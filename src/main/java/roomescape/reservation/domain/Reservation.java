@@ -7,6 +7,7 @@ import roomescape.reservation.handler.exception.ExceptionCode;
 
 public class Reservation {
 
+    public static final int MAX_NAME_LENGTH = 10;
     private final Long id;
     private final String name;
     private final LocalDate date;
@@ -26,7 +27,7 @@ public class Reservation {
 
 
     private void validateName(String name) {
-        if (name.isEmpty() || name.length() > 10) {
+        if (name.isEmpty() || name.length() > MAX_NAME_LENGTH) {
             throw new CustomException(ExceptionCode.INVALID_NAME_LENGTH);
         }
     }
