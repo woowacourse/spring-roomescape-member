@@ -31,7 +31,7 @@ public class ConsoleConfig {
     }
 
     public ReservationService reservationService() {
-        return new ReservationService(reservationRepository(), reservationTimeRepository());
+        return new ReservationService(reservationRepository(), reservationTimeRepository(), null);
     }
 
     public InputView inputView() {

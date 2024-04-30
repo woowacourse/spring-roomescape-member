@@ -33,10 +33,16 @@ public class JdbcReservationRepository implements ReservationRepository {
                             r.name, 
                             r.date, 
                             t.id AS time_id, 
-                            t.start_at AS time_value 
+                            t.start_at AS time_value,
+                            th.id AS theme_id,
+                            th.name AS theme_name,
+                            th.description,
+                            th.thumbnail
                         FROM reservation AS r 
-                        INNER JOIN reservation_time AS t 
-                        ON r.time_id = t.id""",
+                        INNER JOIN reservation_time AS t
+                        ON r.time_id = t.id
+                        INNER JOIN theme AS th
+                        ON r.theme_id = th.id""",
                 reservationRowMapper());
     }
 
@@ -48,10 +54,16 @@ public class JdbcReservationRepository implements ReservationRepository {
                             r.name, 
                             r.date, 
                             t.id AS time_id, 
-                            t.start_at AS time_value
+                            t.start_at AS time_value,
+                            th.id AS theme_id,
+                            th.name AS theme_name,
+                            th.description,
+                            th.thumbnail
                         FROM reservation AS r 
                         INNER JOIN reservation_time AS t
                         ON r.time_id = t.id
+                        INNER JOIN theme AS th
+                        ON r.theme_id = th.id
                         WHERE r.id = ?""",
                 reservationRowMapper(), id);
     }
@@ -64,7 +76,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                 .addValue("theme_id", reservation.getTheme().getId());
         Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
 
-        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime());
+        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
+                reservation.getTheme());
     }
 
     public void removeById(Long id) {
@@ -88,7 +101,13 @@ public class JdbcReservationRepository implements ReservationRepository {
                     resultSet.getLong("reservation_id"),
                     new Name(resultSet.getString("name")),
                     LocalDate.parse(resultSet.getString("date")),
-                    new ReservationTime(resultSet.getLong("time_id"), startAt)
+                    new ReservationTime(resultSet.getLong("time_id"), startAt),
+                    new Theme(
+                            resultSet.getLong("theme_id"),
+                            resultSet.getString("theme_name"),
+                            resultSet.getString("description"),
+                            resultSet.getString("thumbnail")
+                    )
             );
             return reservation;
         };

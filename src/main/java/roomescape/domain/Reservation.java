@@ -17,12 +17,8 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public Reservation(Long id, Name name, LocalDate date, ReservationTime time) {
-        this(id, name, date, time, new Theme("엘라", "no desc", "no thumbnail"));
-    }
-
-    public Reservation(Name name, LocalDate date, ReservationTime time) {
-        this(null, name, date, time);
+    public Reservation(Name name, LocalDate date, ReservationTime time, Theme theme) {
+        this(null, name, date, time, theme);
     }
 
     public Long getId() {

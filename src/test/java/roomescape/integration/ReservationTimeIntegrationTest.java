@@ -43,7 +43,7 @@ class ReservationTimeIntegrationTest {
     @Test
     @DisplayName("예약 시간을 생성한다.")
     void createReservationTime() {
-        ReservationTimeRequest createDto = new ReservationTimeRequest("13:00");
+        ReservationTimeRequest createDto = new ReservationTimeRequest("18:00");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -52,7 +52,7 @@ class ReservationTimeIntegrationTest {
                 .then().log().all()
                 .statusCode(201)
                 .header("Location", startsWith("/times/"))
-                .body("startAt", is("13:00"));
+                .body("startAt", is("18:00"));
     }
 
     @Test

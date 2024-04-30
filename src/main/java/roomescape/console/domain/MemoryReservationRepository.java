@@ -35,7 +35,8 @@ public class MemoryReservationRepository implements ReservationRepository {
                 index.getAndIncrement(),
                 reservation.getName(),
                 reservation.getDate(),
-                reservation.getTime()
+                reservation.getTime(),
+                null
         );
         reservations.put(createdReservation.getId(), createdReservation);
         return createdReservation;

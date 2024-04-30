@@ -67,7 +67,8 @@ class ReservationRepositoryTest {
         Name name = new Name("브라운");
         LocalDate date = LocalDate.parse("2023-08-05");
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.parse("10:00"));
-        Reservation createReservation = new Reservation(null, name, date, reservationTime);
+        Theme theme = new Theme(1L, null, null, null);
+        Reservation createReservation = new Reservation(name, date, reservationTime, theme);
 
         // when
         reservationRepository.create(createReservation);
@@ -97,7 +98,7 @@ class ReservationRepositoryTest {
         Name name = new Name("아톰");
         LocalDate date = LocalDate.parse("2024-05-04");
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.parse("10:00"));
-        Reservation reservation = new Reservation(name, date, reservationTime);
+        Reservation reservation = new Reservation(name, date, reservationTime, null);
 
         // when
         boolean result = reservationRepository.hasDuplicateDateTimeReservation(reservation);

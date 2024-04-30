@@ -7,13 +7,14 @@ import java.time.LocalDate;
 import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 public record ReservationRequest(
         @NotNull @NotBlank String name,
         @NotNull @NotBlank String date,
         @NotNull @Positive Long timeId,
         @NotNull @Positive Long themeId) {
-    public Reservation toDomain(ReservationTime reservationTime) {
-        return new Reservation(new Name(name), LocalDate.parse(date), reservationTime);
+    public Reservation toDomain(ReservationTime reservationTime, Theme theme) {
+        return new Reservation(new Name(name), LocalDate.parse(date), reservationTime, theme);
     }
 }

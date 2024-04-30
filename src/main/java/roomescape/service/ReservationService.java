@@ -9,6 +9,8 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
+import roomescape.domain.Theme;
+import roomescape.domain.ThemeRepository;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 
@@ -16,11 +18,13 @@ import roomescape.dto.ReservationResponse;
 public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository) {
+                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
     }
 
     public List<ReservationResponse> getAllReservations() {
@@ -35,7 +39,8 @@ public class ReservationService {
 
     public ReservationResponse createReservation(ReservationRequest createDto) {
         ReservationTime reservationTime = getReservationTime(createDto.timeId());
-        Reservation reservation = createDto.toDomain(reservationTime);
+        Theme theme = getTheme(createDto.themeId());
+        Reservation reservation = createDto.toDomain(reservationTime, theme);
         validateDateAndTime(reservation, reservationTime);
 
         Reservation createdReservation = reservationRepository.create(reservation);
@@ -45,6 +50,11 @@ public class ReservationService {
     private ReservationTime getReservationTime(Long id) {
         return reservationTimeRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("해당되는 예약 시간이 없습니다."));
+    }
+
+    private Theme getTheme(Long id) {
+        return themeRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("해당되는 테마가 없습니다."));
     }
 
     private void validateDateAndTime(Reservation reservation, ReservationTime reservationTime) {
