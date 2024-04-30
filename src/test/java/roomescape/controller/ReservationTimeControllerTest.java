@@ -5,6 +5,8 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
@@ -12,6 +14,7 @@ import org.springframework.test.context.jdbc.Sql;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 
 @Sql(value = {"/recreateReservationTime.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -46,6 +49,25 @@ class ReservationTimeControllerTest {
                 .then()
                 .statusCode(200)
                 .body("size()", is(1));
+    }
+
+    @DisplayName("시간 컨트롤러는 잘못된 형식의 시간으로 시간 생성 요청 시 400을 응답한다.")
+    @ValueSource(strings = {"aaa", "10:000", "25:30"})
+    @ParameterizedTest
+    void createInvalidTimeReservationTime(String invalidTime) {
+        Map<String, String> params = new HashMap<>();
+        params.put("startAt", invalidTime);
+
+        String detailMessage = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(400)
+                .extract()
+                .jsonPath().get("detail");
+
+        assertThat(detailMessage).isEqualTo("잘못된 형식의 날짜 혹은 시간입니다.");
     }
 
     @DisplayName("시간 컨트롤러는 시간 조회 요청이 들어오면 저장된 시간을 반환한다.")

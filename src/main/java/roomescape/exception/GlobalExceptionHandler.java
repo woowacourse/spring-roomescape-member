@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.exception.dto.ErrorResponse;
 
+import java.time.DateTimeException;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -23,8 +25,17 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException() {
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException exception) {
+        if (exception.getRootCause() instanceof DateTimeException) {
+            return handleDateTimeParseException();
+        }
+
         ErrorResponse data = new ErrorResponse(HttpStatus.BAD_REQUEST, "요청에 잘못된 형식의 값이 있습니다.");
         return ResponseEntity.badRequest().body(data);
+    }
+
+    private ResponseEntity<ErrorResponse> handleDateTimeParseException() {
+        ErrorResponse data = new ErrorResponse(HttpStatus.BAD_REQUEST, "잘못된 형식의 날짜 혹은 시간입니다.");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(data);
     }
 }
