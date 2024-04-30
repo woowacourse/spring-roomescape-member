@@ -22,7 +22,7 @@ public class ReservationTimeControllerTest {
 
     @DisplayName("잘못된 형식의 시간 데이터로 POST 요청을 보낼 시, 400 Bad Request가 발생한다.")
     @Test
-    void requestWithMalformedTimeDate() {
+    void requestWithMalformedTime() {
         Map<String, String> requestBody = Map.of("startAt", "10;00");
 
         RestAssured.given().log().all()
