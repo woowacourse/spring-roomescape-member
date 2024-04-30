@@ -74,7 +74,7 @@ class MissionStepTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("size()", is(findLastIdOfReservation()));
     }
 
     @Test
@@ -88,7 +88,7 @@ class MissionStepTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0)); // 아직 생성 요청이 없으니 Controller에서 임의로 넣어준 Reservation 갯수 만큼 검증하거나 0개임을 확인하세요.
+                .body("size()", is(findLastIdOfReservation()));
     }
 
     @Test
@@ -105,13 +105,13 @@ class MissionStepTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(1));
+                .body("id", is(findLastIdOfReservation()));
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", is(findLastIdOfReservation()));
 
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
@@ -122,7 +122,7 @@ class MissionStepTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("size()", is(countReservation()));
     }
 
     @Test
@@ -166,18 +166,16 @@ class MissionStepTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
-                .header("Location", "/reservations/1");
+                .header("Location", "/reservations/2");
 
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-        assertThat(count).isEqualTo(1);
+        assertThat(countReservation()).isEqualTo(2);
 
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(204);
 
-        Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-        assertThat(countAfterDelete).isEqualTo(0);
+        assertThat(countReservation()).isEqualTo(1);
     }
 
     @Test
@@ -186,10 +184,10 @@ class MissionStepTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", is(findLastIdOfReservationTime()));
 
         RestAssured.given().log().all()
-                .when().delete("/times/1")
+                .when().delete("/times/" + findLastIdOfReservationTime())
                 .then().log().all()
                 .statusCode(204);
     }
@@ -213,7 +211,7 @@ class MissionStepTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", is(2));
     }
 
     @Autowired
@@ -231,5 +229,17 @@ class MissionStepTest {
         }
 
         assertThat(isJdbcTemplateInjected).isFalse();
+    }
+
+    private int findLastIdOfReservation() {
+        return jdbcTemplate.queryForObject("SELECT max(id) FROM reservation", Integer.class);
+    }
+
+    private int countReservation() {
+        return jdbcTemplate.queryForObject("SELECT count(1) FROM reservation", Integer.class);
+    }
+
+    private int findLastIdOfReservationTime() {
+        return jdbcTemplate.queryForObject("SELECT max(id) FROM reservation_time", Integer.class);
     }
 }
