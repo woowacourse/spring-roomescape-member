@@ -12,41 +12,37 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.ReservationTime;
 import roomescape.controller.request.ReservationTimeRequest;
 import roomescape.controller.response.ReservationTimeResponse;
-import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.H2ReservationRepository;
+import roomescape.service.ReservationTimeService;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/times")
 public class ReservationTimeController {
-    private final ReservationTimeRepository reservationTimeRepository;
+    private final ReservationTimeService reservationTimeService;
 
-    public ReservationTimeController(ReservationTimeRepository reservationTimeRepository) {
-        this.reservationTimeRepository = reservationTimeRepository;
+    public ReservationTimeController(ReservationTimeService reservationTimeService) {
+        this.reservationTimeService = reservationTimeService;
     }
 
     @GetMapping
     public ResponseEntity<List<ReservationTimeResponse>> findAll() {
-        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
-        List<ReservationTimeResponse> reservationTimeResponses = reservationTimes.stream()
-                .map(ReservationTimeResponse::from)
-                .toList();
+        List<ReservationTimeResponse> reservationTimeResponses = reservationTimeService.findAll();
 
         return ResponseEntity.ok(reservationTimeResponses);
     }
 
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> save(@RequestBody ReservationTimeRequest reservationTimeRequest) {
-        ReservationTime reservationTime = reservationTimeRequest.toEntity();
+        ReservationTimeResponse reservationTimeResponse = reservationTimeService.save(reservationTimeRequest);
 
-        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(ReservationTimeResponse.from(savedReservationTime));
+        return ResponseEntity.status(HttpStatus.CREATED).body(reservationTimeResponse);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> save(@PathVariable(name = "id") long id) {
-        reservationTimeRepository.deleteById(id);
+    public ResponseEntity<Void> save(@PathVariable(name = "id") Long id) {
+        reservationTimeService.deleteById(id);
 
         return ResponseEntity.noContent().build();
     }
