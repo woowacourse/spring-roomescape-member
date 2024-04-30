@@ -4,7 +4,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.ReservationTime;
 
@@ -25,8 +24,8 @@ class ReservationTimeRepositoryTest {
     private final ReservationTimeRepository timeRepository;
 
     @Autowired
-    ReservationTimeRepositoryTest(JdbcTemplate jdbcTemplate, DataSource dataSource) {
-        this.timeRepository = new H2ReservationTimeRepository(jdbcTemplate, dataSource);
+    ReservationTimeRepositoryTest(DataSource dataSource) {
+        this.timeRepository = new H2ReservationTimeRepository(dataSource);
     }
 
     @Test

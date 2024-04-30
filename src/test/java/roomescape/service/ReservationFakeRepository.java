@@ -2,6 +2,7 @@ package roomescape.service;
 
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.repository.ReservationRepository;
 
 import java.time.LocalDate;
@@ -17,13 +18,15 @@ public class ReservationFakeRepository implements ReservationRepository {
                     1L,
                     "al",
                     LocalDate.of(2025, 1, 20),
-                    new ReservationTime(1L, null)
+                    new ReservationTime(1L, null),
+                    new Theme(1L, null, null, null)
             ),
             new Reservation(
                     2L,
                     "be",
                     LocalDate.of(2025, 2, 19),
-                    new ReservationTime(2L, null)
+                    new ReservationTime(2L, null),
+                    new Theme(1L, null, null, null)
             )
     ));
     AtomicLong index = new AtomicLong(3);

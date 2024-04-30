@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 import javax.sql.DataSource;
 import java.time.LocalDate;
@@ -28,8 +28,8 @@ class ReservationRepositoryTest {
     private final ReservationRepository reservationRepository;
 
     @Autowired
-    ReservationRepositoryTest(JdbcTemplate jdbcTemplate, DataSource dataSource) {
-        this.reservationRepository = new H2ReservationRepository(jdbcTemplate, dataSource);
+    ReservationRepositoryTest(DataSource dataSource) {
+        this.reservationRepository = new H2ReservationRepository(dataSource);
     }
 
     @Test
@@ -41,13 +41,15 @@ class ReservationRepositoryTest {
                         1L,
                         "al",
                         LocalDate.of(2024, 1, 20),
-                        new ReservationTime(1L, null)
+                        new ReservationTime(1L, null),
+                        new Theme(1L, null, null, null)
                 ),
                 new Reservation(
                         2L,
                         "be",
                         LocalDate.of(2024, 2, 19),
-                        new ReservationTime(2L, null)
+                        new ReservationTime(2L, null),
+                        new Theme(2L, null, null, null)
                 )
         );
 
@@ -67,7 +69,8 @@ class ReservationRepositoryTest {
                 id,
                 "be",
                 LocalDate.of(2024, 2, 19),
-                new ReservationTime(2L, null)
+                new ReservationTime(2L, null),
+                new Theme(2L, null, null, null)
         );
 
         // when
@@ -126,13 +129,15 @@ class ReservationRepositoryTest {
                 null,
                 "cha",
                 LocalDate.of(2024, 3, 1),
-                new ReservationTime(2L, null)
+                new ReservationTime(2L, null),
+                new Theme(2L, null, null, null)
         );
         Reservation expected = new Reservation(
                 3L,
                 "cha",
                 LocalDate.of(2024, 3, 1),
-                new ReservationTime(2L, null)
+                new ReservationTime(2L, null),
+                new Theme(2L, null, null, null)
         );
 
         // when
@@ -150,13 +155,15 @@ class ReservationRepositoryTest {
                 null,
                 "cha",
                 LocalDate.of(2025, 3, 1),
-                new ReservationTime(4L, null)
+                new ReservationTime(4L, null),
+                new Theme(2L, null, null, null)
         );
         Reservation expected = new Reservation(
                 3L,
                 "cha",
                 LocalDate.of(2025, 3, 1),
-                new ReservationTime(4L, null)
+                new ReservationTime(4L, null),
+                new Theme(2L, null, null, null)
         );
 
         // when & then

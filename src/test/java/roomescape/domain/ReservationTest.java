@@ -23,12 +23,16 @@ class ReservationTest {
                 null,
                 "seyang",
                 LocalDate.of(2024, 4, 24),
-                new ReservationTime(1L, LocalTime.of(10, 0)));
+                new ReservationTime(1L, LocalTime.of(10, 0)),
+                new Theme(1L, null, null, null)
+        );
         Reservation expected = new Reservation(
                 2L,
                 "seyang",
                 LocalDate.of(2024, 4, 24),
-                new ReservationTime(1L, LocalTime.of(10, 0)));
+                new ReservationTime(1L, LocalTime.of(10, 0)),
+                new Theme(1L, null, null, null)
+        );
 
         // when
         Reservation actual = reservation.assignId(2L);
@@ -46,13 +50,15 @@ class ReservationTest {
                 2L,
                 "seyang",
                 LocalDate.of(2024, 4, 24),
-                reservationTime
+                reservationTime,
+                new Theme(1L, null, null, null)
         );
         Reservation expected = new Reservation(
                 2L,
                 "seyang",
                 LocalDate.of(2024, 4, 24),
-                reservationTime
+                reservationTime,
+                new Theme(1L, null, null, null)
         );
 
         // when
@@ -69,7 +75,8 @@ class ReservationTest {
                 2L,
                 "",
                 "2024-04-24",
-                new ReservationTime(1L, LocalTime.of(10, 0))
+                new ReservationTime(1L, LocalTime.of(10, 0)),
+                new Theme(1L, null, null, null)
         )).isInstanceOf(InvalidRequestException.class);
     }
 
@@ -80,7 +87,8 @@ class ReservationTest {
                 2L,
                 "seyang",
                 "",
-                new ReservationTime(1L, LocalTime.of(10, 0))
+                new ReservationTime(1L, LocalTime.of(10, 0)),
+                new Theme(1L, null, null, null)
         )).isInstanceOf(InvalidRequestException.class);
     }
 
@@ -89,7 +97,8 @@ class ReservationTest {
     @ValueSource(strings = {"202020-12-13", "1-13-4", "2024-14-15"})
     void validateFormat(String date) {
         final ReservationTime time = new ReservationTime(1L, LocalTime.parse("13:00"));
-        assertThatThrownBy(() -> Reservation.from(1L, "name", date, time))
+        final Theme theme = new Theme(1L, "spring", "Escape from spring cold", "Spring thumb");
+        assertThatThrownBy(() -> Reservation.from(1L, "name", date, time, theme))
                 .isInstanceOf(InvalidDateException.class);
     }
 }

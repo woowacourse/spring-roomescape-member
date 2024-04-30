@@ -3,27 +3,41 @@ package roomescape.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import roomescape.controller.reservation.ReservationRequest;
 import roomescape.controller.reservation.ReservationResponse;
 import roomescape.controller.time.TimeResponse;
 import roomescape.exception.DuplicateReservation;
 import roomescape.exception.PreviousTimeException;
 import roomescape.exception.TimeNotFoundException;
+import roomescape.repository.H2ThemeRepository;
+import roomescape.repository.ThemeRepository;
 
+import javax.sql.DataSource;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@JdbcTest
 class ReservationServiceTest {
 
+    private final ThemeRepository themeRepository;
     private ReservationService reservationService;
+
+    @Autowired
+    ReservationServiceTest(final DataSource dataSource) {
+        this.themeRepository = new H2ThemeRepository(dataSource);
+    }
 
     @BeforeEach
     void setUp() {
+        // TODO: Fake 객체 제거
         reservationService = new ReservationService(
                 new ReservationFakeRepository(),
-                new ReservationTimeFakeRepository()
+                new ReservationTimeFakeRepository(),
+                themeRepository
         );
     }
 
@@ -47,7 +61,7 @@ class ReservationServiceTest {
     @DisplayName("예약을 추가한다.")
     void addReservation() {
         // given
-        ReservationRequest request = new ReservationRequest("cha", "2025-03-18", 3L);
+        ReservationRequest request = new ReservationRequest("cha", "2025-03-18", 3L, 2L);
         ReservationResponse expected = new ReservationResponse(3L, "cha", "2025-03-18", new TimeResponse(3L, "12:25"));
 
         // when
@@ -80,7 +94,7 @@ class ReservationServiceTest {
     @Test
     @DisplayName("존재하지 않는 시간(id)로 예약을 할 때 예외가 발생한다.")
     void addReservationNonExistTime() {
-        ReservationRequest request = new ReservationRequest("redddy", "2024-06-21", 100L);
+        ReservationRequest request = new ReservationRequest("redddy", "2024-06-21", 100L, 2L);
         assertThatThrownBy(() -> reservationService.addReservation(request))
                 .isInstanceOf(TimeNotFoundException.class);
     }
@@ -88,7 +102,7 @@ class ReservationServiceTest {
     @Test
     @DisplayName("예약하려는 시간이 현재 시간보다 이전일 경우 예외가 발생한다.")
     void validateReservationTimeAfterThanNow() {
-        assertThatThrownBy(() -> reservationService.addReservation(new ReservationRequest("cha", "2024-04-30", 1L)))
+        assertThatThrownBy(() -> reservationService.addReservation(new ReservationRequest("cha", "2024-04-30", 1L, 1L)))
                 .isInstanceOf(PreviousTimeException.class);
     }
 
@@ -96,7 +110,7 @@ class ReservationServiceTest {
     @DisplayName("중복된 시간으로 예약을 할 때 예외가 발생한다.")
     void duplicateDateTimeReservation() {
         //given
-        final ReservationRequest request = new ReservationRequest("레디", "2025-11-20", 1L);
+        final ReservationRequest request = new ReservationRequest("레디", "2025-11-20", 1L, 1L);
 
         //when
         reservationService.addReservation(request);

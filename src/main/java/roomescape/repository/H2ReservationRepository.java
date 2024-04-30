@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -22,8 +23,8 @@ public class H2ReservationRepository implements ReservationRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public H2ReservationRepository(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
-        this.jdbcTemplate = jdbcTemplate;
+    public H2ReservationRepository(final DataSource dataSource) {
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
@@ -34,7 +35,8 @@ public class H2ReservationRepository implements ReservationRepository {
                 rs.getLong("id"),
                 rs.getString("name"),
                 rs.getString("date"),
-                new ReservationTime(rs.getLong("time_id"), null)
+                new ReservationTime(rs.getLong("time_id"), null),
+                new Theme(rs.getLong("theme_id"), null, null, null)
         );
     }
 

@@ -1,5 +1,6 @@
 package roomescape.domain;
 
+
 import roomescape.exception.InvalidDateException;
 import roomescape.exception.InvalidRequestException;
 
@@ -12,20 +13,22 @@ public class Reservation {
     private final String name;
     private final LocalDate date;
     private final ReservationTime time;
+    private final Theme theme;
 
     // TODO: 생성자 private으로 변경
-    public Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time) {
+    public Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time, final Theme theme) {
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
+        this.theme = theme;
     }
 
-    public static Reservation from(final Long id, final String name, final String date, final ReservationTime time) {
+    public static Reservation from(final Long id, final String name, final String date, final ReservationTime time, final Theme theme) {
         validateNull(name);
         validateNull(date);
         validateFormat(date);
-        return new Reservation(id, name, LocalDate.parse(date), time);
+        return new Reservation(id, name, LocalDate.parse(date), time, theme);
     }
 
     private static void validateFormat(final String date) {
@@ -43,11 +46,11 @@ public class Reservation {
     }
 
     public Reservation assignId(final Long id) {
-        return new Reservation(id, name, date, time);
+        return new Reservation(id, name, date, time, theme);
     }
 
     public Reservation assignTime(final ReservationTime time) {
-        return new Reservation(id, name, date, time);
+        return new Reservation(id, name, date, time, theme);
     }
 
     public Long getId() {
