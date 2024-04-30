@@ -10,11 +10,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class ReservationExceptionHandler {
 
     @ExceptionHandler
-    public ResponseEntity<String> handleReservationException(ReservationException exception) {
-        return new ResponseEntity<>(exception.getMessage(), exception.getStatus());
-    }
-
-    @ExceptionHandler
     public ResponseEntity<String> handleDateTimeParseException(DateTimeParseException exception) {
         return new ResponseEntity<>("올바르지 않은 시간/날짜 형식입니다.", HttpStatus.BAD_REQUEST);
     }
