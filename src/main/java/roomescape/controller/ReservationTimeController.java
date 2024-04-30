@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import java.net.URI;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,20 +30,22 @@ public class ReservationTimeController {
     }
 
     @PostMapping
-    public ReservationTimeResponse createReservationTime(@RequestBody ReservationTimeRequest request) {
+    public ResponseEntity<ReservationTimeResponse> createReservationTime(@RequestBody ReservationTimeRequest request) {
         ReservationTimeOutput output = reservationTimeService.createReservationTime(request.toInput());
-        return ReservationTimeResponse.toResponse(output);
+        return ResponseEntity.created(URI.create("/times/" + output.id()))
+                .body(ReservationTimeResponse.toResponse(output));
     }
 
     @GetMapping
-    public List<ReservationTimeResponse> getAllReservationTimes() {
+    public ResponseEntity<List<ReservationTimeResponse>> getAllReservationTimes() {
         List<ReservationTimeOutput> output = reservationTimeService.getAllReservationTimes();
-        return ReservationTimeResponse.toResponses(output);
+        return ResponseEntity.ok(ReservationTimeResponse.toResponses(output));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteReservationTime(@PathVariable long id) {
+    public ResponseEntity<Void> deleteReservationTime(@PathVariable long id) {
         reservationTimeService.deleteReservationTime(id);
+        return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler(value = IllegalArgumentException.class)
