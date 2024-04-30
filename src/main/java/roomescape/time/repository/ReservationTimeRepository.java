@@ -52,11 +52,11 @@ public class ReservationTimeRepository {
 
     public Optional<ReservationTime> findReservationInSameId(Long id) {
         String sql = """
-                select id,start_at
+                select t.id, t.start_at
                 from reservation_time t
                 join reservation r
                 on r.time_id = t.id
-                where id = ?
+                where t.id = ?
                 """;
         try {
             return Optional.of(jdbcTemplate.queryForObject(sql, createReservationTimeRowMapper(), id));
