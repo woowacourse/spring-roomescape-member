@@ -3,33 +3,34 @@ package roomescape.domain.user;
 import java.util.regex.Pattern;
 
 public class UserName {
-    private static final int MIN_NAME_LENGTH = 2;
-    private static final Pattern NAME_PATTERN = Pattern.compile("^[가-힣a-zA-Z]*$");
+    private static final Pattern NAME_FORMAT = Pattern.compile("^[a-zA-Z가-힣]*$");
+    private static final int MIN_LENGTH = 2;
+    private static final int MAX_LENGTH = 10;
 
     private final String name;
 
     public UserName(String name) {
-        validateBlank(name);
-        validateLength(name);
-        validatePattern(name);
+        validateIsNull(name);
+        validateIsName(name);
+        validateIsInRange(name);
         this.name = name;
     }
 
-    private void validateBlank(String name) {
+    private void validateIsNull(String name) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("이름이 비어있습니다.");
         }
     }
 
-    private void validateLength(String name) {
-        if (name.length() < MIN_NAME_LENGTH) {
-            throw new IllegalArgumentException(String.format("이름은 %d글자 이상이어야 합니다.", MIN_NAME_LENGTH));
+    private void validateIsName(String name) {
+        if (!NAME_FORMAT.matcher(name).matches()) {
+            throw new IllegalArgumentException("이름이 영어이거나 한글이 아닙니다.");
         }
     }
 
-    private void validatePattern(String name) {
-        if (!NAME_PATTERN.matcher(name).matches()) {
-            throw new IllegalArgumentException("이름은 한글, 영어만 가능합니다.");
+    private void validateIsInRange(String name) {
+        if (name.length() < MIN_LENGTH || name.length() > MAX_LENGTH) {
+            throw new IllegalArgumentException("이름 길이는 2글자 이상, 10글자 이하여야 합니다.");
         }
     }
 
