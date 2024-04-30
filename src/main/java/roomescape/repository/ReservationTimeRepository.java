@@ -2,7 +2,6 @@ package roomescape.repository;
 
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 import roomescape.domain.ReservationTime;
 
 public interface ReservationTimeRepository {
@@ -11,9 +10,11 @@ public interface ReservationTimeRepository {
 
     List<ReservationTime> findAll();
 
-    Optional<ReservationTime> findById(Long id);
+    ReservationTime findById(Long id);
 
-    boolean delete(Long id);
+    void delete(Long id);
 
-    Optional<ReservationTime> findByTime(LocalTime time);
+    Boolean existId(Long id);
+
+    Boolean existTime(LocalTime time);
 }

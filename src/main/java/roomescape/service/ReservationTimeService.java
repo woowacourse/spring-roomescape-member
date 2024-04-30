@@ -1,7 +1,7 @@
 package roomescape.service;
 
+import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeRequest;
@@ -15,17 +15,14 @@ public class ReservationTimeService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
 
-    public ReservationTimeService(final ReservationRepository reservationRepository,
-                                  final ReservationTimeRepository reservationTimeRepository) {
+    public ReservationTimeService(ReservationRepository reservationRepository,
+                                  ReservationTimeRepository reservationTimeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
     public Long addReservationTime(ReservationTimeRequest reservationTimeRequest) {
-        Optional<ReservationTime> optional = reservationTimeRepository.findByTime(reservationTimeRequest.startAt());
-        if(optional.isPresent()){
-            throw new IllegalArgumentException("[ERROR] 이미 등록된 시간입니다.");
-        }
+        validateTimeNotExist(reservationTimeRequest.startAt());
         ReservationTime reservationTime = reservationTimeRequest.toEntity();
         return reservationTimeRepository.save(reservationTime);
     }
@@ -38,20 +35,28 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponse getReservationTime(Long id) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 잘못된 id 입니다. : " + id));
-
+        validateIdExist(id);
+        ReservationTime reservationTime = reservationTimeRepository.findById(id);
         return ReservationTimeResponse.from(reservationTime);
     }
 
     public void deleteReservationTime(Long id) {
-        if (reservationRepository.isTimeIdExist(id)) {
+        validateIdExist(id);
+        if (reservationRepository.existTimeId(id)) {
             throw new IllegalArgumentException("[ERROR] 해당 시간에 예약이 존재합니다.");
         }
-        boolean isDeleted = reservationTimeRepository.delete(id);
-        if (!isDeleted) {
-            throw new IllegalArgumentException("[ERROR] 삭제할 아이디가 존재하지 않습니다");
-        }
         reservationRepository.delete(id);
+    }
+
+    public void validateIdExist(Long id) {
+        if (!reservationTimeRepository.existId(id)) {
+            throw new IllegalArgumentException("[ERROR] id가 존재하지 않습니다 : " + id);
+        }
+    }
+
+    public void validateTimeNotExist(LocalTime time) {
+        if (reservationTimeRepository.existTime(time)) {
+            throw new IllegalArgumentException("[ERROR] 이미 등록된 시간 입니다. : " + time);
+        }
     }
 }
