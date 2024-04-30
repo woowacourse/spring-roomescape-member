@@ -5,11 +5,11 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.TimeResponse;
 import roomescape.dto.TimeSaveRequest;
+import roomescape.exception.IllegalTimeException;
 import roomescape.mapper.TimeMapper;
 import roomescape.repository.TimeDao;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -31,11 +31,11 @@ public class ReservationTimeService {
 
     public ReservationTime findTimeById(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException("[ERROR] 유효하지 않은 형식의 예약 시간입니다.");
+            throw new IllegalTimeException("[ERROR] 유효하지 않은 형식의 예약 시간입니다.");
         }
         Optional<ReservationTime> optionalReservationTime = timeDao.findById(id);
         if (optionalReservationTime.isEmpty()) {
-            throw new NoSuchElementException("[ERROR] 예약 시간을 찾을 수 없습니다");
+            throw new IllegalTimeException("[ERROR] 예약 시간을 찾을 수 없습니다");
         }
         return optionalReservationTime.get();
     }
@@ -51,7 +51,7 @@ public class ReservationTimeService {
         try {
             timeDao.deleteById(id);
         } catch (DataIntegrityViolationException e) {
-            throw new IllegalArgumentException("[ERROR] 예약이 존재하는 시간은 삭제할 수 없습니다.");
+            throw new IllegalTimeException("[ERROR] 예약이 존재하는 시간은 삭제할 수 없습니다.");
         }
     }
 }
