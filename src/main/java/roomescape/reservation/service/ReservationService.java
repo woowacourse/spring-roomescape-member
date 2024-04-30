@@ -33,6 +33,10 @@ public class ReservationService {
 
         validateReservationDateTime(createReservationRequest.date(), reservationTime.getTime());
 
+        if (reservationRepository.existByReservation(createReservationRequest.toReservation(reservationTime))) {
+            throw new IllegalStateException("동일한 시간의 예약이 존재합니다.");
+        }
+
         Long id = reservationRepository.save(createReservationRequest.toReservation(reservationTime));
         return CreateReservationResponse.of(getReservation(id));
     }

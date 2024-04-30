@@ -14,4 +14,7 @@ public interface ReservationRepository {
     void deleteById(Long id);
 
     List<Reservation> findAllByTimeId(Long timeId);
+
+    // TODO: existByReservation 이름 고민
+    boolean existByReservation(Reservation reservation);
 }

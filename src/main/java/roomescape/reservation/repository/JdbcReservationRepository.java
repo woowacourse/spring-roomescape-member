@@ -34,6 +34,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                     resultSet.getLong("time_id"),
                     resultSet.getTime("start_at").toLocalTime()
             );
+
     @Override
     public Long save(final Reservation reservation) {
         SqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
@@ -86,5 +87,20 @@ public class JdbcReservationRepository implements ReservationRepository {
                 where r.time_id = ?
                 """;
         return jdbcTemplate.query(sql, reservationRowMapper, timeId);
+    }
+
+    @Override
+    public boolean existByReservation(final Reservation reservation) {
+        String sql = """
+                select count(*)
+                from reservation as r
+                inner join reservation_time as t
+                on r.time_id = t.id
+                where r.name = ? and r.date = ? and r.time_id = ?
+                """; // TODO: 줄바꿈 고쳐라잉
+        return jdbcTemplate.queryForObject(sql, Integer.class,
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.getReservationTime().getId()) != 0;
     }
 }
