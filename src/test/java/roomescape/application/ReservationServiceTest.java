@@ -21,7 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.domain.Name;
+import roomescape.domain.PlayerName;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
@@ -51,7 +51,7 @@ class ReservationServiceTest {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(12, 0));
         Reservation reservation = new Reservation(
                 1L,
-                new Name("test"),
+                new PlayerName("test"),
                 reservationRequest.date(),
                 reservationTime
         );
@@ -137,7 +137,7 @@ class ReservationServiceTest {
     void shouldDeleteReservationWhenReservationExist() {
         Reservation reservation = new Reservation(
                 1L,
-                new Name("test"),
+                new PlayerName("test"),
                 LocalDate.now(),
                 new ReservationTime(1L, LocalTime.now())
         );

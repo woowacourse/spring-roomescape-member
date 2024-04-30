@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.domain.Name;
+import roomescape.domain.PlayerName;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 
@@ -72,7 +72,7 @@ class JdbcReservationRepositoryTest {
     void shouldReturnReservationWithIdWhenReservationSave() {
         jdbcTemplate.update("insert into reservation_time (id, start_at) values (?, ?)", 1L, LocalTime.now());
         Reservation reservationWithoutId = new Reservation(
-                new Name("test"),
+                new PlayerName("test"),
                 LocalDate.now(),
                 new ReservationTime(1L, LocalTime.now())
         );

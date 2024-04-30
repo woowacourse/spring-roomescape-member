@@ -2,11 +2,11 @@ package roomescape.domain;
 
 import java.util.Objects;
 
-public class Name {
+public class PlayerName {
     public static final int NAME_MAX_LENGTH = 20;
     private final String name;
 
-    public Name(String name) {
+    public PlayerName(String name) {
         validateNonBlank(name);
         validateLength(name);
         this.name = name;
@@ -33,10 +33,10 @@ public class Name {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof Name name)) {
+        if (!(o instanceof PlayerName playerName)) {
             return false;
         }
-        return Objects.equals(this.name, name.name);
+        return Objects.equals(this.name, playerName.name);
     }
 
     @Override

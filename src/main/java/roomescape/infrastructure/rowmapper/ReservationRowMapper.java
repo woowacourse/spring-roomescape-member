@@ -4,7 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import org.springframework.jdbc.core.RowMapper;
-import roomescape.domain.Name;
+import roomescape.domain.PlayerName;
 import roomescape.domain.Reservation;
 
 public class ReservationRowMapper implements RowMapper<Reservation> {
@@ -26,7 +26,7 @@ public class ReservationRowMapper implements RowMapper<Reservation> {
         String date = rs.getString("date");
         return new Reservation(
                 id,
-                new Name(name),
+                new PlayerName(name),
                 LocalDate.parse(date),
                 reservationTimeRowMapper.mapRow(rs, rowNum)
         );

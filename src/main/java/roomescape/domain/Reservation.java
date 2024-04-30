@@ -6,19 +6,19 @@ import java.util.Objects;
 
 public class Reservation {
     private final Long id;
-    private final Name name;
+    private final PlayerName name;
     private final LocalDate date;
     private final ReservationTime time;
 
     @JsonCreator
-    public Reservation(Long id, Name name, LocalDate date, ReservationTime time) {
+    public Reservation(Long id, PlayerName name, LocalDate date, ReservationTime time) {
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
     }
 
-    public Reservation(Name name, LocalDate date, ReservationTime time) {
+    public Reservation(PlayerName name, LocalDate date, ReservationTime time) {
         this(null, name, date, time);
     }
 
