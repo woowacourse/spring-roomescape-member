@@ -78,4 +78,33 @@ class ReservationJDBCRepositoryTest {
         //then
         assertThat(reservationRepository.findAll().size()).isEqualTo(expectedSize);
     }
+
+    @DisplayName("주어진 날짜와 시간이 동일한 예약이 존재한다.")
+    @Test
+    void existsByDateAndTimeTest() {
+        //given
+        Reservation reservation = new Reservation("브라운", date, reservationTime);
+        reservationRepository.save(reservation);
+
+        //when
+        boolean result = reservationRepository.existsReservation(date, reservationTime.getId());
+
+        //then
+        assertThat(result).isTrue();
+    }
+
+    @DisplayName("주어진 날짜와 시간이 동일한 예약이 존재하지 않는다.")
+    @Test
+    void notExistsByDateAndTimeTest() {
+        //given
+        String newDate = LocalDate.now().plusDays(2).toString();
+        Reservation reservation = new Reservation("브라운", date, reservationTime);
+        reservationRepository.save(reservation);
+
+        //when
+        boolean result = reservationRepository.existsReservation(newDate, reservationTime.getId());
+
+        //then
+        assertThat(result).isFalse();
+    }
 }

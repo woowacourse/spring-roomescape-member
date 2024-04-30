@@ -9,4 +9,6 @@ public interface ReservationRepository {
     Reservation save(Reservation reservation);
 
     void deleteById(long id);
+
+    boolean existsReservation(String date, long id);
 }
