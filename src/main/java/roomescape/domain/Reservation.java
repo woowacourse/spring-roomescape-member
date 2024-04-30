@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Objects;
@@ -36,6 +37,17 @@ public class Reservation {
 
     public Reservation changeId(Long id) {
         return new Reservation(id, this.name, this.date, this.time);
+    }
+
+    public boolean isAfter(LocalDateTime currentDateTime) {
+        LocalDate currentDate = currentDateTime.toLocalDate();
+        if (date.isAfter(currentDate)) {
+            return true;
+        }
+        if (date.isBefore(currentDate)) {
+            return false;
+        }
+        return time.isAfter(currentDateTime.toLocalTime());
     }
 
     public Long getId() {
