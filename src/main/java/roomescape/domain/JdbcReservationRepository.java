@@ -70,6 +70,16 @@ public class JdbcReservationRepository implements ReservationRepository {
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
     }
 
+    public boolean hasDuplicateDateTimeReservation(Reservation reservation) {
+
+        return jdbcTemplate.queryForObject(
+                """
+                        SELECT count(*)
+                        FROM reservation
+                        WHERE date = ? AND time_id = ?""",
+                Integer.class, reservation.getDate(), reservation.getTime().getId()) > 0;
+    }
+
     private RowMapper<Reservation> reservationRowMapper() {
         return (resultSet, rowNum) -> {
             LocalTime startAt = LocalTime.parse(resultSet.getString("start_at"));

@@ -78,7 +78,7 @@ class ReservationRepositoryTest {
     }
 
     @Test
-    @DisplayName("특정 id를 가진 예약을 삭제한다")
+    @DisplayName("특정 id를 가진 예약을 삭제한다.")
     void remove() {
         // given
         Long id = 2L;
@@ -88,5 +88,21 @@ class ReservationRepositoryTest {
 
         // then
         assertThatThrownBy(() -> reservationRepository.findById(id)).isInstanceOf(EmptyResultDataAccessException.class);
+    }
+
+    @Test
+    @DisplayName("동일한 날짜, 시간의 예약이 있는지 확인한다.")
+    void hasDuplicateDateTimeReservation() {
+        // given
+        Name name = new Name("아톰");
+        LocalDate date = LocalDate.parse("2024-05-04");
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.parse("10:00"));
+        Reservation reservation = new Reservation(name, date, reservationTime);
+
+        // when
+        boolean result = reservationRepository.hasDuplicateDateTimeReservation(reservation);
+
+        // then
+        assertThat(result).isTrue();
     }
 }

@@ -45,4 +45,9 @@ public class MemoryReservationRepository implements ReservationRepository {
     public void removeById(Long id) {
         reservations.remove(id);
     }
+
+    @Override
+    public boolean hasDuplicateDateTimeReservation(Reservation reservation) {
+        return false;
+    }
 }

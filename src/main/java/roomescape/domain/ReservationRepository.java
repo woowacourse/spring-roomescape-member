@@ -10,4 +10,6 @@ public interface ReservationRepository {
     Reservation create(Reservation reservation);
 
     void removeById(Long id);
+
+    boolean hasDuplicateDateTimeReservation(Reservation reservation);
 }
