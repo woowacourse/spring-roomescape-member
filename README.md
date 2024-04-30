@@ -9,3 +9,10 @@
     - [x] 특정 시간에 대한 예약이 존재하는데, 그 시간을 삭제하려 할 때
     - [x] 중복된 예약 시간을 등록할 때
     - [x] 예약 날짜와 시간이 중복될 때
+
+- [ ] 사용자 예약 시 원하는 테마를 선택할 수 있도록 테마 도메인을 추가한다.
+- [x] /admin/theme 요청 시 테마 관리 페이지를 응답한다.
+    - templates/admin/theme.html
+- [ ] 어드민에서 방탈출 예약 시, 테마 정보를 포함할 수 있도록 신규 페이지 파일을 사용한다.
+    - AS-IS: templates/admin/reservation.html
+    - TO-BE: templates/admin/reservation-new.html
