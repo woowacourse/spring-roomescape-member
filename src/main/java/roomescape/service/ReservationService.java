@@ -1,13 +1,12 @@
 package roomescape.service;
 
+import java.time.LocalDateTime;
 import org.springframework.stereotype.Service;
 import roomescape.controller.request.ReservationRequest;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
-
-import java.time.LocalDateTime;
 
 @Service
 public class ReservationService {
@@ -29,8 +28,19 @@ public class ReservationService {
 
 
         rejectPastTimeReservation(reservation);
+        rejectDuplicateDateTime(reservation);
 
         return reservationRepository.save(reservation);
+    }
+
+    private void rejectDuplicateDateTime(Reservation reservation) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(reservation.getDate(), reservation.getTime().getStartAt());
+        boolean present = reservationRepository.findAll().stream()
+                .map(savedReservation -> LocalDateTime.of(savedReservation.getDate(), savedReservation.getTime().getStartAt()))
+                .anyMatch(dateTime -> dateTime.equals(reservationDateTime));
+        if (present) {
+            throw new IllegalArgumentException("중복된 예약이 존재합니다.");
+        }
     }
 
     private void rejectPastTimeReservation(Reservation reservation) {
