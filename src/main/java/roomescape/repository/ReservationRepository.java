@@ -40,7 +40,8 @@ public class ReservationRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
-    public Reservation save(Reservation requestReservation) {
+    public Reservation
+    save(Reservation requestReservation) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", requestReservation.getName())
                 .addValue("date", requestReservation.getDate())
@@ -55,5 +56,10 @@ public class ReservationRepository {
     public void delete(Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
         jdbcTemplate.update(sql, id);
+    }
+
+    public List<Reservation> findByTimeId(Long timeId) {
+        String sql = "SELECT * FROM reservation r JOIN reservation_time rt ON r.time_id = rt.id WHERE r.time_id = ?";
+        return jdbcTemplate.query(sql, ROW_MAPPER, timeId);
     }
 }
