@@ -53,6 +53,11 @@ public class ThemeController {
         return ResponseEntity.ok(themeService.findAll());
     }
 
+    @GetMapping("/popular")
+    public ResponseEntity<List<ThemeResponseDto>> findPopular() {
+        return ResponseEntity.ok(themeService.findPopular());
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") final long id) {
         themeService.delete(id);

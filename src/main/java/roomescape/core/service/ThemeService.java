@@ -51,4 +51,11 @@ public class ThemeService {
         }
         themeRepository.deleteById(id);
     }
+
+    public List<ThemeResponseDto> findPopular() {
+        return themeRepository.findPopular()
+                .stream()
+                .map(ThemeResponseDto::new)
+                .toList();
+    }
 }

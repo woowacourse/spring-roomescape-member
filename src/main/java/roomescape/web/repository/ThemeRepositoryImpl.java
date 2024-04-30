@@ -1,5 +1,6 @@
 package roomescape.web.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import javax.sql.DataSource;
 import org.springframework.dao.DataAccessException;
@@ -36,6 +37,24 @@ public class ThemeRepositoryImpl implements ThemeRepository {
     @Override
     public List<Theme> findAll() {
         return jdbcTemplate.query("SELECT id, name, description, thumbnail FROM theme", getThemeRowMapper());
+    }
+
+    @Override
+    public List<Theme> findPopular() {
+        final LocalDate today = LocalDate.now();
+        final LocalDate lastWeek = today.minusWeeks(1);
+
+        final String query = """
+                SELECT t.id, t.name, t.description, t.thumbnail
+                FROM theme as t
+                JOIN reservation as r ON t.id = r.theme_id
+                WHERE r.date BETWEEN ? AND ?
+                GROUP BY t.id
+                ORDER BY count(r.id) DESC
+                LIMIT 10
+                """;
+        
+        return jdbcTemplate.query(query, getThemeRowMapper(), lastWeek, today);
     }
 
     @Override

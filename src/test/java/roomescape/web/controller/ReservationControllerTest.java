@@ -190,7 +190,7 @@ class ReservationControllerTest {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", TOMORROW_DATE);
-        params.put("timeId", 2);
+        params.put("timeId", 3);
         params.put("themeId", 1);
 
         RestAssured.given().log().all()

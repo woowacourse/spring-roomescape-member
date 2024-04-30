@@ -97,16 +97,18 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
-    public Integer countByDateAndTimeId(final String date, long timeId) {
+    public Integer countByDateAndTimeIdAndThemeId(final String date, final long timeId, final long themeId) {
         final String query = """
                 SELECT count(*)
                 FROM reservation as r
                 inner join reservation_time as t
                 on r.time_id = t.id
-                WHERE r.date = ? and t.id = ?
+                inner join theme as m
+                on r.theme_id = m.id
+                WHERE r.date = ? and t.id = ? and m.id = ?
                 """;
 
-        return jdbcTemplate.queryForObject(query, Integer.class, date, timeId);
+        return jdbcTemplate.queryForObject(query, Integer.class, date, timeId, themeId);
     }
 
     @Override

@@ -49,8 +49,9 @@ public class ReservationService {
     }
 
     private void validateDuplicatedReservation(final Reservation reservation, final ReservationTime reservationTime) {
-        final Integer reservationCount = reservationRepository.countByDateAndTimeId(reservation.getDateString(),
-                reservationTime.getId());
+        final Integer reservationCount = reservationRepository.countByDateAndTimeIdAndThemeId(
+                reservation.getDateString(),
+                reservationTime.getId(), reservation.getTheme().getId());
         if (reservationCount > 0) {
             throw new IllegalArgumentException("예약 내역이 존재합니다.");
         }

@@ -12,7 +12,7 @@ public interface ReservationRepository {
 
     Integer countByThemeId(final long themeId);
 
-    Integer countByDateAndTimeId(final String date, final long timeId);
+    Integer countByDateAndTimeIdAndThemeId(final String date, final long timeId, final long themeId);
 
     void deleteById(final long id);
 }

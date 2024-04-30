@@ -44,8 +44,8 @@ public class ReservationConsoleRepository implements ReservationRepository {
     }
 
     @Override
-    public Integer countByDateAndTimeId(String date, long timeId) {
-        return 0;
+    public Integer countByDateAndTimeIdAndThemeId(final String date, final long timeId, final long themeId) {
+        return null;
     }
 
     @Override

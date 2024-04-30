@@ -1,5 +1,7 @@
 package roomescape.web.controller;
 
+import static org.hamcrest.Matchers.is;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;
@@ -151,6 +153,16 @@ class ThemeControllerTest {
                 .when().post("/themes")
                 .then().log().all()
                 .statusCode(400);
+    }
+
+    @Test
+    @DisplayName("지난 한 주 동안의 인기 테마 목록을 조회한다.")
+    void findPopularThemes() {
+        RestAssured.given().log().all()
+                .when().get("/themes/popular")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(1));
     }
 
     @Test

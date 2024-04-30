@@ -16,6 +16,11 @@ public class ThemeConsoleRepository implements ThemeRepository {
     }
 
     @Override
+    public List<Theme> findPopular() {
+        return null;
+    }
+
+    @Override
     public Theme findById(final long id) {
         return null;
     }
