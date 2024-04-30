@@ -12,12 +12,22 @@ public class Reservation {
     private final ClientName clientName;
     private final LocalDate date;
     private final ReservationTime time;
+    private final Theme theme;
 
-    public Reservation(final ClientName clientName, final LocalDate date, final ReservationTime time) {
-        this(DEFAULT_ID_VALUE, clientName, date, time);
+    public Reservation(
+            final ClientName clientName,
+            final LocalDate date,
+            final ReservationTime time,
+            final Theme theme) {
+        this(DEFAULT_ID_VALUE, clientName, date, time, theme);
     }
 
-    public Reservation(final long id, final ClientName clientName, final LocalDate date, final ReservationTime time) {
+    public Reservation(
+            final long id,
+            final ClientName clientName,
+            final LocalDate date,
+            final ReservationTime time,
+            final Theme theme) {
         validateDate(date);
         validateReservationDateAndTime(date, time.getStartAt());
 
@@ -25,6 +35,7 @@ public class Reservation {
         this.clientName = clientName;
         this.date = date;
         this.time = time;
+        this.theme = theme;
     }
 
     private void validateDate(final LocalDate date) {
@@ -41,7 +52,7 @@ public class Reservation {
     }
 
     public Reservation initializeIndex(final long reservationId) {
-        return new Reservation(reservationId, clientName, date, time);
+        return new Reservation(reservationId, clientName, date, time, theme);
     }
 
     public long getId() {
@@ -58,6 +69,10 @@ public class Reservation {
 
     public ReservationTime getTime() {
         return time;
+    }
+
+    public Theme getTheme() {
+        return theme;
     }
 
     @Override

@@ -10,6 +10,9 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.ClientName;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
+import roomescape.domain.ThemeDescription;
+import roomescape.domain.ThemeName;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -26,10 +29,14 @@ public class H2ReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {
         String sql = "SELECT "
-                + "r.id as reservation_id, r.name as name, r.date as date, t.id as time_id, t.start_at as time_value "
+                + "r.id as reservation_id, r.name as reservation_name, r.date as reservation_date, "
+                + "rt.id as time_id, rt.start_at as reservation_time, "
+                + "th.id as theme_id, th.name as theme_name, th.description as theme_description, th.thumbnail as theme_thumbnail "
                 + "FROM reservation as r "
-                + "inner join reservation_time as t "
-                + "on r.time_id = t.id";
+                + "inner join reservation_time as rt "
+                + "on r.time_id = rt.id "
+                + "inner join theme as th "
+                + "on r.theme_id = th.id";
 
         return template.query(sql, itemRowMapper());
     }
@@ -37,19 +44,28 @@ public class H2ReservationRepository implements ReservationRepository {
     private RowMapper<Reservation> itemRowMapper() {
         return ((rs, rowNum) -> new Reservation(
                 rs.getLong("reservation_id"),
-                new ClientName(rs.getString("name")),
-                rs.getDate("date").toLocalDate(),
-                new ReservationTime(rs.getLong("time_id"), rs.getTime("time_value").toLocalTime())
+                new ClientName(rs.getString("reservation_name")),
+                rs.getDate("reservation_date").toLocalDate(),
+                new ReservationTime(rs.getLong("time_id"), rs.getTime("reservation_time").toLocalTime()),
+                new Theme(
+                        rs.getLong("theme_id"),
+                        new ThemeName(rs.getString("theme_name")),
+                        new ThemeDescription(rs.getString("theme_description")),
+                        rs.getString("theme_thumbnail"))
         ));
     }
 
     @Override
     public Optional<Reservation> findById(final Long reservationId) {
         String sql = "SELECT "
-                + "r.id as reservation_id, r.name as name, r.date as date, t.id as time_id, t.start_at as time_value "
+                + "r.id as reservation_id, r.name as reservation_name, r.date as reservation_date, "
+                + "rt.id as time_id, rt.start_at as reservation_time, "
+                + "th.id as theme_id, th.name as theme_name, th.description as theme_description, th.thumbnail as theme_thumbnail "
                 + "FROM reservation as r "
-                + "inner join reservation_time as t "
-                + "on r.time_id = t.id "
+                + "inner join reservation_time as rt "
+                + "on r.time_id = rt.id "
+                + "inner join theme as th "
+                + "on r.theme_id = th.id "
                 + "WHERE r.id = :reservationId";
 
         try {
@@ -65,11 +81,12 @@ public class H2ReservationRepository implements ReservationRepository {
 
     @Override
     public Reservation save(final Reservation reservation) {
-        String sql = "INSERT INTO reservation(name, date, time_id) VALUES (:name, :date, :timeId)";
+        String sql = "INSERT INTO reservation(name, date, time_id, theme_id) VALUES (:name, :date, :timeId, :themeId)";
         MapSqlParameterSource param = new MapSqlParameterSource()
                 .addValue("name", reservation.getClientName().getValue())
                 .addValue("date", reservation.getDate())
-                .addValue("timeId", reservation.getTime().getId());
+                .addValue("timeId", reservation.getTime().getId())
+                .addValue("themeId", reservation.getTheme().getId());
         KeyHolder keyHolder = new GeneratedKeyHolder();
         template.update(sql, param, keyHolder);
 
