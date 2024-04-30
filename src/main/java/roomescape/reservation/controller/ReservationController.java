@@ -36,7 +36,7 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") long reservationId) {
+    public ResponseEntity<Void> delete(@PathVariable("id") long reservationId) {
         reservationService.delete(reservationId);
         return ResponseEntity.ok().build();
     }

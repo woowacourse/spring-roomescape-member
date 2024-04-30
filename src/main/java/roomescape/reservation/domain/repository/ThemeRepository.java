@@ -7,4 +7,6 @@ public interface ThemeRepository {
     List<Theme> findAll();
 
     Theme save(Theme theme);
+
+    boolean deleteById(long themeId);
 }

@@ -21,4 +21,13 @@ public class FakeThemeDao implements ThemeRepository {
         themes.put((long) themes.size() + 1, theme);
         return new Theme((long) themes.size(), theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
+
+    @Override
+    public boolean deleteById(final long themeId) {
+        if (!themes.containsKey(themeId)) {
+            return false;
+        }
+        themes.remove(themeId);
+        return true;
+    }
 }

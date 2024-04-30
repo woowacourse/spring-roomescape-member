@@ -53,4 +53,14 @@ class ThemeControllerTest extends ControllerTest {
                 .statusCode(200)
                 .body("size()", is(1));
     }
+
+    @DisplayName("테마 삭제 시, 204를 반환한다.")
+    @Test
+    void delete() {
+        //given & when & then
+        RestAssured.given().log().all()
+                .when().delete("/themes/1")
+                .then().log().all()
+                .statusCode(204);
+    }
 }

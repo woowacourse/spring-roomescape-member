@@ -45,4 +45,11 @@ public class ThemeDao implements ThemeRepository {
         long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
         return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
+
+    @Override
+    public boolean deleteById(final long themeId) {
+        String sql = "DELETE FROM theme WHERE id = ?";
+        int updateId = jdbcTemplate.update(sql, themeId);
+        return updateId != 0;
+    }
 }

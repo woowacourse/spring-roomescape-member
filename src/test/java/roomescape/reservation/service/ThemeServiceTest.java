@@ -3,11 +3,15 @@ package roomescape.reservation.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.reservation.dao.FakeThemeDao;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.repository.ThemeRepository;
 import roomescape.reservation.dto.ThemeRequest;
@@ -64,5 +68,23 @@ class ThemeServiceTest {
                 () -> assertThat(themeResponse.thumbnail()).isEqualTo(thumbnail),
                 () -> assertThat(themeResponse.description()).isEqualTo(description)
         );
+    }
+
+    @DisplayName("테마 삭제에 성공한다.")
+    @Test
+    void delete() {
+        //given
+        long id = 1;
+        String name = "name";
+        String description = "description";
+        String thumbnail = "thumbnail";
+        Theme theme = new Theme(id, name, description, thumbnail);
+        themeRepository.save(theme);
+
+        //when
+        themeService.delete(id);
+
+        //then
+        assertThat(themeRepository.findAll()).hasSize(0);
     }
 }

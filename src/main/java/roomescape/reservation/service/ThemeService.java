@@ -26,4 +26,10 @@ public class ThemeService {
         Theme theme = new Theme(themeRequest.name(), themeRequest.description(), themeRequest.thumbnail());
         return ThemeResponse.from(themeRepository.save(theme));
     }
+
+    public void delete(final long themeId) {
+        if (!themeRepository.deleteById(themeId)) {
+            throw new IllegalArgumentException(String.format("잘못된 테마입니다. id=%d를 확인해주세요.", themeId));
+        }
+    }
 }
