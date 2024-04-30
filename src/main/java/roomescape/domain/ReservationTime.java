@@ -14,12 +14,26 @@ public class ReservationTime {
     }
 
     public static ReservationTime from(final String startAt) {
+        validateNull(startAt);
+        validateFormat(startAt);
         return new ReservationTime(null, LocalTime.parse(startAt));
     }
 
-public record ReservationTime(Long id, LocalTime startAt) {
+    private static void validateNull(final String startAt) {
+        if (startAt == null) {
+            throw new IllegalArgumentException("유효하지 않은 시간 입니다.");
+        }
+    }
 
-    public ReservationTime assignId(Long id) {
+    private static void validateFormat(final String startAt) {
+        try {
+            LocalTime.parse(startAt);
+        } catch (DateTimeException e) {
+            throw new IllegalArgumentException("유효하지 않은 시간 입니다.");
+        }
+    }
+
+    public ReservationTime assignId(final Long id) {
         return new ReservationTime(id, startAt);
     }
 
