@@ -33,7 +33,7 @@ class ReservationTimeServiceTest {
     @Test
     void should_add_reservation_times() {
         ReservationTime reservationTime
-                = reservationTimeService.addReservationTime(new ReservationTimeRequest(LocalTime.of(10, 0)));
+                = reservationTimeService.addReservationTime(new ReservationTimeRequest("10:00"));
         List<ReservationTime> allReservationTimes = reservationTimeService.findAllReservationTimes();
         assertThat(allReservationTimes).hasSize(3);
     }
