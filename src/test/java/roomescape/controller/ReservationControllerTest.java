@@ -59,7 +59,7 @@ public class ReservationControllerTest {
         RestAssured.given().contentType("application/json").body(requestJson).log().all()
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
     }
 
     @Test
