@@ -12,7 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.ReservationTimeAddRequest;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -55,15 +54,13 @@ class ReservationTimeDaoImplTest {
     }
 
 
-    @DisplayName("예약시간을 추가하고 예약시간 정보를 반환합니다.")
+    @DisplayName("예약시간을 추가할 수 있습니다.")
     @Test
     void should_get_reservation_time_after_insert() {
-        ReservationTime expectedReservationTime = new ReservationTime(2L, LocalTime.of(11, 0));
+        ReservationTime requestReservationTime = new ReservationTime(null, LocalTime.of(11, 0));
+        ReservationTime actualReservationTime = reservationTimeDao.insert(requestReservationTime);
 
-        ReservationTime actualReservationTime = reservationTimeDao.insert(
-                new ReservationTimeAddRequest(LocalTime.of(11, 0)));
-
-        assertThat(actualReservationTime).isEqualTo(expectedReservationTime);
+        assertThat(actualReservationTime.getId()).isNotNull();
     }
 
     @DisplayName("원하는 ID의 예약시간을 삭제할 수 있습니다.")

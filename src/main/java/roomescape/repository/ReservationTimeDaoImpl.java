@@ -9,7 +9,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.ReservationTimeAddRequest;
 
 @Repository
 public class ReservationTimeDaoImpl implements ReservationTimeDao {
@@ -35,7 +34,7 @@ public class ReservationTimeDaoImpl implements ReservationTimeDao {
     }
 
     @Override
-    public ReservationTime insert(ReservationTimeAddRequest reservationTimeAddRequest) {
+    public ReservationTime insert(ReservationTime reservationTimeAddRequest) {
         Map<String, Object> reservationTimeRow = new HashMap<>();
         reservationTimeRow.put("start_at", reservationTimeAddRequest.getStartAt());
         Long id = simpleJdbcInsert.executeAndReturnKey(reservationTimeRow).longValue();
