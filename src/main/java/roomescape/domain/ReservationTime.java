@@ -11,8 +11,19 @@ public class ReservationTime {
     }
 
     public ReservationTime(final Long id, final LocalTime startAt) {
+        validateExist(startAt);
         this.id = id;
         this.startAt = startAt;
+    }
+
+    private static void validateExist(LocalTime startAt) {
+        if (startAt == null) {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    public boolean isMatch(LocalTime time) {
+        return this.startAt.equals(time);
     }
 
     public Long getId() {

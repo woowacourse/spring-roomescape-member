@@ -16,6 +16,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -29,7 +30,7 @@ class ReservationServiceTest {
 
     @BeforeEach
     void setUp() {
-        reservationTimeDAO.insert(new ReservationTime(LocalTime.now()));
+        reservationTimeDAO.insert(new ReservationTime(LocalTime.of(15, 30)));
     }
 
     @Test
@@ -59,5 +60,21 @@ class ReservationServiceTest {
         final List<Reservation> reservations = reservationService.findAll();
 
         assertThat(reservations).hasSize(0);
+    }
+
+    @Test
+    @DisplayName("예약 날짜와 예약 시간이 중복되면 예외가 발생한다.")
+    void invalidSave() {
+        reservationService.save(new ReservationRequest("abc", LocalDate.of(2024, 4, 30), 1L));
+
+        assertThatThrownBy(() -> reservationService.save(new ReservationRequest("abcde", LocalDate.of(2024, 4, 30), 1L)))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("예약 날짜가 현재 날짜보다 이전이라면 예외가 발생한다.")
+    void invalidDate() {
+        assertThatThrownBy(() -> reservationService.save(new ReservationRequest("abc", LocalDate.of(2024, 3, 30), 1L)))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }

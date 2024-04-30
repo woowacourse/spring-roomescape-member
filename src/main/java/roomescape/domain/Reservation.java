@@ -16,10 +16,17 @@ public class Reservation {
     }
 
     public Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time) {
+        validateReservation(name, date, time);
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
+    }
+
+    private static void validateReservation(String name, LocalDate date, ReservationTime time) {
+        if (name == null || name.isBlank() || date == null || time == null) {
+            throw new IllegalArgumentException();
+        }
     }
 
     public Long getId() {
