@@ -46,4 +46,25 @@ class ThemeControllerTest {
                 .then().log().all()
                 .statusCode(201);
     }
+
+    @Test
+    @DisplayName("테마 삭제")
+    void deleteTheme() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "fall");
+        params.put("description", "Escape from fall");
+        params.put("thumbnail", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTS1xLa6fkaTXaopKK3zxar7JUCiP6Jy-pwMEMl02RwiQ&s");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .when().delete("/themes/3")
+                .then().log().all()
+                .statusCode(204);
+    }
 }

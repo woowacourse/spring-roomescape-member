@@ -28,4 +28,8 @@ public class ThemeService {
         final Theme savedTheme = themeRepository.save(theme);
         return ThemeResponse.from(savedTheme);
     }
+
+    public int deleteTheme(final Long id) {
+        return themeRepository.delete(id);
+    }
 }
