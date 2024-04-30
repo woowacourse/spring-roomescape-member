@@ -87,7 +87,7 @@ public class MissionStepTest {
 
         Map<String, String> params = Map.of(
                 "name", "브라운",
-                "date", "2023-08-05",
+                "date", "2024-08-05",
                 "timeId", reservationTimeId
         );
 
@@ -140,7 +140,7 @@ public class MissionStepTest {
     @Test
     void 오단계() {
         String reservationTimeId = createReservationTime();
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "브라운", "2023-08-05", reservationTimeId);
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "브라운", "2024-08-05", reservationTimeId);
 
         List<Reservation> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -159,7 +159,7 @@ public class MissionStepTest {
 
         Map<String, String> params = Map.of(
                 "name", "브라운",
-                "date", "2023-08-05",
+                "date", "2024-08-05",
                 "timeId", reservationTimeId
         );
 
@@ -217,7 +217,7 @@ public class MissionStepTest {
 
         Map<String, Object> reservation = Map.of(
                 "name", "브라운",
-                "date", "2023-08-05",
+                "date", "2024-08-05",
                 "timeId", reservationTimeId
         );
 
