@@ -40,9 +40,26 @@ class ReservationTimeControllerTest {
                 .then().log().all().statusCode(201).body("id", is(greaterThan(0)));
     }
 
+    @DisplayName("시간 추가 실패 테스트 - 중복 시간 오류")
+    @Test
+    void createDuplicateTime() {
+        //given
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(new ReservationTimeRequest("10:00"))
+                .when().post("/times");
+
+        //when&then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(new ReservationTimeRequest("10:00"))
+                .when().post("/times")
+                .then().log().all().statusCode(400).body("message", is("이미 같은 시간이 존재합니다."));
+    }
+
     @DisplayName("시간 추가 실패 테스트 - 시간 오류")
     @Test
-    void createInvalidScheduleDateReservation() {
+    void createInvalidReservationTime() {
         //given
         String invalidTime = "";
 
