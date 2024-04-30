@@ -311,6 +311,29 @@ class MissionStepTest {
     }
 
     @Test
+    @DisplayName("예약 생성 시, 해당 날짜와 시간에 예약 내역이 있으면 예외가 발생한다.")
+    void validateReservationWithDuplicatedDateAndTime() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", TOMORROW_DATE);
+        params.put("timeId", 1);
+
+        RestAssured.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(params)
+            .when().post("/reservations")
+            .then().log().all()
+            .statusCode(201);
+
+        RestAssured.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(params)
+            .when().post("/reservations")
+            .then().log().all()
+            .statusCode(400);
+    }
+
+    @Test
     @DisplayName("시간 생성 시, startAt 값이 null이면 예외가 발생한다.")
     void validateTimeCreateWithNull() {
         Map<String, Object> params = new HashMap<>();

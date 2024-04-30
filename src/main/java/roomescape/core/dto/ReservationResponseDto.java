@@ -1,6 +1,5 @@
 package roomescape.core.dto;
 
-import java.time.format.DateTimeFormatter;
 import roomescape.core.domain.Reservation;
 
 public class ReservationResponseDto {
@@ -19,7 +18,7 @@ public class ReservationResponseDto {
     public ReservationResponseDto(final Long id, final Reservation reservation) {
         this.id = id;
         this.name = reservation.getName();
-        this.date = reservation.getDate().format(DateTimeFormatter.ISO_DATE);
+        this.date = reservation.getDateString();
         this.time = new ReservationTimeResponseDto(reservation.getReservationTime());
     }
 

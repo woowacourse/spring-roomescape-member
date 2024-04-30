@@ -1,6 +1,7 @@
 package roomescape.web.repository;
 
 import java.util.List;
+import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -76,6 +77,19 @@ public class ReservationRepositoryImpl implements ReservationRepository {
 
             return new Reservation(id, name, date, time);
         };
+    }
+
+    @Override
+    public Integer countByDateAndTimeId(String date, long timeId) {
+        final String query = """
+                SELECT count(*)
+                FROM reservation as r
+                inner join reservation_time as t
+                on r.time_id = t.id
+                WHERE r.date = ? and t.id = ?
+                """;
+
+        return jdbcTemplate.queryForObject(query, Integer.class, date, timeId);
     }
 
     public void deleteById(final long id) {

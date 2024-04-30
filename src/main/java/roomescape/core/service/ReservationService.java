@@ -26,7 +26,7 @@ public class ReservationService {
         final ReservationTime reservationTime = reservationTimeRepository.findById(request.getTimeId());
         final Reservation reservation = new Reservation(request.getName(), request.getDate(), reservationTime);
         validateDateTimeIsNotPast(reservation, reservationTime);
-
+        validateDuplicatedReservation(reservation, reservationTime);
         final Long id = reservationRepository.save(reservation);
 
         return new ReservationResponseDto(id, reservation);
@@ -38,6 +38,13 @@ public class ReservationService {
         }
         if (reservation.isDateToday() && reservationTime.isPast()) {
             throw new IllegalArgumentException("지난 시간에는 예약할 수 없습니다.");
+        }
+    }
+
+    private void validateDuplicatedReservation(final Reservation reservation, final ReservationTime reservationTime) {
+        final Integer reservationCount = reservationRepository.countByDateAndTimeId(reservation.getDateString(), reservationTime.getId());
+        if (reservationCount > 0) {
+            throw new IllegalArgumentException("예약 내역이 존재합니다.");
         }
     }
 

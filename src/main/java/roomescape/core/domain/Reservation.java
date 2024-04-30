@@ -1,6 +1,7 @@
 package roomescape.core.domain;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 public class Reservation {
@@ -41,6 +42,10 @@ public class Reservation {
 
     public LocalDate getDate() {
         return date;
+    }
+
+    public String getDateString() {
+        return date.format(DateTimeFormatter.ISO_DATE);
     }
 
     public Long getTimeId() {

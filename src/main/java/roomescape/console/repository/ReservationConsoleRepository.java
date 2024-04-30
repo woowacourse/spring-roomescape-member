@@ -1,6 +1,5 @@
 package roomescape.console.repository;
 
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -22,7 +21,7 @@ public class ReservationConsoleRepository implements ReservationRepository {
         final Reservation persistReservation = new Reservation(
                 id.getAndIncrement(),
                 reservation.getName(),
-                reservation.getDate().format(DateTimeFormatter.ISO_DATE),
+                reservation.getDateString(),
                 reservation.getReservationTime());
         reservations.add(persistReservation);
         return persistReservation.getId();
@@ -38,6 +37,11 @@ public class ReservationConsoleRepository implements ReservationRepository {
         return reservations.stream()
                 .filter(reservation -> reservation.getTimeId() == timeId)
                 .toList();
+    }
+
+    @Override
+    public Integer countByDateAndTimeId(String date, long timeId) {
+        return 0;
     }
 
     @Override

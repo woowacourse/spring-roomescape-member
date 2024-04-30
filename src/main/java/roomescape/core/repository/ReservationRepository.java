@@ -10,5 +10,7 @@ public interface ReservationRepository {
 
     List<Reservation> findByTimeId(final long timeId);
 
+    Integer countByDateAndTimeId(final String date, final long timeId);
+
     void deleteById(final long id);
 }
