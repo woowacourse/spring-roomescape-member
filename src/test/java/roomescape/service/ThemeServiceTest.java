@@ -2,6 +2,7 @@ package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,21 @@ class ThemeServiceTest {
 
         // then
         assertThat(themeResponse).isEqualTo(new ThemeResponse(1L, "감자", "설명", "섬네일"));
+    }
+
+    @DisplayName("테마 조회")
+    @Test
+    void getThemes() {
+        // given
+        final ThemeSaveRequest themeSaveRequest = new ThemeSaveRequest("감자", "설명", "섬네일");
+        final ThemeResponse themeResponse = themeService.saveTheme(themeSaveRequest);
+
+        // when
+        final List<ThemeResponse> themeResponses = themeService.getThemes();
+
+        // then
+        assertThat(themeResponses).hasSize(1)
+                .containsExactly(new ThemeResponse(1L, "감자", "설명", "섬네일"));
     }
 
 }

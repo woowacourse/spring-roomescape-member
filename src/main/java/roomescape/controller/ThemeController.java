@@ -1,7 +1,9 @@
 package roomescape.controller;
 
 import java.net.URI;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,5 +27,11 @@ public class ThemeController {
         final ThemeResponse themeResponse = themeService.saveTheme(themeSaveRequest);
         return ResponseEntity.created(URI.create("/thems/" + themeResponse.id()))
                 .body(themeResponse);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ThemeResponse>> getThemes() {
+        final List<ThemeResponse> themeResponses = themeService.getThemes();
+        return ResponseEntity.ok(themeResponses);
     }
 }
