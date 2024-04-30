@@ -32,14 +32,14 @@
 
 ## API 명세서
 
-| HTTP Method | URI                  | Description |
-|-------------|----------------------|-------------|
-| GET         | `/admin`             | 관리자 메인 페이지  | 
-| GET         | `/admin/reservation` | 예약 관리 페이지   |
-| GET         | `/admin/time`        | 시간 관리 페이지   |
-| GET         | `/reservations`      | 예약 목록 조회    |
-| POST        | `/reservations`      | 예약 추가       | 
-| DELETE      | `/reservations/{id}` | 예약 삭제       |
-| GET         | `/times`             | 시간 목록 조회    |
-| POST        | `/times`             | 시간 추가       | 
-| DELETE      | `/times/{id}`        | 시간 삭제       |
+| HTTP Method | URI                  | Description  |
+|-------------|----------------------|--------------|
+| GET         | `/admin`             | 관리자 메인 페이지   | 
+| GET         | `/admin/reservation` | 예약 관리 페이지    |
+| GET         | `/admin/time`        | 시간 관리 페이지    |
+| GET         | `/reservations`      | 예약 목록 조회     |
+| POST        | `/reservations`      | 예약 추가        | 
+| DELETE      | `/reservations/{id}` | 예약 삭제        |
+| GET         | `/times`             | 시간 목록 조회     |
+| POST        | `/times`             | 시간 추가        | 
+| DELETE      | `/times/{id}`        | 시간 삭제        |
