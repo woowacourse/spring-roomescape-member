@@ -5,6 +5,7 @@ import roomescape.controller.reservation.ReservationRequest;
 import roomescape.controller.reservation.ReservationResponse;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.TimeNotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
@@ -22,13 +23,6 @@ public class ReservationService {
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
-    private Reservation assignTime(final Reservation reservation) {
-        ReservationTime time = reservationTimeRepository
-                .findById(reservation.getId())
-                .orElse(reservation.getTime());
-        return reservation.assignTime(time);
-    }
-
     public List<ReservationResponse> getReservations() {
         return reservationRepository.findAll().stream()
                 .map(this::assignTime)
@@ -36,16 +30,24 @@ public class ReservationService {
                 .toList();
     }
 
+    private Reservation assignTime(final Reservation reservation) {
+        ReservationTime time = reservationTimeRepository
+                .findById(reservation.getId())
+                .orElse(reservation.getTime());
+        return reservation.assignTime(time);
+    }
+
     public ReservationResponse addReservation(final ReservationRequest reservationRequest) {
-        Reservation parsedReservation = reservationRequest.toDomain();
+        ReservationTime time = reservationTimeRepository
+                .findById(reservationRequest.timeId())
+                .orElseThrow(() -> new TimeNotFoundException("존재하지 않은 시간입니다."));
+
+        Reservation parsedReservation = reservationRequest.toDomain(time);
         Reservation savedReservation = reservationRepository.save(parsedReservation);
 
-        ReservationTime time = reservationTimeRepository
-                .findById(savedReservation.getId())
-                .orElse(savedReservation.getTime());
-        Reservation assignedReservation = savedReservation.assignTime(time);
+        System.out.println("reservationRequest = " + reservationRequest.timeId());
 
-        return ReservationResponse.from(assignedReservation);
+        return ReservationResponse.from(savedReservation);
     }
 
     public int deleteReservation(final Long id) {

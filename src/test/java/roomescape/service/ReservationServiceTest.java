@@ -6,10 +6,12 @@ import org.junit.jupiter.api.Test;
 import roomescape.controller.reservation.ReservationRequest;
 import roomescape.controller.reservation.ReservationResponse;
 import roomescape.controller.time.TimeResponse;
+import roomescape.exception.TimeNotFoundException;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ReservationServiceTest {
 
@@ -60,7 +62,7 @@ class ReservationServiceTest {
         Long id = 2L;
 
         // when & then
-        assertThat(reservationService.deleteReservation(id)).isEqualTo(1);
+        assertThat(reservationService.deleteReservation(id)).isOne();
     }
 
     @Test
@@ -70,6 +72,14 @@ class ReservationServiceTest {
         Long id = 3L;
 
         // when & then
-        assertThat(reservationService.deleteReservation(id)).isEqualTo(0);
+        assertThat(reservationService.deleteReservation(id)).isZero();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 시간(id)로 예약을 할 때 예외가 발생한다.")
+    void addReservationNonExistTime() {
+        ReservationRequest request = new ReservationRequest("redddy", "2024-06-21", 100L);
+        assertThatThrownBy(() -> reservationService.addReservation(request))
+                .isInstanceOf(TimeNotFoundException.class);
     }
 }
