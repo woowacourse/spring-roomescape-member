@@ -9,7 +9,9 @@ import roomescape.domain.ReservationTime;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class ReservationRepository {
@@ -23,6 +25,7 @@ public class ReservationRepository {
             new ReservationTime(resultSet.getLong("reservation_time_id"),
                     resultSet.getTime("time_value").toLocalTime())
     );
+
 
     public ReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -66,5 +69,20 @@ public class ReservationRepository {
             ps.setLong(1, id);
             return ps;
         });
+    }
+
+    public Optional<Reservation> findByDateAndTime(LocalDate date, ReservationTime reservationTime) {
+        String sql = "SELECT id, name, date, reservation_time_id FROM reservation " +
+                "where date = ? and reservation_time_id = ?";
+
+        return jdbcTemplate.query(sql,
+                        (resultSet, rowNum) -> new Reservation(
+                                resultSet.getLong("id"),
+                                resultSet.getString("name"),
+                                resultSet.getDate("date").toLocalDate(),
+                                reservationTime
+                        ), Date.valueOf(date),
+                        reservationTime.getId()).stream()
+                .findAny();
     }
 }

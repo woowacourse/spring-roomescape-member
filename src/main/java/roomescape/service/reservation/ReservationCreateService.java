@@ -20,8 +20,12 @@ public class ReservationCreateService {
 
     public Reservation createReservation(SaveReservationRequest request) {
         ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약된 시간 입니다."));
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간 입니다."));
+        if (reservationRepository.findByDateAndTime(request.date(), reservationTime).isPresent()) {
+            throw new IllegalArgumentException("이미 예약된 시간입니다.");
+        }
         Reservation reservation = SaveReservationRequest.toEntity(request, reservationTime);
+
         return reservationRepository.save(reservation);
     }
 }
