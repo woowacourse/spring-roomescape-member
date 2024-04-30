@@ -22,7 +22,7 @@ class ReservationTimeControllerTest {
         ReservationTimeController reservationTimeController = new ReservationTimeController(reservationTimeService);
         LocalTime time = LocalTime.now();
 
-        ReservationTimeResponse save = reservationTimeController.save(new ReservationTimeRequest(time));
+        ReservationTimeResponse save = reservationTimeController.save(new ReservationTimeRequest(time)).getBody();
 
         ReservationTimeResponse expected = new ReservationTimeResponse(save.id(), time);
         Assertions.assertThat(save)
