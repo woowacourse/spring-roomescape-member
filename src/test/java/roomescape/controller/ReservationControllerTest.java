@@ -212,4 +212,31 @@ public class ReservationControllerTest {
 
         assertThat(isJdbcTemplateInjected).isFalse();
     }
+
+    @Test
+    @DisplayName("이름이 빈칸인 경우 400 상태 코드를 반환한다.")
+    void nameBlankStatusCode400() {
+        Map<String, String> timeParams = Map.of(
+                "startAt", "10:00"
+        );
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(timeParams)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(200);
+
+        Map<String, String> reservationParams = Map.of("name", "",
+                "date", "2023-08-05",
+                "timeId", "1"
+        );
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationParams)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
 }
