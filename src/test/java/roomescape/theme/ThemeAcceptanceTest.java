@@ -1,11 +1,15 @@
 package roomescape.theme;
 
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
 
@@ -20,7 +24,7 @@ public class ThemeAcceptanceTest {
     void setUp() {
         RestAssured.port = port;
     }
-    
+
     @Test
     void findAll() {
         RestAssured.given()
@@ -33,5 +37,36 @@ public class ThemeAcceptanceTest {
                 .all()
                 .statusCode(200)
                 .body("size()", is(0));
+        save();
+        RestAssured.given()
+                .log()
+                .all()
+                .when()
+                .get("/themes")
+                .then()
+                .log()
+                .all()
+                .statusCode(200)
+                .body("size()", is(1));
+    }
+
+    @Test
+    void save() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "hotea");
+        params.put("description", "nice");
+        params.put("thumbnail", "very nice");
+
+        RestAssured.given()
+                .log()
+                .all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when()
+                .post("/themes")
+                .then()
+                .log()
+                .all()
+                .statusCode(201);
     }
 }

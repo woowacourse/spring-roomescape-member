@@ -2,6 +2,8 @@ package roomescape.theme.dao;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.theme.domain.Theme;
@@ -26,5 +28,13 @@ public class ThemeDao {
     public List<Theme> findAll() {
         final String sql = "select * from theme";
         return jdbcTemplate.query(sql, rowMapper);
+    }
+
+    public long save(final Theme theme) {
+        final SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("name", theme.getName())
+                .addValue("description", theme.getDescription())
+                .addValue("thumbnail", theme.getThumbnail());
+        return simpleJdbcInsert.executeAndReturnKey(params).longValue();
     }
 }
