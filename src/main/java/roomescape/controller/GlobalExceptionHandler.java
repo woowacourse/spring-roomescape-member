@@ -11,7 +11,7 @@ public class GlobalExceptionHandler {
     //TODO : 예외 사항 분리 필요
     @ExceptionHandler(value = HttpMessageNotReadableException.class)
     public ResponseEntity<String> handleHttpMessageNotReadableException() {
-        return ResponseEntity.badRequest().body("234");
+        return ResponseEntity.badRequest().build();
     }
 
     @ExceptionHandler(value = IllegalArgumentException.class)

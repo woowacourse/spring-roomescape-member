@@ -1,7 +1,6 @@
 package roomescape.service;
 
 import java.util.List;
-import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -22,17 +21,8 @@ public class ReservationService {
     }
 
     public Long addReservation(ReservationRequest reservationRequest) {
-        ReservationTime reservationTime = timeRepository.findById(reservationRequest.timeId())
-                .orElseThrow(
-                        () -> new IllegalArgumentException("[ERROR] 잘못된 id 입니다. : " + reservationRequest.timeId()));
-
-        Optional<Reservation> optional = reservationRepository.findByDateAndTimeId(reservationRequest.date(),
-                reservationTime.getId());
-
-        if (optional.isPresent()) {
-            throw new IllegalArgumentException("[ERROR] 이미 해당 시간에 예약이 존재합니다.");
-        }
-
+        ReservationTime reservationTime = findReservationTime(reservationRequest);
+        validateReservationNotDuplicate(reservationRequest);
         Reservation reservationToSave = reservationRequest.toEntity(reservationTime);
         return reservationRepository.save(reservationToSave);
     }
@@ -45,11 +35,33 @@ public class ReservationService {
     }
 
     public ReservationResponse getReservation(Long id) {
+        validateIdExist(id);
         Reservation reservation = reservationRepository.findById(id);
         return ReservationResponse.from(reservation);
     }
 
     public void deleteReservation(Long id) {
+        validateIdExist(id);
         reservationRepository.delete(id);
+    }
+
+    public void validateIdExist(Long id) {
+        if (!reservationRepository.existId(id)) {
+            throw new IllegalArgumentException("[ERROR] id가 존재하지 않습니다 : " + id);
+        }
+    }
+
+    private ReservationTime findReservationTime(ReservationRequest reservationRequest) {
+        Long timeId = reservationRequest.timeId();
+        if (!timeRepository.existId(timeId)) {
+            throw new IllegalArgumentException("[ERROR] time_id가 존재하지 않습니다 : " + timeId);
+        }
+        return timeRepository.findById(timeId);
+    }
+
+    private void validateReservationNotDuplicate(ReservationRequest reservationRequest) {
+        if (reservationRepository.existDateAndTimeId(reservationRequest.date(), reservationRequest.timeId())) {
+            throw new IllegalArgumentException("[ERROR] 이미 해당 시간에 예약이 존재합니다.");
+        }
     }
 }

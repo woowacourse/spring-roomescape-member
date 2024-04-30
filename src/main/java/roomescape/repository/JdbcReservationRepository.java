@@ -3,10 +3,7 @@ package roomescape.repository;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 import javax.sql.DataSource;
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -84,36 +81,23 @@ public class JdbcReservationRepository implements ReservationRepository {
         jdbcTemplate.update(sql, id);
     }
 
-
     @Override
-    public boolean isTimeIdExist(Long id) {
-        String sql = "select id from reservation where time_id=? limit 1";
-        try {
-            jdbcTemplate.queryForObject(sql, Long.class, id);
-            return true;
-        } catch (EmptyResultDataAccessException e) {
-            return false;
-        }
-    }
-
-    @Override
-    public Optional<Reservation> findByDateAndTimeId(LocalDate date, Long timeId) {
-        try {
-            String sql = "SELECT "
-                    + "r.id AS reservation_id,"
-                    + " r.name,"
-                    + " r.date,"
-                    + " t.id AS time_id,"
-                    + " t.start_at AS time_value "
-                    + "FROM reservation AS r "
-                    + "INNER JOIN reservation_time AS t "
-                    + "ON r.time_id = t.id "
-                    + "WHERE r.date = ? AND t.id = ?";
-            return Optional.of(jdbcTemplate.queryForObject(sql, ROW_MAPPER, date, timeId));
-        } catch (DataAccessException e) {
-            return Optional.empty();
-        }
+    public Boolean existId(Long id) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE id = ?)";
+        ;
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
     }
 
 
+    @Override
+    public Boolean existTimeId(Long id) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE time_id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
+    }
+
+    @Override
+    public Boolean existDateAndTimeId(LocalDate date, Long timeId) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE date = ? AND time_id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId);
+    }
 }
