@@ -1,5 +1,6 @@
 package roomescape.domain;
 
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
@@ -10,21 +11,23 @@ public class Reservation {
     private final Name name;
     private final LocalDate date;
     private final ReservationTime time;
+    private final Theme theme;
 
-    public Reservation(Long id, Name name, LocalDate date, ReservationTime time) {
+    public Reservation(Long id, Name name, LocalDate date, ReservationTime time, Theme theme) {
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
+        this.theme = theme;
     }
 
-    public Reservation(Name name, LocalDate date, ReservationTime time) {
-        this(null, name, date, time);
+    public Reservation(Name name, LocalDate date, ReservationTime time, Theme theme) {
+        this(null, name, date, time, theme);
     }
 
     public Long id() {
         return id;
-    }
+    } // TODO 네이밍 변경 고려
 
     public Name name() {
         return name;
@@ -40,6 +43,10 @@ public class Reservation {
 
     public ReservationTime time() {
         return time;
+    }
+
+    public Theme getTheme() {
+        return theme;
     }
 
     @Override

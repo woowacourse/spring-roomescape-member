@@ -16,7 +16,8 @@ class ReservationTest {
                 1L,
                 new Name("브라운"),
                 LocalDate.of(2024, 4, 24),
-                null
+                null,
+                new Theme(1L, new Name("레벨2 탈출"), "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg")
         );
 
         String formatted = reservation.date(DateTimeFormatter.ISO_DATE);
@@ -31,13 +32,15 @@ class ReservationTest {
                 1L,
                 new Name("브라운"),
                 LocalDate.of(2024, 4, 24),
-                null
+                null,
+                new Theme(1L, new Name("레벨2 탈출"), "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg")
         );
         Reservation reservation2 = new Reservation(
                 1L,
                 new Name("솔라"),
                 LocalDate.of(2024, 3, 22),
-                null
+                null,
+                new Theme(1L, new Name("레벨2 탈출"), "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg")
         );
 
         assertThat(reservation1).isEqualTo(reservation2);

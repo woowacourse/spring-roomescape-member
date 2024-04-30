@@ -17,6 +17,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 @Repository
 public class ReservationH2Repository implements ReservationRepository {
@@ -36,14 +37,14 @@ public class ReservationH2Repository implements ReservationRepository {
     @Override
     public Reservation save(Reservation reservation) {
         validateDateTime(reservation);
-        Long timeId = reservation.time().id();
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.name().getName())
                 .addValue("date", reservation.date(DateTimeFormatter.ISO_DATE))
-                .addValue("time_id", timeId);
+                .addValue("time_id", reservation.time().id())
+                .addValue("theme_id", reservation.getTheme().getId());
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
 
-        return new Reservation(id, reservation.name(), reservation.date(), reservation.time());
+        return new Reservation(id, reservation.name(), reservation.date(), reservation.time(), reservation.getTheme());
     }
 
     private void validateDateTime(Reservation reservation) {
@@ -59,8 +60,8 @@ public class ReservationH2Repository implements ReservationRepository {
     }
 
     private boolean isDuplicatedDateTime(Reservation reservation) {
-        String sql = "SELECT * FROM reservation WHERE date = ? AND time_id = ?";
-        return !jdbcTemplate.query(sql, (rs, rowNum) -> 0, reservation.date(), reservation.time().id()).isEmpty();
+        String sql = "SELECT * FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?";
+        return !jdbcTemplate.query(sql, (rs, rowNum) -> 0, reservation.date(), reservation.time().id(), reservation.getTheme().getId()).isEmpty();
     }
 
     @Override
@@ -71,9 +72,10 @@ public class ReservationH2Repository implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {
         return jdbcTemplate.query(
-                "SELECT r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at as time_value "
+                "SELECT r.id as reservation_id, r.name, r.date, time.id as time_id, time.start_at as time_value,theme.id as theme_id, theme.name as theme_name, theme.description, theme.thumbnail "
                         + "FROM reservation as r "
-                        + "inner join reservation_time as t on r.time_id = t.id",
+                        + "inner join reservation_time as time on r.time_id = time.id "
+                        + "inner join theme on r.theme_id = theme.id",
                 getReservationRowMapper()
         );
     }
@@ -84,11 +86,18 @@ public class ReservationH2Repository implements ReservationRepository {
                     resultSet.getLong("time_id"),
                     LocalTime.parse(resultSet.getString("time_value"))
             );
+            Theme theme = new Theme(
+                    resultSet.getLong("theme_id"),
+                    new Name(resultSet.getString("theme_name")),
+                    resultSet.getString("description"),
+                    resultSet.getString("thumbnail")
+            );
             return new Reservation(
                     resultSet.getLong("id"),
                     new Name(resultSet.getString("name")),
                     LocalDate.parse(resultSet.getString("date")),
-                    reservationTime
+                    reservationTime,
+                    theme
             );
         };
     }

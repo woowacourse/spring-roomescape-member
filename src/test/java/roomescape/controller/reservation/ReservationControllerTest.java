@@ -60,6 +60,7 @@ class ReservationControllerTest {
         reservationParams.put("name", "브리");
         reservationParams.put("date", localDate.toString());
         reservationParams.put("timeId", "10");
+        reservationParams.put("themeId", "10");
 
         //when & then
         RestAssured.given().log().all()

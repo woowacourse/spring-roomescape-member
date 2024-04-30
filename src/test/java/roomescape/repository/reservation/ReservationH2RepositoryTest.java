@@ -16,6 +16,7 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 @JdbcTest
 @Import(ReservationH2Repository.class)
@@ -33,7 +34,8 @@ class ReservationH2RepositoryTest {
         Reservation reservation = new Reservation(
                 new Name("네오"),
                 LocalDate.now().plusDays(1),
-                new ReservationTime(11L, LocalTime.of(10, 0))
+                new ReservationTime(11L, LocalTime.of(10, 0)),
+                new Theme(10L, new Name("레벨2 탈출"), "우테코 레벨2를 탈출하는 내용입니다.", "아무 내용 없음")
         );
 
         Reservation save = reservationH2Repository.save(reservation);
@@ -47,7 +49,8 @@ class ReservationH2RepositoryTest {
         Reservation reservation = new Reservation(
                 new Name("네오"),
                 LocalDate.of(2023, 4, 24),
-                new ReservationTime(11L, LocalTime.of(10, 0))
+                new ReservationTime(11L, LocalTime.of(10, 0)),
+                new Theme(10L, new Name("레벨2 탈출"), "우테코 레벨2를 탈출하는 내용입니다.", "아무 내용 없음")
         );
         assertThatThrownBy(() -> reservationH2Repository.save(reservation))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -59,7 +62,8 @@ class ReservationH2RepositoryTest {
         Reservation reservation = new Reservation(
                 new Name("네오"),
                 LocalDate.of(2099, 05, 1), // TODO 더 좋은 방식이 있는지 고민
-                new ReservationTime(12L, LocalTime.of(11, 0))
+                new ReservationTime(12L, LocalTime.of(11, 0)),
+                new Theme(10L, new Name("레벨2 탈출"), "우테코 레벨2를 탈출하는 내용입니다.", "아무 내용 없음")
         );
         assertThatThrownBy(() -> reservationH2Repository.save(reservation))
                 .isInstanceOf(IllegalArgumentException.class);
