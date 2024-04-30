@@ -20,7 +20,7 @@ public class ReservationTimeService {
     }
 
     public ReservationTime addReservationTime(ReservationTimeAddRequest reservationTimeAddRequest) {
-        return reservationTimeDao.insert(reservationTimeAddRequest);
+        return reservationTimeDao.insert(reservationTimeAddRequest.toEntity());
     }
 
     public void removeReservationTime(Long id) {
