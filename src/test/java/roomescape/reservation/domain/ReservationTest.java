@@ -26,7 +26,7 @@ class ReservationTest {
         );
     }
 
-    @DisplayName("")
+    @DisplayName("존재하지 않는 날짜를 선택했을 경우 예외가 발생한다")
     @Test
     void validateDateAndTimeExist() {
         ReservationTime reservationTime = new ReservationTime(1L, "15:46");
@@ -39,5 +39,13 @@ class ReservationTest {
                 () -> assertThatThrownBy(() -> new Reservation(1L, "hotea", "2024-04-50", reservationTime))
                         .isInstanceOf(DateTimeParseException.class)
         );
+    }
+
+    @DisplayName("지나간 날짜에 대한 예약 생성의 경우 예외가 발생한다")
+    @Test
+    void validateNoReservationsForPastDates() {
+        ReservationTime reservationTime = new ReservationTime(1L, "15:46");
+        assertThatThrownBy(() -> new Reservation(1L, "hotea", "2022-02-12", reservationTime))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }

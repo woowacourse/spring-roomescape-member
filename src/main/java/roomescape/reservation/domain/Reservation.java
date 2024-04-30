@@ -19,7 +19,7 @@ public class Reservation {
         validateDateIsNotNull(date);
         this.id = id;
         this.name = name;
-        this.date = LocalDate.parse(date);
+        this.date = parseDate(date);
         this.time = time;
     }
 
@@ -32,6 +32,18 @@ public class Reservation {
     private void validateDateIsNotNull(final String date) {
         if (Objects.isNull(date)) {
             throw new IllegalArgumentException("날짜가 null인 경우 저장을 할 수 없습니다.");
+        }
+    }
+
+    private LocalDate parseDate(final String date) {
+        LocalDate localDate = LocalDate.parse(date);
+        validateNoReservationsForPastDates(localDate);
+        return localDate;
+    }
+
+    private void validateNoReservationsForPastDates(LocalDate localDate) {
+        if (localDate.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("날짜가 과거인 경우 모든 시간에 대한 예약이 불가능 합니다.");
         }
     }
 
