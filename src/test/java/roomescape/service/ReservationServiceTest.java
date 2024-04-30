@@ -157,43 +157,47 @@ class ReservationServiceTest {
 
     }
 
-    @Test
-    @DisplayName("예약을 삭제한다.")
-    void delete() {
-        //given
-        long givenId = 1L;
+    @Nested
+    @DisplayName("예약 삭제")
+    class delete {
+        @Test
+        @DisplayName("예약을 삭제한다.")
+        void deleteReservation() {
+            //given
+            long givenId = 1L;
 
-        //when
-        reservationService.delete(givenId);
-        List<ReservationResponse> results = reservationService.findAll();
-        ReservationResponse secondResponse = results.get(0);
+            //when
+            reservationService.delete(givenId);
+            List<ReservationResponse> results = reservationService.findAll();
+            ReservationResponse secondResponse = results.get(0);
 
-        //then
-        assertAll(
-                () -> assertThat(results).hasSize(1),
-                () -> assertThat(secondResponse.getId()).isEqualTo(2)
-        );
-    }
+            //then
+            assertAll(
+                    () -> assertThat(results).hasSize(1),
+                    () -> assertThat(secondResponse.getId()).isEqualTo(2)
+            );
+        }
 
-    @Test
-    @DisplayName("예약 삭제시 아이디가 비어있으면 예외가 발생한다.")
-    void deleteNullId() {
-        //given
-        Long givenId = null;
+        @Test
+        @DisplayName("예약 삭제시 아이디가 비어있으면 예외가 발생한다.")
+        void deleteNullId() {
+            //given
+            Long givenId = null;
 
-        //when //then
-        assertThatThrownBy(() -> reservationService.delete(givenId))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
+            //when //then
+            assertThatThrownBy(() -> reservationService.delete(givenId))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
 
-    @Test
-    @DisplayName("예약 삭제시 아이디가 존재하지 않는다면 예외가 발생한다.")
-    void deleteNotExistId() {
-        //given
-        long givenId = 3L;
+        @Test
+        @DisplayName("예약 삭제시 아이디가 존재하지 않는다면 예외가 발생한다.")
+        void deleteNotExistId() {
+            //given
+            long givenId = 3L;
 
-        //when //then
-        assertThatThrownBy(() -> reservationService.delete(givenId))
-                .isInstanceOf(IllegalArgumentException.class);
+            //when //then
+            assertThatThrownBy(() -> reservationService.delete(givenId))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
     }
 }

@@ -8,6 +8,7 @@ import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
@@ -66,22 +67,39 @@ class ReservationTimeServiceTest {
         );
     }
 
-    @Test
-    @DisplayName("예약 시간을 추가한다.")
-    void add() {
-        //given
-        String givenStartAt = "10:52";
-        ReservationTimeCreateRequest request = ReservationTimeCreateRequest.from(givenStartAt);
+    @Nested
+    @DisplayName("예약 시간 추가")
+    class create {
+        @Test
+        @DisplayName("예약 시간을 추가한다.")
+        void add() {
+            //given
+            String givenStartAt = "10:52";
+            ReservationTimeCreateRequest request = ReservationTimeCreateRequest.from(givenStartAt);
 
-        //when
-        ReservationTimeResponse result = reservationTimeService.add(request);
+            //when
+            ReservationTimeResponse result = reservationTimeService.add(request);
 
-        //then
-        assertAll(
-                () -> assertThat(result.getId()).isEqualTo(3),
-                () -> assertThat(result.getStartAt()).isEqualTo(givenStartAt),
-                () -> assertThat(reservationTimeService.findAll()).hasSize(3)
-        );
+            //then
+            assertAll(
+                    () -> assertThat(result.getId()).isEqualTo(3),
+                    () -> assertThat(result.getStartAt()).isEqualTo(givenStartAt),
+                    () -> assertThat(reservationTimeService.findAll()).hasSize(3)
+            );
+        }
+
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        @DisplayName("예약 시간에 null이나 공백 문자열이 입력되면 예외가 발생한다.")
+        void createReservationTimeByNullOrEmptyStartAt(String given) {
+            //given
+            ReservationTimeCreateRequest request = ReservationTimeCreateRequest.from(given);
+
+            //when //then
+            assertThatThrownBy(() -> reservationTimeService.add(request))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
     }
 
     @Test
@@ -102,52 +120,44 @@ class ReservationTimeServiceTest {
         );
     }
 
-    @Test
-    @DisplayName("예약 시간 삭제시 아이디가 비어있으면 예외가 발생한다.")
-    void deleteNullId() {
-        //given
-        Long givenId = null;
+    @Nested
+    @DisplayName("예약 시간 삭제")
+    class delete {
+        @Test
+        @DisplayName("예약 시간 삭제시 아이디가 비어있으면 예외가 발생한다.")
+        void deleteNullId() {
+            //given
+            Long givenId = null;
 
-        //when //then
-        assertThatThrownBy(() -> reservationTimeService.delete(givenId))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
+            //when //then
+            assertThatThrownBy(() -> reservationTimeService.delete(givenId))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
 
-    @Test
-    @DisplayName("예약 시간 삭제시 아이디가 존재하지 않는다면 예외가 발생한다.")
-    void deleteNotExistId() {
-        //given
-        long givenId = 3L;
+        @Test
+        @DisplayName("예약 시간 삭제시 아이디가 존재하지 않는다면 예외가 발생한다.")
+        void deleteNotExistId() {
+            //given
+            long givenId = 3L;
 
-        //when //then
-        assertThatThrownBy(() -> reservationTimeService.delete(givenId))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
+            //when //then
+            assertThatThrownBy(() -> reservationTimeService.delete(givenId))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
 
-    @ParameterizedTest
-    @NullAndEmptySource
-    @DisplayName("예약 시간에 null이나 공백 문자열이 입력되면 예외가 발생한다.")
-    void createReservationTimeByNullOrEmptyStartAt(String given) {
-        //given
-        ReservationTimeCreateRequest request = ReservationTimeCreateRequest.from(given);
+        @Test
+        @DisplayName("특정 시간에 대한 예약이 존재하는데, 그 시간을 삭제하려 할 때 예외가 발생한다.")
+        void deleteReservationTimeWhenReservationExist() {
+            //given
+            reservationDao.create(new Reservation(
+                    null,
+                    new ReservationName("다온"),
+                    ReservationDate.from("2024-04-30"),
+                    new ReservationTime(1L, ReservationStartAt.from("12:02"))));
 
-        //when //then
-        assertThatThrownBy(() -> reservationTimeService.add(request))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
-    @DisplayName("특정 시간에 대한 예약이 존재하는데, 그 시간을 삭제하려 할 때 예외가 발생한다.")
-    void deleteReservationTimeWhenReservationExist() {
-        //given
-        reservationDao.create(new Reservation(
-                null,
-                new ReservationName("다온"),
-                ReservationDate.from("2024-04-30"),
-                new ReservationTime(1L, ReservationStartAt.from("12:02"))));
-
-        //when //then
-        assertThatThrownBy(() -> reservationTimeService.delete(1L))
-                .isInstanceOf(IllegalArgumentException.class);
+            //when //then
+            assertThatThrownBy(() -> reservationTimeService.delete(1L))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
     }
 }
