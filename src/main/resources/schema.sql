@@ -30,8 +30,8 @@ CREATE TABLE reservation
     FOREIGN KEY (theme_id) REFERENCES theme (id)
 );
 
-INSERT INTO theme(name, description, thumbnail) VALUES ('테바와 비밀친구', '나랑.. 비밀친구할래..?', 'https://wootecowikibucket.s3.ap-northeast-2.amazonaws.com/%ED%85%8C%EB%B0%94%286%EA%B8%B0%29/IMG_0091%20-%20%E1%84%80%E1%85%B5%E1%86%B7%E1%84%89%E1%85%A5%E1%86%BC%E1%84%80%E1%85%A7%E1%86%B7.png');
-INSERT INTO theme(name, description, thumbnail) VALUES ('켈리의 댄스교실', '켈켈켈켈켈', 'https://wootecowikibucket.s3.ap-northeast-2.amazonaws.com/%EC%BC%88%EB%A6%AC%286%EA%B8%B0%29/IMG_0624.jpg');
+INSERT INTO theme(name, description, thumbnail) VALUES ('테바와 비밀친구', '나랑.. 비밀친구할래..?', '테바 사진 링크');
+INSERT INTO theme(name, description, thumbnail) VALUES ('켈리의 댄스교실', '켈켈켈켈켈', '켈리 사진 링크');
 
 INSERT INTO reservation_time(start_at) VALUES ('10:10');
 INSERT INTO reservation_time(start_at) VALUES ('11:30');

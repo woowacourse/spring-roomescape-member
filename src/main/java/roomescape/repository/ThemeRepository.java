@@ -10,4 +10,6 @@ public interface ThemeRepository {
     Optional<Theme> findById(Long themeId);
 
     List<Theme> findAll();
+
+    Theme save(Theme theme);
 }

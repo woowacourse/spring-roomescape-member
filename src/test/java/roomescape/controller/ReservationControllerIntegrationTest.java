@@ -205,4 +205,21 @@ class ReservationControllerIntegrationTest {
                 .statusCode(200)
                 .body("size()", is(2));
     }
+
+    @DisplayName("테마 정보를 저장한다.")
+    @Test
+    void saveThemeTest() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "켈리의 두근두근");
+        params.put("description", "켈리와 함께하는 두근두근 데이트");
+        params.put("thumbnail", "켈리 사진");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201)
+                .body("id", is(3));
+    }
 }

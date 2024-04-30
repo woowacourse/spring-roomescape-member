@@ -21,6 +21,10 @@ public class Theme {
         this.thumbnail = thumbnail;
     }
 
+    public static Theme of(String name, String description, String thumbnail) {
+        return new Theme(new ThemeName(name), new ThemeDescription(description), thumbnail);
+    }
+
     public Theme initializeIndex(final long themeId) {
         return new Theme(themeId, name, description, thumbnail);
     }

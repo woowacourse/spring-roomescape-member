@@ -6,6 +6,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.SaveReservationRequest;
 import roomescape.dto.SaveReservationTimeRequest;
+import roomescape.dto.SaveThemeRequest;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -84,5 +85,9 @@ public class ReservationService {
 
     public List<Theme> getThemes() {
         return themeRepository.findAll();
+    }
+
+    public Theme saveTheme(final SaveThemeRequest saveThemeRequest) {
+        return themeRepository.save(saveThemeRequest.toTheme());
     }
 }

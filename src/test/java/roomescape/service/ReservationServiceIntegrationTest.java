@@ -12,6 +12,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.SaveReservationRequest;
 import roomescape.dto.SaveReservationTimeRequest;
+import roomescape.dto.SaveThemeRequest;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -190,5 +191,28 @@ class ReservationServiceIntegrationTest {
 
         // Then
         assertThat(themes).hasSize(2);
+    }
+
+    @DisplayName("테마 정보를 저장한다.")
+    @Test
+    void saveThemeTest() {
+        // Given
+        String name = "켈리의 두근두근";
+        String description = "켈리와의 두근두근 데이트";
+        String thumbnail = "켈리 사진";
+        SaveThemeRequest saveThemeRequest = new SaveThemeRequest(name, description, thumbnail);
+
+        // When
+        final Theme theme = reservationService.saveTheme(saveThemeRequest);
+
+        // Then
+        final List<Theme> themes = reservationService.getThemes();
+        Assertions.assertAll(
+                () -> assertThat(themes).hasSize(3),
+                () -> assertThat(theme.getId()).isEqualTo(3L),
+                () -> assertThat(theme.getName().getValue()).isEqualTo(name),
+                () -> assertThat(theme.getDescription().getValue()).isEqualTo(description),
+                () -> assertThat(theme.getThumbnail()).isEqualTo(thumbnail)
+        );
     }
 }

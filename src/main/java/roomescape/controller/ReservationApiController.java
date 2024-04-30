@@ -9,10 +9,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.SaveReservationRequest;
 import roomescape.dto.SaveReservationTimeRequest;
+import roomescape.dto.SaveThemeRequest;
 import roomescape.dto.ThemeResponse;
 import roomescape.service.ReservationService;
 
@@ -75,5 +77,13 @@ public class ReservationApiController {
                 .stream()
                 .map(ThemeResponse::from)
                 .toList();
+    }
+
+    @PostMapping("/themes")
+    public ResponseEntity<ThemeResponse> saveTheme(@RequestBody final SaveThemeRequest request) {
+        final Theme savedTheme = reservationService.saveTheme(request);
+
+        return ResponseEntity.created(URI.create("/themes/" + savedTheme.getId()))
+                .body(ThemeResponse.from(savedTheme));
     }
 }
