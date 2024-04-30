@@ -1,5 +1,8 @@
 package roomescape.domain;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 public class Reservation {
 
     private final Long id;
@@ -40,5 +43,15 @@ public class Reservation {
 
     public String getDateAndTimeFormat() {
         return this.date.asString() + " " + this.time.getStartAtAsString();
+    }
+
+    public boolean isBefore(LocalDate reservationDate, LocalTime reservationTime) {
+        if (this.date.isBefore(reservationDate)) {
+            return true;
+        }
+        if (this.date.equals(reservationDate)) {
+            return this.time.isBefore(reservationTime);
+        }
+        return false;
     }
 }

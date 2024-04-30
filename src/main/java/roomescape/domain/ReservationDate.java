@@ -13,6 +13,10 @@ public record ReservationDate(LocalDate date) {
         }
     }
 
+    public boolean isBefore(LocalDate other) {
+        return this.date.isBefore(other);
+    }
+
     public String asString() {
         return date.toString();
     }
