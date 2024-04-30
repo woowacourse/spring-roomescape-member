@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +29,12 @@ public class CollectionReservationTimeRepository implements ReservationTimeRepos
         ReservationTime saved = new ReservationTime(atomicLong.incrementAndGet(), reservationTime.getStartAt());
         reservationTimes.add(saved);
         return saved;
+    }
+
+    @Override
+    public boolean existsByStartAt(LocalTime startAt) {
+        return reservationTimes.stream()
+                .anyMatch(reservationTime -> startAt.equals(reservationTime.getStartAt()));
     }
 
     @Override

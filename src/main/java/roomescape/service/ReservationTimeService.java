@@ -16,6 +16,9 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponse save(ReservationTimeRequest reservationTimeRequest) {
+        if (reservationTimeRepository.existsByStartAt(reservationTimeRequest.startAt())) {
+            throw new IllegalArgumentException("중복된 시간은 생성할 수 없습니다.");
+        }
         ReservationTime reservationTime = new ReservationTime(reservationTimeRequest.startAt());
         ReservationTime saved = reservationTimeRepository.save(reservationTime);
         return toResponse(saved);

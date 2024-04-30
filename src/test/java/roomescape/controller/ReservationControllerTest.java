@@ -30,7 +30,7 @@ class ReservationControllerTest {
     void saveReservation() {
         CollectionReservationRepository collectionReservationRepository = new CollectionReservationRepository(
                 timeRepository);
-        ReservationService reservationService = new ReservationService(collectionReservationRepository);
+        ReservationService reservationService = new ReservationService(collectionReservationRepository, timeRepository);
         ReservationController reservationController = new ReservationController(reservationService);
         LocalDate date = LocalDate.now();
 
@@ -51,7 +51,7 @@ class ReservationControllerTest {
     void findAllReservations() {
         CollectionReservationRepository collectionReservationRepository = new CollectionReservationRepository(
                 timeRepository);
-        ReservationService reservationService = new ReservationService(collectionReservationRepository);
+        ReservationService reservationService = new ReservationService(collectionReservationRepository, timeRepository);
         ReservationController reservationController = new ReservationController(reservationService);
         List<ReservationResponse> allReservations = reservationController.findAllReservations();
 
@@ -66,7 +66,7 @@ class ReservationControllerTest {
                 new Reservation(1L, "폴라", LocalDate.now(), new ReservationTime(LocalTime.now())));
         CollectionReservationRepository collectionReservationRepository = new CollectionReservationRepository(
                 new ArrayList<>(reservations), timeRepository);
-        ReservationService reservationService = new ReservationService(collectionReservationRepository);
+        ReservationService reservationService = new ReservationService(collectionReservationRepository, timeRepository);
         ReservationController reservationController = new ReservationController(reservationService);
 
         reservationController.delete(1L);
@@ -81,7 +81,7 @@ class ReservationControllerTest {
     void checkRepositoryDependency() {
         CollectionReservationRepository collectionReservationRepository = new CollectionReservationRepository(
                 timeRepository);
-        ReservationService reservationService = new ReservationService(collectionReservationRepository);
+        ReservationService reservationService = new ReservationService(collectionReservationRepository, timeRepository);
         ReservationController reservationController = new ReservationController(reservationService);
 
         boolean isRepositoryInjected = false;
