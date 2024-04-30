@@ -13,6 +13,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.dto.reservation.ReservationCreateRequest;
 import roomescape.dto.reservation.ReservationResponse;
 import roomescape.exception.BadRequestException;
+import roomescape.exception.ResourceNotFoundException;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationtime.ReservationTimeRepository;
 
@@ -135,6 +136,21 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.createReservation(request))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage("중복된 예약입니다.");
+    }
+
+    @DisplayName("예약 서비스는 예약 요청에 존재하지 않는 시간이 포함된 경우 예외가 발생한다.")
+    @Test
+    void createWithNonExistentTime() {
+        // given
+        Mockito.when(reservationTimeRepository.findById(id))
+                .thenReturn(Optional.empty());
+
+        ReservationCreateRequest request = new ReservationCreateRequest(name, date, id);
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.createReservation(request))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("존재하지 않는 예약 시간입니다.");
     }
 
     @DisplayName("예약 서비스는 id에 맞는 예약을 삭제한다.")
