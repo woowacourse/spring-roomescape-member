@@ -10,6 +10,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
+@RequestMapping("/times")
 public class ReservationTimeController {
 
     private final ReservationTimeService reservationTimeService;
@@ -18,18 +19,18 @@ public class ReservationTimeController {
         this.reservationTimeService = reservationTimeService;
     }
 
-    @GetMapping("/times")
+    @GetMapping
     public ResponseEntity<List<ReservationTime>> times() {
         return ResponseEntity.ok(reservationTimeService.findAll());
     }
 
-    @PostMapping("/times")
+    @PostMapping
     public ResponseEntity<ReservationTime> create(@RequestBody ReservationTimeRequest reservationTimeRequest) {
         final ReservationTime savedReservationTime = reservationTimeService.save(reservationTimeRequest);
         return ResponseEntity.created(URI.create("/times/" + savedReservationTime.getId())).body(savedReservationTime);
     }
 
-    @DeleteMapping("/times/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         reservationTimeService.delete(id);
         return ResponseEntity.noContent().build();
