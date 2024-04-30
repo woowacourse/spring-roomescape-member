@@ -18,6 +18,11 @@ public class ViewController {
 
     @GetMapping("/admin/reservation")
     public String reservationPage() {
-        return "admin/reservation";
+        return "admin/reservation-new";
+    }
+
+    @GetMapping("/admin/theme")
+    public String themePage() {
+        return "admin/theme";
     }
 }
