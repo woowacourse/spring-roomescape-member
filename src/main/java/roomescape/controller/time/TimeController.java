@@ -25,9 +25,8 @@ public class TimeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TimeResponse>> getTimes() {
-        List<TimeResponse> times = timeService.getTimes();
-        return ResponseEntity.ok(times);
+    public List<TimeResponse> getTimes() {
+        return timeService.getTimes();
     }
 
     @PostMapping
@@ -45,7 +44,8 @@ public class TimeController {
     public ResponseEntity<Void> deleteTime(@PathVariable("id") final Long id) {
         int deleteCount = timeService.deleteTime(id);
         if (deleteCount == 0) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.notFound()
+                    .build();
         }
         return ResponseEntity.ok()
                 .build();

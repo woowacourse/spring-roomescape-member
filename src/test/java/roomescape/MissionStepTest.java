@@ -26,7 +26,7 @@ import static org.hamcrest.CoreMatchers.is;
 @Sql(scripts = {"/drop.sql", "/schema.sql"},
         executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class MissionStepTest {
+class MissionStepTest {
 
     @LocalServerPort
     private int port;
