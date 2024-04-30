@@ -11,7 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.reservation.dto.RequestReservation;
+import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.repository.ReservationTimeRepository;
 
@@ -35,9 +35,9 @@ class ReservationServiceTest {
         doReturn(Optional.empty()).when(reservationTimeRepository)
                 .findById(timeId);
 
-        RequestReservation requestReservation = new RequestReservation("hogi", LocalDate.now(), timeId);
+        ReservationRequest reservationRequest = new ReservationRequest("hogi", LocalDate.now(), timeId);
 
-        assertThatThrownBy(() -> reservationService.save(requestReservation))
+        assertThatThrownBy(() -> reservationService.save(reservationRequest))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 

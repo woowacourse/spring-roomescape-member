@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.reservation.dto.RequestReservation;
-import roomescape.reservation.dto.ResponseReservation;
+import roomescape.reservation.dto.ReservationRequest;
+import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
 
 @RestController
@@ -22,17 +22,17 @@ public class ReservationApiController {
     }
 
     @GetMapping("/reservations")
-    public ResponseEntity<List<ResponseReservation>> findAll() {
-        List<ResponseReservation> responseReservations = reservationService.findAll();
+    public ResponseEntity<List<ReservationResponse>> findAll() {
+        List<ReservationResponse> reservationResponses = reservationService.findAll();
 
-        return ResponseEntity.ok(responseReservations);
+        return ResponseEntity.ok(reservationResponses);
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity<ResponseReservation> create(@RequestBody RequestReservation requestReservation) {
-        Long id = reservationService.save(requestReservation);
-        ResponseReservation responseReservation = reservationService.findById(id);
-        return ResponseEntity.ok(responseReservation);
+    public ResponseEntity<ReservationResponse> create(@RequestBody ReservationRequest reservationRequest) {
+        Long id = reservationService.save(reservationRequest);
+        ReservationResponse reservationResponse = reservationService.findById(id);
+        return ResponseEntity.ok(reservationResponse);
     }
 
     @DeleteMapping("/reservations/{id}")

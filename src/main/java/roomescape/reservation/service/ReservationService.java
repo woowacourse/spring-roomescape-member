@@ -5,8 +5,8 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.domain.Name;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.dto.RequestReservation;
-import roomescape.reservation.dto.ResponseReservation;
+import roomescape.reservation.dto.ReservationRequest;
+import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.dto.ResponseTime;
@@ -24,34 +24,34 @@ public class ReservationService {
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
-    public Long save(RequestReservation requestReservation) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(requestReservation.timeId())
+    public Long save(ReservationRequest reservationRequest) {
+        ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
 
-        Reservation reservation = new Reservation(new Name(requestReservation.name()),
-                requestReservation.date(),
+        Reservation reservation = new Reservation(new Name(reservationRequest.name()),
+                reservationRequest.date(),
                 reservationTime);
 
         return reservationRepository.save(reservation);
     }
 
-    public ResponseReservation findById(Long id) {
+    public ReservationResponse findById(Long id) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약입니다."));
 
         ResponseTime responseTime = new ResponseTime(reservation.getTime().getId(),
                 reservation.getTime().getStartAt());
 
-        return new ResponseReservation(reservation.getId(),
+        return new ReservationResponse(reservation.getId(),
                 reservation.getName(), reservation.getDate(), responseTime);
     }
 
-    public List<ResponseReservation> findAll() {
+    public List<ReservationResponse> findAll() {
         return reservationRepository.findAll().stream()
                 .map(reservation -> {
                     ResponseTime responseTime = new ResponseTime(reservation.getTime().getId(),
                             reservation.getTime().getStartAt());
-                    return new ResponseReservation(reservation.getId(),
+                    return new ReservationResponse(reservation.getId(),
                             reservation.getName(), reservation.getDate(), responseTime);
                 })
                 .collect(Collectors.toList());
