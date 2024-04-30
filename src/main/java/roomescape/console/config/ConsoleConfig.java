@@ -5,6 +5,7 @@ import roomescape.console.controller.ReservationConsoleController;
 import roomescape.console.controller.ReservationTimeConsoleController;
 import roomescape.console.repository.ReservationConsoleRepository;
 import roomescape.console.repository.ReservationTimeConsoleRepository;
+import roomescape.console.repository.ThemeConsoleRepository;
 import roomescape.console.view.RequestBodyMapper;
 import roomescape.core.service.ReservationService;
 import roomescape.core.service.ReservationTimeService;
@@ -12,6 +13,7 @@ import roomescape.core.service.ReservationTimeService;
 public class ConsoleConfig {
     private static final ReservationConsoleRepository reservationConsoleRepository = new ReservationConsoleRepository();
     private static final ReservationTimeConsoleRepository reservationTimeConsoleRepository = new ReservationTimeConsoleRepository();
+    private static final ThemeConsoleRepository themeConsoleRepository = new ThemeConsoleRepository();
 
     private ConsoleConfig() {
     }
@@ -34,7 +36,8 @@ public class ConsoleConfig {
     }
 
     private static ReservationService reservationService() {
-        return new ReservationService(reservationConsoleRepository(), reservationTimeConsoleRepository());
+        return new ReservationService(reservationConsoleRepository(), reservationTimeConsoleRepository(),
+                themeConsoleRepository());
     }
 
     private static ReservationTimeService reservationTimeService() {
@@ -47,5 +50,9 @@ public class ConsoleConfig {
 
     private static ReservationTimeConsoleRepository reservationTimeConsoleRepository() {
         return reservationTimeConsoleRepository;
+    }
+
+    private static ThemeConsoleRepository themeConsoleRepository() {
+        return themeConsoleRepository;
     }
 }

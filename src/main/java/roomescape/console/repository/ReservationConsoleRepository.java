@@ -22,7 +22,8 @@ public class ReservationConsoleRepository implements ReservationRepository {
                 id.getAndIncrement(),
                 reservation.getName(),
                 reservation.getDateString(),
-                reservation.getReservationTime());
+                reservation.getReservationTime(),
+                reservation.getTheme());
         reservations.add(persistReservation);
         return persistReservation.getId();
     }

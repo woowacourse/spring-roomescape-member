@@ -39,6 +39,18 @@ class ReservationControllerTest {
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201);
+
+        Map<String, Object> theme = new HashMap<>();
+        theme.put("name", "레벨2 탈출");
+        theme.put("description", "우테코 레벨2를 탈출하는 내용입니다.");
+        theme.put("thumbnail", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(theme)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201);
     }
 
     @Test
@@ -48,6 +60,7 @@ class ReservationControllerTest {
         params.put("name", null);
         params.put("date", TOMORROW_DATE);
         params.put("timeId", 1);
+        params.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -65,6 +78,7 @@ class ReservationControllerTest {
         params.put("name", name);
         params.put("date", TOMORROW_DATE);
         params.put("timeId", 1);
+        params.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -81,6 +95,7 @@ class ReservationControllerTest {
         params.put("name", "브라운");
         params.put("date", null);
         params.put("timeId", 1);
+        params.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -98,6 +113,7 @@ class ReservationControllerTest {
         params.put("name", "브라운");
         params.put("date", date);
         params.put("timeId", 1);
+        params.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -114,6 +130,7 @@ class ReservationControllerTest {
         params.put("name", "브라운");
         params.put("date", "2020-10-10");
         params.put("timeId", 1);
+        params.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -140,6 +157,7 @@ class ReservationControllerTest {
         reservationParams.put("name", "브라운");
         reservationParams.put("date", LocalDate.now().format(DateTimeFormatter.ISO_DATE));
         reservationParams.put("timeId", 2);
+        reservationParams.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -156,6 +174,7 @@ class ReservationControllerTest {
         params.put("name", "브라운");
         params.put("date", TOMORROW_DATE);
         params.put("timeId", null);
+        params.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -172,6 +191,7 @@ class ReservationControllerTest {
         params.put("name", "브라운");
         params.put("date", TOMORROW_DATE);
         params.put("timeId", 2);
+        params.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -188,6 +208,7 @@ class ReservationControllerTest {
         params.put("name", "브라운");
         params.put("date", TOMORROW_DATE);
         params.put("timeId", 1);
+        params.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

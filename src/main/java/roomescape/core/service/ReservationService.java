@@ -5,26 +5,33 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.core.domain.Reservation;
 import roomescape.core.domain.ReservationTime;
+import roomescape.core.domain.Theme;
 import roomescape.core.dto.ReservationRequestDto;
 import roomescape.core.dto.ReservationResponseDto;
 import roomescape.core.repository.ReservationRepository;
 import roomescape.core.repository.ReservationTimeRepository;
+import roomescape.core.repository.ThemeRepository;
 
 @Service
 public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
 
     public ReservationService(final ReservationRepository reservationRepository,
-                              final ReservationTimeRepository reservationTimeRepository) {
+                              final ReservationTimeRepository reservationTimeRepository,
+                              final ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
     }
 
     @Transactional
     public ReservationResponseDto create(final ReservationRequestDto request) {
         final ReservationTime reservationTime = reservationTimeRepository.findById(request.getTimeId());
-        final Reservation reservation = new Reservation(request.getName(), request.getDate(), reservationTime);
+        final Theme theme = themeRepository.findById(request.getThemeId());
+        final Reservation reservation = new Reservation(request.getName(), request.getDate(), reservationTime, theme);
+
         validateDateTimeIsNotPast(reservation, reservationTime);
         validateDuplicatedReservation(reservation, reservationTime);
         final Long id = reservationRepository.save(reservation);
@@ -42,7 +49,8 @@ public class ReservationService {
     }
 
     private void validateDuplicatedReservation(final Reservation reservation, final ReservationTime reservationTime) {
-        final Integer reservationCount = reservationRepository.countByDateAndTimeId(reservation.getDateString(), reservationTime.getId());
+        final Integer reservationCount = reservationRepository.countByDateAndTimeId(reservation.getDateString(),
+                reservationTime.getId());
         if (reservationCount > 0) {
             throw new IllegalArgumentException("예약 내역이 존재합니다.");
         }

@@ -40,13 +40,25 @@ class MissionStepTest {
     void setUp() {
         RestAssured.port = port;
 
-        Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10:00");
+        Map<String, String> time = new HashMap<>();
+        time.put("startAt", "10:00");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
+                .body(time)
                 .when().post("/times")
+                .then().log().all()
+                .statusCode(201);
+
+        Map<String, Object> theme = new HashMap<>();
+        theme.put("name", "우테코 레벨2");
+        theme.put("description", "우테코 레벨2를 탈출하는 내용입니다.");
+        theme.put("thumbnail", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(theme)
+                .when().post("/themes")
                 .then().log().all()
                 .statusCode(201);
     }
@@ -85,6 +97,7 @@ class MissionStepTest {
         params.put("name", "브라운");
         params.put("date", TOMORROW_DATE);
         params.put("timeId", 1);
+        params.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -125,8 +138,8 @@ class MissionStepTest {
 
     @Test
     void 오단계() {
-        String sql = "INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)";
-        jdbcTemplate.update(sql, "브라운", TOMORROW_DATE, 1);
+        String sql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
+        jdbcTemplate.update(sql, "브라운", TOMORROW_DATE, 1, 1);
 
         List<ReservationResponseDto> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -145,6 +158,7 @@ class MissionStepTest {
         params.put("name", "브라운");
         params.put("date", TOMORROW_DATE);
         params.put("timeId", 1);
+        params.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -186,6 +200,7 @@ class MissionStepTest {
         reservation.put("name", "브라운");
         reservation.put("date", TOMORROW_DATE);
         reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

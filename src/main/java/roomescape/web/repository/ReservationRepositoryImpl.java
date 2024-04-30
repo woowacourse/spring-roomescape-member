@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.core.domain.Reservation;
 import roomescape.core.domain.ReservationTime;
+import roomescape.core.domain.Theme;
 import roomescape.core.repository.ReservationRepository;
 
 @Repository
@@ -29,7 +30,8 @@ public class ReservationRepositoryImpl implements ReservationRepository {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
                 .addValue("date", reservation.getDate())
-                .addValue("time_id", reservation.getTimeId());
+                .addValue("time_id", reservation.getTimeId())
+                .addValue("theme_id", reservation.getThemeId());
         return jdbcInsert.executeAndReturnKey(parameters).longValue();
     }
 
@@ -41,10 +43,16 @@ public class ReservationRepositoryImpl implements ReservationRepository {
                     r.name,
                     r.date,
                     t.id as time_id,
-                    t.start_at as time_value
+                    t.start_at as time_value,
+                    m.id as theme_id,
+                    m.name as theme_name,
+                    m.description as theme_description,
+                    m.thumbnail as theme_thumbnail
                 FROM reservation as r
                 inner join reservation_time as t
                 on r.time_id = t.id
+                inner join theme as m
+                on r.theme_id = m.id
                 """;
 
         return jdbcTemplate.query(query, getReservationRowMapper());
@@ -58,10 +66,16 @@ public class ReservationRepositoryImpl implements ReservationRepository {
                     r.name,
                     r.date,
                     t.id as time_id,
-                    t.start_at as time_value
+                    t.start_at as time_value,
+                    m.id as theme_id,
+                    m.name as theme_name,
+                    m.description as theme_description,
+                    m.thumbnail as theme_thumbnail
                 FROM reservation as r
                 inner join reservation_time as t
                 on r.time_id = t.id
+                inner join theme as m
+                on r.theme_id = m.id
                 WHERE t.id = ?
                 """;
 
@@ -76,8 +90,13 @@ public class ReservationRepositoryImpl implements ReservationRepository {
             final Long tId = resultSet.getLong("time_id");
             final String timeValue = resultSet.getString("time_value");
             final ReservationTime time = new ReservationTime(tId, timeValue);
+            final Long mId = resultSet.getLong("theme_id");
+            final String themeName = resultSet.getString("theme_name");
+            final String themeDescription = resultSet.getString("theme_description");
+            final String themeThumbnail = resultSet.getString("theme_thumbnail");
+            final Theme theme = new Theme(mId, themeName, themeDescription, themeThumbnail);
 
-            return new Reservation(id, name, date, time);
+            return new Reservation(id, name, date, time, theme);
         };
     }
 

@@ -9,19 +9,22 @@ public class Reservation {
     private String name;
     private LocalDate date;
     private ReservationTime time;
+    private Theme theme;
 
     public Reservation() {
     }
 
-    public Reservation(final String name, final String date, final ReservationTime time) {
-        this(null, name, date, time);
+    public Reservation(final String name, final String date, final ReservationTime time, final Theme theme) {
+        this(null, name, date, time, theme);
     }
 
-    public Reservation(final Long id, final String name, final String date, final ReservationTime time) {
+    public Reservation(final Long id, final String name, final String date, final ReservationTime time,
+                       final Theme theme) {
         this.id = id;
         this.name = name;
         this.date = parseDate(date);
         this.time = time;
+        this.theme = theme;
     }
 
     private LocalDate parseDate(final String date) {
@@ -54,6 +57,14 @@ public class Reservation {
 
     public ReservationTime getReservationTime() {
         return time;
+    }
+
+    public Long getThemeId() {
+        return theme.getId();
+    }
+
+    public Theme getTheme() {
+        return theme;
     }
 
     public boolean isDatePast() {
