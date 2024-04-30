@@ -38,7 +38,7 @@ public class ReservationTimeDaoImpl implements ReservationTimeDao {
         Map<String, Object> reservationTimeRow = new HashMap<>();
         reservationTimeRow.put("start_at", reservationTime.getStartAt());
         Long id = simpleJdbcInsert.executeAndReturnKey(reservationTimeRow).longValue();
-        return findById(id).get();
+        return new ReservationTime(id, reservationTime.getStartAt());
     }
 
     @Override
