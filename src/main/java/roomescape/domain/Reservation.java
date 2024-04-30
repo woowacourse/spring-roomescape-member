@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,16 +14,20 @@ public class Reservation {
     private final LocalDate date;
     private final ReservationTime time;
 
-    public Reservation(String name, LocalDate date, ReservationTime time) {
+    public Reservation(String name, String date, ReservationTime time) {
         this(null, name, date, time);
     }
 
     public Reservation(Long id, Reservation reservation) {
-        this(id, reservation.name, reservation.date, reservation.time);
+        this.id = id;
+        this.name = reservation.name;
+        this.date = reservation.date;
+        this.time = reservation.time;
     }
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time) {
+    public Reservation(Long id, String name, String dateInput, ReservationTime time) {
         validateName(name);
+        LocalDate date = convertToLocalDate(dateInput);
         validateDate(date);
         this.id = id;
         this.name = name;
@@ -41,7 +46,18 @@ public class Reservation {
     }
 
     private void validateDate(LocalDate date) {
-        if (date == null || date.isBefore(LocalDate.now())) {
+        if (date.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("이전 날짜는 예약할 수 없습니다.");
+        }
+    }
+
+    private LocalDate convertToLocalDate(String date) {
+        if (date == null || date.isEmpty()) {
+            throw new IllegalArgumentException("예약 날짜가 비어있습니다.");
+        }
+        try {
+            return LocalDate.parse(date);
+        } catch (DateTimeParseException e) {
             throw new IllegalArgumentException("유효하지 않은 예약 날짜입니다.");
         }
     }

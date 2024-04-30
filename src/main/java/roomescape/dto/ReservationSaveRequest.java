@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 public record ReservationSaveRequest(
         String name,
-        LocalDate date,
+        String date,
         Long timeId) {
 
     public Reservation toModel() {

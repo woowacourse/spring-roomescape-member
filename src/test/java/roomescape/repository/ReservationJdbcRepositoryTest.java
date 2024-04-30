@@ -12,6 +12,7 @@ import roomescape.domain.ReservationTime;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Time;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -58,7 +59,8 @@ class ReservationJdbcRepositoryTest extends RepositoryTest implements Reservatio
         );
 
         // when
-        List<Reservation> reservations = reservationRepository.findAllByDateAndTime(MIA_RESERVATION_DATE, new ReservationTime(MIA_RESERVATION_TIME));
+        List<Reservation> reservations = reservationRepository.findAllByDateAndTime(
+                LocalDate.parse(MIA_RESERVATION_DATE), new ReservationTime(MIA_RESERVATION_TIME));
 
         // then
         assertThat(reservations).hasSize(2)

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,7 +43,8 @@ class ReservationCollectionRepositoryTest implements ReservationRepositoryTest {
         reservationRepository.save(wonnyReservation);
 
         // when
-        List<Reservation> reservations = reservationRepository.findAllByDateAndTime(MIA_RESERVATION_DATE, new ReservationTime(MIA_RESERVATION_TIME));
+        List<Reservation> reservations = reservationRepository.findAllByDateAndTime(
+                LocalDate.parse(MIA_RESERVATION_DATE), new ReservationTime(MIA_RESERVATION_TIME));
 
         // then
         assertThat(reservations).hasSize(2)

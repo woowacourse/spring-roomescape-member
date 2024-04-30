@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -8,7 +9,6 @@ import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,17 +27,25 @@ class ReservationTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
-    @ParameterizedTest
-    @MethodSource(value = "invalidDates")
-    @DisplayName("예약 날짜는 null이 아니며, 현재 날짜 이후이다.")
-    void validateDate(LocalDate invalidDate) {
+    @Test
+    @DisplayName("예약 날짜는 현재 날짜 이후이다.")
+    void validateDate() {
+        // given
+        String invalidDate = LocalDate.now().minusDays(1L).toString();
+
         // when & then
         assertThatThrownBy(() -> new Reservation(USER_MIA, invalidDate, new ReservationTime(MIA_RESERVATION_TIME)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
-    private static Stream<LocalDate> invalidDates() {
-        return Stream.of(null, LocalDate.now().minusDays(2L));
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(strings = {"", "22:00:00", "abc"})
+    @DisplayName("예약 날짜 입력 값이 유효하지 않으면 변환할 수 없다.")
+    void convertToLocalDate(String invalidDate) {
+        // when & then
+        assertThatThrownBy(() -> new Reservation(USER_MIA, invalidDate, new ReservationTime(MIA_RESERVATION_TIME)))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @ParameterizedTest
