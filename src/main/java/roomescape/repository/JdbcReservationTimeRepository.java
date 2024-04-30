@@ -3,6 +3,7 @@ package roomescape.repository;
 import java.time.LocalTime;
 import java.util.List;
 import javax.sql.DataSource;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -45,8 +46,12 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public ReservationTime findById(Long id) {
-        String sql = "SELECT * FROM reservation_time WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
+        try {
+            String sql = "SELECT * FROM reservation_time WHERE id = ?";
+            return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
+        } catch (DataAccessException e) {
+            throw new IllegalArgumentException("[ERROR] 잘못된 id 입니다. : " + id);
+        }
     }
 
     @Override
