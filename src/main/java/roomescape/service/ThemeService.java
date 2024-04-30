@@ -27,4 +27,11 @@ public class ThemeService {
                 .map(ThemeResponse::new)
                 .toList();
     }
+
+    public void deleteTheme(final Long id) {
+        // TODO: 테마를 사용하는 예약이 있으면 삭제 불가
+        themeRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
+        themeRepository.deleteById(id);
+    }
 }
