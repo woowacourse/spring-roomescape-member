@@ -2,8 +2,8 @@ package roomescape;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-
-import static org.hamcrest.Matchers.is;
+import org.hamcrest.Matcher;
+import org.springframework.http.HttpStatus;
 
 class HttpRestTestTemplate {
 
@@ -15,39 +15,25 @@ class HttpRestTestTemplate {
         RestAssured.given().log().all()
                 .when().get(path)
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(HttpStatus.OK.value());
     }
 
-    public static void assertGetOk(String path, String bodyPath, Integer expectedValue) {
+    public static void assertGetOk(String path, String bodyPath, Matcher<?> matcher) {
         RestAssured.given().log().all()
                 .when().get(path)
                 .then().log().all()
-                .statusCode(200)
-                .body(bodyPath, is(expectedValue));
+                .statusCode(HttpStatus.OK.value())
+                .body(bodyPath, matcher);
     }
 
-    public static void assertPostCreated(Object params, String path, String bodyPath, Integer expectedValue) {
+    public static void assertPostCreated(Object params, String path, String bodyPath, Matcher<?> matcher) {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post(path)
                 .then().log().all()
-                .statusCode(201)
-                .body(bodyPath, is(expectedValue));
-    }
-
-    public static void assertDeleteNoContent(String path) {
-        RestAssured.given().log().all()
-                .when().delete(path)
-                .then().log().all()
-                .statusCode(204);
-    }
-
-    public static void assertDeleteBadRequest(String path) {
-        RestAssured.given().log().all()
-                .when().delete(path)
-                .then().log().all()
-                .statusCode(400);
+                .statusCode(HttpStatus.CREATED.value())
+                .body(bodyPath, matcher);
     }
 
     public static void assertPostBadRequest(Object params, String path) {
@@ -56,6 +42,20 @@ class HttpRestTestTemplate {
                 .body(params)
                 .when().post(path)
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    public static void assertDeleteNoContent(String path) {
+        RestAssured.given().log().all()
+                .when().delete(path)
+                .then().log().all()
+                .statusCode(HttpStatus.NO_CONTENT.value());
+    }
+
+    public static void assertDeleteBadRequest(String path) {
+        RestAssured.given().log().all()
+                .when().delete(path)
+                .then().log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 }

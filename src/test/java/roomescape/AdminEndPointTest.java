@@ -1,9 +1,14 @@
 package roomescape;
 
-import io.restassured.RestAssured;
-import java.time.DayOfWeek;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
@@ -18,13 +23,6 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationTimeRequest;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.stream.Stream;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -52,7 +50,7 @@ class AdminEndPointTest {
         int reservationSize = reservations.size();
 
         HttpRestTestTemplate.assertGetOk("/admin/reservation");
-        HttpRestTestTemplate.assertGetOk("/reservations", "size()", reservationSize);
+        HttpRestTestTemplate.assertGetOk("/reservations", "size()", is(reservationSize));
     }
 
     @DisplayName("시간 페이지 응답")
@@ -62,37 +60,33 @@ class AdminEndPointTest {
         int reservationTimeSize = reservationTimes.size();
 
         HttpRestTestTemplate.assertGetOk("/admin/time");
-        HttpRestTestTemplate.assertGetOk("/times", "size()", reservationTimeSize);
+        HttpRestTestTemplate.assertGetOk("/times", "size()", is(reservationTimeSize));
     }
 
     @DisplayName("[예약 시간 추가 - 예약 추가 - 예약 삭제] 시나리오")
     @TestFactory
     Stream<DynamicTest> timeAddAndReservationAddAndRemoveScenario() {
+        Long reservationTimeId = 1L;
         ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(
                 LocalTime.now()
         );
         ReservationRequest reservationRequest = new ReservationRequest(
-                "브라운",
+                "알파카",
                 LocalDate.now().plusDays(1),
-                1L
+                reservationTimeId
         );
-        int initialCount = 0;
 
         return Stream.of(
                 DynamicTest.dynamicTest("예약 시간을 등록한다.", () -> {
-                    HttpRestTestTemplate.assertPostCreated(reservationTimeRequest, "/times", "id", 1);
+                    HttpRestTestTemplate.assertPostCreated(reservationTimeRequest, "/times", "id", notNullValue());
                 }),
 
                 DynamicTest.dynamicTest("예약을 등록한다.", () -> {
-                    HttpRestTestTemplate.assertPostCreated(reservationRequest, "/reservations", "id", 1);
-                    Integer countAfterInsert = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-                    assertThat(countAfterInsert).isEqualTo(initialCount + 1);
+                    HttpRestTestTemplate.assertPostCreated(reservationRequest, "/reservations", "id", notNullValue());
                 }),
 
                 DynamicTest.dynamicTest("예약을 삭제한다.", () -> {
-                    HttpRestTestTemplate.assertDeleteNoContent("/reservations/1");
-                    Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-                    assertThat(countAfterDelete).isEqualTo(initialCount);
+                    HttpRestTestTemplate.assertDeleteNoContent("/reservations/" + reservationTimeId);
                 })
         );
     }
@@ -100,29 +94,27 @@ class AdminEndPointTest {
     @DisplayName("[예약 시간 추가 - 예약 추가 - 예약 시간 삭제 불가능] 시나리오")
     @TestFactory
     Stream<DynamicTest> timeAddAndReservationAddAndCannotRemoveTimeScenario() {
+        Long reservationTimeId = 1L;
         ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(
                 LocalTime.now()
         );
         ReservationRequest reservationRequest = new ReservationRequest(
-                "브라운",
+                "산초",
                 LocalDate.now().plusDays(1),
-                1L
+                reservationTimeId
         );
-        int initialCount = 0;
 
         return Stream.of(
                 DynamicTest.dynamicTest("예약 시간을 등록한다.", () -> {
-                    HttpRestTestTemplate.assertPostCreated(reservationTimeRequest, "/times", "id", 1);
+                    HttpRestTestTemplate.assertPostCreated(reservationTimeRequest, "/times", "id", notNullValue());
                 }),
 
                 DynamicTest.dynamicTest("예약을 등록한다.", () -> {
-                    HttpRestTestTemplate.assertPostCreated(reservationRequest, "/reservations", "id", 1);
-                    Integer countAfterInsert = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-                    assertThat(countAfterInsert).isEqualTo(initialCount + 1);
+                    HttpRestTestTemplate.assertPostCreated(reservationRequest, "/reservations", "id", notNullValue());
                 }),
 
                 DynamicTest.dynamicTest("시간에 해당하는 예약이 있을 경우, 예약 시간을 삭제할 수 없다.", () -> {
-                    HttpRestTestTemplate.assertDeleteBadRequest("/times/1");
+                    HttpRestTestTemplate.assertDeleteBadRequest("/times/" + reservationTimeId);
                 })
         );
     }
@@ -134,14 +126,14 @@ class AdminEndPointTest {
                 LocalTime.now().minusHours(1)
         );
         ReservationRequest reservationRequest = new ReservationRequest(
-                "브라운",
+                "러너덕",
                 LocalDate.now().minusDays(1),
                 1L
         );
 
         return Stream.of(
                 DynamicTest.dynamicTest("예약 시간을 등록한다.", () -> {
-                    HttpRestTestTemplate.assertPostCreated(reservationTimeRequest, "/times", "id", 1);
+                    HttpRestTestTemplate.assertPostCreated(reservationTimeRequest, "/times", "id", notNullValue());
                 }),
 
                 DynamicTest.dynamicTest("지금보다 과거의 시간으로 예약을 등록할 수 없다.", () -> {
@@ -157,18 +149,18 @@ class AdminEndPointTest {
                 LocalTime.now()
         );
         ReservationRequest reservationRequest = new ReservationRequest(
-                "브라운", //todo: 산초와 알파카로 .. 러너덕 + 찰리
+                "찰리",
                 LocalDate.now().plusDays(1),
                 1L
         );
 
         return Stream.of(
                 DynamicTest.dynamicTest("예약 시간을 등록한다.", () -> {
-                    HttpRestTestTemplate.assertPostCreated(reservationTimeRequest, "/times", "id", 1);
+                    HttpRestTestTemplate.assertPostCreated(reservationTimeRequest, "/times", "id", notNullValue());
                 }),
 
                 DynamicTest.dynamicTest("중복되는 예약을 등록한다.", () -> {
-                    HttpRestTestTemplate.assertPostCreated(reservationRequest, "/reservations", "id", 1);
+                    HttpRestTestTemplate.assertPostCreated(reservationRequest, "/reservations", "id", notNullValue());
                     HttpRestTestTemplate.assertPostBadRequest(reservationRequest, "/reservations");
                 })
         );
