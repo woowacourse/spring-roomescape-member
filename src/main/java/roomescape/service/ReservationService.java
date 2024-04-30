@@ -31,7 +31,7 @@ public class ReservationService {
     }
 
     private void validateDuplicated(ReservationRequest reservationRequest) {
-        if (reservationRepository.existsReservation(reservationRequest.date(), reservationRequest.timeId())) {
+        if (reservationRepository.existsByDateAndTime(reservationRequest.date(), reservationRequest.timeId())) {
             throw new InvalidReservationException("이미 같은 일정으로 예약이 존재합니다.");
         }
     }

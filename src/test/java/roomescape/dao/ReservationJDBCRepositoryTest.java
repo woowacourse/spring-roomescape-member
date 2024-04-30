@@ -87,7 +87,7 @@ class ReservationJDBCRepositoryTest {
         reservationRepository.save(reservation);
 
         //when
-        boolean result = reservationRepository.existsReservation(date, reservationTime.getId());
+        boolean result = reservationRepository.existsByDateAndTime(date, reservationTime.getId());
 
         //then
         assertThat(result).isTrue();
@@ -102,7 +102,31 @@ class ReservationJDBCRepositoryTest {
         reservationRepository.save(reservation);
 
         //when
-        boolean result = reservationRepository.existsReservation(newDate, reservationTime.getId());
+        boolean result = reservationRepository.existsByDateAndTime(newDate, reservationTime.getId());
+
+        //then
+        assertThat(result).isFalse();
+    }
+
+    @DisplayName("주어진 시간에 대한 예약이 존재한다.")
+    @Test
+    void existsByTimeIdTest() {
+        //given
+        Reservation reservation = new Reservation("브라운", date, reservationTime);
+        reservationRepository.save(reservation);
+
+        //when
+        boolean result = reservationRepository.existsByTimeId(reservationTime.getId());
+
+        //then
+        assertThat(result).isTrue();
+    }
+
+    @DisplayName("주어진 시간에 대한 예약이 존재하지 않는다.")
+    @Test
+    void notExistsByTimeIdTest() {
+        //when
+        boolean result = reservationRepository.existsByTimeId(reservationTime.getId());
 
         //then
         assertThat(result).isFalse();
