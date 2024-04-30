@@ -144,6 +144,14 @@ Content-Type: application/json
     "message": "올바르지 않은 시간입니다. time: ''"
   }
   ```
+  - 추가 실패: 중복 예약 불가능 오류
+  ```
+  HTTP/1.1 400
+  
+  {
+    "message": "이미 같은 일정으로 예약이 존재합니다."
+  }
+  ```
 
 ### 시간 조회
 - http method: GET
@@ -166,9 +174,17 @@ Content-Type: application/json
   - path variable
     - id: 시간 정보 식별자
 - response
-  - 존재하는 id로 삭제 요청
+  - 성공: 존재하는 id로 삭제 요청
   ```
   HTTP/1.1 204
+  ```
+  - 삭제 실패: 이미 예약이 존재하는 시간 삭제 시도 오류
+  ```
+  HTTP/1.1 400
+  
+  {
+    "message": "해당 시간에 예약이 존재해서 삭제할 수 없습니다."
+  }
   ```
 
 ## 기능 명세서
