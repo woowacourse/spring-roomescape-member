@@ -1,5 +1,8 @@
 package roomescape.service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
@@ -22,17 +25,31 @@ public class ReservationService {
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
+    //ToDo 테스트 작성
     public ReservationResponse save(ReservationRequest reservationRequest) {
         //TODO 변수명
         Optional<ReservationTime> reservationTime = reservationTimeRepository.findById(reservationRequest.timeId());
 
-        Reservation saved = reservationRepository.save(new Reservation(
+        Reservation beforeSave = new Reservation(
                 reservationRequest.name(),
                 reservationRequest.date(),
                 //TODO : 커스텀 예외 사용할지 고민해보기
                 reservationTime.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."))
-        ));
+        );
+        boolean isDuplicate = reservationRepository.findAll()
+                .stream()
+                .anyMatch(reservation -> mapToLocalDateTime(reservation).equals(mapToLocalDateTime(beforeSave)));
+        if (isDuplicate) {
+            throw new IllegalArgumentException("동일한 날짜와 시간에 이미 예약이 존재합니다.");
+        }
+        Reservation saved = reservationRepository.save(beforeSave);
         return toResponse(saved);
+    }
+
+    private LocalDateTime mapToLocalDateTime(Reservation reservation) {
+        LocalDate date = reservation.getDate();
+        LocalTime time = reservation.getReservationTime().getStartAt();
+        return LocalDateTime.of(date, time);
     }
 
     private ReservationResponse toResponse(Reservation reservation) {
