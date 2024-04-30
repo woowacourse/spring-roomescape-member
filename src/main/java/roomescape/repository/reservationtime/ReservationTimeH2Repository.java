@@ -3,7 +3,10 @@ package roomescape.repository.reservationtime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import javax.sql.DataSource;
+
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -47,7 +50,11 @@ public class ReservationTimeH2Repository implements ReservationTimeRepository {
 
     @Override
     public void delete(Long id) {
-        jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
+        try {
+            jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException("참조되고 있는 시간을 삭제할 수 없습니다. id = " + id);  // TODO 올바른 예외 타입인가??
+        }
     }
 
     @Override

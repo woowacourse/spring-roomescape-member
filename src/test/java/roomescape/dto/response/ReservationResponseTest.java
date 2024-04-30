@@ -24,7 +24,7 @@ class ReservationResponseTest {
         );
         ReservationResponse expected = new ReservationResponse(
                 1L,
-                new Name("brown"),
+                "brown",
                 "2024-04-01",
                 ReservationTimeResponse.from(time)
         );

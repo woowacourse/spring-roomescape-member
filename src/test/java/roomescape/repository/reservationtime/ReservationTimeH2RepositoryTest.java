@@ -56,6 +56,14 @@ class ReservationTimeH2RepositoryTest {
     }
 
     @Test
+    @DisplayName("참조되어 있는 시간을 삭제하는 경우 예외가 발생한다.")
+    void deleteReferencedTime() {
+        assertThatThrownBy(() -> reservationTimeH2Repository.delete(10L))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+
+    @Test
     @DisplayName("모든 ReservationTime을 찾는다.")
     void findAll() {
         List<ReservationTime> found = reservationTimeH2Repository.findAll();
