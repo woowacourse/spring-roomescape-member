@@ -26,8 +26,8 @@ public class ReservationService {
     }
 
     public Reservation addReservation(ReservationRequest request) {
-        ReservationTime reservationTime = reservationTimeDAO.findReservationById(request.timeId());
-        return reservationRepository.addReservation(new Reservation(request.name(), request.date(), reservationTime));
+        ReservationTime reservationTime = reservationTimeDAO.findReservationById(request.getTimeId());
+        return reservationRepository.addReservation(new Reservation(request.getName(), request.getDate(), reservationTime));
     }
 
     public void deleteReservation(long id) {
