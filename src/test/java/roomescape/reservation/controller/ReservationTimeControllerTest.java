@@ -10,6 +10,8 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.reservation.dto.ReservationTimeRequest;
 import roomescape.reservation.service.ReservationTimeService;
@@ -22,7 +24,7 @@ class ReservationTimeControllerTest extends ControllerTest {
 
     @BeforeEach
     void setUp() {
-        reservationTimeService.create(new ReservationTimeRequest(LocalTime.MIDNIGHT));
+        reservationTimeService.create(new ReservationTimeRequest("12:00"));
     }
 
     @DisplayName("시간 생성 시, 200을 반환한다.")
@@ -60,5 +62,22 @@ class ReservationTimeControllerTest extends ControllerTest {
                 .when().delete("/times/1")
                 .then().log().all()
                 .statusCode(200);
+    }
+
+    @DisplayName("시간 생성 시, 잘못된 시간 형식에 대해 400을 반환한다.")
+    @ParameterizedTest
+    @ValueSource(strings = {"", "26:57", "23:89", "-1"})
+    void createBadRequest(String startAt) {
+        //given
+        Map<String, String> params = new HashMap<>();
+        params.put("startAt", startAt);
+
+        //when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(400);
     }
 }

@@ -29,7 +29,7 @@ class ReservationTimeServiceTest {
     @Test
     void create() {
         //given
-        LocalTime localTime = LocalTime.MIDNIGHT;
+        String localTime = "12:00";
         ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(localTime);
 
         //when

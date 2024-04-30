@@ -1,5 +1,6 @@
 package roomescape.reservation.service;
 
+import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.domain.ReservationTime;
@@ -16,7 +17,7 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponse create(ReservationTimeRequest reservationTimeRequest) {
-        ReservationTime reservationTime = new ReservationTime(reservationTimeRequest.startAt());
+        ReservationTime reservationTime = new ReservationTime(LocalTime.parse(reservationTimeRequest.startAt()));
         return ReservationTimeResponse.from(reservationTimeRepository.save(reservationTime));
     }
 

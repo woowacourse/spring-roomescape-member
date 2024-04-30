@@ -29,7 +29,7 @@ class ReservationControllerTest extends ControllerTest {
 
     @BeforeEach
     void setUp() {
-        reservationTimeResponse = reservationTimeService.create(new ReservationTimeRequest(LocalTime.MIDNIGHT));
+        reservationTimeResponse = reservationTimeService.create(new ReservationTimeRequest("12:00"));
         reservationService.create(new ReservationRequest(
                 "choco",
                 LocalDate.of(2023, 4, 23),
