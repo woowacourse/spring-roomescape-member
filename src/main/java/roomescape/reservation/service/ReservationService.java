@@ -25,7 +25,8 @@ public class ReservationService {
     }
 
     public Long save(RequestReservation requestReservation) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(requestReservation.timeId());
+        ReservationTime reservationTime = reservationTimeRepository.findById(requestReservation.timeId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
 
         Reservation reservation = new Reservation(new Name(requestReservation.name()),
                 requestReservation.date(),
@@ -35,7 +36,9 @@ public class ReservationService {
     }
 
     public ResponseReservation findOneById(Long id) {
-        Reservation reservation = reservationRepository.findById(id);
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약입니다."));
+
         ResponseTime responseTime = new ResponseTime(reservation.getTime().getId(),
                 reservation.getTime().getStartAt());
 

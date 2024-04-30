@@ -23,7 +23,9 @@ public class ReservationTimeService {
     }
 
     public ResponseTime findById(Long id) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(id);
+        ReservationTime reservationTime = reservationTimeRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다"));
+
         return new ResponseTime(reservationTime.getId(), reservationTime.getStartAt());
     }
 

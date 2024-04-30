@@ -3,6 +3,8 @@ package roomescape.time.repository;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -34,9 +36,13 @@ public class ReservationTimeRepository {
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
-    public ReservationTime findById(Long id) {
+    public Optional<ReservationTime> findById(Long id) {
         String sql = "select id, start_at from reservation_time where id = ?";
-        return jdbcTemplate.queryForObject(sql, createReservationTimeRowMapper(), id);
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(sql, createReservationTimeRowMapper(), id));
+        } catch (DataAccessException exception) {
+            return Optional.empty();
+        }
     }
 
     public List<ReservationTime> findAll() {

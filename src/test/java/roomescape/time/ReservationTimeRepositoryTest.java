@@ -32,7 +32,7 @@ class ReservationTimeRepositoryTest extends TestSupport {
         ReservationTime reservationTime2 = new ReservationTime(2L, LocalTime.now());
         reservationTimeRepository.save(reservationTime1);
         reservationTimeRepository.save(reservationTime2);
-        ReservationTime findReservationTime = reservationTimeRepository.findById(reservationTime2.getId());
+        ReservationTime findReservationTime = reservationTimeRepository.findById(reservationTime2.getId()).get();
         assertThat(findReservationTime.getId()).isEqualTo(2);
     }
 

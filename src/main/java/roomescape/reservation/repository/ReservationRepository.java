@@ -3,6 +3,8 @@ package roomescape.reservation.repository;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -38,7 +40,7 @@ public class ReservationRepository {
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
-    public Reservation findById(Long id) {
+    public Optional<Reservation> findById(Long id) {
         String sql = """
                 select
                 r.id,
@@ -51,8 +53,11 @@ public class ReservationRepository {
                 on r.time_id = t.id
                 where r.id = ?
                 """;
-
-        return jdbcTemplate.queryForObject(sql, createReservationRowMapper(), id);
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(sql, createReservationRowMapper(), id));
+        } catch (DataAccessException exception) {
+            return Optional.empty();
+        }
     }
 
     public List<Reservation> findAll() {

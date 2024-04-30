@@ -55,7 +55,7 @@ public class ReservationRepositoryTest extends TestSupport {
         Reservation reservation = new Reservation(1L, new Name("hogi"), LocalDate.now(), reservationTime);
         Long saveId = reservationRepository.save(reservation);
 
-        Reservation findReservation = reservationRepository.findById(saveId);
+        Reservation findReservation = reservationRepository.findById(saveId).get();
         assertThat(findReservation.getId()).isEqualTo(1);
     }
 
