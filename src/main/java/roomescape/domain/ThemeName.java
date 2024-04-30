@@ -11,6 +11,10 @@ public class ThemeName {
         this.name = name;
     }
 
+    public String asText() {
+        return name;
+    }
+
     private void validateNonBlank(String name) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("테마명은 필수 입력값 입니다.");
