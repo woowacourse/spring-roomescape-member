@@ -70,7 +70,7 @@ public class MissionStepTest {
     @Test
     void 이단계() {
         RestAssured.given().log().all()
-                .when().get("/reservation")
+                .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(HttpStatus.SC_OK);
 

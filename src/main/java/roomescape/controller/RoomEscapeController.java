@@ -16,12 +16,12 @@ public class RoomEscapeController {
         return "redirect:/admin";
     }
 
-    @GetMapping("/reservation")
+    @GetMapping("/admin/reservation")
     public String getReservationPage() {
         return "/admin/reservation";
     }
 
-    @GetMapping("/time")
+    @GetMapping("/admin/time")
     public String getTimePage() {
         return "/admin/time";
     }
