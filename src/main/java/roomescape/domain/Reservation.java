@@ -90,16 +90,7 @@ public class Reservation implements Comparable<Reservation> {
 
         Reservation that = (Reservation) o;
 
-        if (!Objects.equals(id, that.id)) {
-            return false;
-        }
-        if (!Objects.equals(name, that.name)) {
-            return false;
-        }
-        if (!Objects.equals(date, that.date)) {
-            return false;
-        }
-        return Objects.equals(time, that.time);
+        return Objects.equals(id, that.id);
     }
 
     @Override

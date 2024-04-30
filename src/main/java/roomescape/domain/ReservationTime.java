@@ -49,10 +49,7 @@ public class ReservationTime {
 
         ReservationTime that = (ReservationTime) o;
 
-        if (!Objects.equals(id, that.id)) {
-            return false;
-        }
-        return Objects.equals(startAt, that.startAt);
+        return Objects.equals(id, that.id);
     }
 
     @Override
