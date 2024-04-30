@@ -58,6 +58,24 @@ public class ReservationControllerTest {
                 .assertThat().statusCode(201).body("id", is(greaterThan(0)));
     }
 
+    @DisplayName("예약 추가 실패 테스트 - 중복 일정 오류")
+    @Test
+    void createDuplicatedReservation() {
+        //given
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(new ReservationRequest("lilly", date, timeId))
+                .when().post("/reservations");
+
+        //when&then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(new ReservationRequest("lilly", date, timeId))
+                .when().post("/reservations")
+                .then().log().all()
+                .assertThat().statusCode(400).body("message", is("이미 같은 일정으로 예약이 존재합니다."));
+    }
+
     @DisplayName("예약 추가 실패 테스트 - 이름 길이 오류")
     @Test
     void createInvalidNameReservation() {
