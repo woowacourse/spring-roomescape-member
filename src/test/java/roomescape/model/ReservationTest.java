@@ -12,7 +12,7 @@ class ReservationTest {
     @Test
     void emptyDate() {
         assertThatThrownBy(() ->
-                new Reservation(1L, "감자", null, new ReservationTime(1L, LocalTime.parse("10:00"))))
+                new Reservation("감자", null, new ReservationTime(LocalTime.parse("10:00")), new Theme("이름", "설명", "썸네일")))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

@@ -2,18 +2,17 @@ package roomescape.repository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
-
-import java.util.List;
+import roomescape.model.Theme;
 
 @Repository
 public class ReservationJdbcRepository implements ReservationRepository {
@@ -23,10 +22,20 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 selectedReservation.getLong("time_id"),
                 LocalTime.parse(selectedReservation.getString("start_at"))
         );
+        final Theme theme = new Theme(
+                selectedReservation.getLong("theme_id"),
+                selectedReservation.getString("theme_name"),
+                selectedReservation.getString("description"),
+                selectedReservation.getString("thumbnail")
+        );
+
         return new Reservation(
                 selectedReservation.getLong("id"),
                 selectedReservation.getString("name"),
-                LocalDate.parse(selectedReservation.getString("date")), time);
+                LocalDate.parse(selectedReservation.getString("date")),
+                time,
+                theme
+        );
     };
 
     private final JdbcTemplate jdbcTemplate;
@@ -41,15 +50,15 @@ public class ReservationJdbcRepository implements ReservationRepository {
 
     @Override
     public Reservation save(final Reservation reservation) {
-        final ReservationTime time = reservation.getTime();
-        final String name = reservation.getName().getValue();
-        final String date = reservation.getFormattedDate();
-        final SqlParameterSource reservationParameters = new MapSqlParameterSource()
-                .addValue("name", name)
-                .addValue("date", date)
-                .addValue("time_id", time.getId());
+        final BeanPropertySqlParameterSource reservationParameters = new BeanPropertySqlParameterSource(reservation);
         final Long savedReservationId = reservationInsert.executeAndReturnKey(reservationParameters).longValue();
-        return new Reservation(savedReservationId, name, LocalDate.parse(date), time);
+        return new Reservation(
+                savedReservationId,
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.getTime(),
+                reservation.getTheme()
+        );
     }
 
     @Override
@@ -59,11 +68,17 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 r.id as reservation_id,
                 r.name,
                 r.date,
-                t.id as time_id,
-                t.start_at
+                rt.id as time_id,
+                rt.start_at,
+                t.id as theme_id,
+                t.name as theme_name,
+                t.description,
+                t.thumbnail
             FROM reservations as r
-            INNER JOIN reservation_times as t
-            ON r.time_id = t.id
+            INNER JOIN reservation_times as rt
+            ON r.time_id = rt.id
+            INNER JOIN theme as t
+            ON r.theme_id = t.id
         """;
         return jdbcTemplate.query(selectQuery, ROW_MAPPER)
                 .stream()
@@ -98,11 +113,17 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 r.id as reservation_id,
                 r.name,
                 r.date,
-                t.id as time_id,
-                t.start_at
+                rt.id as time_id,
+                rt.start_at,
+                t.id as theme_id,
+                t.name as theme_name,
+                t.description,
+                t.thumbnail
             FROM reservations as r
-            INNER JOIN reservation_times as t
-            ON r.time_id = t.id
+            INNER JOIN reservation_times as rt
+            ON r.time_id = rt.id
+            INNER JOIN theme as t
+            ON r.theme_id = t.id
             WHERE r.id = ?
         """;
 

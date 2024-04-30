@@ -18,6 +18,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
+import roomescape.model.Theme;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -36,20 +37,22 @@ class ReservationRepositoryTest {
     void init() {
         RestAssured.port = port;
         jdbcTemplate.update("INSERT INTO reservation_times (start_at) VALUES (?), (?)", "08:00", "07:00");
-        jdbcTemplate.update("INSERT INTO reservations (name, date, time_id) VALUES (?, ?, ?), (?, ?, ?)",
-                "감자", "2024-07-07", 1L,
-                "고구마", "2024-08-12", 2L);
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", " 이름", "설명", "썸네일");
+        jdbcTemplate.update("INSERT INTO reservations (name, date, time_id, theme_id) VALUES (?, ?, ?, ?), (?, ?, ?, ?)",
+                "감자", "2024-07-07", 1L, 1L,
+                "고구마", "2024-08-12", 2L, 1L);
     }
 
     @DisplayName("예약 생성")
     @Test
     void save() {
         final ReservationTime reservationTime = new ReservationTime(1L, LocalTime.parse("08:00"));
-        final Reservation reservation = new Reservation("생강", LocalDate.parse("2025-01-01"), reservationTime);
+        final Theme theme = new Theme(1L, "이름", "설명", "썸네일");
+        final Reservation reservation = new Reservation("생강", LocalDate.parse("2025-01-01"), reservationTime, theme);
         final Reservation savedReservation = reservationRepository.save(reservation);
         assertAll(
                 () -> assertThat(savedReservation.getId()).isEqualTo(3L),
-                () -> assertThat(savedReservation.getName().getValue()).isEqualTo("생강"),
+                () -> assertThat(savedReservation.getName()).isEqualTo("생강"),
                 () -> assertThat(savedReservation.getDate()).isEqualTo("2025-01-01"),
                 () -> assertThat(savedReservation.getTime()).isEqualTo(reservationTime)
         );

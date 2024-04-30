@@ -9,29 +9,42 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.ReservationTimeSaveRequest;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
+import roomescape.model.Theme;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
-import roomescape.testutil.ReservationMemoryRepository;
-import roomescape.testutil.ReservationTimeMemoryRepository;
+import roomescape.repository.ThemeRepository;
 
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 class ReservationTimeServiceTest {
 
+    @Autowired
     private ReservationTimeService reservationTimeService;
+
+    @Autowired
+    private ReservationTimeRepository reservationTimeRepository;
+
+    @Autowired
+    private ThemeRepository themeRepository;
+
+    @Autowired
+    private ReservationRepository reservationRepository;
 
     @BeforeEach
     void init() {
-        final ReservationTimeRepository reservationTimeRepository = new ReservationTimeMemoryRepository();
         reservationTimeRepository.save(new ReservationTime(LocalTime.parse("11:00")));
         final ReservationTime savedReservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("12:00")));
-
-        final ReservationRepository reservationRepository = new ReservationMemoryRepository();
-        reservationRepository.save(new Reservation(1L, "백호", LocalDate.parse("2024-12-12"), savedReservationTime));
-
-        reservationTimeService = new ReservationTimeService(reservationTimeRepository, reservationRepository);
+        final Theme theme = themeRepository.save(new Theme("이름", "설명", "썸네일"));
+        reservationRepository.save(new Reservation(1L, "백호", LocalDate.parse("2024-12-12"), savedReservationTime, theme));
     }
 
     @DisplayName("예약 시간 목록 조회")

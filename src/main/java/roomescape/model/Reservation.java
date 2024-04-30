@@ -10,17 +10,19 @@ public class Reservation {
     private final Name name;
     private final LocalDate date;
     private final ReservationTime time;
+    private final Theme theme;
 
-    public Reservation(final String name, final LocalDate date, final ReservationTime time) {
-        this(null, name, date, time);
+    public Reservation(final String name, final LocalDate date, final ReservationTime time, final Theme theme) {
+        this(null, name, date, time, theme);
     }
 
-    public Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time) {
+    public Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time, final Theme theme) {
         validateDate(date);
         this.id = id;
         this.name = new Name(name);
         this.date = date;
         this.time = time;
+        this.theme = theme;
     }
 
     private static void validateDate(final LocalDate date) {
@@ -29,17 +31,28 @@ public class Reservation {
         }
     }
 
-
     public String getFormattedDate() {
         return date.format(DateTimeFormatter.ISO_DATE);
+    }
+
+    public LocalDateTime getDateTime() {
+        return LocalDateTime.of(date, time.getStartAt());
+    }
+
+    public Long getTimeId() {
+        return time.getId();
+    }
+
+    public Long getThemeId() {
+        return theme.getId();
     }
 
     public Long getId() {
         return id;
     }
 
-    public Name getName() {
-        return name;
+    public String getName() {
+        return name.getValue();
     }
 
     public LocalDate getDate() {
@@ -50,11 +63,7 @@ public class Reservation {
         return time;
     }
 
-    public Long getTimeId() {
-        return time.getId();
-    }
-
-    public LocalDateTime getDateTime() {
-        return LocalDateTime.of(date, time.getStartAt());
+    public Theme getTheme() {
+        return theme;
     }
 }

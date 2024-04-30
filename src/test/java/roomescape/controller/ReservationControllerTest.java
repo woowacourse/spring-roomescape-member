@@ -36,6 +36,7 @@ class ReservationControllerTest {
     void init() {
         RestAssured.port = port;
         jdbcTemplate.update("INSERT INTO reservation_times (start_at) VALUES ('10:00')");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('이름', '설명', '썸네일')");
     }
 
     @DisplayName("존재하지 않는 예약 삭제")
@@ -60,7 +61,7 @@ class ReservationControllerTest {
     @DisplayName("데이터 삽입 후 예약 목록 조회")
     @Test
     void getReservationsAfterInsert() {
-        jdbcTemplate.update("INSERT INTO reservations (name, date, time_id) VALUES (?, ?, ?)", "브라운", "2025-08-05", 1L);
+        jdbcTemplate.update("INSERT INTO reservations (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2025-08-05", 1L, 1L);
 
         final List<ReservationResponse> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -78,7 +79,8 @@ class ReservationControllerTest {
         final Map<String, Object> params = Map.of(
                 "name", "브라운",
                 "date", "2025-08-05",
-                "timeId", 1L);
+                "timeId", 1L,
+                "themeId", 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
