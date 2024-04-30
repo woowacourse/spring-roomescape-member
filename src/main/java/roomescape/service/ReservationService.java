@@ -52,7 +52,7 @@ public class ReservationService {
         );
         boolean isDuplicate = reservationRepository.findAll()
                 .stream()
-                .anyMatch(reservation -> mapToLocalDateTime(reservation).equals(mapToLocalDateTime(beforeSave)));
+                .anyMatch(reservation -> validateDuplicateReservation(beforeSave, reservation));
         if (isDuplicate) {
             throw new RoomescapeException(DUPLICATE_RESERVATION);
         }
@@ -66,15 +66,20 @@ public class ReservationService {
         return toResponse(saved);
     }
 
-    private static boolean isBefore(Reservation beforeSave) {
-        return LocalDateTime.of(beforeSave.getDate(), beforeSave.getTime())
-                .isBefore(LocalDateTime.now());
+    private boolean validateDuplicateReservation(Reservation beforeSave, Reservation reservation) {
+        return mapToLocalDateTime(reservation).equals(mapToLocalDateTime(beforeSave))
+                && beforeSave.getTheme().equals(reservation.getTheme());
     }
 
     private LocalDateTime mapToLocalDateTime(Reservation reservation) {
         LocalDate date = reservation.getDate();
         LocalTime time = reservation.getReservationTime().getStartAt();
         return LocalDateTime.of(date, time);
+    }
+
+    private static boolean isBefore(Reservation beforeSave) {
+        return LocalDateTime.of(beforeSave.getDate(), beforeSave.getTime())
+                .isBefore(LocalDateTime.now());
     }
 
     private ReservationResponse toResponse(Reservation reservation) {
