@@ -75,4 +75,16 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = "delete from reservation where id = ?";
         jdbcTemplate.update(sql, id);
     }
+
+    @Override
+    public List<Reservation> findAllByTimeId(final Long timeId) {
+        String sql = """
+                select r.id, r.name, r.date, t.id as time_id, t.start_at
+                from reservation as r
+                inner join reservation_time as t
+                on r.time_id = t.id
+                where r.time_id = ?
+                """;
+        return jdbcTemplate.query(sql, reservationRowMapper, timeId);
+    }
 }
