@@ -1,6 +1,7 @@
 package roomescape.repository.reservationtime;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -33,6 +34,16 @@ class ReservationTimeH2RepositoryTest {
 
         assertThat(saved.id()).isNotNull();
     }
+
+    @Test
+    @DisplayName("중복된 시간을 저장하려고 하면 예외가 발생한다.")
+    void saveDuplicatedTime() {
+        ReservationTime duplicatedReservationTime = new ReservationTime(LocalTime.of(9, 0));
+
+        assertThatThrownBy(() -> reservationTimeH2Repository.save(duplicatedReservationTime))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
 
     @Test
     @DisplayName("id에 맞는 ReservationTime을 제거한다.")

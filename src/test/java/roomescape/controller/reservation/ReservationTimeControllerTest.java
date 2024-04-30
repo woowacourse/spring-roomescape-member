@@ -48,6 +48,19 @@ class ReservationTimeControllerTest {
                 .statusCode(400);
     }
 
+    @Test
+    @DisplayName("중복된 예약 가능한 시간을 추가하는 경우 bad request 상태코드를 반환한다.")
+    void wrongStartAt() {
+        Map<String, String> params = new HashMap<>();
+        params.put("startAt", "09:00");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(400);
+    }
 
     @Test
     @DisplayName("예약 가능한 시간을 조회한다.")
