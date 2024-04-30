@@ -149,4 +149,18 @@ public class ReservationDao {
                 date,
                 timeId);
     }
+
+    public List<Reservation> findByThemeId(final long themeId) {
+        String sql = "SELECT * FROM reservation WHERE theme_id = ?";
+        return jdbcTemplate.query(
+                sql,
+                (resultSet, rowNum) -> Reservation.of(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("date"),
+                        resultSet.getLong("time_id"),
+                        resultSet.getLong("theme_id")
+                ),
+                themeId);
+    }
 }

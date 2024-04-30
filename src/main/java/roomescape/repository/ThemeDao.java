@@ -67,4 +67,9 @@ public class ThemeDao {
                 .stream()
                 .findAny();
     }
+
+    public void deleteById(final long id) {
+        String sql = "DELETE FROM theme WHERE id = ?";
+        jdbcTemplate.update(sql, Long.valueOf(id));
+    }
 }
