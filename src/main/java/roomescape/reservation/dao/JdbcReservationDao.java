@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.domain.Theme;
 
 @Repository
 public class JdbcReservationDao implements ReservationDao {
@@ -21,6 +22,12 @@ public class JdbcReservationDao implements ReservationDao {
                     new ReservationTime(
                             resultSet.getLong("time_id"),
                             resultSet.getTime("time_value").toLocalTime()
+                    ),
+                    new Theme(
+                            resultSet.getLong("theme_id"),
+                            resultSet.getString("theme_name"),
+                            resultSet.getString("theme_description"),
+                            resultSet.getString("theme_thumbnail")
                     )
             );
 
@@ -38,7 +45,7 @@ public class JdbcReservationDao implements ReservationDao {
     public Reservation save(Reservation reservation) {
         SqlParameterSource parameterSource = new BeanPropertySqlParameterSource(reservation);
         Number id = jdbcInsert.executeAndReturnKey(parameterSource);
-        return new Reservation(id.longValue(), reservation.getName(), reservation.getDate(), reservation.getTime());
+        return new Reservation(id.longValue(), reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
     }
 
     @Override
@@ -49,10 +56,14 @@ public class JdbcReservationDao implements ReservationDao {
                     r.name,
                     r.date,
                     t.id as time_id,
-                    t.start_at as time_value
+                    t.start_at as time_value,
+                    h.id as theme_id,
+                    h.name as theme_name,
+                    h.description as theme_description,
+                    h.thumbnail as theme_thumbnail
                 FROM reservation as r
-                inner join reservation_time as t
-                on r.time_id = t.id
+                inner join reservation_time as t on r.time_id = t.id
+                inner join theme as h on r.theme_id = h.id
                 """;
 
         return jdbcTemplate.query(sql, RESERVATION_MAPPER);
