@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.domain.Reservation;
+import roomescape.dto.ErrorResponse;
 import roomescape.dto.ReservationCreateRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.service.ReservationService;
@@ -41,5 +42,11 @@ public class ReservationController {
     public ResponseEntity<Void> deleteReservation(@PathVariable long id) {
         service.deleteReservation(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler({IllegalArgumentException.class, NullPointerException.class})
+    public ResponseEntity<ErrorResponse> handleException(RuntimeException e) {
+        return ResponseEntity.badRequest()
+                .body(new ErrorResponse(e.getMessage()));
     }
 }

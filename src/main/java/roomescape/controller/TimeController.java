@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.ErrorResponse;
 import roomescape.dto.TimeCreateRequest;
 import roomescape.dto.TimeResponse;
 import roomescape.service.TimeService;
@@ -39,6 +40,12 @@ public class TimeController {
     public ResponseEntity<Void> deleteTime(@PathVariable long id) {
         service.deleteTime(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler({IllegalArgumentException.class, NullPointerException.class})
+    public ResponseEntity<ErrorResponse> handleException(RuntimeException e) {
+        return ResponseEntity.badRequest()
+                .body(new ErrorResponse(e.getMessage()));
     }
 }
 
