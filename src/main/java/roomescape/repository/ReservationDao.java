@@ -10,7 +10,7 @@ public interface ReservationDao {
 
     Optional<Reservation> findById(Long id);
 
-    Reservation insert(Reservation reservationAddRequest);
+    Reservation insert(Reservation reservation);
 
     void deleteById(Long id);
 }
