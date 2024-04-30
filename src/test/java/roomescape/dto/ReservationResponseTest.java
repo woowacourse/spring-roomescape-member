@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Test;
 import roomescape.domain.ClientName;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
+import roomescape.domain.ThemeDescription;
+import roomescape.domain.ThemeName;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -19,11 +22,13 @@ class ReservationResponseTest {
     void convertDtoTest() {
         // Given
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(2, 22));
+        final Theme theme = new Theme(1L, new ThemeName("테바의 비밀친구"), new ThemeDescription("테바의 은밀한 비밀친구"), "대충 테바 사진 링크");
         Reservation reservation = new Reservation(
                 1L,
                 new ClientName("켈리"),
                 LocalDate.now().plusDays(1),
-                reservationTime
+                reservationTime,
+                theme
         );
 
         // When

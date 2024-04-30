@@ -16,10 +16,12 @@ class ReservationTest {
     void initializeIndex() {
         // Given
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(2, 22));
+        Theme theme = new Theme(1L, new ThemeName("테바의 비밀친구"), new ThemeDescription("테바의 은밀한 비밀친구"), "대충 테바 사진 링크");
         Reservation reservation = new Reservation(
                 new ClientName("켈리"),
                 LocalDate.now().plusDays(1),
-                reservationTime);
+                reservationTime,
+                theme);
 
         Long initialIndex = 3L;
 
@@ -35,11 +37,12 @@ class ReservationTest {
     void throwExceptionWithReservationDateTimeBeforeNow() {
         // Given
         ReservationTime reservationTime = new ReservationTime(LocalTime.now());
+        Theme theme = new Theme(1L, new ThemeName("테바의 비밀친구"), new ThemeDescription("테바의 은밀한 비밀친구"), "대충 테바 사진 링크");
         ClientName clientName = new ClientName("켈리");
         LocalDate dateBeforeNow = LocalDate.now().minusDays(1);
 
         // When & Then
-        assertThatThrownBy(() -> new Reservation(clientName, dateBeforeNow, reservationTime))
+        assertThatThrownBy(() -> new Reservation(clientName, dateBeforeNow, reservationTime, theme))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("현재 날짜보다 이전 날짜를 예약할 수 없습니다.");
     }
@@ -51,9 +54,10 @@ class ReservationTest {
         final ClientName clientName = new ClientName("켈리");
         final LocalDate date = null;
         final ReservationTime reservationTime = new ReservationTime(LocalTime.now());
+        Theme theme = new Theme(1L, new ThemeName("테바의 비밀친구"), new ThemeDescription("테바의 은밀한 비밀친구"), "대충 테바 사진 링크");
 
         // When & Then
-        assertThatThrownBy(() -> new Reservation(clientName, date, reservationTime))
+        assertThatThrownBy(() -> new Reservation(clientName, date, reservationTime, theme))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("날짜 정보는 공백을 입력할 수 없습니다.");
     }

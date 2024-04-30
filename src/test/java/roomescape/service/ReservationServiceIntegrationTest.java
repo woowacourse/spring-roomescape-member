@@ -45,7 +45,7 @@ class ReservationServiceIntegrationTest {
     void saveReservationTest() {
         // Given
         LocalDate date = LocalDate.now().plusDays(3);
-        SaveReservationRequest saveReservationRequest = new SaveReservationRequest(date, "켈리", 1L);
+        SaveReservationRequest saveReservationRequest = new SaveReservationRequest(date, "켈리", 1L, 1L);
 
         // When
         Reservation reservation = reservationService.saveReservation(saveReservationRequest);
@@ -65,7 +65,7 @@ class ReservationServiceIntegrationTest {
     @Test
     void throwExceptionWhenSaveReservationWithNotExistReservationTimeTest() {
         // Given
-        SaveReservationRequest saveReservationRequest = new SaveReservationRequest(LocalDate.now(), "켈리", 3L);
+        SaveReservationRequest saveReservationRequest = new SaveReservationRequest(LocalDate.now(), "켈리", 3L, 1L);
 
         // When & Then
         assertThatThrownBy(() -> reservationService.saveReservation(saveReservationRequest))
@@ -160,6 +160,7 @@ class ReservationServiceIntegrationTest {
         final SaveReservationRequest saveReservationRequest = new SaveReservationRequest(
                 LocalDate.of(2024, 7, 3),
                 "테바",
+                1L,
                 1L
         );
 

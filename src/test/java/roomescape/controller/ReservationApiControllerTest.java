@@ -11,6 +11,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import roomescape.domain.ClientName;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
+import roomescape.domain.ThemeDescription;
+import roomescape.domain.ThemeName;
 import roomescape.dto.SaveReservationRequest;
 import roomescape.dto.SaveReservationTimeRequest;
 import roomescape.service.ReservationService;
@@ -47,10 +50,11 @@ class ReservationApiControllerTest {
     void getReservationsTest() throws Exception {
         // Given
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now().plusHours(3));
+        Theme theme = new Theme(1L, new ThemeName("테바의 비밀친구"), new ThemeDescription("테바의 은밀한 비밀친구"), "대충 테바 사진 링크");
         List<Reservation> reservations = List.of(
-                new Reservation(1L, new ClientName("켈리"), LocalDate.now().plusDays(5), reservationTime),
-                new Reservation(2L, new ClientName("브라운"), LocalDate.now().plusDays(5), reservationTime),
-                new Reservation(3L, new ClientName("안나"), LocalDate.now().plusDays(5), reservationTime)
+                new Reservation(1L, new ClientName("켈리"), LocalDate.now().plusDays(5), reservationTime, theme),
+                new Reservation(2L, new ClientName("브라운"), LocalDate.now().plusDays(5), reservationTime, theme),
+                new Reservation(3L, new ClientName("안나"), LocalDate.now().plusDays(5), reservationTime, theme)
         );
         given(reservationService.getReservations()).willReturn(reservations);
 
@@ -65,9 +69,10 @@ class ReservationApiControllerTest {
     @Test
     void saveReservationTest() throws Exception {
         // Given
-        SaveReservationRequest saveReservationRequest = new SaveReservationRequest(LocalDate.now().plusDays(5), "브라운", 1L);
+        SaveReservationRequest saveReservationRequest = new SaveReservationRequest(LocalDate.now().plusDays(5), "브라운", 1L, 1L);
         ReservationTime savedReservationTime = new ReservationTime(1L, LocalTime.now().plusHours(3));
-        Reservation savedReservation = new Reservation(1L, new ClientName("브라운"), LocalDate.now().plusDays(5), savedReservationTime);
+        Theme theme = new Theme(1L, new ThemeName("테바의 비밀친구"), new ThemeDescription("테바의 은밀한 비밀친구"), "대충 테바 사진 링크");
+        Reservation savedReservation = new Reservation(1L, new ClientName("브라운"), LocalDate.now().plusDays(5), savedReservationTime, theme);
         given(reservationService.saveReservation(saveReservationRequest)).willReturn(savedReservation);
 
         // When & Then
@@ -146,7 +151,7 @@ class ReservationApiControllerTest {
     @Test
     void saveReservationWithNoExistReservationTime() throws Exception {
         // Given
-        SaveReservationRequest saveReservationRequest = new SaveReservationRequest(LocalDate.now(), "브라운", 1L);
+        SaveReservationRequest saveReservationRequest = new SaveReservationRequest(LocalDate.now(), "브라운", 1L, 1L);
         doThrow(new NoSuchElementException("해당 id의 예약 시간이 존재하지 않습니다."))
                 .when(reservationService)
                 .saveReservation(saveReservationRequest);
@@ -164,7 +169,7 @@ class ReservationApiControllerTest {
     @Test
     void saveReservationWithReservationDateAndTimeBeforeNow() throws Exception {
         // Given
-        SaveReservationRequest saveReservationRequest = new SaveReservationRequest(LocalDate.now().minusDays(1), "브라운", 1L);
+        SaveReservationRequest saveReservationRequest = new SaveReservationRequest(LocalDate.now().minusDays(1), "브라운", 1L, 1L);
         doThrow(new IllegalArgumentException("현재 날짜보다 이전 날짜를 예약할 수 없습니다."))
                 .when(reservationService)
                 .saveReservation(saveReservationRequest);
@@ -210,7 +215,7 @@ class ReservationApiControllerTest {
     @Test
     void saveReservationWithInvalidName() throws Exception {
         // Given
-        SaveReservationRequest saveReservationRequest = new SaveReservationRequest(LocalDate.now(), "브라운운운운운운운운운", 1L);
+        SaveReservationRequest saveReservationRequest = new SaveReservationRequest(LocalDate.now(), "브라운운운운운운운운운", 1L, 1L);
         doThrow(new IllegalArgumentException("예약자 이름은 1글자 이상 5글자 이하여야 합니다."))
                 .when(reservationService)
                 .saveReservation(saveReservationRequest);

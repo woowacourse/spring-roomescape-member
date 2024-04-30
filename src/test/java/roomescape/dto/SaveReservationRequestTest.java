@@ -4,6 +4,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
+import roomescape.domain.ThemeDescription;
+import roomescape.domain.ThemeName;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -17,15 +20,17 @@ class SaveReservationRequestTest {
     @Test
     void toReservationTest() {
         // Given
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(2, 22));
-        SaveReservationRequest request = new SaveReservationRequest(
+        final ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(2, 22));
+        final Theme theme = new Theme(1L, new ThemeName("테바의 비밀친구"), new ThemeDescription("테바의 은밀한 비밀친구"), "대충 테바 사진 링크");
+        final SaveReservationRequest request = new SaveReservationRequest(
                 LocalDate.now().plusDays(1),
                 "켈리",
+                1L,
                 1L
         );
 
         // When
-        Reservation reservation = request.toReservation(reservationTime);
+        Reservation reservation = request.toReservation(reservationTime, theme);
 
         // Then
         assertAll(

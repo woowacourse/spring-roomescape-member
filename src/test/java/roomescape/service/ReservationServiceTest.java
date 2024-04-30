@@ -9,10 +9,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.ClientName;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
+import roomescape.domain.ThemeDescription;
+import roomescape.domain.ThemeName;
 import roomescape.dto.SaveReservationRequest;
 import roomescape.dto.SaveReservationTimeRequest;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -35,6 +39,8 @@ class ReservationServiceTest {
     private ReservationRepository reservationRepository;
     @Mock
     private ReservationTimeRepository reservationTimeRepository;
+    @Mock
+    private ThemeRepository themeRepository;
 
     @DisplayName("전체 예약 정보를 조회한다.")
     @Test
@@ -42,9 +48,10 @@ class ReservationServiceTest {
         // Given
         ReservationTime savedReservationTime1 = new ReservationTime(1L, LocalTime.now().plusHours(3));
         ReservationTime savedReservationTime2 = new ReservationTime(2L, LocalTime.now().plusHours(4));
+        Theme theme = new Theme(1L, new ThemeName("테바의 비밀친구"), new ThemeDescription("테바의 은밀한 비밀친구"), "대충 테바 사진 링크");
         List<Reservation> savedReservations = List.of(
-                new Reservation(1L, new ClientName("켈리"), LocalDate.now().plusDays(5), savedReservationTime1),
-                new Reservation(2L, new ClientName("켈리"), LocalDate.now().plusDays(6), savedReservationTime2)
+                new Reservation(1L, new ClientName("켈리"), LocalDate.now().plusDays(5), savedReservationTime1, theme),
+                new Reservation(2L, new ClientName("켈리"), LocalDate.now().plusDays(6), savedReservationTime2, theme)
         );
 
         given(reservationRepository.findAll()).willReturn(savedReservations);
@@ -61,11 +68,13 @@ class ReservationServiceTest {
     void saveReservationTest() {
         // Given
         ReservationTime savedReservationTime = new ReservationTime(1L, LocalTime.now().plusHours(3));
-        Reservation savedReservation = new Reservation(1L, new ClientName("켈리"), LocalDate.now().plusDays(5), savedReservationTime);
-        SaveReservationRequest saveReservationRequest = new SaveReservationRequest(LocalDate.now().plusDays(5), "켈리", 1L);
+        Theme savedTheme = new Theme(1L, new ThemeName("테바의 비밀친구"), new ThemeDescription("테바의 은밀한 비밀친구"), "대충 테바 사진 링크");
+        Reservation savedReservation = new Reservation(1L, new ClientName("켈리"), LocalDate.now().plusDays(5), savedReservationTime, savedTheme);
+        SaveReservationRequest saveReservationRequest = new SaveReservationRequest(LocalDate.now().plusDays(5), "켈리", 1L, 1L);
 
         given(reservationTimeRepository.findById(1L)).willReturn(Optional.of(savedReservationTime));
-        given(reservationRepository.save(saveReservationRequest.toReservation(savedReservationTime))).willReturn(savedReservation);
+        given(themeRepository.findById(1L)).willReturn(Optional.of(savedTheme));
+        given(reservationRepository.save(saveReservationRequest.toReservation(savedReservationTime, savedTheme))).willReturn(savedReservation);
 
         // When
         Reservation reservation = reservationService.saveReservation(saveReservationRequest);
@@ -78,7 +87,7 @@ class ReservationServiceTest {
     @Test
     void throwExceptionWhenSaveReservationWithNotExistReservationTimeTest() {
         // Given
-        SaveReservationRequest saveReservationRequest = new SaveReservationRequest(LocalDate.now(), "켈리", 1L);
+        SaveReservationRequest saveReservationRequest = new SaveReservationRequest(LocalDate.now(), "켈리", 1L, 1L);
 
         given(reservationTimeRepository.findById(1L)).willReturn(Optional.empty());
 
@@ -93,7 +102,8 @@ class ReservationServiceTest {
     void deleteReservationTest() {
         // Given
         ReservationTime savedReservationTime = new ReservationTime(1L, LocalTime.now().plusHours(3));
-        Reservation savedReservation = new Reservation(1L, new ClientName("켈리"), LocalDate.now().plusDays(5), savedReservationTime);
+        Theme savedTheme = new Theme(1L, new ThemeName("테바의 비밀친구"), new ThemeDescription("테바의 은밀한 비밀친구"), "대충 테바 사진 링크");
+        Reservation savedReservation = new Reservation(1L, new ClientName("켈리"), LocalDate.now().plusDays(5), savedReservationTime, savedTheme);
 
         given(reservationRepository.findById(1L)).willReturn(Optional.of(savedReservation));
         willDoNothing().given(reservationRepository).deleteById(1L);
