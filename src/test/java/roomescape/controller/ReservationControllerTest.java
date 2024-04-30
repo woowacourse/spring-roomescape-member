@@ -63,4 +63,22 @@ class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(HttpStatus.SC_BAD_REQUEST);
     }
+
+    @Test
+    void createReservation_invalidTime_bad_request() {
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
+
+        Map<String, String> params = Map.of(
+                "name", "테니",
+                "date", "2024-04-30",
+                "timeId", "1"
+        );
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(HttpStatus.SC_BAD_REQUEST);
+    }
 }

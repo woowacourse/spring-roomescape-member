@@ -1,5 +1,6 @@
 package roomescape.domain;
 
+import roomescape.exception.IllegalDateException;
 import roomescape.exception.IllegalTimeException;
 
 import java.time.LocalDate;
@@ -13,6 +14,7 @@ public class Reservation {
     public Reservation(Long id, String name, LocalDate date, ReservationTime time) {
         validateName(name);
         validateDate(date);
+        validateTime(date, time);
         this.id = id;
         this.name = name;
         this.date = date;
@@ -31,6 +33,12 @@ public class Reservation {
         }
         if (date.isBefore(LocalDate.now())) {
             throw new IllegalDateException("[ERROR] 이미 지난 날짜입니다.");
+        }
+    }
+
+    private void validateTime(LocalDate date, ReservationTime time) {
+        if (LocalDate.now().isEqual(date) && time.isPast()) {
+            throw new IllegalTimeException("[ERROR] 이미 지난 시간입니다.");
         }
     }
 
