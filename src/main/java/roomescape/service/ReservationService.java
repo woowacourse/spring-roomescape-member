@@ -32,6 +32,7 @@ public class ReservationService {
         ReservationTime reservationTime = reservationTimeDao.readById(request.getTimeId());
         Reservation reservation = request.toDomain(reservationTime);
         Reservation result = reservationDao.create(reservation);
+        validatePastTimeWhenToday(reservation, reservationTime);
         return ReservationResponse.from(result);
     }
 
@@ -39,6 +40,12 @@ public class ReservationService {
         validateNull(id);
         validateNotExistReservation(id);
         reservationDao.delete(id);
+    }
+
+    private void validatePastTimeWhenToday(Reservation reservation, ReservationTime reservationTime) {
+        if (reservation.isToday() && reservationTime.isBeforeNow()) {
+            throw new IllegalArgumentException("현재보다 이전 시간을 예약할 수 없습니다.");
+        }
     }
 
     private void validateNull(Long id) {

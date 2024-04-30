@@ -19,6 +19,10 @@ public class Reservation {
         this.reservationTime = reservationTime;
     }
 
+    public boolean isToday() {
+        return reservationDate.isToday();
+    }
+
     public Long getId() {
         return id;
     }

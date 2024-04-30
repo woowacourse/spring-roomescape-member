@@ -5,6 +5,8 @@ import java.time.format.DateTimeParseException;
 
 public class ReservationDate {
 
+    private static final LocalDate TODAY = LocalDate.now();
+
     private final LocalDate value;
 
     private ReservationDate(LocalDate value) {
@@ -13,7 +15,15 @@ public class ReservationDate {
 
     public static ReservationDate from(String value) {
         validateValue(value);
-        return new ReservationDate(convertLocalDate(value));
+        LocalDate reservationDate = convertLocalDate(value);
+        validateDate(reservationDate);
+        return new ReservationDate(reservationDate);
+    }
+
+    private static void validateDate(LocalDate reservationDate) {
+        if (TODAY.isAfter(reservationDate)) {
+            throw new IllegalArgumentException("예약일은 오늘보다 과거일 수 없습니다.");
+        }
     }
 
     private static LocalDate convertLocalDate(String value) {
@@ -28,6 +38,10 @@ public class ReservationDate {
         if (value == null || value.isBlank()) {
             throw new IllegalArgumentException("예약 날짜는 비어있을 수 없습니다.");
         }
+    }
+
+    public boolean isToday() {
+        return TODAY.equals(value);
     }
 
     public String toStringDate() {

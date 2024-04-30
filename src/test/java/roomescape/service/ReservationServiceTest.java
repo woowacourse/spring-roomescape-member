@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,21 +40,22 @@ class ReservationServiceTest {
     private WebReservationTimeDao reservationTimeDao;
     @Autowired
     private ReservationService reservationService;
+    private final String tomorrow = LocalDate.now().plusDays(1).toString();
 
     @BeforeEach
     void setUp() {
-        ReservationTime given = new ReservationTime(null, ReservationStartAt.from("12:40"));
+        ReservationTime given = new ReservationTime(null, ReservationStartAt.from(LocalTime.now().minusHours(1).toString()));
         ReservationTime reservationTime = reservationTimeDao.create(given);
         Reservation daon = new Reservation(
                 null,
                 new ReservationName("daon"),
-                ReservationDate.from("2024-04-24"),
+                ReservationDate.from(tomorrow),
                 reservationTime
         );
         Reservation ikjo = new Reservation(
                 null,
                 new ReservationName("ikjo"),
-                ReservationDate.from("2022-02-22"),
+                ReservationDate.from(tomorrow),
                 reservationTime
         );
         reservationDao.create(daon);
@@ -90,7 +93,7 @@ class ReservationServiceTest {
         void add() {
             //given
             String givenName = "wooteco";
-            String givenDate = "2024-04-23";
+            String givenDate = tomorrow;
             ReservationCreateRequest givenRequest = ReservationCreateRequest.of(givenName, givenDate, 1L);
 
             //when
@@ -111,7 +114,7 @@ class ReservationServiceTest {
             //given
             Long given = -1L;
             String givenName = "wooteco";
-            String givenDate = "2024-04-23";
+            String givenDate = tomorrow;
             ReservationCreateRequest givenRequest = ReservationCreateRequest.of(givenName, givenDate, given);
 
             //when //then
@@ -124,7 +127,7 @@ class ReservationServiceTest {
         @DisplayName("예약자명에 null이나 공백 문자열이 입력되면 예외가 발생한다.")
         void createReservationByNullOrEmptyName(String given) {
             //given
-            ReservationCreateRequest request = ReservationCreateRequest.of(given, "2024-04-30", 1L);
+            ReservationCreateRequest request = ReservationCreateRequest.of(given, tomorrow, 1L);
 
             //when //then
             assertThatThrownBy(() -> reservationService.add(request))
@@ -155,6 +158,27 @@ class ReservationServiceTest {
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
+        @Test
+        @DisplayName("지나간 날짜에 대한 예약을 추가하면 예외가 발생한다.")
+        void createReservationByPastDate() {
+            //given
+            ReservationCreateRequest request = ReservationCreateRequest.of("다온", "2024-04-29", 1L);
+
+            //when //then
+            assertThatThrownBy(() -> reservationService.add(request))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @Test
+        @DisplayName("지나간 시간에 대한 예약을 추가하면 예외가 발생한다.")
+        void createReservationByPastTime() {
+            //given
+            ReservationCreateRequest request = ReservationCreateRequest.of("다온", LocalDate.now().toString(), 1L);
+
+            //when //then
+            assertThatThrownBy(() -> reservationService.add(request))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
     }
 
     @Nested

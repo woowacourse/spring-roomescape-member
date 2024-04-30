@@ -10,6 +10,10 @@ public class ReservationTime {
         this.reservationStartAt = reservationStartAt;
     }
 
+    public boolean isBeforeNow() {
+        return reservationStartAt.isBeforeNow();
+    }
+
     public Long getId() {
         return id;
     }
