@@ -158,3 +158,79 @@ DELETE /times/1 HTTP/1.1
 ```
 HTTP/1.1 200
 ```
+
+<br>
+
+### 테마 조회 API
+
+**request**
+
+```http request
+GET /themes HTTP/1.1
+```
+
+
+**response**
+
+```
+HTTP/1.1 200 
+Content-Type: application/json
+
+[
+   {
+        "id": 1,
+        "name": "레벨2 탈출",
+        "description": "우테코 레벨2를 탈출하는 내용입니다.",
+        "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+    }
+]
+```
+
+<br>
+
+### 테마 추가 API
+
+**request**
+
+```http request
+POST /themes HTTP/1.1
+content-type: application/json
+
+{
+    "name": "레벨2 탈출",
+    "description": "우테코 레벨2를 탈출하는 내용입니다.",
+    "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+}
+
+```
+
+**response**
+
+```
+HTTP/1.1 201
+Location: /themes/1
+Content-Type: application/json
+
+{
+    "id": 1,
+    "name": "레벨2 탈출",
+    "description": "우테코 레벨2를 탈출하는 내용입니다.",
+    "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+}
+```
+
+<br>
+
+### 테마 삭제 API
+
+**request**
+
+```http request
+DELETE /themes/1 HTTP/1.1
+```
+
+**response**
+
+```
+HTTP/1.1 204
+```
