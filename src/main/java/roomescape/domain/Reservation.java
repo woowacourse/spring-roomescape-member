@@ -16,6 +16,9 @@ public class Reservation implements Comparable<Reservation> {
     }
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("이름은 필수 값입니다.");
+        }
         this.id = id;
         this.name = name;
         this.date = date;
