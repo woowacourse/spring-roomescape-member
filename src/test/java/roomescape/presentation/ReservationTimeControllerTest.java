@@ -1,5 +1,6 @@
 package roomescape.presentation;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
@@ -14,6 +15,8 @@ import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -51,6 +54,19 @@ class ReservationTimeControllerTest {
                         .content(reservationTimeRequestJson))
                 .andExpect(status().isCreated())
                 .andExpect(content().json(objectMapper.writeValueAsString(reservationTimeResponse)));
+    }
+
+    @DisplayName("예약 시간 저장 요청 시, 올바르지 않은 예약 시간이면 400 Bad Request 응답을 반환한다.")
+    @ParameterizedTest
+    @ValueSource(strings = {"25:00", "10:60"})
+    void shouldReturn400BadRequestWhenCreateInvalidReservationTime(String time) throws Exception {
+
+        String reservationTimeRequestJson = "{\"startAt\": \"" + time + "\"}";
+        mvc.perform(post("/times")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(reservationTimeRequestJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(containsString("올바르지 않은 시간/날짜 형식입니다.")));
     }
 
     @DisplayName("예약 시간을 조회하면, 200 OK 응답으로 저장된 예약 시간을 모두 반환한다.")
