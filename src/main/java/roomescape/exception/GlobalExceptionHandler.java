@@ -16,8 +16,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(data);
     }
 
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorResponse> handleBadRequestException(BadRequestException exception) {
+        ErrorResponse data = new ErrorResponse(HttpStatus.BAD_REQUEST, exception.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(data);
+    }
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException exception) {
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException() {
         ErrorResponse data = new ErrorResponse(HttpStatus.BAD_REQUEST, "요청에 잘못된 형식의 값이 있습니다.");
         return ResponseEntity.badRequest().body(data);
     }
