@@ -22,13 +22,24 @@ public class ReservationService {
     }
 
     public ReservationResponse create(final ReservationRequest reservationRequest) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId())
-                .orElseThrow(
-                        () -> new InvalidReservationException("존재하지 않는 예약 시간입니다. id: " + reservationRequest.timeId()));
+        validateDuplicated(reservationRequest);
+        ReservationTime reservationTime = findTimeById(reservationRequest.timeId());
         Reservation reservation = new Reservation(reservationRequest.name(), reservationRequest.date(),
                 reservationTime);
         Reservation newReservation = reservationRepository.save(reservation);
         return new ReservationResponse(newReservation);
+    }
+
+    private void validateDuplicated(ReservationRequest reservationRequest) {
+        if (reservationRepository.existsReservation(reservationRequest.date(), reservationRequest.timeId())) {
+            throw new InvalidReservationException("이미 같은 일정으로 예약이 존재합니다.");
+        }
+    }
+
+    private ReservationTime findTimeById(final long timeId) {
+        return reservationTimeRepository.findById(timeId)
+                .orElseThrow(
+                        () -> new InvalidReservationException("존재하지 않는 예약 시간입니다. id: " + timeId));
     }
 
 

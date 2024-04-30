@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import roomescape.dao.ReservationRepository;
 import roomescape.dao.ReservationTimeRepository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.InvalidReservationException;
 import roomescape.service.dto.ReservationRequest;
 import roomescape.service.dto.ReservationResponse;
 
@@ -90,5 +92,20 @@ class ReservationServiceTest {
 
         //then
         assertThat(reservationService.findAll()).hasSize(0);
+    }
+
+    @DisplayName("해당 시간과 날짜로 예약이 존재하면 예외를 발생시킨다.")
+    @Test
+    void duplicatedReservation() {
+        //given
+        String name = "lini";
+        String date = "2024-10-04";
+        ReservationRequest reservationRequest = new ReservationRequest(name, date, reservationTime.getId());
+        reservationService.create(reservationRequest);
+
+        //when & then
+        assertThatThrownBy(() -> reservationService.create(reservationRequest))
+                .isInstanceOf(InvalidReservationException.class)
+                .hasMessage("이미 같은 일정으로 예약이 존재합니다.");
     }
 }
