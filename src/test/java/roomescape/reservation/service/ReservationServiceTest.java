@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.reservation.dto.request.CreateReservationRequest;
+import roomescape.reservation.dto.response.CreateReservationResponse;
 import roomescape.reservation.dto.response.FindReservationResponse;
 import roomescape.reservation.dto.response.FindTimeOfReservationsResponse;
 import roomescape.reservation.model.Reservation;
@@ -49,10 +50,11 @@ class ReservationServiceTest extends DummyDataFixture {
                 .thenReturn(Optional.of(new ReservationTime(null, any(LocalTime.class))));
 
         // when
-        long reservationTimeId = reservationService.createReservation(createReservationRequest);
+        CreateReservationResponse createReservationResponse = reservationService.createReservation(
+                createReservationRequest);
 
         // then
-        assertThat(reservationTimeId).isEqualTo(10L);
+        assertThat(createReservationResponse.id()).isEqualTo(10L);
     }
 
     @Test
