@@ -61,8 +61,9 @@ content-type: application/json
 **Response**
 
 ```
-HTTP/1.1 200
+HTTP/1.1 201
 Content-Type: application/json
+Location: reservations/{id}
 
 {
     "id": 1,

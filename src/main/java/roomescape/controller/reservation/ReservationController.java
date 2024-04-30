@@ -8,8 +8,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 import roomescape.service.ReservationService;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -31,7 +33,12 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<ReservationResponse> addReservation(@RequestBody final ReservationRequest request) {
         ReservationResponse reservation = reservationService.addReservation(request);
-        return ResponseEntity.ok(reservation);
+        URI uri = UriComponentsBuilder.fromPath("/reservations/{id}")
+                .buildAndExpand(reservation.id())
+                .toUri();
+
+        return ResponseEntity.created(uri)
+                .body(reservation);
     }
 
     @DeleteMapping("/{id}")
