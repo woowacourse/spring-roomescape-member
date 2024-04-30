@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.reservationtime.ReservationTimeCreateRequest;
 import roomescape.dto.reservationtime.ReservationTimeResponse;
+import roomescape.exception.BadRequestException;
 import roomescape.exception.ResourceNotFoundException;
 import roomescape.repository.reservationtime.ReservationTimeRepository;
 
@@ -22,8 +23,20 @@ public class ReservationTimeService {
 
     public ReservationTimeResponse createTime(ReservationTimeCreateRequest request) {
         ReservationTime reservationTime = request.toReservationTime();
+
+        validateDuplicated(reservationTime);
+
         ReservationTime newReservationTime = reservationTimeRepository.save(reservationTime);
         return ReservationTimeResponse.from(newReservationTime);
+    }
+
+    private void validateDuplicated(ReservationTime reservationTime) {
+        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
+        boolean isDuplicated = reservationTimes.stream()
+                .anyMatch(reservationTime::isSame);
+        if (isDuplicated) {
+            throw new BadRequestException("중복된 예약 시간입니다.");
+        }
     }
 
     public ReservationTimeResponse readReservationTime(Long id) {

@@ -10,14 +10,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.reservationtime.ReservationTimeCreateRequest;
 import roomescape.dto.reservationtime.ReservationTimeResponse;
+import roomescape.exception.BadRequestException;
 import roomescape.repository.reservationtime.ReservationTimeRepository;
 
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
@@ -53,6 +53,20 @@ class ReservationTimeServiceTest {
         // then
         assertThat(reservationTime.startAt())
                 .isEqualTo(startAt);
+    }
+
+    @DisplayName("예약 시간 서비스는 중복된 예약 시간 요청이 들어오면 예외가 발생한다.")
+    @Test
+    void validateIsDuplicated() {
+        // given
+        Mockito.when(reservationTimeRepository.findAll())
+                .thenReturn(List.of(reservationTimeFixture));
+        ReservationTimeCreateRequest request = new ReservationTimeCreateRequest(reservationTimeFixture.getStartAt());
+
+        // when & then
+        assertThatThrownBy(() -> reservationTimeService.createTime(request))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessage("중복된 예약 시간입니다.");
     }
 
     @DisplayName("예약 시간 서비스는 id에 맞는 시간을 반환한다.")
