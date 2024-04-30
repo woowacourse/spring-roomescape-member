@@ -21,7 +21,8 @@ public class ReservationService {
     }
 
     public ReservationOutput createReservation(ReservationInput input) {
-        ReservationTime time = reservationTimeDao.find(input.timeId());
+        //TODO : get 제거해야함
+        ReservationTime time = reservationTimeDao.find(input.timeId()).get();
         Reservation reservation = input.toReservation(time);
         Reservation savedReservation = reservationDao.create(reservation);
         return ReservationOutput.toOutput(savedReservation);
