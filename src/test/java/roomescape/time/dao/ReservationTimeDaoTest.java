@@ -17,7 +17,7 @@ class ReservationTimeDaoTest {
     @Autowired
     private ReservationTimeDao reservationTimeDao;
 
-    private ReservationTime reservationTime = new ReservationTime(1L, "10:00");
+    private ReservationTime reservationTime = new ReservationTime(1L, "23:59");
 
     @Test
     @DisplayName("예약 시간을 생성할 수 있다.")
@@ -38,9 +38,9 @@ class ReservationTimeDaoTest {
         save();
         assertAll(
                 () -> assertThat(reservationTimeDao.findAll()
-                                                   .get(0)).isEqualTo(reservationTime),
+                        .get(0)).isEqualTo(reservationTime),
                 () -> assertThat(reservationTimeDao.findAll()
-                                                   .size()).isEqualTo(1)
+                        .size()).isEqualTo(1)
         );
     }
 

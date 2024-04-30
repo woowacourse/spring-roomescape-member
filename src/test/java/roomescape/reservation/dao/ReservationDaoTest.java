@@ -9,6 +9,7 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.time.dao.ReservationTimeDao;
 import roomescape.time.domain.ReservationTime;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,7 +26,7 @@ class ReservationDaoTest {
     private ReservationTimeDao reservationTimeDao;
 
     private final ReservationTime reservationTime = new ReservationTime(1L, "10:00");
-    private final Reservation reservation = new Reservation(1L, "hotea", "2024-04-11", reservationTime);
+    private final Reservation reservation = new Reservation(1L, "hotea", LocalDate.MAX.toString(), reservationTime);
 
     @Test
     @DisplayName("특정 예약을 생성할 수 있다.")

@@ -19,7 +19,7 @@ public class Reservation {
         validateDateIsNotNull(date);
         this.id = id;
         this.name = name;
-        this.date = parseDate(date);
+        this.date = parseDate(date, time);
         this.time = time;
     }
 
@@ -35,15 +35,18 @@ public class Reservation {
         }
     }
 
-    private LocalDate parseDate(final String date) {
-        LocalDate localDate = LocalDate.parse(date);
-        validateNoReservationsForPastDates(localDate);
+    private LocalDate parseDate(final String date, final ReservationTime time) {
+        LocalDate localDate = LocalDate.parse(date, DATE_FORMAT);
+        validateNoReservationsForPastDates(localDate, time);
         return localDate;
     }
 
-    private void validateNoReservationsForPastDates(LocalDate localDate) {
+    private void validateNoReservationsForPastDates(final LocalDate localDate, final ReservationTime time) {
         if (localDate.isBefore(LocalDate.now())) {
             throw new IllegalArgumentException("날짜가 과거인 경우 모든 시간에 대한 예약이 불가능 합니다.");
+        }
+        if (localDate.equals(LocalDate.now()) && time.checkPastTime()) {
+            throw new IllegalArgumentException("날짜가 오늘인 경우 지나간 시간에 대한 예약이 불가능 합니다.");
         }
     }
 
@@ -61,5 +64,18 @@ public class Reservation {
 
     public ReservationTime getTime() {
         return time;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Reservation that = (Reservation) o;
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(date, that.date) && Objects.equals(time, that.time);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, date, time);
     }
 }

@@ -4,6 +4,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.time.domain.ReservationTime;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -46,6 +48,14 @@ class ReservationTest {
     void validateNoReservationsForPastDates() {
         ReservationTime reservationTime = new ReservationTime(1L, "15:46");
         assertThatThrownBy(() -> new Reservation(1L, "hotea", "2022-02-12", reservationTime))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("날짜가 오늘인 경우 지나간 시간에 대한 예약이 불가능하다")
+    @Test
+    void validateNoReservationsForPastTimesToday() {
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.MIN.toString());
+        assertThatThrownBy(() -> new Reservation(1L, "hotea", LocalDate.now().toString(), reservationTime))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }
