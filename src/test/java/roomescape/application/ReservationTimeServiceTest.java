@@ -98,7 +98,9 @@ class ReservationTimeServiceTest {
         given(reservationRepository.findReservationCountByTimeId(1L)).willReturn(1L);
 
         assertThatCode(() -> reservationTimeService.deleteById(1L))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage(String.format("해당 예약 시간에 연관된 예약이 존재하여 삭제할 수 없습니다. 삭제 요청한 시간:%s",
+                        reservationTime.getStartAt()));
     }
 
     @DisplayName("존재하지 않는 예약 시간을 삭제 요청하면, IllegalArgumentException 예외가 발생한다.")
@@ -107,6 +109,7 @@ class ReservationTimeServiceTest {
         given(reservationTimeRepository.findById(1L)).willReturn(Optional.empty());
 
         assertThatCode(() -> reservationTimeService.deleteById(1L))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("존재하지 않는 예약 시간 입니다.");
     }
 }
