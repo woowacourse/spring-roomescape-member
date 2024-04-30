@@ -28,6 +28,6 @@ public class ReservationPageController {
                 .map(ReservationResponse::from)
                 .toList();
         model.addAttribute("reservationResponses", reservationResponses);
-        return "/admin/reservation";
+        return "/admin/reservation-new";
     }
 }

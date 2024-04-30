@@ -5,6 +5,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -12,6 +13,7 @@ import roomescape.domain.Name;
 import roomescape.domain.Theme;
 
 import javax.sql.DataSource;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,7 +38,10 @@ public class ThemeH2Repository implements ThemeRepository{
             throw new IllegalArgumentException("이미 존재하는 테마입니다.");
         }
 
-        SqlParameterSource params = new BeanPropertySqlParameterSource(theme);
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("name", theme.getName().getName())
+                .addValue("description", theme.getDescription())
+                .addValue("thumbnail", theme.getThumbnail());
         long id = jdbcInsert.executeAndReturnKey(params).longValue();
 
         return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());

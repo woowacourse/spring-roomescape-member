@@ -8,23 +8,16 @@ import org.springframework.test.annotation.DirtiesContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class ReservationPageControllerTest {
+public class ThemePageControllerTest {
 
     @Test
-    @DisplayName("/admin 페이지를 응답한다.")
-    void responseAdminPage() {
+    @DisplayName("/admin/theme 페이지를 응답한다.")
+    void responseThemePage() {
         RestAssured.given().log().all()
-                .when().get("/admin")
+                .when().get("/admin/theme")
                 .then().log().all()
                 .statusCode(200);
     }
 
-    @Test
-    @DisplayName("/admin/reservation-new 페이지를 응답한다.")
-    void responseAdminReservationPage() {
-        RestAssured.given().log().all()
-                .when().get("/admin/reservation")
-                .then().log().all()
-                .statusCode(200);
-    }
+
 }
