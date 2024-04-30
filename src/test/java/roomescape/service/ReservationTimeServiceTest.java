@@ -60,6 +60,18 @@ class ReservationTimeServiceTest {
             .isInstanceOf(IllegalArgumentException.class);
     }
 
+    @DisplayName("실패: 이미 존재하는 시간을 추가할 수 없다.")
+    @Test
+    void save_TimeAlreadyExists() {
+        String rawTime = "10:00";
+
+        when(reservationTimeRepository.countByStartTime(LocalTime.parse(rawTime)))
+            .thenReturn(1L);
+
+        assertThatThrownBy(() -> reservationTimeService.save(new ReservationTimeAppRequest(rawTime)))
+            .isInstanceOf(IllegalArgumentException.class);
+    }
+
     @DisplayName("실패: 시간을 사용하는 예약이 존재하는 경우 시간을 삭제할 수 없다.")
     @Test
     void delete_ReservationExists() {

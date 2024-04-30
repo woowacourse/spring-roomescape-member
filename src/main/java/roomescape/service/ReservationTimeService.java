@@ -26,10 +26,17 @@ public class ReservationTimeService {
     public ReservationTime save(ReservationTimeAppRequest request) {
         try {
             LocalTime parsedTime = LocalTime.parse(request.startAt());
+            validateDuplication(parsedTime);
             ReservationTime newReservationTime = new ReservationTime(parsedTime);
             return reservationTimeRepository.save(newReservationTime);
         } catch (DateTimeParseException | NullPointerException exception) {
             throw new IllegalArgumentException("잘못된 시간 입력입니다.");
+        }
+    }
+
+    private void validateDuplication(LocalTime parsedTime) {
+        if (reservationTimeRepository.countByStartTime(parsedTime) > 0) {
+            throw new IllegalArgumentException("예약 시간이 이미 존재합니다.");
         }
     }
 

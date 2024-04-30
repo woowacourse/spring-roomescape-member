@@ -22,17 +22,19 @@ public class JdbcReservationTimeRepositoryImpl implements ReservationTimeReposit
     public JdbcReservationTimeRepositoryImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(
-                Objects.requireNonNull(jdbcTemplate.getDataSource()))
-                .withTableName("reservation_time")
-                .usingGeneratedKeyColumns("id");
+            Objects.requireNonNull(jdbcTemplate.getDataSource()))
+            .withTableName("reservation_time")
+            .usingGeneratedKeyColumns("id");
     }
 
     @Override
     public ReservationTime save(ReservationTime reservationTime) {
+        // TODO:
+
         SqlParameterSource saveSource = new BeanPropertySqlParameterSource(reservationTime);
         long id = simpleJdbcInsert
-                .executeAndReturnKey(saveSource)
-                .longValue();
+            .executeAndReturnKey(saveSource)
+            .longValue();
 
         return new ReservationTime(id, reservationTime.getStartAt());
     }
@@ -42,8 +44,8 @@ public class JdbcReservationTimeRepositoryImpl implements ReservationTimeReposit
         String sql = "SELECT * FROM reservation_time WHERE id = ?";
 
         return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new ReservationTime(
-                rs.getLong("id"),
-                rs.getTime("start_at").toLocalTime()
+            rs.getLong("id"),
+            rs.getTime("start_at").toLocalTime()
         ), id);
     }
 
@@ -58,10 +60,16 @@ public class JdbcReservationTimeRepositoryImpl implements ReservationTimeReposit
         String sql = "SELECT * FROM reservation_time";
 
         return jdbcTemplate.query(
-                sql,
-                (rs, rowNum) -> new ReservationTime(
-                        rs.getLong("id"),
-                        LocalTime.parse(rs.getString("start_at"))
-                ));
+            sql,
+            (rs, rowNum) -> new ReservationTime(
+                rs.getLong("id"),
+                LocalTime.parse(rs.getString("start_at"))
+            ));
+    }
+
+    @Override
+    public Long countByStartTime(LocalTime localTime) {
+        String sql = "SELECT COUNT(id) FROM reservation_time WHERE start_at = ?";
+        return jdbcTemplate.queryForObject(sql, Long.class, localTime);
     }
 }

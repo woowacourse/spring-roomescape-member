@@ -1,5 +1,6 @@
 package roomescape.domain;
 
+import java.time.LocalTime;
 import java.util.List;
 
 public interface ReservationTimeRepository {
@@ -11,4 +12,6 @@ public interface ReservationTimeRepository {
     void deleteById(Long id);
 
     List<ReservationTime> findAll();
+
+    Long countByStartTime(LocalTime startTime);
 }
