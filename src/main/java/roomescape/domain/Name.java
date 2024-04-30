@@ -11,4 +11,8 @@ public record Name(String name) {
             throw new IllegalArgumentException(String.format("%s 는 유효하지 않은 값입니다.", name));
         }
     }
+
+    public String asString() {
+        return name;
+    }
 }

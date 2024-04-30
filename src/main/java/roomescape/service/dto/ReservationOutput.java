@@ -8,7 +8,7 @@ public record ReservationOutput(long id, String name, ReservationDateOutput date
     public static ReservationOutput toOutput(Reservation reservation) {
         return new ReservationOutput(
                 reservation.getId(),
-                reservation.getName(),
+                reservation.getNameAsString(),
                 ReservationDateOutput.toOutput(reservation.getDate()),
                 ReservationTimeOutput.toOutput(reservation.getTime())
         );

@@ -53,7 +53,7 @@ public class ReservationTimeServiceTest {
     void throw_exception_when_delete_id_that_exist_reservation() {
         ReservationTimeOutput output = reservationTimeService.createReservationTime(
                 new ReservationTimeInput("10:00"));
-        reservationDao.create(new Reservation(null, "제리", ReservationDate.from("2024-04-30"),
+        reservationDao.create(Reservation.from(null, "제리", "2024-04-30",
                 ReservationTime.from(output.id(), output.startAt())));
 
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(output.id()))
