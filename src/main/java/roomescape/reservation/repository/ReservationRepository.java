@@ -2,10 +2,13 @@ package roomescape.reservation.repository;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Objects;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.reservation.domain.Name;
 import roomescape.reservation.domain.Reservation;
 import roomescape.time.domain.ReservationTime;
 
@@ -32,7 +35,7 @@ public class ReservationRepository {
             return ps;
         }, keyHolder);
 
-        return keyHolder.getKey().longValue();
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
     public Reservation findById(Long id) {
@@ -49,18 +52,7 @@ public class ReservationRepository {
                 where r.id = ?
                 """;
 
-        return jdbcTemplate.queryForObject(sql,
-                (rs, rowNum) -> {
-                    return new Reservation(
-                            rs.getLong("id"),
-                            rs.getString("name"),
-                            rs.getDate("date").toLocalDate(),
-                            new ReservationTime(
-                                    rs.getLong("time_id"),
-                                    rs.getTime("start_at").toLocalTime()
-                            )
-                    );
-                }, id);
+        return jdbcTemplate.queryForObject(sql, createReservationRowMapper(), id);
     }
 
     public List<Reservation> findAll() {
@@ -75,22 +67,25 @@ public class ReservationRepository {
                 inner join reservation_time as t
                 on r.time_id = t.id
                 """;
-        return jdbcTemplate.query(sql,
-                (rs, rowNum) -> {
-                    return new Reservation(
-                            rs.getLong("id"),
-                            rs.getString("name"),
-                            rs.getDate("date").toLocalDate(),
-                            new ReservationTime(
-                                    rs.getLong("id"),
-                                    rs.getTime("start_at").toLocalTime()
-                            )
-                    );
-                });
+        return jdbcTemplate.query(sql, createReservationRowMapper());
     }
 
     public void delete(Long id) {
         String sql = "delete from reservation where id = ?";
         jdbcTemplate.update(sql, id);
+    }
+
+    private RowMapper<Reservation> createReservationRowMapper() {
+        return (rs, rowNum) -> {
+            return new Reservation(
+                    rs.getLong("id"),
+                    new Name(rs.getString("name")),
+                    rs.getDate("date").toLocalDate(),
+                    new ReservationTime(
+                            rs.getLong("time_id"),
+                            rs.getTime("start_at").toLocalTime()
+                    )
+            );
+        };
     }
 }

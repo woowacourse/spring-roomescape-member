@@ -6,17 +6,17 @@ import roomescape.time.domain.ReservationTime;
 public class Reservation {
 
     private Long id;
-    private final String name;
+    private final Name name;
     private final LocalDate date;
     private final ReservationTime reservationTime;
 
-    public Reservation(String name, LocalDate date, ReservationTime reservationTime) {
+    public Reservation(Name name, LocalDate date, ReservationTime reservationTime) {
         this.name = name;
         this.date = date;
         this.reservationTime = reservationTime;
     }
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime reservationTime) {
+    public Reservation(Long id, Name name, LocalDate date, ReservationTime reservationTime) {
         this.id = id;
         this.name = name;
         this.date = date;
@@ -32,7 +32,7 @@ public class Reservation {
     }
 
     public String getName() {
-        return name;
+        return name.getName();
     }
 
     public LocalDate getDate() {

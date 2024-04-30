@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.TestSupport;
+import roomescape.reservation.domain.Name;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.domain.ReservationTime;
@@ -26,7 +27,7 @@ public class ReservationRepositoryTest extends TestSupport {
     void saveTest() {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
         Long timeId = reservationTimeRepository.save(reservationTime);
-        Reservation reservation = new Reservation(1L, "hogi", LocalDate.now(), reservationTime);
+        Reservation reservation = new Reservation(1L, new Name("hogi"), LocalDate.now(), reservationTime);
         Long saveId = reservationRepository.save(reservation);
 
         assertThat(saveId).isEqualTo(1L);
@@ -37,8 +38,8 @@ public class ReservationRepositoryTest extends TestSupport {
     void findAllTest() {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
         Long timeId = reservationTimeRepository.save(reservationTime);
-        Reservation reservation1 = new Reservation(1L, "hogi", LocalDate.now(), reservationTime);
-        Reservation reservation2 = new Reservation(2L, "kaki", LocalDate.now(), reservationTime);
+        Reservation reservation1 = new Reservation(1L, new Name("hogi"), LocalDate.now(), reservationTime);
+        Reservation reservation2 = new Reservation(2L, new Name("kaki"), LocalDate.now(), reservationTime);
         reservationRepository.save(reservation1);
         reservationRepository.save(reservation2);
 
@@ -51,7 +52,7 @@ public class ReservationRepositoryTest extends TestSupport {
     void findByIdTest() {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
         reservationTimeRepository.save(reservationTime);
-        Reservation reservation = new Reservation(1L, "hogi", LocalDate.now(), reservationTime);
+        Reservation reservation = new Reservation(1L, new Name("hogi"), LocalDate.now(), reservationTime);
         Long saveId = reservationRepository.save(reservation);
 
         Reservation findReservation = reservationRepository.findById(saveId);
@@ -63,7 +64,7 @@ public class ReservationRepositoryTest extends TestSupport {
     void deleteTest() {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
         Long timeId = reservationTimeRepository.save(reservationTime);
-        Reservation reservation = new Reservation(1L, "hogi", LocalDate.now(), reservationTime);
+        Reservation reservation = new Reservation(1L, new Name("hogi"), LocalDate.now(), reservationTime);
         Long saveId = reservationRepository.save(reservation);
 
         reservationRepository.delete(saveId);
