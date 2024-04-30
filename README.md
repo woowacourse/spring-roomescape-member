@@ -23,7 +23,7 @@
 
 ## 2단계 요구사항
 - [x] /admin/theme 요청 시 테마 관리 페이지를 응답(templates/admin/theme.html)
-- [ ] 예약 페이지 변경(templates/admin/reservation-new.html)
+- [x] 예약 페이지 변경(templates/admin/reservation-new.html)
 - [ ] 스키마 변경
 - [ ] reservation -> 객체 필드 변경, dao 변경, dto 변경, 테스트 코드 변경
 - [ ] API
