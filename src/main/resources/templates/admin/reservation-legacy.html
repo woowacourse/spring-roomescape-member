@@ -22,10 +22,10 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-                <a class="nav-link" href="/admin/reservation">Reservation</a>
+                <a class="nav-link" href="/reservation">Reservation</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/admin/time">Time</a>
+                <a class="nav-link" href="/time">Time</a>
             </li>
         </ul>
     </div>
@@ -48,10 +48,16 @@
         </tr>
         </thead>
         <tbody id="table-body">
+        <tr th:each="reservation : ${reservations}">
+            <td><span th:text="${reservation.id}"></span></td>
+            <td><span th:text="${reservation.name}"></span></td>
+            <td><span th:text="${reservation.date}"></span></td>
+            <td><span th:text="${reservation.time}"></span></td>
+        </tr>
         </tbody>
     </table>
 </div>
 
-<script src="/js/reservation.js"></script>
+<script src="/js/reservation-legacy.js"></script>
 </body>
 </html>
