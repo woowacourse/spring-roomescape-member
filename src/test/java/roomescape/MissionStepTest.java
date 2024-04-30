@@ -72,7 +72,7 @@ public class MissionStepTest {
 
         Map<String, String> params = Map.of(
                 "name", "새양",
-                "date", "1998-02-24",
+                "date", "2025-02-24",
                 "timeId", "1"
         );
 
@@ -112,7 +112,7 @@ public class MissionStepTest {
     @DisplayName("오단계")
     void step5() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "15:40");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "브라운", "2023-08-05", "1");
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "브라운", "2024-08-05", "1");
 
         List<Reservation> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -132,7 +132,7 @@ public class MissionStepTest {
 
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", "2024-08-05");
         params.put("timeId", "1");
 
         RestAssured.given().log().all()

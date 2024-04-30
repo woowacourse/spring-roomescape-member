@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.controller.reservation.ReservationRequest;
 import roomescape.controller.reservation.ReservationResponse;
 import roomescape.controller.time.TimeResponse;
+import roomescape.exception.PreviousTimeException;
 import roomescape.exception.TimeNotFoundException;
 
 import java.util.List;
@@ -45,8 +46,8 @@ class ReservationServiceTest {
     @DisplayName("예약을 추가한다.")
     void addReservation() {
         // given
-        ReservationRequest request = new ReservationRequest("cha", "2024-03-18", 3L);
-        ReservationResponse expected = new ReservationResponse(3L, "cha", "2024-03-18", new TimeResponse(3L, "12:25"));
+        ReservationRequest request = new ReservationRequest("cha", "2025-03-18", 3L);
+        ReservationResponse expected = new ReservationResponse(3L, "cha", "2025-03-18", new TimeResponse(3L, "12:25"));
 
         // when
         ReservationResponse actual = reservationService.addReservation(request);
@@ -81,5 +82,12 @@ class ReservationServiceTest {
         ReservationRequest request = new ReservationRequest("redddy", "2024-06-21", 100L);
         assertThatThrownBy(() -> reservationService.addReservation(request))
                 .isInstanceOf(TimeNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("예약하려는 시간이 현재 시간보다 이전일 경우 예외가 발생한다.")
+    void validateReservationTimeAfterThanNow() {
+        assertThatThrownBy(() -> reservationService.addReservation(new ReservationRequest("cha", "2024-04-30", 1L)))
+                .isInstanceOf(PreviousTimeException.class);
     }
 }

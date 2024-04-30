@@ -58,7 +58,7 @@ class TimeServiceTest {
     @DisplayName("존재하는 예약 시간을 삭제한다.")
     void deleteTimePresent() {
         // given
-        Long id = 2L;
+        Long id = 3L;
 
         // when & then
         assertThat(timeService.deleteTime(id)).isEqualTo(1);
@@ -77,7 +77,7 @@ class TimeServiceTest {
     @Test
     @DisplayName("예약이 있는 시간을 삭제할 경우 예외가 발생한다.")
     void invalidDelete() {
-        assertThatThrownBy(() -> timeService.deleteTime(1L))
+        assertThatThrownBy(() -> timeService.deleteTime(2L))
                 .isInstanceOf(TimeUsedException.class);
     }
 }

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Reservation;
@@ -148,20 +149,19 @@ class ReservationRepositoryTest {
         Reservation reservation = new Reservation(
                 null,
                 "cha",
-                LocalDate.of(2024, 3, 1),
+                LocalDate.of(2025, 3, 1),
                 new ReservationTime(4L, null)
         );
         Reservation expected = new Reservation(
                 3L,
                 "cha",
-                LocalDate.of(2024, 3, 1),
+                LocalDate.of(2025, 3, 1),
                 new ReservationTime(4L, null)
         );
 
         // when & then
         assertThatCode(() -> reservationRepository.save(reservation))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("존재하지 않는 예약 시간입니다.");
+                .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test

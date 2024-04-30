@@ -5,10 +5,12 @@ import roomescape.controller.reservation.ReservationRequest;
 import roomescape.controller.reservation.ReservationResponse;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.PreviousTimeException;
 import roomescape.exception.TimeNotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -38,15 +40,17 @@ public class ReservationService {
     }
 
     public ReservationResponse addReservation(final ReservationRequest reservationRequest) {
-        ReservationTime time = reservationTimeRepository
+        final ReservationTime time = reservationTimeRepository
                 .findById(reservationRequest.timeId())
                 .orElseThrow(() -> new TimeNotFoundException("존재하지 않은 시간입니다."));
+        final Reservation parsedReservation = reservationRequest.toDomain(time);
 
-        Reservation parsedReservation = reservationRequest.toDomain(time);
+        final LocalDateTime reservationDateTime = parsedReservation.getDate().atTime(time.getStartAt());
+        if (reservationDateTime.isBefore(LocalDateTime.now())) {
+            throw new PreviousTimeException("지난 시간으로 예약할 수 없습니다.");
+        }
+
         Reservation savedReservation = reservationRepository.save(parsedReservation);
-
-        System.out.println("reservationRequest = " + reservationRequest.timeId());
-
         return ReservationResponse.from(savedReservation);
     }
 
