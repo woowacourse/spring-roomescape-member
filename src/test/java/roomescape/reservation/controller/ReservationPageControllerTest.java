@@ -1,4 +1,4 @@
-package roomescape.time;
+package roomescape.reservation.controller;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -11,10 +11,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.reservation.service.ReservationService;
-import roomescape.time.controller.ReservationTimePageController;
 
-@WebMvcTest(ReservationTimePageController.class)
-class ReservationTimePageControllerTest {
+@WebMvcTest(ReservationPageController.class)
+class ReservationPageControllerTest {
 
     @MockBean
     private ReservationService reservationService;
@@ -23,10 +22,10 @@ class ReservationTimePageControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    @DisplayName("/time 을 요청하면 time.html 를 반환한다.")
-    void requestTime() throws Exception {
-        mockMvc.perform(get("/time"))
+    @DisplayName("/reservation 를 요청하면 reservation.html 를 반환한다.")
+    void requestAdminReservation() throws Exception {
+        mockMvc.perform(get("/reservation"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("admin/time"));
+                .andExpect(view().name("admin/reservation"));
     }
 }

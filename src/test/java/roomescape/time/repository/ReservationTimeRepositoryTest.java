@@ -1,4 +1,4 @@
-package roomescape.time;
+package roomescape.time.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -14,7 +14,6 @@ import roomescape.reservation.domain.Name;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.repository.ReservationTimeRepository;
 
 @JdbcTest
 @Import({ReservationTimeRepository.class, ReservationRepository.class})
