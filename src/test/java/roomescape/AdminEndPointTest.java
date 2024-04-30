@@ -76,17 +76,17 @@ class AdminEndPointTest {
 
         return Stream.of(
                 DynamicTest.dynamicTest("예약 시간을 등록한다.", () -> {
-                    HttpRestTestTemplate.assertPostOk(reservationTimeRequest, "/times", "id", 1);
+                    HttpRestTestTemplate.assertPostCreated(reservationTimeRequest, "/times", "id", 1);
                 }),
 
                 DynamicTest.dynamicTest("예약을 등록한다.", () -> {
-                    HttpRestTestTemplate.assertPostOk(reservationRequest, "/reservations", "id", 1);
+                    HttpRestTestTemplate.assertPostCreated(reservationRequest, "/reservations", "id", 1);
                     Integer countAfterInsert = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
                     assertThat(countAfterInsert).isEqualTo(initialCount + 1);
                 }),
 
                 DynamicTest.dynamicTest("예약을 삭제한다.", () -> {
-                    HttpRestTestTemplate.assertDeleteOk("/reservations/1");
+                    HttpRestTestTemplate.assertDeleteNoContent("/reservations/1");
                     Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
                     assertThat(countAfterDelete).isEqualTo(initialCount);
                 })
@@ -108,11 +108,11 @@ class AdminEndPointTest {
 
         return Stream.of(
                 DynamicTest.dynamicTest("예약 시간을 등록한다.", () -> {
-                    HttpRestTestTemplate.assertPostOk(reservationTimeRequest, "/times", "id", 1);
+                    HttpRestTestTemplate.assertPostCreated(reservationTimeRequest, "/times", "id", 1);
                 }),
 
                 DynamicTest.dynamicTest("예약을 등록한다.", () -> {
-                    HttpRestTestTemplate.assertPostOk(reservationRequest, "/reservations", "id", 1);
+                    HttpRestTestTemplate.assertPostCreated(reservationRequest, "/reservations", "id", 1);
                     Integer countAfterInsert = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
                     assertThat(countAfterInsert).isEqualTo(initialCount + 1);
                 }),

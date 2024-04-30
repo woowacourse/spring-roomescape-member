@@ -25,21 +25,21 @@ class HttpRestTestTemplate {
                 .body(bodyPath, is(expectedValue));
     }
 
-    public static void assertPostOk(Object params, String path, String bodyPath, Integer expectedValue) {
+    public static void assertPostCreated(Object params, String path, String bodyPath, Integer expectedValue) {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post(path)
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(201)
                 .body(bodyPath, is(expectedValue));
     }
 
-    public static void assertDeleteOk(String path) {
+    public static void assertDeleteNoContent(String path) {
         RestAssured.given().log().all()
                 .when().delete(path)
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
     }
 
     public static void assertDeleteInitialServerError(String path) {

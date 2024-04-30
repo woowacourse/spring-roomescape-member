@@ -1,5 +1,6 @@
 package roomescape.controller.api;
 
+import java.net.URI;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.dto.ReservationTimeRequest;
@@ -30,7 +31,7 @@ public class TimeController {
     ResponseEntity<ReservationTimeResponse> addTime(@RequestBody ReservationTimeRequest reservationTimeRequest) {
         ReservationTimeResponse reservationTimeResponse = reservationTimeService.addReservationTime(reservationTimeRequest);
 
-        return ResponseEntity.ok()
+        return ResponseEntity.created(URI.create("/times/" + reservationTimeResponse.id()))
                 .body(reservationTimeResponse);
     }
 
@@ -38,7 +39,7 @@ public class TimeController {
     ResponseEntity<Void> deleteTime(@PathVariable("id") Long id) {
         reservationTimeService.deleteReservationTimeById(id);
 
-        return ResponseEntity.ok()
+        return ResponseEntity.noContent()
                 .build();
     }
 }
