@@ -36,7 +36,7 @@ class ReservationServiceTest {
     void create() {
         //given
         String name = "choco";
-        LocalDate date = LocalDate.of(2024, 4, 18);
+        String date = "2023-04-18";
         long timeId = 1L;
         reservationTimeRepository.save(new ReservationTime(timeId, LocalTime.MIDNIGHT));
         ReservationRequest reservationRequest = new ReservationRequest(name, date, timeId);

@@ -1,5 +1,6 @@
 package roomescape.reservation.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.domain.Reservation;
@@ -35,7 +36,7 @@ public class ReservationService {
 
         Reservation reservation = new Reservation(
                 reservationRequest.name(),
-                reservationRequest.date(),
+                LocalDate.parse(reservationRequest.date()),
                 reservationTime
         );
         return ReservationResponse.from(reservationRepository.save(reservation));
