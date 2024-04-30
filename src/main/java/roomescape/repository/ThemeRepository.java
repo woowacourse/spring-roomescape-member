@@ -45,4 +45,13 @@ public class ThemeRepository {
         String sql = "SELECT id, name, description, thumbnail FROM theme";
         return jdbcTemplate.query(sql, themeRowMapper);
     }
+
+    public void deleteById(Long id) {
+        String sql = "DELETE FROM theme WHERE id = ?";
+        jdbcTemplate.update(con -> {
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setLong(1, id);
+            return ps;
+        });
+    }
 }

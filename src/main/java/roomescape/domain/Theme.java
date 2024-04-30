@@ -20,6 +20,10 @@ public class Theme {
         this.thumbnail = thumbnail;
     }
 
+    public boolean isSameTheme(Long id) {
+        return this.id.equals(id);
+    }
+
     public Long getId() {
         return id;
     }
