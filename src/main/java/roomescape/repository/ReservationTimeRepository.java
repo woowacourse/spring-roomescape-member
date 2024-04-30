@@ -8,6 +8,7 @@ import roomescape.domain.ReservationTime;
 
 import java.sql.PreparedStatement;
 import java.sql.Time;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,6 +44,12 @@ public class ReservationTimeRepository {
     public Optional<ReservationTime> findById(Long id) {
         String sql = "SELECT id, start_at FROM reservation_time where id = ?";
         List<ReservationTime> reservationTimes = jdbcTemplate.query(sql, reservationTimeRowMapper, id);
+        return reservationTimes.isEmpty() ? Optional.empty() : Optional.of(reservationTimes.get(0));
+    }
+
+    public Optional<ReservationTime> findByStartAt(LocalTime startAt) {
+        String sql = "SELECT id, start_at FROM reservation_time where start_at = ?";
+        List<ReservationTime> reservationTimes = jdbcTemplate.query(sql, reservationTimeRowMapper, Time.valueOf(startAt));
         return reservationTimes.isEmpty() ? Optional.empty() : Optional.of(reservationTimes.get(0));
     }
 
