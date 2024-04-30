@@ -88,4 +88,35 @@ class ReservationTimeJDBCRepositoryTest {
         //then
         assertThat(reservationTimeRepository.findAll().size()).isEqualTo(expectedSize);
     }
+
+    @DisplayName("주어진 시간이 이미 존재한다.")
+    @Test
+    void existsTime() {
+        //given
+        String startAt = "10:00";
+        ReservationTime reservationTime = new ReservationTime(startAt);
+        reservationTimeRepository.save(reservationTime);
+
+        //when
+        boolean result = reservationTimeRepository.existsByTime(startAt);
+
+        //then
+        assertThat(result).isTrue();
+    }
+
+    @DisplayName("주어진 시간이 존재하지 않는다.")
+    @Test
+    void notExistsTime() {
+        //given
+        String startAt = "10:00";
+        ReservationTime reservationTime = new ReservationTime(startAt);
+        reservationTimeRepository.save(reservationTime);
+
+        //when
+        String newStartAt = "10:01";
+        boolean result = reservationTimeRepository.existsByTime(newStartAt);
+
+        //then
+        assertThat(result).isFalse();
+    }
 }

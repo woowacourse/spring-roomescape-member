@@ -13,4 +13,6 @@ public interface ReservationTimeRepository {
     void deleteById(long id);
 
     Optional<ReservationTime> findById(long id);
+
+    boolean existsByTime(String startAt);
 }
