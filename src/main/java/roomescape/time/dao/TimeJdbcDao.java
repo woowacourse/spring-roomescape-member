@@ -1,4 +1,4 @@
-package roomescape.Time.dao;
+package roomescape.time.dao;
 
 import java.util.List;
 import javax.sql.DataSource;
@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
-import roomescape.Time.domain.Time;
+import roomescape.time.domain.Time;
 
 @Component
 public class TimeJdbcDao implements TimeDao {

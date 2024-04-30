@@ -3,7 +3,7 @@ package roomescape.reservation.domain;
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.regex.Pattern;
-import roomescape.Time.domain.Time;
+import roomescape.time.domain.Time;
 import roomescape.exception.BadRequestException;
 
 public class Reservation {

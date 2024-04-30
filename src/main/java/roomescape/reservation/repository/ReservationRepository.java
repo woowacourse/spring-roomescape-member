@@ -2,8 +2,8 @@ package roomescape.reservation.repository;
 
 import java.util.List;
 import org.springframework.stereotype.Repository;
-import roomescape.Time.dao.TimeDao;
-import roomescape.Time.domain.Time;
+import roomescape.time.dao.TimeDao;
+import roomescape.time.domain.Time;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
 

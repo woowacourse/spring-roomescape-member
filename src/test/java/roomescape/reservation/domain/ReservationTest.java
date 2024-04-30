@@ -9,7 +9,7 @@ import java.time.LocalTime;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.Time.domain.Time;
+import roomescape.time.domain.Time;
 import roomescape.exception.BadRequestException;
 
 class ReservationTest {

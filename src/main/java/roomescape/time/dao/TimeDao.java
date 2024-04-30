@@ -1,7 +1,7 @@
-package roomescape.Time.dao;
+package roomescape.time.dao;
 
 import java.util.List;
-import roomescape.Time.domain.Time;
+import roomescape.time.domain.Time;
 
 public interface TimeDao {
 

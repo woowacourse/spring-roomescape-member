@@ -13,11 +13,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.Time.domain.Time;
-import roomescape.Time.dto.ReservationTimeRequest;
-import roomescape.Time.dto.ReservationTimeResponse;
-import roomescape.Time.repository.TimeRepository;
-import roomescape.Time.service.TimeService;
+import roomescape.time.domain.Time;
+import roomescape.time.dto.ReservationTimeRequest;
+import roomescape.time.dto.ReservationTimeResponse;
+import roomescape.time.repository.TimeRepository;
 
 @ExtendWith(MockitoExtension.class)
 class TimeServiceTest {

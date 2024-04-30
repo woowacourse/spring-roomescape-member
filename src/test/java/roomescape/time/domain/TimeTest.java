@@ -31,7 +31,7 @@ public class TimeTest {
                     assertEquals("운영 시간 외의 예약 시간 요청입니다.", beforeOpenTime.getMessage());
 
                     Throwable afterCloseTime = assertThrows(
-                            BadRequestException.class, () -> new Time(LocalTime.of(23, 01)));
+                            BadRequestException.class, () -> new Time(LocalTime.of(23, 1)));
                     assertEquals("운영 시간 외의 예약 시간 요청입니다.", afterCloseTime.getMessage());
                 }
         );

@@ -1,9 +1,9 @@
-package roomescape.Time.repository;
+package roomescape.time.repository;
 
 import java.util.List;
 import org.springframework.stereotype.Repository;
-import roomescape.Time.dao.TimeDao;
-import roomescape.Time.domain.Time;
+import roomescape.time.dao.TimeDao;
+import roomescape.time.domain.Time;
 
 @Repository
 public class TimeRepository {
