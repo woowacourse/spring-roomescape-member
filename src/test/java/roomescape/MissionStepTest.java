@@ -11,7 +11,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import roomescape.controller.RoomEscapeController;
+import roomescape.controller.AdminController;
 import roomescape.domain.Reservation;
 
 import java.lang.reflect.Field;
@@ -31,7 +31,7 @@ public class MissionStepTest {
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    private RoomEscapeController controller;
+    private AdminController controller;
 
     @LocalServerPort
     private Integer port;
