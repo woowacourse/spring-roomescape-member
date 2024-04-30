@@ -3,6 +3,7 @@ package roomescape.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationSaveRequest;
 import roomescape.dto.ReservationTimeResponse;
-import roomescape.exception.ResourceNotFoundException;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.repository.ReservationRepository;
@@ -28,7 +28,7 @@ class ReservationServiceTest {
         final ReservationTimeRepository reservationTimeRepository = new ReservationTimeMemoryRepository();
         final ReservationRepository reservationRepository = new ReservationMemoryRepository();
         reservationTimeRepository.save(new ReservationTime(LocalTime.parse("10:00")));
-        reservationRepository.save(new Reservation("감자", "2024-05-13", new ReservationTime(1L, LocalTime.parse("10:00"))));
+        reservationRepository.save(new Reservation("감자", LocalDate.parse("2025-05-13"), new ReservationTime(1L, LocalTime.parse("10:00"))));
         reservationService = new ReservationService(reservationRepository, reservationTimeRepository);
     }
 
@@ -54,7 +54,7 @@ class ReservationServiceTest {
         final ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest("고구마", "2025-11-11", 2L);
         assertThatThrownBy(() -> {
             reservationService.saveReservation(reservationSaveRequest);
-        }).isInstanceOf(ResourceNotFoundException.class);
+        }).isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("예약 삭제")
@@ -69,6 +69,22 @@ class ReservationServiceTest {
     void deleteReservationNotFound() {
         assertThatThrownBy(() -> {
             reservationService.deleteReservation(2L);
-        }).isInstanceOf(ResourceNotFoundException.class);
+        }).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("지나간 시간 예약 저장")
+    @Test
+    void saveReservationWithGoneTime() {
+        assertThatThrownBy(() -> {
+            reservationService.saveReservation(new ReservationSaveRequest("백호", "2023-11-11", 1L));
+        }).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("중복된 예약 저장")
+    @Test
+    void saveDuplicatedReservation() {
+        assertThatThrownBy(() -> {
+            reservationService.saveReservation(new ReservationSaveRequest("호롤로", "2025-05-13", 1L));
+        }).isInstanceOf(IllegalArgumentException.class);
     }
 }

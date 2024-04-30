@@ -1,6 +1,9 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -23,7 +26,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
         return new Reservation(
                 selectedReservation.getLong("id"),
                 selectedReservation.getString("name"),
-                selectedReservation.getString("date"), time);
+                LocalDate.parse(selectedReservation.getString("date")), time);
     };
 
     private final JdbcTemplate jdbcTemplate;
@@ -36,6 +39,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
+    @Override
     public Reservation save(final Reservation reservation) {
         final ReservationTime time = reservation.getTime();
         final String name = reservation.getName().getValue();
@@ -45,9 +49,10 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 .addValue("date", date)
                 .addValue("time_id", time.getId());
         final Long savedReservationId = reservationInsert.executeAndReturnKey(reservationParameters).longValue();
-        return new Reservation(savedReservationId, name, date, time);
+        return new Reservation(savedReservationId, name, LocalDate.parse(date), time);
     }
 
+    @Override
     public List<Reservation> findAll() {
         final String selectQuery = """
             SELECT
@@ -65,8 +70,63 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 .toList();
     }
 
-    public boolean deleteById(final Long id) {
-        final int affectedRowCount = jdbcTemplate.update("DELETE FROM reservations WHERE id = ?", id);
-        return affectedRowCount == 1;
+    @Override
+    public void deleteById(final Long id) {
+        jdbcTemplate.update("DELETE FROM reservations WHERE id = ?", id);
+    }
+
+    @Override
+    public boolean existByTimeId(final Long timeId) {
+        String sql = """
+                SELECT 
+                CASE WHEN EXISTS (
+                        SELECT 1
+                        FROM reservations
+                        WHERE time_id = ?
+                    )
+                    THEN TRUE
+                    ELSE FALSE
+                END""";
+
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, timeId));
+    }
+
+    @Override
+    public Optional<Reservation> findById(final Long id) {
+        final String selectQuery = """
+            SELECT
+                r.id as reservation_id,
+                r.name,
+                r.date,
+                t.id as time_id,
+                t.start_at
+            FROM reservations as r
+            INNER JOIN reservation_times as t
+            ON r.time_id = t.id
+            WHERE r.id = ?
+        """;
+
+        try {
+            final Reservation reservation = jdbcTemplate.queryForObject(selectQuery, ROW_MAPPER, id);
+            return Optional.ofNullable(reservation);
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public boolean existByDateAndTimeId(final LocalDate date, final Long timeId) {
+        String sql = """
+                SELECT 
+                CASE WHEN EXISTS (
+                        SELECT 1
+                        FROM reservations
+                        WHERE date = ? AND time_id = ?
+                    )
+                    THEN TRUE
+                    ELSE FALSE
+                END""";
+
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId));
     }
 }

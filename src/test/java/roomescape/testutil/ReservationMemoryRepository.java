@@ -1,13 +1,13 @@
 package roomescape.testutil;
 
-import roomescape.model.Reservation;
-import roomescape.repository.ReservationRepository;
-
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+import roomescape.model.Reservation;
+import roomescape.repository.ReservationRepository;
 
 public class ReservationMemoryRepository implements ReservationRepository {
 
@@ -28,10 +28,29 @@ public class ReservationMemoryRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean deleteById(final Long id) {
-        final Optional<Reservation> findReservation = reservations.stream()
+    public void deleteById(final Long id) {
+        reservations.stream()
                 .filter(reservation -> reservation.getId().equals(id))
-                .findFirst();
-        return findReservation.map(reservations::remove).orElse(false);
+                .findFirst()
+                .ifPresent(reservations::remove);
+    }
+
+    @Override
+    public boolean existByTimeId(final Long timeId) {
+        return reservations.stream()
+                .anyMatch(reservation -> reservation.getTimeId().equals(timeId));
+    }
+
+    @Override
+    public Optional<Reservation> findById(final Long id) {
+        return reservations.stream()
+                .filter(reservation -> reservation.getId().equals(id))
+                .findAny();
+    }
+
+    @Override
+    public boolean existByDateAndTimeId(final LocalDate date, final Long timeId) {
+        return reservations.stream()
+                .anyMatch(reservation -> reservation.getTimeId().equals(timeId) && reservation.getDate().equals(date));
     }
 }

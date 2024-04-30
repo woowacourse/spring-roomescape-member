@@ -1,7 +1,14 @@
 package roomescape.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,14 +18,6 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.dto.ReservationResponse;
-
-import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -45,7 +44,7 @@ class ReservationControllerTest {
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
                 .then().log().all()
-                .statusCode(404);
+                .statusCode(400);
     }
 
     @DisplayName("비어 있는 예약 목록 조회")
@@ -61,7 +60,7 @@ class ReservationControllerTest {
     @DisplayName("데이터 삽입 후 예약 목록 조회")
     @Test
     void getReservationsAfterInsert() {
-        jdbcTemplate.update("INSERT INTO reservations (name, date, time_id) VALUES (?, ?, ?)", "브라운", "2023-08-05", 1L);
+        jdbcTemplate.update("INSERT INTO reservations (name, date, time_id) VALUES (?, ?, ?)", "브라운", "2025-08-05", 1L);
 
         final List<ReservationResponse> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -78,7 +77,7 @@ class ReservationControllerTest {
     void saveAndDeleteReservation() {
         final Map<String, Object> params = Map.of(
                 "name", "브라운",
-                "date", "2023-08-05",
+                "date", "2025-08-05",
                 "timeId", 1L);
 
         RestAssured.given().log().all()
@@ -106,7 +105,7 @@ class ReservationControllerTest {
     void reservationTimeForSaveNotFound() {
         final Map<String, Object> params = Map.of(
                 "name", "브라운",
-                "date", "2023-08-05",
+                "date", "2025-08-05",
                 "timeId", 100L);
 
         RestAssured.given().log().all()
@@ -114,7 +113,7 @@ class ReservationControllerTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(404);
+                .statusCode(400);
     }
 
     @DisplayName("컨트롤러에서 jdbcTemplate 필드 제거")

@@ -1,11 +1,11 @@
 package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.restassured.RestAssured;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,7 +45,7 @@ class ReservationRepositoryTest {
     @Test
     void save() {
         final ReservationTime reservationTime = new ReservationTime(1L, LocalTime.parse("08:00"));
-        final Reservation reservation = new Reservation("생강", "2025-01-01", reservationTime);
+        final Reservation reservation = new Reservation("생강", LocalDate.parse("2025-01-01"), reservationTime);
         final Reservation savedReservation = reservationRepository.save(reservation);
         assertAll(
                 () -> assertThat(savedReservation.getId()).isEqualTo(3L),
@@ -65,14 +65,7 @@ class ReservationRepositoryTest {
     @DisplayName("존재하는 예약 삭제")
     @Test
     void deleteExistById() {
-        final boolean isDeleted = reservationRepository.deleteById(1L);
-        assertTrue(isDeleted);
-    }
-
-    @DisplayName("존재하지 않는 예약 삭제")
-    @Test
-    void deleteEmptyById() {
-        final boolean isDeleted = reservationRepository.deleteById(3L);
-        assertFalse(isDeleted);
+        assertThatCode(() -> reservationRepository.deleteById(1L))
+                .doesNotThrowAnyException();
     }
 }
