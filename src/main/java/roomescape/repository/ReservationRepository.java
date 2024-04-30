@@ -6,7 +6,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -35,7 +34,7 @@ public class ReservationRepository {
         String sql = "SELECT exists(SELECT 1 FROM reservation " +
                 "where reservation_time_id = ?)";
 
-        return jdbcTemplate.queryForObject(sql,Boolean.class, reservationTimeId);
+        return jdbcTemplate.queryForObject(sql, Boolean.class, reservationTimeId);
     }
 
     public List<Reservation> findAll() {
@@ -79,17 +78,17 @@ public class ReservationRepository {
     }
 
     public Optional<Reservation> findByDateAndTime(LocalDate date, ReservationTime reservationTime) {
-            String sql = "SELECT id, name, date, reservation_time_id FROM reservation " +
-                    "where date = ? and reservation_time_id = ?";
+        String sql = "SELECT id, name, date, reservation_time_id FROM reservation " +
+                "where date = ? and reservation_time_id = ?";
 
-            return jdbcTemplate.query(sql,
-                            (resultSet, rowNum) -> new Reservation(
-                                    resultSet.getLong("id"),
-                                    resultSet.getString("name"),
-                                    resultSet.getDate("date").toLocalDate(),
-                                    reservationTime
-                            ), Date.valueOf(date),
-                            reservationTime.getId()).stream()
+        return jdbcTemplate.query(sql,
+                        (resultSet, rowNum) -> new Reservation(
+                                resultSet.getLong("id"),
+                                resultSet.getString("name"),
+                                resultSet.getDate("date").toLocalDate(),
+                                reservationTime
+                        ), Date.valueOf(date),
+                        reservationTime.getId()).stream()
                 .findAny();
     }
 }

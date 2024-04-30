@@ -12,7 +12,7 @@ public record SaveReservationRequest(String name, LocalDate date, Long timeId) {
     }
 
     private void validateNameBlank(String name) {
-        if(name.isBlank()) {
+        if (name.isBlank()) {
             throw new IllegalArgumentException("이름은 빈칸일 수 없습니다.");
         }
     }
