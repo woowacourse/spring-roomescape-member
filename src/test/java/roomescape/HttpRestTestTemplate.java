@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.is;
 
 class HttpRestTestTemplate {
 
+    //TODO: 응답 코드를 하드코딩하지 않기
     private HttpRestTestTemplate() {
     }
 

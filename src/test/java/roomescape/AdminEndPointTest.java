@@ -1,6 +1,7 @@
 package roomescape;
 
 import io.restassured.RestAssured;
+import java.time.DayOfWeek;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
@@ -122,6 +123,29 @@ class AdminEndPointTest {
 
                 DynamicTest.dynamicTest("시간에 해당하는 예약이 있을 경우, 예약 시간을 삭제할 수 없다.", () -> {
                     HttpRestTestTemplate.assertDeleteBadRequest("/times/1");
+                })
+        );
+    }
+
+    @DisplayName("[예약 시간 추가 - 예약 시간 또는 날짜가 과거라 예약 추가 불가능] 시나리오")
+    @TestFactory
+    Stream<DynamicTest> validateReservationTimeIsFutureFail() {
+        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(
+                LocalTime.now().minusHours(1)
+        );
+        ReservationRequest reservationRequest = new ReservationRequest(
+                "브라운",
+                LocalDate.now().minusDays(1),
+                1L
+        );
+
+        return Stream.of(
+                DynamicTest.dynamicTest("예약 시간을 등록한다.", () -> {
+                    HttpRestTestTemplate.assertPostCreated(reservationTimeRequest, "/times", "id", 1);
+                }),
+
+                DynamicTest.dynamicTest("지금보다 과거의 시간으로 예약을 등록할 수 없다.", () -> {
+                    HttpRestTestTemplate.assertPostBadRequest(reservationRequest, "/reservations");
                 })
         );
     }
