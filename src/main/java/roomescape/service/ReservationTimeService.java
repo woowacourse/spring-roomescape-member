@@ -1,7 +1,9 @@
 package roomescape.service;
 
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import roomescape.dao.ReservationRepository;
 import roomescape.dao.ReservationTimeRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.InvalidReservationException;
@@ -11,9 +13,13 @@ import roomescape.service.dto.ReservationTimeResponse;
 @Service
 public class ReservationTimeService {
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ReservationTimeService(final ReservationTimeRepository reservationTimeRepository) {
+    @Autowired
+    public ReservationTimeService(final ReservationTimeRepository reservationTimeRepository,
+                                  ReservationRepository reservationRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public ReservationTimeResponse create(final ReservationTimeRequest reservationTimeRequest) {
@@ -36,6 +42,9 @@ public class ReservationTimeService {
     }
 
     public void deleteById(final long id) {
+        if (reservationRepository.existsByTimeId(id)) {
+            throw new InvalidReservationException("해당 시간에 예약이 존재해서 삭제할 수 없습니다.");
+        }
         reservationTimeRepository.deleteById(id);
     }
 }

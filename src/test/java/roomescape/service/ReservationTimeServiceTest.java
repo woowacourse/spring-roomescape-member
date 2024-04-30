@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.dao.ReservationTimeRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.InvalidReservationException;
+import roomescape.service.dto.ReservationRequest;
 import roomescape.service.dto.ReservationTimeRequest;
 import roomescape.service.dto.ReservationTimeResponse;
 
@@ -22,6 +23,8 @@ class ReservationTimeServiceTest {
     private ReservationTimeRepository reservationTimeRepository;
     @Autowired
     private ReservationTimeService reservationTimeService;
+    @Autowired
+    private ReservationService reservationService;
 
     @AfterEach
     void init() {
@@ -74,5 +77,20 @@ class ReservationTimeServiceTest {
         assertThatThrownBy(() -> reservationTimeService.create(reservationTimeRequest))
                 .isInstanceOf(InvalidReservationException.class)
                 .hasMessage("이미 같은 시간이 존재합니다.");
+    }
+
+    @DisplayName("예약이 존재하는 시간으로 삭제를 시도하면 예외를 발생시킨다.")
+    @Test
+    void cannotDeleteTime() {
+        //given
+        String startAt = "10:00";
+        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(startAt);
+        ReservationTimeResponse reservationTimeResponse = reservationTimeService.create(reservationTimeRequest);
+        reservationService.create(new ReservationRequest("lilly", "2222-10-04", reservationTimeResponse.id()));
+
+        //when&then
+        assertThatThrownBy(() -> reservationTimeService.deleteById(reservationTimeResponse.id()))
+                .isInstanceOf(InvalidReservationException.class)
+                .hasMessage("해당 시간에 예약이 존재해서 삭제할 수 없습니다.");
     }
 }
