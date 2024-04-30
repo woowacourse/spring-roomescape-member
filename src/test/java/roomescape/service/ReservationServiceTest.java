@@ -29,7 +29,7 @@ class ReservationServiceTest {
     @Test
     @DisplayName("예약을 추가하고 id값을 붙여서 응답 DTO를 생성한다.")
     void addReservation() {
-        ReservationAddRequest reservationAddRequest = new ReservationAddRequest(new Name("네오"), LocalDate.of(2024, 1, 12), 10L);
+        ReservationAddRequest reservationAddRequest = new ReservationAddRequest(new Name("네오"), LocalDate.now().plusDays(1), 10L);
 
         ReservationResponse reservationResponse = reservationService.addReservation(reservationAddRequest);
 
@@ -39,7 +39,7 @@ class ReservationServiceTest {
     @Test
     @DisplayName("존재하지 않는 time_id로 예약을 추가하면 예외를 발생시킨다.")
     void addReservationInvalidTimeId() {
-        ReservationAddRequest reservationAddRequest = new ReservationAddRequest(new Name("네오"), LocalDate.of(2024, 1, 12), -1L);
+        ReservationAddRequest reservationAddRequest = new ReservationAddRequest(new Name("네오"), LocalDate.now().plusDays(1), -1L);
 
         assertThatThrownBy(() -> reservationService.addReservation(reservationAddRequest))
                 .isInstanceOf(IllegalArgumentException.class);

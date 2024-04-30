@@ -6,6 +6,8 @@ import static org.hamcrest.Matchers.is;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.lang.reflect.Field;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
@@ -53,9 +55,10 @@ class ReservationControllerTest {
     @DisplayName("Reservation을 추가한다.")
     void addReservation() {
         //given
+        LocalDate localDate = LocalDate.now().plusDays(1);
         Map<String, String> reservationParams = new HashMap<>();
         reservationParams.put("name", "브리");
-        reservationParams.put("date", "2023-08-05");
+        reservationParams.put("date", localDate.toString());
         reservationParams.put("timeId", "10");
 
         //when & then

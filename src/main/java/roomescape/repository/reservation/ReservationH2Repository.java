@@ -1,6 +1,7 @@
 package roomescape.repository.reservation;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -32,6 +33,7 @@ public class ReservationH2Repository implements ReservationRepository {
 
     @Override
     public Reservation save(Reservation reservation) {
+        validateDateTime(reservation);
         Long timeId = reservation.time().id();
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.name())
@@ -40,6 +42,15 @@ public class ReservationH2Repository implements ReservationRepository {
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
 
         return new Reservation(id, reservation.name(), reservation.date(), reservation.time());
+    }
+
+    private void validateDateTime(Reservation reservation) {
+        LocalDateTime localDateTime = LocalDateTime.of(reservation.date(), reservation.time().startAt());
+        LocalDateTime now = LocalDateTime.now();
+
+        if (localDateTime.isBefore(now)) {
+            throw new IllegalArgumentException("과거 시간은 예약할 수 없습니다.");
+        }
     }
 
     @Override

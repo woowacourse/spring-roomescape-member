@@ -1,6 +1,7 @@
 package roomescape.repository.reservation;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -31,7 +32,7 @@ class ReservationH2RepositoryTest {
     void save() {
         Reservation reservation = new Reservation(
                 new Name("네오"),
-                LocalDate.of(2024, 4, 24),
+                LocalDate.now().plusDays(1),
                 new ReservationTime(11L, LocalTime.of(10, 0))
         );
 
@@ -39,6 +40,19 @@ class ReservationH2RepositoryTest {
 
         assertThat(save.id()).isNotNull();
     }
+
+    @Test
+    @DisplayName("과거 시간을 예약하려는 경우 예외를 발생시킨다.")
+    void savePastTime() {
+        Reservation reservation = new Reservation(
+                new Name("네오"),
+                LocalDate.of(2023, 4, 24),
+                new ReservationTime(11L, LocalTime.of(10, 0))
+        );
+        assertThatThrownBy(() -> reservationH2Repository.save(reservation))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
 
     @Test
     @DisplayName("Reservation을 제거한다.")
