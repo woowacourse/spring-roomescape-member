@@ -26,9 +26,15 @@ public class ReservationRepository {
                     resultSet.getTime("time_value").toLocalTime())
     );
 
-
     public ReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    public boolean existByReservationTimeId(Long reservationTimeId) {
+        String sql = "SELECT exists(SELECT 1 FROM reservation " +
+                "where reservation_time_id = ?)";
+
+        return jdbcTemplate.queryForObject(sql,Boolean.class, reservationTimeId);
     }
 
     public List<Reservation> findAll() {
@@ -72,17 +78,17 @@ public class ReservationRepository {
     }
 
     public Optional<Reservation> findByDateAndTime(LocalDate date, ReservationTime reservationTime) {
-        String sql = "SELECT id, name, date, reservation_time_id FROM reservation " +
-                "where date = ? and reservation_time_id = ?";
+            String sql = "SELECT id, name, date, reservation_time_id FROM reservation " +
+                    "where date = ? and reservation_time_id = ?";
 
-        return jdbcTemplate.query(sql,
-                        (resultSet, rowNum) -> new Reservation(
-                                resultSet.getLong("id"),
-                                resultSet.getString("name"),
-                                resultSet.getDate("date").toLocalDate(),
-                                reservationTime
-                        ), Date.valueOf(date),
-                        reservationTime.getId()).stream()
+            return jdbcTemplate.query(sql,
+                            (resultSet, rowNum) -> new Reservation(
+                                    resultSet.getLong("id"),
+                                    resultSet.getString("name"),
+                                    resultSet.getDate("date").toLocalDate(),
+                                    reservationTime
+                            ), Date.valueOf(date),
+                            reservationTime.getId()).stream()
                 .findAny();
     }
 }
