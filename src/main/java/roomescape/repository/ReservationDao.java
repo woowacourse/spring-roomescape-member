@@ -27,7 +27,7 @@ public class ReservationDao {
                             "insert into reservation (name, date, time_id) values (?, ?, ?)",
                             new String[]{"id"}
                     );
-                    ps.setString(1, reservation.getName());
+                    ps.setString(1, reservation.getName().getValue());
                     ps.setString(2, reservation.getDate().toString());
                     ps.setString(3, String.valueOf(reservation.getTimeId()));
                     return ps;
@@ -38,9 +38,9 @@ public class ReservationDao {
             long id = keyHolder.getKey().longValue();
             return new Reservation(
                     id,
-                    reservation.name(),
-                    reservation.date(),
-                    reservation.time()
+                    reservation.getName(),
+                    reservation.getDate(),
+                    reservation.getTime()
             );
         } catch (NullPointerException exception) {
             throw new RuntimeException("[ERROR] 예약 요청이 정상적으로 이루어지지 않았습니다.");

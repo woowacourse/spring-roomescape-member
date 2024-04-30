@@ -13,7 +13,7 @@ public record ReservationResponse(
     public static ReservationResponse from(final Reservation reservation) {
         return new ReservationResponse(
                 reservation.getId(),
-                reservation.getName(),
+                reservation.getName().getValue(),
                 reservation.getDate(),
                 reservation.getTime()
         );
