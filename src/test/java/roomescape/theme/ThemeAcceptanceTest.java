@@ -69,4 +69,28 @@ public class ThemeAcceptanceTest {
                 .all()
                 .statusCode(201);
     }
+
+    @Test
+    void delete() {
+        save();
+        RestAssured.given()
+                .log()
+                .all()
+                .when()
+                .delete("/themes/1")
+                .then()
+                .log()
+                .all()
+                .statusCode(204);
+
+        RestAssured.given()
+                .log()
+                .all()
+                .when()
+                .delete("/themes/1")
+                .then()
+                .log()
+                .all()
+                .statusCode(404);
+    }
 }

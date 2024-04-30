@@ -37,4 +37,9 @@ public class ThemeDao {
                 .addValue("thumbnail", theme.getThumbnail());
         return simpleJdbcInsert.executeAndReturnKey(params).longValue();
     }
+
+    public int deleteById(final long id) {
+        final String sql = "delete from theme where id = ?";
+        return jdbcTemplate.update(sql, id);
+    }
 }
