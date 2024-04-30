@@ -35,7 +35,8 @@ class ReservationControllerTest {
         LocalDate date = LocalDate.now();
 
         ReservationResponse saveResponse = reservationController.saveReservation(
-                new ReservationRequest(date, "폴라", timeId));
+                        new ReservationRequest(date, "폴라", timeId))
+                .getBody();
 
         long id = Objects.requireNonNull(saveResponse).id();
         ReservationResponse expected = new ReservationResponse(id, "폴라", date,
