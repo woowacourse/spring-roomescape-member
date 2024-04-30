@@ -13,9 +13,8 @@ public class MemberName {
     private final String value;
 
     public MemberName(final String value) {
-        String trimmedValue = value.trim();
-        validateName(trimmedValue);
-        this.value = trimmedValue;
+        validateName(value);
+        this.value = value;
     }
 
     private void validateName(final String name) {

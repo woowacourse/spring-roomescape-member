@@ -1,5 +1,7 @@
 package roomescape.domain;
 
+import org.springframework.validation.annotation.Validated;
+
 public class Theme {
     private long id;
     private final ThemeName name;

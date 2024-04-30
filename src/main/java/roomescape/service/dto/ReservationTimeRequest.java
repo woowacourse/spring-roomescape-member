@@ -1,4 +1,6 @@
 package roomescape.service.dto;
 
-public record ReservationTimeRequest(String startAt) {
+import jakarta.validation.constraints.NotNull;
+
+public record ReservationTimeRequest(@NotNull String startAt) {
 }
