@@ -6,6 +6,7 @@ import roomescape.domain.reservation.Reservation;
 import roomescape.domain.time.Time;
 import roomescape.dto.reservation.ReservationRequest;
 import roomescape.dto.reservation.ReservationResponse;
+import roomescape.global.exception.model.ConflictException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.TimeRepository;
 
@@ -28,6 +29,13 @@ public class ReservationService {
     }
 
     public ReservationResponse createReservation(ReservationRequest reservationRequest) {
+        List<Reservation> duplicateTimeReservation = reservationRepository.findByTimeIdAndDate(
+                reservationRequest.timeId(), reservationRequest.date());
+
+        if (duplicateTimeReservation.size() > 0) {
+            throw new ConflictException("이미 해당 날짜와 시간에 예약이 존재합니다.");
+        }
+
         Time time = timeRepository.findById(reservationRequest.timeId());
 
         Reservation reservation = reservationRequest.toReservation(time);
