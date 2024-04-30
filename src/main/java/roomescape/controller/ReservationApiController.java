@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +15,7 @@ import roomescape.dto.SaveReservationRequest;
 import roomescape.dto.SaveReservationTimeRequest;
 import roomescape.service.ReservationService;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -33,10 +35,11 @@ public class ReservationApiController {
     }
 
     @PostMapping("/reservations")
-    public ReservationResponse saveReservation(@RequestBody final SaveReservationRequest request) {
+    public ResponseEntity<ReservationResponse> saveReservation(@RequestBody final SaveReservationRequest request) {
         Reservation savedReservation = reservationService.saveReservation(request);
 
-        return ReservationResponse.from(savedReservation);
+        return ResponseEntity.created(URI.create("/reservations/" + savedReservation.getId()))
+                .body(ReservationResponse.from(savedReservation));
     }
 
     @DeleteMapping("/reservations/{reservation-id}")
@@ -53,10 +56,11 @@ public class ReservationApiController {
     }
 
     @PostMapping("/times")
-    public ReservationTimeResponse saveReservationTime(@RequestBody final SaveReservationTimeRequest request) {
+    public ResponseEntity<ReservationTimeResponse> saveReservationTime(@RequestBody final SaveReservationTimeRequest request) {
         ReservationTime savedReservationTime = reservationService.saveReservationTime(request);
 
-        return ReservationTimeResponse.from(savedReservationTime);
+        return ResponseEntity.created(URI.create("/times/" + savedReservationTime.getId()))
+                .body(ReservationTimeResponse.from(savedReservationTime));
     }
 
     @DeleteMapping("/times/{reservation-time-id}")

@@ -57,7 +57,7 @@ class ReservationControllerIntegrationTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(201)
                 .body("id", is(3));
     }
 
@@ -109,7 +109,7 @@ class ReservationControllerIntegrationTest {
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(201)
                 .body("id", is(3));
     }
 

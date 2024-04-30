@@ -76,7 +76,7 @@ class ReservationApiControllerTest {
                         .content(objectMapper.writeValueAsBytes(saveReservationRequest))
                 )
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1));
     }
 
@@ -138,7 +138,7 @@ class ReservationApiControllerTest {
                         .content(objectMapper.writeValueAsBytes(saveReservationTimeRequest))
                 )
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1));
     }
 
