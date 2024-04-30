@@ -50,6 +50,10 @@ public class ReservationService {
     }
 
     public ReservationTime saveReservationTime(final SaveReservationTimeRequest request) {
+        reservationTimeRepository.findByStartAt(request.startAt())
+                .ifPresent(reservationTime -> {
+                    throw new NoSuchElementException("이미 존재하는 예약시간이 있습니다.");
+                });
         return reservationTimeRepository.save(request.toReservationTime());
     }
 

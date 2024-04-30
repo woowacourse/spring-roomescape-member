@@ -11,6 +11,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -69,5 +70,19 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
                 .addValue("id", reservationTimeId);
         template.update(sql, param);
         System.out.println("param = " + param);
+    }
+
+    @Override
+    public Optional<ReservationTime> findByStartAt(final LocalTime startAt) {
+        String sql = "SELECT * FROM reservation_time WHERE start_at = :startAt";
+        try {
+            MapSqlParameterSource param = new MapSqlParameterSource()
+                    .addValue("startAt", startAt);
+            ReservationTime reservationTime = template.queryForObject(sql, param, itemRowMapper());
+
+            return Optional.of(reservationTime);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 }

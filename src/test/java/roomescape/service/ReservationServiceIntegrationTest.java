@@ -141,4 +141,15 @@ class ReservationServiceIntegrationTest {
                 .isInstanceOf(NoSuchElementException.class)
                 .hasMessage("해당 id의 예약 시간이 존재하지 않습니다.");
     }
+
+    @DisplayName("이미 존재하는 예약시간이 입력되면 예외를 발생한다.")
+    @Test
+    void throwExceptionWhenExistReservationTimeTest() {
+        // Given
+        SaveReservationTimeRequest saveReservationTimeRequest = new SaveReservationTimeRequest(LocalTime.of(10, 10));
+        // When & Then
+        assertThatThrownBy(() -> reservationService.saveReservationTime(saveReservationTimeRequest))
+                .isInstanceOf(NoSuchElementException.class)
+                .hasMessage("이미 존재하는 예약시간이 있습니다.");
+    }
 }
