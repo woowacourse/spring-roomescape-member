@@ -3,6 +3,7 @@ package roomescape.domain;
 import roomescape.exception.InvalidException;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Objects;
 
 public class Reservation {
@@ -12,14 +13,29 @@ public class Reservation {
     private final ReservationTime time;
 
     public Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time) {
-        validateEmptyName(name);
+        validateEmptyString(name);
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
     }
 
-    private void validateEmptyName(final String name) {
+    public static Reservation from(final Long id, final String name, final String date, final ReservationTime time) {
+        validateEmptyString(name);
+        validateEmptyString(date);
+        validateDate(date);
+        return new Reservation(id, name, LocalDate.parse(date), time);
+    }
+
+    private static void validateDate(final String date) {
+        try {
+            LocalDate.parse(date);
+        } catch (DateTimeParseException exception) {
+            throw new IllegalArgumentException("유효하지 않은 날짜입니다.");
+        }
+    }
+
+    private static void validateEmptyString(final String name) {
         if (name == null || name.trim().isEmpty()) {
             throw new InvalidException("이름은 공백일 수 없습니다.");
         }
