@@ -34,7 +34,7 @@ class ReservationTimeControllerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"", "abc", "1500", "15000", "15"})
+    @ValueSource(strings = {"", "abc", "1500", "15000", "15", "25:00"})
     @DisplayName("예약 가능한 시간이 잘못된 경우 bad request 상태코드를 반환한다.")
     void wrongStartAt(String startAt) {
         Map<String, String> params = new HashMap<>();
