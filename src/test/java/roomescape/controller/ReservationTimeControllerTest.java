@@ -9,7 +9,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.List;
 import java.util.stream.IntStream;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,11 +72,8 @@ class ReservationTimeControllerTest extends ControllerTest {
     }
 
     @Test
-    void 예약_시간이_비어있으면_예외가_발생한다() throws Exception {
-        // ReservationTimeRequest request = new ReservationTimeRequest(null);
-        // // String content = "{\"startAt\":\"12:89\"}";
+    void 예약_시간이_비어있으면_Bad_Request_상태를_반환한다() throws Exception {
         String content = "{}";
-
 
         ResultActions result = SimpleMockMvc.post(mockMvc, "/times", content);
 
@@ -86,7 +82,7 @@ class ReservationTimeControllerTest extends ControllerTest {
     }
 
     @Test
-    void 예약_시간이_포맷에_맞지않을경우_예외가_발생한다() throws Exception {
+    void 예약_시간이_포맷에_맞지_않을_경우_Bad_Request_상태를_반환한다() throws Exception {
         String content = "{\"startAt\":1112}";
 
         ResultActions result = SimpleMockMvc.post(mockMvc, "/times", content);
@@ -96,7 +92,7 @@ class ReservationTimeControllerTest extends ControllerTest {
     }
 
     @Test
-    void 예약_시간이_올바르지_않을_경우_예외가_발생한다() throws Exception {
+    void 예약_시간이_올바르지_않을_경우_Bad_Request_상태를_반환한다() throws Exception {
         String content = "{\"startAt\":\"14:89\"}";
 
         ResultActions result = SimpleMockMvc.post(mockMvc, "/times", content);
