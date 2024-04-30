@@ -1,5 +1,6 @@
 package roomescape.time.dao;
 
+import java.time.LocalTime;
 import java.util.List;
 import roomescape.time.domain.Time;
 
@@ -12,4 +13,6 @@ public interface TimeDao {
     Time findById(long reservationTimeId);
 
     void deleteById(long reservationTimeId);
+
+    int countByStartAt(LocalTime startAt);
 }

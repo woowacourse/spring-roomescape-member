@@ -1,5 +1,6 @@
 package roomescape.time.dao;
 
+import java.time.LocalTime;
 import java.util.List;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -48,6 +49,12 @@ public class TimeJdbcDao implements TimeDao {
         return jdbcTemplate.queryForObject(findReservationTimeSql, (resultSet, rowNum) -> new Time(
                 reservationTimeId,
                 resultSet.getTime(TIME_START_ATTRIBUTE).toLocalTime()), reservationTimeId);
+    }
+
+    @Override
+    public int countByStartAt(LocalTime startAt) {
+        String findByStartAtSql = "SELECT COUNT(*) FROM reservation_time WHERE start_at = ?";
+        return jdbcTemplate.queryForObject(findByStartAtSql, Integer.class, startAt);
     }
 
     @Override

@@ -16,7 +16,7 @@ import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "/data-test.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
-public class ReservationIntegrationTest {
+class ReservationIntegrationTest {
     @LocalServerPort
     private int port;
 
@@ -30,7 +30,7 @@ public class ReservationIntegrationTest {
     void adminReservationPageWork() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "범블비");
-        params.put("date", "2023-08-05");
+        params.put("date", "2024-08-05");
         params.put("timeId", "3");
 
         RestAssured.given().log().all()
@@ -63,7 +63,7 @@ public class ReservationIntegrationTest {
     void notExistTime() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "범블비");
-        params.put("date", "2023-08-05");
+        params.put("date", "2024-08-05");
         params.put("timeId", "6");
 
         RestAssured.given().log().all()

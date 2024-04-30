@@ -38,7 +38,7 @@ public class Time {
         if (startAt == null) {
             throw new BadRequestException("시간 값이 정의되지 않은 요청입니다.");
         }
-        if (OPEN_TIME.isBefore(startAt) || CLOSE_TIME.isAfter(startAt)) {
+        if (OPEN_TIME.isAfter(startAt) || CLOSE_TIME.isBefore(startAt)) {
             throw new BadRequestException("운영 시간 외의 예약 시간 요청입니다.");
         }
     }

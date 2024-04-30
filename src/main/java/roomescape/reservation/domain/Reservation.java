@@ -3,8 +3,8 @@ package roomescape.reservation.domain;
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.regex.Pattern;
-import roomescape.time.domain.Time;
 import roomescape.exception.BadRequestException;
+import roomescape.time.domain.Time;
 
 public class Reservation {
     private static final Pattern ILLEGAL_NAME_REGEX = Pattern.compile(".*[^\\w\\s가-힣].*");

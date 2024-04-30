@@ -2,10 +2,10 @@ package roomescape.reservation.repository;
 
 import java.util.List;
 import org.springframework.stereotype.Repository;
-import roomescape.time.dao.TimeDao;
-import roomescape.time.domain.Time;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
+import roomescape.time.dao.TimeDao;
+import roomescape.time.domain.Time;
 
 @Repository
 public class ReservationRepository {
@@ -25,6 +25,10 @@ public class ReservationRepository {
 
     public List<Reservation> findAllReservation() {
         return reservationDao.findAllOrderByDateAndReservationTime();
+    }
+
+    public int countReservationByTimeId(long timeId) {
+        return reservationDao.findByTimeId(timeId);
     }
 
     public void deleteReservationById(long reservationId) {

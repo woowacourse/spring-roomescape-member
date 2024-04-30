@@ -10,4 +10,6 @@ public interface ReservationDao {
     List<Reservation> findAllOrderByDateAndReservationTime();
 
     void deleteById(long reservationId);
+
+    int findByTimeId(long timeId);
 }
