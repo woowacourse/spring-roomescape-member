@@ -89,4 +89,20 @@ public class ReservationTimeControllerTest {
                 .then()
                 .statusCode(409);
     }
+
+    @Test
+    @DisplayName("특정 시간에 대한 예약이 존재하는데, 그 시간을 삭제하려 할 때 409를 반환한다.")
+    void return_409_when_duplicate_reservationTime() {
+        reservationTimeService.createReservationTime(new ReservationTimeInput("10:00"));
+
+        Map<String, String> params = new HashMap<>();
+        params.put("startAt", "10:00");
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/times")
+                .then()
+                .statusCode(409);
+    }
 }

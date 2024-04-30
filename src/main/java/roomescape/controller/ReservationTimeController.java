@@ -16,6 +16,7 @@ import roomescape.controller.dto.ReservationTimeRequest;
 import roomescape.controller.dto.ReservationTimeResponse;
 import roomescape.exception.ExistReservationInReservationTimeException;
 import roomescape.exception.NotExistReservationTimeException;
+import roomescape.exception.ReservationTimeAlreadyExistsException;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.dto.ReservationTimeOutput;
 
@@ -60,6 +61,11 @@ public class ReservationTimeController {
 
     @ExceptionHandler(value = ExistReservationInReservationTimeException.class)
     public ResponseEntity<String> handleExistReservationInReservationTimeException(ExistReservationInReservationTimeException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(value = ReservationTimeAlreadyExistsException.class)
+    public ResponseEntity<String> handleReservationTimeAlreadyExistsException(ReservationTimeAlreadyExistsException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
     }
 }
