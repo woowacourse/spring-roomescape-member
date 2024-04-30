@@ -7,9 +7,10 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.HashMap;
 import java.util.Map;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class ReservationTimeIntegrationTest extends IntegrationTest {
+class ReservationTimeIntegrationTest extends IntegrationTest {
     @Test
     void 시간을_추가할_수_있다() {
         Map<String, String> params = new HashMap<>();
@@ -35,7 +36,7 @@ public class ReservationTimeIntegrationTest extends IntegrationTest {
                 .statusCode(204);
 
         Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation_time", Integer.class);
-        assertThat(countAfterDelete).isEqualTo(0);
+        assertThat(countAfterDelete).isZero();
     }
 
     @Test
@@ -45,5 +46,13 @@ public class ReservationTimeIntegrationTest extends IntegrationTest {
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
+    }
+
+    @Test
+    void 존재하지_않는_시간은_삭제할_수_없다() {
+        RestAssured.given().log().all()
+                .when().delete("/times/13")
+                .then().log().all()
+                .statusCode(404);
     }
 }

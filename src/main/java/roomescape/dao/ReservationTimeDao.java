@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javax.sql.DataSource;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -38,8 +39,8 @@ public class ReservationTimeDao implements ReservationTimeRepository {
     @Override
     public Optional<ReservationTime> findById(Long id) {
         String sql = "SELECT * FROM reservation_time WHERE id = ?";
-        ReservationTime time = jdbcTemplate.queryForObject(sql, timeRowMapper, id);
-        return Optional.ofNullable(time);
+        List<ReservationTime> time = jdbcTemplate.query(sql, timeRowMapper, id);
+        return DataAccessUtils.optionalResult(time);
     }
 
     @Override

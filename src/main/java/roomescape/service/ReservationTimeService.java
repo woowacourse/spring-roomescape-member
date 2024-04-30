@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
+import roomescape.exception.NotFoundTimeException;
 import roomescape.web.dto.ReservationTimeRequest;
 import roomescape.web.dto.ReservationTimeResponse;
 
@@ -35,6 +36,6 @@ public class ReservationTimeService {
 
     private ReservationTime findReservationTimeById(Long id) {
         return reservationTimeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
+                .orElseThrow(NotFoundTimeException::new);
     }
 }

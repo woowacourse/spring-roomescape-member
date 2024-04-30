@@ -6,6 +6,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
+import roomescape.exception.NotFoundTimeException;
 import roomescape.web.dto.ReservationRequest;
 import roomescape.web.dto.ReservationResponse;
 
@@ -46,6 +47,6 @@ public class ReservationService {
 
     private ReservationTime findReservationTimeById(Long id) {
         return reservationTimeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
+                .orElseThrow(NotFoundTimeException::new);
     }
 }
