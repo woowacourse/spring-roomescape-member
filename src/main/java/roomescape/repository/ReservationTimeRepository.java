@@ -11,4 +11,6 @@ public interface ReservationTimeRepository {
     ReservationTime addReservationTime(ReservationTime reservationTime);
 
     void deleteReservationTime(long id);
+
+    Long countReservationTimeById(long id);
 }

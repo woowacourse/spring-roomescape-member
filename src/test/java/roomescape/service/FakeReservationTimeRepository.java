@@ -14,7 +14,6 @@ class FakeReservationTimeRepository implements ReservationTimeRepository {
             new ReservationTime(2, LocalTime.of(11, 0))
     ));
 
-
     @Override
     public List<ReservationTime> findAllReservationTimes() {
         return reservationTimes;
@@ -42,5 +41,12 @@ class FakeReservationTimeRepository implements ReservationTimeRepository {
                 .orElseThrow(() -> new NoSuchElementException("해당하는 아이디가 없습니다."));
 
         reservationTimes.remove(findReservationTime);
+    }
+
+    @Override
+    public Long countReservationTimeById(long id) {
+        return reservationTimes.stream()
+                .filter(reservationTime -> reservationTime.getId() == id)
+                .count();
     }
 }
