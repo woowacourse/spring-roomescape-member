@@ -13,6 +13,7 @@ import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.SaveReservationRequest;
 import roomescape.dto.SaveReservationTimeRequest;
+import roomescape.dto.ThemeResponse;
 import roomescape.service.ReservationService;
 
 import java.net.URI;
@@ -66,5 +67,13 @@ public class ReservationApiController {
     @DeleteMapping("/times/{reservation-time-id}")
     public void deleteReservationTime(@PathVariable("reservation-time-id") final Long reservationTimeId) {
         reservationService.deleteReservationTime(reservationTimeId);
+    }
+
+    @GetMapping("/themes")
+    public List<ThemeResponse> getThemes() {
+        return reservationService.getThemes()
+                .stream()
+                .map(ThemeResponse::from)
+                .toList();
     }
 }

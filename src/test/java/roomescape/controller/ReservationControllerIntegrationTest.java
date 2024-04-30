@@ -195,4 +195,14 @@ class ReservationControllerIntegrationTest {
                 .statusCode(400)
                 .body("message", is("예약자 이름은 1글자 이상 5글자 이하여야 합니다."));
     }
+
+    @DisplayName("전체 테마 정보를 조회한다.")
+    @Test
+    void getThemesTest() {
+        RestAssured.given().log().all()
+                .when().get("/themes")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(2));
+    }
 }

@@ -9,6 +9,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.dto.SaveReservationRequest;
 import roomescape.dto.SaveReservationTimeRequest;
 
@@ -179,5 +180,15 @@ class ReservationServiceIntegrationTest {
         assertThatThrownBy(() -> reservationService.deleteReservationTime(reservationTimeId))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약에 포함된 시간 정보는 삭제할 수 없습니다.");
+    }
+
+    @DisplayName("전체 테마 정보를 조회한다.")
+    @Test
+    void getThemesTest() {
+        // When
+        final List<Theme> themes = reservationService.getThemes();
+
+        // Then
+        assertThat(themes).hasSize(2);
     }
 }

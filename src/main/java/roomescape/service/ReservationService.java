@@ -81,4 +81,8 @@ public class ReservationService {
         reservationTimeRepository.findById(reservationTimeId)
                 .orElseThrow(() -> new NoSuchElementException("해당 id의 예약 시간이 존재하지 않습니다."));
     }
+
+    public List<Theme> getThemes() {
+        return themeRepository.findAll();
+    }
 }

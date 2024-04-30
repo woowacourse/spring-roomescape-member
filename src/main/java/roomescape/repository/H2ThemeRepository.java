@@ -9,6 +9,7 @@ import roomescape.domain.Theme;
 import roomescape.domain.ThemeDescription;
 import roomescape.domain.ThemeName;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -41,5 +42,12 @@ public class H2ThemeRepository implements ThemeRepository {
                 new ThemeDescription(rs.getString("description")),
                 rs.getString("thumbnail")
         ));
+    }
+
+    @Override
+    public List<Theme> findAll() {
+        String sql = "SELECT * FROM theme";
+
+        return template.query(sql, itemRowMapper());
     }
 }
