@@ -35,9 +35,9 @@ class ReservationTimeControllerTest {
     @MockBean
     private ReservationTimeService reservationTimeService;
 
-    @DisplayName("예약 시간 저장을 요청하면, 해당 예약 시간의 저장 id와 시간 200 OK 응답으로 반환한다.")
+    @DisplayName("예약 시간 저장을 요청하면, 해당 예약 시간의 저장 id와 시간 201 Created 응답으로 반환한다.")
     @Test
-    void shouldReturnReservationTimeResponseWith200OkWhenCreateReservationTime() throws Exception {
+    void shouldReturnReservationTimeResponseWith201CreatedWhenCreateReservationTime() throws Exception {
         ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.parse("10:00"));
         ReservationTimeResponse reservationTimeResponse = new ReservationTimeResponse(1L, LocalTime.of(10, 0));
 
@@ -49,7 +49,7 @@ class ReservationTimeControllerTest {
         mvc.perform(post("/times")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(reservationTimeRequestJson))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(content().json(objectMapper.writeValueAsString(reservationTimeResponse)));
     }
 
@@ -72,11 +72,11 @@ class ReservationTimeControllerTest {
                 .andExpect(content().json(reservationTimeResponsesJson));
     }
 
-    @DisplayName("예약 id로 삭제 요청을 하면, 200 OK 응답으로 저장되어있는 예약을 삭제한다.")
+    @DisplayName("예약 id로 삭제 요청을 하면, 204 No Content 응답으로 저장되어있는 예약을 삭제한다.")
     @Test
-    void shouldReturn200OkWithoutResponseWhenDeleteReservationTime() throws Exception {
+    void shouldReturn204NoContentWithoutResponseWhenDeleteReservationTime() throws Exception {
         mvc.perform(delete("/times/1"))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
 
         then(reservationTimeService).should(times(1)).deleteById(1L);
     }
