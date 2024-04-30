@@ -39,7 +39,7 @@ public class TimeDao {
 
         jdbcTemplate.update((connection) -> {
             PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
-            preparedStatement.setString(1, time.startAt());
+            preparedStatement.setString(1, time.getStartAt());
             return preparedStatement;
         }, keyHolder);
 

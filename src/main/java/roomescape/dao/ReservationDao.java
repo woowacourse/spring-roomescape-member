@@ -55,7 +55,7 @@ public class ReservationDao {
             PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
             preparedStatement.setString(1, reservation.getName());
             preparedStatement.setString(2, reservation.getDate());
-            preparedStatement.setLong(3, reservation.getTime().id());
+            preparedStatement.setLong(3, reservation.getTime().getId());
             return preparedStatement;
         }, keyHolder);
 
