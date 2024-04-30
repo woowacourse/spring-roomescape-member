@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,10 +20,13 @@ public class ReservationTimeService {
     }
 
     public ReservationTime save(ReservationTimeAppRequest request) {
-        LocalTime parsedTime = LocalTime.parse(request.startAt());
-        ReservationTime newReservationTime = new ReservationTime(parsedTime);
-
-        return reservationTimeRepository.save(newReservationTime);
+        try {
+            LocalTime parsedTime = LocalTime.parse(request.startAt());
+            ReservationTime newReservationTime = new ReservationTime(parsedTime);
+            return reservationTimeRepository.save(newReservationTime);
+        } catch (DateTimeParseException | NullPointerException exception) {
+            throw new IllegalArgumentException("잘못된 시간 입력입니다.");
+        }
     }
 
     public void delete(Long id) {
