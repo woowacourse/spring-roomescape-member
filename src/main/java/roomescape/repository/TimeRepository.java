@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.time.LocalTime;
 import java.util.List;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -50,5 +51,11 @@ public class TimeRepository {
     public void delete(Long id) {
         String sql = "DELETE FROM reservation_time WHERE id = ?";
         jdbcTemplate.update(sql, id);
+    }
+
+    public List<Time> findByStartAt(LocalTime startAt) {
+        String sql = "SELECT * FROM reservation_time WHERE start_at = ?";
+
+        return jdbcTemplate.query(sql, ROW_MAPPER, startAt);
     }
 }
