@@ -85,7 +85,7 @@ public class AdminIntegrationTest {
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -115,7 +115,7 @@ public class AdminIntegrationTest {
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
 
         Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
         Assertions.assertThat(countAfterDelete).isEqualTo(0);
@@ -143,6 +143,6 @@ public class AdminIntegrationTest {
         RestAssured.given().log().all()
                 .when().delete("/times/2")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
     }
 }
