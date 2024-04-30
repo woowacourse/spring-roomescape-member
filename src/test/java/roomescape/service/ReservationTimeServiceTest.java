@@ -100,29 +100,40 @@ class ReservationTimeServiceTest {
             assertThatThrownBy(() -> reservationTimeService.add(request))
                     .isInstanceOf(IllegalArgumentException.class);
         }
-    }
 
-    @Test
-    @DisplayName("예약 시간을 삭제한다.")
-    void delete() {
-        //given
-        long givenId = 1L;
+        @Test
+        @DisplayName("예약 시간이 중복되면 예외가 발생한다.")
+        void createReservationTimeWhenDuplicatedStartAt() {
+            //given
+            ReservationTimeCreateRequest request = ReservationTimeCreateRequest.from("12:02");
 
-        //when
-        reservationTimeService.delete(givenId);
-        List<ReservationTimeResponse> results = reservationTimeService.findAll();
-        ReservationTimeResponse secondResponse = results.get(0);
-
-        //then
-        assertAll(
-                () -> assertThat(results).hasSize(1),
-                () -> assertThat(secondResponse.getId()).isEqualTo(2)
-        );
+            //when //then
+            assertThatThrownBy(() -> reservationTimeService.add(request))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
     }
 
     @Nested
     @DisplayName("예약 시간 삭제")
     class delete {
+        @Test
+        @DisplayName("예약 시간을 삭제한다.")
+        void delete() {
+            //given
+            long givenId = 1L;
+
+            //when
+            reservationTimeService.delete(givenId);
+            List<ReservationTimeResponse> results = reservationTimeService.findAll();
+            ReservationTimeResponse secondResponse = results.get(0);
+
+            //then
+            assertAll(
+                    () -> assertThat(results).hasSize(1),
+                    () -> assertThat(secondResponse.getId()).isEqualTo(2)
+            );
+        }
+
         @Test
         @DisplayName("예약 시간 삭제시 아이디가 비어있으면 예외가 발생한다.")
         void deleteNullId() {

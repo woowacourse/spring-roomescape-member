@@ -28,8 +28,15 @@ public class ReservationTimeService {
 
     public ReservationTimeResponse add(ReservationTimeCreateRequest request) {
         ReservationTime reservationTime = request.toDomain();
+        validateDuplicateStartAt(reservationTime);
         ReservationTime result = reservationTimeDao.create(reservationTime);
         return ReservationTimeResponse.from(result);
+    }
+
+    private void validateDuplicateStartAt(ReservationTime reservationTime) {
+        if (reservationTimeDao.exist(reservationTime)) {
+            throw new IllegalArgumentException("동일한 예약 시간이 존재합니다.");
+        }
     }
 
     public void delete(Long id) {

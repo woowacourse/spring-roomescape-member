@@ -40,6 +40,12 @@ public class ConsoleReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
+    public Boolean exist(ReservationTime reservationTime) {
+        return store.values().stream()
+                .anyMatch(time -> time.getStartAt().equals(reservationTime.getStartAt()));
+    }
+
+    @Override
     public void delete(long id) {
         store.remove(id);
     }

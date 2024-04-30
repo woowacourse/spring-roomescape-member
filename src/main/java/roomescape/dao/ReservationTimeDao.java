@@ -15,5 +15,7 @@ public interface ReservationTimeDao {
 
     Boolean exist(long id);
 
+    Boolean exist(ReservationTime reservationTime);
+
     void delete(long id);
 }
