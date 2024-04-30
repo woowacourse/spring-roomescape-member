@@ -26,11 +26,10 @@ public class TimeService {
         return timeDao.createTime(dto.createReservationTime());
     }
 
-    public boolean deleteTime(long id) {
-        if (reservationDao.readReservationCountByTimeId(id) == 0) {
-            timeDao.deleteTime(id);
-            return true;
+    public void deleteTime(long id) {
+        if (reservationDao.isReservationsByTimeId(id)) {
+            throw new IllegalArgumentException("해당 시간을 사용하는 예약이 존재합니다.");
         }
-        return false;
+        timeDao.deleteTime(id);
     }
 }

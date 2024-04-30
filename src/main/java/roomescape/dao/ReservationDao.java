@@ -1,5 +1,6 @@
 package roomescape.dao;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -10,6 +11,7 @@ import roomescape.domain.ReservationTime;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class ReservationDao {
@@ -37,14 +39,29 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public Long readReservationCountByTimeId(long time_id) {
+    public boolean isReservationsByTimeId(long time_id) {
         String sql = """
-                SELECT count(reservation.time_id)
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM reservation
+                    WHERE time_id = ?
+                )
+                """;
+        return jdbcTemplate.queryForObject(sql, Boolean.class, time_id);
+    }
+
+    public Optional<Reservation> readReservationByTimeId(long time_id) {
+        String sql = """
+                SELECT reservation.id, reservation.name, reservation.date, reservation.time_id, reservation_time.start_at
                 FROM reservation
                 JOIN reservation_time ON reservation.time_id = reservation_time.id
                 WHERE reservation.time_id = ?
                 """;
-        return jdbcTemplate.queryForObject(sql, Long.class, time_id);
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, time_id));
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
     }
 
     public Reservation createReservation(Reservation reservation) {

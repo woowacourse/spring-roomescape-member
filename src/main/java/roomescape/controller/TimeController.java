@@ -31,10 +31,8 @@ public class TimeController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTime(@PathVariable long id) {
-        if (service.deleteTime(id)) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        service.deleteTime(id);
+        return ResponseEntity.noContent().build();
     }
 }
 
