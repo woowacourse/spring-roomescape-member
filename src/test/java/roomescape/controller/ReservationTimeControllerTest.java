@@ -3,6 +3,8 @@ package roomescape.controller;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -78,10 +80,11 @@ public class ReservationTimeControllerTest {
                 .statusCode(204);
     }
 
+    @DisplayName("빈 시간을 입력하면 400으로 응답한다.")
     @Test
     void invalidTimeTest() {
         Map<String, String> params = new HashMap<>();
-        params.put("startAt", "1000");
+        params.put("startAt", "");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
