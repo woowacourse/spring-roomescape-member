@@ -36,7 +36,7 @@ public class ReservationFakeRepository implements ReservationRepository {
     @Override
     public Optional<Reservation> findById(Long id) {
         return reservations.stream()
-                .filter(reservation -> reservation.id().equals(id))
+                .filter(reservation -> reservation.getId().equals(id))
                 .findAny();
     }
 
@@ -49,7 +49,7 @@ public class ReservationFakeRepository implements ReservationRepository {
 
     @Override
     public int deleteById(Long id) {
-        if (reservations.removeIf(reservation -> reservation.id().equals(id))) {
+        if (reservations.removeIf(reservation -> reservation.getId().equals(id))) {
             return 1;
         }
         return 0;

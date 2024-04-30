@@ -24,8 +24,8 @@ public class ReservationService {
 
     private Reservation assignTime(final Reservation reservation) {
         ReservationTime time = reservationTimeRepository
-                .findById(reservation.id())
-                .orElse(reservation.time());
+                .findById(reservation.getId())
+                .orElse(reservation.getTime());
         return reservation.assignTime(time);
     }
 
@@ -41,8 +41,8 @@ public class ReservationService {
         Reservation savedReservation = reservationRepository.save(parsedReservation);
 
         ReservationTime time = reservationTimeRepository
-                .findById(savedReservation.id())
-                .orElse(savedReservation.time());
+                .findById(savedReservation.getId())
+                .orElse(savedReservation.getTime());
         Reservation assignedReservation = savedReservation.assignTime(time);
 
         return ReservationResponse.from(assignedReservation);

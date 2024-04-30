@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import roomescape.controller.time.TimeRequest;
 import roomescape.controller.time.TimeResponse;
 
-import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,7 +40,7 @@ class TimeServiceTest {
     @DisplayName("예약 시간을 추가한다.")
     void addTIme() {
         // given
-        TimeRequest request = new TimeRequest(LocalTime.of(13, 30));
+        TimeRequest request = new TimeRequest("13:30");
         TimeResponse expected = new TimeResponse(4L, "13:30");
 
         // when
