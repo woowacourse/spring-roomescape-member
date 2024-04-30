@@ -10,8 +10,9 @@ public class Reservation {
     private final String name;
     private final LocalDate date;
     private final ReservationTime time;
+    private final Theme theme;
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time) {
+    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         validateName(name);
         validateDate(date);
         validateTime(date, time);
@@ -19,6 +20,7 @@ public class Reservation {
         this.name = name;
         this.date = date;
         this.time = time;
+        this.theme = theme;
     }
 
     private void validateName(String name) {
@@ -58,7 +60,15 @@ public class Reservation {
         return time;
     }
 
+    public Theme getTheme() {
+        return theme;
+    }
+
     public Long getReservationTimeId() {
         return time.getId();
+    }
+
+    public Long getThemeId() {
+        return theme.getId();
     }
 }

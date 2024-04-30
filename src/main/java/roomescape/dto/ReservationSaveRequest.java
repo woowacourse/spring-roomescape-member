@@ -6,6 +6,7 @@ public record ReservationSaveRequest(
         Long id,
         String name,
         LocalDate date,
-        Long timeId
+        Long timeId,
+        Long themeId
 ) {
 }
