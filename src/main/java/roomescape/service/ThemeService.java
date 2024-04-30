@@ -5,15 +5,18 @@ import org.springframework.stereotype.Service;
 import roomescape.dto.ThemeResponse;
 import roomescape.dto.ThemeSaveRequest;
 import roomescape.model.Theme;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 
 @Service
 public class ThemeService {
 
     private final ThemeRepository themeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ThemeService(final ThemeRepository themeRepository) {
+    public ThemeService(final ThemeRepository themeRepository, final ReservationRepository reservationRepository) {
         this.themeRepository = themeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public ThemeResponse saveTheme(final ThemeSaveRequest themeSaveRequest) {
@@ -29,9 +32,13 @@ public class ThemeService {
     }
 
     public void deleteTheme(final Long id) {
-        // TODO: 테마를 사용하는 예약이 있으면 삭제 불가
+        final boolean isReservationExist = reservationRepository.existByThemeId(id);
+        if (isReservationExist) {
+            throw new IllegalArgumentException("예약이 존재하는 테마입니다.");
+        }
         themeRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
+
         themeRepository.deleteById(id);
     }
 }
