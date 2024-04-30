@@ -1,5 +1,8 @@
 package roomescape.reservation.service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -27,10 +30,18 @@ public class ReservationService {
     public CreateReservationResponse createReservation(final CreateReservationRequest createReservationRequest) {
         ReservationTime reservationTime = reservationTimeRepository.findById(createReservationRequest.timeId())
                 .orElseThrow(() -> new NoSuchElementException("해당하는 예약 시간이 존재하지 않습니다."));
+
+        validateReservationDateTime(createReservationRequest.date(), reservationTime.getTime());
+
         Long id = reservationRepository.save(createReservationRequest.toReservation(reservationTime));
-
-
         return CreateReservationResponse.of(getReservation(id));
+    }
+
+    private void validateReservationDateTime(final LocalDate reservationDate, final LocalTime reservationTime) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(reservationDate, reservationTime);
+        if (reservationDateTime.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("지나간 날짜와 시간에 대한 예약 생성은 불가능합니다.");
+        }
     }
 
     public List<FindReservationResponse> getReservations() {

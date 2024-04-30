@@ -9,6 +9,7 @@ public record CreateReservationRequest(LocalDate date, String name, Long timeId)
         if (date == null || name.isBlank() || timeId == null) {
             throw new IllegalArgumentException("올바른 예약이 아닙니다.");
         }
+        // 날짜 현재보다 이후인지
         this.date = date;
         this.name = name;
         this.timeId = timeId;
