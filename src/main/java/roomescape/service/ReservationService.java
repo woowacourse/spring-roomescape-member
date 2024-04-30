@@ -3,8 +3,10 @@ package roomescape.service;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDAO;
 import roomescape.dao.ReservationTimeDAO;
+import roomescape.dao.ThemeDAO;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequest;
 
 import java.time.LocalDate;
@@ -15,16 +17,19 @@ import java.util.List;
 public class ReservationService {
     private final ReservationDAO reservationDAO;
     private final ReservationTimeDAO reservationTimeDAO;
+    private final ThemeDAO themeDAO;
 
-    public ReservationService(final ReservationDAO reservationDAO, final ReservationTimeDAO reservationTimeDAO) {
+    public ReservationService(final ReservationDAO reservationDAO, final ReservationTimeDAO reservationTimeDAO, ThemeDAO themeDAO) {
         this.reservationDAO = reservationDAO;
         this.reservationTimeDAO = reservationTimeDAO;
+        this.themeDAO = themeDAO;
     }
 
     public Reservation save(final ReservationRequest reservationRequest) {
         validateReservation(reservationRequest);
         final ReservationTime reservationTime = reservationTimeDAO.findById(reservationRequest.timeId());
-        final Reservation reservation = reservationRequest.toEntity(reservationTime);
+        final Theme theme = themeDAO.findById(reservationRequest.themeId());
+        final Reservation reservation = reservationRequest.toEntity(reservationTime, theme);
 
         return reservationDAO.insert(reservation);
     }

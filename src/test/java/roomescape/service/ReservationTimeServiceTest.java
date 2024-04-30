@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationTimeRequest;
+import roomescape.dto.ThemeRequest;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -24,6 +26,8 @@ class ReservationTimeServiceTest {
     ReservationTimeService reservationTimeService;
     @Autowired
     ReservationService reservationService;
+    @Autowired
+    ThemeService themeService;
 
     @Test
     @DisplayName("예약 시간을 저장할 수 있다.")
@@ -60,7 +64,8 @@ class ReservationTimeServiceTest {
         LocalTime localTime = LocalTime.now();
 
         ReservationTime savedReservationTime = reservationTimeService.save(new ReservationTimeRequest(localTime.plusHours(1)));
-        reservationService.save(new ReservationRequest("abc", LocalDate.now(), savedReservationTime.getId()));
+        Theme savedTheme = themeService.save(new ThemeRequest("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        reservationService.save(new ReservationRequest("abc", LocalDate.now(), savedReservationTime.getId(), savedTheme.getId()));
 
         assertThatThrownBy(() -> reservationTimeService.delete(savedReservationTime.getId()))
                 .isInstanceOf(IllegalArgumentException.class);

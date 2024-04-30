@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -23,14 +24,17 @@ class ReservationDAOTest {
     ReservationDAO reservationDAO;
     @Autowired
     ReservationTimeDAO reservationTimeDAO;
+    @Autowired
+    ThemeDAO themeDAO;
 
     Reservation reservation;
 
     @BeforeEach
     void setUp() {
         final ReservationTime savedReservationTime = reservationTimeDAO.insert(new ReservationTime(LocalTime.now()));
+        final Theme theme = themeDAO.insert(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
 
-        reservation = new Reservation("뽀로로", LocalDate.now(), savedReservationTime);
+        reservation = new Reservation("뽀로로", LocalDate.now(), savedReservationTime, theme);
     }
 
     @Test
