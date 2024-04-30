@@ -95,7 +95,7 @@ class ReservationApiControllerTest {
         // When & Then
         mockMvc.perform(delete("/reservations/" + reservationId))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
     }
 
     @DisplayName("존재하지 않는 예약 정보를 삭제하려고 하면 400코드가 응답된다.")
@@ -193,7 +193,7 @@ class ReservationApiControllerTest {
         // When & Then
         mockMvc.perform(delete("/times/" + reservationTimeId))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
     }
 
     @DisplayName("존재하지 않는 예약 시간 정보를 삭제하려고 하면 400코드가 응답된다.")

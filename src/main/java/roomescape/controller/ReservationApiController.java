@@ -46,8 +46,9 @@ public class ReservationApiController {
     }
 
     @DeleteMapping("/reservations/{reservation-id}")
-    public void deleteReservation(@PathVariable("reservation-id") final Long reservationId) {
+    public ResponseEntity<Void> deleteReservation(@PathVariable("reservation-id") final Long reservationId) {
         reservationService.deleteReservation(reservationId);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/times")
@@ -67,8 +68,9 @@ public class ReservationApiController {
     }
 
     @DeleteMapping("/times/{reservation-time-id}")
-    public void deleteReservationTime(@PathVariable("reservation-time-id") final Long reservationTimeId) {
+    public ResponseEntity<Void> deleteReservationTime(@PathVariable("reservation-time-id") final Long reservationTimeId) {
         reservationService.deleteReservationTime(reservationTimeId);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/themes")
@@ -88,7 +90,8 @@ public class ReservationApiController {
     }
 
     @DeleteMapping("/themes/{themeId}")
-    public void deleteTheme(@PathVariable final Long themeId) {
+    public ResponseEntity<Void> deleteTheme(@PathVariable final Long themeId) {
         reservationService.deleteTheme(themeId);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -69,7 +69,7 @@ class ReservationControllerIntegrationTest {
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
 
         List<ReservationResponse> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -157,7 +157,7 @@ class ReservationControllerIntegrationTest {
         RestAssured.given().log().all()
                 .when().delete("/times/2")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
 
         // 예약 시간 정보 조회
         List<ReservationTimeResponse> reservationTimes = RestAssured.given().log().all()
@@ -231,7 +231,7 @@ class ReservationControllerIntegrationTest {
         RestAssured.given().log().all()
                 .when().delete("/themes/2")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
 
         // 예약 시간 정보 조회
         List<ThemeResponse> themes = RestAssured.given().log().all()
