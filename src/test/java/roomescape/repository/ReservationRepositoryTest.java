@@ -18,10 +18,8 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
-@Sql(scripts = {"/sample.sql"},
+@Sql(scripts = {"/drop.sql", "/schema.sql", "/data.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(scripts = {"/drop.sql", "/schema.sql"},
-        executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 @JdbcTest
 class ReservationRepositoryTest {
 
@@ -40,14 +38,14 @@ class ReservationRepositoryTest {
                 new Reservation(
                         1L,
                         "al",
-                        LocalDate.of(2024, 1, 20),
+                        LocalDate.of(2025, 1, 20),
                         new ReservationTime(1L, null),
                         new Theme(1L, null, null, null)
                 ),
                 new Reservation(
                         2L,
                         "be",
-                        LocalDate.of(2024, 2, 19),
+                        LocalDate.of(2025, 2, 19),
                         new ReservationTime(2L, null),
                         new Theme(2L, null, null, null)
                 )
@@ -68,7 +66,7 @@ class ReservationRepositoryTest {
         Reservation expected = new Reservation(
                 id,
                 "be",
-                LocalDate.of(2024, 2, 19),
+                LocalDate.of(2025, 2, 19),
                 new ReservationTime(2L, null),
                 new Theme(2L, null, null, null)
         );

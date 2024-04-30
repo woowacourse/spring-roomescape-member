@@ -10,7 +10,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.util.Map;
 
-@Sql(scripts = {"/sample.sql"},
+@Sql(scripts = {"/data.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(scripts = {"/drop.sql", "/schema.sql"},
         executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -32,7 +32,8 @@ class GlobalExceptionHandlerTest {
         Map<String, String> params = Map.of(
                 "name", " ",
                 "date", "1998-02-24",
-                "timeId", "1"
+                "timeId", "1",
+                "themeId", "1"
         );
 
         // when & then

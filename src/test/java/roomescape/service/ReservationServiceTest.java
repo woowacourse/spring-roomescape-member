@@ -1,45 +1,34 @@
 package roomescape.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.controller.reservation.ReservationRequest;
 import roomescape.controller.reservation.ReservationResponse;
 import roomescape.controller.time.TimeResponse;
 import roomescape.exception.DuplicateReservation;
 import roomescape.exception.PreviousTimeException;
 import roomescape.exception.TimeNotFoundException;
+import roomescape.repository.H2ReservationRepository;
+import roomescape.repository.H2ReservationTimeRepository;
 import roomescape.repository.H2ThemeRepository;
-import roomescape.repository.ThemeRepository;
 
-import javax.sql.DataSource;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@Sql(scripts = {"/drop.sql", "/schema.sql", "/data.sql"},
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @JdbcTest
+@Import({ReservationService.class, H2ReservationRepository.class, H2ReservationTimeRepository.class, H2ThemeRepository.class})
 class ReservationServiceTest {
 
-    private final ThemeRepository themeRepository;
-    private ReservationService reservationService;
-
     @Autowired
-    ReservationServiceTest(final DataSource dataSource) {
-        this.themeRepository = new H2ThemeRepository(dataSource);
-    }
-
-    @BeforeEach
-    void setUp() {
-        // TODO: Fake 객체 제거
-        reservationService = new ReservationService(
-                new ReservationFakeRepository(),
-                new ReservationTimeFakeRepository(),
-                themeRepository
-        );
-    }
+    private ReservationService reservationService;
 
     @Test
     @DisplayName("예약 목록을 조회한다.")

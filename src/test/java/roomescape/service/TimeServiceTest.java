@@ -1,27 +1,30 @@
 package roomescape.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.controller.time.TimeRequest;
 import roomescape.controller.time.TimeResponse;
 import roomescape.exception.TimeUsedException;
+import roomescape.repository.H2ReservationRepository;
+import roomescape.repository.H2ReservationTimeRepository;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@Sql(scripts = {"/drop.sql", "/schema.sql", "/data.sql"},
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@JdbcTest
+@Import({TimeService.class, H2ReservationRepository.class, H2ReservationTimeRepository.class})
 class TimeServiceTest {
 
+    @Autowired
     private TimeService timeService;
-
-    @BeforeEach
-    void setUp() {
-        timeService = new TimeService(
-                new ReservationFakeRepository(),
-                new ReservationTimeFakeRepository());
-    }
 
     @Test
     @DisplayName("예약 시간 목록을 조회한다.")

@@ -14,10 +14,8 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Sql(scripts = {"/sample.sql"},
+@Sql(scripts = {"/drop.sql", "/schema.sql", "/data.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(scripts = {"/drop.sql", "/schema.sql"},
-        executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 @JdbcTest
 class ReservationTimeRepositoryTest {
 

@@ -8,5 +8,5 @@ VALUES ('spring', 'Escape from spring cold', 'Spring thumb'),
        ('summer', 'Escape from hottest weather', 'Summer thumb');
 
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('al', '2024-01-20', 1, 1),
-       ('be', '2024-02-19', 2, 2);
+VALUES ('al', '2025-01-20', 1, 1),
+       ('be', '2025-02-19', 2, 2);
