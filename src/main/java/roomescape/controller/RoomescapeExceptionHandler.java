@@ -17,8 +17,8 @@ public class RoomescapeExceptionHandler {
     }
 
     //TODO : 커스템 에러로 처리하도록 변경
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> handle(IllegalArgumentException e) {
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ErrorResponse> handle(RuntimeException e) {
         e.printStackTrace();
         return ResponseEntity.badRequest().
                 body(new ErrorResponse(e.getMessage()));

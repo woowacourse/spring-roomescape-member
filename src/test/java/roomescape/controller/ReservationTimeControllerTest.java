@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
+import roomescape.repository.CollectionReservationRepository;
 import roomescape.repository.CollectionReservationTimeRepository;
 import roomescape.service.ReservationTimeService;
 
@@ -18,7 +19,10 @@ class ReservationTimeControllerTest {
     @DisplayName("시간을 잘 저장하는지 확인한다.")
     void save() {
         CollectionReservationTimeRepository reservationTimeRepository = new CollectionReservationTimeRepository();
-        ReservationTimeService reservationTimeService = new ReservationTimeService(reservationTimeRepository);
+        CollectionReservationRepository reservationRepository = new CollectionReservationRepository(
+                reservationTimeRepository);
+        ReservationTimeService reservationTimeService = new ReservationTimeService(reservationRepository,
+                reservationTimeRepository);
         ReservationTimeController reservationTimeController = new ReservationTimeController(reservationTimeService);
         LocalTime time = LocalTime.now();
 
@@ -33,7 +37,10 @@ class ReservationTimeControllerTest {
     @DisplayName("시간을 잘 불러오는지 확인한다.")
     void findAll() {
         CollectionReservationTimeRepository reservationTimeRepository = new CollectionReservationTimeRepository();
-        ReservationTimeService reservationTimeService = new ReservationTimeService(reservationTimeRepository);
+        CollectionReservationRepository reservationRepository = new CollectionReservationRepository(
+                reservationTimeRepository);
+        ReservationTimeService reservationTimeService = new ReservationTimeService(reservationRepository,
+                reservationTimeRepository);
         ReservationTimeController reservationTimeController = new ReservationTimeController(reservationTimeService);
         List<ReservationTimeResponse> reservationTimeResponses = reservationTimeController.findAll();
 
@@ -47,7 +54,10 @@ class ReservationTimeControllerTest {
         CollectionReservationTimeRepository reservationTimeRepository = new CollectionReservationTimeRepository(
                 new ArrayList<>(List.of(new ReservationTime(1L, LocalTime.now())))
         );
-        ReservationTimeService reservationTimeService = new ReservationTimeService(reservationTimeRepository);
+        CollectionReservationRepository reservationRepository = new CollectionReservationRepository(
+                reservationTimeRepository);
+        ReservationTimeService reservationTimeService = new ReservationTimeService(reservationRepository,
+                reservationTimeRepository);
         ReservationTimeController reservationTimeController = new ReservationTimeController(reservationTimeService);
 
         reservationTimeController.delete(1);
@@ -61,7 +71,10 @@ class ReservationTimeControllerTest {
     @DisplayName("내부에 Repository를 의존하고 있지 않은지 확인한다.")
     void checkRepositoryDependency() {
         CollectionReservationTimeRepository reservationTimeRepository = new CollectionReservationTimeRepository();
-        ReservationTimeService reservationTimeService = new ReservationTimeService(reservationTimeRepository);
+        CollectionReservationRepository reservationRepository = new CollectionReservationRepository(
+                reservationTimeRepository);
+        ReservationTimeService reservationTimeService = new ReservationTimeService(reservationRepository,
+                reservationTimeRepository);
         ReservationTimeController reservationTimeController = new ReservationTimeController(reservationTimeService);
 
         boolean isRepositoryInjected = false;
