@@ -19,7 +19,6 @@ import roomescape.support.annotation.FixedClock;
 import roomescape.support.extension.MockClockExtension;
 import roomescape.support.extension.TableTruncateExtension;
 
-
 @SpringBootTest
 @ExtendWith({TableTruncateExtension.class, MockClockExtension.class})
 @FixedClock(date = "2024-04-20")
