@@ -47,8 +47,6 @@ class ReservationServiceTest {
     @DisplayName("정상적인 예약 요청을 받아서 저장하고, 예약 응답을 반환한다.")
     @Test
     void shouldReturnReservationResponseWhenValidReservationRequestSave() {
-        ReservationRequest reservationRequest = new ReservationRequest("test", LocalDate.now(), 1L);
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
         ReservationRequest reservationRequest = new ReservationRequest("test", LocalDate.of(2024, 12, 26), 1L);
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(12, 0));
         Reservation reservation = new Reservation(
@@ -61,8 +59,7 @@ class ReservationServiceTest {
         setClockMock(2024, 12, 25, 0, 0);
         given(reservationTimeRepository.findById(any(Long.class)))
                 .willReturn(Optional.of(reservationTime));
-        given(reservationRepository.existByNameAndDateAndTimeId(any(String.class), any(LocalDate.class),
-                any(Long.class)))
+        given(reservationRepository.existByDateAndTimeId(any(LocalDate.class), any(Long.class)))
                 .willReturn(false);
         given(reservationRepository.save(any(Reservation.class)))
                 .willReturn(reservation);
@@ -71,7 +68,7 @@ class ReservationServiceTest {
 
         then(reservationTimeRepository).should(times(1)).findById(any(Long.class));
         then(reservationRepository).should(times(1))
-                .existByNameAndDateAndTimeId(any(String.class), any(LocalDate.class), any(Long.class));
+                .existByDateAndTimeId(any(LocalDate.class), any(Long.class));
         then(reservationRepository).should(times(1)).save(any(Reservation.class));
     }
 
@@ -84,23 +81,20 @@ class ReservationServiceTest {
 
         then(reservationTimeRepository).should().findById(any(Long.class));
         then(reservationRepository).should(times(0))
-                .existByNameAndDateAndTimeId(any(String.class), any(LocalDate.class), any(Long.class));
+                .existByDateAndTimeId(any(LocalDate.class), any(Long.class));
         then(reservationRepository).should(times(0)).save(any(Reservation.class));
     }
 
     @DisplayName("중복된 예약을 하는 경우 IllegalStateException 예외를 반환한다.")
     @Test
     void shouldReturnIllegalStateExceptionWhenDuplicatedReservationCreate() {
-        ReservationRequest reservationRequest = new ReservationRequest("test", LocalDate.now(), 1L);
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
         ReservationRequest reservationRequest = new ReservationRequest("test", LocalDate.of(2024, 12, 27), 1L);
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(12, 0));
 
         setClockMock(2024, 12, 26, 0, 0);
         given(reservationTimeRepository.findById(any(Long.class)))
                 .willReturn(Optional.of(reservationTime));
-        given(reservationRepository.existByNameAndDateAndTimeId(any(String.class), any(LocalDate.class),
-                any(Long.class)))
+        given(reservationRepository.existByDateAndTimeId(any(LocalDate.class), any(Long.class)))
                 .willReturn(true);
 
         assertThatCode(() -> reservationService.create(reservationRequest))
@@ -109,7 +103,7 @@ class ReservationServiceTest {
 
         then(reservationTimeRepository).should().findById(any(Long.class));
         then(reservationRepository).should()
-                .existByNameAndDateAndTimeId(any(String.class), any(LocalDate.class), any(Long.class));
+                .existByDateAndTimeId(any(LocalDate.class), any(Long.class));
         then(reservationRepository).should(times(0)).save(any(Reservation.class));
     }
 

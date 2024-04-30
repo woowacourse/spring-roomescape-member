@@ -118,7 +118,7 @@ class JdbcReservationRepositoryTest {
         jdbcTemplate.update("insert into reservation (id, name, date, time_id) values (?, ?, ?, ?)", 1L, "test",
                 date, 1L);
 
-        boolean isExist = jdbcReservationRepository.existByNameAndDateAndTimeId(name, date, 1L);
+        boolean isExist = jdbcReservationRepository.existByDateAndTimeId(date, 1L);
 
         assertThat(isExist).isTrue();
     }
