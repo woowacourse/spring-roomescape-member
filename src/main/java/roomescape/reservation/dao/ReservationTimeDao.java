@@ -1,6 +1,7 @@
 package roomescape.reservation.dao;
 
 import java.sql.ResultSet;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
@@ -68,5 +69,12 @@ public class ReservationTimeDao implements ReservationTimeRepository {
         String sql = "DELETE FROM reservation_time WHERE id = ?";
         int deleteId = jdbcTemplate.update(sql, timeId);
         return deleteId != 0;
+    }
+
+    @Override
+    public boolean existsByStartAt(LocalTime time) {
+        String sql = "SELECT * FROM reservation_time WHERE start_at = ?";
+        List<ReservationTime> times = jdbcTemplate.query(sql, rowMapper, time);
+        return !times.isEmpty();
     }
 }

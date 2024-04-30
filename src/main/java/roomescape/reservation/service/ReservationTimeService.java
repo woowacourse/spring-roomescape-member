@@ -21,7 +21,12 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponse create(ReservationTimeRequest reservationTimeRequest) {
-        ReservationTime reservationTime = new ReservationTime(LocalTime.parse(reservationTimeRequest.startAt()));
+        LocalTime time = LocalTime.parse(reservationTimeRequest.startAt());
+        if (reservationTimeRepository.existsByStartAt(time)) {
+            throw new IllegalArgumentException("시간이 중복되었습니다.");
+        }
+
+        ReservationTime reservationTime = new ReservationTime(time);
         return ReservationTimeResponse.from(reservationTimeRepository.save(reservationTime));
     }
 

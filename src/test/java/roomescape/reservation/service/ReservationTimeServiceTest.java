@@ -92,4 +92,17 @@ class ReservationTimeServiceTest {
         assertThatThrownBy(() -> reservationTimeService.delete(id))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @DisplayName("예약 시간이 증복일 경우, 예외가 발생한다.")
+    @Test
+    void duplicatedTime() {
+        //given
+        String localTime = "12:00";
+        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(localTime);
+        reservationTimeRepository.save(new ReservationTime(LocalTime.parse(localTime)));
+
+        //when & then
+        assertThatThrownBy(() -> reservationTimeService.create(reservationTimeRequest))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }

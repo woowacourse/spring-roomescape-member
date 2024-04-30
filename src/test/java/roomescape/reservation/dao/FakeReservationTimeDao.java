@@ -1,5 +1,6 @@
 package roomescape.reservation.dao;
 
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,5 +36,13 @@ public class FakeReservationTimeDao implements ReservationTimeRepository {
         }
         reservationTimes.remove(timeId);
         return true;
+    }
+
+    @Override
+    public boolean existsByStartAt(final LocalTime time) {
+        List<ReservationTime> times = reservationTimes.values().stream()
+                .filter(reservationTime -> reservationTime.getStartAt().equals(time))
+                .toList();
+        return !times.isEmpty();
     }
 }

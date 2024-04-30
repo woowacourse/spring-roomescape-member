@@ -52,7 +52,7 @@ class ReservationControllerTest extends ControllerTest {
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
     }
 
     @DisplayName("예약 삭제 시 200을 반환한다.")

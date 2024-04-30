@@ -39,7 +39,7 @@ class ReservationTimeControllerTest extends ControllerTest {
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
     }
 
     @DisplayName("시간 조회 시, 200을 반환한다.")
