@@ -1,5 +1,7 @@
 package roomescape.domain;
 
+import roomescape.exception.BadRequestException;
+
 import java.time.LocalDate;
 
 public class Reservation {
@@ -10,10 +12,17 @@ public class Reservation {
     private final ReservationTime time;
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time) {
+        validateName(name);
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
+    }
+
+    private void validateName(String name) {
+        if (name.isBlank()) {
+            throw new BadRequestException("이름은 공백일 수 없습니다.");
+        }
     }
 
     public Reservation(String name, LocalDate date, ReservationTime reservationTime) {
