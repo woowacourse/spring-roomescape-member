@@ -1,5 +1,7 @@
 package roomescape.controller;
 
+import static org.hamcrest.Matchers.is;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalTime;
@@ -49,11 +51,10 @@ class ReservationTimeControllerTest {
         ReservationTimeAddRequest reservationTimeAddRequest = new ReservationTimeAddRequest(LocalTime.of(10, 0));
 
         RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservationTimeAddRequest)
-                .when().post("/times")
+                .when().get("/times")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(200)
+                .body("size()", is(1));
     }
 
     @DisplayName("존재하는 리소스에 대한 삭제 요청시, 204 no content를 응답한다.")
