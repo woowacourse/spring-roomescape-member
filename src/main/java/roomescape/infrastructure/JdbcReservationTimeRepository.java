@@ -1,5 +1,9 @@
 package roomescape.infrastructure;
 
+import java.sql.PreparedStatement;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.NoSuchElementException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -8,16 +12,10 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 
-import java.sql.PreparedStatement;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.NoSuchElementException;
-
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
 
     private final JdbcTemplate jdbcTemplate;
-
     private final RowMapper<ReservationTime> reservationTimeRowMapper = (resultSet, rowNum) -> new ReservationTime(
             resultSet.getLong("id"),
             LocalTime.parse(resultSet.getString("start_at")
