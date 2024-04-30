@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidException(InvalidException e) {
+    public ResponseEntity<ErrorResponse> handleInvalidException(final InvalidException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(e.getMessage()));
     }

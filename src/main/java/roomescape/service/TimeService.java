@@ -13,7 +13,7 @@ public class TimeService {
 
     private final ReservationTimeRepository timeRepository;
 
-    public TimeService(ReservationTimeRepository timeRepository) {
+    public TimeService(final ReservationTimeRepository timeRepository) {
         this.timeRepository = timeRepository;
     }
 
@@ -23,13 +23,13 @@ public class TimeService {
                 .toList();
     }
 
-    public TimeResponse addTime(TimeRequest timeRequest) {
+    public TimeResponse addTime(final TimeRequest timeRequest) {
         ReservationTime parsedTime = timeRequest.toDomain();
         ReservationTime savedTime = timeRepository.save(parsedTime);
         return TimeResponse.from(savedTime);
     }
 
-    public int deleteTime(Long id) {
+    public int deleteTime(final Long id) {
         return timeRepository.deleteById(id);
     }
 }

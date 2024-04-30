@@ -20,14 +20,14 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public H2ReservationTimeRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+    public H2ReservationTimeRepository(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation_time")
                 .usingGeneratedKeyColumns("id");
     }
 
-    private ReservationTime mapRowTime(ResultSet rs, int rowNum) throws SQLException {
+    private ReservationTime mapRowTime(final ResultSet rs, final int rowNum) throws SQLException {
         return new ReservationTime(
                 rs.getLong("id"),
                 LocalTime.parse(rs.getString("start_at"))
@@ -42,7 +42,7 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
     }
 
     @Override
-    public Optional<ReservationTime> findById(Long id) {
+    public Optional<ReservationTime> findById(final Long id) {
         String sql = "SELECT * FROM reservation_time WHERE id = ?";
 
         return jdbcTemplate.query(sql, this::mapRowTime, id)
@@ -52,7 +52,7 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
 
 
     @Override
-    public ReservationTime save(ReservationTime time) {
+    public ReservationTime save(final ReservationTime time) {
         SqlParameterSource params = new BeanPropertySqlParameterSource(time);
         Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
 
@@ -60,7 +60,7 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
     }
 
     @Override
-    public int deleteById(Long id) {
+    public int deleteById(final Long id) {
         String sql = "DELETE FROM reservation_time WHERE id = ?";
 
         return jdbcTemplate.update(sql, id);

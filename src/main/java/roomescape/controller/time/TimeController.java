@@ -20,7 +20,7 @@ public class TimeController {
 
     private final TimeService timeService;
 
-    public TimeController(TimeService timeService) {
+    public TimeController(final TimeService timeService) {
         this.timeService = timeService;
     }
 

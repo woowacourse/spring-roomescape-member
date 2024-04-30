@@ -16,12 +16,13 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, ReservationTimeRepository reservationTimeRepository) {
+    public ReservationService(final ReservationRepository reservationRepository,
+                              final ReservationTimeRepository reservationTimeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
-    private Reservation assignTime(Reservation reservation) {
+    private Reservation assignTime(final Reservation reservation) {
         ReservationTime time = reservationTimeRepository
                 .findById(reservation.id())
                 .orElse(reservation.time());
@@ -35,7 +36,7 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse addReservation(ReservationRequest reservationRequest) {
+    public ReservationResponse addReservation(final ReservationRequest reservationRequest) {
         Reservation parsedReservation = reservationRequest.toDomain();
         Reservation savedReservation = reservationRepository.save(parsedReservation);
 
@@ -47,7 +48,7 @@ public class ReservationService {
         return ReservationResponse.from(assignedReservation);
     }
 
-    public int deleteReservation(Long id) {
+    public int deleteReservation(final Long id) {
         return reservationRepository.deleteById(id);
     }
 }

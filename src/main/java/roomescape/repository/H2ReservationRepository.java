@@ -23,14 +23,14 @@ public class H2ReservationRepository implements ReservationRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public H2ReservationRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+    public H2ReservationRepository(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
     }
 
-    private Reservation mapRowReservation(ResultSet rs, int rowNum) throws SQLException {
+    private Reservation mapRowReservation(final ResultSet rs, final int rowNum) throws SQLException {
         return new Reservation(
                 rs.getLong("id"),
                 rs.getString("name"),
@@ -47,7 +47,7 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Optional<Reservation> findById(Long id) {
+    public Optional<Reservation> findById(final Long id) {
         String sql = "SELECT * FROM reservation WHERE id = ?";
 
         return jdbcTemplate.query(sql, this::mapRowReservation, id)
@@ -56,7 +56,7 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation save(Reservation reservation) {
+    public Reservation save(final Reservation reservation) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.name())
                 .addValue("date", reservation.date().format(DateTimeFormatter.ISO_LOCAL_DATE))
@@ -71,7 +71,7 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public int deleteById(Long id) {
+    public int deleteById(final Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
 
         return jdbcTemplate.update(sql, id);
