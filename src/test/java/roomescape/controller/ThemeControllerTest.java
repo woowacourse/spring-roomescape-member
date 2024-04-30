@@ -44,6 +44,32 @@ class ThemeControllerTest {
                 .then().log().all().statusCode(201).body("id", is(greaterThan(0)));
     }
 
+    @DisplayName("테마 추가 실패 테스트 - 이름 오류")
+    @Test
+    void cannotCreateThemeByName() {
+        //given
+        ThemeRequest themeRequest = new ThemeRequest("", "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+
+        //when&then
+        RestAssured.given().contentType(ContentType.JSON).body(themeRequest)
+                .when().post("/themes")
+                .then().log().all().statusCode(400).body("message", is("이름은 빈칸(공백)일 수 없습니다."));
+    }
+
+    @DisplayName("테마 추가 실패 테스트 - 썸네일 형식 오류")
+    @Test
+    void cannotCreateThemeByThumbnail() {
+        //given
+        ThemeRequest themeRequest = new ThemeRequest("lily", "우테코 레벨2를 탈출하는 내용입니다.",
+                "//i.pinimg.com/236x/6e/bc/4");
+
+        //when&then
+        RestAssured.given().contentType(ContentType.JSON).body(themeRequest)
+                .when().post("/themes")
+                .then().log().all().statusCode(400).body("message", is("올바르지 않은 썸네일 형식입니다."));
+    }
+
     @DisplayName("테마 조회 성공 테스트")
     @Test
     void findAll() {
