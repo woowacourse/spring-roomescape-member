@@ -21,7 +21,7 @@ public class ViewAcceptanceTest {
     @DisplayName("[Step2] 어드민 예약 페이지를 조회한다.")
     void getAdminReservationPage() {
         RestAssured.given().log().all()
-                .when().get("/reservation")
+                .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200);
     }
@@ -30,7 +30,7 @@ public class ViewAcceptanceTest {
     @DisplayName("[Step7] 어드민 시간 관리 페이지를 조회한다.")
     void getTimePage() {
         RestAssured.given().log().all()
-                .when().get("/time")
+                .when().get("/admin/time")
                 .then().log().all()
                 .statusCode(200);
     }

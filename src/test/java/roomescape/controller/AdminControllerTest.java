@@ -22,7 +22,7 @@ public class AdminControllerTest extends ControllerTest {
     @DisplayName("어드민 예약 페이지를 반환한다.")
     void reservationPage() throws Exception {
         // whe & then
-        mockMvc.perform(get("/reservation"))
+        mockMvc.perform(get("/admin/reservation"))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
