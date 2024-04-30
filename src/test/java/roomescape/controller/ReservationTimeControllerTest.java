@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.dao.ReservationDao;
+import roomescape.dao.ReservationTimeDao;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -24,13 +29,21 @@ class ReservationTimeControllerTest {
     private int port;
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private ReservationDao reservationDao;
+    @Autowired
+    private ReservationTimeDao reservationTimeDao;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        jdbcTemplate.update("delete from reservation");
-        jdbcTemplate.update("delete from reservation_time");
+        List<Reservation> reservations = reservationDao.findAll();
+        for (Reservation reservation : reservations) {
+            reservationDao.deleteById(reservation.getId());
+        }
+        List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
+        for (ReservationTime reservationTime : reservationTimes) {
+            reservationTimeDao.deleteById(reservationTime.getId());
+        }
     }
 
     @DisplayName("모든 예약 시간 조회 테스트")
@@ -55,10 +68,11 @@ class ReservationTimeControllerTest {
     @Test
     void deleteReservationTImeSuccess() {
         //given
-        jdbcTemplate.update("INSERT INTO reservation_time VALUES (1, '10:00')");
+        ReservationTime reservationTime = reservationTimeDao.save(new ReservationTime("10:00"));
+        Long id = reservationTime.getId();
         //then
         RestAssured.given().log().all()
-                .when().delete("/times/1")
+                .when().delete("/times/" + id)
                 .then().log().all().assertThat().statusCode(HttpStatus.NO_CONTENT.value());
     }
 
@@ -77,11 +91,12 @@ class ReservationTimeControllerTest {
     @Test
     void deleteReservationTimeDeletesReservationAlso() {
         //given
-        jdbcTemplate.update("INSERT INTO reservation_time VALUES (1, '10:00')");
-        jdbcTemplate.update("INSERT INTO reservation VALUES (1, 'brown', '2024-11-15', 1)");
+        ReservationTime reservationTime = reservationTimeDao.save(new ReservationTime("10:00"));
+        reservationDao.save(new Reservation("brown", "2024-11-15", reservationTime));
+        Long timeId = reservationTime.getId();
         //when
         Response deleteResponse = RestAssured.given().log().all()
-                .when().delete("/times/1")
+                .when().delete("/times/" + timeId)
                 .then().log().all().extract().response();
         //then
         Response reservationResponse = RestAssured.given().log().all()

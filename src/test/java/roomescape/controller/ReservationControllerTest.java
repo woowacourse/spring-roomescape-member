@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.lang.reflect.Field;
+import java.time.LocalTime;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,7 +15,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.dao.ReservationDao;
+import roomescape.dao.ReservationTimeDao;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationRequest;
+import roomescape.service.ReservationService;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReservationControllerTest {
@@ -21,16 +28,21 @@ class ReservationControllerTest {
     private int port;
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-
+    private ReservationDao reservationDao;
     @Autowired
-    private ReservationController reservationController;
+    private ReservationTimeDao reservationTimeDao;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        jdbcTemplate.update("delete from reservation");
-        jdbcTemplate.update("delete from reservation_time");
+        List<Reservation> reservations = reservationDao.findAll();
+        for (Reservation reservation : reservations) {
+            reservationDao.deleteById(reservation.getId());
+        }
+        List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
+        for (ReservationTime reservationTime : reservationTimes) {
+            reservationTimeDao.deleteById(reservationTime.getId());
+        }
     }
 
     @DisplayName("모든 예약 내역 조회 테스트")
@@ -45,7 +57,7 @@ class ReservationControllerTest {
     @Test
     void createReservation() {
         //given
-        jdbcTemplate.update("INSERT INTO reservation_time VALUES (1, '10:00')");
+        reservationTimeDao.save(new ReservationTime("10:00"));
         //then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -68,11 +80,13 @@ class ReservationControllerTest {
     @Test
     void deleteReservationSuccess() {
         //given
-        jdbcTemplate.update("INSERT INTO reservation_time VALUES (1, '10:00:00')");
-        jdbcTemplate.update("INSERT INTO reservation VALUES (1, 'brown', '2024-11-15', 1)");
+        ReservationTime reservationTime = reservationTimeDao.save(new ReservationTime("10:00"));
+        Reservation reservation = reservationDao.save(
+                new Reservation("brown", "2024-11-15", reservationTime));
+        Long id = reservation.getId();
         //then
         RestAssured.given().log().all()
-                .when().delete("/reservations/1")
+                .when().delete("/reservations/" + id)
                 .then().log().all().assertThat().statusCode(HttpStatus.NO_CONTENT.value());
     }
 
@@ -85,20 +99,5 @@ class ReservationControllerTest {
         RestAssured.given().log().all()
                 .when().delete("/reservations/" + invalidId)
                 .then().log().all().assertThat().statusCode(HttpStatus.NOT_FOUND.value());
-    }
-
-    @DisplayName("JDBC 주입 여부 테스트")
-    @Test
-    void jdbcTemplateNotInjected() {
-        boolean isJdbcTemplateInjected = false;
-
-        for (Field field : reservationController.getClass().getDeclaredFields()) {
-            if (field.getType().equals(JdbcTemplate.class)) {
-                isJdbcTemplateInjected = true;
-                break;
-            }
-        }
-
-        assertThat(isJdbcTemplateInjected).isFalse();
     }
 }
