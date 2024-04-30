@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.ReservationTimeRequest;
 import roomescape.controller.dto.ReservationTimeResponse;
+import roomescape.exception.ExistReservationInReservationTimeException;
 import roomescape.exception.NotExistReservationTimeException;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.dto.ReservationTimeOutput;
@@ -54,4 +55,8 @@ public class ReservationTimeController {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(value = ExistReservationInReservationTimeException.class)
+    public ResponseEntity<String> handleExistReservationInReservationTimeException(ExistReservationInReservationTimeException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
+    }
 }
