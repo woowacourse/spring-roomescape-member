@@ -26,12 +26,17 @@ public class AdminController {
     @GetMapping("/reservation")
     public String reservation(Model model) {
         model.addAttribute("reservations", reservationService.findAllReservations());
-        return "admin/reservation";
+        return "admin/reservation-new";
     }
 
     @GetMapping("/time")
     public String time(Model model) {
         model.addAttribute("reservationTimes", reservationTimeService.findAll());
         return "admin/time";
+    }
+
+    @GetMapping("/theme")
+    public String theme() {
+        return "admin/theme";
     }
 }
