@@ -16,7 +16,8 @@ public class ReservationJDBCRepository implements ReservationRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
     private final RowMapper<Reservation> rowMapper = (resultSet, rowNum) -> {
-        ReservationTime reservationTime = new ReservationTime(resultSet.getLong("time_id"), resultSet.getString("start_at"));
+        ReservationTime reservationTime = new ReservationTime(resultSet.getLong("time_id"),
+                resultSet.getString("start_at"));
         Reservation reservation = new Reservation(
                 resultSet.getLong("reservation_id"),
                 resultSet.getString("name"),
