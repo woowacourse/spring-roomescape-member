@@ -19,6 +19,8 @@
     - [x] 중복된 이름의 테마 생성 요청시 에러
     - [x] 예약이 있는 테마를 삭제 요청시 에러
 
+- [ ] 사용자 예약 기능 추가
+
 # API 명세
 
 ## 예약 조회 API
@@ -222,3 +224,24 @@
 ### response
 
 > HTTP/1.1 204
+
+## 예약 가능 시간 조회 API
+
+### Request
+
+> GET /availableTimes?date=${date}&themeId=${themeId}
+
+### response
+
+> HTTP/1.1 200
+> Content-Type: application/json
+
+```json
+[
+  {
+    "id": 0,
+    "startAt": "02:53",
+    "isBooked": false
+  }
+]
+```
