@@ -3,6 +3,7 @@ package roomescape.domain;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Objects;
 
 public class Reservation {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -13,25 +14,24 @@ public class Reservation {
     private final ReservationTime time;
 
     public Reservation(Long id, String name, String date, ReservationTime time) {
-        this.id = id;
-        this.name = name;
-        this.date = toLocalDate(date);
-        this.time = time;
-    }
-
-    private LocalDate toLocalDate(String date) {
-        try {
-            return LocalDate.parse(date, DATE_FORMATTER);
-        }catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("날짜(%s)가 yyyy-MM-dd에 맞지 않습니다.".formatted(date));
-        }
+        this(id, name, toLocalDate(date), time);
     }
 
     private Reservation(Long id, String name, LocalDate date, ReservationTime time) {
+        final String errorMessage = "인자 중 null 값이 존재합니다.";
         this.id = id;
-        this.name = name;
-        this.date = date;
-        this.time = time;
+        this.name = Objects.requireNonNull(name, errorMessage);
+        this.date = Objects.requireNonNull(date, errorMessage);
+        this.time = Objects.requireNonNull(time, errorMessage);
+    }
+
+    private static LocalDate toLocalDate(String date) {
+        Objects.requireNonNull(date, "인자 중 null 값이 존재합니다.");
+        try {
+            return LocalDate.parse(date, DATE_FORMATTER);
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("날짜(%s)가 yyyy-MM-dd에 맞지 않습니다.".formatted(date));
+        }
     }
 
     public Reservation changeId(Long id) {
