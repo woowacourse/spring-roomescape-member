@@ -8,6 +8,8 @@ public interface ReservationTimeRepository {
 
     List<ReservationTime> findAll();
 
+    List<ReservationTime> findAvailableByDateAndThemeId(final String date, final long themeId);
+
     ReservationTime findById(final long id);
 
     Integer countByStartAt(final String startAt);

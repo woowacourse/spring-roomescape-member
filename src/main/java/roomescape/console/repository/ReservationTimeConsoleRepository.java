@@ -33,6 +33,11 @@ public class ReservationTimeConsoleRepository implements ReservationTimeReposito
     }
 
     @Override
+    public List<ReservationTime> findAvailableByDateAndThemeId(final String date, final long themeId) {
+        return List.of();
+    }
+
+    @Override
     public ReservationTime findById(final long id) {
         return reservationTimes.stream()
                 .filter(reservationTime -> reservationTime.getId() == id)

@@ -37,6 +37,20 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
     }
 
     @Override
+    public List<ReservationTime> findAvailableByDateAndThemeId(final String date, final long themeId) {
+        final String query = """
+            SELECT t.id, t.start_at
+            FROM reservation_time AS t 
+            LEFT JOIN (
+                SELECT * FROM reservation WHERE date LIKE ? AND theme_id = ?
+            ) AS r
+            ON t.id = r.time_id
+            WHERE r.id IS NULL;
+            """;
+        return jdbcTemplate.query(query, getReservationTimeRowMapper(), date, themeId);
+    }
+
+    @Override
     public ReservationTime findById(final long id) {
         try {
             final String query = "SELECT id, start_at FROM reservation_time WHERE id = ?";

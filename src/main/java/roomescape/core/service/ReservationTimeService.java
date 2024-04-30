@@ -44,6 +44,14 @@ public class ReservationTimeService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<ReservationTimeResponseDto> findBookable(final String date, final long themeId) {
+        return reservationTimeRepository.findAvailableByDateAndThemeId(date, themeId)
+            .stream()
+            .map(ReservationTimeResponseDto::new)
+            .toList();
+    }
+
     @Transactional
     public void delete(final long id) {
         final int reservationCount = reservationRepository.countByTimeId(id);
