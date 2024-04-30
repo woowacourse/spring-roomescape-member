@@ -31,7 +31,7 @@ class ReservationTimeDaoTest {
                 .usingGeneratedKeyColumns("id");
     }
 
-    @DisplayName("예약 시간 DAO느 생성 요청이 들어오면 DB에 값을 저장한다.")
+    @DisplayName("예약 시간 DAO는 생성 요청이 들어오면 DB에 값을 저장한다.")
     @Test
     void save() {
         // given
