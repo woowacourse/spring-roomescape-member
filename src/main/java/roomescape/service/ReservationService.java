@@ -6,6 +6,7 @@ import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.NotExistReservationException;
 import roomescape.service.dto.ReservationInput;
 import roomescape.service.dto.ReservationOutput;
 
@@ -34,6 +35,9 @@ public class ReservationService {
     }
 
     public void deleteReservation(long id) {
+        if (!reservationDao.isExistById(id)) {
+            throw new NotExistReservationException(String.format(String.format("%d는 없는 id 입니다.", id)));
+        }
         reservationDao.delete(id);
     }
 }
