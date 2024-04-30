@@ -161,8 +161,6 @@ class MissionStepTest {
         params.put("startAt", "10:00");
 
         RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201);
