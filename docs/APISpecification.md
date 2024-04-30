@@ -15,7 +15,7 @@
 | GET    |               | /times             | 모든 시간 조회      |                         |                                     |
 |        | 200 OK        |                    | 모든 시간 조회      |                         | {id, startAt}                       |
 | POST   |               | /times             | 시간 추가         |                         | startAt                             |
-|        | 200 OK        |                    | 시간 추가         |                         | id, startAt                         |
+|        | 201 OK        |                    | 시간 추가         |                         | id, startAt                         |
 | DELETE |               | /times/{id}        | 시간 삭제         |                         |                                     |
-|        | 200 OK        |                    | 시간 삭제 성공      |                         |                                     |
+|        | 204 OK        |                    | 시간 삭제 성공      |                         |                                     |
 |        | 404 NOT FOUND |                    | 시간 삭제 실패      |                         |                                     |
