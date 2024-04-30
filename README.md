@@ -58,9 +58,10 @@
 
 ### Response
 
-> HTTP/1.1 200
+> HTTP/1.1 201
 >
 > Content-Type: application/json
+> Location: /reservations/{id}
 
 ```JSON
 {
@@ -82,7 +83,7 @@
 
 ### Response
 
-> HTTP/1.1 200
+> HTTP/1.1 204
 
 ## 시간 추가 API
 
@@ -99,8 +100,9 @@
 
 ### response
 
-> HTTP/1.1 200
+> HTTP/1.1 201
 > Content-Type: application/json
+> Location: /times/{id}
 
 ```JSON
 {
@@ -137,4 +139,4 @@
 
 ### response
 
-> HTTP/1.1 200
+> HTTP/1.1 204
