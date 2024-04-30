@@ -166,6 +166,6 @@ class ReservationServiceIntegrationTest {
         // When & Then
         assertThatThrownBy(() -> reservationService.saveReservation(saveReservationRequest))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미 해당 날짜의 예약이 있습니다.");
+                .hasMessage("이미 해당 날짜/시간의 예약이 있습니다.");
     }
 }

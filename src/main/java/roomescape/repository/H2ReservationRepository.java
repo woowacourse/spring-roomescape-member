@@ -87,10 +87,11 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existByDate(final LocalDate date) {
-        String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE date = :date)";
+    public boolean existByDateAndTimeId(final LocalDate date, final Long timeId) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE date = :date AND time_id = :timeId)";
         MapSqlParameterSource param = new MapSqlParameterSource()
-                .addValue("date", date);
+                .addValue("date", date)
+                .addValue("timeId", timeId);
 
         return Boolean.TRUE.equals(template.queryForObject(sql, param, Boolean.class));
     }

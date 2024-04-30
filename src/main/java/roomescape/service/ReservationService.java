@@ -32,8 +32,8 @@ public class ReservationService {
         ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
                 .orElseThrow(() -> new NoSuchElementException("해당 id의 예약 시간이 존재하지 않습니다."));
 
-        if (reservationRepository.existByDate(request.date())) {
-            throw new IllegalArgumentException("이미 해당 날짜의 예약이 있습니다.");
+        if (reservationRepository.existByDateAndTimeId(request.date(), request.timeId())) {
+            throw new IllegalArgumentException("이미 해당 날짜/시간의 예약이 있습니다.");
         }
 
         return reservationRepository.save(request.toReservation(reservationTime));
