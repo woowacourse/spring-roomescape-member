@@ -29,6 +29,7 @@ public class TimeController {
 
     @PostMapping
     ResponseEntity<ReservationTimeResponse> addTime(@RequestBody ReservationTimeRequest reservationTimeRequest) {
+        System.out.println(reservationTimeRequest);
         ReservationTimeResponse reservationTimeResponse = reservationTimeService.addReservationTime(reservationTimeRequest);
 
         return ResponseEntity.created(URI.create("/times/" + reservationTimeResponse.id()))

@@ -42,10 +42,19 @@ class HttpRestTestTemplate {
                 .statusCode(204);
     }
 
-    public static void assertDeleteInitialServerError(String path) {
+    public static void assertDeleteBadRequest(String path) {
         RestAssured.given().log().all()
                 .when().delete(path)
                 .then().log().all()
-                .statusCode(500);
+                .statusCode(400);
+    }
+
+    public static void assertPostBadRequest(Object params, String path) {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post(path)
+                .then().log().all()
+                .statusCode(400);
     }
 }

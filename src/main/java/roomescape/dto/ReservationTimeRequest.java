@@ -6,6 +6,10 @@ import java.time.LocalTime;
 
 public record ReservationTimeRequest(LocalTime startAt) {
 
+    public ReservationTimeRequest {
+        InputValidator.validateNotNull(startAt);
+    }
+
     public ReservationTime toReservationTime() {
         return new ReservationTime(
                 null,

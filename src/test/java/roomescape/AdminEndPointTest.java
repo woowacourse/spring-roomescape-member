@@ -1,5 +1,8 @@
 package roomescape;
 
+import io.restassured.RestAssured;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
@@ -118,8 +121,19 @@ class AdminEndPointTest {
                 }),
 
                 DynamicTest.dynamicTest("시간에 해당하는 예약이 있을 경우, 예약 시간을 삭제할 수 없다.", () -> {
-                    HttpRestTestTemplate.assertDeleteInitialServerError("/times/1");
+                    HttpRestTestTemplate.assertDeleteBadRequest("/times/1");
                 })
         );
+    }
+
+    @DisplayName("빈 값 입력 검증")
+    @Test
+    void validateNotNull() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", "");
+        params.put("timeId", "1");
+
+        HttpRestTestTemplate.assertPostBadRequest(params, "/reservations");
     }
 }
