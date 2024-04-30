@@ -15,9 +15,10 @@ import org.springframework.test.annotation.DirtiesContext;
 import roomescape.reservation.dto.request.ReservationRequest;
 import roomescape.reservation.dto.request.ReservationTimeRequest;
 import roomescape.reservation.dto.response.ReservationResponse;
+import roomescape.reservation.handler.exception.CustomException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class ReservationServiceTest {
 
     @Autowired
@@ -32,7 +33,7 @@ class ReservationServiceTest {
         ReservationRequest reservationRequest = new ReservationRequest("브라운", LocalDate.of(2023, 8, 5), 1L);
 
         assertThatThrownBy(() -> reservationService.createReservation(reservationRequest))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(CustomException.class);
     }
 
     @DisplayName("예약 생성 테스트")

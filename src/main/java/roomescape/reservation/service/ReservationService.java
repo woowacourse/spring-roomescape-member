@@ -8,6 +8,8 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.dto.request.ReservationRequest;
 import roomescape.reservation.dto.response.ReservationResponse;
+import roomescape.reservation.handler.exception.CustomException;
+import roomescape.reservation.handler.exception.ExceptionCode;
 
 @Service
 public class ReservationService {
@@ -22,7 +24,7 @@ public class ReservationService {
 
     public ReservationResponse createReservation(ReservationRequest reservationRequest) {
         ReservationTime reservationTime = reservationTimeDao.findById(reservationRequest.timeId())
-                .orElseThrow(() -> new IllegalArgumentException("예약 시간을 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_RESERVATION_TIME));
         Reservation reservation = reservationRequest.toEntity(reservationTime);
 
         Reservation savedReservation = reservationDao.save(reservation);
