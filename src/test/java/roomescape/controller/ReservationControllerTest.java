@@ -27,6 +27,7 @@ import roomescape.service.ReservationService;
 
 @WebMvcTest(ReservationController.class)
 class ReservationControllerTest {
+
     @Autowired
     private MockMvc mvc;
     @Autowired
@@ -42,18 +43,18 @@ class ReservationControllerTest {
         String name = "브리";
         Reservation reservation = new Reservation(1L, name, date, new ReservationTime(LocalTime.MIN));
 
-        when(reservationService.save(new ReservationAppRequest(time_id, date, name)))
-                .thenReturn(reservation);
+        when(reservationService.save(new ReservationAppRequest(time_id, date.toString(), name)))
+            .thenReturn(reservation);
 
-        String requestBody = objectMapper.writeValueAsString(new ReservationWebRequest(date, name, time_id));
+        String requestBody = objectMapper.writeValueAsString(new ReservationWebRequest(name, date.toString(), time_id));
         String responseBody = objectMapper.writeValueAsString(new ReservationWebResponse(1L, name, date,
-                ReservationTimeWebResponse.from(reservation)));
+            ReservationTimeWebResponse.from(reservation)));
 
         mvc.perform(post("/reservations")
-                        .content(requestBody)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated())
-                .andExpect(content().json(responseBody));
+                .content(requestBody)
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isCreated())
+            .andExpect(content().json(responseBody));
     }
 
     @DisplayName("예약을 삭제한다. -> 204")
@@ -64,17 +65,17 @@ class ReservationControllerTest {
         String name = "브리";
         Reservation reservation = new Reservation(1L, name, date, new ReservationTime(LocalTime.MIN));
 
-        when(reservationService.save(new ReservationAppRequest(time_id, date, name)))
-                .thenReturn(reservation);
+        when(reservationService.save(new ReservationAppRequest(time_id, date.toString(), name)))
+            .thenReturn(reservation);
 
         mvc.perform(delete("/reservations/" + reservation.getId()))
-                .andExpect(status().isNoContent());
+            .andExpect(status().isNoContent());
     }
 
     @DisplayName("예약을 조회한다. -> 200")
     @Test
     void getReservations() throws Exception {
         mvc.perform(get("/reservations"))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
     }
 }
