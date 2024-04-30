@@ -53,4 +53,14 @@ class ThemeControllerTest {
                 .statusCode(200)
                 .body("size()", is(2));
     }
+
+    @DisplayName("테마 컨트롤러는 테마 삭제 요청이 들어오면 204를 반환한다.")
+    @Test
+    void deleteTheme() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().delete("/themes/1")
+                .then().log().all()
+                .statusCode(204);
+    }
 }

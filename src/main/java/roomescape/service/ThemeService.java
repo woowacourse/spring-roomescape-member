@@ -31,8 +31,12 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> readThemes() {
-        return  themeRepository.findAll().stream()
+        return themeRepository.findAll().stream()
                 .map(ThemeResponse::from)
                 .toList();
+    }
+
+    public void deleteTheme(Long id) {
+        themeRepository.delete(id);
     }
 }

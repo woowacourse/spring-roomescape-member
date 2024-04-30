@@ -58,5 +58,11 @@ public class ThemeDao implements ThemeRepository {
         String sql = "SELECT * FROM theme";
         return jdbcTemplate.query(sql, getThemeRowMapper());
     }
+
+    @Override
+    public void delete(Long id) {
+        String sql = "DELETE FROM theme WHERE id = ?";
+        jdbcTemplate.update(sql, id);
+    }
 }
 

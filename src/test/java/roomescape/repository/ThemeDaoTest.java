@@ -39,7 +39,7 @@ class ThemeDaoTest {
         Optional<Theme> actual = themeRepository.findById(savedTheme.getId());
 
         // then
-        assertThat(actual.isPresent()).isTrue();
+        assertThat(actual).isPresent();
     }
 
     @DisplayName("테마 DAO는 조회 요청이 들어오면 DB에 저장된 모든 테마를 반환한다.")
@@ -50,5 +50,19 @@ class ThemeDaoTest {
 
         // then
         assertThat(themes).hasSize(2);
+    }
+
+    @DisplayName("테마 DAO는 삭제 요청이 들어오면 id에 맞는 값을 삭제한다.")
+    @Test
+    void delete() {
+        // given
+        Long id = 1L;
+
+        // when
+        themeRepository.delete(id);
+        Optional<Theme> actual = themeRepository.findById(id);
+
+        // then
+        assertThat(actual).isNotPresent();
     }
 }

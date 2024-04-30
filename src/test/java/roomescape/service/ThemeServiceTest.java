@@ -16,6 +16,7 @@ import roomescape.repository.ThemeRepository;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
@@ -71,5 +72,17 @@ class ThemeServiceTest {
 
         // then
         assertThat(themeResponses).hasSize(1);
+    }
+
+    @DisplayName("테마 서비스는 id에 해당하는 테마를 삭제한다.")
+    @Test
+    void delete() {
+        // given
+        Long id = 1L;
+        Mockito.doNothing().when(themeRepository).delete(id);
+
+        // when & then
+        assertThatCode(() -> themeService.deleteTheme(id))
+                .doesNotThrowAnyException();
     }
 }
