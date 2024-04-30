@@ -1,7 +1,6 @@
 package roomescape.domain;
 
 import java.util.Objects;
-import roomescape.exception.InvalidReservationException;
 
 public class ThemeName {
     private final String value;

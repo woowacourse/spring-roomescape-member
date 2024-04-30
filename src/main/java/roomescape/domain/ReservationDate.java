@@ -18,7 +18,7 @@ public class ReservationDate {
         try {
             LocalDate.parse(value);
         } catch (DateTimeParseException e) {
-            throw new InvalidReservationException("올바르지 않은 날짜입니다. date: '" + value + "'");
+            throw new InvalidReservationException("올바르지 않은 날짜입니다.");
         }
     }
 

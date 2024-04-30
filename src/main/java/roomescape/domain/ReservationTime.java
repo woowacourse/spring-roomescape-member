@@ -37,7 +37,7 @@ public class ReservationTime {
         try {
             LocalTime.parse(time);
         } catch (DateTimeParseException e) {
-            throw new InvalidReservationException("올바르지 않은 시간입니다. time: '" + time + "'");
+            throw new InvalidReservationException("올바르지 않은 시간입니다.");
         }
     }
 

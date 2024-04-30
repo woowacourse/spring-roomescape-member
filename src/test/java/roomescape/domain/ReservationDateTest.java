@@ -16,6 +16,6 @@ class ReservationDateTest {
         //when&then
         assertThatThrownBy(() -> new ReservationDate(invalidDate))
                 .isInstanceOf(InvalidReservationException.class)
-                .hasMessage("올바르지 않은 날짜입니다. date: '" + invalidDate + "'");
+                .hasMessage("올바르지 않은 날짜입니다.");
     }
 }

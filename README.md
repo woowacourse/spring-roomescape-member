@@ -108,7 +108,7 @@ content-type: application/json
   HTTP/1.1 400
   
   {
-    "message": "올바르지 않은 날짜입니다. date: '03-04'"
+    "message": "올바르지 않은 날짜입니다."
   }
   ```
 
@@ -151,7 +151,7 @@ Content-Type: application/json
   HTTP/1.1 400
   
   {
-    "message": "올바르지 않은 시간입니다. time: ''"
+    "message": "올바르지 않은 시간입니다."
   }
   ```
   - 추가 실패: 중복 시간 오류

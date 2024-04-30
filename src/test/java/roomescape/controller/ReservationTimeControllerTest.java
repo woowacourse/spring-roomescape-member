@@ -74,7 +74,7 @@ class ReservationTimeControllerTest {
                 .body(new ReservationTimeRequest(invalidTime))
                 .when().post("/times")
                 .then().log().all()
-                .assertThat().statusCode(400).body("message", is("올바르지 않은 시간입니다. time: '" + invalidTime + "'"));
+                .assertThat().statusCode(400).body("message", is("올바르지 않은 시간입니다."));
     }
 
     @DisplayName("등록된 시간 내역을 조회한다.")

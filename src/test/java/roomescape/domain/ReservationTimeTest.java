@@ -20,7 +20,7 @@ class ReservationTimeTest {
         //when&then
         assertThatThrownBy(() -> new ReservationTime(1, invalidTime))
                 .isInstanceOf(InvalidReservationException.class)
-                .hasMessage("올바르지 않은 시간입니다. time: '" + invalidTime + "'");
+                .hasMessage("올바르지 않은 시간입니다.");
     }
 
     @DisplayName("시간은 `HH:mm` 형식으로 반환한다.")
