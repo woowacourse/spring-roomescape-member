@@ -1,3 +1,11 @@
+CREATE TABLE theme
+(
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description VARCHAR(255) NOT NULL,
+    thumbnail VARCHAR(255) NOT NULL
+);
+
 CREATE TABLE reservation_time
 (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
