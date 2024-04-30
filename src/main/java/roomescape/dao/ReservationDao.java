@@ -64,6 +64,20 @@ public class ReservationDao {
         }
     }
 
+    private Optional<Reservation> readReservationById(long id) {
+        String sql = """
+                SELECT reservation.id, reservation.name, reservation.date, reservation.time_id, reservation_time.start_at
+                FROM reservation
+                JOIN reservation_time ON reservation.time_id = reservation_time.id
+                WHERE reservation.id = ?
+                """;
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
+    }
+
     public Reservation createReservation(Reservation reservation) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "INSERT INTO reservation (name, date, time_id) values (?, ?, ?)";
@@ -77,7 +91,7 @@ public class ReservationDao {
         }, keyHolder);
 
         long id = keyHolder.getKey().longValue();
-        return reservation.changeId(id);
+        return readReservationById(id).orElseThrow();
     }
 
     public void deleteReservation(long id) {

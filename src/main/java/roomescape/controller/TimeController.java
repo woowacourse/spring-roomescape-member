@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.TimeCreateRequest;
+import roomescape.dto.TimeResponse;
 import roomescape.service.TimeService;
 
 import java.util.List;
@@ -19,14 +20,19 @@ public class TimeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationTime>> readTimes() {
-        return ResponseEntity.ok(service.readTimes());
+    public ResponseEntity<List<TimeResponse>> readTimes() {
+        List<TimeResponse> response = service.readTimes().stream()
+                .map(TimeResponse::from)
+                .toList();
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTime> createTime(@RequestBody TimeCreateRequest dto) {
+    public ResponseEntity<TimeResponse> createTime(@RequestBody TimeCreateRequest dto) {
+        ReservationTime time = service.createTime(dto);
+        TimeResponse response = TimeResponse.from(time);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(service.createTime(dto));
+                .body(response);
     }
 
     @DeleteMapping("/{id}")

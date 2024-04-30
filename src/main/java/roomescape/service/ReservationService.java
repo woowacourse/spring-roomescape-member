@@ -25,7 +25,6 @@ public class ReservationService {
 
     public Reservation createReservation(ReservationCreateRequest dto) {
         Reservation reservation = dto.createReservation();
-
         validate(reservation);
         return reservationDao.createReservation(reservation);
     }
@@ -34,7 +33,7 @@ public class ReservationService {
         if (reservation.isAfter(LocalDateTime.now())) {
             throw new IllegalArgumentException("예약은 현재 시간 이후여야 합니다.");
         }
-        timeDao.readTimeById(reservation.getTimeId())
+        timeDao.readTimeById(reservation.getTime().getId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 예약 시간이 존재하지 않습니다."));
     }
 

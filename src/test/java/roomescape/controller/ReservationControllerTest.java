@@ -9,11 +9,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.domain.Reservation;
 import roomescape.dto.ReservationCreateRequest;
 
 import java.lang.reflect.Field;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,16 +32,16 @@ class ReservationControllerTest {
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)"
                 , "브라운", "2023-08-05", "1");
 
-        List<Reservation> reservations = RestAssured.given().log().all()
+        int size = RestAssured.given().log().all()
                 .port(port)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200).extract()
-                .jsonPath().getList(".", Reservation.class);
+                .jsonPath().getInt("size()");
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
 
-        assertThat(reservations.size()).isEqualTo(count);
+        assertThat(size).isEqualTo(count);
     }
 
     @DisplayName("예약을 DB에 추가할 수 있다.")

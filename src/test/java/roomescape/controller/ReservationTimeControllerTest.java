@@ -33,16 +33,16 @@ class ReservationTimeControllerTest {
     void readTimes() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
 
-        List<ReservationTime> times = RestAssured.given().log().all()
+        int size = RestAssured.given().log().all()
                 .port(port)
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200).extract()
-                .jsonPath().getList(".", ReservationTime.class);
+                .jsonPath().getInt("size()");
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation_time", Integer.class);
 
-        assertThat(times.size()).isEqualTo(count);
+        assertThat(size).isEqualTo(count);
     }
 
     @DisplayName("시간을 DB에 추가할 수 있다.")

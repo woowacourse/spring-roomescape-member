@@ -22,7 +22,10 @@ public class ReservationTime {
     }
 
     private static LocalTime toLocalTime(String time) {
-        Objects.requireNonNull(time, "인자 중 null 값이 존재합니다.");
+        if (time == null) {
+            return null;
+        }
+
         try {
             return LocalTime.parse(time, TIME_FORMATTER);
         } catch (DateTimeParseException e) {
