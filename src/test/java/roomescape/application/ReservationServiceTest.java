@@ -79,9 +79,6 @@ class ReservationServiceTest {
     @DisplayName("존재하지 않는 예약 시간으로 예약을 생성시 IllegalArgumentException 예외를 반환한다.")
     @Test
     void shouldReturnIllegalArgumentExceptionWhenNotFoundReservationTime() {
-        given(reservationTimeRepository.findById(any(Long.class)))
-                .willThrow(new IllegalArgumentException("존재하지 않는 예약 시간 입니다."));
-
         assertThatCode(() -> reservationService.create(new ReservationRequest("test", LocalDate.now(), 1L)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("존재하지 않는 예약 시간 입니다.");
