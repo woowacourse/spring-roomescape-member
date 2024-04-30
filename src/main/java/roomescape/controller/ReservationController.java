@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import java.net.URI;
 import java.util.List;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +33,8 @@ public class ReservationController {
     public ResponseEntity<ReservationResponse> createReservation(
             @RequestBody ReservationRequest reservationRequest) {
         try {
-            return ResponseEntity.ok(reservationService.save(reservationRequest));
+            ReservationResponse reservationResponse = reservationService.save(reservationRequest);
+            return ResponseEntity.created(URI.create("admin/reservation")).body(reservationResponse);
         } catch (IncorrectResultSizeDataAccessException e) {
             return ResponseEntity.badRequest().build();
         }
