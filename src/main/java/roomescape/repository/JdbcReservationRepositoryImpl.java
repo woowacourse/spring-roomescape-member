@@ -70,6 +70,6 @@ public class JdbcReservationRepositoryImpl implements ReservationRepository {
     public long countByTimeId(Long id) {
         String sql = "SELECT COUNT(id) FROM reservation WHERE time_id = ?";
 
-        return jdbcTemplate.queryForObject(sql, new Object[]{id}, Long.class);
+        return jdbcTemplate.queryForObject(sql, Long.class, id);
     }
 }
