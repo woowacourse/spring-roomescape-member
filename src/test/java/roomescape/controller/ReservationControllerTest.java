@@ -32,7 +32,7 @@ class ReservationControllerTest {
                 timeRepository);
         ReservationService reservationService = new ReservationService(collectionReservationRepository, timeRepository);
         ReservationController reservationController = new ReservationController(reservationService);
-        LocalDate date = LocalDate.now();
+        LocalDate date = LocalDate.now().plusDays(1);
 
         ReservationResponse saveResponse = reservationController.saveReservation(
                         new ReservationRequest(date, "폴라", timeId))

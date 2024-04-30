@@ -4,6 +4,8 @@ import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
@@ -18,6 +20,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class AdminIntegrationTest {
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     @LocalServerPort
     private int port;
     @Autowired
@@ -65,7 +68,7 @@ public class AdminIntegrationTest {
         System.out.println(integer);
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", LocalDate.now().plusDays(1).format(DATE_FORMATTER));
         params.put("timeId", 1);
 
         RestAssured.given().log().all()
@@ -99,7 +102,7 @@ public class AdminIntegrationTest {
     void adminReservationPageWorkWithDB() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", LocalDate.now().plusDays(1).format(DATE_FORMATTER));
         params.put("timeId", 1);
 
         RestAssured.given().log().all()

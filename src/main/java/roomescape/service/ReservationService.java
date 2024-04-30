@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -28,13 +27,14 @@ public class ReservationService {
     //ToDo 테스트 작성
     public ReservationResponse save(ReservationRequest reservationRequest) {
         //TODO 변수명
-        Optional<ReservationTime> reservationTime = reservationTimeRepository.findById(reservationRequest.timeId());
+        ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
 
         Reservation beforeSave = new Reservation(
                 reservationRequest.name(),
                 reservationRequest.date(),
                 //TODO : 커스텀 예외 사용할지 고민해보기
-                reservationTime.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."))
+                reservationTime
         );
         boolean isDuplicate = reservationRepository.findAll()
                 .stream()
@@ -42,8 +42,19 @@ public class ReservationService {
         if (isDuplicate) {
             throw new IllegalArgumentException("동일한 날짜와 시간에 이미 예약이 존재합니다.");
         }
+
+        //todo 테스트
+        if (isBefore(beforeSave)) {
+            throw new IllegalArgumentException("이미 지난 시간에 예약할 수 없습니다.");
+        }
+
         Reservation saved = reservationRepository.save(beforeSave);
         return toResponse(saved);
+    }
+
+    private static boolean isBefore(Reservation beforeSave) {
+        return LocalDateTime.of(beforeSave.getDate(), beforeSave.getTime())
+                .isBefore(LocalDateTime.now());
     }
 
     private LocalDateTime mapToLocalDateTime(Reservation reservation) {
