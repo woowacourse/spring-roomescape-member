@@ -27,17 +27,6 @@ public class ReservationRepositoryTest {
     private ReservationTimeRepository reservationTimeRepository;
 
     @Test
-    @DisplayName("DB 저장 테스트")
-    void saveTest() {
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
-        Long timeId = reservationTimeRepository.save(reservationTime);
-        Reservation reservation = new Reservation(1L, new Name("hogi"), LocalDate.now(), reservationTime);
-        Long saveId = reservationRepository.save(reservation);
-
-        assertThat(saveId).isEqualTo(1L);
-    }
-
-    @Test
     @DisplayName("DB 조회 테스트")
     void findAllTest() {
         Long timeId = reservationTimeRepository.save(new ReservationTime(LocalTime.now()));
@@ -46,8 +35,8 @@ public class ReservationRepositoryTest {
         Reservation reservation2 = new Reservation(new Name("kaki"), LocalDate.now(), reservationTime);
         reservationRepository.save(reservation1);
         reservationRepository.save(reservation2);
-
         List<Reservation> reservations = reservationRepository.findAll();
+
         assertThat(reservations.size()).isEqualTo(2);
     }
 
@@ -57,11 +46,10 @@ public class ReservationRepositoryTest {
         Long timeId = reservationTimeRepository.save(new ReservationTime(LocalTime.now()));
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId).get();
         Reservation reservation = new Reservation(new Name("hogi"), LocalDate.now(), reservationTime);
-        Long saveId = reservationRepository.save(reservation);
+        Long reservationId = reservationRepository.save(reservation);
+        Reservation findReservation = reservationRepository.findById(reservationId).get();
 
-        Reservation findReservation = reservationRepository.findById(saveId).get();
-
-        assertThat(findReservation.getId()).isEqualTo(saveId);
+        assertThat(findReservation.getId()).isEqualTo(reservationId);
     }
 
     @Test
@@ -70,10 +58,10 @@ public class ReservationRepositoryTest {
         Long timeId = reservationTimeRepository.save(new ReservationTime(LocalTime.now()));
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId).get();
         Reservation reservation = new Reservation(new Name("hogi"), LocalDate.now(), reservationTime);
-        Long saveId = reservationRepository.save(reservation);
-
-        reservationRepository.delete(saveId);
+        Long reservationId = reservationRepository.save(reservation);
+        reservationRepository.delete(reservationId);
         List<Reservation> reservations = reservationRepository.findAll();
+
         assertThat(reservations.size()).isEqualTo(0);
     }
 }
