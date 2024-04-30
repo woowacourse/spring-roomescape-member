@@ -11,6 +11,7 @@ import roomescape.domain.ClientName;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -83,5 +84,14 @@ public class H2ReservationRepository implements ReservationRepository {
         MapSqlParameterSource param = new MapSqlParameterSource()
                 .addValue("id", reservationId);
         template.update(sql, param);
+    }
+
+    @Override
+    public boolean existByDate(final LocalDate date) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE date = :date)";
+        MapSqlParameterSource param = new MapSqlParameterSource()
+                .addValue("date", date);
+
+        return Boolean.TRUE.equals(template.queryForObject(sql, param, Boolean.class));
     }
 }

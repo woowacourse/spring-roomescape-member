@@ -149,7 +149,23 @@ class ReservationServiceIntegrationTest {
         SaveReservationTimeRequest saveReservationTimeRequest = new SaveReservationTimeRequest(LocalTime.of(10, 10));
         // When & Then
         assertThatThrownBy(() -> reservationService.saveReservationTime(saveReservationTimeRequest))
-                .isInstanceOf(NoSuchElementException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 존재하는 예약시간이 있습니다.");
+    }
+
+    @DisplayName("이미 존재하는 예약 날짜가 입력되면 예외가 발생한다.")
+    @Test
+    void throwExceptionWhenInputDuplicateReservationDate() {
+        // Given
+        final SaveReservationRequest saveReservationRequest = new SaveReservationRequest(
+                LocalDate.of(2024, 7, 3),
+                "테바",
+                1L
+        );
+
+        // When & Then
+        assertThatThrownBy(() -> reservationService.saveReservation(saveReservationRequest))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이미 해당 날짜의 예약이 있습니다.");
     }
 }

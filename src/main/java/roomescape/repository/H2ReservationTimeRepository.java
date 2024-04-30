@@ -73,16 +73,11 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
     }
 
     @Override
-    public Optional<ReservationTime> findByStartAt(final LocalTime startAt) {
-        String sql = "SELECT * FROM reservation_time WHERE start_at = :startAt";
-        try {
-            MapSqlParameterSource param = new MapSqlParameterSource()
-                    .addValue("startAt", startAt);
-            ReservationTime reservationTime = template.queryForObject(sql, param, itemRowMapper());
+    public boolean existByStartAt(final LocalTime startAt) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM reservation_time WHERE start_at = :startAt)";
+        MapSqlParameterSource param = new MapSqlParameterSource()
+                .addValue("startAt", startAt);
 
-            return Optional.of(reservationTime);
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
+        return Boolean.TRUE.equals(template.queryForObject(sql, param, Boolean.class));
     }
 }
