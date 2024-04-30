@@ -113,7 +113,28 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.createReservation(request))
-                .isInstanceOf(BadRequestException.class);
+                .isInstanceOf(BadRequestException.class)
+                .hasMessage("이미 지난 날짜는 예약할 수 없습니다.");
+    }
+
+    @DisplayName("예약 서비스는 중복된 예약 요청이 들어오면 예외가 발생한다.")
+    @Test
+    void validateIsDuplicated() {
+        // given
+        Mockito.when(reservationTimeRepository.findById(id))
+                .thenReturn(Optional.of(new ReservationTime(id, startAt)));
+        Mockito.when(reservationRepository.findAll())
+                .thenReturn(List.of(reservationFixture));
+        ReservationCreateRequest request = new ReservationCreateRequest(
+                reservationFixture.getName(),
+                reservationFixture.getDate(),
+                id
+        );
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.createReservation(request))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessage("중복된 예약입니다.");
     }
 
     @DisplayName("예약 서비스는 id에 맞는 예약을 삭제한다.")

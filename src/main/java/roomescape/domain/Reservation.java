@@ -24,6 +24,12 @@ public class Reservation {
         this(id, reservation.getName(), reservation.getDate(), reservation.getTime());
     }
 
+    public boolean isSame(Reservation other) {
+        return name.equals(other.name)
+                && date.equals(other.date)
+                && time.getId().equals(other.time.getId());
+    }
+
     public Long getId() {
         return id;
     }
