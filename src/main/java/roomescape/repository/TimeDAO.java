@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.TimeSlot;
 import roomescape.domain.dto.TimeSlotRequest;
 
+import java.time.LocalTime;
 import java.util.List;
 
 @Repository
@@ -48,5 +49,10 @@ public class TimeDAO {
     public void delete(Long id) {
         String sql = "delete from reservation_time where id = ?";
         jdbcTemplate.update(sql, id);
+    }
+
+    public boolean isExist(LocalTime localTime) {
+        String sql = "select count(*) from reservation_time where start_at = ?";
+        return jdbcTemplate.queryForObject(sql, Integer.class, localTime) != 0;
     }
 }

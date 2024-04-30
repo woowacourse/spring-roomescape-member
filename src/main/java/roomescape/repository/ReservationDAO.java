@@ -7,15 +7,14 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
-import roomescape.domain.dto.ReservationRequest;
 import roomescape.domain.TimeSlot;
+import roomescape.domain.dto.ReservationRequest;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Repository
 public class ReservationDAO {
-
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
     private final RowMapper<Reservation> rowMapper =
@@ -60,5 +59,20 @@ public class ReservationDAO {
     public void delete(Long id) {
         String sql = "delete from reservation where id = ?";
         jdbcTemplate.update(sql, id);
+    }
+
+    public boolean isExists(LocalDate date, Long timeId) {
+        String sql = """
+                SELECT
+                count(*)
+                FROM reservation
+                WHERE date = ? AND time_id = ? 
+                """;
+        return jdbcTemplate.queryForObject(sql, Integer.class, date, timeId) != 0;
+    }
+
+    public boolean isExistsTimeId(Long timeId) {
+        String sql = "select count(*) from reservation where time_id = ?";
+        return jdbcTemplate.queryForObject(sql, Integer.class, timeId) != 0;
     }
 }
