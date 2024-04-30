@@ -37,7 +37,7 @@ class ReservationTimeControllerTest {
                 .contentType(ContentType.JSON)
                 .body(new ReservationTimeRequest("10:00"))
                 .when().post("/times")
-                .then().log().all().statusCode(200).body("id", is(greaterThan(0)));
+                .then().log().all().statusCode(201).body("id", is(greaterThan(0)));
     }
 
     @DisplayName("시간 추가 실패 테스트 - 시간 오류")
@@ -80,7 +80,7 @@ class ReservationTimeControllerTest {
         RestAssured.given().log().all()
                 .when().delete("/times/" + id)
                 .then().log().all()
-                .assertThat().statusCode(200);
+                .assertThat().statusCode(204);
 
         RestAssured.given().log().all()
                 .when().get("/times")
