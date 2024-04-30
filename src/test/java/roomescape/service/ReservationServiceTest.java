@@ -7,7 +7,6 @@ import roomescape.controller.reservation.ReservationRequest;
 import roomescape.controller.reservation.ReservationResponse;
 import roomescape.controller.time.TimeResponse;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,7 +43,7 @@ class ReservationServiceTest {
     @DisplayName("예약을 추가한다.")
     void addReservation() {
         // given
-        ReservationRequest request = new ReservationRequest("cha", LocalDate.of(2024, 3, 18), 3L);
+        ReservationRequest request = new ReservationRequest("cha", "2024-03-18", 3L);
         ReservationResponse expected = new ReservationResponse(3L, "cha", "2024-03-18", new TimeResponse(3L, "12:25"));
 
         // when

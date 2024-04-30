@@ -12,7 +12,6 @@ import roomescape.domain.ReservationTime;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -31,10 +30,10 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     private Reservation mapRowReservation(final ResultSet rs, final int rowNum) throws SQLException {
-        return new Reservation(
+        return Reservation.from(
                 rs.getLong("id"),
                 rs.getString("name"),
-                LocalDate.parse(rs.getString("date")),
+                rs.getString("date"),
                 new ReservationTime(rs.getLong("time_id"), null)
         );
     }

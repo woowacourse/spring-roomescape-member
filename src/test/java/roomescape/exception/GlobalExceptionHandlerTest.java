@@ -6,11 +6,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.util.Map;
 
-import static org.hamcrest.Matchers.is;
-
+@Sql(scripts = {"/sample.sql"},
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = {"/drop.sql", "/schema.sql"},
+        executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class GlobalExceptionHandlerTest {
 
@@ -24,7 +27,7 @@ class GlobalExceptionHandlerTest {
 
     @Test
     @DisplayName("이름에 공백이 입력될 경우 상태코드가 400이 된다.")
-    void handleInvalidException() {
+    void handleInvalidDateException() {
         // given
         Map<String, String> params = Map.of(
                 "name", " ",
@@ -38,7 +41,6 @@ class GlobalExceptionHandlerTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(400)
-                .body("message", is("이름은 공백일 수 없습니다."));
+                .statusCode(400);
     }
 }

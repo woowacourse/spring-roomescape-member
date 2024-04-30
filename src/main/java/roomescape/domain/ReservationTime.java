@@ -1,5 +1,8 @@
 package roomescape.domain;
 
+import roomescape.exception.InvalidRequestException;
+import roomescape.exception.InvalidTimeException;
+
 import java.time.DateTimeException;
 import java.time.LocalTime;
 import java.util.Objects;
@@ -20,8 +23,8 @@ public class ReservationTime {
     }
 
     private static void validateNull(final String startAt) {
-        if (startAt == null) {
-            throw new IllegalArgumentException("유효하지 않은 시간 입니다.");
+        if (startAt == null || startAt.isBlank()) {
+            throw new InvalidRequestException("공백일 수 없습니다.");
         }
     }
 
@@ -29,7 +32,7 @@ public class ReservationTime {
         try {
             LocalTime.parse(startAt);
         } catch (DateTimeException e) {
-            throw new IllegalArgumentException("유효하지 않은 시간 입니다.");
+            throw new InvalidTimeException("유효하지 않은 시간 입니다.");
         }
     }
 

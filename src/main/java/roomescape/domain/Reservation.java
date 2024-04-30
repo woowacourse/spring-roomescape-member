@@ -1,6 +1,7 @@
 package roomescape.domain;
 
-import roomescape.exception.InvalidException;
+import roomescape.exception.InvalidDateException;
+import roomescape.exception.InvalidRequestException;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -12,8 +13,8 @@ public class Reservation {
     private final LocalDate date;
     private final ReservationTime time;
 
+    // TODO: 생성자 private으로 변경
     public Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time) {
-        validateEmptyString(name);
         this.id = id;
         this.name = name;
         this.date = date;
@@ -21,23 +22,23 @@ public class Reservation {
     }
 
     public static Reservation from(final Long id, final String name, final String date, final ReservationTime time) {
-        validateEmptyString(name);
-        validateEmptyString(date);
-        validateDate(date);
+        validateNull(name);
+        validateNull(date);
+        validateFormat(date);
         return new Reservation(id, name, LocalDate.parse(date), time);
     }
 
-    private static void validateDate(final String date) {
+    private static void validateFormat(final String date) {
         try {
             LocalDate.parse(date);
         } catch (DateTimeParseException exception) {
-            throw new IllegalArgumentException("유효하지 않은 날짜입니다.");
+            throw new InvalidDateException("유효하지 않은 날짜입니다.");
         }
     }
 
-    private static void validateEmptyString(final String name) {
-        if (name == null || name.trim().isEmpty()) {
-            throw new InvalidException("이름은 공백일 수 없습니다.");
+    private static void validateNull(final String value) {
+        if (value == null || value.isBlank()) {
+            throw new InvalidRequestException("공백일 수 없습니다.");
         }
     }
 
