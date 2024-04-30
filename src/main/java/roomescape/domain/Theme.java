@@ -4,31 +4,31 @@ import java.util.Objects;
 
 public class Theme {
     private final Long id;
-    private final ThemeName themeName;
+    private final ThemeName name;
     private final String description;
     private final String thumbnailUrl;
 
-    public Theme(Long id, ThemeName themeName, String description, String thumbnailUrl) {
+    public Theme(Long id, ThemeName name, String description, String thumbnailUrl) {
         this.id = id;
-        this.themeName = themeName;
+        this.name = name;
         this.description = description;
         this.thumbnailUrl = thumbnailUrl;
     }
 
-    public Theme(ThemeName themeName, String description, String thumbnail) {
-        this(null, themeName, description, thumbnail);
+    public Theme(ThemeName name, String description, String thumbnail) {
+        this(null, name, description, thumbnail);
     }
 
     public Theme withId(long id) {
-        return new Theme(id, themeName, description, thumbnailUrl);
+        return new Theme(id, name, description, thumbnailUrl);
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getThemeName() {
-        return themeName.asText();
+    public String getName() {
+        return name.asText();
     }
 
     public String getDescription() {

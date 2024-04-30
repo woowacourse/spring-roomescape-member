@@ -67,6 +67,7 @@
 ### Response
 
 - 201 Created
+- Location: /reservations/1
 - content-type: application/json
 
 ```json
@@ -112,6 +113,7 @@
 ### Response
 
 - 201 Created
+- Location: /times/1
 - content-type: application/json
 
 ```json
@@ -155,3 +157,73 @@
 ### Response
 
 - 200 OK
+
+---
+
+## 테마 추가
+
+### Request
+
+- POST /themes
+- Location: /themes/1
+- content-type: application/json
+
+```json
+{
+  "name": "테마",
+  "description": "테마 설명",
+  "thumbnail": "테마 이미지"
+}
+```
+
+### Response
+
+- 201 Created
+- content-type: application/json
+
+```json
+{
+  "id": 1,
+  "name": "테마",
+  "description": "테마 설명",
+  "thumbnail": "테마 이미지"
+}
+```
+
+---
+
+## 테마 조회
+
+### Request
+
+- GET /themes
+
+### Response
+
+- 200 OK
+- content-type: application/json
+
+```json
+[
+  {
+    "id": 1,
+    "name": "테마",
+    "description": "테마 설명",
+    "thumbnail": "테마 이미지"
+  }
+]
+```
+
+---
+
+## 테마 삭제
+
+### Request
+
+- DELETE /themes/{id}
+
+### Response
+
+- 204 No Content
+
+---
