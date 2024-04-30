@@ -7,7 +7,7 @@ public record ReservationResponse (Long id, String name, String date, Reservatio
     public static ReservationResponse from(Reservation reservation) {
         return new ReservationResponse(
                 reservation.getId(),
-                reservation.getName(),
+                reservation.getName().getUserName(),
                 reservation.getDate().format(DateTimeFormatter.ISO_DATE),
                 ReservationTimeResponse.from(reservation.getReservationTime())
         );

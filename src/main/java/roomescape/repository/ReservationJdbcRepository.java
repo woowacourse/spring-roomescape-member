@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.UserName;
 
 @Repository
 public class ReservationJdbcRepository implements ReservationRepository {
@@ -25,7 +26,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
         Reservation reservation
                 = new Reservation(
                 resultSet.getLong("id"),
-                resultSet.getString("name"),
+                new UserName(resultSet.getString("name")),
                 LocalDate.parse(resultSet.getString("date")),
                 new ReservationTime(
                         resultSet.getLong("time_id"),
@@ -59,7 +60,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
 
     public Reservation save(Reservation reservation) {
         SqlParameterSource parameterSource = new MapSqlParameterSource()
-                .addValue("name", reservation.getName())
+                .addValue("name", reservation.getName().getUserName())
                 .addValue("date", reservation.getDate())
                 .addValue("time_id", reservation.getReservationTime().getId());
         Long id = simpleJdbcInsert.executeAndReturnKey(parameterSource).longValue();

@@ -5,6 +5,7 @@ import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.UserName;
 import roomescape.dto.ReservationCreateRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.repository.ReservationRepository;
@@ -32,7 +33,7 @@ public class ReservationService {
     public ReservationResponse create(ReservationCreateRequest reservationCreateRequest) {
         ReservationTime reservationTime = reservationTimeRepository.findByTimeId(reservationCreateRequest.timeId());
         Reservation reservation = new Reservation(
-                reservationCreateRequest.name(),
+                new UserName(reservationCreateRequest.name()),
                 reservationCreateRequest.date(),
                 reservationTime
         );
