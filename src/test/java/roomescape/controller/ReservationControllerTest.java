@@ -12,6 +12,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.Reservation;
 
 import java.lang.reflect.Field;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -165,7 +166,7 @@ public class ReservationControllerTest {
     @DisplayName("예약 추가, 조회를 정상적으로 수행한다.")
     void ReservationTime_CREATE_READ_Success() {
         Map<String, Object> reservation = Map.of("name", "브라운",
-                "date", "2023-08-05",
+                "date", LocalDate.now().plusDays(1L).toString(),
                 "timeId", 1
         );
 
