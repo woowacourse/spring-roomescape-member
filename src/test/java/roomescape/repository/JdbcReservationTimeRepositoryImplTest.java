@@ -33,8 +33,8 @@ class JdbcReservationTimeRepositoryImplTest {
         ReservationTime expected = reservationTimeRepository.findById(actual.getId());
 
         assertAll(
-                () -> assertEquals(expected.getId(), actual.getId()),
-                () -> assertEquals(expected.getStartAt(), actual.getStartAt())
+            () -> assertEquals(expected.getId(), actual.getId()),
+            () -> assertEquals(expected.getStartAt(), actual.getStartAt())
         );
     }
 
@@ -48,8 +48,8 @@ class JdbcReservationTimeRepositoryImplTest {
         ReservationTime expected = new ReservationTime(save.getId(), save.getStartAt());
 
         assertAll(
-                () -> assertEquals(expected.getId(), actual.getId()),
-                () -> assertEquals(expected.getStartAt(), actual.getStartAt())
+            () -> assertEquals(expected.getId(), actual.getId()),
+            () -> assertEquals(expected.getStartAt(), actual.getStartAt())
         );
     }
 
@@ -78,10 +78,10 @@ class JdbcReservationTimeRepositoryImplTest {
         List<ReservationTime> expected = List.of(save1, save2);
 
         assertAll(
-                () -> assertEquals(expected.get(0).getId(), actual.get(0).getId()),
-                () -> assertEquals(expected.get(0).getStartAt(), actual.get(0).getStartAt()),
-                () -> assertEquals(expected.get(1).getId(), actual.get(1).getId()),
-                () -> assertEquals(expected.get(1).getStartAt(), actual.get(1).getStartAt())
+            () -> assertEquals(expected.get(0).getId(), actual.get(0).getId()),
+            () -> assertEquals(expected.get(0).getStartAt(), actual.get(0).getStartAt()),
+            () -> assertEquals(expected.get(1).getId(), actual.get(1).getId()),
+            () -> assertEquals(expected.get(1).getStartAt(), actual.get(1).getStartAt())
         );
     }
 }
