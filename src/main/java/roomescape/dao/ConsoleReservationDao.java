@@ -2,6 +2,7 @@ package roomescape.dao;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.reservation.Reservation;
@@ -38,5 +39,11 @@ public class ConsoleReservationDao implements ReservationDao {
     @Override
     public void delete(long id) {
         store.remove(id);
+    }
+
+    @Override
+    public boolean existByTimeId(Long timeId) {
+        return store.values().stream()
+                .anyMatch(reservation -> Objects.equals(reservation.getReservationTime().getId(), timeId));
     }
 }

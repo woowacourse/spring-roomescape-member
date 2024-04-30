@@ -24,7 +24,7 @@ public class Main {
                 reservationTimeDao
         );
 
-        ReservationTimeService reservationTimeService = new ReservationTimeService(reservationTimeDao);
+        ReservationTimeService reservationTimeService = new ReservationTimeService(reservationTimeDao, reservationDao);
 
         RoomEscapeConsoleController roomEscapeConsoleController = new RoomEscapeConsoleController(
                 inputView,

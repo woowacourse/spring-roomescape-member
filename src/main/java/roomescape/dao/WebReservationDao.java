@@ -17,7 +17,7 @@ import roomescape.domain.reservationtime.ReservationStartAt;
 import roomescape.domain.reservationtime.ReservationTime;
 
 @Repository
-public class WebReservationDao implements ReservationDao {
+public class  WebReservationDao implements ReservationDao {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -88,6 +88,19 @@ public class WebReservationDao implements ReservationDao {
                 WHERE id = ?
                 """;
         jdbcTemplate.update(sql, id);
+    }
+
+    @Override
+    public boolean existByTimeId(Long timeId) {
+        String sql = """
+                SELECT
+                CASE
+                    WHEN EXISTS (SELECT 1 FROM reservation WHERE time_id = ?)
+                    THEN TRUE
+                    ELSE FALSE
+                END
+                """;
+        return jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
     }
 
     private Reservation getReservation(ResultSet resultSet, ReservationTime reservationTime) throws SQLException {

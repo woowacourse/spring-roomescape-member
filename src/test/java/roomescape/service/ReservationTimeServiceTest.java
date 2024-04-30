@@ -15,7 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.dao.WebReservationDao;
 import roomescape.dao.WebReservationTimeDao;
+import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationDate;
+import roomescape.domain.reservation.ReservationName;
 import roomescape.domain.reservationtime.ReservationStartAt;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.dto.reservationtime.ReservationTimeCreateRequest;
@@ -26,6 +30,8 @@ class ReservationTimeServiceTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private WebReservationDao reservationDao;
     @Autowired
     private WebReservationTimeDao reservationTimeDao;
     @Autowired
@@ -127,6 +133,21 @@ class ReservationTimeServiceTest {
 
         //when //then
         assertThatThrownBy(() -> reservationTimeService.add(request))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("특정 시간에 대한 예약이 존재하는데, 그 시간을 삭제하려 할 때 예외가 발생한다.")
+    void deleteReservationTimeWhenReservationExist() {
+        //given
+        reservationDao.create(new Reservation(
+                null,
+                new ReservationName("다온"),
+                ReservationDate.from("2024-04-30"),
+                new ReservationTime(1L, ReservationStartAt.from("12:02"))));
+
+        //when //then
+        assertThatThrownBy(() -> reservationTimeService.delete(1L))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }
