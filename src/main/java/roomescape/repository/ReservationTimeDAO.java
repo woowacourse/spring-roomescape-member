@@ -57,4 +57,11 @@ public class ReservationTimeDAO implements ReservationTimeRepository {
         jdbcTemplate.update(sql, id);
 
     }
+
+    @Override
+    public Long countReservationTimeById(long id) {
+        String sql = "select count(id) from reservation_time where id = ?";
+        return jdbcTemplate.queryForObject(sql, (resultSet, ignored) ->
+                resultSet.getLong(1), id);
+    }
 }

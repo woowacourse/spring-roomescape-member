@@ -3,6 +3,7 @@ package roomescape.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.controller.request.ReservationTimeRequest;
+import roomescape.exception.NotFoundException;
 import roomescape.model.ReservationTime;
 import roomescape.repository.ReservationTimeRepository;
 
@@ -29,6 +30,10 @@ public class ReservationTimeService {
     }
 
     public void deleteReservationTime(long id) {
+        Long count = reservationTimeRepository.countReservationTimeById(id);
+        if (count == null || count <= 0) {
+            throw new NotFoundException("[ERROR] 존재하지 않는 시간입니다.");
+        }
         reservationTimeRepository.deleteReservationTime(id);
     }
 }

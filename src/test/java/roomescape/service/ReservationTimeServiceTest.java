@@ -1,13 +1,16 @@
 package roomescape.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.time.LocalTime;
 import java.util.List;
+
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.controller.request.ReservationTimeRequest;
+import roomescape.exception.NotFoundException;
 import roomescape.model.ReservationTime;
+
+import static org.assertj.core.api.Assertions.*;
 
 class ReservationTimeServiceTest {
     ReservationTimeService reservationTimeService = new ReservationTimeService(new FakeReservationTimeRepository());
@@ -41,5 +44,20 @@ class ReservationTimeServiceTest {
         reservationTimeService.deleteReservationTime(1);
         List<ReservationTime> allReservationTimes = reservationTimeService.findAllReservationTimes();
         assertThat(allReservationTimes).hasSize(1);
+    }
+
+    @DisplayName("존재하지 않는 시간이면 예외를 발생시킨다.")
+    @Test
+    void should_throw_exception_when_not_exist_id() {
+        assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(10000000))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("[ERROR] 존재하지 않는 시간입니다.");
+    }
+
+    @DisplayName("존재하는 시간이면 예외가 발생하지 않는다.")
+    @Test
+    void should_not_throw_exception_when_exist_id() {
+        assertThatCode(() -> reservationTimeService.deleteReservationTime(1))
+                .doesNotThrowAnyException();
     }
 }

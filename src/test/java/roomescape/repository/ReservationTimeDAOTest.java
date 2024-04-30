@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -79,5 +80,19 @@ class ReservationTimeDAOTest {
     void should_get_reservation_time() {
         ReservationTime reservationTime = reservationTimeDAOImpl.findReservationById(1);
         assertThat(reservationTime.getStartAt()).isEqualTo(LocalTime.of(10, 0));
+    }
+
+    @DisplayName("아이디가 존재하면 참을 반환한다.")
+    @Test
+    void should_return_true_when_id_exist() {
+        long count = reservationTimeDAOImpl.countReservationTimeById(1);
+        assertThat(count).isEqualTo(1);
+    }
+
+    @DisplayName("아이디가 존재하면 거짓을 반환한다.")
+    @Test
+    void should_return_false_when_id_not_exist() {
+        long count = reservationTimeDAOImpl.countReservationTimeById(100000000);
+        assertThat(count).isEqualTo(0);
     }
 }
