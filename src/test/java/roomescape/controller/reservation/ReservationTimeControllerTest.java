@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
@@ -30,6 +32,22 @@ class ReservationTimeControllerTest {
                 .then().log().all()
                 .statusCode(201);
     }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"", "abc", "1500", "15000", "15"})
+    @DisplayName("예약 가능한 시간이 잘못된 경우 bad request 상태코드를 반환한다.")
+    void wrongStartAt(String startAt) {
+        Map<String, String> params = new HashMap<>();
+        params.put("startAt", startAt);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(400);
+    }
+
 
     @Test
     @DisplayName("예약 가능한 시간을 조회한다.")

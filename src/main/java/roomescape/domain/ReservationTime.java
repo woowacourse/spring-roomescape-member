@@ -10,6 +10,7 @@ public class ReservationTime {
     private final LocalTime startAt;
 
     public ReservationTime(Long id, LocalTime startAt) {
+        validate(startAt);
         this.id = id;
         this.startAt = startAt;
     }
@@ -20,6 +21,12 @@ public class ReservationTime {
 
     public ReservationTime(LocalTime startAt) {
         this(null, startAt);
+    }
+
+    private void validate(LocalTime startAt) {
+        if (startAt == null) {
+            throw new IllegalArgumentException("시작 시간이 null입니다.");
+        }
     }
 
     public Long id() {

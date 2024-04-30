@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -26,5 +27,14 @@ class ReservationTimeTest {
         ReservationTime reservationTime2 = new ReservationTime(1L, LocalTime.of(19, 30));
 
         assertThat(reservationTime1).isEqualTo(reservationTime2);
+    }
+
+    @Test
+    @DisplayName("startAt이 Null인 경우 예외가 발생한다.")
+    void startAtCannotBeNull() {
+        LocalTime startAt = null;
+
+        assertThatThrownBy(() -> new ReservationTime(1L, startAt))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }
