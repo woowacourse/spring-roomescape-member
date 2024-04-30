@@ -47,6 +47,11 @@ public class ReservationController {
         return ResponseEntity.noContent().build();
     }
 
+    @ExceptionHandler(value = IllegalArgumentException.class)
+    public ResponseEntity<String> handleArgumentException(IllegalArgumentException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(value = NotExistReservationException.class)
     public ResponseEntity<String> handleNotExistReservationException(NotExistReservationException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
