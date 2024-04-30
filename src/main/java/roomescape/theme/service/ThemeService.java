@@ -8,6 +8,7 @@ import roomescape.theme.domain.Theme;
 import roomescape.theme.dto.ThemeRequestDto;
 import roomescape.theme.dto.ThemeResponseDto;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -39,5 +40,14 @@ public class ThemeService {
         } catch (final DataAccessException dataAccessException) {
             return ResponseCode.FAILED_DELETE;
         }
+    }
+
+    public List<ThemeResponseDto> findPopular() {
+        LocalDate today = LocalDate.now();
+
+        List<Theme> themes = themeDao.findPopular(today.minusWeeks(1).toString(), today.minusDays(1).toString());
+        return themes.stream()
+                .map(ThemeResponseDto::new)
+                .toList();
     }
 }

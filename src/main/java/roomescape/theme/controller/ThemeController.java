@@ -35,4 +35,9 @@ public class ThemeController {
         final ResponseCode deletedStatus = themeService.deleteById(id);
         return ResponseEntity.status(deletedStatus.getHttpStatus()).build();
     }
+
+    @GetMapping("/popular")
+    public List<ThemeResponseDto> findPopular() {
+        return themeService.findPopular();
+    }
 }
