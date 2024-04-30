@@ -11,7 +11,6 @@ import roomescape.service.ReservationService;
 import roomescape.service.ReservationTimeService;
 
 public class ConsoleRoomescapeApplication {
-
     public static void main(String[] args) {
         ConsoleController consoleController = initConsoleController();
         consoleController.run();
