@@ -26,6 +26,7 @@ public class ReservationTimeDao implements ReservationTimeRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
+    @Override
     public ReservationTime save(ReservationTime reservationTime) {
         SqlParameterSource sqlParameterSource = new BeanPropertySqlParameterSource(reservationTime);
         Long id = simpleJdbcInsert.executeAndReturnKey(sqlParameterSource).longValue();
@@ -33,6 +34,7 @@ public class ReservationTimeDao implements ReservationTimeRepository {
         return new ReservationTime(id, reservationTime.getStartAt());
     }
 
+    @Override
     public Optional<ReservationTime> findById(Long id) {
         try {
             String sql = "SELECT * FROM reservation_time WHERE id = ?";
@@ -43,6 +45,7 @@ public class ReservationTimeDao implements ReservationTimeRepository {
         }
     }
 
+    @Override
     public List<ReservationTime> findAll() {
         String sql = "SELECT * FROM reservation_time";
         return jdbcTemplate.query(sql, getReservationTimeRowMapper());
@@ -55,6 +58,7 @@ public class ReservationTimeDao implements ReservationTimeRepository {
         );
     }
 
+    @Override
     public void deleteById(Long id) {
         String sql = "DELETE FROM reservation_time WHERE id = ?";
         jdbcTemplate.update(sql, id);

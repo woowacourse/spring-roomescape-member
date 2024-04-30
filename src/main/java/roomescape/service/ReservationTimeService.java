@@ -6,6 +6,7 @@ import roomescape.dto.reservationtime.ReservationTimeCreateRequest;
 import roomescape.dto.reservationtime.ReservationTimeResponse;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ResourceNotFoundException;
+import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationtime.ReservationTimeRepository;
 
 import java.util.List;
@@ -16,9 +17,12 @@ public class ReservationTimeService {
     private static final String RESERVATION_TIME_NOT_FOUND = "존재하지 않는 예약 시간입니다.";
 
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository) {
+    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository,
+                                  ReservationRepository reservationRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public ReservationTimeResponse createTime(ReservationTimeCreateRequest request) {
@@ -52,6 +56,9 @@ public class ReservationTimeService {
     }
 
     public void deleteTime(Long id) {
+        if (reservationRepository.existsByTimeId(id)) {
+            throw new BadRequestException("해당 시간대에 예약이 존재합니다.");
+        }
         reservationTimeRepository.deleteById(id);
     }
 }

@@ -27,6 +27,7 @@ public class ReservationDao implements ReservationRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
+    @Override
     public Reservation save(Reservation reservation) {
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
@@ -38,6 +39,7 @@ public class ReservationDao implements ReservationRepository {
         return new Reservation(id, reservation);
     }
 
+    @Override
     public Optional<Reservation> findById(Long id) {
         try {
             String sql = "SELECT r.id AS reservation_id, r.name, r.date, t.id AS time_id, t.start_at AS start_at " +
@@ -49,6 +51,7 @@ public class ReservationDao implements ReservationRepository {
         }
     }
 
+    @Override
     public List<Reservation> findAll() {
         String sql = "SELECT r.id AS reservation_id, r.name, r.date, t.id AS time_id, t.start_at AS start_at " +
                 "FROM reservation AS r INNER JOIN reservation_time as t on r.time_id = t.id";
@@ -67,8 +70,18 @@ public class ReservationDao implements ReservationRepository {
         );
     }
 
+    @Override
     public void deleteById(Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
         jdbcTemplate.update(sql, id);
+    }
+
+    @Override
+    public boolean existsByTimeId(Long timeId) {
+        String sql = "SELECT id FROM reservation WHERE time_id = ? LIMIT 1";
+        List<Reservation> reservations = jdbcTemplate.query(
+                sql, getReservationRowMapper(), timeId
+        );
+        return !reservations.isEmpty();
     }
 }

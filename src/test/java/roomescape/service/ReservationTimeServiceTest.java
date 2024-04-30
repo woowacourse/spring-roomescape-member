@@ -11,6 +11,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.dto.reservationtime.ReservationTimeCreateRequest;
 import roomescape.dto.reservationtime.ReservationTimeResponse;
 import roomescape.exception.BadRequestException;
+import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationtime.ReservationTimeRepository;
 
 import java.time.LocalTime;
@@ -27,13 +28,15 @@ class ReservationTimeServiceTest {
     private ReservationTimeService reservationTimeService;
     @Mock
     private ReservationTimeRepository reservationTimeRepository;
+    @Mock
+    private ReservationRepository reservationRepository;
     private Long id;
     private LocalTime startAt;
     private ReservationTime reservationTimeFixture;
 
     @BeforeEach
     void setUp() {
-        this.reservationTimeService = new ReservationTimeService(reservationTimeRepository);
+        this.reservationTimeService = new ReservationTimeService(reservationTimeRepository, reservationRepository);
         this.id = 1L;
         this.startAt = LocalTime.of(10, 10);
         this.reservationTimeFixture = new ReservationTime(id, startAt);
@@ -102,10 +105,24 @@ class ReservationTimeServiceTest {
     @Test
     void deleteTime() {
         // given
+        Mockito.when(reservationRepository.existsByTimeId(id))
+                        .thenReturn(false);
         Mockito.doNothing().when(reservationTimeRepository).deleteById(id);
 
         // when & then
         assertThatCode(() -> reservationTimeService.deleteTime(id))
                 .doesNotThrowAnyException();
+    }
+
+    @DisplayName("예약 시간 서비스는 id에 맞는 시간에 예약이 존재하면 예외가 발생한다.")
+    @Test
+    void deleteTimeWithExistsReservation() {
+        // given
+        Mockito.when(reservationRepository.existsByTimeId(id))
+                .thenReturn(true);
+
+        // when & then
+        assertThatThrownBy(() -> reservationTimeService.deleteTime(id))
+                .isInstanceOf(BadRequestException.class);
     }
 }
