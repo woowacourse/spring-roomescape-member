@@ -1,7 +1,6 @@
 package roomescape.web.repository;
 
 import java.util.List;
-import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -25,6 +24,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
+    @Override
     public Long save(final Reservation reservation) {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
@@ -33,6 +33,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
         return jdbcInsert.executeAndReturnKey(parameters).longValue();
     }
 
+    @Override
     public List<Reservation> findAll() {
         final String query = """
                 SELECT
@@ -49,6 +50,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
         return jdbcTemplate.query(query, getReservationRowMapper());
     }
 
+    @Override
     public List<Reservation> findByTimeId(final long timeId) {
         final String query = """
                 SELECT
@@ -92,6 +94,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
         return jdbcTemplate.queryForObject(query, Integer.class, date, timeId);
     }
 
+    @Override
     public void deleteById(final long id) {
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
     }

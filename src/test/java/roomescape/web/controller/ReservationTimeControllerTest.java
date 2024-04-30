@@ -6,11 +6,13 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 
@@ -19,6 +21,14 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(properties = {"spring.config.location = classpath:application-test.yml"})
 class ReservationTimeControllerTest {
     private static final String TOMORROW_DATE = LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_DATE);
+
+    @LocalServerPort
+    private int port;
+
+    @BeforeEach
+    void setUp() {
+        RestAssured.port = port;
+    }
 
     @Test
     @DisplayName("시간 생성 시, startAt 값이 null이면 예외가 발생한다.")
@@ -57,6 +67,16 @@ class ReservationTimeControllerTest {
         params.put("date", TOMORROW_DATE);
         params.put("timeId", 1);
 
+        Map<String, Object> time = new HashMap<>();
+        time.put("startAt", "10:10");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(time)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(201);
+
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
@@ -66,6 +86,27 @@ class ReservationTimeControllerTest {
 
         RestAssured.given().log().all()
                 .when().delete("/times/1")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    @DisplayName("시간 생성 시, startAt 값이 중복되면 예외가 발생한다.")
+    void validateTimeDuplicated() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("startAt", "10:10");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/times")
                 .then().log().all()
                 .statusCode(400);
     }

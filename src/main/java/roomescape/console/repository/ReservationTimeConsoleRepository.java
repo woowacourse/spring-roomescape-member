@@ -41,6 +41,11 @@ public class ReservationTimeConsoleRepository implements ReservationTimeReposito
     }
 
     @Override
+    public Integer countByStartAt(final String startAt) {
+        return null;
+    }
+
+    @Override
     public void deleteById(final long id) {
         reservationTimes.removeIf(reservationTime -> reservationTime.getId() == id);
     }

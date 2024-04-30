@@ -10,5 +10,7 @@ public interface ReservationTimeRepository {
 
     ReservationTime findById(final long id);
 
+    Integer countByStartAt(final String startAt);
+
     void deleteById(final long id);
 }

@@ -24,8 +24,17 @@ public class ReservationTimeService {
     @Transactional
     public ReservationTimeResponseDto create(final ReservationTimeRequestDto request) {
         final ReservationTime reservationTime = new ReservationTime(request.getStartAt());
+        validateDuplicatedStartAt(reservationTime);
         final Long id = reservationTimeRepository.save(reservationTime);
         return new ReservationTimeResponseDto(id, reservationTime);
+    }
+
+    private void validateDuplicatedStartAt(final ReservationTime reservationTime) {
+        final Integer reservationTimeCount = reservationTimeRepository.countByStartAt(
+                reservationTime.getStartAtString());
+        if (reservationTimeCount > 0) {
+            throw new IllegalArgumentException("해당 시간이 이미 존재합니다.");
+        }
     }
 
     @Transactional(readOnly = true)
