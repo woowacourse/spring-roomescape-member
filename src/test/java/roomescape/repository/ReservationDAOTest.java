@@ -102,4 +102,18 @@ class ReservationDAOTest {
         Integer count = jdbcTemplate.queryForObject("select count(1) from reservation", Integer.class);
         assertThat(count).isEqualTo(1);
     }
+
+    @DisplayName("아이디가 존재하면 참을 반환한다.")
+    @Test
+    void should_return_true_when_id_exist() {
+        long count = reservationRepository.countReservationById(1);
+        assertThat(count).isEqualTo(1);
+    }
+
+    @DisplayName("아이디가 존재하면 거짓을 반환한다.")
+    @Test
+    void should_return_false_when_id_not_exist() {
+        long count = reservationRepository.countReservationById(100000000);
+        assertThat(count).isEqualTo(0);
+    }
 }

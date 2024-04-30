@@ -9,4 +9,6 @@ public interface ReservationRepository {
     Reservation addReservation(Reservation reservation);
 
     long deleteReservation(long id);
+
+    Long countReservationById(long id);
 }
