@@ -36,7 +36,7 @@ class ReservationServiceTest {
     void create() {
         //given
         String name = "choco";
-        String date = "2023-04-18";
+        String date = "2100-04-18";
         long timeId = 1L;
         reservationTimeRepository.save(new ReservationTime(timeId, LocalTime.MIDNIGHT));
         ReservationRequest reservationRequest = new ReservationRequest(name, date, timeId);
@@ -58,7 +58,7 @@ class ReservationServiceTest {
         //given
         long id = 1;
         String name = "choco";
-        LocalDate date = LocalDate.of(2024, 4, 18);
+        LocalDate date = LocalDate.now().plusYears(1);
         long timeId = 1L;
         LocalTime localTime = LocalTime.MIDNIGHT;
         ReservationTime reservationTime = new ReservationTime(timeId, localTime);
@@ -83,7 +83,7 @@ class ReservationServiceTest {
         //given
         long id = 1;
         String name = "choco";
-        LocalDate date = LocalDate.of(2024, 4, 18);
+        LocalDate date = LocalDate.now().plusYears(1);
         long timeId = 1L;
         LocalTime localTime = LocalTime.MIDNIGHT;
         ReservationTime reservationTime = new ReservationTime(timeId, localTime);

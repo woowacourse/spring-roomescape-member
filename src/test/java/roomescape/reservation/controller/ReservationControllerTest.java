@@ -2,8 +2,6 @@ package roomescape.reservation.controller;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +32,7 @@ class ReservationControllerTest extends ControllerTest {
         reservationTimeResponse = reservationTimeService.create(new ReservationTimeRequest("12:00"));
         reservationService.create(new ReservationRequest(
                 "choco",
-                "2023-04-23",
+                "2099-04-23",
                 reservationTimeResponse.id())
         );
     }
@@ -45,7 +43,7 @@ class ReservationControllerTest extends ControllerTest {
         //given
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", "2099-08-05");
         reservation.put("timeId", reservationTimeResponse.id());
 
         //when & then
@@ -114,7 +112,7 @@ class ReservationControllerTest extends ControllerTest {
         //given
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", name);
-        reservation.put("date", "2024-12-01");
+        reservation.put("date", "2100-12-01");
         reservation.put("timeId", reservationTimeResponse.id());
 
         //when & then

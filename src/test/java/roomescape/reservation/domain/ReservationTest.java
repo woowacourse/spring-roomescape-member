@@ -1,6 +1,7 @@
 package roomescape.reservation.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -15,13 +16,13 @@ class ReservationTest {
         //given
         long id = 1L;
         String name1 = "choco";
-        LocalDate date1 = LocalDate.of(2024, 4, 19);
+        LocalDate date1 = LocalDate.now().plusYears(1);
         long timeId = 1;
         LocalTime localTime = LocalTime.of(12, 23, 0);
         ReservationTime time1 = new ReservationTime(timeId, localTime);
 
         String name2 = "pororo";
-        LocalDate date2 = LocalDate.of(2022, 4, 19);
+        LocalDate date2 = LocalDate.now().plusYears(1);
         LocalTime time2 = LocalTime.of(11, 23, 0);
 
         //when
@@ -30,5 +31,19 @@ class ReservationTest {
 
         //then
         assertThat(reservation1).isEqualTo(reservation2);
+    }
+
+    @DisplayName("현재보다 이전 시각의 예약을 생성하면 예외가 발생한다.")
+    @Test
+    void createIllegalException() {
+        //given
+        LocalDate localDate = LocalDate.of(2017, 12, 30);
+        long timeId = 1;
+        LocalTime localTime = LocalTime.of(12, 23, 0);
+        ReservationTime time = new ReservationTime(timeId, localTime);
+
+        //when & then
+        assertThatThrownBy(() -> new Reservation(1L, "테스트", localDate, time))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }
