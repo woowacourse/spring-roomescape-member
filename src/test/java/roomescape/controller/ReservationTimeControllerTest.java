@@ -30,7 +30,7 @@ class ReservationTimeControllerTest {
         jdbcTemplate.update("delete from reservation_time");
     }
 
-    @DisplayName("예약 시간을 추가 성공할 시, 200 ok를 응답한다.")
+    @DisplayName("예약 시간을 추가 성공할 시, 201 created를 응답한다.")
     @Test
     void should_add_reservation_time_to_db() {
         ReservationTimeAddRequest reservationTimeAddRequest = new ReservationTimeAddRequest(LocalTime.of(10, 0));
@@ -40,7 +40,7 @@ class ReservationTimeControllerTest {
                 .body(reservationTimeAddRequest)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
     }
 
     @DisplayName("존재하는 예약 시간을 조회시, 200 ok를 응답한다.")
