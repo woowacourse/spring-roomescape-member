@@ -9,6 +9,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -113,6 +115,18 @@ class ReservationTimeServiceTest {
 
         //when //then
         assertThatThrownBy(() -> reservationTimeService.delete(givenId))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @DisplayName("예약 시간에 null이나 공백 문자열이 입력되면 예외가 발생한다.")
+    void createReservationTimeByNullOrEmptyStartAt(String given) {
+        //given
+        ReservationTimeCreateRequest request = ReservationTimeCreateRequest.from(given);
+
+        //when //then
+        assertThatThrownBy(() -> reservationTimeService.add(request))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

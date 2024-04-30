@@ -28,7 +28,7 @@ public class ReservationStartAt {
     }
 
     private static void validateValue(String value) {
-        if (value == null) {
+        if (value == null || value.isBlank()) {
             throw new IllegalArgumentException("시작 시간은 비어있을 수 없습니다.");
         }
     }
