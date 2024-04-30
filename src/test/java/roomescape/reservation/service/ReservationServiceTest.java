@@ -11,6 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.reservation.dto.request.ReservationRequest;
 import roomescape.reservation.dto.request.ReservationTimeRequest;
@@ -22,15 +23,17 @@ import roomescape.reservation.handler.exception.CustomException;
 class ReservationServiceTest {
 
     @Autowired
-    private ReservationService reservationService;
+    private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    private ReservationTimeService reservationTimeService;
+    private ReservationService reservationService;
 
     @DisplayName("예약시간이 없는 경우 예외가 발생한다.")
     @Test
     void reservationTimeIsNotExist() {
-        ReservationRequest reservationRequest = new ReservationRequest("브라운", LocalDate.of(2999, 8, 5), 1L);
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES(?, ?, ?)", "happy", "hi", "abcd.html");
+
+        ReservationRequest reservationRequest = new ReservationRequest("브라운", LocalDate.of(2999, 8, 5), 1L,1L);
 
         assertThatThrownBy(() -> reservationService.createReservation(reservationRequest))
                 .isInstanceOf(CustomException.class);
@@ -39,10 +42,10 @@ class ReservationServiceTest {
     @DisplayName("예약 생성 테스트")
     @Test
     void createReservation() {
-        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.of(10, 1));
-        reservationTimeService.createReservationTime(reservationTimeRequest);
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES(?)", LocalTime.of(10, 0));
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES(?, ?, ?)", "happy", "hi", "abcd.html");
 
-        ReservationRequest reservationRequest = new ReservationRequest("브라운", LocalDate.of(2999, 8, 5), 1L);
+        ReservationRequest reservationRequest = new ReservationRequest("브라운", LocalDate.of(2999, 8, 5), 1L, 1L);
         ReservationResponse reservationResponse = reservationService.createReservation(reservationRequest);
 
         assertAll(
@@ -54,10 +57,10 @@ class ReservationServiceTest {
     @DisplayName("모든 예약 조회 테스트")
     @Test
     void findAllReservations() {
-        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.of(10, 1));
-        reservationTimeService.createReservationTime(reservationTimeRequest);
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES(?)", LocalTime.of(10, 0));
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES(?, ?, ?)", "happy", "hi", "abcd.html");
 
-        ReservationRequest reservationRequest = new ReservationRequest("브라운", LocalDate.of(2999, 8, 5), 1L);
+        ReservationRequest reservationRequest = new ReservationRequest("브라운", LocalDate.of(2999, 8, 5), 1L, 1L);
         reservationService.createReservation(reservationRequest);
 
         List<ReservationResponse> reservations = reservationService.findAllReservations();
@@ -72,10 +75,10 @@ class ReservationServiceTest {
     @DisplayName("예약 삭제 테스트")
     @Test
     void deleteReservation() {
-        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.of(10, 1));
-        reservationTimeService.createReservationTime(reservationTimeRequest);
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES(?)", LocalTime.of(10, 0));
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES(?, ?, ?)", "happy", "hi", "abcd.html");
 
-        ReservationRequest reservationRequest = new ReservationRequest("브라운", LocalDate.of(2999, 8, 5), 1L);
+        ReservationRequest reservationRequest = new ReservationRequest("브라운", LocalDate.of(2999, 8, 5), 1L, 1L);
         ReservationResponse savedReservation = reservationService.createReservation(reservationRequest);
 
         reservationService.deleteReservation(savedReservation.id());
