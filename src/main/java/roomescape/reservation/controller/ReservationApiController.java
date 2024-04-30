@@ -31,7 +31,7 @@ public class ReservationApiController {
     @PostMapping("/reservations")
     public ResponseEntity<ResponseReservation> create(@RequestBody RequestReservation requestReservation) {
         Long id = reservationService.save(requestReservation);
-        ResponseReservation responseReservation = reservationService.findOneById(id);
+        ResponseReservation responseReservation = reservationService.findById(id);
         return ResponseEntity.ok(responseReservation);
     }
 

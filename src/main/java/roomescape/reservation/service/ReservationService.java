@@ -35,7 +35,7 @@ public class ReservationService {
         return reservationRepository.save(reservation);
     }
 
-    public ResponseReservation findOneById(Long id) {
+    public ResponseReservation findById(Long id) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약입니다."));
 
