@@ -1,7 +1,7 @@
 package roomescape.application;
 
 import java.time.Clock;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,8 +29,9 @@ public class ReservationService {
     @Transactional
     public ReservationResponse create(ReservationRequest request) {
         ReservationTime reservationTime = getReservationTime(request);
-        validateDatePast(request);
-        validateReservationDuplicated(request);
+        LocalDateTime dateTime = LocalDateTime.of(request.date(), reservationTime.getStartAt());
+        validateRequestDateAfterCurrentTime(dateTime);
+        validateUniqueReservation(request);
         Reservation reservation = request.toReservation(reservationTime);
         return ReservationResponse.from(reservationRepository.save(reservation));
     }
@@ -40,14 +41,14 @@ public class ReservationService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간 입니다."));
     }
 
-    private void validateDatePast(ReservationRequest request) {
-        LocalDate currentDate = LocalDate.now(clock);
-        if (request.date().isBefore(currentDate)) {
-            throw new IllegalArgumentException(String.format("현재 날짜보다 과거로 예약할 수 없습니다. 현재 날짜:%s", currentDate));
+    private void validateRequestDateAfterCurrentTime(LocalDateTime dateTime) {
+        LocalDateTime currentTime = LocalDateTime.now(clock);
+        if (dateTime.isBefore(currentTime)) {
+            throw new IllegalArgumentException("현재 시간보다 과거로 예약할 수 없습니다.");
         }
     }
 
-    private void validateReservationDuplicated(ReservationRequest request) {
+    private void validateUniqueReservation(ReservationRequest request) {
         if (reservationRepository.existByNameAndDateAndTimeId(request.name(), request.date(), request.timeId())) {
             throw new IllegalStateException("이미 존재하는 예약입니다.");
         }

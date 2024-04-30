@@ -8,9 +8,9 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
 
 import java.time.Clock;
-import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.List;
@@ -49,6 +49,8 @@ class ReservationServiceTest {
     void shouldReturnReservationResponseWhenValidReservationRequestSave() {
         ReservationRequest reservationRequest = new ReservationRequest("test", LocalDate.now(), 1L);
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
+        ReservationRequest reservationRequest = new ReservationRequest("test", LocalDate.of(2024, 12, 26), 1L);
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(12, 0));
         Reservation reservation = new Reservation(
                 1L,
                 new Name("test"),
@@ -56,10 +58,7 @@ class ReservationServiceTest {
                 reservationTime
         );
 
-        given(clock.instant())
-                .willReturn(Instant.now());
-        given(clock.getZone())
-                .willReturn(ZoneId.systemDefault());
+        setClockMock(2024, 12, 25, 0, 0);
         given(reservationTimeRepository.findById(any(Long.class)))
                 .willReturn(Optional.of(reservationTime));
         given(reservationRepository.existByNameAndDateAndTimeId(any(String.class), any(LocalDate.class),
@@ -94,11 +93,10 @@ class ReservationServiceTest {
     void shouldReturnIllegalStateExceptionWhenDuplicatedReservationCreate() {
         ReservationRequest reservationRequest = new ReservationRequest("test", LocalDate.now(), 1L);
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
+        ReservationRequest reservationRequest = new ReservationRequest("test", LocalDate.of(2024, 12, 27), 1L);
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(12, 0));
 
-        given(clock.instant())
-                .willReturn(Instant.now());
-        given(clock.getZone())
-                .willReturn(ZoneId.systemDefault());
+        setClockMock(2024, 12, 26, 0, 0);
         given(reservationTimeRepository.findById(any(Long.class)))
                 .willReturn(Optional.of(reservationTime));
         given(reservationRepository.existByNameAndDateAndTimeId(any(String.class), any(LocalDate.class),
@@ -115,22 +113,19 @@ class ReservationServiceTest {
         then(reservationRepository).should(times(0)).save(any(Reservation.class));
     }
 
-    @DisplayName("과거 날짜로 예약을 하는 경우 IllegalArgumentException 예외를 반환한다.")
+    @DisplayName("과거 시간을 예약하는 경우 IllegalArgumentException 예외를 반환한다.")
     @Test
     void shouldThrowsIllegalArgumentExceptionWhenReservationDateIsBeforeCurrentDate() {
         ReservationRequest reservationRequest = new ReservationRequest("test", LocalDate.of(2024, 12, 25), 1L);
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(12, 0));
 
-        given(clock.instant())
-                .willReturn(Instant.now().plus(Duration.ofDays(365)));
-        given(clock.getZone())
-                .willReturn(ZoneId.systemDefault());
+        setClockMock(2024, 12, 26, 0, 0);
         given(reservationTimeRepository.findById(any(Long.class)))
                 .willReturn(Optional.of(reservationTime));
 
         assertThatCode(() -> reservationService.create(reservationRequest))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage(String.format("현재 날짜보다 과거로 예약할 수 없습니다. 현재 날짜:%s", LocalDate.now(clock)));
+                .hasMessage("현재 시간보다 과거로 예약할 수 없습니다.");
     }
 
     @DisplayName("모든 예약 조회시 reservationRepository findAll 메서드를 1회 호출하고 모든 예약을 반환한다.")
@@ -174,5 +169,12 @@ class ReservationServiceTest {
 
         then(reservationRepository).should().findById(any(Long.class));
         then(reservationRepository).should(times(0)).deleteById(any(Long.class));
+    }
+
+    private void setClockMock(int year, int month, int day, int hour, int minute) {
+        given(clock.instant())
+            .willReturn(Instant.from(LocalDateTime.of(year, month, day, hour, minute).atZone(ZoneId.systemDefault())));
+        given(clock.getZone())
+                .willReturn(ZoneId.systemDefault());
     }
 }
