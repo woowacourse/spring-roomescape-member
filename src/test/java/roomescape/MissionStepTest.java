@@ -142,7 +142,7 @@ class MissionStepTest {
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
 
-        assertThat(reservations.size()).isEqualTo(count);
+        assertThat(reservations).hasSize(count);
     }
 
     @Test
@@ -179,7 +179,7 @@ class MissionStepTest {
                 .statusCode(204);
 
         Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-        assertThat(countAfterDelete).isEqualTo(0);
+        assertThat(countAfterDelete).isZero();
     }
 
     @Test
