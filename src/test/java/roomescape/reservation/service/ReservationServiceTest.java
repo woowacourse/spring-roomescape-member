@@ -29,13 +29,22 @@ class ReservationServiceTest {
 
     @Test
     @DisplayName("존재하지 않는 시간에 예약을 하면 예외가 발생한다.")
-    void saveExceptionTest() {
+    void emptyIdExceptionTest() {
         Long timeId = 1L;
 
         doReturn(Optional.empty()).when(reservationTimeRepository)
                 .findById(timeId);
 
         ReservationRequest reservationRequest = new ReservationRequest("hogi", LocalDate.now(), timeId);
+
+        assertThatThrownBy(() -> reservationService.save(reservationRequest))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("지나간 날짜를 예약 하면 예외가 발생한다")
+    void beforeDateExceptionTest() {
+        ReservationRequest reservationRequest = new ReservationRequest("hogi", LocalDate.parse("1998-03-14"), 1L);
 
         assertThatThrownBy(() -> reservationService.save(reservationRequest))
                 .isInstanceOf(IllegalArgumentException.class);

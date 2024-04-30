@@ -1,5 +1,6 @@
 package roomescape.reservation.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,10 @@ public class ReservationService {
     public Long save(ReservationRequest reservationRequest) {
         ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
+
+        if (LocalDate.now().isBefore(reservationRequest.date())) {
+            throw new IllegalArgumentException("지난 날짜는 예약할 수 없습니다.");
+        }
 
         Reservation reservation = new Reservation(new Name(reservationRequest.name()),
                 reservationRequest.date(),
