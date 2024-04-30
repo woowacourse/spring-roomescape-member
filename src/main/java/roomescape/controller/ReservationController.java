@@ -28,7 +28,7 @@ public class ReservationController {
         Reservation reservation = service.createReservation(dto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .header("Location", "/reservations/" + reservation.id())
+                .header("Location", "/reservations/" + reservation.getId())
                 .body(reservation);
     }
 
