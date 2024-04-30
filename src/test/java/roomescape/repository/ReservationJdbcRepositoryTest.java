@@ -12,6 +12,7 @@ import roomescape.domain.ReservationTime;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Time;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,7 +26,7 @@ class ReservationJdbcRepositoryTest extends RepositoryTest implements Reservatio
     @BeforeEach
     void setUp() {
         String insertTimeSql = "INSERT INTO reservation_time (start_at) VALUES (?)";
-        jdbcTemplate.update(insertTimeSql, Time.valueOf(MIA_RESERVATION_TIME));
+        jdbcTemplate.update(insertTimeSql, Time.valueOf(LocalTime.parse(MIA_RESERVATION_TIME)));
     }
 
     @Override

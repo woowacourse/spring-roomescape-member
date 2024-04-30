@@ -48,7 +48,7 @@ class ReservationTimeControllerTest extends ControllerTest {
     @DisplayName("잘못된 형식의 예약 시간 POST 요청 시 상태코드 400을 반환한다.")
     void createReservationTimeWithInvalidRequest() throws Exception {
         // given
-        ReservationTimeSaveRequest request = new ReservationTimeSaveRequest(LocalTime.of(15, 3));
+        ReservationTimeSaveRequest request = new ReservationTimeSaveRequest("15:03");
 
         BDDMockito.given(reservationTimeService.create(any()))
                 .willThrow(IllegalArgumentException.class);

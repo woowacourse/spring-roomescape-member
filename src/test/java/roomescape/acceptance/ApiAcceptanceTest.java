@@ -59,7 +59,7 @@ public class ApiAcceptanceTest {
     @DisplayName("[Step7] 잘못된 형식의 예약 시간을 추가한다.")
     void createReservationTime2() {
         // given & when
-        ReservationTimeSaveRequest request = new ReservationTimeSaveRequest(LocalTime.of(15, 3));
+        ReservationTimeSaveRequest request = new ReservationTimeSaveRequest("15:03");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

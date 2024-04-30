@@ -43,7 +43,7 @@ class ReservationTest {
     @ParameterizedTest
     @MethodSource("reservationsAndExpectedResult")
     @DisplayName("예약이 동일한 예약 시간을 갖는지 확인한다.")
-    void hasSameDateTime(LocalDate date, LocalTime time, boolean expectedResult) {
+    void hasSameDateTime(LocalDate date, String time, boolean expectedResult) {
         // given
         Reservation reservation = MIA_RESERVATION(new ReservationTime(MIA_RESERVATION_TIME));
 

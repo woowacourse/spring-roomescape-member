@@ -47,7 +47,7 @@ public class ReservationTimeDao {
     }
 
     private ReservationTime rowMapper(ResultSet resultSet, int rowNumber) throws SQLException {
-        var reservationTime = new ReservationTime(resultSet.getTime("start_at").toLocalTime());
+        var reservationTime = new ReservationTime(resultSet.getString("start_at"));
         return new ReservationTime(resultSet.getLong("id"), reservationTime);
     }
 

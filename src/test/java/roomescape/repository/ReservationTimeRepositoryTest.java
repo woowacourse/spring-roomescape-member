@@ -9,6 +9,7 @@ import roomescape.domain.ReservationTime;
 
 import java.sql.PreparedStatement;
 import java.sql.Time;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,7 +56,7 @@ class ReservationTimeRepositoryTest extends RepositoryTest {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(insertSql, new String[]{"id"});
-            ps.setTime(1, Time.valueOf(MIA_RESERVATION_TIME));
+            ps.setTime(1, Time.valueOf(LocalTime.parse(MIA_RESERVATION_TIME)));
             return ps;
         }, keyHolder);
         Long id = keyHolder.getKey().longValue();
@@ -88,7 +89,7 @@ class ReservationTimeRepositoryTest extends RepositoryTest {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(insertSql, new String[]{"id"});
-            ps.setTime(1, Time.valueOf(MIA_RESERVATION_TIME));
+            ps.setTime(1, Time.valueOf(LocalTime.parse(MIA_RESERVATION_TIME)));
             return ps;
         }, keyHolder);
         Long id = keyHolder.getKey().longValue();

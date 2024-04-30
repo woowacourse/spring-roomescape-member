@@ -64,7 +64,7 @@ class ReservationTimeServiceTest {
         // then
         assertThat(responses).hasSize(1)
                 .extracting(ReservationTimeResponse::startAt)
-                .contains(MIA_RESERVATION_TIME.toString());
+                .contains(MIA_RESERVATION_TIME);
     }
 
     @Test
