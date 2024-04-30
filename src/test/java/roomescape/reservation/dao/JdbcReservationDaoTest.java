@@ -15,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.domain.Theme;
 
 @JdbcTest
 class JdbcReservationDaoTest {
@@ -34,12 +35,17 @@ class JdbcReservationDaoTest {
     void saveReservation() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES(?)", LocalTime.of(10, 0));
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
-        Reservation reservation = new Reservation(null, "parang", LocalDate.of(2999, 3, 28), reservationTime);
+
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES(?, ?, ?)", "happy", "hi", "abcd.html");
+        Theme theme = new Theme(1L, "happy", "hi", "abcd.html");
+
+        Reservation reservation = new Reservation(null, "parang", LocalDate.of(2999, 3, 28), reservationTime, theme);
         savedReservation = jdbcReservationDao.save(reservation);
     }
 
     @AfterEach
     void setUp() {
+        jdbcTemplate.execute("ALTER TABLE theme ALTER COLUMN `id` RESTART");
         jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN `id` RESTART");
         jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN `id` RESTART");
     }
