@@ -4,6 +4,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 import org.springframework.http.HttpStatus;
 
+//Todo 상태코드 고민해보기
 public enum ExceptionType {
 
     NAME_EMPTY(BAD_REQUEST, "이름은 필수 값입니다."),
@@ -14,6 +15,7 @@ public enum ExceptionType {
     INVALID_DATE_TIME_FORMAT(BAD_REQUEST, "해석할 수 없는 날짜, 시간 포맷입니다."),
     //Todo 이름 변경
     INVALID_DELETE_TIME(BAD_REQUEST, "예약이 존재하는 시간은 삭제할 수 없습니다."),
+    INVALID_DELETE_THEME(BAD_REQUEST, "예약이 존재하는 테마는 삭제할 수 없습니다."),
     RESERVATION_TIME_NOT_FOUND(BAD_REQUEST, "존재하지 않는 시간입니다."),
     //todo 이름 변경,
     PAST_TIME(BAD_REQUEST, "이미 지난 시간에 예약할 수 없습니다."),

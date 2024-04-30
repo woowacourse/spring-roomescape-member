@@ -46,6 +46,7 @@ public class Theme {
         this(null, name, description, thumbnail);
     }
 
+    //todo : long 으로 변경
     public Long getId() {
         return id;
     }

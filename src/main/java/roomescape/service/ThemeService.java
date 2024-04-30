@@ -1,12 +1,14 @@
 package roomescape.service;
 
 import java.util.List;
+import java.util.Objects;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
 import roomescape.exception.ExceptionType;
 import roomescape.exception.RoomescapeException;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 
 //todo 테스트코드 작성
@@ -14,9 +16,11 @@ import roomescape.repository.ThemeRepository;
 public class ThemeService {
 
     private final ThemeRepository themeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ThemeService(ThemeRepository themeRepository) {
+    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository) {
         this.themeRepository = themeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public ThemeResponse save(ThemeRequest themeRequest) {
@@ -41,6 +45,12 @@ public class ThemeService {
     }
 
     public void delete(long id) {
+        //todo : 변수명 고민
+        boolean invalidDelete = reservationRepository.findAll().stream()
+                .anyMatch(reservation -> Objects.equals(reservation.getTheme().getId(), id));
+        if (invalidDelete) {
+            throw new RoomescapeException(ExceptionType.INVALID_DELETE_THEME);
+        }
         themeRepository.delete(id);
     }
 }
