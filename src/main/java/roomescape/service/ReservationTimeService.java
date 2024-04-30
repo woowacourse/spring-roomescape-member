@@ -30,6 +30,9 @@ public class ReservationTimeService {
     }
 
     public ReservationTime findTimeById(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("[ERROR] 유효하지 않은 형식의 예약 시간입니다.");
+        }
         Optional<ReservationTime> optionalReservationTime = timeDao.findById(id);
         if (optionalReservationTime.isEmpty()) {
             throw new NoSuchElementException("[ERROR] 예약 시간을 찾을 수 없습니다");
