@@ -1,5 +1,6 @@
 package roomescape.console.repository;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -8,6 +9,7 @@ import roomescape.core.domain.ReservationTime;
 import roomescape.core.repository.ReservationTimeRepository;
 
 public class ReservationTimeConsoleRepository implements ReservationTimeRepository {
+    public static final String TIME_FORMAT = "HH:mm";
     private final List<ReservationTime> reservationTimes;
     private final AtomicLong id;
 
@@ -20,7 +22,7 @@ public class ReservationTimeConsoleRepository implements ReservationTimeReposito
     public Long save(final ReservationTime reservationTime) {
         final ReservationTime persistReservationTime = new ReservationTime(
                 id.getAndIncrement(),
-                reservationTime.getStartAt());
+                reservationTime.getStartAt().format(DateTimeFormatter.ofPattern(TIME_FORMAT)));
         reservationTimes.add(persistReservationTime);
         return persistReservationTime.getId();
     }

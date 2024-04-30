@@ -5,7 +5,7 @@ import java.time.format.DateTimeParseException;
 
 public class ReservationTime {
     private Long id;
-    private String startAt;
+    private LocalTime startAt;
 
     public ReservationTime() {
     }
@@ -15,14 +15,13 @@ public class ReservationTime {
     }
 
     public ReservationTime(final Long id, final String startAt) {
-        validateStartAt(startAt);
         this.id = id;
-        this.startAt = startAt;
+        this.startAt = parseStartAt(startAt);
     }
 
-    private void validateStartAt(final String startAt) {
+    private LocalTime parseStartAt(final String startAt) {
         try {
-            LocalTime.parse(startAt);
+            return LocalTime.parse(startAt);
         } catch (final DateTimeParseException e) {
             throw new IllegalArgumentException("시간 형식이 잘못되었습니다.");
         }
@@ -32,7 +31,7 @@ public class ReservationTime {
         return id;
     }
 
-    public String getStartAt() {
+    public LocalTime getStartAt() {
         return startAt;
     }
 }

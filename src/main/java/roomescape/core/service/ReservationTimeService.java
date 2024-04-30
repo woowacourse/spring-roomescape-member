@@ -23,8 +23,9 @@ public class ReservationTimeService {
 
     @Transactional
     public ReservationTimeResponseDto create(final ReservationTimeRequestDto request) {
-        final Long id = reservationTimeRepository.save(new ReservationTime(request.getStartAt()));
-        return new ReservationTimeResponseDto(id, request.getStartAt());
+        final ReservationTime reservationTime = new ReservationTime(request.getStartAt());
+        final Long id = reservationTimeRepository.save(reservationTime);
+        return new ReservationTimeResponseDto(id, reservationTime);
     }
 
     @Transactional(readOnly = true)

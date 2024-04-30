@@ -1,5 +1,6 @@
 package roomescape.console.repository;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -21,7 +22,7 @@ public class ReservationConsoleRepository implements ReservationRepository {
         final Reservation persistReservation = new Reservation(
                 id.getAndIncrement(),
                 reservation.getName(),
-                reservation.getDate(),
+                reservation.getDate().format(DateTimeFormatter.ISO_DATE),
                 reservation.getReservationTime());
         reservations.add(persistReservation);
         return persistReservation.getId();
