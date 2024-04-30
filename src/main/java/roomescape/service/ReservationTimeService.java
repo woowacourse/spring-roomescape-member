@@ -16,7 +16,8 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponse save(ReservationTimeRequest reservationTimeRequest) {
-        ReservationTime saved = reservationTimeRepository.save(reservationTimeRequest);
+        ReservationTime reservationTime = new ReservationTime(reservationTimeRequest.startAt());
+        ReservationTime saved = reservationTimeRepository.save(reservationTime);
         return toResponse(saved);
     }
 

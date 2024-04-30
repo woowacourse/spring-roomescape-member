@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.ReservationTimeRequest;
 
 public class CollectionReservationTimeRepository implements ReservationTimeRepository {
     private final List<ReservationTime> reservationTimes;
@@ -24,11 +23,10 @@ public class CollectionReservationTimeRepository implements ReservationTimeRepos
     }
 
     @Override
-    public ReservationTime save(ReservationTimeRequest reservationTimeRequest) {
-        ReservationTime reservationTime = new ReservationTime(atomicLong.incrementAndGet(),
-                reservationTimeRequest.startAt());
-        reservationTimes.add(reservationTime);
-        return reservationTime;
+    public ReservationTime save(ReservationTime reservationTime) {
+        ReservationTime saved = new ReservationTime(atomicLong.incrementAndGet(), reservationTime.getStartAt());
+        reservationTimes.add(saved);
+        return saved;
     }
 
     @Override

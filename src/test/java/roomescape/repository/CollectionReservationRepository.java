@@ -1,6 +1,5 @@
 package roomescape.repository;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
@@ -30,27 +29,20 @@ public class CollectionReservationRepository implements ReservationRepository {
         this(reservations, new AtomicLong(0), timeRepository);
     }
 
-    @Override
-    public Reservation save(ReservationRequest reservationRequest) {
-        Reservation reservation = fromRequest(reservationRequest);
-        reservations.add(reservation);
-        return reservation;
-    }
-
-    private Reservation fromRequest(ReservationRequest reservationRequest) {
-        long id = atomicLong.incrementAndGet();
-
-        String name = reservationRequest.name();
-        LocalDate date = reservationRequest.date();
-        ReservationTime reservationTime = timeRepository.findAll().stream()
-                .filter(sameId(reservationRequest))
-                .findAny()
-                .orElseThrow();
-        return new Reservation(id, name, date, reservationTime);
-    }
-
     private static Predicate<ReservationTime> sameId(ReservationRequest reservationRequest) {
         return reservationTime -> reservationTime.getId() == reservationRequest.timeId();
+    }
+
+    @Override
+    public Reservation save(Reservation reservation) {
+        ReservationTime findTime = timeRepository.findAll().stream()
+                .filter(reservationTime -> reservationTime.getId() == reservation.getReservationTime().getId())
+                .findFirst()
+                .get();
+        Reservation saved = new Reservation(atomicLong.incrementAndGet(), reservation.getName(), reservation.getDate(),
+                findTime);
+        reservations.add(saved);
+        return saved;
     }
 
     @Override

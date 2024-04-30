@@ -18,7 +18,11 @@ public class ReservationService {
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest) {
-        Reservation saved = reservationRepository.save(reservationRequest);
+        Reservation saved = reservationRepository.save(new Reservation(
+                reservationRequest.name(),
+                reservationRequest.date(),
+                new ReservationTime(reservationRequest.timeId(), null)
+        ));
         return toResponse(saved);
     }
 

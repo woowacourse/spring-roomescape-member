@@ -11,8 +11,8 @@ public class Reservation implements Comparable<Reservation> {
     private final LocalDate date;
     private final ReservationTime time;
 
-    public Reservation(long id, Reservation reservationBeforeSave) {
-        this(id, reservationBeforeSave.name, reservationBeforeSave.date, reservationBeforeSave.time);
+    public Reservation(String name, LocalDate date, ReservationTime time) {
+        this(null, name, date, time);
     }
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time) {
@@ -20,6 +20,10 @@ public class Reservation implements Comparable<Reservation> {
         this.name = name;
         this.date = date;
         this.time = time;
+    }
+
+    public Reservation(long id, Reservation reservationBeforeSave) {
+        this(id, reservationBeforeSave.name, reservationBeforeSave.date, reservationBeforeSave.time);
     }
 
     @Override

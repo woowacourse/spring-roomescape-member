@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.ReservationTimeRequest;
 
 @SpringBootTest
 class JdbcTemplateReservationTimeRepositoryTest {
@@ -31,7 +30,7 @@ class JdbcTemplateReservationTimeRepositoryTest {
     @DisplayName("ReservationTime 을 잘 저장하는지 확인한다.")
     void save() {
         var beforeSave = reservationTimeRepository.findAll().stream().map(ReservationTime::getId).toList();
-        ReservationTime saved = reservationTimeRepository.save(new ReservationTimeRequest(LocalTime.now()));
+        ReservationTime saved = reservationTimeRepository.save(new ReservationTime(LocalTime.now()));
         var afterSave = reservationTimeRepository.findAll().stream().map(ReservationTime::getId).toList();
 
         Assertions.assertThat(afterSave)
@@ -43,8 +42,8 @@ class JdbcTemplateReservationTimeRepositoryTest {
     @DisplayName("ReservationTime 을 잘 조회하는지 확인한다.")
     void findAll() {
         List<ReservationTime> beforeSave = reservationTimeRepository.findAll();
-        reservationTimeRepository.save(new ReservationTimeRequest(LocalTime.now()));
-        reservationTimeRepository.save(new ReservationTimeRequest(LocalTime.now()));
+        reservationTimeRepository.save(new ReservationTime(LocalTime.now()));
+        reservationTimeRepository.save(new ReservationTime(LocalTime.now()));
 
         List<ReservationTime> afterSave = reservationTimeRepository.findAll();
 
@@ -56,7 +55,7 @@ class JdbcTemplateReservationTimeRepositoryTest {
     @DisplayName("ReservationTime 을 잘 지우하는지 확인한다.")
     void delete() {
         List<ReservationTime> beforeSaveAndDelete = reservationTimeRepository.findAll();
-        reservationTimeRepository.save(new ReservationTimeRequest(LocalTime.now()));
+        reservationTimeRepository.save(new ReservationTime(LocalTime.now()));
 
         reservationTimeRepository.delete(1L);
 

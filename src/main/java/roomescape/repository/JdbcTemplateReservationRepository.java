@@ -11,7 +11,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.ReservationRequest;
 
 @Repository
 public class JdbcTemplateReservationRepository implements ReservationRepository {
@@ -22,23 +21,23 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
     }
 
     @Override
-    public Reservation save(ReservationRequest reservationRequest) {
-        ReservationTime reservationTime = findReservationTime(reservationRequest);
-        Reservation reservation = new Reservation(null, reservationRequest.name(), reservationRequest.date(),
+    public Reservation save(Reservation reservation) {
+        ReservationTime reservationTime = findReservationTime(reservation.getReservationTime().getId());
+        Reservation beforeSaved = new Reservation(null, reservation.getName(), reservation.getDate(),
                 reservationTime);
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        save(reservation, keyHolder);
+        save(beforeSaved, keyHolder);
         long id = keyHolder.getKey().longValue();
         return new Reservation(id, reservation);
     }
 
-    private ReservationTime findReservationTime(ReservationRequest reservationRequest) {
+    private ReservationTime findReservationTime(long timeId) {
         String reservationTimeSelectSql = "select * from reservation_time where id = ?";
         return jdbcTemplate.queryForObject(reservationTimeSelectSql, (rs, rowNum) -> {
             long id = rs.getLong(1);
             LocalTime startAt = rs.getTime(2).toLocalTime();
             return new ReservationTime(id, startAt);
-        }, reservationRequest.timeId());
+        }, timeId);
     }
 
     private void save(Reservation reservation, KeyHolder keyHolder) {

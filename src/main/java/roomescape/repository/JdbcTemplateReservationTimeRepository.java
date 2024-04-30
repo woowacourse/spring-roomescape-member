@@ -9,7 +9,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.ReservationTimeRequest;
 
 @Repository
 public class JdbcTemplateReservationTimeRepository implements ReservationTimeRepository {
@@ -20,17 +19,17 @@ public class JdbcTemplateReservationTimeRepository implements ReservationTimeRep
     }
 
     @Override
-    public ReservationTime save(ReservationTimeRequest reservationTimeRequest) {
+    public ReservationTime save(ReservationTime reservationTime) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        save(reservationTimeRequest, keyHolder);
-        return new ReservationTime(keyHolder.getKey().longValue(), reservationTimeRequest.startAt());
+        save(reservationTime, keyHolder);
+        return new ReservationTime(keyHolder.getKey().longValue(), reservationTime.getStartAt());
     }
 
-    private void save(ReservationTimeRequest reservationTimeRequest, KeyHolder keyHolder) {
+    private void save(ReservationTime reservationTime, KeyHolder keyHolder) {
         jdbcTemplate.update(con -> {
             PreparedStatement pstmt = con.prepareStatement("insert into reservation_time(start_at) values ( ? )",
                     new String[]{"id"});
-            pstmt.setTime(1, Time.valueOf(reservationTimeRequest.startAt()));
+            pstmt.setTime(1, Time.valueOf(reservationTime.getStartAt()));
             return pstmt;
         }, keyHolder);
     }

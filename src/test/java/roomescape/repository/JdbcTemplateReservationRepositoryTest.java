@@ -1,6 +1,7 @@
 package roomescape.repository;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,10 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Reservation;
-import roomescape.dto.ReservationRequest;
+import roomescape.domain.ReservationTime;
 
 @SpringBootTest
 class JdbcTemplateReservationRepositoryTest {
+    private static final ReservationTime DEFAULT_TIME = new ReservationTime(1L, LocalTime.of(11, 56));
     @Autowired
     private ReservationRepository reservationRepository;
     @Autowired
@@ -32,7 +34,7 @@ class JdbcTemplateReservationRepositoryTest {
     @DisplayName("Reservation 을 잘 저장하는지 확인한다.")
     void save() {
         var beforeSave = reservationRepository.findAll();
-        Reservation saved = reservationRepository.save(new ReservationRequest(LocalDate.now(), "test", 1));
+        Reservation saved = reservationRepository.save(new Reservation("test", LocalDate.now(), DEFAULT_TIME));
         var afterSave = reservationRepository.findAll();
 
         Assertions.assertThat(afterSave)
@@ -44,8 +46,8 @@ class JdbcTemplateReservationRepositoryTest {
     @DisplayName("Reservation 을 잘 조회하는지 확인한다.")
     void findAll() {
         List<Reservation> beforeSave = reservationRepository.findAll();
-        reservationRepository.save(new ReservationRequest(LocalDate.now(), "test", 1));
-        reservationRepository.save(new ReservationRequest(LocalDate.now(), "test2", 1));
+        reservationRepository.save(new Reservation("test", LocalDate.now(), DEFAULT_TIME));
+        reservationRepository.save(new Reservation("test2", LocalDate.now(), DEFAULT_TIME));
 
         List<Reservation> afterSave = reservationRepository.findAll();
         Assertions.assertThat(afterSave.size())
@@ -56,7 +58,7 @@ class JdbcTemplateReservationRepositoryTest {
     @DisplayName("Reservation 을 잘 지우는지 확인한다.")
     void delete() {
         List<Reservation> beforeSaveAndDelete = reservationRepository.findAll();
-        reservationRepository.save(new ReservationRequest(LocalDate.now(), "test", 1));
+        reservationRepository.save(new Reservation("test", LocalDate.now(), DEFAULT_TIME));
 
         reservationRepository.delete(1L);
 
