@@ -1,22 +1,21 @@
 package roomescape.repository;
 
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.model.ReservationTime;
-
-import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class ReservationTimeJdbcRepository implements ReservationTimeRepository {
 
     private static final RowMapper<ReservationTime> ROW_MAPPER = (selectedTime, rowNum) ->
-            new ReservationTime(selectedTime.getLong("id"), selectedTime.getString("start_at"));
+            new ReservationTime(selectedTime.getLong("id"), LocalTime.parse(selectedTime.getString("start_at")));
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert reservationTimeInsert;
@@ -29,11 +28,9 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
     }
 
     public ReservationTime save(final ReservationTime reservationTime) {
-        final String startAt = reservationTime.getFormattedTime();
-        final SqlParameterSource timeParameters = new MapSqlParameterSource()
-                .addValue("start_at", startAt);
-        final Long savedTimeId = reservationTimeInsert.executeAndReturnKey(timeParameters).longValue();
-        return new ReservationTime(savedTimeId, startAt);
+        final BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(reservationTime);
+        final Long savedTimeId = reservationTimeInsert.executeAndReturnKey(parameterSource).longValue();
+        return new ReservationTime(savedTimeId, reservationTime.getStartAt());
     }
 
     public Optional<ReservationTime> findById(final Long id) {

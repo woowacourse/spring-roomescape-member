@@ -1,9 +1,10 @@
 package roomescape.model;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ReservationTest {
 
@@ -11,7 +12,7 @@ class ReservationTest {
     @Test
     void emptyDate() {
         assertThatThrownBy(() ->
-                new Reservation(1L, "감자", "", new ReservationTime(1L, "10:00")))
+                new Reservation(1L, "감자", "", new ReservationTime(1L, LocalTime.parse("10:00"))))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

@@ -1,5 +1,10 @@
 package roomescape.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.time.LocalTime;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,11 +19,6 @@ import roomescape.repository.ReservationTimeRepository;
 import roomescape.testutil.ReservationMemoryRepository;
 import roomescape.testutil.ReservationTimeMemoryRepository;
 
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 class ReservationServiceTest {
 
     private ReservationService reservationService;
@@ -27,8 +27,8 @@ class ReservationServiceTest {
     void init() {
         final ReservationTimeRepository reservationTimeRepository = new ReservationTimeMemoryRepository();
         final ReservationRepository reservationRepository = new ReservationMemoryRepository();
-        reservationTimeRepository.save(new ReservationTime("10:00"));
-        reservationRepository.save(new Reservation("감자", "2024-05-13", new ReservationTime(1L, "10:00")));
+        reservationTimeRepository.save(new ReservationTime(LocalTime.parse("10:00")));
+        reservationRepository.save(new Reservation("감자", "2024-05-13", new ReservationTime(1L, LocalTime.parse("10:00"))));
         reservationService = new ReservationService(reservationRepository, reservationTimeRepository);
     }
 
@@ -44,7 +44,7 @@ class ReservationServiceTest {
     void saveReservation() {
         final ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest("고구마", "2025-11-11", 1L);
         final ReservationResponse reservationResponse = reservationService.saveReservation(reservationSaveRequest);
-        final ReservationResponse expectedReservation = new ReservationResponse(2L, "고구마", "2025-11-11", new ReservationTimeResponse(1L, "10:00"));
+        final ReservationResponse expectedReservation = new ReservationResponse(2L, "고구마", "2025-11-11", new ReservationTimeResponse(1L, LocalTime.parse("10:00")));
         assertThat(reservationResponse).isEqualTo(expectedReservation);
     }
 

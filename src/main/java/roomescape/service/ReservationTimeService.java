@@ -21,14 +21,14 @@ public class ReservationTimeService {
     public List<ReservationTimeResponse> getTimes() {
         return reservationTimeRepository.findAll()
                 .stream()
-                .map(ReservationTimeResponse::from)
+                .map(ReservationTimeResponse::new)
                 .toList();
     }
 
     public ReservationTimeResponse saveTime(final ReservationTimeSaveRequest reservationTimeSaveRequest) {
-        final ReservationTime reservationTime = new ReservationTime(reservationTimeSaveRequest.startAt());
+        final ReservationTime reservationTime = reservationTimeSaveRequest.toReservationTime();
         final ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
-        return ReservationTimeResponse.from(savedReservationTime);
+        return new ReservationTimeResponse(savedReservationTime);
     }
 
     public void deleteTime(final Long id) {

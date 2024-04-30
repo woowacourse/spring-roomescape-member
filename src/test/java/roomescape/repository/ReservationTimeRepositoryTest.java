@@ -1,6 +1,14 @@
 package roomescape.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import io.restassured.RestAssured;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,13 +18,6 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.model.ReservationTime;
-
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -40,7 +41,7 @@ class ReservationTimeRepositoryTest {
     @DisplayName("예약 시간 저장")
     @Test
     void save() {
-        final ReservationTime reservationTime = new ReservationTime("10:00");
+        final ReservationTime reservationTime = new ReservationTime( LocalTime.parse("10:00"));
         final ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
         assertAll(
                 () -> assertThat(savedReservationTime.getId()).isEqualTo(3L),

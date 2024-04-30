@@ -17,7 +17,7 @@ public class ReservationTimeMemoryRepository implements ReservationTimeRepositor
     @Override
     public ReservationTime save(final ReservationTime reservationTime) {
         final Long savedReservationTimeId = reservationTimeId.getAndIncrement();
-        final ReservationTime savedReservationTime = new ReservationTime(savedReservationTimeId, reservationTime.getFormattedTime());
+        final ReservationTime savedReservationTime = new ReservationTime(savedReservationTimeId, reservationTime.getStartAt());
         reservationTimes.add(savedReservationTime);
         return savedReservationTime;
     }

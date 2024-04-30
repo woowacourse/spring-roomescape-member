@@ -1,5 +1,10 @@
 package roomescape.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.time.LocalTime;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,11 +15,6 @@ import roomescape.model.ReservationTime;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.testutil.ReservationTimeMemoryRepository;
 
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 class ReservationTimeServiceTest {
 
     private ReservationTimeService reservationTimeService;
@@ -22,8 +22,8 @@ class ReservationTimeServiceTest {
     @BeforeEach
     void init() {
         final ReservationTimeRepository reservationTimeRepository = new ReservationTimeMemoryRepository();
-        reservationTimeRepository.save(new ReservationTime("11:00"));
-        reservationTimeRepository.save(new ReservationTime("12:00"));
+        reservationTimeRepository.save(new ReservationTime(LocalTime.parse("11:00")));
+        reservationTimeRepository.save(new ReservationTime(LocalTime.parse("12:00")));
         reservationTimeService = new ReservationTimeService(reservationTimeRepository);
     }
 
@@ -37,9 +37,9 @@ class ReservationTimeServiceTest {
     @DisplayName("예약 시간 추가")
     @Test
     void saveTime() {
-        final ReservationTimeSaveRequest reservationTimeSaveRequest = new ReservationTimeSaveRequest("01:00");
+        final ReservationTimeSaveRequest reservationTimeSaveRequest = new ReservationTimeSaveRequest(LocalTime.parse("01:00"));
         final ReservationTimeResponse reservationTimeResponse = reservationTimeService.saveTime(reservationTimeSaveRequest);
-        assertThat(reservationTimeResponse).isEqualTo(new ReservationTimeResponse(3L, "01:00"));
+        assertThat(reservationTimeResponse).isEqualTo(new ReservationTimeResponse(3L, LocalTime.parse("01:00")));
     }
 
     @DisplayName("예약 시간 삭제")
