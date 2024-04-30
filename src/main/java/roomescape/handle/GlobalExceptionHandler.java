@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.handle;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +10,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = IllegalArgumentException.class)
     public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException illegalArgumentException) {
-        return new ResponseEntity<>("올바르지 않은 입력입니다.", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(illegalArgumentException.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

@@ -58,7 +58,8 @@ class ReservationTimeServiceTest {
     @DisplayName("이미 예약된 예약 시간을 삭제하려 하면 예외가 발생한다.")
     void invalidDelete() {
         LocalTime localTime = LocalTime.now();
-        ReservationTime savedReservationTime = reservationTimeService.save(new ReservationTimeRequest(localTime));
+
+        ReservationTime savedReservationTime = reservationTimeService.save(new ReservationTimeRequest(localTime.plusHours(1)));
         reservationService.save(new ReservationRequest("abc", LocalDate.now(), savedReservationTime.getId()));
 
         assertThatThrownBy(() -> reservationTimeService.delete(savedReservationTime.getId()))

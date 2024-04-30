@@ -11,6 +11,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.service.ReservationTimeService;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -86,9 +87,10 @@ class ReservationControllerTest {
 
     private Map<String, String> getParams() {
         Map<String, String> params = new HashMap<>();
+        LocalDate localDate = LocalDate.now().plusDays(1);
 
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", localDate.toString());
         params.put("timeId", "1");
 
         return params;

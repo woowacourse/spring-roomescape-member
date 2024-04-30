@@ -30,7 +30,7 @@ class ReservationServiceTest {
 
     @BeforeEach
     void setUp() {
-        reservationTimeDAO.insert(new ReservationTime(LocalTime.of(15, 30)));
+        reservationTimeDAO.insert(new ReservationTime(LocalTime.now().plusHours(1)));
     }
 
     @Test
