@@ -3,7 +3,6 @@ package roomescape.repository;
 import java.util.List;
 import java.util.Optional;
 import roomescape.domain.Reservation;
-import roomescape.dto.ReservationAddRequest;
 
 public interface ReservationDao {
 
@@ -11,7 +10,7 @@ public interface ReservationDao {
 
     Optional<Reservation> findById(Long id);
 
-    Reservation insert(ReservationAddRequest reservationAddRequest);
+    Reservation insert(Reservation reservationAddRequest);
 
     void deleteById(Long id);
 }

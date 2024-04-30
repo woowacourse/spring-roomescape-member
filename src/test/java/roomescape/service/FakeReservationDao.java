@@ -8,7 +8,6 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.ReservationAddRequest;
 import roomescape.repository.ReservationDao;
 
 public class FakeReservationDao implements ReservationDao {
@@ -42,7 +41,7 @@ public class FakeReservationDao implements ReservationDao {
     }
 
     @Override
-    public Reservation insert(ReservationAddRequest reservationAddRequest) {
+    public Reservation insert(Reservation reservationAddRequest) {
         Long id = reservationAtomicLong.incrementAndGet();
         Reservation reservation = new Reservation(id, reservationAddRequest.getName(), reservationAddRequest.getDate(),
                 new ReservationTime(reservationTimeAtomicLong.incrementAndGet(),

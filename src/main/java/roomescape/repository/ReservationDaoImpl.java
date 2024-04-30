@@ -10,7 +10,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.ReservationAddRequest;
 
 @Repository
 public class ReservationDaoImpl implements ReservationDao {
@@ -66,13 +65,13 @@ public class ReservationDaoImpl implements ReservationDao {
     }
 
     @Override
-    public Reservation insert(ReservationAddRequest reservationAddRequest) {
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", reservationAddRequest.getName());
-        reservation.put("date", reservationAddRequest.getDate());
-        reservation.put("time_id", reservationAddRequest.getTimeId());
-        Long id = simpleJdbcInsert.executeAndReturnKey(reservation).longValue();
-        return findById(id).get();
+    public Reservation insert(Reservation reservation) {
+        Map<String, Object> reservationRow = new HashMap<>();
+        reservationRow.put("name", reservation.getName());
+        reservationRow.put("date", reservation.getDate());
+        reservationRow.put("time_id", reservation.getTimeId());
+        Long id = simpleJdbcInsert.executeAndReturnKey(reservationRow).longValue();
+        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime());
     }
 
     @Override
