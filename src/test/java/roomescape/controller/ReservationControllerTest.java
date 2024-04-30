@@ -27,7 +27,7 @@ class ReservationControllerTest extends ControllerTest {
     void 예약을_생성한다() throws Exception {
         Reservation reservation = ReservationFixture.reservation();
         when(reservationService.reserve(any())).thenReturn(reservation);
-        ReservationRequest request = new ReservationRequest(reservation.getName(), reservation.getDate(),
+        ReservationRequest request = new ReservationRequest(reservation.getName(), reservation.getDate().toString(),
                 reservation.getTimeId());
         String content = objectMapper.writeValueAsString(request);
 
@@ -70,6 +70,28 @@ class ReservationControllerTest extends ControllerTest {
         ResultActions result = SimpleMockMvc.delete(mockMvc, "/reservations/{id}", id);
 
         result.andExpect(status().isNoContent())
+                .andDo(print());
+    }
+
+    @Test
+    void 예약_날짜가_형식과_맞지_않으면_Bad_Request_상태를_반환한다() throws Exception {
+        String content = "{\"name\":\"prin\", \"date\":\"2024_04_30\", \"timeId\":1}";
+
+        ResultActions result = SimpleMockMvc.post(mockMvc, "/reservations", content);
+
+        result.andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$").value("yyyy-MM-dd 형식이어야 합니다."))
+                .andDo(print());
+    }
+
+    @Test
+    void 예약_날짜가_올바르지_않으면_Bad_Request_상태를_반환한다() throws Exception {
+        String content = "{\"name\":\"lemone\", \"date\":\"2024-04-70\", \"timeId\":1}";
+
+        ResultActions result = SimpleMockMvc.post(mockMvc, "/reservations", content);
+
+        result.andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$").value("잘못된 날짜입니다."))
                 .andDo(print());
     }
 }
