@@ -90,6 +90,34 @@ class ReservationRepositoryTest {
     }
 
     @Test
+    @DisplayName("등록된 시간 아이디로 예약 존재 여부를 확인한다.")
+    void existsByTimeIdPresent() {
+        // given
+        final Long timeId = 2L;
+        final boolean expected = true;
+
+        // when
+        final boolean actual = reservationRepository.existsByTimeId(timeId);
+
+        // then
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("등록되지 않은 시간 아이디로 예약 존재 여부를 확인한다,")
+    void existsByTimeIdNotPresent() {
+        // given
+        final Long timeId = 4L;
+        final boolean expected = false;
+
+        // when
+        final boolean actual = reservationRepository.existsByTimeId(timeId);
+
+        // then
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
     @DisplayName("예약 정보를 저장하면 새로운 아이디가 부여된다.")
     void save() {
         // given

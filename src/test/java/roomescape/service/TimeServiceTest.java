@@ -16,7 +16,9 @@ class TimeServiceTest {
 
     @BeforeEach
     void setUp() {
-        timeService = new TimeService(new ReservationTimeFakeRepository());
+        timeService = new TimeService(
+                new ReservationFakeRepository(),
+                new ReservationTimeFakeRepository());
     }
 
     @Test

@@ -1,6 +1,5 @@
 package roomescape.repository;
 
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -55,18 +54,22 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public boolean existsByTimeId(final Long timeId) {
+        String sql = "SELECT * FROM reservation WHERE time_id = ? LIMIT 1";
+
+        return !jdbcTemplate.query(sql, this::mapRowReservation, timeId)
+                .isEmpty();
+    }
+
+    @Override
     public Reservation save(final Reservation reservation) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
                 .addValue("date", reservation.getDate().format(DateTimeFormatter.ISO_LOCAL_DATE))
                 .addValue("time_id", reservation.getTime().getId());
 
-        try {
-            Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
-            return reservation.assignId(id);
-        } catch (DataIntegrityViolationException e) {
-            throw new IllegalArgumentException("존재하지 않는 예약 시간입니다.");
-        }
+        Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
+        return reservation.assignId(id);
     }
 
     @Override
