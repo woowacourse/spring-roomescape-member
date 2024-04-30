@@ -68,4 +68,22 @@ public class H2ThemeRepository implements ThemeRepository {
 
         return theme.initializeIndex(savedThemeId);
     }
+
+    @Override
+    public void deleteById(final Long themeId) {
+        String sql = "DELETE FROM theme WHERE id = :id";
+        MapSqlParameterSource param = new MapSqlParameterSource()
+                .addValue("id", themeId);
+        template.update(sql, param);
+    }
+
+    @Override
+    public boolean existById(final Long themeId) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM theme WHERE id = :themeId)";
+
+        MapSqlParameterSource param = new MapSqlParameterSource()
+                .addValue("themeId", themeId);
+
+        return Boolean.TRUE.equals(template.queryForObject(sql, param, Boolean.class));
+    }
 }

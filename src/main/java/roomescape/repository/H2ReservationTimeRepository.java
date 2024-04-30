@@ -69,7 +69,6 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
         MapSqlParameterSource param = new MapSqlParameterSource()
                 .addValue("id", reservationTimeId);
         template.update(sql, param);
-        System.out.println("param = " + param);
     }
 
     @Override

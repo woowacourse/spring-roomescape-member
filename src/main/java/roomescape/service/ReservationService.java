@@ -78,6 +78,7 @@ public class ReservationService {
         reservationTimeRepository.deleteById(reservationTimeId);
     }
 
+    // TODO : exist 생성
     private void checkReservationTimeExist(final Long reservationTimeId) {
         reservationTimeRepository.findById(reservationTimeId)
                 .orElseThrow(() -> new NoSuchElementException("해당 id의 예약 시간이 존재하지 않습니다."));
@@ -89,5 +90,13 @@ public class ReservationService {
 
     public Theme saveTheme(final SaveThemeRequest saveThemeRequest) {
         return themeRepository.save(saveThemeRequest.toTheme());
+    }
+
+    public void deleteTheme(final Long themeId) {
+        if (!themeRepository.existById(themeId)) {
+            throw new NoSuchElementException("해당 id의 테마 정보가 존재하지 않습니다.");
+        }
+
+        themeRepository.deleteById(themeId);
     }
 }

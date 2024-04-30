@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 
 import java.util.List;
@@ -51,5 +52,16 @@ class ThemeRepositoryTest {
                 () -> assertThat(savedTheme.getDescription().getValue()).isEqualTo(theme.getDescription().getValue()),
                 () -> assertThat(savedTheme.getThumbnail()).isEqualTo(theme.getThumbnail())
         );
+    }
+
+    @DisplayName("테마 정보를 삭제한다.")
+    @Test
+    void deleteByIdTest() {
+        // When
+        themeRepository.deleteById(2L);
+
+        // Then
+        final List<Theme> themes = themeRepository.findAll();
+        assertThat(themes).hasSize(1);
     }
 }

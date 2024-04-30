@@ -86,4 +86,9 @@ public class ReservationApiController {
         return ResponseEntity.created(URI.create("/themes/" + savedTheme.getId()))
                 .body(ThemeResponse.from(savedTheme));
     }
+
+    @DeleteMapping("/themes/{themeId}")
+    public void deleteTheme(@PathVariable final Long themeId) {
+        reservationService.deleteTheme(themeId);
+    }
 }

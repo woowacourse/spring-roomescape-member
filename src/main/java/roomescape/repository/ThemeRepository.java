@@ -12,4 +12,8 @@ public interface ThemeRepository {
     List<Theme> findAll();
 
     Theme save(Theme theme);
+
+    void deleteById(Long themeId);
+
+    boolean existById(Long themeId);
 }

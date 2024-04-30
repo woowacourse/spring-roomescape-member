@@ -11,6 +11,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationTimeResponse;
+import roomescape.dto.ThemeResponse;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -221,5 +222,24 @@ class ReservationControllerIntegrationTest {
                 .then().log().all()
                 .statusCode(201)
                 .body("id", is(3));
+    }
+
+    @DisplayName("테마 정보를 삭제한다.")
+    @Test
+    void deleteThemeTest() {
+        // 예약 시간 정보 삭제
+        RestAssured.given().log().all()
+                .when().delete("/themes/2")
+                .then().log().all()
+                .statusCode(200);
+
+        // 예약 시간 정보 조회
+        List<ThemeResponse> themes = RestAssured.given().log().all()
+                .when().get("/themes")
+                .then().log().all()
+                .statusCode(200).extract()
+                .jsonPath().getList(".", ThemeResponse.class);
+
+        assertThat(themes.size()).isEqualTo(1);
     }
 }

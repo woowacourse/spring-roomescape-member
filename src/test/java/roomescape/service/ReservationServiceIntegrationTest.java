@@ -215,4 +215,15 @@ class ReservationServiceIntegrationTest {
                 () -> assertThat(theme.getThumbnail()).isEqualTo(thumbnail)
         );
     }
+
+    @DisplayName("테마 정보를 삭제한다.")
+    @Test
+    void deleteThemeTest() {
+        // When
+        reservationService.deleteTheme(2L);
+
+        // Then
+        final List<Theme> themes = reservationService.getThemes();
+        assertThat(themes).hasSize(1);
+    }
 }
