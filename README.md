@@ -241,6 +241,14 @@ content-type: application/json
     "message": "이미 존재하는 테마 이름입니다."
   }
   ```
+  - 추가 실패: 썸네일 형식 오류
+  ```
+  HTTP/1.1 400
+  
+  {
+    "message": "올바르지 않은 썸네일 형식입니다."
+  }
+  ```
 
 ### 테마 조회
 - http method: GET
