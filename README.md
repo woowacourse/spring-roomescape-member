@@ -62,7 +62,7 @@ content-type: application/json
 - response
   - 추가 성공
   ```
-  HTTP/1.1 200 
+  HTTP/1.1 201 
   Content-Type: application/json
   
   {
@@ -110,7 +110,7 @@ content-type: application/json
 - response
   - 존재하는 id로 삭제 요청
   ```
-  HTTP/1.1 200
+  HTTP/1.1 204
   ```
   
 ### 시간 추가
@@ -128,7 +128,7 @@ Content-Type: application/json
 - response
   - 추가 성공
   ```
-  HTTP/1.1 200 
+  HTTP/1.1 201 
   Content-Type: application/json
   
   {
@@ -168,7 +168,7 @@ Content-Type: application/json
 - response
   - 존재하는 id로 삭제 요청
   ```
-  HTTP/1.1 200
+  HTTP/1.1 204
   ```
 
 ## 기능 명세서
