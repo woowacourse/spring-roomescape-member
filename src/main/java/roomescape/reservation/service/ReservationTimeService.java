@@ -4,15 +4,19 @@ import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.domain.repository.ReservationTimeRepository;
 import roomescape.reservation.dto.ReservationTimeRequest;
 import roomescape.reservation.dto.ReservationTimeResponse;
 
 @Service
 public class ReservationTimeService {
+    private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
 
-    public ReservationTimeService(final ReservationTimeRepository reservationTimeRepository) {
+    public ReservationTimeService(ReservationRepository reservationRepository,
+                                  ReservationTimeRepository reservationTimeRepository) {
+        this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
@@ -29,6 +33,10 @@ public class ReservationTimeService {
     }
 
     public void delete(long timeId) {
+        if (!reservationRepository.findAllByTimeId(timeId).isEmpty()) {
+            throw new IllegalArgumentException("예약이 존재해 시간을 삭제할 수 없습니다.");
+        }
+
         if (!reservationTimeRepository.deleteById(timeId)) {
             throw new IllegalArgumentException(
                     String.format("잘못된 예약 시간입니다. id %d를 확인해주세요.", timeId));

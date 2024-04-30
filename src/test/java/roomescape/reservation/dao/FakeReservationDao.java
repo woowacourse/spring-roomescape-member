@@ -35,4 +35,11 @@ public class FakeReservationDao implements ReservationRepository {
         reservations.remove(reservationId);
         return true;
     }
+
+    @Override
+    public List<Reservation> findAllByTimeId(final long timeId) {
+        return reservations.values().stream()
+                .filter(reservation -> reservation.getTime().getId() == timeId)
+                .toList();
+    }
 }
