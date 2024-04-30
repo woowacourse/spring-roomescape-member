@@ -166,8 +166,74 @@ class MissionStepTest {
     }
 
     @Test
+    @DisplayName("예약 생성 시, name이 null이면 예외가 발생한다.")
+    void validateReservationWithNullName() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", null);
+        params.put("date", "2023-08-05");
+        params.put("timeId", 1);
+
+        RestAssured.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(params)
+            .when().post("/reservations")
+            .then().log().all()
+            .statusCode(400);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"", " "})
+    @DisplayName("예약 생성 시, name이 유효하지 않으면 예외가 발생한다.")
+    void validateReservationWithNameFormat(final String name) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        params.put("date", "2023-08-05");
+        params.put("timeId", 1);
+
+        RestAssured.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(params)
+            .when().post("/reservations")
+            .then().log().all()
+            .statusCode(400);
+    }
+
+    @Test
+    @DisplayName("예약 생성 시, date가 null이면 예외가 발생한다.")
+    void validateReservationWithNullDate() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", null);
+        params.put("timeId", 1);
+
+        RestAssured.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(params)
+            .when().post("/reservations")
+            .then().log().all()
+            .statusCode(400);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"", " ", "abc"})
+    @DisplayName("예약 생성 시, date의 형식이 올바르지 않으면 예외가 발생한다.")
+    void validateReservationWithDateFormat(final String date) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", date);
+        params.put("timeId", 1);
+
+        RestAssured.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(params)
+            .when().post("/reservations")
+            .then().log().all()
+            .statusCode(400);
+    }
+
+    @Test
     @DisplayName("예약 생성 시, timeId가 null이면 예외가 발생한다.")
-    void validateReservationCreate() {
+    void validateReservationWithNullTimeId() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", "2023-08-05");
@@ -178,12 +244,12 @@ class MissionStepTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(500);
+                .statusCode(400);
     }
 
     @Test
     @DisplayName("예약 생성 시, timeId 값으로 찾을 수 있는 시간이 없으면 예외가 발생한다.")
-    void validateReservationTimeId() {
+    void validateReservationWithTimeIdNotFound() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", "2023-08-05");
@@ -194,7 +260,7 @@ class MissionStepTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(500);
+                .statusCode(400);
     }
 
     @Test
