@@ -78,4 +78,22 @@ class ReservationControllerTest {
         mvc.perform(get("/reservations"))
             .andExpect(status().isOk());
     }
+
+    @DisplayName("실패: 잘못된 이름, 날짜, 시간으로 예약 -> 400")
+    @Test
+    void reserve_BadRequest() throws Exception {
+        long timeId = 1L;
+        String rawDate = "2040-01-01";
+        String name = "brown";
+
+        String requestBody = objectMapper.writeValueAsString(new ReservationWebRequest(name, rawDate, timeId));
+
+        when(reservationService.save(new ReservationAppRequest(timeId, rawDate, name)))
+            .thenThrow(IllegalArgumentException.class);
+
+        mvc.perform(post("/reservations")
+                .content(requestBody)
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
 }

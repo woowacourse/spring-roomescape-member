@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,15 +33,15 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<ReservationWebResponse> reserve(@RequestBody ReservationWebRequest request) {
         Reservation newReservation = reservationService.save(
-                new ReservationAppRequest(request.timeId(), request.date(), request.name()));
+            new ReservationAppRequest(request.timeId(), request.date(), request.name()));
         Long id = newReservation.getId();
 
         ReservationWebResponse reservationWebResponse = new ReservationWebResponse(id, newReservation.getName(),
-                newReservation.getDate(),
-                ReservationTimeWebResponse.from(newReservation));
+            newReservation.getDate(),
+            ReservationTimeWebResponse.from(newReservation));
 
         return ResponseEntity.created(URI.create("/reservations/" + id))
-                .body(reservationWebResponse);
+            .body(reservationWebResponse);
     }
 
     @DeleteMapping("/{id}")
@@ -54,10 +55,15 @@ public class ReservationController {
     public ResponseEntity<List<ReservationWebResponse>> getReservations() {
         List<Reservation> reservations = reservationService.findAll();
         List<ReservationWebResponse> reservationWebResponse = reservations.stream().
-                map(reservation -> new ReservationWebResponse(reservation.getId(), reservation.getName(),
-                        reservation.getDate(), ReservationTimeWebResponse.from(reservation)))
-                .toList();
+            map(reservation -> new ReservationWebResponse(reservation.getId(), reservation.getName(),
+                reservation.getDate(), ReservationTimeWebResponse.from(reservation)))
+            .toList();
 
         return ResponseEntity.ok(reservationWebResponse);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Void> handleException(IllegalArgumentException e) {
+        return ResponseEntity.badRequest().build();
     }
 }
