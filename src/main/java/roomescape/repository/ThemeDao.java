@@ -1,6 +1,8 @@
 package roomescape.repository;
 
 import java.sql.PreparedStatement;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -41,5 +43,28 @@ public class ThemeDao {
         } catch (NullPointerException exception) {
             throw new RuntimeException("[ERROR] 테마 추가 요청이 정상적으로 이루어지지 않았습니다.");
         }
+    }
+
+    public List<Theme> getAll() {
+        String sql = "SELECT * FROM theme";
+        return jdbcTemplate.query(sql, (result, rowNum) ->
+                new Theme(result.getLong("id"),
+                        result.getString("name"),
+                        result.getString("description"),
+                        result.getString("thumbnail")
+                )
+        );
+    }
+
+    public Optional<Theme> findById(final long themeId) {
+        String sql = "SELECT * FROM theme WHERE id = ? ";
+        return jdbcTemplate.query(sql, (result, rowNum) ->
+                        new Theme(result.getLong("id"),
+                                result.getString("name"),
+                                result.getString("description"),
+                                result.getString("thumbnail")
+                        ), themeId)
+                .stream()
+                .findAny();
     }
 }

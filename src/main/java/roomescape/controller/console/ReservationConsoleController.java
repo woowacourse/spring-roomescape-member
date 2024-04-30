@@ -32,7 +32,8 @@ public class ReservationConsoleController {
             ReservationRequest reservationRequest = new ReservationRequest(
                     reservationView.readName(),
                     reservationView.readDate(),
-                    ReservationTimeView.readIndexToReserve(reservationTimes)
+                    ReservationTimeView.readIndexToReserve(reservationTimes),
+                    0 // TODO: 수정
             );
             reservationService.save(reservationRequest);
             reservationView.printSuccessfullyAdded();

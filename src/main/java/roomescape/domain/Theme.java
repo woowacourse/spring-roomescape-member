@@ -20,6 +20,10 @@ public class Theme {
         this.thumbnail = thumbnail;
     }
 
+    public Theme(final long themeId) {
+        this(themeId, null, null, null);
+    }
+
     public long getId() {
         return id;
     }

@@ -25,12 +25,13 @@ public class ReservationDao {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
                     PreparedStatement ps = connection.prepareStatement(
-                            "insert into reservation (name, date, time_id) values (?, ?, ?)",
+                            "insert into reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)",
                             new String[]{"id"}
                     );
                     ps.setString(1, reservation.getName().getValue());
                     ps.setString(2, reservation.getDate().toString());
                     ps.setString(3, String.valueOf(reservation.getTimeId()));
+                    ps.setString(4, String.valueOf(reservation.getThemeId()));
                     return ps;
                 }, keyHolder
         );
@@ -41,7 +42,8 @@ public class ReservationDao {
                     id,
                     reservation.getName(),
                     reservation.getDate(),
-                    reservation.getTime()
+                    reservation.getTime(),
+                    reservation.getTheme()
             );
         } catch (NullPointerException exception) {
             throw new RuntimeException("[ERROR] 예약 요청이 정상적으로 이루어지지 않았습니다.");
@@ -50,11 +52,15 @@ public class ReservationDao {
 
     public Optional<Reservation> findById(long id) {
         try {
-            String sql = "SELECT r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at as time_value "
-                    + "FROM reservation as r "
-                    + "INNER JOIN reservation_time as t "
-                    + "ON r.time_id = t.id "
-                    + "WHERE r.id = ?";
+            String sql =
+                    "SELECT r.id as reservation_id, r.name, r.date, time.id as time_id, time.start_at as time_value, "
+                            + "theme.id as theme_id, theme.name as theme_name, theme.description, theme.thumbnail "
+                            + "FROM reservation as r "
+                            + "INNER JOIN reservation_time as time "
+                            + "ON r.time_id = time.id "
+                            + "INNER JOIN theme as theme "
+                            + "ON r.theme_id = theme.id "
+                            + "WHERE r.id = ?";
             return Optional.of(jdbcTemplate.queryForObject(sql, reservationRowMapper, id));
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
@@ -67,14 +73,21 @@ public class ReservationDao {
                     resultSet.getString("name"),
                     resultSet.getString("date"),
                     resultSet.getLong("time_id"),
-                    resultSet.getString("start_at")
+                    resultSet.getString("start_at"),
+                    resultSet.getLong("theme_id"),
+                    resultSet.getString("theme_name"),
+                    resultSet.getString("description"),
+                    resultSet.getString("thumbnail")
             );
 
     public List<Reservation> getAll() {
-        String sql = "SELECT r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at as time_value "
+        String sql = "SELECT r.id as reservation_id, r.name, r.date, time.id as time_id, time.start_at as time_value, "
+                + "theme.id as theme_id, theme.name as theme_name, theme.description, theme.thumbnail "
                 + "FROM reservation as r "
-                + "INNER JOIN reservation_time AS t "
-                + "ON r.time_id = t.id";
+                + "INNER JOIN reservation_time as time "
+                + "ON r.time_id = time.id "
+                + "INNER JOIN theme as theme "
+                + "ON r.theme_id = theme.id ";
         return jdbcTemplate.query(
                 sql,
                 (resultSet, rowNum) -> Reservation.of(
@@ -82,7 +95,11 @@ public class ReservationDao {
                         resultSet.getString("name"),
                         resultSet.getString("date"),
                         resultSet.getLong("time_id"),
-                        resultSet.getString("start_at")
+                        resultSet.getString("start_at"),
+                        resultSet.getLong("theme_id"),
+                        resultSet.getString("theme_name"),
+                        resultSet.getString("description"),
+                        resultSet.getString("thumbnail")
                 )
         );
     }
@@ -99,16 +116,20 @@ public class ReservationDao {
                         resultSet.getLong("id"),
                         resultSet.getString("name"),
                         resultSet.getString("date"),
-                        resultSet.getLong("time_id")
+                        resultSet.getLong("time_id"),
+                        resultSet.getLong("theme_id")
                 ),
                 timeId);
     }
 
     public List<Reservation> findByDateAndTimeId(final LocalDate date, final long timeId) {
-        String sql = "SELECT r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at as time_value "
+        String sql = "SELECT r.id as reservation_id, r.name, r.date, time.id as time_id, time.start_at as time_value, "
+                + "theme.id as theme_id, theme.name as theme_name, theme.description, theme.thumbnail "
                 + "FROM reservation as r "
-                + "INNER JOIN reservation_time AS t "
-                + "ON r.time_id = t.id "
+                + "INNER JOIN reservation_time as time "
+                + "ON r.time_id = time.id "
+                + "INNER JOIN theme as theme "
+                + "ON r.theme_id = theme.id "
                 + "WHERE r.date = ? "
                 + "AND r.time_id = ?";
 
@@ -119,7 +140,11 @@ public class ReservationDao {
                         resultSet.getString("name"),
                         resultSet.getString("date"),
                         resultSet.getLong("time_id"),
-                        resultSet.getString("start_at")
+                        resultSet.getString("start_at"),
+                        resultSet.getLong("theme_id"),
+                        resultSet.getString("theme_name"),
+                        resultSet.getString("description"),
+                        resultSet.getString("thumbnail")
                 ),
                 date,
                 timeId);

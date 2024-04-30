@@ -3,13 +3,15 @@ package roomescape.dto;
 import java.time.LocalDate;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 public record ReservationRequest(
         String name,
         LocalDate date,
-        long timeId
+        long timeId,
+        long themeId
 ) {
-    public Reservation toEntity(final ReservationTime reservationTime) {
-        return Reservation.of(name, date, reservationTime);
+    public Reservation toEntity(final ReservationTime reservationTime, final Theme theme) {
+        return Reservation.of(name, date, reservationTime, theme);
     }
 }

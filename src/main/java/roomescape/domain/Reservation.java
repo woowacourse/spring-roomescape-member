@@ -8,14 +8,17 @@ public class Reservation {
     private final Name name;
     private final LocalDate date;
     private final ReservationTime time;
+    private final Theme theme;
 
-    public Reservation(final Long id, final Name name, final LocalDate date, final ReservationTime time) {
+    public Reservation(final Long id, final Name name, final LocalDate date, final ReservationTime time,
+                       final Theme theme) {
         validateDate(date);
         validateTime(date, time);
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
+        this.theme = theme;
     }
 
     private void validateDate(final LocalDate date) {
@@ -37,21 +40,24 @@ public class Reservation {
         }
     }
 
-    public static Reservation of(long id, String name, String date, long timeId) {
+    public static Reservation of(long id, String name, String date, long timeId, long themeId) {
         LocalDate parsedDate = LocalDate.parse(date);
 
-        return new Reservation(id, new Name(name), parsedDate, new ReservationTime(timeId));
+        return new Reservation(id, new Name(name), parsedDate, new ReservationTime(timeId), new Theme(themeId));
     }
 
-    public static Reservation of(long id, String name, String date, long timeId, String time) {
+    public static Reservation of(long id, String name, String date, long timeId, String time, long themeId,
+                                 String themeName, String description, String thumbnail) {
         LocalDate parsedDate = LocalDate.parse(date);
         LocalTime parsedTime = LocalTime.parse(time);
 
-        return new Reservation(id, new Name(name), parsedDate, new ReservationTime(timeId, parsedTime));
+        return new Reservation(id, new Name(name), parsedDate, new ReservationTime(timeId, parsedTime),
+                new Theme(themeId, themeName, description, thumbnail));
     }
 
-    public static Reservation of(final String name, final LocalDate date, final ReservationTime reservationTime) {
-        return new Reservation(null, new Name(name), date, reservationTime);
+    public static Reservation of(final String name, final LocalDate date, final ReservationTime reservationTime,
+                                 final Theme theme) {
+        return new Reservation(null, new Name(name), date, reservationTime, theme);
     }
 
     public long getId() {
@@ -70,7 +76,15 @@ public class Reservation {
         return time;
     }
 
+    public Theme getTheme() {
+        return theme;
+    }
+
     public long getTimeId() {
         return time.getId();
+    }
+
+    public long getThemeId() {
+        return theme.getId();
     }
 }
