@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
@@ -25,6 +26,11 @@ public class ReservationService {
     public ReservationResponse save(final ReservationRequest reservationRequest) {
         ReservationTime reservationTime = reservationTimeDao.findById(reservationRequest.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 잘못된 예약 가능 시간 번호를 입력하였습니다."));
+
+        if (hasDuplicateReservation(reservationRequest.date(), reservationRequest.timeId())) {
+            throw new IllegalArgumentException("[ERROR] 중복된 예약이 존재합니다.");
+        }
+
         Reservation reservation = reservationRequest.toEntity(reservationTime);
         return ReservationResponse.from(reservationDao.save(reservation));
     }
@@ -48,5 +54,9 @@ public class ReservationService {
         reservationDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 삭제할 예약 데이터가 없습니다."));
         reservationDao.delete(id);
+    }
+
+    private boolean hasDuplicateReservation(LocalDate date, long timeId) {
+        return !reservationDao.findByDateAndTimeId(date, timeId).isEmpty();
     }
 }

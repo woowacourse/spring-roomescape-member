@@ -1,6 +1,7 @@
 package roomescape.repository;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -100,6 +101,27 @@ public class ReservationDao {
                         resultSet.getString("date"),
                         resultSet.getLong("time_id")
                 ),
+                timeId);
+    }
+
+    public List<Reservation> findByDateAndTimeId(final LocalDate date, final long timeId) {
+        String sql = "SELECT r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at as time_value "
+                + "FROM reservation as r "
+                + "INNER JOIN reservation_time AS t "
+                + "ON r.time_id = t.id "
+                + "WHERE r.date = ? "
+                + "AND r.time_id = ?";
+
+        return jdbcTemplate.query(
+                sql,
+                (resultSet, rowNum) -> Reservation.of(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("date"),
+                        resultSet.getLong("time_id"),
+                        resultSet.getString("start_at")
+                ),
+                date,
                 timeId);
     }
 }
