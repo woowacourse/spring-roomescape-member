@@ -69,5 +69,12 @@ class ReservationTimeServiceTest {
         assertThatThrownBy(() -> reservationTimeService.deleteTime(2L))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @DisplayName("중복된 시간 저장")
+    @Test
+    void saveDuplicatedTime() {
+        assertThatThrownBy(() -> reservationTimeService.saveTime(new ReservationTimeSaveRequest(LocalTime.parse("11:00"))))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }
 

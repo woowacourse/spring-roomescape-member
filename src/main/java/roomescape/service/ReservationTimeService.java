@@ -28,8 +28,20 @@ public class ReservationTimeService {
 
     public ReservationTimeResponse saveTime(final ReservationTimeSaveRequest reservationTimeSaveRequest) {
         final ReservationTime reservationTime = reservationTimeSaveRequest.toReservationTime();
+
+        validateUniqueReservationTime(reservationTime);
+
         final ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
         return new ReservationTimeResponse(savedReservationTime);
+    }
+
+    private void validateUniqueReservationTime(final ReservationTime reservationTime) {
+        boolean isTimeExist = reservationTimeRepository.existByStartAt(reservationTime.getStartAt());
+
+        if (isTimeExist) {
+            throw new IllegalArgumentException("중복된 시간입니다.");
+        }
+
     }
 
     public void deleteTime(final Long id) {

@@ -79,4 +79,20 @@ class ReservationTimeRepositoryTest {
         assertThatCode(() -> reservationTimeRepository.deleteById(1L))
                 .doesNotThrowAnyException();
     }
+
+    @DisplayName("특정 시간 존재 여부 확인")
+    @Test
+    void existByStartAtTrue() {
+        final boolean existByStartAt = reservationTimeRepository.existByStartAt(LocalTime.parse("08:00"));
+
+        assertThat(existByStartAt).isTrue();
+    }
+
+    @DisplayName("특정 시간 존재 여부 확인")
+    @Test
+    void existByStartAtFalse() {
+        final boolean existByStartAt = reservationTimeRepository.existByStartAt(LocalTime.parse("06:00"));
+
+        assertThat(existByStartAt).isFalse();
+    }
 }

@@ -1,5 +1,6 @@
 package roomescape.testutil;
 
+import java.time.LocalTime;
 import roomescape.model.ReservationTime;
 import roomescape.repository.ReservationTimeRepository;
 
@@ -40,5 +41,11 @@ public class ReservationTimeMemoryRepository implements ReservationTimeRepositor
                 .filter(reservation -> reservation.getId().equals(id))
                 .findFirst()
                 .ifPresent(reservationTimes::remove);
+    }
+
+    @Override
+    public boolean existByStartAt(final LocalTime startAt) {
+        return reservationTimes.stream()
+                .anyMatch(reservationTime -> reservationTime.getStartAt().equals(startAt));
     }
 }

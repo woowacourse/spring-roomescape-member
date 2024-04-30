@@ -27,12 +27,14 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
                 .usingGeneratedKeyColumns("id");
     }
 
+    @Override
     public ReservationTime save(final ReservationTime reservationTime) {
         final BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(reservationTime);
         final Long savedTimeId = reservationTimeInsert.executeAndReturnKey(parameterSource).longValue();
         return new ReservationTime(savedTimeId, reservationTime.getStartAt());
     }
 
+    @Override
     public Optional<ReservationTime> findById(final Long id) {
         final String selectQuery = "SELECT id, start_at FROM reservation_times WHERE id = ?";
         try {
@@ -43,6 +45,7 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
         }
     }
 
+    @Override
     public List<ReservationTime> findAll() {
         final String selectQuery = "SELECT id, start_at FROM reservation_times";
         return jdbcTemplate.query(selectQuery, ROW_MAPPER)
@@ -50,7 +53,24 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
                 .toList();
     }
 
+    @Override
     public void deleteById(final Long id) {
         jdbcTemplate.update("DELETE FROM reservation_times WHERE id = ?", id);
+    }
+
+    @Override
+    public boolean existByStartAt(final LocalTime startAt) {
+        String sql = """
+                SELECT 
+                CASE WHEN EXISTS (
+                        SELECT 1
+                        FROM reservation_times
+                        WHERE start_at = ?
+                    )
+                    THEN TRUE
+                    ELSE FALSE
+                END""";
+
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, startAt));
     }
 }
