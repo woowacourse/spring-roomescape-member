@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationTimeRepository;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.InvalidReservationException;
 import roomescape.service.dto.ReservationTimeRequest;
 import roomescape.service.dto.ReservationTimeResponse;
 
@@ -16,9 +17,16 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponse create(final ReservationTimeRequest reservationTimeRequest) {
+        validateDuplicated(reservationTimeRequest);
         ReservationTime reservationTime = reservationTimeRepository.save(
                 new ReservationTime(reservationTimeRequest.startAt()));
         return new ReservationTimeResponse(reservationTime);
+    }
+
+    private void validateDuplicated(ReservationTimeRequest reservationTimeRequest) {
+        if (reservationTimeRepository.existsByTime(reservationTimeRequest.startAt())) {
+            throw new InvalidReservationException("이미 같은 시간이 존재합니다.");
+        }
     }
 
     public List<ReservationTimeResponse> findAll() {
