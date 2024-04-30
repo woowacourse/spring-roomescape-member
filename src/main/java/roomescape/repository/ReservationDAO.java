@@ -64,4 +64,10 @@ public class ReservationDAO implements ReservationRepository {
         String sql = "delete from reservation where id = ?";
         return jdbcTemplate.update(sql, id);
     }
+
+    @Override
+    public Long countReservationById(long id) {
+        String sql = "select count(id) from reservation where id = ?";
+        return jdbcTemplate.queryForObject(sql, (resultSet, ignored) -> resultSet.getLong(1), id);
+    }
 }
