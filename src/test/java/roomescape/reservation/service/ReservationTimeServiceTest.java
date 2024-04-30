@@ -11,7 +11,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.reservation.dao.FakeReservationDao;
 import roomescape.reservation.dao.FakeReservationTimeDao;
-import roomescape.reservation.dao.FakeThemeDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;

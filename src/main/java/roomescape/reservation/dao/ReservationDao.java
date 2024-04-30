@@ -61,10 +61,12 @@ public class ReservationDao implements ReservationRepository {
 
     @Override
     public List<Reservation> findAll() {
-        String sql = "SELECT r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at as time_value, th.id as theme_id, th.name as theme_name, th.description, th.thumbnail " +
-                "FROM reservation as r " +
-                "INNER JOIN reservation_time as t on r.time_id = t.id "
-                + "INNER JOIN theme as th on r.theme_id = th.id";
+        String sql =
+                "SELECT r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at as time_value, th.id as theme_id, th.name as theme_name, th.description, th.thumbnail "
+                        +
+                        "FROM reservation as r " +
+                        "INNER JOIN reservation_time as t on r.time_id = t.id "
+                        + "INNER JOIN theme as th on r.theme_id = th.id";
         return jdbcTemplate.query(sql, rowMapper);
     }
 
@@ -77,22 +79,26 @@ public class ReservationDao implements ReservationRepository {
 
     @Override
     public List<Reservation> findAllByTimeId(final long timeId) {
-        String sql = "SELECT r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at as time_value, th.id as theme_id, th.name as theme_name, th.description, th.thumbnail " +
-                "FROM reservation as r " +
-                "INNER JOIN reservation_time as t on r.time_id = t.id "
-                + "INNER JOIN theme as th on r.theme_id = th.id "
-                + "WHERE t.id = ?";
+        String sql =
+                "SELECT r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at as time_value, th.id as theme_id, th.name as theme_name, th.description, th.thumbnail "
+                        +
+                        "FROM reservation as r " +
+                        "INNER JOIN reservation_time as t on r.time_id = t.id "
+                        + "INNER JOIN theme as th on r.theme_id = th.id "
+                        + "WHERE t.id = ?";
 
         return jdbcTemplate.query(sql, rowMapper, timeId);
     }
 
     @Override
     public boolean existsByDateTime(final LocalDate date, final long timeId) {
-        String sql = "SELECT r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at as time_value, th.id as theme_id, th.name as theme_name, th.description, th.thumbnail " +
-                "FROM reservation as r " +
-                "INNER JOIN reservation_time as t on r.time_id = t.id " +
-                "INNER JOIN theme as th on r.theme_id = th.id " +
-                "WHERE t.id = ? AND r.date = ?";
+        String sql =
+                "SELECT r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at as time_value, th.id as theme_id, th.name as theme_name, th.description, th.thumbnail "
+                        +
+                        "FROM reservation as r " +
+                        "INNER JOIN reservation_time as t on r.time_id = t.id " +
+                        "INNER JOIN theme as th on r.theme_id = th.id " +
+                        "WHERE t.id = ? AND r.date = ?";
 
         List<Reservation> reservations = jdbcTemplate.query(sql, rowMapper, timeId, date);
         return !reservations.isEmpty();

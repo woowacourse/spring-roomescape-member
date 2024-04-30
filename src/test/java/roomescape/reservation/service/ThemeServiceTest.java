@@ -3,15 +3,11 @@ package roomescape.reservation.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.reservation.dao.FakeThemeDao;
-import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.repository.ThemeRepository;
 import roomescape.reservation.dto.ThemeRequest;
