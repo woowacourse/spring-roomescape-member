@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 
@@ -64,7 +65,7 @@ public class ReservationH2Repository implements ReservationRepository {
             );
             return new Reservation(
                     resultSet.getLong("id"),
-                    resultSet.getString("name"),
+                    new Name(resultSet.getString("name")),
                     LocalDate.parse(resultSet.getString("date")),
                     reservationTime
             );

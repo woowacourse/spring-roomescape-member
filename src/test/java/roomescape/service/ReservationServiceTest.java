@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.domain.Name;
 import roomescape.dto.request.ReservationAddRequest;
 import roomescape.dto.response.ReservationResponse;
 
@@ -28,7 +29,7 @@ class ReservationServiceTest {
     @Test
     @DisplayName("예약을 추가하고 id값을 붙여서 응답 DTO를 생성한다.")
     void addReservation() {
-        ReservationAddRequest reservationAddRequest = new ReservationAddRequest("네오", LocalDate.of(2024, 1, 12), 10L);
+        ReservationAddRequest reservationAddRequest = new ReservationAddRequest(new Name("네오"), LocalDate.of(2024, 1, 12), 10L);
 
         ReservationResponse reservationResponse = reservationService.addReservation(reservationAddRequest);
 
@@ -38,7 +39,7 @@ class ReservationServiceTest {
     @Test
     @DisplayName("존재하지 않는 time_id로 예약을 추가하면 예외를 발생시킨다.")
     void addReservationInvalidTimeId() {
-        ReservationAddRequest reservationAddRequest = new ReservationAddRequest("네오", LocalDate.of(2024, 1, 12), -1L);
+        ReservationAddRequest reservationAddRequest = new ReservationAddRequest(new Name("네오"), LocalDate.of(2024, 1, 12), -1L);
 
         assertThatThrownBy(() -> reservationService.addReservation(reservationAddRequest))
                 .isInstanceOf(IllegalArgumentException.class);

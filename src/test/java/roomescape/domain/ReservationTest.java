@@ -14,7 +14,7 @@ class ReservationTest {
     void formatDate() {
         Reservation reservation = new Reservation(
                 1L,
-                "브라운",
+                new Name("브라운"),
                 LocalDate.of(2024, 4, 24),
                 null
         );
@@ -29,13 +29,13 @@ class ReservationTest {
     void testEquals() {
         Reservation reservation1 = new Reservation(
                 1L,
-                "브라운",
+                new Name("브라운"),
                 LocalDate.of(2024, 4, 24),
                 null
         );
         Reservation reservation2 = new Reservation(
                 1L,
-                "솔라",
+                new Name("솔라"),
                 LocalDate.of(2024, 3, 22),
                 null
         );

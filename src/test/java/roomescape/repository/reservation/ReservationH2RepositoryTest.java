@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 
@@ -29,7 +30,7 @@ class ReservationH2RepositoryTest {
     @DisplayName("Reservation을 저장하면 id가 포함된 Reservation이 반환된다.")
     void save() {
         Reservation reservation = new Reservation(
-                "네오",
+                new Name("네오"),
                 LocalDate.of(2024, 4, 24),
                 new ReservationTime(11L, LocalTime.of(10, 0))
         );
