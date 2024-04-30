@@ -27,7 +27,7 @@ public class ReservationDao {
     public Reservation create(Reservation reservation) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.getNameAsString())
-                .addValue("date", reservation.getDate())
+                .addValue("date", reservation.getDate().asString())
                 .addValue("time_id", reservation.getTime().getId());
         long id = jdbcInsert.executeAndReturnKey(params).longValue();
         return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime());
