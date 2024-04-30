@@ -34,11 +34,18 @@ public class ReservationService {
     public ReservationResponse addReservation(ReservationRequest reservationRequest) {
         ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId());
         validateNotPast(reservationRequest.date(), reservationTime.getStartAt());
+        validateNotDuplicatedTime(reservationRequest.date(), reservationRequest.timeId());
 
         Reservation reservation = new Reservation(reservationRequest.name(), reservationRequest.date(), reservationTime);
         Reservation savedReservation = reservationRepository.save(reservation);
 
         return ReservationResponse.from(savedReservation);
+    }
+
+    private void validateNotDuplicatedTime(LocalDate date, Long id) {
+        if (reservationRepository.existByDateAndTimeId(date, id)) {
+            throw new IllegalArgumentException("중복 예약은 불가능하다.");
+        }
     }
 
     private void validateNotPast(LocalDate date, LocalTime time) {

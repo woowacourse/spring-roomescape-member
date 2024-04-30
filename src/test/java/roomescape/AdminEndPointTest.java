@@ -73,7 +73,7 @@ class AdminEndPointTest {
         );
         ReservationRequest reservationRequest = new ReservationRequest(
                 "브라운",
-                LocalDate.parse("2023-08-05"),
+                LocalDate.now().plusDays(1),
                 1L
         );
         int initialCount = 0;
@@ -105,7 +105,7 @@ class AdminEndPointTest {
         );
         ReservationRequest reservationRequest = new ReservationRequest(
                 "브라운",
-                LocalDate.parse("2023-08-05"),
+                LocalDate.now().plusDays(1),
                 1L
         );
         int initialCount = 0;
@@ -149,6 +149,31 @@ class AdminEndPointTest {
                 })
         );
     }
+
+    @DisplayName("[예약 시간 추가 - 중복 예약 추가 불가능] 시나리오")
+    @TestFactory
+    Stream<DynamicTest> validateReservationIsDuplicatedFail() {
+        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(
+                LocalTime.now()
+        );
+        ReservationRequest reservationRequest = new ReservationRequest(
+                "브라운", //todo: 산초와 알파카로 .. 러너덕 + 찰리
+                LocalDate.now().plusDays(1),
+                1L
+        );
+
+        return Stream.of(
+                DynamicTest.dynamicTest("예약 시간을 등록한다.", () -> {
+                    HttpRestTestTemplate.assertPostCreated(reservationTimeRequest, "/times", "id", 1);
+                }),
+
+                DynamicTest.dynamicTest("중복되는 예약을 등록한다.", () -> {
+                    HttpRestTestTemplate.assertPostCreated(reservationRequest, "/reservations", "id", 1);
+                    HttpRestTestTemplate.assertPostBadRequest(reservationRequest, "/reservations");
+                })
+        );
+    }
+
 
     @DisplayName("빈 값 입력 검증")
     @Test

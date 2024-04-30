@@ -89,4 +89,12 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = "delete from reservation where id = ?";
         jdbcTemplate.update(sql, id);
     }
+
+    @Override
+    public boolean existByDateAndTimeId(LocalDate date, Long id) {
+        String sql = basicSelectQuery + "WHERE r.date = ? AND t.id = ?";
+        List<Reservation> reservations = jdbcTemplate.query(sql, reservationRowMapper, date, id);
+
+        return !reservations.isEmpty();
+    }
 }
