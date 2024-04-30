@@ -72,4 +72,19 @@ class ReservationTimeControllerTest {
         mvc.perform(get("/times"))
             .andExpect(status().isOk());
     }
+
+    @DisplayName("예약 시간 포맷이 잘못될 경우 -> 400")
+    @Test
+    void create_IllegalTimeFormat() throws Exception {
+        String illegalTime = "24:00";
+        String requestBody = objectMapper.writeValueAsString(new ReservationTimeWebRequest(1L, illegalTime));
+
+        when(reservationTimeService.save(new ReservationTimeAppRequest(illegalTime)))
+            .thenThrow(IllegalArgumentException.class);
+
+        mvc.perform(post("/times")
+                .content(requestBody)
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
 }
