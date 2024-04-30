@@ -119,4 +119,19 @@ public class TimeControllerTest {
 
         assertThat(isJdbcTemplateInjected).isFalse();
     }
+
+    @Test
+    @DisplayName("시간의 입력 형식이 올바르지 않으면 4xx 상태코드를 리턴한다.")
+    void invalidTimeFormat() {
+        Map<String, String> invalidTimeParam = Map.of(
+                "startAt", "hihi");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .port(port)
+                .body(invalidTimeParam)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(400);
+    }
 }
