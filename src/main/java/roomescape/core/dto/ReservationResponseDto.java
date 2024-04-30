@@ -7,6 +7,7 @@ public class ReservationResponseDto {
     private String name;
     private String date;
     private ReservationTimeResponseDto time;
+    private ThemeResponseDto theme;
 
     public ReservationResponseDto() {
     }
@@ -20,6 +21,7 @@ public class ReservationResponseDto {
         this.name = reservation.getName();
         this.date = reservation.getDateString();
         this.time = new ReservationTimeResponseDto(reservation.getReservationTime());
+        this.theme = new ThemeResponseDto(reservation.getTheme());
     }
 
     public Long getId() {
@@ -36,5 +38,9 @@ public class ReservationResponseDto {
 
     public ReservationTimeResponseDto getTime() {
         return time;
+    }
+
+    public ThemeResponseDto getTheme() {
+        return theme;
     }
 }

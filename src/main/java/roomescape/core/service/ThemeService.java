@@ -1,5 +1,6 @@
 package roomescape.core.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.core.domain.Theme;
@@ -20,6 +21,7 @@ public class ThemeService {
         final Theme theme = new Theme(request.getName(), request.getDescription(), request.getThumbnail());
         validateDuplicatedName(theme);
         final Long id = themeRepository.save(theme);
+
         return new ThemeResponseDto(id, theme);
     }
 
@@ -28,5 +30,18 @@ public class ThemeService {
         if (themeCount > 0) {
             throw new IllegalArgumentException("해당 이름의 테마가 이미 존재합니다.");
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<ThemeResponseDto> findAll() {
+        return themeRepository.findAll()
+                .stream()
+                .map(ThemeResponseDto::new)
+                .toList();
+    }
+
+    @Transactional
+    public void delete(final long id) {
+        themeRepository.deleteById(id);
     }
 }

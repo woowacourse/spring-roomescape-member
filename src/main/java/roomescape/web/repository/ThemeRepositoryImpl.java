@@ -35,7 +35,7 @@ public class ThemeRepositoryImpl implements ThemeRepository {
 
     @Override
     public List<Theme> findAll() {
-        return null;
+        return jdbcTemplate.query("SELECT id, name, description, thumbnail FROM theme", getThemeRowMapper());
     }
 
     @Override

@@ -11,15 +11,15 @@ public class ThemeResponseDto {
     public ThemeResponseDto() {
     }
 
-    public ThemeResponseDto(final Long id, final Theme theme) {
-        this(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
+    public ThemeResponseDto(final Theme theme) {
+        this(theme.getId(), theme);
     }
 
-    public ThemeResponseDto(final Long id, final String name, final String description, final String thumbnail) {
+    public ThemeResponseDto(final Long id, final Theme theme) {
         this.id = id;
-        this.name = name;
-        this.description = description;
-        this.thumbnail = thumbnail;
+        this.name = theme.getName();
+        this.description = theme.getDescription();
+        this.thumbnail = theme.getThumbnail();
     }
 
     public Long getId() {

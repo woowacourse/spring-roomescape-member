@@ -56,5 +56,9 @@ public class ReservationController {
         if (request.getTimeId() == null) {
             throw new IllegalArgumentException("Time ID cannot be null");
         }
+
+        if (request.getThemeId() == null) {
+            throw new IllegalArgumentException("Theme ID cannot be null");
+        }
     }
 }
