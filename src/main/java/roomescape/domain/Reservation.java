@@ -5,7 +5,7 @@ import java.time.LocalDate;
 public class Reservation {
 
     private Long id;
-    private String name;
+    private Name name;
     private LocalDate date;
     private ReservationTime time;
 
@@ -14,7 +14,7 @@ public class Reservation {
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime reservationTime) {
         this.id = id;
-        this.name = name;
+        this.name = new Name(name);
         this.date = date;
         this.time = reservationTime;
     }
@@ -28,7 +28,7 @@ public class Reservation {
     }
 
     public String getName() {
-        return name;
+        return name.getName();
     }
 
     public LocalDate getDate() {
