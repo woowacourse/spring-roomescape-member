@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.ReservationRequest;
 import roomescape.controller.dto.ReservationResponse;
 import roomescape.exception.NotExistReservationException;
+import roomescape.exception.PastTimeReservationException;
 import roomescape.exception.ReservationAlreadyExistsException;
 import roomescape.service.ReservationService;
 import roomescape.service.dto.ReservationOutput;
@@ -61,5 +62,9 @@ public class ReservationController {
     @ExceptionHandler(value = ReservationAlreadyExistsException.class)
     public ResponseEntity<String> handleReservationAlreadyExistsException(ReservationAlreadyExistsException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
+    }
+    @ExceptionHandler(value = PastTimeReservationException.class)
+    public ResponseEntity<String> handlePastTimeReservationException(PastTimeReservationException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

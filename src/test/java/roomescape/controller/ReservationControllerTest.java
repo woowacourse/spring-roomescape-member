@@ -96,4 +96,22 @@ public class ReservationControllerTest {
                 .then()
                 .statusCode(409);
     }
+
+    @Test
+    @DisplayName("지나간 날짜와 시간으로 예약 생성 시 400를 반환한다.")
+    void return_400_when_create_past_time_reservation() {
+        long id = reservationTimeService.createReservationTime(new ReservationTimeInput("10:00")).id();
+
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", "제리");
+        reservation.put("date", "2024-03-30");
+        reservation.put("timeId", id);
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then()
+                .statusCode(400);
+    }
 }
