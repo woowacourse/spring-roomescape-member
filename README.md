@@ -22,10 +22,10 @@
     - TO-BE: templates/admin/reservation-new.html
 
 - [ ] 사용자가 예약 가능한 시간을 조회하고, 예약할 수 있도록 기능을 추가/변경 한다.
-- [ ] /reservation 요청 시 사용자 예약 페이지를 응답합니다.
+- [x] /reservation 요청 시 사용자 예약 페이지를 응답합니다.
     - 페이지는 templates/reservation.html
 
 - [ ] 인기 테마 조회 기능을 추가한다.
     - 최근 일주일을 기준으로 하여 해당 기간 내에 방문하는 예약이 많은 테마 10개를 조회한다.
-- [ ] / 요청 시 인기 테마 페이지를 응답한다.
+- [x] / 요청 시 인기 테마 페이지를 응답한다.
     - 페이지는 templates/index.html
