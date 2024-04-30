@@ -89,4 +89,17 @@ public class ReservationDao {
     public void delete(final long id) {
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", Long.valueOf(id));
     }
+
+    public List<Reservation> findByTimeId(final long timeId) {
+        String sql = "SELECT * FROM reservation WHERE time_id = ?";
+        return jdbcTemplate.query(
+                sql,
+                (resultSet, rowNum) -> Reservation.of(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("date"),
+                        resultSet.getLong("time_id")
+                ),
+                timeId);
+    }
 }

@@ -37,6 +37,12 @@ public class Reservation {
         }
     }
 
+    public static Reservation of(long id, String name, String date, long timeId) {
+        LocalDate parsedDate = LocalDate.parse(date);
+
+        return new Reservation(id, new Name(name), parsedDate, new ReservationTime(timeId));
+    }
+
     public static Reservation of(long id, String name, String date, long timeId, String time) {
         LocalDate parsedDate = LocalDate.parse(date);
         LocalTime parsedTime = LocalTime.parse(time);
