@@ -18,11 +18,19 @@ public class Reservation {
     }
 
     public Reservation(final long id, final ClientName clientName, final LocalDate date, final ReservationTime time) {
+        validateDate(date);
         validateReservationDateAndTime(date, time.getStartAt());
+
         this.id = id;
         this.clientName = clientName;
         this.date = date;
         this.time = time;
+    }
+
+    private void validateDate(final LocalDate date) {
+        if (date == null) {
+            throw new IllegalArgumentException("날짜 정보는 공백을 입력할 수 없습니다.");
+        }
     }
 
     private void validateReservationDateAndTime(final LocalDate date, final LocalTime time) {

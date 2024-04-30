@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ReservationTimeTest {
 
@@ -21,5 +22,15 @@ class ReservationTimeTest {
 
         // Then
         assertThat(initIndexReservationTime.getId()).isEqualTo(initialIndex);
+    }
+
+    @DisplayName("예약 시간에 공백을 입력하면 예외를 발생한다.")
+    @Test
+    void throwExceptionWhenReservationTimeBlank() {
+        // When & Then
+        assertThatThrownBy(() -> new ReservationTime(1, null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("시간 정보는 공백을 입력할 수 없습니다.");
+
     }
 }

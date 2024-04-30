@@ -14,8 +14,15 @@ public class ReservationTime {
     }
 
     public ReservationTime(final long id, final LocalTime startAt) {
+        validateTime(startAt);
         this.id = id;
         this.startAt = startAt;
+    }
+
+    private void validateTime(final LocalTime startAt) {
+        if (startAt == null) {
+            throw new IllegalArgumentException("시간 정보는 공백을 입력할 수 없습니다.");
+        }
     }
 
     public ReservationTime initializeIndex(final long reservationId) {
