@@ -87,4 +87,20 @@ class ReservationTimeControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
     }
+
+    @DisplayName("예약이 존재하는 시간 삭제 -> 400")
+    @Test
+    void delete_ReservationExists() throws Exception {
+        long timeId = 1L;
+        LocalTime time = LocalTime.now();
+        ReservationTime reservationTime = new ReservationTime(timeId, time);
+
+        // TODO: void 메소드일 때도 모킹이 가능한지 확인
+        when(reservationTimeService.delete(timeId))
+            .thenThrow(IllegalArgumentException.class);
+
+        mvc.perform(delete("/times/" + reservationTime.getId()))
+            .andExpect(status().isBadRequest());
+    }
 }
+

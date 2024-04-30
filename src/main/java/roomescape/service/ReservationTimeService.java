@@ -33,12 +33,14 @@ public class ReservationTimeService {
         }
     }
 
-    public void delete(Long id) {
+    // TODO: void 메소드일 때도 모킹이 가능한지 확인
+    public long delete(Long id) {
         long count = reservationRepository.countByTimeId(id);
         if (count > 0) {
             throw new IllegalArgumentException("해당 시간을 사용하는 예약이 존재합니다.");
         }
         reservationTimeRepository.deleteById(id);
+        return id;
     }
 
     public List<ReservationTime> findAll() {
