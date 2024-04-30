@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,5 +50,30 @@ public class ThemeRepositoryTest {
         // then
         List<Theme> themes = themeRepository.findAll();
         assertThat(themes).hasSize(3);
+    }
+
+    @Test
+    @DisplayName("테마를 삭제한다.")
+    void delete() {
+        // given
+        Long id = 2L;
+
+        // when
+        themeRepository.removeById(id);
+
+        // then
+        List<Theme> themes = themeRepository.findAll();
+        assertThat(themes).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("테마를 사용하고 있는 예약이 존재하면, 삭제하지 않는다.")
+    void cantDelete() {
+        // given
+        Long id = 1L;
+
+        // when, then
+        assertThatThrownBy(() -> themeRepository.removeById(id))
+                .isInstanceOf(IllegalStateException.class);
     }
 }

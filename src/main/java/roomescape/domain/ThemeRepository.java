@@ -6,4 +6,6 @@ public interface ThemeRepository {
     List<Theme> findAll();
 
     Theme create(Theme theme);
+
+    void removeById(Long id);
 }
