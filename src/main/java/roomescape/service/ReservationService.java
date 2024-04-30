@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.dto.reservation.ReservationCreateRequest;
 import roomescape.dto.reservation.ReservationResponse;
@@ -31,6 +32,7 @@ public class ReservationService {
         validateNotExistReservationTime(request.getTimeId());
         ReservationTime reservationTime = reservationTimeDao.readById(request.getTimeId());
         Reservation reservation = request.toDomain(reservationTime);
+        validateDuplicateDateAndTime(reservation.getDate(), reservation.getReservationTime());
         Reservation result = reservationDao.create(reservation);
         validatePastTimeWhenToday(reservation, reservationTime);
         return ReservationResponse.from(result);
@@ -40,6 +42,12 @@ public class ReservationService {
         validateNull(id);
         validateNotExistReservation(id);
         reservationDao.delete(id);
+    }
+
+    private void validateDuplicateDateAndTime(ReservationDate reservationDate, ReservationTime reservationTime) {
+        if (reservationDao.exist(reservationDate, reservationTime)) {
+            throw new IllegalArgumentException("중복된 예약을 생성할 수 없습니다.");
+        }
     }
 
     private void validatePastTimeWhenToday(Reservation reservation, ReservationTime reservationTime) {

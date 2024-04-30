@@ -44,19 +44,17 @@ class ReservationServiceTest {
 
     @BeforeEach
     void setUp() {
-        ReservationTime given = new ReservationTime(null, ReservationStartAt.from(LocalTime.now().minusHours(1).toString()));
-        ReservationTime reservationTime = reservationTimeDao.create(given);
         Reservation daon = new Reservation(
                 null,
                 new ReservationName("daon"),
                 ReservationDate.from(tomorrow),
-                reservationTime
+                reservationTimeDao.create(new ReservationTime(null, ReservationStartAt.from("23:00")))
         );
         Reservation ikjo = new Reservation(
                 null,
                 new ReservationName("ikjo"),
                 ReservationDate.from(tomorrow),
-                reservationTime
+                reservationTimeDao.create(new ReservationTime(null, ReservationStartAt.from("22:00")))
         );
         reservationDao.create(daon);
         reservationDao.create(ikjo);
@@ -94,7 +92,10 @@ class ReservationServiceTest {
             //given
             String givenName = "wooteco";
             String givenDate = tomorrow;
-            ReservationCreateRequest givenRequest = ReservationCreateRequest.of(givenName, givenDate, 1L);
+            ReservationTime reservationTime = reservationTimeDao.create(
+                    new ReservationTime(null, ReservationStartAt.from("12:00")));
+            ReservationCreateRequest givenRequest =
+                    ReservationCreateRequest.of(givenName, givenDate, reservationTime.getId());
 
             //when
             ReservationResponse result = reservationService.add(givenRequest);
@@ -173,7 +174,22 @@ class ReservationServiceTest {
         @DisplayName("지나간 시간에 대한 예약을 추가하면 예외가 발생한다.")
         void createReservationByPastTime() {
             //given
-            ReservationCreateRequest request = ReservationCreateRequest.of("다온", LocalDate.now().toString(), 1L);
+            String pastTime = LocalTime.now().minusHours(1).toString();
+            ReservationTime reservationTime = reservationTimeDao.create(
+                    new ReservationTime(null, ReservationStartAt.from(pastTime)));
+            ReservationCreateRequest request =
+                    ReservationCreateRequest.of("다온", LocalDate.now().toString(), reservationTime.getId());
+
+            //when //then
+            assertThatThrownBy(() -> reservationService.add(request))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @Test
+        @DisplayName("동일한 날짜와 시간에 대한 예약을 추가하면 예외가 발생한다.")
+        void createReservationByDuplicated() {
+            //given
+            ReservationCreateRequest request = ReservationCreateRequest.of("다온", tomorrow, 1L);
 
             //when //then
             assertThatThrownBy(() -> reservationService.add(request))

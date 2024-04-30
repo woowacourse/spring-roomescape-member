@@ -81,6 +81,24 @@ public class  WebReservationDao implements ReservationDao {
     }
 
     @Override
+    public Boolean exist(ReservationDate reservationDate, ReservationTime reservationTime) {
+        String sql = """
+                SELECT
+                CASE
+                    WHEN EXISTS (SELECT 1 FROM reservation WHERE date = ? AND time_id = ?)
+                    THEN TRUE
+                    ELSE FALSE
+                END
+                """;
+        return jdbcTemplate.queryForObject(
+                sql,
+                Boolean.class,
+                reservationDate.toStringDate(),
+                reservationTime.getId()
+        );
+    }
+
+    @Override
     public void delete(long id) {
         String sql = """
                 DELETE

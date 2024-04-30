@@ -6,6 +6,8 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationDate;
+import roomescape.domain.reservationtime.ReservationTime;
 
 public class ConsoleReservationDao implements ReservationDao {
 
@@ -34,6 +36,13 @@ public class ConsoleReservationDao implements ReservationDao {
     @Override
     public Boolean exist(long id) {
         return store.containsKey(id);
+    }
+
+    @Override
+    public Boolean exist(ReservationDate reservationDate, ReservationTime reservationTime) {
+        return store.values().stream()
+                .anyMatch(value -> value.getDate() == reservationDate
+                        && value.getReservationTime() == reservationTime);
     }
 
     @Override
