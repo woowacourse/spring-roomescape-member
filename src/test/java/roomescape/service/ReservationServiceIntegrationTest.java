@@ -168,4 +168,15 @@ class ReservationServiceIntegrationTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 해당 날짜/시간의 예약이 있습니다.");
     }
+
+    @DisplayName("해당 시간을 참조하고 있는 예약이 하나라도 있으면 삭제시 예외가 발생한다.")
+    @Test
+    void throwExceptionWhenDeleteReservationTimeHasRelation() {
+        // Given
+        long reservationTimeId = 1;
+        // When & Then
+        assertThatThrownBy(() -> reservationService.deleteReservationTime(reservationTimeId))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("예약에 포함된 시간 정보는 삭제할 수 없습니다.");
+    }
 }

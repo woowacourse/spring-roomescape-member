@@ -95,4 +95,13 @@ public class H2ReservationRepository implements ReservationRepository {
 
         return Boolean.TRUE.equals(template.queryForObject(sql, param, Boolean.class));
     }
+
+    @Override
+    public boolean existByTimeId(final Long reservationTimeId) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE time_id = :timeId)";
+        MapSqlParameterSource param = new MapSqlParameterSource()
+                .addValue("timeId", reservationTimeId);
+
+        return Boolean.TRUE.equals(template.queryForObject(sql, param, Boolean.class));
+    }
 }
