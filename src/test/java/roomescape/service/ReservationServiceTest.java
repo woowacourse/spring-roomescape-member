@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.controller.reservation.ReservationRequest;
 import roomescape.controller.reservation.ReservationResponse;
 import roomescape.controller.time.TimeResponse;
+import roomescape.exception.DuplicateReservation;
 import roomescape.exception.PreviousTimeException;
 import roomescape.exception.TimeNotFoundException;
 
@@ -31,8 +32,8 @@ class ReservationServiceTest {
     void getReservations() {
         // given
         List<ReservationResponse> expected = List.of(
-                new ReservationResponse(1L, "al", "2024-01-20", new TimeResponse(1L, "10:15")),
-                new ReservationResponse(2L, "be", "2024-02-19", new TimeResponse(2L, "11:20"))
+                new ReservationResponse(1L, "al", "2025-01-20", new TimeResponse(1L, "10:15")),
+                new ReservationResponse(2L, "be", "2025-02-19", new TimeResponse(2L, "11:20"))
         );
 
         // when
@@ -89,5 +90,19 @@ class ReservationServiceTest {
     void validateReservationTimeAfterThanNow() {
         assertThatThrownBy(() -> reservationService.addReservation(new ReservationRequest("cha", "2024-04-30", 1L)))
                 .isInstanceOf(PreviousTimeException.class);
+    }
+
+    @Test
+    @DisplayName("중복된 시간으로 예약을 할 때 예외가 발생한다.")
+    void duplicateDateTimeReservation() {
+        //given
+        final ReservationRequest request = new ReservationRequest("레디", "2025-11-20", 1L);
+
+        //when
+        reservationService.addReservation(request);
+
+        //then
+        assertThatThrownBy(() -> reservationService.addReservation(request))
+                .isInstanceOf(DuplicateReservation.class);
     }
 }

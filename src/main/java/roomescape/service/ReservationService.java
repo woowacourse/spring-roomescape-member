@@ -5,6 +5,7 @@ import roomescape.controller.reservation.ReservationRequest;
 import roomescape.controller.reservation.ReservationResponse;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.DuplicateReservation;
 import roomescape.exception.PreviousTimeException;
 import roomescape.exception.TimeNotFoundException;
 import roomescape.repository.ReservationRepository;
@@ -34,7 +35,7 @@ public class ReservationService {
 
     private Reservation assignTime(final Reservation reservation) {
         ReservationTime time = reservationTimeRepository
-                .findById(reservation.getId())
+                .findById(reservation.getTime().getId())
                 .orElse(reservation.getTime());
         return reservation.assignTime(time);
     }
@@ -44,8 +45,13 @@ public class ReservationService {
                 .findById(reservationRequest.timeId())
                 .orElseThrow(() -> new TimeNotFoundException("존재하지 않은 시간입니다."));
         final Reservation parsedReservation = reservationRequest.toDomain(time);
+        final boolean isExistsReservation = reservationRepository.existsByDateAndTimeId(time.getId(), parsedReservation.getDate());
+        if (isExistsReservation) {
+            throw new DuplicateReservation("중복된 시간으로 예약이 불가합니다.");
+        }
 
         final LocalDateTime reservationDateTime = parsedReservation.getDate().atTime(time.getStartAt());
+
         if (reservationDateTime.isBefore(LocalDateTime.now())) {
             throw new PreviousTimeException("지난 시간으로 예약할 수 없습니다.");
         }

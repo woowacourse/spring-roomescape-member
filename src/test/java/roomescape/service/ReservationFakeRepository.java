@@ -16,13 +16,13 @@ public class ReservationFakeRepository implements ReservationRepository {
             new Reservation(
                     1L,
                     "al",
-                    LocalDate.of(2024, 1, 20),
+                    LocalDate.of(2025, 1, 20),
                     new ReservationTime(1L, null)
             ),
             new Reservation(
                     2L,
                     "be",
-                    LocalDate.of(2024, 2, 19),
+                    LocalDate.of(2025, 2, 19),
                     new ReservationTime(2L, null)
             )
     ));
@@ -59,5 +59,17 @@ public class ReservationFakeRepository implements ReservationRepository {
             return 1;
         }
         return 0;
+    }
+
+    @Override
+    public boolean existsByDateAndTimeId(final Long timeId, final LocalDate date) {
+        for (final Reservation reservation : reservations) {
+            if (reservation.getTime().getId().equals(timeId)) {
+                if (reservation.getDate().equals(date)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

@@ -11,6 +11,7 @@ import roomescape.domain.ReservationTime;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -70,6 +71,13 @@ public class H2ReservationRepository implements ReservationRepository {
 
         Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
         return reservation.assignId(id);
+    }
+
+    @Override
+    public boolean existsByDateAndTimeId(final Long timeId, final LocalDate date) {
+        String sql = "SELECT * FROM reservation WHERE time_id = ? AND date = ? LIMIT 1";
+
+        return !jdbcTemplate.query(sql, this::mapRowReservation, timeId, date).isEmpty();
     }
 
     @Override
