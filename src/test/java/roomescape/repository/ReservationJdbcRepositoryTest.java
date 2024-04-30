@@ -20,7 +20,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static roomescape.TestFixture.*;
 
-class ReservationJdbcRepositoryTest extends RepositoryTest implements ReservationRepositoryTest {
+class ReservationJdbcRepositoryTest extends RepositoryTest {
     @Autowired
     private ReservationRepository reservationRepository;
 
@@ -30,7 +30,6 @@ class ReservationJdbcRepositoryTest extends RepositoryTest implements Reservatio
         jdbcTemplate.update(insertTimeSql, Time.valueOf(LocalTime.parse(MIA_RESERVATION_TIME)));
     }
 
-    @Override
     @Test
     @DisplayName("예약을 저장한다.")
     public void save() {
@@ -45,7 +44,6 @@ class ReservationJdbcRepositoryTest extends RepositoryTest implements Reservatio
         assertThat(savedReservation.getId()).isNotNull();
     }
 
-    @Override
     @Test
     @DisplayName("동일시간대의 예약 목록을 조회한다.")
     public void findAllByDateAndTime() {
@@ -68,7 +66,6 @@ class ReservationJdbcRepositoryTest extends RepositoryTest implements Reservatio
                 .containsExactly(USER_MIA, USER_TOMMY);
     }
 
-    @Override
     @Test
     @DisplayName("모든 예약 목록을 조회한다.")
     public void findAll() {
@@ -85,7 +82,6 @@ class ReservationJdbcRepositoryTest extends RepositoryTest implements Reservatio
         assertThat(reservations.size()).isEqualTo(count);
     }
 
-    @Override
     @Test
     @DisplayName("Id로 예약을 조회한다.")
     public void findById() {
@@ -109,7 +105,6 @@ class ReservationJdbcRepositoryTest extends RepositoryTest implements Reservatio
         assertThat(reservation).isPresent();
     }
 
-    @Override
     @Test
     @DisplayName("Id에 해당하는 예약이 없다면 빈 Optional을 반환한다.")
     public void findByNotExistingId() {
@@ -123,7 +118,6 @@ class ReservationJdbcRepositoryTest extends RepositoryTest implements Reservatio
         assertThat(actualReservation).isEmpty();
     }
 
-    @Override
     @Test
     @DisplayName("Id로 예약을 삭제한다.")
     public void deleteById() {
@@ -147,4 +141,18 @@ class ReservationJdbcRepositoryTest extends RepositoryTest implements Reservatio
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation where id = ?", Integer.class, id);
         assertThat(count).isEqualTo(0);
     }
+
+    @Test
+    @DisplayName("timeId에 해당하는 예약 건수를 조회한다.")
+    void countByTimeId() {
+        // given
+        long timeId = 2L;
+
+        // when
+        int count = reservationRepository.countByTimeId(timeId);
+
+        // then
+        assertThat(count).isEqualTo(0);
+    }
+
 }

@@ -42,4 +42,9 @@ public class ReservationJdbcRepository implements ReservationRepository {
     public void deleteById(Long id) {
         reservationDao.deleteById(id);
     }
+
+    @Override
+    public int countByTimeId(Long timeId) {
+        return reservationDao.countByTimeId(timeId);
+    }
 }

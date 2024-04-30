@@ -91,6 +91,11 @@ public class ReservationDao {
         jdbcTemplate.update(sql, id);
     }
 
+    public int countByTimeId(Long timeId) {
+        String sql = "SELECT count(*) FROM reservation WHERE time_id = ?";
+        return jdbcTemplate.queryForObject(sql, Integer.class, timeId);
+    }
+
     private Reservation rowMapper(ResultSet resultSet, int rowNumber) throws SQLException {
         ReservationTime reservationTime = new ReservationTime(
                 resultSet.getLong("time_id"),

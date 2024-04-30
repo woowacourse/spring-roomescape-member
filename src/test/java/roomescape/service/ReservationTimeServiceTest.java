@@ -9,13 +9,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeResponse;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -25,6 +25,9 @@ import static roomescape.TestFixture.MIA_RESERVATION_TIME;
 class ReservationTimeServiceTest {
     @Mock
     private ReservationTimeRepository reservationTimeRepository;
+
+    @Mock
+     ReservationRepository reservationRepository;
 
     @InjectMocks
     private ReservationTimeService reservationTimeService;
@@ -68,7 +71,7 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    @DisplayName("예약을 삭제한다.")
+    @DisplayName("예약 시간을 삭제한다.")
     void delete() {
         // given
         ReservationTime reservationTime = new ReservationTime(MIA_RESERVATION_TIME);
@@ -79,5 +82,21 @@ class ReservationTimeServiceTest {
         // when & then
         assertThatCode(() -> reservationTimeService.delete(1L))
                 .doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("삭제하려는 예약 시간에 예약이 존재할 경우 예외가 발생한다.")
+    void validateHasReservation() {
+        // given
+        ReservationTime reservationTime = new ReservationTime(1L, MIA_RESERVATION_TIME);
+
+        BDDMockito.given(reservationTimeRepository.findById(anyLong()))
+                .willReturn(Optional.of(reservationTime));
+        BDDMockito.given(reservationRepository.countByTimeId(anyLong()))
+                .willReturn(1);
+
+        // when & then
+        assertThatThrownBy(() -> reservationTimeService.delete(1L))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }
