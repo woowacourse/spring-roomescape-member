@@ -55,7 +55,7 @@ public class ReservationControllerTest {
                 .body(new ReservationRequest("브라운", date, timeId))
                 .when().post("/reservations")
                 .then().log().all()
-                .assertThat().statusCode(200).body("id", is(greaterThan(0)));
+                .assertThat().statusCode(201).body("id", is(greaterThan(0)));
     }
 
     @DisplayName("예약 추가 실패 테스트 - 이름 길이 오류")
@@ -125,7 +125,7 @@ public class ReservationControllerTest {
         RestAssured.given().log().all()
                 .when().delete("/reservations/" + id)
                 .then().log().all()
-                .assertThat().statusCode(200);
+                .assertThat().statusCode(204);
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
