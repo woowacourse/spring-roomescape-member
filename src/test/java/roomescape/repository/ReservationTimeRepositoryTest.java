@@ -1,8 +1,8 @@
 package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.restassured.RestAssured;
@@ -76,14 +76,7 @@ class ReservationTimeRepositoryTest {
     @DisplayName("존재하는 예약 시간 삭제")
     @Test
     void deleteExistById() {
-        final boolean isDeleted = reservationTimeRepository.deleteById(1L);
-        assertTrue(isDeleted);
-    }
-
-    @DisplayName("존재하지 않는 예약 시간 삭제")
-    @Test
-    void deleteEmptyById() {
-        final boolean isDeleted = reservationTimeRepository.deleteById(100L);
-        assertFalse(isDeleted);
+        assertThatCode(() -> reservationTimeRepository.deleteById(1L))
+                .doesNotThrowAnyException();
     }
 }

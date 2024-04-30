@@ -50,8 +50,7 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
                 .toList();
     }
 
-    public boolean deleteById(final Long id) {
-        final int affectedRowCount = jdbcTemplate.update("DELETE FROM reservation_times WHERE id = ?", id);
-        return affectedRowCount == 1;
+    public void deleteById(final Long id) {
+        jdbcTemplate.update("DELETE FROM reservation_times WHERE id = ?", id);
     }
 }

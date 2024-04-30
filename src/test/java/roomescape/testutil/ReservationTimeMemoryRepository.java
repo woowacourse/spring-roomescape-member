@@ -35,10 +35,10 @@ public class ReservationTimeMemoryRepository implements ReservationTimeRepositor
     }
 
     @Override
-    public boolean deleteById(final Long id) {
-        final Optional<ReservationTime> findReservationTime = reservationTimes.stream()
+    public void deleteById(final Long id) {
+        reservationTimes.stream()
                 .filter(reservation -> reservation.getId().equals(id))
-                .findFirst();
-        return findReservationTime.map(reservationTimes::remove).orElse(false);
+                .findFirst()
+                .ifPresent(reservationTimes::remove);
     }
 }

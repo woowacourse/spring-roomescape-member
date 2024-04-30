@@ -1,21 +1,22 @@
 package roomescape.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.ReservationTimeSaveRequest;
-import roomescape.exception.ResourceNotFoundException;
 import roomescape.model.ReservationTime;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
-
-import java.util.List;
 
 @Service
 public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ReservationTimeService(final ReservationTimeRepository reservationTimeRepository) {
+    public ReservationTimeService(final ReservationTimeRepository reservationTimeRepository, final ReservationRepository reservationRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public List<ReservationTimeResponse> getTimes() {
@@ -32,10 +33,17 @@ public class ReservationTimeService {
     }
 
     public void deleteTime(final Long id) {
-        boolean isDeleted = reservationTimeRepository.deleteById(id);
-        if (isDeleted) {
-            return;
+        validateDeleteTime(id);
+        reservationTimeRepository.deleteById(id);
+    }
+
+    private void validateDeleteTime(final Long id) {
+        reservationTimeRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
+
+        final boolean existByTimeId = reservationRepository.existByTimeId(id);
+        if (existByTimeId) {
+            throw new IllegalArgumentException("예약이 존재하는 시간입니다.");
         }
-        throw new ResourceNotFoundException("존재하지 않는 예약 시간입니다.");
     }
 }

@@ -95,7 +95,7 @@ class ReservationTimeControllerTest {
         RestAssured.given().log().all()
                 .when().delete("/times/1")
                 .then().log().all()
-                .statusCode(404);
+                .statusCode(400);
     }
 
     @DisplayName("컨트롤러에서 jdbcTemplate 필드 제거")
