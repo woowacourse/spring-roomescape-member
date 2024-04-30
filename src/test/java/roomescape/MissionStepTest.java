@@ -87,7 +87,7 @@ public class MissionStepTest {
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
                 .then().log().all()
-                .statusCode(204);
+                .statusCode(200);
 
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
@@ -165,7 +165,7 @@ public class MissionStepTest {
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         RestAssured.given().log().all()
                 .when().get("/times")

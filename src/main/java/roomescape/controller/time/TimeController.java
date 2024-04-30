@@ -8,8 +8,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 import roomescape.service.TimeService;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -31,8 +33,12 @@ public class TimeController {
     @PostMapping
     public ResponseEntity<TimeResponse> addTime(@RequestBody final TimeRequest timeRequest) {
         TimeResponse time = timeService.addTime(timeRequest);
+        URI uri = UriComponentsBuilder.fromPath("/reservations/{id}")
+                .buildAndExpand(time.id())
+                .toUri();
 
-        return ResponseEntity.ok(time);
+        return ResponseEntity.created(uri)
+                .body(time);
     }
 
     @DeleteMapping("/{id}")
