@@ -34,7 +34,7 @@ class JdbcReservationDaoTest {
     void saveReservation() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES(?)", LocalTime.of(10, 0));
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
-        Reservation reservation = new Reservation(null, "parang", LocalDate.of(2000, 3, 28), reservationTime);
+        Reservation reservation = new Reservation(null, "parang", LocalDate.of(2999, 3, 28), reservationTime);
         savedReservation = jdbcReservationDao.save(reservation);
     }
 

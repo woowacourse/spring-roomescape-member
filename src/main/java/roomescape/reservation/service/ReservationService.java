@@ -25,8 +25,15 @@ public class ReservationService {
     public ReservationResponse createReservation(ReservationRequest reservationRequest) {
         ReservationTime reservationTime = reservationTimeDao.findById(reservationRequest.timeId())
                 .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_RESERVATION_TIME));
-        Reservation reservation = reservationRequest.toEntity(reservationTime);
 
+        reservationDao.findAllReservations().stream()
+                .filter(reservation -> reservation.getTime().equals(reservationTime))
+                .findAny()
+                .ifPresent(time -> {
+                    throw new CustomException(ExceptionCode.DUPLICATE_RESERVATION);
+                });
+
+        Reservation reservation = reservationRequest.toEntity(reservationTime);
         Reservation savedReservation = reservationDao.save(reservation);
         return ReservationResponse.from(savedReservation);
     }
