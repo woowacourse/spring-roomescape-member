@@ -4,10 +4,12 @@ import org.springframework.stereotype.Service;
 import roomescape.controller.time.TimeRequest;
 import roomescape.controller.time.TimeResponse;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.TimeUsedException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 @Service
 public class TimeService {
@@ -33,7 +35,9 @@ public class TimeService {
     }
 
     public int deleteTime(final Long id) {
-//        reservationRepository.findByTimeId(id);
+        if (reservationRepository.existsByTimeId(id)) {
+            throw new TimeUsedException("예약된 시간은 삭제할 수 없습니다.");
+        }
         return timeRepository.deleteById(id);
     }
 }

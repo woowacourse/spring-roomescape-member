@@ -5,10 +5,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.controller.time.TimeRequest;
 import roomescape.controller.time.TimeResponse;
+import roomescape.exception.TimeUsedException;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class TimeServiceTest {
 
@@ -70,5 +72,12 @@ class TimeServiceTest {
 
         // when & then
         assertThat(timeService.deleteTime(id)).isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("예약이 있는 시간을 삭제할 경우 예외가 발생한다.")
+    void invalidDelete() {
+        assertThatThrownBy(() -> timeService.deleteTime(1L))
+                .isInstanceOf(TimeUsedException.class);
     }
 }
