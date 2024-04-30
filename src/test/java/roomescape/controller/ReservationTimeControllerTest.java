@@ -102,5 +102,20 @@ class ReservationTimeControllerTest {
         mvc.perform(delete("/times/" + reservationTime.getId()))
             .andExpect(status().isBadRequest());
     }
+
+    @DisplayName("이미 존재하는 시간을 저장 -> 400")
+    @Test
+    void create_Duplicate() throws Exception {
+        String rawTime = "19:00";
+        when(reservationTimeService.save(new ReservationTimeAppRequest(rawTime)))
+            .thenThrow(IllegalArgumentException.class);
+
+        String requestBody = objectMapper.writeValueAsString(new ReservationTimeWebRequest(4L, rawTime));
+
+        mvc.perform(post("/times")
+                .content(requestBody)
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
 }
 
