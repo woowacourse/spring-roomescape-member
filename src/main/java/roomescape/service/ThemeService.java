@@ -1,0 +1,30 @@
+package roomescape.service;
+
+import org.springframework.stereotype.Service;
+import roomescape.dao.ThemeDAO;
+import roomescape.domain.Theme;
+import roomescape.dto.ThemeRequest;
+
+import java.util.List;
+
+@Service
+public class ThemeService {
+    private final ThemeDAO themeDAO;
+
+    public ThemeService(ThemeDAO themeDAO) {
+        this.themeDAO = themeDAO;
+    }
+
+    public Theme save(final ThemeRequest themeRequest) {
+        final Theme theme = new Theme(themeRequest.name(), themeRequest.description(), themeRequest.thumbnail());
+        return themeDAO.insert(theme);
+    }
+
+    public List<Theme> findAll() {
+        return themeDAO.selectAll();
+    }
+
+    public void delete(final Long id) {
+        themeDAO.deleteById(id);
+    }
+}
