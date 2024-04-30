@@ -33,6 +33,9 @@ public class AdminIntegrationTest {
         jdbcTemplate.update("delete from reservation_time");
         jdbcTemplate.update("ALTER TABLE reservation_time alter column id restart with 1");
         jdbcTemplate.update("insert into reservation_time(start_at) values('11:56')");
+        jdbcTemplate.update("delete from THEME");
+        jdbcTemplate.update("ALTER TABLE THEME alter column id restart with 1");
+        jdbcTemplate.update("insert into THEME values ( 1,'a','a','a')");
         RestAssured.port = port;
     }
 
@@ -70,6 +73,7 @@ public class AdminIntegrationTest {
         params.put("name", "브라운");
         params.put("date", LocalDate.now().plusDays(1).format(DATE_FORMATTER));
         params.put("timeId", 1);
+        params.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -104,6 +108,7 @@ public class AdminIntegrationTest {
         params.put("name", "브라운");
         params.put("date", LocalDate.now().plusDays(1).format(DATE_FORMATTER));
         params.put("timeId", 1);
+        params.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

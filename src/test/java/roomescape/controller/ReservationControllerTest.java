@@ -11,36 +11,43 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationTimeResponse;
+import roomescape.dto.ThemeResponse;
 import roomescape.repository.CollectionReservationRepository;
 import roomescape.repository.CollectionReservationTimeRepository;
+import roomescape.repository.CollectionThemeRepository;
 import roomescape.service.ReservationService;
 
+//TODO : 전체적으로 테스트 수정
 class ReservationControllerTest {
     static final long timeId = 1L;
     static final LocalTime time = LocalTime.now();
+    private static final Theme DEFUALT_THEME = new Theme(1L, "이름", "설명", "썸네일");
     private final CollectionReservationTimeRepository timeRepository = new CollectionReservationTimeRepository(
             new ArrayList<>(List.of(new ReservationTime(timeId, time)))
     );
+    private final CollectionThemeRepository themeRepository = new CollectionThemeRepository();
 
     @Test
     @DisplayName("예약 정보를 잘 저장하는지 확인한다.")
     void saveReservation() {
         CollectionReservationRepository collectionReservationRepository = new CollectionReservationRepository(
                 timeRepository);
-        ReservationService reservationService = new ReservationService(collectionReservationRepository, timeRepository);
+        ReservationService reservationService = new ReservationService(collectionReservationRepository, timeRepository,
+                themeRepository);
         ReservationController reservationController = new ReservationController(reservationService);
         LocalDate date = LocalDate.now().plusDays(1);
 
         ReservationResponse saveResponse = reservationController.saveReservation(
-                        new ReservationRequest(date, "폴라", timeId))
+                        new ReservationRequest(date, "폴라", timeId, 1))
                 .getBody();
 
         long id = Objects.requireNonNull(saveResponse).id();
         ReservationResponse expected = new ReservationResponse(id, "폴라", date,
-                new ReservationTimeResponse(timeId, time));
+                new ReservationTimeResponse(timeId, time), new ThemeResponse(1, "이름", "설명", "썸네일"));
 
         Assertions.assertThat(saveResponse)
                 .isEqualTo(expected);
@@ -51,7 +58,8 @@ class ReservationControllerTest {
     void findAllReservations() {
         CollectionReservationRepository collectionReservationRepository = new CollectionReservationRepository(
                 timeRepository);
-        ReservationService reservationService = new ReservationService(collectionReservationRepository, timeRepository);
+        ReservationService reservationService = new ReservationService(collectionReservationRepository, timeRepository,
+                null);
         ReservationController reservationController = new ReservationController(reservationService);
         List<ReservationResponse> allReservations = reservationController.findAllReservations();
 
@@ -63,10 +71,11 @@ class ReservationControllerTest {
     @DisplayName("예약 정보를 잘 지우는지 확인한다.")
     void delete() {
         List<Reservation> reservations = List.of(
-                new Reservation(1L, "폴라", LocalDate.now(), new ReservationTime(LocalTime.now())));
+                new Reservation(1L, "폴라", LocalDate.now(), new ReservationTime(LocalTime.now()), DEFUALT_THEME));
         CollectionReservationRepository collectionReservationRepository = new CollectionReservationRepository(
                 new ArrayList<>(reservations), timeRepository);
-        ReservationService reservationService = new ReservationService(collectionReservationRepository, timeRepository);
+        ReservationService reservationService = new ReservationService(collectionReservationRepository, timeRepository,
+                null);
         ReservationController reservationController = new ReservationController(reservationService);
 
         reservationController.delete(1L);
@@ -81,7 +90,8 @@ class ReservationControllerTest {
     void checkRepositoryDependency() {
         CollectionReservationRepository collectionReservationRepository = new CollectionReservationRepository(
                 timeRepository);
-        ReservationService reservationService = new ReservationService(collectionReservationRepository, timeRepository);
+        ReservationService reservationService = new ReservationService(collectionReservationRepository, timeRepository,
+                null);
         ReservationController reservationController = new ReservationController(reservationService);
 
         boolean isRepositoryInjected = false;

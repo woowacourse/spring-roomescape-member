@@ -12,10 +12,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 @SpringBootTest
 class JdbcTemplateReservationRepositoryTest {
     private static final ReservationTime DEFAULT_TIME = new ReservationTime(1L, LocalTime.of(11, 56));
+    private static final Theme DEFAULT_THEME = new Theme(1L, "이름", "설명", "썸네일");
+
     @Autowired
     private ReservationRepository reservationRepository;
     @Autowired
@@ -34,7 +37,8 @@ class JdbcTemplateReservationRepositoryTest {
     @DisplayName("Reservation 을 잘 저장하는지 확인한다.")
     void save() {
         var beforeSave = reservationRepository.findAll();
-        Reservation saved = reservationRepository.save(new Reservation("test", LocalDate.now(), DEFAULT_TIME));
+        Reservation saved = reservationRepository.save(
+                new Reservation("test", LocalDate.now(), DEFAULT_TIME, DEFAULT_THEME));
         var afterSave = reservationRepository.findAll();
 
         Assertions.assertThat(afterSave)
@@ -46,8 +50,8 @@ class JdbcTemplateReservationRepositoryTest {
     @DisplayName("Reservation 을 잘 조회하는지 확인한다.")
     void findAll() {
         List<Reservation> beforeSave = reservationRepository.findAll();
-        reservationRepository.save(new Reservation("test", LocalDate.now(), DEFAULT_TIME));
-        reservationRepository.save(new Reservation("test2", LocalDate.now(), DEFAULT_TIME));
+        reservationRepository.save(new Reservation("test", LocalDate.now(), DEFAULT_TIME, DEFAULT_THEME));
+        reservationRepository.save(new Reservation("test2", LocalDate.now(), DEFAULT_TIME, DEFAULT_THEME));
 
         List<Reservation> afterSave = reservationRepository.findAll();
         Assertions.assertThat(afterSave.size())
@@ -58,7 +62,7 @@ class JdbcTemplateReservationRepositoryTest {
     @DisplayName("Reservation 을 잘 지우는지 확인한다.")
     void delete() {
         List<Reservation> beforeSaveAndDelete = reservationRepository.findAll();
-        reservationRepository.save(new Reservation("test", LocalDate.now(), DEFAULT_TIME));
+        reservationRepository.save(new Reservation("test", LocalDate.now(), DEFAULT_TIME, DEFAULT_THEME));
 
         reservationRepository.delete(1L);
 

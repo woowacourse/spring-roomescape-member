@@ -43,6 +43,12 @@
             "id": 1,
             "startAt": "10:00"
         }
+        "theme" : {
+            "id": 1,
+            "name": "이름",
+            "description": "설명",
+            "thumbnail": "썸네일"
+        }
     }
 ]
 ```
@@ -59,7 +65,8 @@
 {
   "date": "2023-08-05",
   "name": "브라운",
-  "timeId": 1
+  "timeId": 1,
+  "themeId": 1
 }
 ```
 
@@ -78,6 +85,12 @@
   "time": {
     "id": 1,
     "startAt": "10:00"
+  },
+  "theme": {
+    "id": 1,
+    "name": "이름",
+    "description": "설명",
+    "thumbnail": "썸네일"
   }
 }
 ```

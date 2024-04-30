@@ -35,12 +35,13 @@ public class CollectionReservationRepository implements ReservationRepository {
 
     @Override
     public Reservation save(Reservation reservation) {
+        //TODO 안해도 되는지 확인하기
         ReservationTime findTime = timeRepository.findAll().stream()
                 .filter(reservationTime -> reservationTime.getId() == reservation.getReservationTime().getId())
                 .findFirst()
                 .get();
         Reservation saved = new Reservation(atomicLong.incrementAndGet(), reservation.getName(), reservation.getDate(),
-                findTime);
+                findTime, reservation.getTheme());
         reservations.add(saved);
         return saved;
     }

@@ -2,6 +2,7 @@ package roomescape.repository;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -25,6 +26,18 @@ public class JdbcTemplateThemeRepository implements ThemeRepository {
             String thumbnail = rs.getString(4);
             return new Theme(id, name, description, thumbnail);
         });
+    }
+
+    @Override
+    public Optional<Theme> findById(long id) {
+        List<Theme> themes = jdbcTemplate.query("select id, name, description, thumbnail from theme where id = ?",
+                (rs, rowNum) -> {
+                    String name = rs.getString("name");
+                    String description = rs.getString("description");
+                    String thumbnail = rs.getString("thumbnail");
+                    return new Theme(id, name, description, thumbnail);
+                }, id);
+        return themes.stream().findFirst();
     }
 
     @Override

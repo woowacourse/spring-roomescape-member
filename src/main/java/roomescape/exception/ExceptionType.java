@@ -18,7 +18,9 @@ public enum ExceptionType {
     //todo 이름 변경,
     PAST_TIME(BAD_REQUEST, "이미 지난 시간에 예약할 수 없습니다."),
     DESCRIPTION_EMPTY(BAD_REQUEST, "테마 설명은 필수값 입니다."),
-    THUMBNAIL_EMPTY(BAD_REQUEST, "테마 썸네일은 필수값 입니다.");
+    THUMBNAIL_EMPTY(BAD_REQUEST, "테마 썸네일은 필수값 입니다."),
+    THEME_NOT_FOUND(BAD_REQUEST, "없는 테마입니다."),
+    ;
 
     private final HttpStatus status;
     private final String message;

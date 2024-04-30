@@ -13,12 +13,13 @@ public class Reservation implements Comparable<Reservation> {
     private final String name;
     private final LocalDate date;
     private final ReservationTime time;
+    private final Theme theme;
 
-    public Reservation(String name, LocalDate date, ReservationTime time) {
-        this(null, name, date, time);
+    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
+        this(null, name, date, time, theme);
     }
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time) {
+    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         if (name == null || name.isBlank()) {
             throw new RoomescapeException(NAME_EMPTY);
         }
@@ -26,10 +27,12 @@ public class Reservation implements Comparable<Reservation> {
         this.name = name;
         this.date = date;
         this.time = time;
+        this.theme = theme;
     }
 
     public Reservation(long id, Reservation reservationBeforeSave) {
-        this(id, reservationBeforeSave.name, reservationBeforeSave.date, reservationBeforeSave.time);
+        this(id, reservationBeforeSave.name, reservationBeforeSave.date, reservationBeforeSave.time,
+                reservationBeforeSave.theme);
     }
 
     @Override
@@ -61,6 +64,10 @@ public class Reservation implements Comparable<Reservation> {
 
     public ReservationTime getReservationTime() {
         return time;
+    }
+
+    public Theme getTheme() {
+        return theme;
     }
 
     @Override
