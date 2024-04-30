@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationDate;
 
 @Repository
 public class ReservationDao {
@@ -31,6 +32,11 @@ public class ReservationDao {
                 .addValue("time_id", reservation.getTime().getId());
         long id = jdbcInsert.executeAndReturnKey(params).longValue();
         return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime());
+    }
+
+    public boolean isExistByReservationAndTime(ReservationDate date, long timeId) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE date = ? AND time_id = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, date.asString(), timeId));
     }
 
     public boolean isExistByTimeId(long timdId) {

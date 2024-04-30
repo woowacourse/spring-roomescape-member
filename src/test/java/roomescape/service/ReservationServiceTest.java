@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.NotExistReservationException;
+import roomescape.exception.ReservationAlreadyExistsException;
 import roomescape.service.dto.ReservationInput;
 
 @SpringBootTest
@@ -36,5 +37,15 @@ public class ReservationServiceTest {
     void throw_exception_when_not_exist_id() {
         assertThatThrownBy(() -> reservationService.deleteReservation(-1))
                 .isInstanceOf(NotExistReservationException.class);
+    }
+
+    @Test
+    @DisplayName("중복 예약 이면 예외를 발생한다.")
+    void throw_exception_when_duplicate_reservationTime() {
+        long id = reservationTimeDao.create(ReservationTime.from(null, "10:00")).getId();
+        reservationService.createReservation(new ReservationInput("제리", "2023-11-24", id));
+
+        assertThatThrownBy(() -> reservationService.createReservation(new ReservationInput("제리", "2023-11-24", id)))
+                .isInstanceOf(ReservationAlreadyExistsException.class);
     }
 }

@@ -34,8 +34,11 @@ public class Reservation {
         return date;
     }
 
-
     public ReservationTime getTime() {
         return time;
+    }
+
+    public String getDateAndTimeFormat() {
+        return this.date.asString() + " " + this.time.getStartAtAsString();
     }
 }

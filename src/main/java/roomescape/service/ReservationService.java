@@ -7,6 +7,9 @@ import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.NotExistReservationException;
+import roomescape.exception.NotExistReservationTimeException;
+import roomescape.exception.ReservationAlreadyExistsException;
+import roomescape.exception.ReservationTimeAlreadyExistsException;
 import roomescape.service.dto.ReservationInput;
 import roomescape.service.dto.ReservationOutput;
 
@@ -22,9 +25,16 @@ public class ReservationService {
     }
 
     public ReservationOutput createReservation(ReservationInput input) {
-        //TODO : get 제거해야함
-        ReservationTime time = reservationTimeDao.find(input.timeId()).get();
+        //TODO : Controller 가 아닌 ControllerAdvice 가 catch 해주게 변경
+        ReservationTime time = reservationTimeDao.find(input.timeId())
+                .orElseThrow(
+                        () -> new NotExistReservationTimeException(String.format("%d는 없는 id 입니다.", input.timeId())));
+
         Reservation reservation = input.toReservation(time);
+        if (reservationDao.isExistByReservationAndTime(reservation.getDate(), time.getId())) {
+            throw new ReservationAlreadyExistsException(
+                    String.format("%s 에 해당하는 예약이 있습니다.", reservation.getDateAndTimeFormat()));
+        }
         Reservation savedReservation = reservationDao.create(reservation);
         return ReservationOutput.toOutput(savedReservation);
     }
