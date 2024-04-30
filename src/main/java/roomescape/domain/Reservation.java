@@ -37,7 +37,7 @@ public class Reservation {
     }
 
     private void validateTime(LocalDate date, ReservationTime time) {
-        if (LocalDate.now().isEqual(date) && time.isPast()) {
+        if (LocalDate.now().isEqual(date) && time.inPast()) {
             throw new IllegalTimeException("[ERROR] 이미 지난 시간입니다.");
         }
     }
