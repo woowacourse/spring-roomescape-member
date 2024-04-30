@@ -54,4 +54,15 @@ public class ReservationDao {
         final String sql = "delete from reservation where id = ?";
         return jdbcTemplate.update(sql, id);
     }
+
+    public boolean checkReservationExists(final String date, final String time) {
+        String sql = "SELECT CASE WHEN COUNT(*) > 0 THEN TRUE ELSE FALSE END " +
+                "FROM reservation AS r " +
+                "INNER JOIN reservation_time AS t " +
+                "ON r.time_id = t.id " +
+                "WHERE r.date = ? AND t.start_at = ?";
+
+        Boolean result = jdbcTemplate.queryForObject(sql, new Object[]{date, time}, Boolean.class);
+        return Boolean.TRUE.equals(result);
+    }
 }

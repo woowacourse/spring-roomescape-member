@@ -98,6 +98,27 @@ public class ReservationAcceptanceTest {
     }
 
     @Test
+    void duplicateSave() {
+        save();
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", "브라운");
+        reservation.put("date", LocalDate.MAX.toString());
+        reservation.put("timeId", 1);
+
+        RestAssured.given()
+                .log()
+                .all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when()
+                .post("/reservations")
+                .then()
+                .log()
+                .all()
+                .statusCode(500);
+    }
+
+    @Test
     void delete() {
         save();
         RestAssured.given()

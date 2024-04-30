@@ -7,6 +7,8 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationRequestDto;
 import roomescape.reservation.dto.ReservationResponseDto;
 import roomescape.response.ResponseCode;
+import roomescape.time.dao.ReservationTimeDao;
+import roomescape.time.domain.ReservationTime;
 
 import java.util.List;
 
@@ -14,22 +16,30 @@ import java.util.List;
 public class ReservationService {
 
     private final ReservationDao reservationDao;
+    private final ReservationTimeDao reservationTimeDao;
 
-    public ReservationService(final ReservationDao reservationDao) {
+    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao) {
         this.reservationDao = reservationDao;
+        this.reservationTimeDao = reservationTimeDao;
     }
 
     public List<ReservationResponseDto> findAll() {
         final List<Reservation> reservations = reservationDao.findAll();
         return reservations.stream()
-                           .map(ReservationResponseDto::new)
-                           .toList();
+                .map(ReservationResponseDto::new)
+                .toList();
     }
 
     public ReservationResponseDto save(final ReservationRequestDto requestDto) {
-        final long reservationId = reservationDao.save(requestDto.toReservation());
-        final Reservation reservation = reservationDao.findById(reservationId);
-        return new ReservationResponseDto(reservation);
+        final ReservationTime reservationTime = reservationTimeDao.findById(requestDto.timeId());
+        final Reservation reservation = requestDto.toReservation();
+        boolean isExist = reservationDao.checkReservationExists(reservation.getDate().toString(), reservationTime.getStartAt().toString());
+        if (isExist) {
+            throw new IllegalArgumentException("이미 해당 날짜, 시간에 예약이 존재합니다.");
+        }
+        final long reservationId = reservationDao.save(reservation);
+        final Reservation findReservation = reservationDao.findById(reservationId);
+        return new ReservationResponseDto(findReservation);
     }
 
     public ResponseCode deleteById(final long id) {
