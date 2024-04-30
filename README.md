@@ -13,9 +13,9 @@
 - [ ] 사용자 예약 시 원하는 테마를 선택할 수 있도록 테마 도메인을 추가한다.
 - [x] /admin/theme 요청 시 테마 관리 페이지를 응답한다.
     - templates/admin/theme.html
-- [ ] 테마 추가 API를 구현한다.
-- [ ] 테마 조회 API를 구현한다.
-- [ ] 테마 삭제 API를 구현한다.
+- [x] 테마 추가 API를 구현한다.
+- [x] 테마 조회 API를 구현한다.
+- [x] 테마 삭제 API를 구현한다.
 
 - [ ] 어드민에서 방탈출 예약 시, 테마 정보를 포함할 수 있도록 신규 페이지 파일을 사용한다.
     - AS-IS: templates/admin/reservation.html
