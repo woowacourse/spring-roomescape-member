@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.startsWith;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,7 +45,8 @@ class ReservationIntegrationTest {
     @Test
     @DisplayName("예약을 생성한다.")
     void createReservation() {
-        ReservationRequest createDto = new ReservationRequest("브라운", "2023-08-05", 1L);
+        LocalDate reservationDate = LocalDate.now().plusDays(1);
+        ReservationRequest createDto = new ReservationRequest("브라운", reservationDate.toString(), 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -54,7 +56,7 @@ class ReservationIntegrationTest {
                 .statusCode(201)
                 .header("Location", startsWith("/reservations/"))
                 .body("name", is("브라운"))
-                .body("date", is("2023-08-05"));
+                .body("date", is(reservationDate.toString()));
     }
 
     @Test

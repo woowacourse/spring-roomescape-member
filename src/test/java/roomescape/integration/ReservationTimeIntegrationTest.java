@@ -37,7 +37,7 @@ class ReservationTimeIntegrationTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(2));
+                .body("size()", is(3));
     }
 
     @Test
@@ -59,7 +59,7 @@ class ReservationTimeIntegrationTest {
     @DisplayName("예약 시간을 삭제한다.")
     void deleteReservationTime() {
         RestAssured.given().log().all()
-                .when().delete("/times/1")
+                .when().delete("/times/3")
                 .then().log().all()
                 .statusCode(204);
     }
