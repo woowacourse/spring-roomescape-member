@@ -48,8 +48,8 @@ public class ReservationRepository {
                 r.date,
                 t.id as time_id,
                 t.start_at
-                from reservation as r
-                inner join reservation_time as t
+                from reservation r
+                inner join reservation_time t
                 on r.time_id = t.id
                 where r.id = ?
                 """;
@@ -68,11 +68,27 @@ public class ReservationRepository {
                 r.date,
                 t.id as time_id,
                 t.start_at
-                from reservation as r
-                inner join reservation_time as t
+                from reservation r 
+                inner join reservation_time t
                 on r.time_id = t.id
                 """;
         return jdbcTemplate.query(sql, createReservationRowMapper());
+    }
+
+    public boolean existReservation(Reservation reservation) {
+        String sql = """
+                select count(*)
+                from reservation r
+                join reservation_time t on r.time_id = t.id
+                where r.date = ? and t.start_at = ?
+                """;
+        try {
+            jdbcTemplate.queryForObject(sql, Integer.class, reservation.getDate().toString(),
+                    reservation.getTime().getStartAt().toString());
+            return true;
+        } catch (DataAccessException exception) {
+            return false;
+        }
     }
 
     public void delete(Long id) {

@@ -52,6 +52,18 @@ public class ReservationRepositoryTest {
     }
 
     @Test
+    @DisplayName("이미 저장된 예약일 경우 true를 반환한다.")
+    void existReservationTest() {
+        Long timeId = reservationTimeRepository.save(new ReservationTime(LocalTime.now()));
+        ReservationTime reservationTime = reservationTimeRepository.findById(timeId).get();
+        Reservation reservation = new Reservation(new Name("hogi"), LocalDate.now(), reservationTime);
+        reservationRepository.save(reservation);
+        boolean exist = reservationRepository.existReservation(reservation);
+
+        assertThat(exist).isTrue();
+    }
+
+    @Test
     @DisplayName("DB 삭제 테스트")
     void deleteTest() {
         Long timeId = reservationTimeRepository.save(new ReservationTime(LocalTime.now()));

@@ -37,6 +37,10 @@ public class ReservationService {
                 reservationRequest.date(),
                 reservationTime);
 
+        if (reservationRepository.existReservation(reservation)) {
+            throw new IllegalArgumentException("중복된 예약이 있습니다.");
+        }
+
         return reservationRepository.save(reservation);
     }
 
