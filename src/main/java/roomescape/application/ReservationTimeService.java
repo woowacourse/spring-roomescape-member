@@ -1,19 +1,25 @@
 package roomescape.application;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import roomescape.application.dto.ReservationTimeCreationRequest;
+import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.time.ReservationTime;
 import roomescape.domain.time.repository.ReservationTimeRepository;
 
 @Service
 public class ReservationTimeService {
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository) {
+    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository,
+            ReservationRepository reservationRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public ReservationTime register(ReservationTimeCreationRequest request) {
@@ -35,6 +41,10 @@ public class ReservationTimeService {
 
     public void delete(long id) {
         ReservationTime reservationTime = getReservationTime(id);
+        Optional<Reservation> optionalReservation = reservationRepository.findByTimeId(id);
+        if (optionalReservation.isPresent()) {
+            throw new IllegalArgumentException("해당 시간을 사용하는 예약이 존재합니다");
+        }
         reservationTimeRepository.deleteById(reservationTime.getId());
     }
 }

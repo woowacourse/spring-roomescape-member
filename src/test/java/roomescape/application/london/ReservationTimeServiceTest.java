@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.application.ReservationTimeService;
 import roomescape.application.dto.ReservationTimeCreationRequest;
+import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.time.ReservationTime;
 import roomescape.domain.time.repository.ReservationTimeRepository;
 
@@ -25,6 +26,8 @@ class ReservationTimeServiceTest {
     private ReservationTimeService reservationTimeService;
     @Mock
     private ReservationTimeRepository reservationTimeRepository;
+    @Mock
+    private ReservationRepository reservationRepository;
 
     @Test
     void 예약_시간을_성공적으로_등록한다() {
@@ -54,6 +57,7 @@ class ReservationTimeServiceTest {
         LocalTime startAt = LocalTime.of(13, 0);
         ReservationTime reservationTime = new ReservationTime(1L, startAt);
         when(reservationTimeRepository.findById(anyLong())).thenReturn(Optional.of(reservationTime));
+        when(reservationRepository.findByTimeId(anyLong())).thenReturn(Optional.empty());
 
         reservationTimeService.delete(reservationTime.getId());
 

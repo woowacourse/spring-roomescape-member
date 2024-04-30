@@ -3,6 +3,7 @@ package roomescape.application.classical;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.application.ReservationTimeService;
 import roomescape.application.dto.ReservationTimeCreationRequest;
+import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.time.ReservationTime;
 import roomescape.support.extension.TableTruncateExtension;
 
@@ -18,6 +21,8 @@ import roomescape.support.extension.TableTruncateExtension;
 public class ReservationTimeServiceTest {
     @Autowired
     private ReservationTimeService reservationTimeService;
+    @Autowired
+    private ReservationRepository reservationRepository;
 
     @Test
     void 예약_시간을_성공적으로_등록한다() {
@@ -56,5 +61,18 @@ public class ReservationTimeServiceTest {
         assertThatThrownBy(() -> reservationTimeService.delete(1L))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("존재하지 않는 예약 시간입니다.");
+    }
+
+    @Test
+    void 특정_시간의_예약과_같은_시간을_삭제했을_때_예외가_발생한다() {
+        LocalTime startAt = LocalTime.of(13, 0);
+        ReservationTimeCreationRequest request = new ReservationTimeCreationRequest(startAt);
+        ReservationTime reservationTime = reservationTimeService.register(request);
+
+        reservationRepository.save(new Reservation("prin", LocalDate.parse("2024-04-30"), reservationTime));
+
+        assertThatThrownBy(() -> reservationTimeService.delete(reservationTime.getId()))
+                .isExactlyInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("해당 시간을 사용하는 예약이 존재합니다");
     }
 }

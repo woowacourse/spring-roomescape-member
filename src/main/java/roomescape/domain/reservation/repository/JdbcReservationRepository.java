@@ -86,6 +86,21 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public Optional<Reservation> findByTimeId(long timeId) {
+        String query = QueryBuilder.select(TABLE_NAME)
+                .alias("r")
+                .addAllColumns()
+                .join(JoinType.INNER, "reservation_time", JoinCondition.on("r.time_id", "t.id"), "t")
+                .where(ComparisonCondition.equalTo("r.time_id", timeId))
+                .build();
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(query, ROW_MAPPER));
+        } catch (DataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public List<Reservation> findAll() {
         String query = QueryBuilder.select(TABLE_NAME)
                 .alias("r")
