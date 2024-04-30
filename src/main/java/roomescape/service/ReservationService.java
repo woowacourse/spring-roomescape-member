@@ -5,6 +5,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationSaveRequest;
+import roomescape.exception.AlreadyExistReservationException;
 import roomescape.mapper.ReservationMapper;
 import roomescape.repository.ReservationDao;
 
@@ -32,6 +33,11 @@ public class ReservationService {
     public ReservationResponse saveReservation(ReservationSaveRequest request) {
         ReservationTime time = reservationTimeService.findTimeById(request.timeId());
         Reservation reservation = reservationMapper.mapToReservation(request, time);
+
+        if (reservationDao.existByDateTime(reservation.getDate(), time.getStartAt())) {
+            throw new AlreadyExistReservationException("[ERROR] 같은 날짜, 시간에 중복된 예약을 생성할 수 없습니다.");
+        }
+
         Long saveId = reservationDao.save(reservation);
 
         return reservationMapper.mapToResponse(saveId, reservation);

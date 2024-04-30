@@ -62,4 +62,14 @@ public class ReservationDao {
     public void deleteById(Long id) {
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
     }
+
+    public boolean existByDateTime(LocalDate date, LocalTime time) {
+        int count = jdbcTemplate.queryForObject("""
+                SELECT count(*) 
+                FROM reservation as r 
+                INNER JOIN reservation_time as t ON r.time_id = t.id
+                WHERE r.date = ? AND t.start_at = ?
+                """, Integer.class, date, time);
+        return count > 0;
+    }
 }

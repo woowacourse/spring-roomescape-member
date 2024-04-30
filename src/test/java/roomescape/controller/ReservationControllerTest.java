@@ -81,4 +81,23 @@ class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(HttpStatus.SC_BAD_REQUEST);
     }
+
+    @Test
+    void createReservation_duplicate_bad_request() {
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "테니", "2024-06-01", 1);
+
+        Map<String, String> params = Map.of(
+                "name", "테니",
+                "date", "2024-06-01",
+                "timeId", "1"
+        );
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(HttpStatus.SC_BAD_REQUEST);
+    }
 }
