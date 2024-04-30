@@ -11,7 +11,8 @@ import roomescape.domain.ReservationTime;
 public record ReservationRequest(
         @NotNull @NotBlank String name,
         @NotNull @NotBlank String date,
-        @NotNull @Positive Long timeId) {
+        @NotNull @Positive Long timeId,
+        @NotNull @Positive Long themeId) {
     public Reservation toDomain(ReservationTime reservationTime) {
         return new Reservation(new Name(name), LocalDate.parse(date), reservationTime);
     }

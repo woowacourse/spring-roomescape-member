@@ -29,7 +29,7 @@ class ReservationServiceTest {
     void cantCreateReservationWithPreviousDate() {
         // given
         LocalDate date = LocalDate.now().minusDays(1);
-        ReservationRequest request = new ReservationRequest("엘라", date.toString(), 1L);
+        ReservationRequest request = new ReservationRequest("엘라", date.toString(), 1L, 1L);
 
         // when, then
         assertThatThrownBy(() -> reservationService.createReservation(request))
@@ -43,7 +43,7 @@ class ReservationServiceTest {
         ReservationTime reservationTime = reservationTimeRepository.create(
                 new ReservationTime(LocalTime.now().minusHours(1)));
         LocalDate date = LocalDate.now();
-        ReservationRequest request = new ReservationRequest("엘라", date.toString(), reservationTime.getId());
+        ReservationRequest request = new ReservationRequest("엘라", date.toString(), reservationTime.getId(), 1L);
 
         // when, then
         assertThatThrownBy(() -> reservationService.createReservation(request))

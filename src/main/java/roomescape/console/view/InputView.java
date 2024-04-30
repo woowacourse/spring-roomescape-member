@@ -34,8 +34,8 @@ public class InputView {
         return new ReservationRequest(
                 splitRequest.get(NAME_INDEX),
                 splitRequest.get(DATE_INDEX),
-                Long.parseLong(splitRequest.get(TIME_ID_INDEX))
-        );
+                Long.parseLong(splitRequest.get(TIME_ID_INDEX)),
+                1L);
     }
 
     public Long readDeleteReservationId() {

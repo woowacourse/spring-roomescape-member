@@ -46,7 +46,7 @@ class ReservationIntegrationTest {
     @DisplayName("예약을 생성한다.")
     void createReservation() {
         LocalDate reservationDate = LocalDate.now().plusDays(1);
-        ReservationRequest createDto = new ReservationRequest("브라운", reservationDate.toString(), 1L);
+        ReservationRequest createDto = new ReservationRequest("브라운", reservationDate.toString(), 1L, 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
