@@ -2,8 +2,10 @@ package roomescape.reservation.dao;
 
 import java.sql.ResultSet;
 import java.util.List;
+import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -24,6 +26,20 @@ public class ThemeDao implements ThemeRepository {
                 resultSet.getString("description"),
                 resultSet.getString("thumbnail")
         );
+    };
+
+    private final ResultSetExtractor<Optional<Theme>> optionalResultSetExtractor = (ResultSet resultSet) -> {
+        if (resultSet.next()) {
+            Theme theme = new Theme(
+                    resultSet.getLong("id"),
+                    resultSet.getString("name"),
+                    resultSet.getString("description"),
+                    resultSet.getString("thumbnail")
+            );
+            return Optional.of(theme);
+        } else {
+            return Optional.empty();
+        }
     };
 
     public ThemeDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
@@ -51,5 +67,11 @@ public class ThemeDao implements ThemeRepository {
         String sql = "DELETE FROM theme WHERE id = ?";
         int updateId = jdbcTemplate.update(sql, themeId);
         return updateId != 0;
+    }
+
+    @Override
+    public Optional<Theme> findById(final long themeId) {
+        String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
+        return jdbcTemplate.query(sql, optionalResultSetExtractor, themeId);
     }
 }

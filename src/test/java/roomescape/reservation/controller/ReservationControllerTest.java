@@ -13,8 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationTimeRequest;
 import roomescape.reservation.dto.ReservationTimeResponse;
+import roomescape.reservation.dto.ThemeRequest;
+import roomescape.reservation.dto.ThemeResponse;
 import roomescape.reservation.service.ReservationService;
 import roomescape.reservation.service.ReservationTimeService;
+import roomescape.reservation.service.ThemeService;
 import roomescape.util.ControllerTest;
 
 @DisplayName("예약 API 통합 테스트")
@@ -25,15 +28,22 @@ class ReservationControllerTest extends ControllerTest {
     @Autowired
     ReservationTimeService reservationTimeService;
 
+    @Autowired
+    ThemeService themeService;
+
     ReservationTimeResponse reservationTimeResponse;
+    ThemeResponse themeResponse;
 
     @BeforeEach
     void setUp() {
         reservationTimeResponse = reservationTimeService.create(new ReservationTimeRequest("12:00"));
+        themeResponse = themeService.create(new ThemeRequest("name", "description", "thumbnail"));
         reservationService.create(new ReservationRequest(
-                "choco",
-                "2099-04-23",
-                reservationTimeResponse.id())
+                        "choco",
+                        "2099-04-23",
+                        reservationTimeResponse.id(),
+                        themeResponse.id()
+                )
         );
     }
 
@@ -45,6 +55,7 @@ class ReservationControllerTest extends ControllerTest {
         reservation.put("name", "브라운");
         reservation.put("date", "2099-08-05");
         reservation.put("timeId", reservationTimeResponse.id());
+        reservation.put("themeId", themeResponse.id());
 
         //when & then
         RestAssured.given().log().all()

@@ -9,17 +9,19 @@ public class Reservation {
     private String name;
     private LocalDate date;
     private ReservationTime time;
+    private Theme theme;
 
-    public Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time) {
+    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         validate(date, time);
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
+        this.theme = theme;
     }
 
-    public Reservation(final String name, final LocalDate date, final ReservationTime time) {
-        this(null, name, date, time);
+    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
+        this(null, name, date, time, theme);
     }
 
     private void validate(LocalDate date, ReservationTime time) {
@@ -42,6 +44,10 @@ public class Reservation {
 
     public ReservationTime getTime() {
         return time;
+    }
+
+    public Theme getTheme() {
+        return theme;
     }
 
     @Override

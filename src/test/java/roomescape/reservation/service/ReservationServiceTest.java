@@ -12,10 +12,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.reservation.dao.FakeReservationDao;
 import roomescape.reservation.dao.FakeReservationTimeDao;
+import roomescape.reservation.dao.FakeThemeDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.domain.repository.ReservationTimeRepository;
+import roomescape.reservation.domain.repository.ThemeRepository;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 
@@ -23,13 +26,15 @@ import roomescape.reservation.dto.ReservationResponse;
 class ReservationServiceTest {
     ReservationRepository reservationRepository;
     ReservationTimeRepository reservationTimeRepository;
+    ThemeRepository themeRepository;
     ReservationService reservationService;
 
     @BeforeEach
     void setUp() {
         reservationRepository = new FakeReservationDao();
         reservationTimeRepository = new FakeReservationTimeDao();
-        reservationService = new ReservationService(reservationRepository, reservationTimeRepository);
+        themeRepository = new FakeThemeDao();
+        reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
     }
 
     @DisplayName("예약 생성에 성공한다.")
@@ -39,8 +44,10 @@ class ReservationServiceTest {
         String name = "choco";
         String date = "2100-04-18";
         long timeId = 1L;
+        long themeId = 1L;
         reservationTimeRepository.save(new ReservationTime(timeId, LocalTime.MIDNIGHT));
-        ReservationRequest reservationRequest = new ReservationRequest(name, date, timeId);
+        themeRepository.save(new Theme(themeId, "name", "description", "thumbnail"));
+        ReservationRequest reservationRequest = new ReservationRequest(name, date, timeId, themeId);
 
         //when
         ReservationResponse reservationResponse = reservationService.create(reservationRequest);
@@ -61,9 +68,12 @@ class ReservationServiceTest {
         String name = "choco";
         LocalDate date = LocalDate.now().plusYears(1);
         long timeId = 1L;
+        long themeId = 1L;
         LocalTime localTime = LocalTime.MIDNIGHT;
         ReservationTime reservationTime = new ReservationTime(timeId, localTime);
-        reservationRepository.save(new Reservation(id, name, date, reservationTime));
+
+        Theme theme = new Theme(themeId, "name", "description", "thumbnail");
+        reservationRepository.save(new Reservation(id, name, date, reservationTime, theme));
 
         //when
         List<ReservationResponse> reservations = reservationService.findAllReservations();
@@ -86,9 +96,12 @@ class ReservationServiceTest {
         String name = "choco";
         LocalDate date = LocalDate.now().plusYears(1);
         long timeId = 1L;
+        long themeId = 1L;
         LocalTime localTime = LocalTime.MIDNIGHT;
         ReservationTime reservationTime = new ReservationTime(timeId, localTime);
-        reservationRepository.save(new Reservation(id, name, date, reservationTime));
+
+        Theme theme = new Theme(themeId, "name", "description", "thumbnail");
+        reservationRepository.save(new Reservation(id, name, date, reservationTime, theme));
 
         //when
         reservationService.delete(id);
@@ -104,9 +117,13 @@ class ReservationServiceTest {
         String name = "choco";
         String date = "2099-04-18";
         long timeId = 1L;
+        long themeId = 1L;
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(timeId, LocalTime.MIDNIGHT));
-        reservationRepository.save(new Reservation(1L, "choco", LocalDate.parse(date), time));
-        ReservationRequest reservationRequest = new ReservationRequest(name, date, timeId);
+        Theme theme = new Theme(themeId, "name", "description", "thumbnail");
+        themeRepository.save(theme);
+        reservationRepository.save(new Reservation(1L, "choco", LocalDate.parse(date), time, theme));
+
+        ReservationRequest reservationRequest = new ReservationRequest(name, date, timeId, themeId);
 
         //when & then
         assertThatThrownBy(() -> reservationService.create(reservationRequest))

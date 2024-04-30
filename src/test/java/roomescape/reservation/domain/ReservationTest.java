@@ -25,9 +25,13 @@ class ReservationTest {
         LocalDate date2 = LocalDate.now().plusYears(1);
         LocalTime time2 = LocalTime.of(11, 23, 0);
 
+        long themeId = 1;
+        Theme theme1 = new Theme(themeId, "name", "description", "thumbnail");
+        Theme theme2 = new Theme(themeId, "name", "description", "thumbnail");
+
         //when
-        Reservation reservation1 = new Reservation(id, name1, date1, time1);
-        Reservation reservation2 = new Reservation(id, name2, date2, time1);
+        Reservation reservation1 = new Reservation(id, name1, date1, time1, theme1);
+        Reservation reservation2 = new Reservation(id, name2, date2, time1, theme2);
 
         //then
         assertThat(reservation1).isEqualTo(reservation2);
@@ -42,8 +46,11 @@ class ReservationTest {
         LocalTime localTime = LocalTime.of(12, 23, 0);
         ReservationTime time = new ReservationTime(timeId, localTime);
 
+        long themeId = 1L;
+        Theme theme = new Theme(themeId, "name", "description", "thumbnail");
+
         //when & then
-        assertThatThrownBy(() -> new Reservation(1L, "테스트", localDate, time))
+        assertThatThrownBy(() -> new Reservation(1L, "테스트", localDate, time, theme))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

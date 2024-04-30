@@ -11,10 +11,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.reservation.dao.FakeReservationDao;
 import roomescape.reservation.dao.FakeReservationTimeDao;
+import roomescape.reservation.dao.FakeThemeDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.domain.repository.ReservationTimeRepository;
+import roomescape.reservation.domain.repository.ThemeRepository;
 import roomescape.reservation.dto.ReservationTimeRequest;
 import roomescape.reservation.dto.ReservationTimeResponse;
 
@@ -22,6 +25,7 @@ import roomescape.reservation.dto.ReservationTimeResponse;
 class ReservationTimeServiceTest {
     ReservationRepository reservationRepository;
     ReservationTimeRepository reservationTimeRepository;
+    ThemeRepository themeRepository;
 
     ReservationTimeService reservationTimeService;
 
@@ -85,7 +89,8 @@ class ReservationTimeServiceTest {
         LocalTime localTime = LocalTime.MIDNIGHT;
         ReservationTime saveTime = reservationTimeRepository.save(new ReservationTime(id, localTime));
 
-        Reservation reservation = new Reservation(1L, "test", LocalDate.now().plusYears(1), saveTime);
+        Reservation reservation = new Reservation(1L, "test", LocalDate.now().plusYears(1), saveTime,
+                new Theme("name", "description", "thumbnail"));
         reservationRepository.save(reservation);
 
         //when & then

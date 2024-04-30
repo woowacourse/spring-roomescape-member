@@ -13,6 +13,9 @@ public record ReservationRequest(
         String date,
 
         @NotNull
-        long timeId
+        long timeId,
+
+        @NotNull
+        long themeId
 ) {
 }
