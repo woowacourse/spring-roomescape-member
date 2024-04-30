@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -9,17 +10,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.domain.ReservationTime;
 import roomescape.controller.request.ReservationTimeRequest;
 import roomescape.controller.response.ReservationTimeResponse;
-import roomescape.repository.H2ReservationRepository;
 import roomescape.service.ReservationTimeService;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/times")
 public class ReservationTimeController {
+
     private final ReservationTimeService reservationTimeService;
 
     public ReservationTimeController(ReservationTimeService reservationTimeService) {
