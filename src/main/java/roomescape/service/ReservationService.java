@@ -26,6 +26,13 @@ public class ReservationService {
                 .orElseThrow(
                         () -> new IllegalArgumentException("[ERROR] 잘못된 id 입니다. : " + reservationRequest.timeId()));
 
+        Optional<Reservation> optional = reservationRepository.findByDateAndTimeId(reservationRequest.date(),
+                reservationTime.getId());
+
+        if (optional.isPresent()) {
+            throw new IllegalArgumentException("[ERROR] 이미 해당 시간에 예약이 존재합니다.");
+        }
+
         Reservation reservationToSave = reservationRequest.toEntity(reservationTime);
         return reservationRepository.save(reservationToSave);
     }
@@ -41,6 +48,7 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(id);
         return ReservationResponse.from(reservation);
     }
+
     public void deleteReservation(Long id) {
         reservationRepository.delete(id);
     }

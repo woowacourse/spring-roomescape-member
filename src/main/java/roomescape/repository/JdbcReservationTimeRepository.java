@@ -61,4 +61,14 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
             return false;
         }
     }
+
+    @Override
+    public Optional<ReservationTime> findByTime(final LocalTime time) {
+        try {
+            String sql = "SELECT * FROM reservation_time WHERE start_at = ?";
+            return Optional.of(jdbcTemplate.queryForObject(sql, ROW_MAPPER, time));
+        } catch (DataAccessException e) {
+            return Optional.empty();
+        }
+    }
 }
