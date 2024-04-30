@@ -46,7 +46,7 @@ class ReservationControllerTest extends ControllerTest {
     }
 
     @Test
-    @DisplayName("예약 POST 요청 시 상태코드 200을 반환한다.")
+    @DisplayName("예약 POST 요청 시 상태코드 201을 반환한다.")
     void createReservation() throws Exception {
         // given
         ReservationSaveRequest request = new ReservationSaveRequest(USER_MIA, MIA_RESERVATION_DATE, 1L);
@@ -61,7 +61,7 @@ class ReservationControllerTest extends ControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(request)))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value(USER_MIA))
                 .andExpect(jsonPath("$.time.id").value(1L))
                 .andExpect(jsonPath("$.time.startAt").value(MIA_RESERVATION_TIME.toString()))
@@ -113,7 +113,7 @@ class ReservationControllerTest extends ControllerTest {
     }
 
     @Test
-    @DisplayName("예약 DELETE 요청 시 상태코드 200을 반환한다.")
+    @DisplayName("예약 DELETE 요청 시 상태코드 204를 반환한다.")
     void deleteReservation() throws Exception {
         // given
         BDDMockito.willDoNothing()
@@ -124,7 +124,7 @@ class ReservationControllerTest extends ControllerTest {
         mockMvc.perform(delete("/reservations/{id}", anyLong())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
     }
 
     @Test

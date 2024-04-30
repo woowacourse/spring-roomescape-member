@@ -25,7 +25,9 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
-import static roomescape.TestFixture.*;
+import static roomescape.TestFixture.MIA_RESERVATION_DATE;
+import static roomescape.TestFixture.MIA_RESERVATION_TIME;
+import static roomescape.TestFixture.USER_MIA;
 
 @Sql("/test-schema.sql")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -47,7 +49,7 @@ public class ApiAcceptanceTest {
 
         // then
         assertAll(() -> {
-            checkHttpStatusOk(response);
+            checkHttpStatusCreated(response);
             assertThat(reservationTimeResponse.id()).isNotNull();
             assertThat(reservationTimeResponse.startAt()).isEqualTo(MIA_RESERVATION_TIME.toString());
         });
@@ -147,7 +149,7 @@ public class ApiAcceptanceTest {
                 .extract();
 
         // then
-        checkHttpStatusOk(response);
+        checkHttpStatusNoContent(response);
     }
 
     @Test
@@ -259,7 +261,7 @@ public class ApiAcceptanceTest {
 
         // then
         assertAll(() -> {
-            checkHttpStatusOk(response);
+            checkHttpStatusCreated(response);
             assertThat(reservationResponse.id()).isNotNull();
             assertThat(reservationResponse.name()).isEqualTo(USER_MIA);
         });
@@ -291,11 +293,19 @@ public class ApiAcceptanceTest {
                 .extract();
 
         // then
-        checkHttpStatusOk(response);
+        checkHttpStatusNoContent(response);
     }
 
     void checkHttpStatusOk(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    void checkHttpStatusCreated(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    void checkHttpStatusNoContent(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     void checkHttpStatusBadRequest(ExtractableResponse<Response> response) {

@@ -14,7 +14,9 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -23,7 +25,7 @@ import static roomescape.TestFixture.MIA_RESERVATION_TIME;
 class ReservationTimeControllerTest extends ControllerTest {
 
     @Test
-    @DisplayName("예약 시간 POST 요청 시 상태코드 200을 반환한다.")
+    @DisplayName("예약 시간 POST 요청 시 상태코드 201을 반환한다.")
     void createReservationTime() throws Exception {
         // given
         ReservationTimeSaveRequest request = new ReservationTimeSaveRequest(MIA_RESERVATION_TIME);
@@ -37,7 +39,7 @@ class ReservationTimeControllerTest extends ControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(request)))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.startAt").value(MIA_RESERVATION_TIME.toString()));
     }
@@ -75,7 +77,7 @@ class ReservationTimeControllerTest extends ControllerTest {
     }
 
     @Test
-    @DisplayName("예약 시간 DELETE 요청 시 상태코드 200를 반환한다.")
+    @DisplayName("예약 시간 DELETE 요청 시 상태코드 204를 반환한다.")
     void deleteReservationTime() throws Exception {
         // given
         BDDMockito.willDoNothing()
@@ -86,7 +88,7 @@ class ReservationTimeControllerTest extends ControllerTest {
         mockMvc.perform(delete("/times/{id}", anyLong())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
     }
 
     @Test

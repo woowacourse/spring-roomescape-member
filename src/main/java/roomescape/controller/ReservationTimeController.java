@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.service.ReservationTimeService;
@@ -20,7 +21,7 @@ public class ReservationTimeController {
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> createReservationTime(@RequestBody ReservationTimeSaveRequest request) {
         var reservationTime = request.toModel();
-        return ResponseEntity.ok(reservationTimeService.create(reservationTime));
+        return ResponseEntity.status(HttpStatus.CREATED).body(reservationTimeService.create(reservationTime));
     }
 
     @GetMapping
@@ -31,6 +32,6 @@ public class ReservationTimeController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservationTime(@PathVariable Long id) {
         reservationTimeService.delete(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }
