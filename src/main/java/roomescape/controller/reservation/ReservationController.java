@@ -1,6 +1,5 @@
 package roomescape.controller.reservation;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.service.ReservationService;
 
-import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -33,11 +31,7 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<ReservationResponse> addReservation(@RequestBody final ReservationRequest request) {
         ReservationResponse reservation = reservationService.addReservation(request);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .location(URI.create("/reservations/" + reservation.id()))
-                .body(reservation);
+        return ResponseEntity.ok(reservation);
     }
 
     @DeleteMapping("/{id}")
@@ -46,6 +40,7 @@ public class ReservationController {
         if (deletedCount == 0) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok()
+                .build();
     }
 }

@@ -1,6 +1,5 @@
 package roomescape.controller.time;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.service.TimeService;
 
-import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -34,10 +32,7 @@ public class TimeController {
     public ResponseEntity<TimeResponse> addTime(@RequestBody final TimeRequest timeRequest) {
         TimeResponse time = timeService.addTime(timeRequest);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .location(URI.create("/times/" + time.id()))
-                .body(time);
+        return ResponseEntity.ok(time);
     }
 
     @DeleteMapping("/{id}")
@@ -46,6 +41,7 @@ public class TimeController {
         if (deleteCount == 0) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok()
+                .build();
     }
 }
