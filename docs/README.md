@@ -1,21 +1,9 @@
-## API 명세서
+## 방탈출 사용자예약 요구사항 정리
 
-| REQ    | RES           | ENDPOINT           | DESCRIPTION   | FILEPATH                | BODY                                |
-|--------|---------------|--------------------|---------------|-------------------------|-------------------------------------|
-| GET    |               | /admin             | 어드민 메인 페이지 접근 | /admin/index.html       |                                     |
-| GET    |               | /admin/reservation | 어드민 예약 페이지 접근 | /admin/reservation.html |                                     |
-| GET    |               | /admin/time        | 어드민 시간 페이지 접근 | /admin/time.html        |
-| GET    |               | /reservations      | 모든 예약 조회      |                         |                                     |
-|        | 200 OK        |                    | 모든 예약 조회      |                         | {id, name, date, time{id, startAt}} |
-| POST   |               | /reservations      | 예약 추가         |                         | name, date, timeId                  |
-|        | 200 OK        |                    | 예약 추가         |                         | id, name, date, time{id, startAt}   |
-| DELETE |               | /reservations/{id} | 예약 삭제         |                         |                                     |
-|        | 200 OK        |                    | 예약 삭제 성공      |                         |                                     |
-|        | 404 NOT FOUND |                    | 예약 삭제 실패      |                         |                                     |
-| GET    |               | /times             | 모든 시간 조회      |                         |                                     |
-|        | 200 OK        |                    | 모든 시간 조회      |                         | {id, startAt}                       |
-| POST   |               | /times             | 시간 추가         |                         | startAt                             |
-|        | 200 OK        |                    | 시간 추가         |                         | id, startAt                         |
-| DELETE |               | /times/{id}        | 시간 삭제         |                         |                                     |
-|        | 200 OK        |                    | 시간 삭제 성공      |                         |                                     |
-|        | 404 NOT FOUND |                    | 시간 삭제 실패      |                         |                                     |
+### 1단계
+
+- [ ] 어드민 페이지 정상 동작 확인
+- [ ] 예외 상황 처리
+  - [ ] 시간 생성 시 시작 시간이 유효하지 않을 때
+  - [ ] 예약 생성 시 유효하지 않은 값이 입력되었을 때
+  - [ ] 특정 시간에 대한 예약이 존재하는데, 특정 시간을 삭제하려고 할 때
