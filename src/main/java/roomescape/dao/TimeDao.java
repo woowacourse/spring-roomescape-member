@@ -39,6 +39,17 @@ public class TimeDao {
         }
     }
 
+    public boolean isReservationTimeByStartAt(String startAt) {
+        String sql = """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM reservation_time
+                    WHERE start_at = ?
+                )
+                """;
+        return jdbcTemplate.queryForObject(sql, Boolean.class, startAt);
+    }
+
     public ReservationTime createTime(ReservationTime time) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "INSERT INTO reservation_time(start_at) VALUES (?)";

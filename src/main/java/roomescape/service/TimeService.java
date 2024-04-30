@@ -23,6 +23,9 @@ public class TimeService {
     }
 
     public ReservationTime createTime(TimeCreateRequest dto) {
+        if (timeDao.isReservationTimeByStartAt(dto.startAt())) {
+            throw new IllegalArgumentException("해당 시간은 이미 존재합니다.");
+        }
         return timeDao.createTime(dto.createReservationTime());
     }
 
