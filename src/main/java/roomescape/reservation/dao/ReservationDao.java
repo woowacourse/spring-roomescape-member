@@ -47,7 +47,8 @@ public class ReservationDao implements ReservationRepository {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
                 .addValue("date", reservation.getDate())
-                .addValue("time_id", reservation.getTime().getId());
+                .addValue("time_id", reservation.getTime().getId())
+                .addValue("theme_id", reservation.getTheme().getId());
         long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
         return new Reservation(
                 id,
