@@ -50,4 +50,12 @@ public class Reservation {
     public ReservationTime getReservationTime() {
         return time;
     }
+
+    public boolean isDatePast() {
+        return date.isBefore(LocalDate.now());
+    }
+
+    public boolean isDateToday() {
+        return date.isEqual(LocalDate.now());
+    }
 }

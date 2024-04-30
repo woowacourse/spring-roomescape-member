@@ -25,9 +25,20 @@ public class ReservationService {
     public ReservationResponseDto create(final ReservationRequestDto request) {
         final ReservationTime reservationTime = reservationTimeRepository.findById(request.getTimeId());
         final Reservation reservation = new Reservation(request.getName(), request.getDate(), reservationTime);
+        validateDateTimeIsNotPast(reservation, reservationTime);
+
         final Long id = reservationRepository.save(reservation);
 
         return new ReservationResponseDto(id, reservation);
+    }
+
+    private void validateDateTimeIsNotPast(final Reservation reservation, final ReservationTime reservationTime) {
+        if (reservation.isDatePast()) {
+            throw new IllegalArgumentException("지난 날짜에는 예약할 수 없습니다.");
+        }
+        if (reservation.isDateToday() && reservationTime.isPast()) {
+            throw new IllegalArgumentException("지난 시간에는 예약할 수 없습니다.");
+        }
     }
 
     @Transactional(readOnly = true)

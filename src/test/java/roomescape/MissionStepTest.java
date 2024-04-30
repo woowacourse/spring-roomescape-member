@@ -8,6 +8,9 @@ import io.restassured.http.ContentType;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +32,8 @@ import roomescape.web.controller.ReservationController;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @TestPropertySource(properties = {"spring.config.location = classpath:application-test.yml"})
 class MissionStepTest {
+    private static final String TOMORROW_DATE = LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_DATE);
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -82,7 +87,7 @@ class MissionStepTest {
     void 삼단계() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", TOMORROW_DATE);
         params.put("timeId", 1);
 
         RestAssured.given().log().all()
@@ -125,7 +130,7 @@ class MissionStepTest {
     @Test
     void 오단계() {
         String sql = "INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)";
-        jdbcTemplate.update(sql, "브라운", "2023-08-05", 1);
+        jdbcTemplate.update(sql, "브라운", TOMORROW_DATE, 1);
 
         List<ReservationResponseDto> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -142,7 +147,7 @@ class MissionStepTest {
     void 육단계() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", TOMORROW_DATE);
         params.put("timeId", 1);
 
         RestAssured.given().log().all()
@@ -170,15 +175,15 @@ class MissionStepTest {
     void validateReservationWithNullName() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", null);
-        params.put("date", "2023-08-05");
+        params.put("date", TOMORROW_DATE);
         params.put("timeId", 1);
 
         RestAssured.given().log().all()
-            .contentType(ContentType.JSON)
-            .body(params)
-            .when().post("/reservations")
-            .then().log().all()
-            .statusCode(400);
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
     }
 
     @ParameterizedTest
@@ -187,15 +192,15 @@ class MissionStepTest {
     void validateReservationWithNameFormat(final String name) {
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);
-        params.put("date", "2023-08-05");
+        params.put("date", TOMORROW_DATE);
         params.put("timeId", 1);
 
         RestAssured.given().log().all()
-            .contentType(ContentType.JSON)
-            .body(params)
-            .when().post("/reservations")
-            .then().log().all()
-            .statusCode(400);
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
     }
 
     @Test
@@ -207,11 +212,11 @@ class MissionStepTest {
         params.put("timeId", 1);
 
         RestAssured.given().log().all()
-            .contentType(ContentType.JSON)
-            .body(params)
-            .when().post("/reservations")
-            .then().log().all()
-            .statusCode(400);
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
     }
 
     @ParameterizedTest
@@ -224,11 +229,53 @@ class MissionStepTest {
         params.put("timeId", 1);
 
         RestAssured.given().log().all()
-            .contentType(ContentType.JSON)
-            .body(params)
-            .when().post("/reservations")
-            .then().log().all()
-            .statusCode(400);
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    @DisplayName("예약 생성 시, date가 이미 지난 날짜면 예외가 발생한다.")
+    void validateReservationWithPastDate() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", "2020-10-10");
+        params.put("timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    @DisplayName("예약 생성 시, date는 오늘이고 time은 이미 지난 시간이면 예외가 발생한다.")
+    void validateReservationWithTodayPastTime() {
+        Map<String, String> params = new HashMap<>();
+        params.put("startAt", LocalTime.now().minusHours(1).format(DateTimeFormatter.ofPattern("HH:mm")));
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(201);
+
+        Map<String, Object> reservationParams = new HashMap<>();
+        reservationParams.put("name", "브라운");
+        reservationParams.put("date", LocalDate.now().format(DateTimeFormatter.ISO_DATE));
+        reservationParams.put("timeId", 2);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationParams)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
     }
 
     @Test
@@ -236,7 +283,7 @@ class MissionStepTest {
     void validateReservationWithNullTimeId() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", TOMORROW_DATE);
         params.put("timeId", null);
 
         RestAssured.given().log().all()
@@ -252,7 +299,7 @@ class MissionStepTest {
     void validateReservationWithTimeIdNotFound() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", TOMORROW_DATE);
         params.put("timeId", 2);
 
         RestAssured.given().log().all()
@@ -297,7 +344,7 @@ class MissionStepTest {
     void validateTimeDelete() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", TOMORROW_DATE);
         params.put("timeId", 1);
 
         RestAssured.given().log().all()
@@ -331,7 +378,7 @@ class MissionStepTest {
     void 팔단계() {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", TOMORROW_DATE);
         reservation.put("timeId", 1);
 
         RestAssured.given().log().all()
