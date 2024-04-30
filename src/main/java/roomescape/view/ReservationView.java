@@ -57,7 +57,7 @@ public class ReservationView {
                 id,
                 reservationResponse.name(),
                 reservationResponse.date().toString(),
-                reservationResponse.time().startAt().toString()
+                reservationResponse.time().getStartAt().toString()
         );
     }
 

@@ -10,7 +10,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.ReservationTimeRequest;
 
 @Repository
 public class ReservationTimeDao {
@@ -20,14 +19,14 @@ public class ReservationTimeDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public ReservationTime save(final ReservationTimeRequest reservationTimeRequest) {
+    public ReservationTime save(final ReservationTime reservationTime) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
                     PreparedStatement ps = connection.prepareStatement(
                             "INSERT INTO reservation_time (start_at) VALUES (?)",
                             new String[]{"id"}
                     );
-                    ps.setString(1, reservationTimeRequest.startAt().toString());
+                    ps.setString(1, reservationTime.getStartAt().toString());
                     return ps;
                 }, keyHolder
         );
@@ -36,7 +35,7 @@ public class ReservationTimeDao {
             long id = keyHolder.getKey().longValue();
             return new ReservationTime(
                     id,
-                    reservationTimeRequest.startAt()
+                    reservationTime.getStartAt()
             );
         } catch (NullPointerException exception) {
             throw new RuntimeException("[ERROR] 예약 시간 추가 요청이 정상적으로 이루어지지 않았습니다.");

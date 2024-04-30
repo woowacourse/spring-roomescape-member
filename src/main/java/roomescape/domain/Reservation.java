@@ -37,6 +37,6 @@ public record Reservation(
     }
 
     public long getTimeId() {
-        return time.id();
+        return time.getId();
     }
 }

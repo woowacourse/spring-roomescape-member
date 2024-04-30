@@ -16,8 +16,8 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponse save(final ReservationTimeRequest reservationTimeRequest) {
-        ReservationTime reservationTime = reservationTimeDao.save(reservationTimeRequest);
-        return ReservationTimeResponse.from(reservationTime);
+        ReservationTime reservationTime = reservationTimeRequest.toEntity();
+        return ReservationTimeResponse.from(reservationTimeDao.save(reservationTime));
     }
 
     public List<ReservationTimeResponse> findAll() {
