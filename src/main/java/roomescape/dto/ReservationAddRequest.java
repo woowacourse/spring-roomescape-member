@@ -1,6 +1,8 @@
 package roomescape.dto;
 
 import java.time.LocalDate;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
 
 public class ReservationAddRequest {
     private LocalDate date;
@@ -15,6 +17,10 @@ public class ReservationAddRequest {
         this.date = date;
         this.name = name;
         this.timeId = timeId;
+    }
+
+    public Reservation toEntity(ReservationTime reservationTime) {
+        return new Reservation(null, name, date, reservationTime);
     }
 
     public LocalDate getDate() {

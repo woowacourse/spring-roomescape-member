@@ -21,6 +21,10 @@ public class Reservation {
         return id;
     }
 
+    public Long getTimeId() {
+        return time.getId();
+    }
+
     public String getName() {
         return name;
     }

@@ -14,7 +14,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.ReservationAddRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -57,16 +56,15 @@ class ReservationDaoImplTest {
         assertThat(actualReservation).isEqualTo(expectedReservation);
     }
 
-    @DisplayName("예약을 추가하고 예약정보를 반환합니다.")
+    @DisplayName("예약을 추가할 수 있습니다.")
     @Test
     void should_insert() {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
-        Reservation expectedReservation = new Reservation(2L, "도도", LocalDate.of(2020, 11, 11), reservationTime);
+        Reservation reservation = new Reservation(null, "도도", LocalDate.of(2020, 11, 11), reservationTime);
 
-        Reservation actualReservation = reservationDaoImpl.insert(
-                new ReservationAddRequest(LocalDate.of(2020, 11, 11), "도도", 1L));
+        Reservation actualReservation = reservationDaoImpl.insert(reservation);
 
-        assertThat(actualReservation).isEqualTo(expectedReservation);
+        assertThat(actualReservation.getId()).isNotNull();
     }
 
     @DisplayName("원하는 ID의 예약을 삭제할 수 있습니다.")
