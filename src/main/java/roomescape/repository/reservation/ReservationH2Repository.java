@@ -7,7 +7,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.sql.DataSource;
 
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -54,12 +53,12 @@ public class ReservationH2Repository implements ReservationRepository {
         if (localDateTime.isBefore(now)) {
             throw new IllegalArgumentException("과거 시간은 예약할 수 없습니다.");
         }
-        if (isDuplicatedDateTime(reservation)) {
-            throw new IllegalArgumentException("이미 예약된 시간에는 예약할 수 없습니다.");
+        if (isDuplicatedReservation(reservation)) {
+            throw new IllegalArgumentException("중복 예약을 할 수 없습니다.");
         }
     }
 
-    private boolean isDuplicatedDateTime(Reservation reservation) {
+    private boolean isDuplicatedReservation(Reservation reservation) {
         String sql = "SELECT * FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?";
         return !jdbcTemplate.query(sql, (rs, rowNum) -> 0, reservation.date(), reservation.time().id(), reservation.getTheme().getId()).isEmpty();
     }

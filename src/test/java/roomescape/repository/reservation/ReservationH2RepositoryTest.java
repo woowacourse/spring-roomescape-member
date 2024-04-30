@@ -1,8 +1,5 @@
 package roomescape.repository.reservation;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -17,6 +14,8 @@ import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+
+import static org.assertj.core.api.Assertions.*;
 
 @JdbcTest
 @Import(ReservationH2Repository.class)
@@ -57,11 +56,11 @@ class ReservationH2RepositoryTest {
     }
 
     @Test
-    @DisplayName("이미 예약된 시간에 예약을 하는 경우 예외를 발생시킨다.")
-    void saveDuplicatedDateTime() {
+    @DisplayName("같은 날짜, 시간, 테마에 예약을 하는 경우 예외를 발생시킨다.")
+    void saveSameReservation() {
         Reservation reservation = new Reservation(
                 new Name("네오"),
-                LocalDate.of(2099, 05, 1), // TODO 더 좋은 방식이 있는지 고민
+                LocalDate.of(2099, 5, 1), // TODO 더 좋은 방식이 있는지 고민
                 new ReservationTime(12L, LocalTime.of(11, 0)),
                 new Theme(10L, new Name("레벨2 탈출"), "우테코 레벨2를 탈출하는 내용입니다.", "아무 내용 없음")
         );
@@ -69,7 +68,29 @@ class ReservationH2RepositoryTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
+    @Test
+    @DisplayName("시간과 날짜만 같고 테마가 다른 경우 예약에 성공한다.")
+    void saveOnlySameDateTime() {
+        Reservation reservation = new Reservation(
+                new Name("네오"),
+                LocalDate.of(2099, 5, 1), // TODO 더 좋은 방식이 있는지 고민
+                new ReservationTime(12L, LocalTime.of(11, 0)),
+                new Theme(11L, new Name("레벨3 탈출"), "우테코 레벨3를 탈출하는 내용입니다.", "아무 내용 없음")
+        );
+        assertThatNoException().isThrownBy(() -> reservationH2Repository.save(reservation));
+    }
 
+    @Test
+    @DisplayName("테마가 같고 시간과 날짜가 다른 경우 예약에 성공한다.")
+    void saveOnlySameTheme() {
+        Reservation reservation = new Reservation(
+                new Name("네오"),
+                LocalDate.of(2099, 5, 2), // TODO 더 좋은 방식이 있는지 고민
+                new ReservationTime(11L, LocalTime.of(10, 0)),
+                new Theme(10L, new Name("레벨2 탈출"), "우테코 레벨2를 탈출하는 내용입니다.", "아무 내용 없음")
+        );
+        assertThatNoException().isThrownBy(() -> reservationH2Repository.save(reservation));
+    }
 
     @Test
     @DisplayName("Reservation을 제거한다.")
