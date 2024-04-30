@@ -39,7 +39,7 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public boolean isReservationsByTimeId(long time_id) {
+    public boolean isReservationsByTimeId(long timeId) {
         String sql = """
                 SELECT EXISTS (
                     SELECT 1
@@ -47,10 +47,21 @@ public class ReservationDao {
                     WHERE time_id = ?
                 )
                 """;
-        return jdbcTemplate.queryForObject(sql, Boolean.class, time_id);
+        return jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
     }
 
-    public Optional<Reservation> readReservationByTimeId(long time_id) {
+    public boolean isReservationsByTimeIdAndDate(long timeId, String date) {
+        String sql = """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM reservation
+                    WHERE time_id = ? AND date = ?
+                )
+                """;
+        return jdbcTemplate.queryForObject(sql, Boolean.class, timeId, date);
+    }
+
+    public Optional<Reservation> readReservationByTimeId(long timeId) {
         String sql = """
                 SELECT reservation.id, reservation.name, reservation.date, reservation.time_id, reservation_time.start_at
                 FROM reservation
@@ -58,7 +69,7 @@ public class ReservationDao {
                 WHERE reservation.time_id = ?
                 """;
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, time_id));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, timeId));
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
         }

@@ -35,6 +35,10 @@ public class ReservationService {
         }
         timeDao.readTimeById(reservation.getTime().getId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 예약 시간이 존재하지 않습니다."));
+
+        if (reservationDao.isReservationsByTimeIdAndDate(reservation.getTime().getId(), reservation.getDate())) {
+            throw new IllegalArgumentException("해당 시간대 예약은 이미 존재합니다.");
+        }
     }
 
     public void deleteReservation(long id) {
