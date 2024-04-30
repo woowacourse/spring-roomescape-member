@@ -9,6 +9,8 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.reservation.dto.ReservationTimeRequest;
 import roomescape.reservation.dto.ThemeRequest;
@@ -62,5 +64,24 @@ class ThemeControllerTest extends ControllerTest {
                 .when().delete("/themes/1")
                 .then().log().all()
                 .statusCode(204);
+    }
+
+    @DisplayName("테마 생성 시, 잘못된 형식에 대해 400을 반환한다.")
+    @ParameterizedTest
+    @ValueSource(strings = {"", "      "})
+    void createBadRequest(String name) {
+        //given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("description", "Hi, I am Siso");
+        params.put("thumbnail", "thumbnail");
+
+        //when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(400);
     }
 }
