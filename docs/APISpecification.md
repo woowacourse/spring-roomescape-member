@@ -10,7 +10,7 @@
 | POST   |                | /reservations      | 예약 추가         |                         | name, date, timeId                  |
 |        | 201 CREATED    |                    | 예약 추가         |                         | id, name, date, time{id, startAt}   |
 | DELETE |                | /reservations/{id} | 예약 삭제         |                         |                                     |
-|        | 200 OK         |                    | 예약 삭제 성공      |                         |                                     |
+|        | 204 NO CONTENT |                    | 예약 삭제 성공      |                         |                                     |
 |        | 404 NOT FOUND  |                    | 예약 삭제 실패      |                         |                                     |
 | GET    |                | /times             | 모든 시간 조회      |                         |                                     |
 |        | 200 OK         |                    | 모든 시간 조회      |                         | {id, startAt}                       |
