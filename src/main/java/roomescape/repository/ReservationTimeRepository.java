@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import roomescape.domain.ReservationTime;
@@ -13,4 +14,6 @@ public interface ReservationTimeRepository {
     Optional<ReservationTime> findById(Long id);
 
     boolean delete(Long id);
+
+    Optional<ReservationTime> findByTime(LocalTime time);
 }

@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeRequest;
@@ -21,6 +22,10 @@ public class ReservationTimeService {
     }
 
     public Long addReservationTime(ReservationTimeRequest reservationTimeRequest) {
+        Optional<ReservationTime> optional = reservationTimeRepository.findByTime(reservationTimeRequest.startAt());
+        if(optional.isPresent()){
+            throw new IllegalArgumentException("[ERROR] 이미 등록된 시간입니다.");
+        }
         ReservationTime reservationTime = reservationTimeRequest.toEntity();
         return reservationTimeRepository.save(reservationTime);
     }
