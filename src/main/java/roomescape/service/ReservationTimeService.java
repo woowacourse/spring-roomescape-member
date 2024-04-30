@@ -7,6 +7,7 @@ import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.ExistReservationInReservationTimeException;
 import roomescape.exception.NotExistReservationTimeException;
+import roomescape.exception.ReservationTimeAlreadyExistsException;
 import roomescape.service.dto.ReservationTimeInput;
 import roomescape.service.dto.ReservationTimeOutput;
 
@@ -23,6 +24,11 @@ public class ReservationTimeService {
 
     public ReservationTimeOutput createReservationTime(ReservationTimeInput input) {
         ReservationTime reservationTime = input.toReservationTime();
+
+        if (reservationTimeDao.isExistByStartAt(reservationTime.getStartAt())) {
+            throw new ReservationTimeAlreadyExistsException(String.format("%s에 해당하는 시간이 있습니다.", reservationTime.getStartAt()));
+        }
+
         ReservationTime savedReservationTime = reservationTimeDao.create(reservationTime);
         return ReservationTimeOutput.toOutput(savedReservationTime);
     }

@@ -9,10 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.dao.ReservationDao;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.ExistReservationInReservationTimeException;
 import roomescape.exception.NotExistReservationTimeException;
+import roomescape.exception.ReservationTimeAlreadyExistsException;
 import roomescape.service.dto.ReservationTimeInput;
 import roomescape.service.dto.ReservationTimeOutput;
 
@@ -58,5 +58,13 @@ public class ReservationTimeServiceTest {
 
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(output.id()))
                 .isInstanceOf(ExistReservationInReservationTimeException.class);
+    }
+
+    @Test
+    @DisplayName("중복 예약 시간이면 예외를 발생한다.")
+    void throw_exception_when_duplicate_reservationTime() {
+        reservationTimeService.createReservationTime(new ReservationTimeInput("10:00"));
+        assertThatThrownBy(() -> reservationTimeService.createReservationTime(new ReservationTimeInput("10:00")))
+                .isInstanceOf(ReservationTimeAlreadyExistsException.class);
     }
 }

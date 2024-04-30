@@ -33,6 +33,11 @@ public class ReservationTimeDao {
         return ReservationTime.from(id, reservationTime.getStartAt());
     }
 
+    public boolean isExistByStartAt(String startAt) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation_time WHERE start_at = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, startAt));
+    }
+
     public Optional<ReservationTime> find(Long id) {
         String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
         try {
