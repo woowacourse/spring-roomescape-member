@@ -12,6 +12,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.reservation.ReservationCreateRequest;
 import roomescape.dto.reservation.ReservationResponse;
+import roomescape.exception.BadRequestException;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationtime.ReservationTimeRepository;
 
@@ -20,8 +21,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
@@ -99,6 +99,21 @@ class ReservationServiceTest {
         softAssertions.assertThat(reservation.name()).isEqualTo(name);
         softAssertions.assertThat(reservation.time().getStartAt()).isEqualTo(startAt);
         softAssertions.assertAll();
+    }
+
+    @DisplayName("예약 서비스는 지난 시점의 예약이 요청되면 예외가 발생한다.")
+    @Test
+    void validateRequestedTime() {
+        // given
+        Mockito.when(reservationTimeRepository.findById(id))
+                .thenReturn(Optional.of(new ReservationTime(id, startAt)));
+
+        LocalDate date = LocalDate.MIN;
+        ReservationCreateRequest request = new ReservationCreateRequest(name, date, id);
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.createReservation(request))
+                .isInstanceOf(BadRequestException.class);
     }
 
     @DisplayName("예약 서비스는 id에 맞는 예약을 삭제한다.")

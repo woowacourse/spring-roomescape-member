@@ -5,10 +5,12 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.reservation.ReservationCreateRequest;
 import roomescape.dto.reservation.ReservationResponse;
+import roomescape.exception.BadRequestException;
 import roomescape.exception.ResourceNotFoundException;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationtime.ReservationTimeRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -41,8 +43,18 @@ public class ReservationService {
     public ReservationResponse createReservation(ReservationCreateRequest request) {
         ReservationTime reservationTime = findReservationTimeById(request);
         Reservation reservation = request.toReservation(reservationTime);
+
+        validateRequestedTime(reservation, reservationTime);
+
         Reservation newReservation = reservationRepository.save(reservation);
-        return  ReservationResponse.from(newReservation);
+        return ReservationResponse.from(newReservation);
+    }
+
+    private void validateRequestedTime(Reservation reservation, ReservationTime reservationTime) {
+        LocalDateTime requestedDateTime = LocalDateTime.of(reservation.getDate(), reservationTime.getStartAt());
+        if (requestedDateTime.isBefore(LocalDateTime.now())) {
+            throw new BadRequestException("이미 지난 날짜는 예약할 수 없습니다.");
+        }
     }
 
     private ReservationTime findReservationTimeById(ReservationCreateRequest request) {
