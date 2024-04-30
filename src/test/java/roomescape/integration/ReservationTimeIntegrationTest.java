@@ -7,7 +7,6 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class ReservationTimeIntegrationTest extends IntegrationTest {
@@ -40,19 +39,27 @@ class ReservationTimeIntegrationTest extends IntegrationTest {
     }
 
     @Test
+    void 존재하지_않는_시간은_삭제할_수_없다() {
+        RestAssured.given().log().all()
+                .when().delete("/times/13")
+                .then().log().all()
+                .statusCode(404);
+    }
+
+    @Test
+    void 예약이_존재하는_시간은_삭제할_수_없다() {
+        RestAssured.given().log().all()
+                .when().delete("/times/1")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
     void 시간_목록을_조회할_수_있다() {
         RestAssured.given().log().all()
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
-    }
-
-    @Test
-    void 존재하지_않는_시간은_삭제할_수_없다() {
-        RestAssured.given().log().all()
-                .when().delete("/times/13")
-                .then().log().all()
-                .statusCode(404);
     }
 }
