@@ -36,4 +36,13 @@ class AdminViewControllerTest {
                 .then().log().all()
                 .statusCode(200);
     }
+
+    @Test
+    @DisplayName("테마 관리 페이지를 요청하면 200 OK를 반환한다.")
+    void themePageTest() {
+        RestAssured.given().log().all()
+                .when().get("/admin/theme")
+                .then().log().all()
+                .statusCode(200);
+    }
 }

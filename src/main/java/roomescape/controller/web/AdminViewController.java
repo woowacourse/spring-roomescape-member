@@ -22,4 +22,9 @@ public class AdminViewController {
     public String timePage() {
         return "admin/time";
     }
+
+    @GetMapping("/theme")
+    public String themePage() {
+        return "admin/theme";
+    }
 }
