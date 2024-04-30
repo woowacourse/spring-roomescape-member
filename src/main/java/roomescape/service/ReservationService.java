@@ -38,6 +38,7 @@ public class ReservationService {
                 .toList();
     }
 
+    // TODO: assignTheme 추가하기
     private Reservation assignTime(final Reservation reservation) {
         ReservationTime time = reservationTimeRepository
                 .findById(reservation.getTime().getId())
@@ -67,6 +68,7 @@ public class ReservationService {
         }
 
         Reservation savedReservation = reservationRepository.save(parsedReservation);
+        System.out.println("savedReservation = " + savedReservation);
         return ReservationResponse.from(savedReservation);
     }
 

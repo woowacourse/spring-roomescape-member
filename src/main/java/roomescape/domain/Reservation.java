@@ -28,6 +28,7 @@ public class Reservation {
         validateNull(name);
         validateNull(date);
         validateFormat(date);
+        System.out.println("theme = " + theme);
         return new Reservation(id, name, LocalDate.parse(date), time, theme);
     }
 
@@ -69,29 +70,37 @@ public class Reservation {
         return time;
     }
 
+    public Theme getTheme() {
+        return theme;
+    }
+
     @Override
-    public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (obj == null || obj.getClass() != this.getClass()) return false;
-        var that = (Reservation) obj;
-        return Objects.equals(this.id, that.id) &&
-                Objects.equals(this.name, that.name) &&
-                Objects.equals(this.date, that.date) &&
-                Objects.equals(this.time, that.time);
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        final Reservation that = (Reservation) o;
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(date, that.date) && Objects.equals(time, that.time) && Objects.equals(theme, that.theme);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, date, time);
+        int result = Objects.hashCode(id);
+        result = 31 * result + Objects.hashCode(name);
+        result = 31 * result + Objects.hashCode(date);
+        result = 31 * result + Objects.hashCode(time);
+        result = 31 * result + Objects.hashCode(theme);
+        return result;
     }
 
     @Override
     public String toString() {
-        return "Reservation[" +
-                "id=" + id + ", " +
-                "name=" + name + ", " +
-                "date=" + date + ", " +
-                "time=" + time + ']';
+        return "Reservation{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", date=" + date +
+                ", time=" + time +
+                ", theme=" + theme +
+                '}';
     }
-
 }
