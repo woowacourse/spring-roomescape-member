@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -43,12 +44,12 @@ class JdbcReservationRepositoryImplTest {
 
         Reservation actual = reservationRepository.save(reservation);
         Reservation expected = new Reservation(actual.getId(), reservation.getName(), reservation.getDate(),
-                reservation.getTime());
+            reservation.getTime());
 
         assertAll(
-                () -> assertEquals(expected.getDate(), actual.getDate()),
-                () -> assertEquals(expected.getTime(), actual.getTime()),
-                () -> assertEquals(expected.getName(), actual.getName())
+            () -> assertEquals(expected.getDate(), actual.getDate()),
+            () -> assertEquals(expected.getTime(), actual.getTime()),
+            () -> assertEquals(expected.getName(), actual.getName())
         );
     }
 
@@ -63,11 +64,11 @@ class JdbcReservationRepositoryImplTest {
         List<Reservation> expected = List.of(save1, save2);
 
         assertAll(
-                () -> assertEquals(2, actual.size()),
-                () -> assertEquals(expected.get(0).getId(), actual.get(0).getId()),
-                () -> assertEquals(expected.get(0).getName(), actual.get(0).getName()),
-                () -> assertEquals(expected.get(1).getId(), actual.get(1).getId()),
-                () -> assertEquals(expected.get(1).getName(), actual.get(1).getName())
+            () -> assertEquals(2, actual.size()),
+            () -> assertEquals(expected.get(0).getId(), actual.get(0).getId()),
+            () -> assertEquals(expected.get(0).getName(), actual.get(0).getName()),
+            () -> assertEquals(expected.get(1).getId(), actual.get(1).getId()),
+            () -> assertEquals(expected.get(1).getName(), actual.get(1).getName())
         );
     }
 
@@ -81,5 +82,18 @@ class JdbcReservationRepositoryImplTest {
         reservationRepository.deleteById(save.getId());
 
         assertTrue(reservationRepository.findAll().isEmpty());
+    }
+
+    @DisplayName("time_id값을 통해 예약 수를 가져온다.")
+    @Test
+    void countByTimeId() {
+        Reservation reservation1 = new Reservation("brown1", LocalDate.MAX, reservationTime);
+        Reservation reservation2 = new Reservation("brown2", LocalDate.MIN, reservationTime);
+        reservationRepository.save(reservation1);
+        reservationRepository.save(reservation2);
+
+        long actual = reservationRepository.countByTimeId(reservationTime.getId());
+
+        assertThat(actual).isEqualTo(2L);
     }
 }

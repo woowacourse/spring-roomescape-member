@@ -23,20 +23,20 @@ public class JdbcReservationRepositoryImpl implements ReservationRepository {
     public JdbcReservationRepositoryImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         simpleJdbcInsert = new SimpleJdbcInsert(Objects.requireNonNull(jdbcTemplate.getDataSource()))
-                .withTableName("reservation")
-                .usingGeneratedKeyColumns("id");
+            .withTableName("reservation")
+            .usingGeneratedKeyColumns("id");
     }
 
     @Override
     public Reservation save(Reservation reservation) {
         Map<String, Object> saveSource = Map.ofEntries(
-                Map.entry("name", reservation.getName()),
-                Map.entry("date", reservation.getDate()),
-                Map.entry("time_id", reservation.getTime().getId())
+            Map.entry("name", reservation.getName()),
+            Map.entry("date", reservation.getDate()),
+            Map.entry("time_id", reservation.getTime().getId())
         );
         long id = simpleJdbcInsert
-                .executeAndReturnKey(saveSource)
-                .longValue();
+            .executeAndReturnKey(saveSource)
+            .longValue();
 
         return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime());
     }
@@ -44,25 +44,32 @@ public class JdbcReservationRepositoryImpl implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {
         String sql = """
-                SELECT r.id AS reservation_id, r.name AS reservation_name , r.date AS reservation_date, t.id AS time_id, t.start_at AS time_value
-                FROM reservation AS r 
-                INNER JOIN reservation_time AS t ON r.time_id = t.id
-                """;
+            SELECT r.id AS reservation_id, r.name AS reservation_name , r.date AS reservation_date, t.id AS time_id, t.start_at AS time_value
+            FROM reservation AS r 
+            INNER JOIN reservation_time AS t ON r.time_id = t.id
+            """;
 
         return jdbcTemplate.query(
-                sql,
-                ((rs, rowNum) ->
-                        new Reservation(
-                                rs.getLong("reservation_id"),
-                                rs.getString("reservation_name"),
-                                LocalDate.parse(rs.getString("reservation_date")),
-                                new ReservationTime(rs.getLong("time_id"), LocalTime.parse(rs.getString("time_value"))))
-                ));
+            sql,
+            ((rs, rowNum) ->
+                new Reservation(
+                    rs.getLong("reservation_id"),
+                    rs.getString("reservation_name"),
+                    LocalDate.parse(rs.getString("reservation_date")),
+                    new ReservationTime(rs.getLong("time_id"), LocalTime.parse(rs.getString("time_value"))))
+            ));
     }
 
     @Override
     public void deleteById(Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
         jdbcTemplate.update(sql, id);
+    }
+
+    @Override
+    public long countByTimeId(Long id) {
+        String sql = "SELECT COUNT(id) FROM reservation WHERE time_id = ?";
+
+        return jdbcTemplate.queryForObject(sql, new Object[]{id}, Long.class);
     }
 }

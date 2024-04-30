@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.dto.app.ReservationTimeAppRequest;
@@ -29,6 +30,8 @@ class ReservationTimeServiceTest {
     private ReservationTimeService reservationTimeService;
     @MockBean
     private ReservationTimeRepository reservationTimeRepository;
+    @MockBean
+    private ReservationRepository reservationRepository;
 
     @DisplayName("예약 시간을 저장하고, 해당 시간을 id값과 함께 반환한다.")
     @Test
@@ -54,6 +57,17 @@ class ReservationTimeServiceTest {
     @NullAndEmptySource
     void save_IllegalTimeFormat(String time) {
         assertThatThrownBy(() -> reservationTimeService.save(new ReservationTimeAppRequest(time)))
+            .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("실패: 시간을 사용하는 예약이 존재하는 경우 시간을 삭제할 수 없다.")
+    @Test
+    void delete_ReservationExists() {
+        long timeId = 1L;
+        when(reservationRepository.countByTimeId(timeId))
+            .thenReturn(1L);
+
+        assertThatThrownBy(() -> reservationTimeService.delete(timeId))
             .isInstanceOf(IllegalArgumentException.class);
     }
 }
