@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import roomescape.service.ReservationService;
 import roomescape.service.ReservationTimeService;
+import roomescape.service.dto.ReservationInput;
 import roomescape.service.dto.ReservationTimeInput;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -77,4 +78,22 @@ public class ReservationControllerTest {
                 .statusCode(404);
     }
 
+    @Test
+    @DisplayName("중복된 예약을 생성하려 할 때 409를 반환한다.")
+    void return_409_when_duplicate_reservation() {
+        long id = reservationTimeService.createReservationTime(new ReservationTimeInput("10:00")).id();
+        reservationService.createReservation(new ReservationInput("조이썬", "2024-04-30", id));
+
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", "제리");
+        reservation.put("date", "2024-04-30");
+        reservation.put("timeId", id);
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then()
+                .statusCode(409);
+    }
 }

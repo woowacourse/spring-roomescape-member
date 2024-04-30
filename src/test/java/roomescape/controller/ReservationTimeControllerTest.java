@@ -91,7 +91,7 @@ public class ReservationTimeControllerTest {
     }
 
     @Test
-    @DisplayName("특정 시간에 대한 예약이 존재하는데, 그 시간을 삭제하려 할 때 409를 반환한다.")
+    @DisplayName("중복된 예약 시간을 생성하려 할 때 409를 반환한다.")
     void return_409_when_duplicate_reservationTime() {
         reservationTimeService.createReservationTime(new ReservationTimeInput("10:00"));
 
