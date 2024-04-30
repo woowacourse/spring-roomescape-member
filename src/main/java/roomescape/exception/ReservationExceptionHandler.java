@@ -8,14 +8,18 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class ReservationExceptionHandler {
 
-    @ExceptionHandler(IllegalArgumentException.class)
+    @ExceptionHandler
     public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(IllegalStateException.class)
+    @ExceptionHandler
     public ResponseEntity<String> handleIllegalStateException(IllegalStateException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
     }
-}
 
+    @ExceptionHandler
+    public ResponseEntity<String> handleReservationException(ReservationException exception) {
+        return new ResponseEntity<>(exception.getMessage(), exception.getStatus());
+    }
+}
