@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.NotExistReservationException;
+import roomescape.exception.PastTimeReservationException;
 import roomescape.exception.ReservationAlreadyExistsException;
 import roomescape.service.dto.ReservationInput;
 
@@ -47,5 +48,13 @@ public class ReservationServiceTest {
 
         assertThatThrownBy(() -> reservationService.createReservation(new ReservationInput("제리", "2023-11-24", id)))
                 .isInstanceOf(ReservationAlreadyExistsException.class);
+    }
+
+    @Test
+    @DisplayName("지나간 날짜와 시간으로 예약 생성 시 예외가 발생한다.")
+    void throw_exception_when_create_past_time_reservation() {
+        Long id = reservationTimeDao.create(ReservationTime.from(null, "10:00")).getId();
+        assertThatThrownBy(() -> reservationService.createReservation(new ReservationInput("제리", "2024-03-10", id)))
+                .isInstanceOf(PastTimeReservationException.class);
     }
 }
