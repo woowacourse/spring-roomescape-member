@@ -30,6 +30,7 @@ public class TimeRepository {
     }
 
     public Time findById(Long timeId) {
+        // TODO: timeId 에 해당하는 시간이 등록되지 않은 경우 예외 처리 필요
         String sql = "SELECT * FROM reservation_time WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, ROW_MAPPER, timeId);
     }
