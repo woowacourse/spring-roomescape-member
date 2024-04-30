@@ -3,27 +3,35 @@ package roomescape.domain;
 import java.time.LocalDate;
 
 public class Reservation {
-    private final long id;
+    private final Long id;
     private final String name;
     private final LocalDate date;
     private final ReservationTime time;
 
-    public Reservation(long id, String name, String date, ReservationTime time) {
+    public Reservation(String name, String date, ReservationTime time) {
+        this(null, name, date, time);
+    }
+
+    public Reservation(Long id, String name, String date, ReservationTime time) {
         this(id, name, LocalDate.parse(date), time);
     }
 
-    public Reservation(long id, String name, LocalDate date, ReservationTime time) {
+    public Reservation(Long id, String name, LocalDate date, ReservationTime time) {
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
     }
 
-    public boolean hasSameTimeId(long timeId) {
+    public Reservation withId(Long id) {
+        return new Reservation(id, name, date, time);
+    }
+
+    public boolean hasSameTimeId(Long timeId) {
         return time.hasSameId(timeId);
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 

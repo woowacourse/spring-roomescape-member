@@ -8,17 +8,21 @@ public class ReservationTime {
     private final Long id;
     private final LocalTime startAt;
 
-    public ReservationTime(Long id, Time startAt) {
-        this(id, startAt.toLocalTime());
-    }
-
     public ReservationTime(String startAt) {
         this(null, LocalTime.parse(startAt));
+    }
+
+    public ReservationTime(Long id, Time startAt) {
+        this(id, startAt.toLocalTime());
     }
 
     public ReservationTime(Long id, LocalTime startAt) {
         this.id = id;
         this.startAt = startAt;
+    }
+
+    public ReservationTime withId(Long id) {
+        return new ReservationTime(id, startAt);
     }
 
     public boolean hasSameId(Long id) {

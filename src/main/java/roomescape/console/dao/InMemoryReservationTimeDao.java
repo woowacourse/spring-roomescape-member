@@ -22,17 +22,18 @@ public class InMemoryReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public ReservationTime findById(long id) {
+    public ReservationTime findById(Long id) {
         return inMemoryReservationTimeDb.selectById(id);
     }
 
     @Override
-    public long save(ReservationTime reservationTime) {
-        return inMemoryReservationTimeDb.insert(reservationTime.getStartAt());
+    public ReservationTime save(ReservationTime reservationTime) {
+        long id = inMemoryReservationTimeDb.insert(reservationTime.getStartAt());
+        return reservationTime.withId(id);
     }
 
     @Override
-    public boolean deleteById(long id) {
+    public boolean deleteById(Long id) {
         boolean deleted = inMemoryReservationTimeDb.deleteById(id);
         inMemoryReservationDb.deleteByTimeId(id);
         return deleted;

@@ -2,6 +2,7 @@ package roomescape.dao;
 
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -39,17 +40,17 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public long save(String name, String date, long timeId) {
-        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
-                .addValue("name", name)
-                .addValue("date", date)
-                .addValue("time_id", timeId);
-        return simpleJdbcInsert.executeAndReturnKey(sqlParameterSource)
-                .longValue();
+    public Reservation save(Reservation reservation) {
+        SqlParameterSource parameterSource = new MapSqlParameterSource()
+                .addValue("name", reservation.getName())
+                .addValue("date", reservation.getDate())
+                .addValue("time_id", reservation.getTime().getId());
+        Long id = simpleJdbcInsert.executeAndReturnKey(parameterSource).longValue();
+        return reservation.withId(id);
     }
 
     @Override
-    public boolean deleteById(long id) {
+    public boolean deleteById(Long id) {
         return jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id) > 0;
     }
 }

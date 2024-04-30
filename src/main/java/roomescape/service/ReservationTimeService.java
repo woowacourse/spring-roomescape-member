@@ -3,6 +3,7 @@ package roomescape.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationTimeDao;
+import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
 
@@ -22,8 +23,9 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponse save(ReservationTimeRequest reservationTimeRequest) {
-        long id = reservationTimeDao.save(reservationTimeRequest.toReservationTime()); //TODO 도메인 반환
-        return new ReservationTimeResponse(id, reservationTimeRequest.startAt());
+        ReservationTime reservationTime = reservationTimeDao
+                .save(reservationTimeRequest.toReservationTime());
+        return new ReservationTimeResponse(reservationTime);
     }
 
     public boolean deleteById(long id) {

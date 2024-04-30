@@ -30,7 +30,7 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public ReservationTime findById(long id) {
+    public ReservationTime findById(Long id) {
         return jdbcTemplate.queryForObject("SELECT * FROM reservation_time WHERE id = ?",
                 (rs, rowNum) -> new ReservationTime(
                         rs.getLong("id"),
@@ -39,15 +39,16 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public long save(ReservationTime reservationTime) {
+    public ReservationTime save(ReservationTime reservationTime) {
         SqlParameterSource params = new MapSqlParameterSource("start_at", reservationTime.getStartAt());
-
-        return simpleJdbcInsert.executeAndReturnKey(params)
+        Long id = simpleJdbcInsert.executeAndReturnKey(params)
                 .longValue();
+
+        return reservationTime.withId(id);
     }
 
     @Override
-    public boolean deleteById(long id) {
+    public boolean deleteById(Long id) {
         return jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id) > 0;
     }
 }

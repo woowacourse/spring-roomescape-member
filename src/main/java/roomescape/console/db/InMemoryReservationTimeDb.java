@@ -18,7 +18,7 @@ public class InMemoryReservationTimeDb {
                 .toList();
     }
 
-    public ReservationTime selectById(long id) {
+    public ReservationTime selectById(Long id) {
         if (reservationTimes.containsKey(id)) {
             return reservationTimes.get(id);
         }

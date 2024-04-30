@@ -9,12 +9,9 @@ import roomescape.domain.ReservationTime;
 
 public class InMemoryReservationDao implements ReservationDao {
     private final InMemoryReservationDb inMemoryReservationDb;
-    private final InMemoryReservationTimeDb inMemoryReservationTimeDb;
 
-    public InMemoryReservationDao(InMemoryReservationDb inMemoryReservationDb,
-                                  InMemoryReservationTimeDb inMemoryReservationTimeDb) {
+    public InMemoryReservationDao(InMemoryReservationDb inMemoryReservationDb) {
         this.inMemoryReservationDb = inMemoryReservationDb;
-        this.inMemoryReservationTimeDb = inMemoryReservationTimeDb;
     }
 
     @Override
@@ -23,13 +20,14 @@ public class InMemoryReservationDao implements ReservationDao {
     }
 
     @Override
-    public long save(String name, String date, long timeId) {
-        ReservationTime reservationTime = inMemoryReservationTimeDb.selectById(timeId);
-        return inMemoryReservationDb.insert(name, date, reservationTime);
+    public Reservation save(Reservation reservation) {
+        Long id = inMemoryReservationDb.insert(
+                reservation.getName(), reservation.getDate().toString(), reservation.getTime());
+        return reservation.withId(id);
     }
 
     @Override
-    public boolean deleteById(long id) {
+    public boolean deleteById(Long id) {
         return inMemoryReservationDb.deleteById(id);
     }
 }

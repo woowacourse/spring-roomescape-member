@@ -11,6 +11,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import roomescape.console.dao.InMemoryReservationDao;
 import roomescape.console.db.InMemoryReservationDb;
 import roomescape.console.db.InMemoryReservationTimeDb;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
 
 class InMemoryReservationDaoTest {
     private InMemoryReservationTimeDb inMemoryReservationTimeDb;
@@ -20,7 +22,7 @@ class InMemoryReservationDaoTest {
     void setUp() {
         inMemoryReservationTimeDb = new InMemoryReservationTimeDb();
         reservationDao = new InMemoryReservationDao(
-                new InMemoryReservationDb(), inMemoryReservationTimeDb);
+                new InMemoryReservationDb());
     }
 
     @DisplayName("존재하는 모든 예약을 보여준다.")
@@ -34,17 +36,11 @@ class InMemoryReservationDaoTest {
     void save() {
         //given
         inMemoryReservationTimeDb.insert(LocalTime.of(10, 0));
+        ReservationTime reservationTime = inMemoryReservationTimeDb.selectById(1L);
         //when
-        reservationDao.save("aa", "2023-10-10", 1);
+        reservationDao.save(new Reservation("aa", "2023-10-10", reservationTime));
         //then
         assertThat(reservationDao.findAll()).hasSize(1);
-    }
-
-    @DisplayName("존재하지 않는 예약 시간 id의 예약을 저장하면 오류가 발생한다.")
-    @Test
-    void savingNotExistTimeIdThrowsException() {
-        assertThatThrownBy(() -> reservationDao.save("aa", "2023-10-10", 1))
-                .isInstanceOf(EmptyResultDataAccessException.class);
     }
 
     @DisplayName("해당 id의 예약을 삭제한다.")
@@ -52,9 +48,10 @@ class InMemoryReservationDaoTest {
     void deleteById() {
         //given
         inMemoryReservationTimeDb.insert(LocalTime.of(10, 0));
-        reservationDao.save("aa", "2023-10-10", 1);
+        ReservationTime reservationTime = inMemoryReservationTimeDb.selectById(1L);
+        reservationDao.save(new Reservation("aa", "2023-10-10", reservationTime));
         //when
-        reservationDao.deleteById(1);
+        reservationDao.deleteById(1L);
         //then
         assertThat(reservationDao.findAll()).hasSize(0);
     }
@@ -64,9 +61,10 @@ class InMemoryReservationDaoTest {
     void returnTrueWhenDeleted() {
         //given
         inMemoryReservationTimeDb.insert(LocalTime.of(10, 0));
-        reservationDao.save("aa", "2023-10-10", 1);
+        ReservationTime reservationTime = inMemoryReservationTimeDb.selectById(1L);
+        reservationDao.save(new Reservation("aa", "2023-10-10", reservationTime));
         //when
-        boolean deleted = reservationDao.deleteById(1);
+        boolean deleted = reservationDao.deleteById(1L);
         //then
         assertThat(deleted).isTrue();
     }
@@ -75,7 +73,7 @@ class InMemoryReservationDaoTest {
     @Test
     void returnFalseWhenNotDeleted() {
         //when
-        boolean deleted = reservationDao.deleteById(1);
+        boolean deleted = reservationDao.deleteById(1L);
         //then
         assertThat(deleted).isFalse();
     }

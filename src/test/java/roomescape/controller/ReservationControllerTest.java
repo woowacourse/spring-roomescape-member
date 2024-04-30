@@ -49,7 +49,7 @@ class ReservationControllerTest {
         //then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new ReservationRequest("브라운", "2023-08-05", 1))
+                .body(new ReservationRequest("브라운", "2023-08-05", 1L))
                 .when().post("/reservations")
                 .then().log().all().assertThat().statusCode(HttpStatus.CREATED.value());
     }
@@ -59,7 +59,7 @@ class ReservationControllerTest {
     void createReservationFail() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new ReservationRequest("브라운", "2023-08-05", 1))
+                .body(new ReservationRequest("브라운", "2023-08-05", 1L))
                 .when().post("/reservations")
                 .then().log().all().assertThat().statusCode(HttpStatus.BAD_REQUEST.value());
     }

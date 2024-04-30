@@ -21,7 +21,7 @@ public class ConsoleRoomescapeApplication {
         InMemoryReservationDb inMemoryReservationDb = new InMemoryReservationDb();
         InMemoryReservationTimeDb inMemoryReservationTimeDb = new InMemoryReservationTimeDb();
         ReservationDao fakeReservationDao
-                = new InMemoryReservationDao(inMemoryReservationDb, inMemoryReservationTimeDb);
+                = new InMemoryReservationDao(inMemoryReservationDb);
         ReservationTimeDao fakeReservationTimeDao
                 = new InMemoryReservationTimeDao(inMemoryReservationDb, inMemoryReservationTimeDb);
         ReservationService reservationService

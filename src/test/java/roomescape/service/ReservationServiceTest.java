@@ -26,8 +26,7 @@ class ReservationServiceTest {
         InMemoryReservationTimeDb inMemoryReservationTimeDb = new InMemoryReservationTimeDb();
         reservationTimeDao = new InMemoryReservationTimeDao(
                 inMemoryReservationDb, inMemoryReservationTimeDb);
-        ReservationDao reservationDao = new InMemoryReservationDao(
-                inMemoryReservationDb, inMemoryReservationTimeDb);
+        ReservationDao reservationDao = new InMemoryReservationDao(inMemoryReservationDb);
         reservationService = new ReservationService(
                 reservationDao, reservationTimeDao);
     }
@@ -43,7 +42,7 @@ class ReservationServiceTest {
     void save() {
         //given
         reservationTimeDao.save(new ReservationTime("10:00"));
-        ReservationRequest reservationRequest = new ReservationRequest("aa", "2024-10-10", 1);
+        ReservationRequest reservationRequest = new ReservationRequest("aa", "2024-10-10", 1L);
         //when
         ReservationResponse response = reservationService.save(reservationRequest);
         //then
@@ -62,7 +61,7 @@ class ReservationServiceTest {
     void deleteById() {
         //given
         reservationTimeDao.save(new ReservationTime("10:00"));
-        reservationService.save(new ReservationRequest("aa", "2024-10-10", 1));
+        reservationService.save(new ReservationRequest("aa", "2024-10-10", 1L));
         //when
         reservationService.deleteById(1);
         //then
