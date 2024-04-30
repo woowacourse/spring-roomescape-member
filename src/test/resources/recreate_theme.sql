@@ -10,3 +10,6 @@ CREATE TABLE IF NOT EXISTS theme
     thumbnail   VARCHAR(255) NOT NULL,
     PRIMARY KEY (id)
 );
+
+INSERT INTO theme (name, description, thumbnail) VALUES ( '공포', '완전 무서운 테마', 'https://example.org' );
+INSERT INTO theme (name, description, thumbnail) VALUES ( '힐링', '완전 힐링되는 테마', 'https://example.org' );

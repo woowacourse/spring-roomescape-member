@@ -13,6 +13,9 @@ import roomescape.dto.ThemeCreateRequest;
 import roomescape.dto.ThemeResponse;
 import roomescape.repository.ThemeRepository;
 
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
@@ -54,5 +57,19 @@ class ThemeServiceTest {
         softAssertions.assertThat(actual.description()).isEqualTo(themeFixture.getDescription());
         softAssertions.assertThat(actual.thumbnail()).isEqualTo(themeFixture.getThumbnail());
         softAssertions.assertAll();
+    }
+
+    @DisplayName("테마 서비스는 모든 테마를 조회한다.")
+    @Test
+    void findAll() {
+        // given
+        Mockito.when(themeRepository.findAll())
+                .thenReturn(List.of(themeFixture));
+
+        // when
+        List<ThemeResponse> themeResponses = themeService.readThemes();
+
+        // then
+        assertThat(themeResponses).hasSize(1);
     }
 }

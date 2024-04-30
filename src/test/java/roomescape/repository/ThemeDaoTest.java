@@ -5,13 +5,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Theme;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
+@Sql(value = {"/recreate_theme.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class ThemeDaoTest {
 
     private final ThemeRepository themeRepository;
@@ -37,5 +40,15 @@ class ThemeDaoTest {
 
         // then
         assertThat(actual.isPresent()).isTrue();
+    }
+
+    @DisplayName("테마 DAO는 조회 요청이 들어오면 DB에 저장된 모든 테마를 반환한다.")
+    @Test
+    void findAll() {
+        // when
+        List<Theme> themes = themeRepository.findAll();
+
+        // then
+        assertThat(themes).hasSize(2);
     }
 }

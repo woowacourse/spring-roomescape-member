@@ -9,12 +9,13 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public class ThemeDao implements ThemeRepository {
-
     private final JdbcTemplate jdbcTemplate;
+
     private final SimpleJdbcInsert simpleJdbcInsert;
 
     public ThemeDao(JdbcTemplate jdbcTemplate) {
@@ -22,6 +23,15 @@ public class ThemeDao implements ThemeRepository {
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("theme")
                 .usingGeneratedKeyColumns("id");
+    }
+
+    private RowMapper<Theme> getThemeRowMapper() {
+        return (rs, rowNum) -> new Theme(
+                rs.getLong("id"),
+                rs.getString("name"),
+                rs.getString("description"),
+                rs.getString("thumbnail")
+        );
     }
 
     @Override
@@ -43,13 +53,10 @@ public class ThemeDao implements ThemeRepository {
         }
     }
 
-    private RowMapper<Theme> getThemeRowMapper() {
-        return (rs, rowNum) -> new Theme(
-                rs.getLong("id"),
-                rs.getString("name"),
-                rs.getString("description"),
-                rs.getString("thumbnail")
-        );
+    @Override
+    public List<Theme> findAll() {
+        String sql = "SELECT * FROM theme";
+        return jdbcTemplate.query(sql, getThemeRowMapper());
     }
 }
 

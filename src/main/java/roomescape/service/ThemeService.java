@@ -7,6 +7,8 @@ import roomescape.dto.ThemeResponse;
 import roomescape.exception.BadRequestException;
 import roomescape.repository.ThemeRepository;
 
+import java.util.List;
+
 @Service
 public class ThemeService {
 
@@ -26,5 +28,11 @@ public class ThemeService {
         Theme theme = themeRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException("존재하지 않는 테마입니다."));
         return ThemeResponse.from(theme);
+    }
+
+    public List<ThemeResponse> readThemes() {
+        return  themeRepository.findAll().stream()
+                .map(ThemeResponse::from)
+                .toList();
     }
 }
