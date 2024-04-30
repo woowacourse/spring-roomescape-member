@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.ReservationTimeRequest;
 import roomescape.controller.dto.ReservationTimeResponse;
+import roomescape.exception.NotExistReservationTimeException;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.dto.ReservationTimeOutput;
 
@@ -47,4 +48,10 @@ public class ReservationTimeController {
     public ResponseEntity<String> handleArgumentException(IllegalArgumentException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(value = NotExistReservationTimeException.class)
+    public ResponseEntity<String> handleNotExistReservationTimeException(NotExistReservationTimeException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
 }

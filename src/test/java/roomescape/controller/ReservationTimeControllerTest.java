@@ -1,4 +1,4 @@
-package roomescape;
+package roomescape.controller;
 
 import static org.hamcrest.Matchers.is;
 
@@ -55,6 +55,15 @@ public class ReservationTimeControllerTest {
                 .when().post("/times")
                 .then()
                 .statusCode(400);
+    }
+
+    @Test
+    @DisplayName("특정 시간이 존재하지 않는데, 그 시간을 삭제하려 할 때 404을 반환한다.")
+    void return_404_when_not_exist_id() {
+        RestAssured.given()
+                .delete("/times/-1")
+                .then()
+                .statusCode(404);
     }
 
 }
