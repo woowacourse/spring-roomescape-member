@@ -51,6 +51,23 @@ class ReservationTimeControllerTest {
                 .body("size()", is(1));
     }
 
+    @DisplayName("시간 컨트롤러는 시간 생성 시 잘못된 형식의 본문이 들어오면 400을 응답한다.")
+    @Test
+    void createInvalidRequestBody() {
+        String invalidBody = "invalidBody";
+
+        String detailMessage = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(invalidBody)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(400)
+                .extract()
+                .jsonPath().get("detail");
+
+        assertThat(detailMessage).isEqualTo("요청에 잘못된 형식의 값이 있습니다.");
+    }
+
     @DisplayName("시간 컨트롤러는 잘못된 형식의 시간으로 시간 생성 요청 시 400을 응답한다.")
     @ValueSource(strings = {"aaa", "10:000", "25:30"})
     @ParameterizedTest
