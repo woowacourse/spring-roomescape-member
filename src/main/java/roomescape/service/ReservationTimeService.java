@@ -51,7 +51,7 @@ public class ReservationTimeService {
         try {
             timeDao.deleteById(id);
         } catch (DataIntegrityViolationException e) {
-            throw new IllegalArgumentException("[ERROR] 해당 시간에 예약이 존재합니다");
+            throw new IllegalArgumentException("[ERROR] 예약이 존재하는 시간은 삭제할 수 없습니다.");
         }
     }
 }
