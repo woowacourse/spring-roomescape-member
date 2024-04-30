@@ -48,7 +48,7 @@ class ReservationTimeControllerTest {
                 .contentType(ContentType.JSON)
                 .body(new ReservationTimeRequest("10:00"))
                 .when().post("/times")
-                .then().log().all().assertThat().statusCode(HttpStatus.OK.value());
+                .then().log().all().assertThat().statusCode(HttpStatus.CREATED.value());
     }
 
     @DisplayName("예약 시간 삭제 성공 테스트")
@@ -59,7 +59,7 @@ class ReservationTimeControllerTest {
         //then
         RestAssured.given().log().all()
                 .when().delete("/times/1")
-                .then().log().all().assertThat().statusCode(HttpStatus.OK.value());
+                .then().log().all().assertThat().statusCode(HttpStatus.NO_CONTENT.value());
     }
 
     @DisplayName("예약 시간 삭제 실패 테스트")
@@ -88,7 +88,7 @@ class ReservationTimeControllerTest {
                 .when().get("reservations")
                 .then().log().all().extract().response();
         assertAll(
-                () -> assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
                 () -> assertThat(reservationResponse.jsonPath().getList(".")).isEmpty()
         );
     }
