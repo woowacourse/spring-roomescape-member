@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import javax.sql.DataSource;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -79,5 +80,17 @@ public class JdbcReservationRepository implements ReservationRepository {
     public void delete(Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
         jdbcTemplate.update(sql, id);
+    }
+
+
+    @Override
+    public boolean isTimeIdExist(Long id) {
+        String sql = "select id from reservation where time_id=? limit 1";
+        try {
+            jdbcTemplate.queryForObject(sql, Long.class, id);
+            return true;
+        } catch (EmptyResultDataAccessException e) {
+            return false;
+        }
     }
 }

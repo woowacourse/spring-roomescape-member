@@ -2,6 +2,7 @@ package roomescape.repository;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -15,11 +16,8 @@ import roomescape.domain.ReservationTime;
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
 
-    private static final RowMapper<ReservationTime> ROW_MAPPER = (resultSet, rowNum) ->
-            new ReservationTime(
-                    resultSet.getLong("id"),
-                    LocalTime.parse(resultSet.getString("start_at"))
-            );
+    private static final RowMapper<ReservationTime> ROW_MAPPER = (resultSet, rowNum) -> new ReservationTime(
+            resultSet.getLong("id"), LocalTime.parse(resultSet.getString("start_at")));
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
@@ -27,8 +25,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     public JdbcReservationTimeRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
-        this.jdbcInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName("reservation_time")
+        this.jdbcInsert = new SimpleJdbcInsert(dataSource).withTableName("reservation_time")
                 .usingGeneratedKeyColumns("id");
     }
 
@@ -45,18 +42,23 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public ReservationTime findById(Long id) {
+    public Optional<ReservationTime> findById(Long id) {
         try {
             String sql = "SELECT * FROM reservation_time WHERE id = ?";
-            return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
+            return Optional.of(jdbcTemplate.queryForObject(sql, ROW_MAPPER, id));
         } catch (DataAccessException e) {
-            throw new IllegalArgumentException("[ERROR] 잘못된 id 입니다. : " + id);
+            return Optional.empty();
         }
     }
 
     @Override
-    public void delete(Long id) {
-        String sql = "DELETE FROM reservation_time WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+    public boolean delete(Long id) {
+        try {
+            String sql = "DELETE FROM reservation_time WHERE id = ?";
+            jdbcTemplate.update(sql, id);
+            return true;
+        } catch (DataAccessException e) {
+            return false;
+        }
     }
 }

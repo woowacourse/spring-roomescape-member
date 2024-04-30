@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -21,7 +22,10 @@ public class ReservationService {
     }
 
     public Long addReservation(ReservationRequest reservationRequest) {
-        ReservationTime reservationTime = timeRepository.findById(reservationRequest.timeId());
+        ReservationTime reservationTime = timeRepository.findById(reservationRequest.timeId())
+                .orElseThrow(
+                        () -> new IllegalArgumentException("[ERROR] 잘못된 id 입니다. : " + reservationRequest.timeId()));
+
         Reservation reservationToSave = reservationRequest.toEntity(reservationTime);
         return reservationRepository.save(reservationToSave);
     }
@@ -37,7 +41,6 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(id);
         return ReservationResponse.from(reservation);
     }
-
     public void deleteReservation(Long id) {
         reservationRepository.delete(id);
     }
