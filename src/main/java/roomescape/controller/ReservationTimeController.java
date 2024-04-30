@@ -20,7 +20,7 @@ import roomescape.service.ReservationTimeService;
 @RestController
 @RequestMapping("/times")
 public class ReservationTimeController {
-    
+
     private final ReservationTimeService reservationTimeService;
 
     @Autowired
@@ -31,14 +31,14 @@ public class ReservationTimeController {
     @PostMapping
     public ResponseEntity<ReservationTimeWebResponse> create(@RequestBody ReservationTimeWebRequest request) {
         ReservationTime newReservationTime = reservationTimeService.save(
-                new ReservationTimeAppRequest(request.startAt()));
+            new ReservationTimeAppRequest(request.startAt()));
         Long id = newReservationTime.getId();
 
         return ResponseEntity.created(URI.create("/times/" + id))
-                .body(new ReservationTimeWebResponse(
-                        id,
-                        request.startAt()
-                ));
+            .body(new ReservationTimeWebResponse(
+                id,
+                newReservationTime.getStartAt()
+            ));
     }
 
     @DeleteMapping("/{id}")
@@ -52,9 +52,9 @@ public class ReservationTimeController {
     public ResponseEntity<List<ReservationTimeWebResponse>> getReservationTimes() {
         List<ReservationTime> reservationTimes = reservationTimeService.findAll();
         List<ReservationTimeWebResponse> reservationTimeWebResponses = reservationTimes.stream()
-                .map(reservationTime -> new ReservationTimeWebResponse(reservationTime.getId(),
-                        reservationTime.getStartAt()))
-                .toList();
+            .map(reservationTime -> new ReservationTimeWebResponse(reservationTime.getId(),
+                reservationTime.getStartAt()))
+            .toList();
 
         return ResponseEntity.ok(reservationTimeWebResponses);
     }
