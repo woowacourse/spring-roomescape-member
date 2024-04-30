@@ -8,17 +8,21 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import roomescape.TestSupport;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
 import roomescape.reservation.domain.Name;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
 
-public class ReservationRepositoryTest extends TestSupport {
+@JdbcTest
+@Import({ReservationRepository.class, ReservationTimeRepository.class})
+public class ReservationRepositoryTest {
 
     @Autowired
     private ReservationRepository reservationRepository;
+
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
 
@@ -36,10 +40,10 @@ public class ReservationRepositoryTest extends TestSupport {
     @Test
     @DisplayName("DB 조회 테스트")
     void findAllTest() {
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
-        Long timeId = reservationTimeRepository.save(reservationTime);
-        Reservation reservation1 = new Reservation(1L, new Name("hogi"), LocalDate.now(), reservationTime);
-        Reservation reservation2 = new Reservation(2L, new Name("kaki"), LocalDate.now(), reservationTime);
+        Long timeId = reservationTimeRepository.save(new ReservationTime(LocalTime.now()));
+        ReservationTime reservationTime = reservationTimeRepository.findById(timeId).get();
+        Reservation reservation1 = new Reservation(new Name("hogi"), LocalDate.now(), reservationTime);
+        Reservation reservation2 = new Reservation(new Name("kaki"), LocalDate.now(), reservationTime);
         reservationRepository.save(reservation1);
         reservationRepository.save(reservation2);
 
@@ -50,21 +54,22 @@ public class ReservationRepositoryTest extends TestSupport {
     @Test
     @DisplayName("id 값을 받아 Reservation 반환")
     void findByIdTest() {
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
-        reservationTimeRepository.save(reservationTime);
-        Reservation reservation = new Reservation(1L, new Name("hogi"), LocalDate.now(), reservationTime);
+        Long timeId = reservationTimeRepository.save(new ReservationTime(LocalTime.now()));
+        ReservationTime reservationTime = reservationTimeRepository.findById(timeId).get();
+        Reservation reservation = new Reservation(new Name("hogi"), LocalDate.now(), reservationTime);
         Long saveId = reservationRepository.save(reservation);
 
         Reservation findReservation = reservationRepository.findById(saveId).get();
-        assertThat(findReservation.getId()).isEqualTo(1);
+
+        assertThat(findReservation.getId()).isEqualTo(saveId);
     }
 
     @Test
     @DisplayName("DB 삭제 테스트")
     void deleteTest() {
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
-        Long timeId = reservationTimeRepository.save(reservationTime);
-        Reservation reservation = new Reservation(1L, new Name("hogi"), LocalDate.now(), reservationTime);
+        Long timeId = reservationTimeRepository.save(new ReservationTime(LocalTime.now()));
+        ReservationTime reservationTime = reservationTimeRepository.findById(timeId).get();
+        Reservation reservation = new Reservation(new Name("hogi"), LocalDate.now(), reservationTime);
         Long saveId = reservationRepository.save(reservation);
 
         reservationRepository.delete(saveId);

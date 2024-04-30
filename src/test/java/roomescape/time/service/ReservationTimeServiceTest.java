@@ -41,9 +41,6 @@ class ReservationTimeServiceTest {
         Long timeId = 1L;
 
         doReturn(Optional.of(new ReservationTime(timeId, LocalTime.now()))).when(reservationTimeRepository)
-                .findById(timeId);
-
-        doReturn(Optional.of(new ReservationTime(timeId, LocalTime.now()))).when(reservationTimeRepository)
                 .findReservationInSameId(timeId);
 
         assertThatThrownBy(() -> reservationTimeService.delete(timeId))

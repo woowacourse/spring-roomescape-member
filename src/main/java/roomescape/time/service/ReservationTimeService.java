@@ -36,7 +36,6 @@ public class ReservationTimeService {
     }
 
     public void delete(Long id) {
-        findById(id);
         if (reservationTimeRepository.findReservationInSameId(id).isPresent()) {
             throw new IllegalArgumentException("이미 해당 시간에 예약이 있습니다.");
         }
