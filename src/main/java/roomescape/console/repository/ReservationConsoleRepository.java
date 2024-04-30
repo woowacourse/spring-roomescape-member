@@ -34,10 +34,13 @@ public class ReservationConsoleRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findByTimeId(final long timeId) {
-        return reservations.stream()
-                .filter(reservation -> reservation.getTimeId() == timeId)
-                .toList();
+    public Integer countByTimeId(final long timeId) {
+        return null;
+    }
+
+    @Override
+    public Integer countByThemeId(final long themeId) {
+        return null;
     }
 
     @Override

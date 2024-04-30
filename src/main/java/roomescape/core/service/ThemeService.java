@@ -6,14 +6,17 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.core.domain.Theme;
 import roomescape.core.dto.ThemeRequestDto;
 import roomescape.core.dto.ThemeResponseDto;
+import roomescape.core.repository.ReservationRepository;
 import roomescape.core.repository.ThemeRepository;
 
 @Service
 public class ThemeService {
     private final ThemeRepository themeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ThemeService(final ThemeRepository themeRepository) {
+    public ThemeService(final ThemeRepository themeRepository, final ReservationRepository reservationRepository) {
         this.themeRepository = themeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     @Transactional
@@ -42,6 +45,10 @@ public class ThemeService {
 
     @Transactional
     public void delete(final long id) {
+        final int reservationCount = reservationRepository.countByThemeId(id);
+        if (reservationCount > 0) {
+            throw new IllegalArgumentException("Theme that have reservations cannot be deleted.");
+        }
         themeRepository.deleteById(id);
     }
 }

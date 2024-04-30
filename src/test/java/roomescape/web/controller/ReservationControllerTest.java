@@ -224,4 +224,21 @@ class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(400);
     }
+
+    @Test
+    @DisplayName("예약 생성 시, themeId가 null이면 예외가 발생한다.")
+    void validateReservationWithNullThemeId() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", TOMORROW_DATE);
+        params.put("timeId", 1);
+        params.put("themeId", null);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
 }

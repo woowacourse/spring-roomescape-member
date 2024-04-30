@@ -8,7 +8,9 @@ public interface ReservationRepository {
 
     List<Reservation> findAll();
 
-    List<Reservation> findByTimeId(final long timeId);
+    Integer countByTimeId(final long timeId);
+
+    Integer countByThemeId(final long themeId);
 
     Integer countByDateAndTimeId(final String date, final long timeId);
 

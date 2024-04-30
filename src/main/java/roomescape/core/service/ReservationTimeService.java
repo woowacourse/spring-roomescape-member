@@ -3,7 +3,6 @@ package roomescape.core.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.core.domain.Reservation;
 import roomescape.core.domain.ReservationTime;
 import roomescape.core.dto.ReservationTimeRequestDto;
 import roomescape.core.dto.ReservationTimeResponseDto;
@@ -47,8 +46,8 @@ public class ReservationTimeService {
 
     @Transactional
     public void delete(final long id) {
-        final List<Reservation> reservations = reservationRepository.findByTimeId(id);
-        if (!reservations.isEmpty()) {
+        final int reservationCount = reservationRepository.countByTimeId(id);
+        if (reservationCount > 0) {
             throw new IllegalArgumentException("Reservation time that have reservations cannot be deleted.");
         }
         reservationTimeRepository.deleteById(id);
