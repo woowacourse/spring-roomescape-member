@@ -25,8 +25,8 @@ public class ReservationTimeService {
     public ReservationTimeOutput createReservationTime(ReservationTimeInput input) {
         ReservationTime reservationTime = input.toReservationTime();
 
-        if (reservationTimeDao.isExistByStartAt(reservationTime.getStartAt())) {
-            throw new ReservationTimeAlreadyExistsException(String.format("%s에 해당하는 시간이 있습니다.", reservationTime.getStartAt()));
+        if (reservationTimeDao.isExistByStartAt(reservationTime.getStartAtAsString())) {
+            throw new ReservationTimeAlreadyExistsException(String.format("%s에 해당하는 시간이 있습니다.", reservationTime.getStartAtAsString()));
         }
 
         ReservationTime savedReservationTime = reservationTimeDao.create(reservationTime);

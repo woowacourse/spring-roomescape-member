@@ -6,7 +6,7 @@ import roomescape.domain.ReservationTime;
 public record ReservationTimeOutput(long id, String startAt) {
 
     public static ReservationTimeOutput toOutput(ReservationTime reservationTime) {
-        return new ReservationTimeOutput(reservationTime.getId(), reservationTime.getStartAt());
+        return new ReservationTimeOutput(reservationTime.getId(), reservationTime.getStartAtAsString());
     }
 
     public static List<ReservationTimeOutput> toOutputs(List<ReservationTime> reservationTimes) {

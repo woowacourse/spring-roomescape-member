@@ -28,9 +28,9 @@ public class ReservationTimeDao {
 
     public ReservationTime create(ReservationTime reservationTime) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("start_at", reservationTime.getStartAt());
+                .addValue("start_at", reservationTime.getStartAtAsString());
         long id = jdbcInsert.executeAndReturnKey(params).longValue();
-        return ReservationTime.from(id, reservationTime.getStartAt());
+        return ReservationTime.from(id, reservationTime.getStartAtAsString());
     }
 
     public boolean isExistByStartAt(String startAt) {
