@@ -40,7 +40,7 @@ public class ReservationTimeAcceptanceTest {
                    .then()
                    .log()
                    .all()
-                   .statusCode(200);
+                   .statusCode(201);
     }
 
     @Test

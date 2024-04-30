@@ -65,7 +65,7 @@ public class ReservationAcceptanceTest {
                    .then()
                    .log()
                    .all()
-                   .statusCode(200);
+                   .statusCode(201);
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
@@ -82,7 +82,7 @@ public class ReservationAcceptanceTest {
                    .then()
                    .log()
                    .all()
-                   .statusCode(200);
+                   .statusCode(201);
 
         RestAssured.given()
                    .log()
