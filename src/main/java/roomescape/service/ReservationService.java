@@ -47,7 +47,6 @@ public class ReservationService {
         Reservation beforeSave = new Reservation(
                 reservationRequest.name(),
                 reservationRequest.date(),
-                //TODO : 커스텀 예외 사용할지 고민해보기
                 reservationTime,
                 theme
         );
