@@ -36,7 +36,7 @@ public class ReservationTimeService {
         ReservationTime reservationTime = reservationTimeDao.find(id)
                 .orElseThrow(() -> new NotExistReservationTimeException(String.format("%d는 없는 id 입니다.", id)));
 
-        if (reservationDao.isExistsByTimeId(id)) {
+        if (reservationDao.isExistByTimeId(id)) {
             throw new ExistReservationInReservationTimeException(String.format("%d에 해당하는 예약이 있습니다.", id));
         }
 

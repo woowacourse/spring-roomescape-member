@@ -33,8 +33,13 @@ public class ReservationDao {
         return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime());
     }
 
-    public boolean isExistsByTimeId(long id) {
+    public boolean isExistByTimeId(long timdId) {
         String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE time_id = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, timdId));
+    }
+
+    public boolean isExistById(long id) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE id = ?)";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, id));
     }
 
