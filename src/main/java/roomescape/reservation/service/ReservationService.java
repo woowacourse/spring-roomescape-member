@@ -33,12 +33,13 @@ public class ReservationService {
                 .orElseThrow(() -> new IllegalArgumentException(
                         String.format("잘못된 예약 시간입니다. id=%d를 확인해주세요.", reservationRequest.timeId())
                 ));
+        LocalDate date = LocalDate.parse(reservationRequest.date());
 
-        Reservation reservation = new Reservation(
-                reservationRequest.name(),
-                LocalDate.parse(reservationRequest.date()),
-                reservationTime
-        );
+        if (reservationRepository.existsByDateTime(date, reservationRequest.timeId())) {
+            throw new IllegalArgumentException("예약 시간이 중복되었습니다.");
+        }
+
+        Reservation reservation = new Reservation(reservationRequest.name(), date, reservationTime);
         return ReservationResponse.from(reservationRepository.save(reservation));
     }
 
