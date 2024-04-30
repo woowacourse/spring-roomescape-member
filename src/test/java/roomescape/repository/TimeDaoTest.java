@@ -4,14 +4,19 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.ReservationTime;
 
+import java.time.LocalTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class TimeDaoTest {
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @Autowired
     private TimeDao timeDao;
@@ -22,5 +27,12 @@ class TimeDaoTest {
         Optional<ReservationTime> optionalReservationTime = timeDao.findById(0L);
 
         assertThat(optionalReservationTime).isEmpty();
+    }
+
+    @Test
+    void existByTime() {
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
+        boolean existByDateTime = timeDao.existByTime(LocalTime.of(10, 0));
+        assertThat(existByDateTime).isTrue();
     }
 }

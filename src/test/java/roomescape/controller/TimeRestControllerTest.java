@@ -55,4 +55,19 @@ class TimeRestControllerTest {
                 .then().log().all()
                 .statusCode(HttpStatus.SC_BAD_REQUEST);
     }
+
+    @Test
+    void deleteById_existTime_bad_request() {
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
+        Map<String, String> params = Map.of(
+                "startAt", "10:00"
+        );
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(HttpStatus.SC_BAD_REQUEST);
+    }
 }

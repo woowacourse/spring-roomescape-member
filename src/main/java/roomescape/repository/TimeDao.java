@@ -57,4 +57,13 @@ public class TimeDao {
     public void deleteById(Long id) {
         jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
     }
+
+    public boolean existByTime(LocalTime time) {
+        int count = jdbcTemplate.queryForObject("""
+                SELECT count(*) 
+                FROM reservation_time
+                WHERE start_at = ?
+                """, Integer.class, time);
+        return count > 0;
+    }
 }

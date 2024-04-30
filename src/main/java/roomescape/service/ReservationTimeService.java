@@ -42,8 +42,12 @@ public class ReservationTimeService {
 
     public TimeResponse saveTime(TimeSaveRequest request) {
         ReservationTime reservationTime = timeMapper.mapToTime(request);
-        Long saveId = timeDao.save(reservationTime);
 
+        if (timeDao.existByTime(reservationTime.getStartAt())) {
+            throw new IllegalTimeException("[ERROR] 중복된 시간을 생성할 수 없습니다.");
+        }
+
+        Long saveId = timeDao.save(reservationTime);
         return timeMapper.mapToResponse(saveId, reservationTime);
     }
 
