@@ -53,6 +53,19 @@ class ReservationH2RepositoryTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
+    @Test
+    @DisplayName("이미 예약된 시간에 예약을 하는 경우 예외를 발생시킨다.")
+    void saveDuplicatedDateTime() {
+        Reservation reservation = new Reservation(
+                new Name("네오"),
+                LocalDate.of(2099, 05, 1), // TODO 더 좋은 방식이 있는지 고민
+                new ReservationTime(12L, LocalTime.of(11, 0))
+        );
+        assertThatThrownBy(() -> reservationH2Repository.save(reservation))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+
 
     @Test
     @DisplayName("Reservation을 제거한다.")

@@ -11,4 +11,4 @@ INSERT INTO reservation (id, name, date, time_id)
 VALUES (10, '브라운', '2024-04-25', 10);
 
 INSERT INTO reservation (id, name, date, time_id)
-VALUES (11, '솔라', '2024-05-01', 12);
+VALUES (11, '솔라', '2099-05-01', 12);

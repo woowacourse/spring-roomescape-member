@@ -53,6 +53,14 @@ public class ReservationH2Repository implements ReservationRepository {
         if (localDateTime.isBefore(now)) {
             throw new IllegalArgumentException("과거 시간은 예약할 수 없습니다.");
         }
+        if (isDuplicatedDateTime(reservation)) {
+            throw new IllegalArgumentException("이미 예약된 시간에는 예약할 수 없습니다.");
+        }
+    }
+
+    private boolean isDuplicatedDateTime(Reservation reservation) {
+        String sql = "SELECT * FROM reservation WHERE date = ? AND time_id = ?";
+        return !jdbcTemplate.query(sql, (rs, rowNum) -> 0, reservation.date(), reservation.time().id()).isEmpty();
     }
 
     @Override
