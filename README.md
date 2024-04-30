@@ -136,7 +136,7 @@ Content-type: application/json
 {
     "name": "ted",
     "date": "2024-04-01",
-    "time_id": 1
+    "timeId": 1
 }
 ```
 
