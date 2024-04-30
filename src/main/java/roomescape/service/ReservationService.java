@@ -1,5 +1,9 @@
 package roomescape.service;
 
+import static roomescape.exception.ExceptionType.DUPLICATE_RESERVATION;
+import static roomescape.exception.ExceptionType.PAST_TIME;
+import static roomescape.exception.ExceptionType.RESERVATION_TIME_NOT_FOUND;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -10,6 +14,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationTimeResponse;
+import roomescape.exception.RoomescapeException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
@@ -28,7 +33,7 @@ public class ReservationService {
     public ReservationResponse save(ReservationRequest reservationRequest) {
         //TODO 변수명
         ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
+                .orElseThrow(() -> new RoomescapeException(RESERVATION_TIME_NOT_FOUND));
 
         Reservation beforeSave = new Reservation(
                 reservationRequest.name(),
@@ -40,12 +45,12 @@ public class ReservationService {
                 .stream()
                 .anyMatch(reservation -> mapToLocalDateTime(reservation).equals(mapToLocalDateTime(beforeSave)));
         if (isDuplicate) {
-            throw new IllegalArgumentException("동일한 날짜와 시간에 이미 예약이 존재합니다.");
+            throw new RoomescapeException(DUPLICATE_RESERVATION);
         }
 
         //todo 테스트
         if (isBefore(beforeSave)) {
-            throw new IllegalArgumentException("이미 지난 시간에 예약할 수 없습니다.");
+            throw new RoomescapeException(PAST_TIME);
         }
 
         Reservation saved = reservationRepository.save(beforeSave);

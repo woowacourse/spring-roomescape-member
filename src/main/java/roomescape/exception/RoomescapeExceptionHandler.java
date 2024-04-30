@@ -1,4 +1,6 @@
-package roomescape.controller;
+package roomescape.exception;
+
+import static roomescape.exception.ExceptionType.INVALID_DATE_TIME_FORMAT;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -12,15 +14,15 @@ public class RoomescapeExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handle(HttpMessageNotReadableException e) {
         e.printStackTrace();
-        return ResponseEntity.badRequest()
-                .body(new ErrorResponse("입력값이 잘못되었습니다."));
+        return ResponseEntity.status(INVALID_DATE_TIME_FORMAT.getStatus())
+                .body(new ErrorResponse(INVALID_DATE_TIME_FORMAT.getMessage()));
     }
 
-    //TODO : 커스템 에러로 처리하도록 변경
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorResponse> handle(RuntimeException e) {
+    @ExceptionHandler(RoomescapeException.class)
+    public ResponseEntity<ErrorResponse> handle(RoomescapeException e) {
         e.printStackTrace();
-        return ResponseEntity.badRequest().
-                body(new ErrorResponse(e.getMessage()));
+        return ResponseEntity
+                .status(e.getHttpStatus())
+                .body(new ErrorResponse(e.getMessage()));
     }
 }

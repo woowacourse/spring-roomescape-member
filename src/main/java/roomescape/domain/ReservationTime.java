@@ -1,7 +1,10 @@
 package roomescape.domain;
 
+import static roomescape.exception.ExceptionType.TIME_EMPTY;
+
 import java.time.LocalTime;
 import java.util.Objects;
+import roomescape.exception.RoomescapeException;
 
 public class ReservationTime {
     private final Long id;
@@ -14,7 +17,7 @@ public class ReservationTime {
     //TODO 테스트 추가
     public ReservationTime(Long id, LocalTime startAt) {
         if (startAt == null) {
-            throw new IllegalArgumentException("시간은 없을 수 없습니다.");
+            throw new RoomescapeException(TIME_EMPTY);
         }
         this.id = id;
         this.startAt = startAt;

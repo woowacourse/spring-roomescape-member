@@ -1,11 +1,15 @@
 package roomescape.service;
 
+import static roomescape.exception.ExceptionType.DUPLICATE_RESERVATION_TIME;
+import static roomescape.exception.ExceptionType.INVALID_DELETE_TIME;
+
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
+import roomescape.exception.RoomescapeException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
@@ -22,7 +26,7 @@ public class ReservationTimeService {
 
     public ReservationTimeResponse save(ReservationTimeRequest reservationTimeRequest) {
         if (reservationTimeRepository.existsByStartAt(reservationTimeRequest.startAt())) {
-            throw new IllegalArgumentException("중복된 시간은 생성할 수 없습니다.");
+            throw new RoomescapeException(DUPLICATE_RESERVATION_TIME);
         }
         ReservationTime reservationTime = new ReservationTime(reservationTimeRequest.startAt());
         ReservationTime saved = reservationTimeRepository.save(reservationTime);
@@ -47,7 +51,7 @@ public class ReservationTimeService {
         boolean invalidDelete = reservations.stream()
                 .anyMatch(reservation -> reservation.getReservationTime().getId() == id);
         if (invalidDelete) {
-            throw new IllegalStateException("예약이 존재하는 시간을 지울 수 없습니다.");
+            throw new RoomescapeException(INVALID_DELETE_TIME);
         }
         reservationTimeRepository.delete(id);
     }

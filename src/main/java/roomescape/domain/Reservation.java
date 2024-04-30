@@ -1,9 +1,12 @@
 package roomescape.domain;
 
+import static roomescape.exception.ExceptionType.NAME_EMPTY;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Objects;
+import roomescape.exception.RoomescapeException;
 
 public class Reservation implements Comparable<Reservation> {
     private final Long id;
@@ -17,7 +20,7 @@ public class Reservation implements Comparable<Reservation> {
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("이름은 필수 값입니다.");
+            throw new RoomescapeException(NAME_EMPTY);
         }
         this.id = id;
         this.name = name;
