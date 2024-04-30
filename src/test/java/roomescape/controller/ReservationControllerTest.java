@@ -179,14 +179,14 @@ public class ReservationControllerTest {
                 .body(time)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
 
         RestAssured.given().log().all()
@@ -226,7 +226,7 @@ public class ReservationControllerTest {
                 .body(timeParams)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         Map<String, String> reservationParams = Map.of("name", "",
                 "date", "2023-08-05",
