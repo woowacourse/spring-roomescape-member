@@ -28,7 +28,7 @@ public class ReservationTimeDao {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("start_at", reservationTime.getStartAt());
         long id = jdbcInsert.executeAndReturnKey(params).longValue();
-        return new ReservationTime(id, reservationTime.getStartAt());
+        return ReservationTime.from(id, reservationTime.getStartAt());
     }
 
     public ReservationTime find(Long id) {

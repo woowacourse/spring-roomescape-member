@@ -2,6 +2,7 @@ package roomescape.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalTime;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import roomescape.domain.ReservationTime;
@@ -13,7 +14,7 @@ public class ReservationTimeRowMapper implements RowMapper<ReservationTime> {
     public ReservationTime mapRow(ResultSet rs, int rowNum) throws SQLException {
         return new ReservationTime(
                 rs.getLong("id"),
-                rs.getString("start_at")
+                LocalTime.parse(rs.getString("start_at"))
         );
     }
 }

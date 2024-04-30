@@ -17,6 +17,6 @@ public class ReservationRowMapper implements RowMapper<Reservation> {
         String date = rs.getString("date");
         long timeId = rs.getLong("time_id");
         String startAt = rs.getString("time_value");
-        return new Reservation(reservationId, name, date, new ReservationTime(timeId, startAt));
+        return new Reservation(reservationId, name, date, ReservationTime.from(timeId, startAt));
     }
 }
