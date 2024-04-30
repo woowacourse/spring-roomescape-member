@@ -44,4 +44,9 @@ public class MemoryReservationTimeRepository implements ReservationTimeRepositor
     public void removeById(Long id) {
         times.remove(id);
     }
+
+    @Override
+    public boolean hasDuplicateTime(ReservationTime reservationTime) {
+        return false;
+    }
 }

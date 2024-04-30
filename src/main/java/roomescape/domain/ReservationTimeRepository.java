@@ -11,4 +11,6 @@ public interface ReservationTimeRepository {
     ReservationTime create(ReservationTime reservationTime);
 
     void removeById(Long id);
+
+    boolean hasDuplicateTime(ReservationTime reservationTime);
 }

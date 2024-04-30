@@ -23,6 +23,9 @@ public class ReservationTimeService {
 
     public ReservationTimeResponse createReservationTime(ReservationTimeRequest createDto) {
         ReservationTime time = createDto.toDomain();
+        if (reservationTimeRepository.hasDuplicateTime(time)) {
+            throw new IllegalStateException("해당 예약 시간이 존재합니다.");
+        }
         ReservationTime createdReservationTime = reservationTimeRepository.create(time);
         return ReservationTimeResponse.from(createdReservationTime);
     }

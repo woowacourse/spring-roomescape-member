@@ -95,4 +95,17 @@ class ReservationTimeRepositoryTest {
         assertThatThrownBy(() -> reservationTimeRepository.removeById(id))
                 .isInstanceOf(IllegalStateException.class);
     }
+
+    @Test
+    @DisplayName("동일한 예약 시간이 존재하는지 확인한다.")
+    void hasDuplicateTime() {
+        // given
+        ReservationTime reservationTime = new ReservationTime(LocalTime.parse("10:00"));
+
+        // when
+        boolean result = reservationTimeRepository.hasDuplicateTime(reservationTime);
+
+        // then
+        assertThat(result).isTrue();
+    }
 }

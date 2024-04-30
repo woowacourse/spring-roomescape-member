@@ -66,4 +66,13 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
             throw new IllegalStateException("해당 시간을 사용하고 있는 예약이 존재합니다.");
         }
     }
+
+    public boolean hasDuplicateTime(ReservationTime reservationTime) {
+        return jdbcTemplate.queryForObject(
+                """
+                        SELECT count(*) 
+                        FROM reservation_time 
+                        WHERE start_at = ?""",
+                Integer.class, reservationTime.getStartAt()) > 0;
+    }
 }
