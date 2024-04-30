@@ -29,5 +29,5 @@
   - [ ] 동시간대에 이미 예약된 테마를 예약하는 경우 예외가 발생한다.
 
 ## 화면
-- [ ] `/admin/theme` 요청 시 `templates/admin/theme.html`가 응답한다.
+- [x] `/admin/theme` 요청 시 `templates/admin/theme.html`가 응답한다.
 - [ ] `/admin/reservation` 요청 시 `templates/admin/reservation-new.html`가 응답한다.

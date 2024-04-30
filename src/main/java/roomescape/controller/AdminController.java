@@ -22,4 +22,9 @@ public class AdminController {
     public String readTimes() {
         return "admin/time";
     }
+
+    @GetMapping("/theme")
+    public String readTheme() {
+        return "admin/theme";
+    }
 }

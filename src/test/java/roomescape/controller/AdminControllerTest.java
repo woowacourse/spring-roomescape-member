@@ -45,4 +45,13 @@ public class AdminControllerTest {
                 .then().log().all()
                 .statusCode(200);
     }
+
+    @DisplayName("어드민 컨트롤러는 /admin/theme로 GET 요청이 들어오면 테마 목록 페이지를 반환한다.")
+    @Test
+    void readTheme() {
+        RestAssured.given().log().all()
+                .when().get("/admin/theme")
+                .then().log().all()
+                .statusCode(200);
+    }
 }
