@@ -1,10 +1,12 @@
 package roomescape.service;
 
 import java.util.List;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.exception.NotFoundTimeException;
+import roomescape.exception.ReservationReferencedTimeException;
 import roomescape.web.dto.ReservationTimeRequest;
 import roomescape.web.dto.ReservationTimeResponse;
 
@@ -31,7 +33,11 @@ public class ReservationTimeService {
 
     public void deleteReservationTime(Long id) {
         ReservationTime reservationTime = findReservationTimeById(id);
-        reservationTimeRepository.delete(reservationTime);
+        try {
+            reservationTimeRepository.delete(reservationTime);
+        } catch (DataIntegrityViolationException e) { // TODO: 조회 쿼리로 대체하는 것도 좋을듯?
+            throw new ReservationReferencedTimeException();
+        }
     }
 
     private ReservationTime findReservationTimeById(Long id) {
