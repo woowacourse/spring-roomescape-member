@@ -38,7 +38,7 @@ class ReservationTest {
     void createReservation() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES(?)", LocalTime.of(10, 0));
 
-        ReservationRequest reservationRequest = new ReservationRequest("브라운", LocalDate.of(2023, 8, 5), 1L);
+        ReservationRequest reservationRequest = new ReservationRequest("브라운", LocalDate.of(2999, 8, 5), 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -69,7 +69,7 @@ class ReservationTest {
     @Test
     void deleteReservation() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES(?)", LocalTime.of(10, 0));
-        ReservationRequest reservationRequest = new ReservationRequest("브라운", LocalDate.of(2023, 8, 5), 1L);
+        ReservationRequest reservationRequest = new ReservationRequest("브라운", LocalDate.of(2999, 8, 5), 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -134,8 +134,46 @@ class ReservationTest {
 
         Map<String, String> reservationRequest = new HashMap<>();
         reservationRequest.put("name", "12345678900");
-        reservationRequest.put("date", "2025-12-12");
+        reservationRequest.put("date", "2030-12-12");
         reservationRequest.put("timeId", "a");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationRequest)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @DisplayName("지나간 시점에 대한 예약시 예외처리")
+    @Test
+    void pastTimeSlotReservation() {
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES(?)", LocalTime.of(10, 0));
+
+        Map<String, String> reservationRequest = new HashMap<>();
+        reservationRequest.put("name", "1234567890");
+        reservationRequest.put("date", "1999-12-12");
+        reservationRequest.put("timeId", "1");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationRequest)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @DisplayName("동일한 시간에 중복 예약시 예외 처리")
+    @Test
+    void duplicateReservation() {
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES(?)", LocalTime.of(10, 0));
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES(?, ?, ?)",
+                "rush", LocalDate.of(2030, 12, 12), 1);
+
+        Map<String, String> reservationRequest = new HashMap<>();
+        reservationRequest.put("name", "1234567890");
+        reservationRequest.put("date", "2030-12-12");
+        reservationRequest.put("timeId", "1");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

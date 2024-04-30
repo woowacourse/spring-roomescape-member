@@ -30,7 +30,7 @@ class ReservationServiceTest {
     @DisplayName("예약시간이 없는 경우 예외가 발생한다.")
     @Test
     void reservationTimeIsNotExist() {
-        ReservationRequest reservationRequest = new ReservationRequest("브라운", LocalDate.of(2023, 8, 5), 1L);
+        ReservationRequest reservationRequest = new ReservationRequest("브라운", LocalDate.of(2999, 8, 5), 1L);
 
         assertThatThrownBy(() -> reservationService.createReservation(reservationRequest))
                 .isInstanceOf(CustomException.class);
@@ -42,12 +42,12 @@ class ReservationServiceTest {
         ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.of(10, 1));
         reservationTimeService.createReservationTime(reservationTimeRequest);
 
-        ReservationRequest reservationRequest = new ReservationRequest("브라운", LocalDate.of(2023, 8, 5), 1L);
+        ReservationRequest reservationRequest = new ReservationRequest("브라운", LocalDate.of(2999, 8, 5), 1L);
         ReservationResponse reservationResponse = reservationService.createReservation(reservationRequest);
 
         assertAll(
                 () -> assertThat(reservationResponse.name()).isEqualTo("브라운"),
-                () -> assertThat(reservationResponse.date()).isEqualTo(LocalDate.of(2023, 8, 5))
+                () -> assertThat(reservationResponse.date()).isEqualTo(LocalDate.of(2999, 8, 5))
         );
     }
 
@@ -57,7 +57,7 @@ class ReservationServiceTest {
         ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.of(10, 1));
         reservationTimeService.createReservationTime(reservationTimeRequest);
 
-        ReservationRequest reservationRequest = new ReservationRequest("브라운", LocalDate.of(2023, 8, 5), 1L);
+        ReservationRequest reservationRequest = new ReservationRequest("브라운", LocalDate.of(2999, 8, 5), 1L);
         reservationService.createReservation(reservationRequest);
 
         List<ReservationResponse> reservations = reservationService.findAllReservations();
@@ -65,7 +65,7 @@ class ReservationServiceTest {
         assertAll(
                 () -> assertThat(reservations).hasSize(1),
                 () -> assertThat(reservations.get(0).name()).isEqualTo("브라운"),
-                () -> assertThat(reservations.get(0).date()).isEqualTo(LocalDate.of(2023, 8, 5))
+                () -> assertThat(reservations.get(0).date()).isEqualTo(LocalDate.of(2999, 8, 5))
         );
     }
 
@@ -75,7 +75,7 @@ class ReservationServiceTest {
         ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.of(10, 1));
         reservationTimeService.createReservationTime(reservationTimeRequest);
 
-        ReservationRequest reservationRequest = new ReservationRequest("브라운", LocalDate.of(2023, 8, 5), 1L);
+        ReservationRequest reservationRequest = new ReservationRequest("브라운", LocalDate.of(2999, 8, 5), 1L);
         ReservationResponse savedReservation = reservationService.createReservation(reservationRequest);
 
         reservationService.deleteReservation(savedReservation.id());

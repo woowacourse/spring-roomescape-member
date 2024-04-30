@@ -1,6 +1,7 @@
 package roomescape.reservation.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import roomescape.reservation.handler.exception.CustomException;
 import roomescape.reservation.handler.exception.ExceptionCode;
 
@@ -13,6 +14,7 @@ public class Reservation {
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time) {
         validateName(name);
+        validateDateTime(date, time);
 
         this.id = id;
         this.name = name;
@@ -20,9 +22,17 @@ public class Reservation {
         this.time = time;
     }
 
+
     public void validateName(String name) {
         if (name.isEmpty() || name.length() > 10) {
             throw new CustomException(ExceptionCode.INVALID_NAME_LENGTH);
+        }
+    }
+
+    private void validateDateTime(LocalDate date, ReservationTime time) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
+        if (LocalDateTime.now().isAfter(reservationDateTime)) {
+            throw new CustomException(ExceptionCode.PAST_TIME_SLOT_RESERVATION);
         }
     }
 
