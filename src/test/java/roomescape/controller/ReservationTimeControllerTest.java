@@ -9,6 +9,8 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -92,11 +94,12 @@ class ReservationTimeControllerTest {
     }
 
     @DisplayName("시간 생성에서 잘못된 값 입력시 예외메시지를 응답한다.")
-    @Test
-    void createException() {
+    @ParameterizedTest
+    @ValueSource(strings = {"", " ", "24:01", "12:60"})
+    void createException(String startAt) {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new ReservationTimeRequest(""))
+                .body(new ReservationTimeRequest(startAt))
                 .when().post("/times")
                 .then().log().all().assertThat().statusCode(HttpStatus.BAD_REQUEST.value());
     }
