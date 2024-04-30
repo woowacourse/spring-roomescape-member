@@ -4,6 +4,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.time.domain.ReservationTime;
 
+import java.time.format.DateTimeParseException;
+
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -24,4 +26,18 @@ class ReservationTest {
         );
     }
 
+    @DisplayName("")
+    @Test
+    void validateDateAndTimeExist() {
+        ReservationTime reservationTime = new ReservationTime(1L, "15:46");
+
+        assertAll(
+                () -> assertThatThrownBy(() -> new Reservation(1L, "hotea", null, reservationTime))
+                        .isInstanceOf(IllegalArgumentException.class),
+                () -> assertThatThrownBy(() -> new Reservation(1L, "hotea", "2024-14-30", reservationTime))
+                        .isInstanceOf(DateTimeParseException.class),
+                () -> assertThatThrownBy(() -> new Reservation(1L, "hotea", "2024-04-50", reservationTime))
+                        .isInstanceOf(DateTimeParseException.class)
+        );
+    }
 }
