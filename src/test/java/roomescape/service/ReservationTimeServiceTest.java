@@ -1,4 +1,4 @@
-package roomescape;
+package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -7,7 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import roomescape.service.ReservationTimeService;
+import roomescape.exception.NotExistReservationTimeException;
 import roomescape.service.dto.ReservationTimeInput;
 
 @SpringBootTest
@@ -30,5 +30,12 @@ public class ReservationTimeServiceTest {
         ReservationTimeInput input = new ReservationTimeInput("");
         assertThatThrownBy(() -> reservationTimeService.createReservationTime(input))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 시간 ID 를 삭제하려 하면 에외를 발생한다.ㄴ")
+    void throw_exception_when_not_exist_id() {
+        assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(-1))
+                .isInstanceOf(NotExistReservationTimeException.class);
     }
 }

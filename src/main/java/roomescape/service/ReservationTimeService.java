@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.NotExistReservationTimeException;
 import roomescape.service.dto.ReservationTimeInput;
 import roomescape.service.dto.ReservationTimeOutput;
 
@@ -28,6 +29,9 @@ public class ReservationTimeService {
     }
 
     public void deleteReservationTime(long id) {
-        reservationTimeDao.delete(id);
+        ReservationTime reservationTime = reservationTimeDao.find(id)
+                .orElseThrow(() -> new NotExistReservationTimeException(String.format("%d는 없는 id 입니다.", id)));
+
+        reservationTimeDao.delete(reservationTime.getId());
     }
 }
