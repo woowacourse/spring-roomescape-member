@@ -2,6 +2,7 @@ package roomescape.reservation.service;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+import roomescape.exception.DuplicateReservationException;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationRequestDto;
@@ -35,7 +36,7 @@ public class ReservationService {
         final Reservation reservation = requestDto.toReservation();
         boolean isExist = reservationDao.checkReservationExists(reservation.getDate().toString(), reservationTime.getStartAt().toString());
         if (isExist) {
-            throw new IllegalArgumentException("이미 해당 날짜, 시간에 예약이 존재합니다.");
+            throw new DuplicateReservationException("이미 해당 날짜, 시간에 예약이 존재합니다.");
         }
         final long reservationId = reservationDao.save(reservation);
         final Reservation findReservation = reservationDao.findById(reservationId);

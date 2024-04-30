@@ -1,5 +1,7 @@
 package roomescape.time.domain;
 
+import roomescape.exception.NullPointTimeException;
+
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
@@ -18,7 +20,7 @@ public class ReservationTime {
 
     private void validateTimeIsNotNull(final String time) {
         if (Objects.isNull(time)) {
-            throw new IllegalArgumentException("시간인 null인 경우 저장을 할 수 없습니다.");
+            throw new NullPointTimeException("시간인 null인 경우 저장을 할 수 없습니다.");
         }
     }
 

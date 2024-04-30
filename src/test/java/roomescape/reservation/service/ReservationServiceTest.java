@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.exception.DuplicateReservationException;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.dto.ReservationRequestDto;
 import roomescape.time.dao.ReservationTimeDao;
@@ -34,6 +35,6 @@ class ReservationServiceTest {
         when(reservationTimeDao.findById(id)).thenReturn(reservationTime);
         when(reservationDao.checkReservationExists(anyString(), anyString())).thenReturn(true);
         assertThatThrownBy(() -> reservationService.save(new ReservationRequestDto("hotea", "2025-04-01", id)))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(DuplicateReservationException.class);
     }
 }
