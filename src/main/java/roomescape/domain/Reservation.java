@@ -46,8 +46,8 @@ public class Reservation {
     }
 
     private void validateDate(LocalDate date) {
-        if (date.isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException("이전 날짜는 예약할 수 없습니다.");
+        if (date.isBefore(LocalDate.now()) || date.equals(LocalDate.now())) {
+            throw new IllegalArgumentException("이전 날짜 혹은 당일은 예약할 수 없습니다.");
         }
     }
 
