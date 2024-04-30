@@ -30,4 +30,4 @@
 
 ## 화면
 - [x] `/admin/theme` 요청 시 `templates/admin/theme.html`가 응답한다.
-- [ ] `/admin/reservation` 요청 시 `templates/admin/reservation-new.html`가 응답한다.
+- [x] `/admin/reservation` 요청 시 `templates/admin/reservation-new.html`가 응답한다.
