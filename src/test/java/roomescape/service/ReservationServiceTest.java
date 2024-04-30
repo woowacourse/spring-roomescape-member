@@ -39,6 +39,9 @@ class ReservationServiceTest {
         for (final Reservation reservation : reservationRepository.findAll()) {
             reservationRepository.deleteById(reservation.getId());
         }
+        for (final ReservationTime reservationTime : reservationTimeRepository.findAll()) {
+            reservationTimeRepository.deleteById(reservationTime.getId());
+        }
     }
 
     @DisplayName("새로운 예약을 저장한다.")

@@ -26,6 +26,10 @@ class ReservationTimeControllerTest {
 
     @AfterEach
     void initData() {
+        RestAssured.get("/reservations")
+                .then().extract().body().jsonPath().getList("id")
+                .forEach(id -> RestAssured.delete("/reservations/" + id));
+
         RestAssured.get("/times")
                 .then().extract().body().jsonPath().getList("id")
                 .forEach(id -> RestAssured.delete("/times/" + id));

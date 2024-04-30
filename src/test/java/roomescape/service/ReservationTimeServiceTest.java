@@ -10,14 +10,16 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import roomescape.dao.ReservationTimeRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.InvalidReservationException;
 import roomescape.service.dto.ReservationRequest;
+import roomescape.service.dto.ReservationResponse;
 import roomescape.service.dto.ReservationTimeRequest;
 import roomescape.service.dto.ReservationTimeResponse;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = WebEnvironment.NONE)
 class ReservationTimeServiceTest {
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
@@ -28,6 +30,9 @@ class ReservationTimeServiceTest {
 
     @AfterEach
     void init() {
+        for (final ReservationResponse reservationResponse : reservationService.findAll()) {
+            reservationService.deleteById(reservationResponse.id());
+        }
         for (final ReservationTime reservationTime : reservationTimeRepository.findAll()) {
             reservationTimeRepository.deleteById(reservationTime.getId());
         }
