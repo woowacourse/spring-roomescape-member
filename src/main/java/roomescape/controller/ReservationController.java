@@ -2,8 +2,10 @@ package roomescape.controller;
 
 import java.net.URI;
 import java.util.List;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.ReservationRequest;
 import roomescape.controller.dto.ReservationResponse;
+import roomescape.exception.NotExistReservationException;
 import roomescape.service.ReservationService;
 import roomescape.service.dto.ReservationOutput;
 
@@ -42,5 +45,10 @@ public class ReservationController {
     public ResponseEntity<Void> deleteReservation(@PathVariable long id) {
         reservationService.deleteReservation(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler(value = NotExistReservationException.class)
+    public ResponseEntity<String> handleNotExistReservationException(NotExistReservationException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
     }
 }

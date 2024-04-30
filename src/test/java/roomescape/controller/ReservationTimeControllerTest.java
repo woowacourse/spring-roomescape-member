@@ -16,9 +16,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import roomescape.service.ReservationService;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.dto.ReservationInput;
-import roomescape.service.dto.ReservationOutput;
 import roomescape.service.dto.ReservationTimeInput;
-import roomescape.service.dto.ReservationTimeOutput;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class ReservationTimeControllerTest {
