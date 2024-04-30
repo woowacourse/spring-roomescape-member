@@ -1,7 +1,7 @@
 package roomescape.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -16,8 +16,14 @@ import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 
 /*
  * 테스트 데이터베이스 초기 데이터
+ * {ID=1, NAME=브라운, DATE=2024-05-04, TIME={ID=1, START_AT="10:00"}}
+ * {ID=2, NAME=엘라, DATE=2024-05-04, TIME={ID=2, START_AT="11:00"}}
+ * {ID=3, NAME=릴리, DATE=2023-08-05, TIME={ID=2, START_AT="11:00"}}
+ *
+ * 테스트 데이터베이스 초기 데이터
  * {ID=1, START_AT=10:00}
  * {ID=2, START_AT=11:00}
+ * {ID=3, START_AT=13:00}
  */
 @JdbcTest
 @Sql(scripts = "/reset_test_data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_CLASS)
@@ -39,7 +45,7 @@ class ReservationTimeRepositoryTest {
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
 
         // then
-        assertThat(reservationTimes).hasSize(2);
+        assertThat(reservationTimes).hasSize(3);
     }
 
     @Test
@@ -63,25 +69,30 @@ class ReservationTimeRepositoryTest {
         ReservationTime createdTime = reservationTimeRepository.create(inputData);
 
         // then
-        assertAll(
-                () -> assertThat(createdTime.getStartAt()).isEqualTo(startAt),
-                () -> assertThat(reservationTimeRepository.findAll()).hasSize(3)
-        );
+        assertThat(createdTime.getStartAt()).isEqualTo(startAt);
     }
 
     @Test
     @DisplayName("예약 시간을 삭제한다.")
     void delete() {
         // given
-        Long id = 1L;
+        Long id = 3L;
 
         // when
         reservationTimeRepository.removeById(id);
 
         // then
-        assertAll(
-                () -> assertThat(reservationTimeRepository.findById(id)).isEmpty(),
-                () -> assertThat(reservationTimeRepository.findAll()).hasSize(1)
-        );
+        assertThat(reservationTimeRepository.findById(id)).isEmpty();
+    }
+
+    @Test
+    @DisplayName("예약 시간을 사용하는 예약이 존재하면, 삭제하지 않는다.")
+    void cantDelete() {
+        // given
+        Long id = 1L;
+
+        // when, then
+        assertThatThrownBy(() -> reservationTimeRepository.removeById(id))
+                .isInstanceOf(IllegalStateException.class);
     }
 }

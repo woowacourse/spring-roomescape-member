@@ -4,6 +4,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -59,6 +60,10 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     public void removeById(Long id) {
-        jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
+        try {
+            jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
+        } catch (DataIntegrityViolationException exception) {
+            throw new IllegalStateException("해당 시간을 사용하고 있는 예약이 존재합니다.");
+        }
     }
 }
