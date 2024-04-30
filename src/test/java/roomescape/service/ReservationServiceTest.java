@@ -12,6 +12,7 @@ import roomescape.console.db.InMemoryReservationDb;
 import roomescape.console.db.InMemoryReservationTimeDb;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
+import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 
@@ -41,7 +42,7 @@ class ReservationServiceTest {
     @Test
     void save() {
         //given
-        reservationTimeDao.save("10:00");
+        reservationTimeDao.save(new ReservationTime("10:00"));
         ReservationRequest reservationRequest = new ReservationRequest("aa", "2024-10-10", 1);
         //when
         ReservationResponse response = reservationService.save(reservationRequest);
@@ -60,7 +61,7 @@ class ReservationServiceTest {
     @Test
     void deleteById() {
         //given
-        reservationTimeDao.save("10:00");
+        reservationTimeDao.save(new ReservationTime("10:00"));
         reservationService.save(new ReservationRequest("aa", "2024-10-10", 1));
         //when
         reservationService.deleteById(1);

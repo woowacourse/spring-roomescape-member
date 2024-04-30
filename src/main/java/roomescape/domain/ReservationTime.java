@@ -2,29 +2,30 @@ package roomescape.domain;
 
 import java.sql.Time;
 import java.time.LocalTime;
+import java.util.Objects;
 
 public class ReservationTime {
-    private final long id;
+    private final Long id;
     private final LocalTime startAt;
 
-    public ReservationTime(long id, String startAt) {
-        this(id, LocalTime.parse(startAt));
-    }
-
-    public ReservationTime(long id, Time startAt) {
+    public ReservationTime(Long id, Time startAt) {
         this(id, startAt.toLocalTime());
     }
 
-    public ReservationTime(long id, LocalTime startAt) {
+    public ReservationTime(String startAt) {
+        this(null, LocalTime.parse(startAt));
+    }
+
+    public ReservationTime(Long id, LocalTime startAt) {
         this.id = id;
         this.startAt = startAt;
     }
 
-    public boolean hasSameId(long id) {
-        return this.id == id;
+    public boolean hasSameId(Long id) {
+        return Objects.equals(this.id, id);
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 

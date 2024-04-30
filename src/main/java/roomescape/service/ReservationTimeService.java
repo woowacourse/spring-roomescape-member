@@ -22,7 +22,7 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponse save(ReservationTimeRequest reservationTimeRequest) {
-        long id = reservationTimeDao.save(reservationTimeRequest.startAt());
+        long id = reservationTimeDao.save(reservationTimeRequest.toReservationTime()); //TODO 도메인 반환
         return new ReservationTimeResponse(id, reservationTimeRequest.startAt());
     }
 

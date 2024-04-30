@@ -27,8 +27,8 @@ public class InMemoryReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public long save(String startAt) {
-        return inMemoryReservationTimeDb.insert(startAt);
+    public long save(ReservationTime reservationTime) {
+        return inMemoryReservationTimeDb.insert(reservationTime.getStartAt());
     }
 
     @Override

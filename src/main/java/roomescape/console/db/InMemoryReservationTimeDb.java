@@ -1,5 +1,6 @@
 package roomescape.console.db;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,7 +25,7 @@ public class InMemoryReservationTimeDb {
         throw new EmptyResultDataAccessException("time id doesnt exist", 1);
     }
 
-    public long insert(String startAt) {
+    public long insert(LocalTime startAt) {
         long thisId = id.getAndIncrement();
         reservationTimes.put(thisId, new ReservationTime(thisId, startAt));
         return thisId;

@@ -39,8 +39,8 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public long save(String startAt) {
-        SqlParameterSource params = new MapSqlParameterSource("start_at", startAt);
+    public long save(ReservationTime reservationTime) {
+        SqlParameterSource params = new MapSqlParameterSource("start_at", reservationTime.getStartAt());
 
         return simpleJdbcInsert.executeAndReturnKey(params)
                 .longValue();

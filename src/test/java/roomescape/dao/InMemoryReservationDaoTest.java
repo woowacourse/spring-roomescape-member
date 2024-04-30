@@ -3,6 +3,7 @@ package roomescape.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,7 +33,7 @@ class InMemoryReservationDaoTest {
     @Test
     void save() {
         //given
-        inMemoryReservationTimeDb.insert("10:00");
+        inMemoryReservationTimeDb.insert(LocalTime.of(10, 0));
         //when
         reservationDao.save("aa", "2023-10-10", 1);
         //then
@@ -50,7 +51,7 @@ class InMemoryReservationDaoTest {
     @Test
     void deleteById() {
         //given
-        inMemoryReservationTimeDb.insert("10:00");
+        inMemoryReservationTimeDb.insert(LocalTime.of(10, 0));
         reservationDao.save("aa", "2023-10-10", 1);
         //when
         reservationDao.deleteById(1);
@@ -62,7 +63,7 @@ class InMemoryReservationDaoTest {
     @Test
     void returnTrueWhenDeleted() {
         //given
-        inMemoryReservationTimeDb.insert("10:00");
+        inMemoryReservationTimeDb.insert(LocalTime.of(10, 0));
         reservationDao.save("aa", "2023-10-10", 1);
         //when
         boolean deleted = reservationDao.deleteById(1);

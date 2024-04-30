@@ -90,4 +90,14 @@ class ReservationTimeControllerTest {
                 () -> assertThat(reservationResponse.jsonPath().getList(".")).isEmpty()
         );
     }
+
+    @DisplayName("시간 생성에서 잘못된 값 입력시 예외메시지를 응답한다.")
+    @Test
+    void createException() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(new ReservationTimeRequest(""))
+                .when().post("/times")
+                .then().log().all().assertThat().statusCode(HttpStatus.BAD_REQUEST.value());
+    }
 }

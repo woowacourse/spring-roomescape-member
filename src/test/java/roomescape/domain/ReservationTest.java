@@ -12,14 +12,14 @@ class ReservationTest {
     @Test
     void validCreate() {
         assertDoesNotThrow(() -> new Reservation(1, "aa", "2023-10-10",
-                new ReservationTime(1, "10:00")));
+                new ReservationTime("10:00")));
     }
 
     @DisplayName("비정상 날짜 생성 불가 테스트")
     @Test
     void invalidDateCreate() {
         assertThatThrownBy(() -> new Reservation(1, "aa", "20222-10-10",
-                new ReservationTime(1, "10:00")))
+                new ReservationTime("10:00")))
                 .isInstanceOf(DateTimeParseException.class);
     }
 }
