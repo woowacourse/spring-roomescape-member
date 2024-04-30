@@ -50,6 +50,10 @@ public class Reservation {
         return time.isAfter(currentDateTime.toLocalTime());
     }
 
+    public Long getTimeId() {
+        return time.getId();
+    }
+
     public Long getId() {
         return id;
     }
