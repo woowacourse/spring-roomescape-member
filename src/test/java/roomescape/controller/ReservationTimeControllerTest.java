@@ -9,6 +9,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.List;
 import java.util.stream.IntStream;
+
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
@@ -19,6 +21,7 @@ import roomescape.fixture.ReservationFixture;
 import roomescape.support.ControllerTest;
 import roomescape.support.SimpleMockMvc;
 
+@DisplayName("예약 시간 컨트롤러")
 class ReservationTimeControllerTest extends ControllerTest {
     @Autowired
     private ReservationTimeService reservationTimeService;
@@ -27,7 +30,7 @@ class ReservationTimeControllerTest extends ControllerTest {
     void 예약_시간을_생성한다() throws Exception {
         ReservationTime reservationTime = ReservationFixture.reservationTime();
         when(reservationTimeService.register(any())).thenReturn(reservationTime);
-        ReservationTimeRequest request = new ReservationTimeRequest(reservationTime.getStartAt());
+        ReservationTimeRequest request = new ReservationTimeRequest(reservationTime.getStartAt().toString());
         String content = objectMapper.writeValueAsString(request);
 
         ResultActions result = SimpleMockMvc.post(mockMvc, "/times", content);
@@ -69,4 +72,36 @@ class ReservationTimeControllerTest extends ControllerTest {
                 .andDo(print());
     }
 
+    @Test
+    void 예약_시간이_비어있으면_예외가_발생한다() throws Exception {
+        // ReservationTimeRequest request = new ReservationTimeRequest(null);
+        // // String content = "{\"startAt\":\"12:89\"}";
+        String content = "{}";
+
+
+        ResultActions result = SimpleMockMvc.post(mockMvc, "/times", content);
+
+        result.andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
+    @Test
+    void 예약_시간이_포맷에_맞지않을경우_예외가_발생한다() throws Exception {
+        String content = "{\"startAt\":1112}";
+
+        ResultActions result = SimpleMockMvc.post(mockMvc, "/times", content);
+
+        result.andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
+    @Test
+    void 예약_시간이_올바르지_않을_경우_예외가_발생한다() throws Exception {
+        String content = "{\"startAt\":\"14:89\"}";
+
+        ResultActions result = SimpleMockMvc.post(mockMvc, "/times", content);
+
+        result.andExpect(status().isBadRequest())
+                .andDo(print());
+    }
 }
