@@ -17,3 +17,9 @@ CREATE TABLE reservation
     PRIMARY KEY (id),
     FOREIGN KEY (time_id) REFERENCES reservation_time (id) -- 외래키 추가
 );
+
+INSERT INTO reservation_time(start_at) VALUES ('10:10');
+INSERT INTO reservation_time(start_at) VALUES ('11:30');
+
+INSERT INTO reservation(name, date, time_id) VALUES ('켈리', '2024-07-03', 1);
+INSERT INTO reservation(name, date, time_id) VALUES ('오리', '2024-07-03', 1);
