@@ -3,7 +3,7 @@ package roomescape.domain;
 import java.util.Objects;
 import roomescape.exception.InvalidReservationException;
 
-public class Name {
+public class MemberName {
 
     private static final int MINIMUM_NAME_LENGTH = 1;
     private static final int MAXIMUM_NAME_LENGTH = 5;
@@ -12,7 +12,7 @@ public class Name {
 
     private final String value;
 
-    public Name(final String value) {
+    public MemberName(final String value) {
         String trimmedValue = value.trim();
         validateName(trimmedValue);
         this.value = trimmedValue;
@@ -37,8 +37,8 @@ public class Name {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        final Name name = (Name) o;
-        return Objects.equals(value, name.value);
+        final MemberName memberName = (MemberName) o;
+        return Objects.equals(value, memberName.value);
     }
 
     public String getValue() {
