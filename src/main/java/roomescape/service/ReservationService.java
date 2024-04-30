@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
@@ -8,6 +9,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
+import roomescape.dto.SelectableTimeResponse;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ReservationTimeDao;
 import roomescape.repository.ThemeDao;
@@ -63,7 +65,21 @@ public class ReservationService {
         reservationDao.delete(id);
     }
 
-    private boolean hasDuplicateReservation(LocalDate date, long timeId) {
+    public List<SelectableTimeResponse> findSelectableTime(final LocalDate date, final long themeId) {
+        List<SelectableTimeResponse> result = new ArrayList<>();
+        List<Long> usedTimeId = reservationDao.findTimeIdByDateAndThemeId(date, themeId);
+        List<ReservationTime> reservationTimes = reservationTimeDao.getAll();
+        for (ReservationTime reservationTime : reservationTimes) {
+            if (usedTimeId.contains(reservationTime.getId())) {
+                result.add(new SelectableTimeResponse(reservationTime.getId(), reservationTime.getStartAt(), true));
+                continue;
+            }
+            result.add(new SelectableTimeResponse(reservationTime.getId(), reservationTime.getStartAt(), false));
+        }
+        return result;
+    }
+
+    private boolean hasDuplicateReservation(final LocalDate date, final long timeId) {
         return !reservationDao.findByDateAndTimeId(date, timeId).isEmpty();
     }
 }

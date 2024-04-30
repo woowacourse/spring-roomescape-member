@@ -56,7 +56,7 @@ public class ReservationTimeView {
         System.out.println("[INFO] 방탈출 예약이 가능한 시간의 목록입니다.");
         System.out.println("번호  시작 시간");
         for (ReservationTimeResponse reservationTimeResponse : reservationTimeResponses) {
-            printReservationTime(reservationTimeResponse.id(), reservationTimeResponse);
+            printReservationTime(reservationTimeResponse.timeId(), reservationTimeResponse);
         }
     }
 

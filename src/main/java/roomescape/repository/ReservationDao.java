@@ -163,4 +163,11 @@ public class ReservationDao {
                 ),
                 themeId);
     }
+
+    public List<Long> findTimeIdByDateAndThemeId(final LocalDate date, final long themeId) {
+        String sql = "SELECT time_id FROM reservation WHERE date = ? AND theme_id = ?";
+        return jdbcTemplate.query(
+                sql, (resultSet, rowNum) -> resultSet.getLong("time_id"), date.toString(), themeId
+        );
+    }
 }
