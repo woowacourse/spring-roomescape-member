@@ -49,4 +49,20 @@ class ThemeJDBCRepositoryTest {
         //then
         assertThat(themes).hasSize(1);
     }
+
+    @DisplayName("테마를 삭제한다.")
+    @Test
+    void deleteTheme() {
+        //given
+        Theme theme = new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        Theme target = themeRepository.save(theme);
+        int expectedSize = 0;
+
+        //when
+        themeRepository.deleteById(target.getId());
+
+        //then
+        assertThat(themeRepository.findAll()).hasSize(expectedSize);
+    }
 }

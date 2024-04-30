@@ -47,4 +47,10 @@ public class ThemeJDBCRepository implements ThemeRepository {
         String sql = "SELECT * FROM theme";
         return jdbcTemplate.query(sql, rowMapper);
     }
+
+    @Override
+    public void deleteById(long id) {
+        String sql = "DELETE FROM theme WHERE id = ?";
+        jdbcTemplate.update(sql, id);
+    }
 }
