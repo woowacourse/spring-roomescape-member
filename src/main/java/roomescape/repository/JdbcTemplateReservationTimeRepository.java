@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.Time;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -25,13 +26,14 @@ public class JdbcTemplateReservationTimeRepository implements ReservationTimeRep
         return new ReservationTime(keyHolder.getKey().longValue(), reservationTime.getStartAt());
     }
 
-    private void save(ReservationTime reservationTime, KeyHolder keyHolder) {
-        jdbcTemplate.update(con -> {
-            PreparedStatement pstmt = con.prepareStatement("insert into reservation_time(start_at) values ( ? )",
-                    new String[]{"id"});
-            pstmt.setTime(1, Time.valueOf(reservationTime.getStartAt()));
-            return pstmt;
-        }, keyHolder);
+    @Override
+    public Optional<ReservationTime> findById(long id) {
+        List<ReservationTime> times = jdbcTemplate.query("select start_at from reservation_time where id = ?",
+                (rs, rowNum) -> {
+                    LocalTime time = rs.getTime(1).toLocalTime();
+                    return new ReservationTime(id, time);
+                }, id);
+        return times.stream().findFirst();
     }
 
     @Override
@@ -46,5 +48,14 @@ public class JdbcTemplateReservationTimeRepository implements ReservationTimeRep
     @Override
     public void delete(long id) {
         jdbcTemplate.update("delete from reservation_time where id = ?", id);
+    }
+
+    private void save(ReservationTime reservationTime, KeyHolder keyHolder) {
+        jdbcTemplate.update(con -> {
+            PreparedStatement pstmt = con.prepareStatement("insert into reservation_time(start_at) values ( ? )",
+                    new String[]{"id"});
+            pstmt.setTime(1, Time.valueOf(reservationTime.getStartAt()));
+            return pstmt;
+        }, keyHolder);
     }
 }

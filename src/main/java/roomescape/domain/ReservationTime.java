@@ -11,7 +11,11 @@ public class ReservationTime {
         this(null, startAt);
     }
 
+    //TODO 테스트 추가
     public ReservationTime(Long id, LocalTime startAt) {
+        if (startAt == null) {
+            throw new IllegalArgumentException("시간은 없을 수 없습니다.");
+        }
         this.id = id;
         this.startAt = startAt;
     }

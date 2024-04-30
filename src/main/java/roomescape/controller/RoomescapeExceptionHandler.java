@@ -15,4 +15,12 @@ public class RoomescapeExceptionHandler {
         return ResponseEntity.badRequest()
                 .body(new ErrorResponse("입력값이 잘못되었습니다."));
     }
+
+    //TODO : 커스템 에러로 처리하도록 변경
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handle(IllegalArgumentException e) {
+        e.printStackTrace();
+        return ResponseEntity.badRequest().
+                body(new ErrorResponse(e.getMessage()));
+    }
 }
