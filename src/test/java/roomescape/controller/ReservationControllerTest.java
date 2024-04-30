@@ -3,6 +3,7 @@ package roomescape.controller;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -91,6 +92,24 @@ class ReservationControllerTest {
         mockMvc.perform(delete("/reservations/{id}", 1))
                 .andDo(print())
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("유효하지않는 값이 입력되면 Bad Request 응답을 반환한다.")
+    void createReservationByInvalidRequest() throws Exception {
+        //given
+        ReservationCreateRequest givenRequest
+                = ReservationCreateRequest.of("InvalidName", "InvalidDate", -1L);
+        when(reservationService.add(givenRequest))
+                .thenThrow(IllegalArgumentException.class);
+        String requestBody = objectMapper.writeValueAsString(givenRequest);
+
+        //when //then
+        mockMvc.perform(post("/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
     }
 
     private List<ReservationResponse> getExpectedResponses(String firstName, String secondDate, String secondStartAt) {

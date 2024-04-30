@@ -25,7 +25,7 @@ public class ReservationDate {
     }
 
     private static void validateValue(String value) {
-        if (value == null) {
+        if (value == null || value.isBlank()) {
             throw new IllegalArgumentException("예약 날짜는 비어있을 수 없습니다.");
         }
     }

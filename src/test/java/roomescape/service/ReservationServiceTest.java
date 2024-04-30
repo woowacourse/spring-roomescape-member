@@ -8,7 +8,11 @@ import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -78,38 +82,79 @@ class ReservationServiceTest {
         );
     }
 
-    @Test
-    @DisplayName("예약을 추가한다.")
-    void add() {
-        //given
-        String givenName = "wooteco";
-        String givenDate = "2024-04-23";
-        ReservationCreateRequest givenRequest = ReservationCreateRequest.of(givenName, givenDate, 1L);
+    @Nested
+    @DisplayName("예약 추가")
+    class create {
+        @Test
+        @DisplayName("예약을 추가한다.")
+        void add() {
+            //given
+            String givenName = "wooteco";
+            String givenDate = "2024-04-23";
+            ReservationCreateRequest givenRequest = ReservationCreateRequest.of(givenName, givenDate, 1L);
 
-        //when
-        ReservationResponse result = reservationService.add(givenRequest);
+            //when
+            ReservationResponse result = reservationService.add(givenRequest);
 
-        //then
-        assertAll(
-                () -> assertThat(result.getId()).isEqualTo(3),
-                () -> assertThat(result.getName()).isEqualTo(givenName),
-                () -> assertThat(result.getDate()).isEqualTo(givenDate),
-                () -> assertThat(reservationService.findAll()).hasSize(3)
-        );
-    }
+            //then
+            assertAll(
+                    () -> assertThat(result.getId()).isEqualTo(3),
+                    () -> assertThat(result.getName()).isEqualTo(givenName),
+                    () -> assertThat(result.getDate()).isEqualTo(givenDate),
+                    () -> assertThat(reservationService.findAll()).hasSize(3)
+            );
+        }
 
-    @Test
-    @DisplayName("존재하지 않는 시간 아이디로 예약 추가시 에외가 발생한다.")
-    void addNotExistTimeId() {
-        //given
-        Long given = -1L;
-        String givenName = "wooteco";
-        String givenDate = "2024-04-23";
-        ReservationCreateRequest givenRequest = ReservationCreateRequest.of(givenName, givenDate, given);
+        @Test
+        @DisplayName("존재하지 않는 시간 아이디로 예약 추가시 에외가 발생한다.")
+        void addNotExistTimeId() {
+            //given
+            Long given = -1L;
+            String givenName = "wooteco";
+            String givenDate = "2024-04-23";
+            ReservationCreateRequest givenRequest = ReservationCreateRequest.of(givenName, givenDate, given);
 
-        //when //then
-        assertThatThrownBy(() -> reservationService.add(givenRequest))
-                .isInstanceOf(IllegalArgumentException.class);
+            //when //then
+            assertThatThrownBy(() -> reservationService.add(givenRequest))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        @DisplayName("예약자명에 null이나 공백 문자열이 입력되면 예외가 발생한다.")
+        void createReservationByNullOrEmptyName(String given) {
+            //given
+            ReservationCreateRequest request = ReservationCreateRequest.of(given, "2024-04-30", 1L);
+
+            //when //then
+            assertThatThrownBy(() -> reservationService.add(request))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        @DisplayName("예약 날짜에 null이나 공백 문자열이 입력되면 예외가 발생한다.")
+        void createReservationByNullOrEmptyDate(String given) {
+            //given
+            ReservationCreateRequest request = ReservationCreateRequest.of("다온", given, 1L);
+
+            //when //then
+            assertThatThrownBy(() -> reservationService.add(request))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"24-02-04", "2024;04;24"})
+        @DisplayName("예약 날짜가 yyyy-MM-dd 형식이 아닌 경우 예외가 발생한다.")
+        void createReservationByInvalidDate(String given) {
+            //given
+            ReservationCreateRequest request = ReservationCreateRequest.of("다온", given, 1L);
+
+            //when //then
+            assertThatThrownBy(() -> reservationService.add(request))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+
     }
 
     @Test
