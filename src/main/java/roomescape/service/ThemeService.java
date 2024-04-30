@@ -30,4 +30,8 @@ public class ThemeService {
 
         return ThemeResponse.from(savedTheme);
     }
+
+    public void deleteById(long id) {
+        themeRepository.deleteById(id);
+    }
 }
