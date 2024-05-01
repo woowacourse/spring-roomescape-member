@@ -5,6 +5,7 @@ import roomescape.repository.ThemeRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class FakeThemeRepository implements ThemeRepository {
@@ -30,7 +31,11 @@ public class FakeThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public long deleteTheme(long id) {
-        return 0;
+    public void deleteTheme(long id) {
+        Theme targetTheme = themes.stream()
+                .filter(theme -> theme.getId() == id)
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 테마입니다."));
+        themes.remove(targetTheme);
     }
 }

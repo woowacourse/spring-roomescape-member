@@ -24,4 +24,8 @@ public class ThemeService {
         Theme theme = new Theme(themeRequest.getName(), themeRequest.getDescription(), themeRequest.getThumbnail());
         return themeRepository.addTheme(theme);
     }
+
+    public void deleteTheme(long id) {
+        themeRepository.deleteTheme(id);
+    }
 }

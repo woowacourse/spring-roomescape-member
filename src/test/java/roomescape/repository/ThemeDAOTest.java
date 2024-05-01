@@ -68,4 +68,11 @@ class ThemeDAOTest {
         themeRepository.addTheme(theme);
         assertThat(themeRepository.findAllThemes()).hasSize(3);
     }
+
+    @DisplayName("테마를 삭제한다.")
+    @Test
+    void should_delete_theme() {
+        themeRepository.deleteTheme(1);
+        assertThat(themeRepository.findAllThemes()).hasSize(1);
+    }
 }

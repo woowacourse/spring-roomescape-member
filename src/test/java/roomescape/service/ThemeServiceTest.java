@@ -3,7 +3,6 @@ package roomescape.service;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.controller.request.ThemeRequest;
-import roomescape.model.Theme;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -21,7 +20,14 @@ class ThemeServiceTest {
     @Test
     void should_add_theme() {
         ThemeRequest themeRequest = new ThemeRequest("에버", "공포", "공포.jpg");
-        Theme theme = themeService.addTheme(themeRequest);
+        themeService.addTheme(themeRequest);
         assertThat(themeService.findAllThemes()).hasSize(4);
+    }
+
+    @DisplayName("테마를 삭제한다.")
+    @Test
+    void should_delete_theme() {
+        themeService.deleteTheme(1L);
+        assertThat(themeService.findAllThemes()).hasSize(2);
     }
 }

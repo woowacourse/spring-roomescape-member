@@ -2,6 +2,7 @@ package roomescape.controller;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +23,6 @@ class ThemeControllerTest {
     @Autowired
     JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    private ThemeController themeController;
-
     @DisplayName("전체 테마를 조회한다.")
     @Test
     void should_get_themes() {
@@ -42,7 +40,7 @@ class ThemeControllerTest {
         assertThat(themes).hasSize(count);
     }
 
-    @DisplayName("전체 테마를 추가한다.")
+    @DisplayName("테마를 추가한다.")
     @Test
     void should_add_theme() {
         ThemeRequest request = new ThemeRequest("에버", "공포", "공포.jpg");
@@ -57,6 +55,21 @@ class ThemeControllerTest {
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from theme", Integer.class);
 
+        assertThat(count).isEqualTo(1);
+    }
+
+    @DisplayName("테마를 삭제한다")
+    @Test
+    void should_remove_theme() {
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "에버", "공포", "공포.jpg");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "배키", "미스터리", "미스터리.jpg");
+
+        RestAssured.given().log().all()
+                .when().delete("/themes/1")
+                .then().log().all()
+                .statusCode(204);
+
+        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from theme", Integer.class);
         assertThat(count).isEqualTo(1);
     }
 }

@@ -3,7 +3,6 @@ package roomescape.repository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
 
 import javax.sql.DataSource;
@@ -47,7 +46,8 @@ public class ThemeDAO implements ThemeRepository {
     }
 
     @Override
-    public long deleteTheme(long id) {
-        return 0;
+    public void deleteTheme(long id) {
+        String sql = "delete from theme where id = ?";
+        jdbcTemplate.update(sql, id);
     }
 }
