@@ -3,7 +3,9 @@ package roomescape.dao;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import javax.sql.DataSource;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -36,12 +38,25 @@ public class ThemeDao implements ThemeRepository {
     }
 
     @Override
-    public Theme save(final Theme theme) {
+    public Optional<Theme> findById(Long id) {
+        String sql = "SELECT * FROM theme WHERE id = ?";
+        List<Theme> theme = jdbcTemplate.query(sql, themeRowMapper, id);
+        return DataAccessUtils.optionalResult(theme);
+    }
+
+    @Override
+    public Theme save(Theme theme) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("name", theme.getName());
         parameters.put("description", theme.getDescription());
         parameters.put("thumbnail", theme.getThumbnail());
         Long id = (Long) jdbcInsert.executeAndReturnKey(parameters);
         return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
+    }
+
+    @Override
+    public void delete(Theme theme) {
+        String sql = "DELETE FROM theme WHERE id = ?";
+        jdbcTemplate.update(sql, theme.getId());
     }
 }

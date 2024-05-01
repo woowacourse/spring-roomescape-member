@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
+import roomescape.exception.theme.NotFoundThemeException;
 import roomescape.web.dto.ThemeRequest;
 import roomescape.web.dto.ThemeResponse;
 
@@ -26,5 +27,15 @@ public class ThemeService {
         Theme theme = request.toTheme();
         Theme savedTheme = themeRepository.save(theme);
         return ThemeResponse.from(savedTheme);
+    }
+
+    public void deleteTheme(Long id) {
+        Theme theme = findThemeById(id);
+        themeRepository.delete(theme);
+    }
+
+    private Theme findThemeById(Long id) {
+        return themeRepository.findById(id)
+                .orElseThrow(NotFoundThemeException::new);
     }
 }
