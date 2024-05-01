@@ -7,7 +7,6 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class ReservationIntegrationTest extends IntegrationTest {
@@ -102,7 +101,6 @@ class ReservationIntegrationTest extends IntegrationTest {
                 .statusCode(400);
     }
 
-    @Disabled
     @Test
     void 예약을_삭제할_수_있다() {
         RestAssured.given().log().all()

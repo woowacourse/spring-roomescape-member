@@ -61,8 +61,16 @@ public class ReservationDao implements ReservationRepository {
 
     @Override
     public Optional<Reservation> findById(Long id) {
-        String sql = "SELECT r.id AS reservation_id, r.name, r.date, t.id AS time_id, t.start_at AS time_value "
-                + "FROM reservation AS r INNER JOIN reservation_time AS t ON r.time_id = t.id WHERE r.id = ?";
+        String sql = """
+                SELECT reservation.id, reservation.name, reservation.date, 
+                `time`.id AS time_id, `time`.start_at AS time_start_at, 
+                theme.id AS theme_id, theme.name AS theme_name, 
+                theme.description AS theme_description, theme.thumbnail AS theme_thumbnail 
+                FROM reservation 
+                INNER JOIN reservation_time AS `time` ON reservation.time_id = `time`.id 
+                INNER JOIN theme ON reservation.theme_id = theme.id
+                WHERE reservation.id = ?
+                """;
         List<Reservation> reservation = jdbcTemplate.query(sql, reservationRowMapper, id);
         return DataAccessUtils.optionalResult(reservation);
     }

@@ -11,7 +11,6 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -44,7 +43,6 @@ class MissionStepTest extends IntegrationTest {
                 .body("size()", is(1));
     }
 
-    @Disabled
     @Test
     void 삼단계() {
         Map<String, String> params = new HashMap<>();
@@ -108,7 +106,6 @@ class MissionStepTest extends IntegrationTest {
         assertThat(reservations).hasSize(count);
     }
 
-    @Disabled
     @Test
     void 육단계() {
         Map<String, String> params = new HashMap<>();
