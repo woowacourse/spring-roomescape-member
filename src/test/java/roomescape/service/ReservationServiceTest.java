@@ -32,7 +32,7 @@ class ReservationServiceTest {
     @Test
     void should_add_reservation_times() {
         reservationService.addReservation(
-                new ReservationRequest(LocalDate.of(2024, 9, 1), "네오", 1));
+                new ReservationRequest("2020-01-01", "네오", 1));
         List<Reservation> allReservations = reservationService.findAllReservations();
         assertThat(allReservations).hasSize(3);
     }

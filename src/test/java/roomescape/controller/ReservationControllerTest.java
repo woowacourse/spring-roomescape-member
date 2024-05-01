@@ -50,7 +50,7 @@ class ReservationControllerTest {
         Integer count1 = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
         System.out.println("count1 = " + count1);
         ReservationRequest request = new ReservationRequest(
-                LocalDate.of(2023, 8, 5),
+                "2023-08-05",
                 "브라운",
                 1);
 
