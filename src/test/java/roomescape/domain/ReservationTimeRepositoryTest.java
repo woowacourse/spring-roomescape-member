@@ -1,7 +1,6 @@
 package roomescape.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -83,17 +82,6 @@ class ReservationTimeRepositoryTest {
 
         // then
         assertThat(reservationTimeRepository.findById(id)).isEmpty();
-    }
-
-    @Test
-    @DisplayName("예약 시간을 사용하는 예약이 존재하면, 삭제하지 않는다.")
-    void cantDelete() {
-        // given
-        Long id = 1L;
-
-        // when, then
-        assertThatThrownBy(() -> reservationTimeRepository.removeById(id))
-                .isInstanceOf(IllegalStateException.class);
     }
 
     @Test

@@ -95,6 +95,16 @@ public class JdbcReservationRepository implements ReservationRepository {
                 > 0;
     }
 
+    public boolean hasByTimeId(Long id) {
+        return jdbcTemplate.queryForObject(
+                """
+                        SELECT count(*)
+                        FROM reservation
+                        WHERE time_id = ?""",
+                Integer.class, id)
+                > 0;
+    }
+
     private RowMapper<Reservation> reservationRowMapper() {
         return (resultSet, rowNum) -> {
             LocalTime startAt = LocalTime.parse(resultSet.getString("start_at"));

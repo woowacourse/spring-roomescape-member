@@ -51,4 +51,9 @@ public class MemoryReservationRepository implements ReservationRepository {
     public boolean hasDuplicateReservation(Reservation reservation) {
         return false;
     }
+
+    @Override
+    public boolean hasByTimeId(Long id) {
+        return false;
+    }
 }

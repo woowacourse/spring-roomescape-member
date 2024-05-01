@@ -12,4 +12,6 @@ public interface ReservationRepository {
     void removeById(Long id);
 
     boolean hasDuplicateReservation(Reservation reservation);
+
+    boolean hasByTimeId(Long id);
 }

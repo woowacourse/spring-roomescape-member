@@ -27,7 +27,7 @@ public class ConsoleConfig {
     }
 
     public ReservationTimeService reservationTimeService() {
-        return new ReservationTimeService(reservationTimeRepository());
+        return new ReservationTimeService(reservationTimeRepository(), reservationRepository());
     }
 
     public ReservationService reservationService() {
