@@ -1,5 +1,6 @@
 package roomescape.time.repository;
 
+import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -18,8 +19,8 @@ public class ReservationTimeDao {
     private final SimpleJdbcInsert jdbcInsert;
 
     private final RowMapper<ReservationTime> reservationTimeRowMapper = (resultSet, __) -> new ReservationTime(
-        resultSet.getLong("id"),
-        resultSet.getTime("start_at").toLocalTime()
+            resultSet.getLong("id"),
+            resultSet.getTime("start_at").toLocalTime()
     );
 
     public ReservationTimeDao(JdbcTemplate jdbcTemplate) {
@@ -44,6 +45,15 @@ public class ReservationTimeDao {
                 .addValue("start_at", reservationTime.startAt());
         long id = jdbcInsert.executeAndReturnKey(params).longValue();
         return findById(id);
+    }
+
+    public boolean exists(LocalTime startAt) {
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM RESERVATION_TIME WHERE START_AT = ?",
+                Integer.class,
+                startAt
+        );
+        return count != null && count > 0;
     }
 
     public void delete(long id) {

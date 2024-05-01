@@ -1,5 +1,6 @@
 package roomescape.time.service;
 
+import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -21,7 +22,14 @@ public class ReservationTimeService {
     }
 
     public ReservationTime save(ReservationTime reservationTime) {
+        if (exists(reservationTime.startAt())) {
+            throw new IllegalArgumentException("StartAt already exists");
+        }
         return reservationTimeDao.save(reservationTime);
+    }
+
+    public boolean exists(LocalTime startAt) {
+        return reservationTimeDao.exists(startAt);
     }
 
     public void delete(long id) {
