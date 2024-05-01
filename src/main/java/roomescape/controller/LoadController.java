@@ -21,4 +21,9 @@ public class LoadController {
     public String loadTimePage() {
         return "admin/time";
     }
+
+    @GetMapping("/theme")
+    public String loadThemePage() {
+        return "admin/theme";
+    }
 }

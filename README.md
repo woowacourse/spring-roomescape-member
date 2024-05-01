@@ -29,7 +29,7 @@
 
 ## 2단계 기능 요구 사항
 
-- [ ] /admin/theme 요청 시 테마 관리 페이지를 응답
+- [x] /admin/theme 요청 시 테마 관리 페이지를 응답
 - [ ] 어드민에서 방탈출 예약 페이지 변경
 
 - '테마' 도메인 추가 (id, name, description, thumbnail)

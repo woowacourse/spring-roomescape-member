@@ -8,7 +8,6 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class LoadControllerTest {
     @LocalServerPort
     private int port;
@@ -39,6 +38,16 @@ class LoadControllerTest {
         RestAssured.given().log().all()
                 .port(port)
                 .when().get("/admin/time")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @DisplayName("테마 관리 페이지를 열 수 있다.")
+    @Test
+    void loadThemePage() {
+        RestAssured.given().log().all()
+                .port(port)
+                .when().get("/admin/theme")
                 .then().log().all()
                 .statusCode(200);
     }
