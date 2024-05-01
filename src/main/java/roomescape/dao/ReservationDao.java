@@ -64,10 +64,16 @@ public class ReservationDao {
                 r.name,
                 r.date,
                 t.id AS time_id,
-                t.start_at AS time_value
+                t.start_at AS time_value,
+                th.id AS theme_id,
+                th.name AS theme_name,
+                th.description AS theme_description,
+                th.thumbnail AS theme_thumbnail
                 FROM reservation AS r
-                INNER JOIN reservation_time AS t
-                ON r.time_id = t.id
+                INNER JOIN reservation_time AS t 
+                ON r.time_id = t.id 
+                INNER JOIN theme AS th 
+                ON r.theme_id = th.id 
                 """;
         return jdbcTemplate.query(sql, rowMapper);
     }
