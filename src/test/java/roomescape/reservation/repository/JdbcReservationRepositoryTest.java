@@ -59,7 +59,7 @@ class JdbcReservationRepositoryTest extends DummyDataFixture {
     void existByReservation_whenSameName() {
         Reservation reservation = new Reservation(null, "아서", LocalDate.of(2024, 04, 24),
                 1L, LocalTime.of(15, 40));
-        assertThat(jdbcReservationRepository.existByReservationDateAndTime(reservation)).isTrue();
+        assertThat(jdbcReservationRepository.existsByDateAndTime(reservation.getDate(), reservation.getReservationTime().getId())).isTrue();
     }
 
     @Test
@@ -67,7 +67,7 @@ class JdbcReservationRepositoryTest extends DummyDataFixture {
     void existByReservation_whenNotSameName() {
         Reservation reservation = new Reservation(null, "마크", LocalDate.of(2024, 04, 24),
                 1L, LocalTime.of(15, 40));
-        assertThat(jdbcReservationRepository.existByReservationDateAndTime(reservation)).isTrue();
+        assertThat(jdbcReservationRepository.existsByDateAndTime(reservation.getDate(), reservation.getReservationTime().getId())).isTrue();
     }
 
     @Test
@@ -75,6 +75,6 @@ class JdbcReservationRepositoryTest extends DummyDataFixture {
     void existByReservation_isFalse() {
         Reservation reservation = new Reservation(null, "아서", LocalDate.of(2024, 05, 24),
                 1L, LocalTime.of(15, 40));
-        assertThat(jdbcReservationRepository.existByReservationDateAndTime(reservation)).isFalse();
+        assertThat(jdbcReservationRepository.existsByDateAndTime(reservation.getDate(), reservation.getReservationTime().getId())).isFalse();
     }
 }

@@ -42,12 +42,12 @@ class ReservationServiceTest extends DummyDataFixture {
     void createReservation() {
         // given
         CreateReservationRequest createReservationRequest = new CreateReservationRequest(
-                LocalDate.of(10, 10, 10), "포비", 1L);
+                LocalDate.of(3000, 10, 10), "포비", 1L);
 
         // stub
-        Mockito.when(reservationRepository.save(any(Reservation.class))).thenReturn(10L);
+        Mockito.when(reservationRepository.save(any(Reservation.class))).thenReturn(any(Reservation.class));
         Mockito.when(reservationTimeRepository.findById(1L))
-                .thenReturn(Optional.of(new ReservationTime(null, any(LocalTime.class))));
+                .thenReturn(Optional.of(new ReservationTime(null, LocalTime.of(12, 0))));
 
         // when
         CreateReservationResponse createReservationResponse = reservationService.createReservation(

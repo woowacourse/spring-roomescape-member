@@ -1,6 +1,8 @@
 package roomescape.reservation.repository;
 
 import java.sql.Date;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
@@ -98,7 +100,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existByReservationDateAndTime(final Reservation reservation) {
+    public boolean existsByDateAndTime(final LocalDate date, final Long timeId) {
         String sql = """
                 select count(*)
                 from reservation as r
@@ -106,8 +108,6 @@ public class JdbcReservationRepository implements ReservationRepository {
                 on r.time_id = t.id
                 where r.date = ? and r.time_id = ?
                 """; // TODO: 줄바꿈 고쳐라잉
-        return jdbcTemplate.queryForObject(sql, Integer.class,
-                reservation.getDate(),
-                reservation.getReservationTime().getId()) != 0;
+        return jdbcTemplate.queryForObject(sql, Integer.class, date, timeId) != 0;
     }
 }
