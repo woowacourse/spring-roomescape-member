@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class ViewController {
 
     @GetMapping("/admin")
-    public String mainPage() {
+    public String adminPage() {
         return "admin/index";
     }
 
@@ -17,12 +17,22 @@ public class ViewController {
     }
 
     @GetMapping("/admin/reservation")
-    public String reservationPage() {
+    public String reservationAdminPage() {
         return "admin/reservation-new";
     }
 
     @GetMapping("/admin/theme")
-    public String themePage() {
+    public String themeAdminPage() {
         return "admin/theme";
+    }
+
+    @GetMapping("/reservation")
+    public String reservationUserPage() {
+        return "reservation";
+    }
+
+    @GetMapping
+    public String mainUserPage() {
+        return "index";
     }
 }
