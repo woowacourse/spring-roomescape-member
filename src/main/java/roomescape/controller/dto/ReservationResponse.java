@@ -1,8 +1,8 @@
 package roomescape.controller.dto;
 
 import java.util.List;
-import roomescape.service.dto.ReservationOutput;
-import roomescape.service.dto.ReservationTimeOutput;
+import roomescape.service.dto.output.ReservationOutput;
+import roomescape.service.dto.output.ReservationTimeOutput;
 
 public record ReservationResponse(long id, String name, String date, ReservationTimeOutput time) {
 

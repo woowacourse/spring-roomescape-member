@@ -10,8 +10,8 @@ import roomescape.exception.NotExistReservationException;
 import roomescape.exception.NotExistReservationTimeException;
 import roomescape.exception.PastTimeReservationException;
 import roomescape.exception.ReservationAlreadyExistsException;
-import roomescape.service.dto.ReservationInput;
-import roomescape.service.dto.ReservationOutput;
+import roomescape.service.dto.input.ReservationInput;
+import roomescape.service.dto.output.ReservationOutput;
 import roomescape.service.util.DateTimeFormatter;
 
 @Service

@@ -15,8 +15,8 @@ import roomescape.domain.ReservationTime;
 import roomescape.exception.ExistReservationInReservationTimeException;
 import roomescape.exception.NotExistReservationTimeException;
 import roomescape.exception.ReservationTimeAlreadyExistsException;
-import roomescape.service.dto.ReservationTimeInput;
-import roomescape.service.dto.ReservationTimeOutput;
+import roomescape.service.dto.input.ReservationTimeInput;
+import roomescape.service.dto.output.ReservationTimeOutput;
 
 @SpringBootTest
 public class ReservationTimeServiceTest {

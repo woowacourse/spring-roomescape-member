@@ -15,8 +15,8 @@ import org.springframework.test.context.ActiveProfiles;
 import roomescape.TestConfig;
 import roomescape.service.ReservationService;
 import roomescape.service.ReservationTimeService;
-import roomescape.service.dto.ReservationInput;
-import roomescape.service.dto.ReservationTimeInput;
+import roomescape.service.dto.input.ReservationInput;
+import roomescape.service.dto.input.ReservationTimeInput;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,classes = TestConfig.class)
 @ActiveProfiles("test")

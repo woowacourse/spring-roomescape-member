@@ -16,8 +16,8 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.service.ReservationService;
 import roomescape.service.ReservationTimeService;
-import roomescape.service.dto.ReservationInput;
-import roomescape.service.dto.ReservationTimeInput;
+import roomescape.service.dto.input.ReservationInput;
+import roomescape.service.dto.input.ReservationTimeInput;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class ReservationTimeControllerTest {
@@ -43,8 +43,8 @@ public class ReservationTimeControllerTest {
     }
 
     @Test
-    @DisplayName("시간 생성에 성공하면, 200을 반환한다")
-    void return_200_when_reservationTime_create_success() {
+    @DisplayName("시간 생성에 성공하면, 201을 반환한다")
+    void return_201_when_reservationTime_create_success() {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
 

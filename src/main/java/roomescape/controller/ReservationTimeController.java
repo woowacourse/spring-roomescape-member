@@ -18,7 +18,7 @@ import roomescape.exception.ExistReservationInReservationTimeException;
 import roomescape.exception.NotExistReservationTimeException;
 import roomescape.exception.ReservationTimeAlreadyExistsException;
 import roomescape.service.ReservationTimeService;
-import roomescape.service.dto.ReservationTimeOutput;
+import roomescape.service.dto.output.ReservationTimeOutput;
 
 @RestController
 @RequestMapping("/times")
