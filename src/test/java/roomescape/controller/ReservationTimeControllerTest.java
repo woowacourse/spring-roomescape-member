@@ -95,7 +95,6 @@ class ReservationTimeControllerTest {
         LocalTime time = LocalTime.now();
         ReservationTime reservationTime = new ReservationTime(timeId, time);
 
-        // TODO: void 메소드일 때도 모킹이 가능한지 확인
         when(reservationTimeService.delete(timeId))
             .thenThrow(IllegalArgumentException.class);
 

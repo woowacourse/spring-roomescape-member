@@ -29,8 +29,6 @@ public class JdbcReservationTimeRepositoryImpl implements ReservationTimeReposit
 
     @Override
     public ReservationTime save(ReservationTime reservationTime) {
-        // TODO:
-
         SqlParameterSource saveSource = new BeanPropertySqlParameterSource(reservationTime);
         long id = simpleJdbcInsert
             .executeAndReturnKey(saveSource)
@@ -50,9 +48,9 @@ public class JdbcReservationTimeRepositoryImpl implements ReservationTimeReposit
     }
 
     @Override
-    public void deleteById(Long id) {
+    public int deleteById(Long id) {
         String sql = "DELETE FROM reservation_time WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        return jdbcTemplate.update(sql, id);
     }
 
     @Override
