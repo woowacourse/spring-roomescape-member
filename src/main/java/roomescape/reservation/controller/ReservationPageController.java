@@ -13,7 +13,7 @@ public class ReservationPageController {
 
     @GetMapping("/admin/reservation")
     public String adminReservationPage() {
-        return "admin/reservation";
+        return "admin/reservation-new";
     }
 }
 
