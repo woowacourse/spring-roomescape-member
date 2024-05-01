@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import java.util.Objects;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationTimeRequest;
 
@@ -13,21 +14,28 @@ public class TestSetting {
     private TestSetting() {
     }
 
-    public static Reservation createReservation() {
+    public static Reservation createReservation(ReservationTime reservationTime, Theme theme) {
         String name = "ted";
         LocalDate date = LocalDate.parse("2024-01-01");
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.parse("10:00"));
-        return new Reservation(name, date, reservationTime);
+        return new Reservation(name, date, reservationTime, theme);
     }
 
     public static ReservationTime createReservationTime() {
         return new ReservationTime(LocalTime.parse("10:00"));
     }
 
+    public static Theme createTheme() {
+        String name = "테마명";
+        String description = "테마 설명 테마 설명 테마 설명";
+        String thumbnail = "썸네일명.jpg";
+        return new Theme(name, description, thumbnail);
+    }
+
     public static ReservationRequest createReservationRequest() {
         return new ReservationRequest(
                 "ted",
                 LocalDate.parse("2024-01-01"),
+                1L,
                 1L);
     }
 
