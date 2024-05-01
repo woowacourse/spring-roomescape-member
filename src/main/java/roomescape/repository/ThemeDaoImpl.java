@@ -3,6 +3,7 @@ package roomescape.repository;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -47,5 +48,15 @@ public class ThemeDaoImpl implements ThemeDao {
     @Override
     public void deleteById(Long id) {
         jdbcTemplate.update("delete from theme where id = ?", id);
+    }
+
+    @Override
+    public Optional<Theme> findById(Long id) {
+        String sql = "select * from theme where id = ?";
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(sql, rowMapper, id));
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
 }
