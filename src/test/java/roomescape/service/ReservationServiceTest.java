@@ -8,6 +8,8 @@ import roomescape.domain.Reservation;
 import roomescape.dto.ReservationRequestDto;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
@@ -33,7 +35,7 @@ public class ReservationServiceTest {
 
     @Test
     void insertReservationTest() {
-        ReservationRequestDto reservationRequestDto = new ReservationRequestDto("test", LocalDate.parse("2024-01-01"), 1L);
+        ReservationRequestDto reservationRequestDto = new ReservationRequestDto("test", LocalDate.now().plusDays(1), 1L);
         Reservation reservation = reservationService.insertReservation(reservationRequestDto);
 
         assertThat(reservation.getId()).isEqualTo(2L);
@@ -46,5 +48,15 @@ public class ReservationServiceTest {
         int sizeBeforeDelete = reservationService.getAllReservations().size();
         assertThatCode(() -> reservationService.deleteReservation(1L)).doesNotThrowAnyException();
         assertThat(reservationService.getAllReservations().size()).isEqualTo(sizeBeforeDelete - 1);
+    }
+
+    @Test
+    void invalidDateTimeTest() {
+        LocalDate localDate = LocalDate.now().minusDays(2);
+
+        ReservationRequestDto reservationRequestDto = new ReservationRequestDto("test", localDate, 1L);
+
+        assertThatThrownBy(() -> reservationService.insertReservation(reservationRequestDto))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }
