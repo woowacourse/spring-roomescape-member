@@ -1,94 +1,77 @@
 package roomescape.reservation.controller;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.Mockito.doReturn;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestFactory;
-import roomescape.TestSupport;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import roomescape.reservation.dto.ReservationRequest;
+import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservation.service.ReservationService;
+import roomescape.time.dto.TimeResponse;
 
-class ReservationApiControllerTest extends TestSupport {
+@WebMvcTest(ReservationApiController.class)
+class ReservationApiControllerTest {
+
+    @MockBean
+    private ReservationService reservationService;
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Test
-    @DisplayName("예약 목록을 조회한다.")
-    void findAllTest() {
-        RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(0));
+    @DisplayName("예약 목록 조회에 성공하면 200 응답을 받는다.")
+    void getReservationRequestTest() throws Exception {
+        mockMvc.perform(get("/reservations")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(0)));
     }
 
-    @TestFactory
-    @DisplayName("예약을 추가하고 삭제합니다.")
-    Collection<DynamicTest> createAndDeleteReservation() {
+    @Test
+    @DisplayName("예약을 성공적으로 추가하면 201 응답과 Location 헤더에 리소스 저장 경로를 받는다.")
+    void createReservationRequestTest() throws Exception {
 
-        Map<String, Object> timeParams = Map.of(
-                "startAt", "10:00"
-        );
+        ReservationRequest reservationRequest = new ReservationRequest("hogi", LocalDate.now(), 1L);
+        ReservationResponse reservationResponse = new ReservationResponse(1L, "hogi", reservationRequest.date(),
+                new TimeResponse(1L, LocalTime.now()));
 
-        Map<String, Object> params = Map.of(
-                "name", "브라운",
-                "date", "2023-08-05",
-                "timeId", 1L);
+        doReturn(1L).when(reservationService)
+                .save(reservationRequest);
 
-        return List.of(
-                DynamicTest.dynamicTest("시간을 추가한다", () -> {
-                    RestAssured.given().log().all()
-                            .contentType(ContentType.JSON)
-                            .body(timeParams)
-                            .when().post("/times")
-                            .then().log().all()
-                            .statusCode(200);
-                }),
+        doReturn(reservationResponse).when(reservationService)
+                .findById(1L);
 
-                DynamicTest.dynamicTest("예약을 추가한다.", () -> {
-                    RestAssured.given().log().all()
-                            .contentType(ContentType.JSON)
-                            .body(params)
-                            .when().post("/reservations")
-                            .then().log().all()
-                            .statusCode(200)
-                            .body("id", is(1));
-                }),
+        mockMvc.perform(post("/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(reservationRequest)))
+                .andExpect(status().isCreated())
+                .andExpect(header().string("Location", "/reservations/1"))
+                .andExpect(jsonPath("$.id").value(reservationResponse.id()));
+    }
 
-                DynamicTest.dynamicTest("예약을 조회했을 때 하나이다.", () -> {
-                    RestAssured.given().log().all()
-                            .when().get("/reservations")
-                            .then().log().all()
-                            .statusCode(200)
-                            .body("size()", is(1));
-                }),
-
-                DynamicTest.dynamicTest("예약을 조회했을 때 브라운 이름이 존재한다.", () -> {
-                    RestAssured.given().log().all()
-                            .when().get("/reservations")
-                            .then().log().all()
-                            .statusCode(200)
-                            .body("name", contains("브라운"));
-                }),
-
-                DynamicTest.dynamicTest("예약을 삭제한다.", () -> {
-                    RestAssured.given().log().all()
-                            .when().delete("/reservations/1")
-                            .then().log().all()
-                            .statusCode(200);
-                }),
-
-                DynamicTest.dynamicTest("예약을 삭제한 후 조회 했을 때 갯수가 0이다.", () -> {
-                    RestAssured.given().log().all()
-                            .when().get("/reservations")
-                            .then().log().all()
-                            .statusCode(200)
-                            .body("size()", is(0));
-                })
-        );
+    @Test
+    @DisplayName("예약을 성공적으로 제거하면 204 응답을 받는다.")
+    void deleteReservationRequestTest() throws Exception {
+        mockMvc.perform(delete("/reservations/{id}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
     }
 }

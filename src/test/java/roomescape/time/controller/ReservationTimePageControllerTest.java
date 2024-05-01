@@ -24,7 +24,7 @@ class ReservationTimePageControllerTest {
     @Test
     @DisplayName("/time 을 요청하면 time.html 를 반환한다.")
     void requestTime() throws Exception {
-        mockMvc.perform(get("/time"))
+        mockMvc.perform(get("/admin/time"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("admin/time"));
     }

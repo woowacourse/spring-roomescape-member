@@ -23,8 +23,16 @@ class ReservationPageControllerTest {
 
     @Test
     @DisplayName("/reservation 를 요청하면 reservation.html 를 반환한다.")
-    void requestAdminReservation() throws Exception {
+    void requestUserReservation() throws Exception {
         mockMvc.perform(get("/reservation"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("reservation"));
+    }
+
+    @Test
+    @DisplayName("/admin/reservation 를 요청하면 admin/reservation.html 를 반환한다.")
+    void requestAdminReservation() throws Exception {
+        mockMvc.perform(get("/admin/reservation"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("admin/reservation"));
     }
