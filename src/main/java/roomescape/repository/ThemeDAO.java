@@ -1,19 +1,27 @@
 package roomescape.repository;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
 
+import javax.sql.DataSource;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class ThemeDAO implements ThemeRepository {
 
     private final JdbcTemplate jdbcTemplate;
+    private SimpleJdbcInsert insertActor;
 
-    public ThemeDAO(JdbcTemplate jdbcTemplate) {
+    public ThemeDAO(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
+        this.insertActor = new SimpleJdbcInsert(dataSource)
+                .withTableName("theme")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
@@ -30,7 +38,12 @@ public class ThemeDAO implements ThemeRepository {
 
     @Override
     public Theme addTheme(Theme theme) {
-        return null;
+        Map<String, Object> parameters = new HashMap<>(1);
+        parameters.put("name", theme.getName());
+        parameters.put("description", theme.getDescription());
+        parameters.put("thumbnail", theme.getThumbnail());
+        Number newId = insertActor.executeAndReturnKey(parameters);
+        return new Theme(newId.longValue(), theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 
     @Override

@@ -5,6 +5,7 @@ import roomescape.repository.ThemeRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class FakeThemeRepository implements ThemeRepository {
 
@@ -14,6 +15,8 @@ public class FakeThemeRepository implements ThemeRepository {
             new Theme(3, "포비", "스릴러", "스릴러.jpg")
     ));
 
+    private AtomicLong index = new AtomicLong(1L);
+
     @Override
     public List<Theme> findAllThemes() {
         return themes;
@@ -21,7 +24,9 @@ public class FakeThemeRepository implements ThemeRepository {
 
     @Override
     public Theme addTheme(Theme theme) {
-        return null;
+        Theme newTheme = new Theme(index.getAndIncrement(), theme.getName(), theme.getDescription(), theme.getThumbnail());
+        themes.add(newTheme);
+        return newTheme;
     }
 
     @Override

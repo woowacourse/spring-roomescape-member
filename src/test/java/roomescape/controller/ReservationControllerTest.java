@@ -47,7 +47,6 @@ class ReservationControllerTest {
     @DisplayName("예약을 추가할 수 있다.")
     @Test
     void should_insert_reservation() {
-        Integer count1 = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
         ReservationRequest request = new ReservationRequest(
                 "2030-08-05",
                 "브라운",
@@ -62,7 +61,6 @@ class ReservationControllerTest {
                 .header("Location", "/reservations/1");
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-        System.out.println("count = " + count);
         assertThat(count).isEqualTo(1);
     }
 
