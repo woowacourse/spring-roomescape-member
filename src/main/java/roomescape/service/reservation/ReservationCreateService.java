@@ -28,7 +28,7 @@ public class ReservationCreateService {
         Theme theme = themeRepository.findById(request.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마 입니다."));
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(request.date(), request.timeId(), request.themeId())) {
-            throw new IllegalArgumentException("이미 예약된 시간입니다.");
+            throw new IllegalArgumentException("해당 시간에 이미 예약된 테마입니다.");
         }
         Reservation reservation = SaveReservationRequest.toEntity(request, reservationTime, theme);
 

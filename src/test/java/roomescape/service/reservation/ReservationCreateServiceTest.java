@@ -71,6 +71,6 @@ class ReservationCreateServiceTest {
 
         assertThatThrownBy(() -> reservationCreateService.createReservation(request))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미 예약된 시간입니다.");
+                .hasMessage("해당 시간에 이미 예약된 테마입니다.");
     }
 }

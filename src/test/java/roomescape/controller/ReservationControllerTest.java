@@ -26,6 +26,9 @@ public class ReservationControllerTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private ReservationController reservationController;
+
     @Test
     @DisplayName("예약 페이지 요청이 정상적으로 수행된다.")
     void moveToReservationPage_Success() {
@@ -43,123 +46,6 @@ public class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
-    }
-
-    @Test
-    @Disabled
-    @DisplayName("예약 추가를 정상적으로 수행한다.")
-    void addReservation_Success() {
-        Map<String, String> params = Map.of("name", "브라운",
-                "date", "2023-08-05",
-                "reservationTime", "15:40"
-        );
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("id", is(1));
-
-        RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
-    }
-
-    @Test
-    @Disabled
-    @DisplayName("예약 취소를 정상적으로 수행한다.")
-    void deleteReservation_Success() {
-        Map<String, String> params = Map.of("name", "브라운",
-                "date", "2023-08-05",
-                "reservationTime", "15:40"
-        );
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/reservations");
-
-        RestAssured.given().log().all()
-                .when().delete("/reservations/1")
-                .then().log().all()
-                .statusCode(200);
-
-        RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(0));
-    }
-
-    @Test
-    @Disabled
-    @DisplayName("DB에 저장되어있는 모든 예약을 정상적으로 조회한다.")
-    void selectReservationListRequest_InDatabase_Success() {
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time) VALUES (?, ?, ?)", "브라운", "2023-08-05", "15:40");
-
-        List<Reservation> reservations = RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200).extract()
-                .jsonPath().getList(".", Reservation.class);
-
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-
-        assertThat(reservations.size()).isEqualTo(count);
-    }
-
-    @Test
-    @Disabled
-    @DisplayName("DB에 예약을 정상적으로 추가한다.")
-    void addReservation_InDatabase_Success() {
-        Map<String, String> params = Map.of("name", "브라운",
-                "date", "2023-08-05",
-                "reservationTime", "15:40"
-        );
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(201)
-                .header("Location", "/reservations/1");
-
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-        assertThat(count).isEqualTo(1);
-    }
-
-    @Test
-    @Disabled
-    @DisplayName("DB에 저장된 예약을 정상적으로 삭제한다.")
-    void deleteReservation_InDatabase_Success() {
-        Map<String, String> params = Map.of("name", "브라운",
-                "date", "2023-08-05",
-                "reservationTime", "15:40"
-        );
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(201)
-                .header("Location", "/reservations/1");
-
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-        assertThat(count).isEqualTo(1);
-
-        RestAssured.given().log().all()
-                .when().delete("/reservations/1")
-                .then().log().all()
-                .statusCode(204);
-
-        Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-        assertThat(countAfterDelete).isEqualTo(0);
     }
 
     @Test
@@ -209,8 +95,56 @@ public class ReservationControllerTest {
                 .body("size()", is(1));
     }
 
-    @Autowired
-    private ReservationController reservationController;
+    @Test
+    @DisplayName("DB에 저장된 예약을 정상적으로 삭제한다.")
+    void deleteReservation_InDatabase_Success() {
+        Map<String, Object> reservation = Map.of("name", "브라운",
+                "date", LocalDate.now().plusDays(1L).toString(),
+                "timeId", 1,
+                "themeId", 1
+        );
+
+        Map<String, String> time = Map.of(
+                "startAt", "10:00"
+        );
+
+        Map<String, Object> theme = Map.of("name", "테마",
+                "description", "테마 설명",
+                "thumbnail", "테마 썸네일"
+        );
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(time)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(theme)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .when().delete("/reservations/1")
+                .then().log().all()
+                .statusCode(204);
+
+        RestAssured.given().log().all()
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(0));
+    }
 
     @Test
     @DisplayName("데이터베이스 관련 로직을 컨트롤러에서 분리하였다.")
