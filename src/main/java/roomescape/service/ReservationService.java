@@ -1,5 +1,8 @@
 package roomescape.service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
@@ -32,6 +35,8 @@ public class ReservationService {
 
     public ReservationResponse create(ReservationCreateRequest reservationCreateRequest) {
         ReservationTime reservationTime = reservationTimeRepository.findByTimeId(reservationCreateRequest.timeId());
+        validateAvailableDateTime(reservationCreateRequest.date(), reservationTime.getStartAt());
+
         Reservation reservation = new Reservation(
                 new UserName(reservationCreateRequest.name()),
                 reservationCreateRequest.date(),
@@ -39,6 +44,15 @@ public class ReservationService {
         );
         Reservation savedReservation = reservationRepository.save(reservation);
         return ReservationResponse.from(savedReservation);
+    }
+
+    private void validateAvailableDateTime(LocalDate date, LocalTime time) {
+        LocalDate nowDate = LocalDate.now(ZoneId.of("Asia/Seoul"));
+        LocalTime nowTime = LocalTime.now(ZoneId.of("Asia/Seoul"));
+
+        if (date.isBefore(nowDate) || (date.isEqual(nowDate) && time.isBefore(nowTime))) {
+            throw new IllegalArgumentException("예약 가능한 시간이 아닙니다.");
+        }
     }
 
     public void delete(Long id) {

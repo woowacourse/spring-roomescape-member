@@ -43,7 +43,7 @@ class ReservationControllerTest {
     Stream<DynamicTest> reservationCreateAndDelete() {
         Map<String, String> reservationParams = Map.of(
                 "name", "브라운",
-                "date", "2023-08-05",
+                "date", "2025-08-05",
                 "timeId", "1"
         );
 
@@ -172,6 +172,41 @@ class ReservationControllerTest {
                 "name", "초롱",
                 "date", "2024-10-10",
                 "timeId", "시간 선택"
+        );
+
+        Map<String, String> reservationTimeParams = Map.of(
+                "id", "1",
+                "startAt", "10:00"
+        );
+
+        return Stream.of(
+                dynamicTest("예약 시간을 추가한다.", () -> {
+                    RestAssured.given().log().all()
+                            .contentType(ContentType.JSON)
+                            .body(reservationTimeParams)
+                            .when().post("/times")
+                            .then().log().all()
+                            .statusCode(201);
+                }),
+
+                dynamicTest("예약을 추가한다", () -> {
+                    RestAssured.given().log().all()
+                            .contentType(ContentType.JSON).body(reservationParams)
+                            .when().post("/reservations")
+                            .then().log().all()
+                            .statusCode(400);
+                })
+        );
+    }
+
+    @TestFactory
+    @DisplayName("예약 시간이 현재 시간보다 이전 시간이면 예약이 불가능한지 확인한다.")
+    Stream<DynamicTest> checkIsPassedReservationTime() {
+
+        Map<String, String> reservationParams = Map.of(
+                "name", "초롱",
+                "date", "2020-05-01",
+                "timeId", "1"
         );
 
         Map<String, String> reservationTimeParams = Map.of(
