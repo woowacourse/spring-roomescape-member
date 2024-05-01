@@ -85,6 +85,13 @@ public class ReservationRepository {
         return jdbcTemplate.queryForObject(sql, Boolean.class, reservationTimeId);
     }
 
+    public boolean existsByReservationThemeId(Long themeId) {
+        String sql = "SELECT exists(SELECT 1 FROM reservation " +
+                "where theme_id = ?)";
+
+        return jdbcTemplate.queryForObject(sql, Boolean.class, themeId);
+    }
+
     public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long reservationTimeId, Long themeId) {
         String sql = "SELECT exists(SELECT 1 FROM reservation " +
                 "where date = ? and reservation_time_id = ? and theme_id = ?)";
