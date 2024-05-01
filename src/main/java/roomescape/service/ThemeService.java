@@ -1,7 +1,6 @@
 package roomescape.service;
 
 import java.util.List;
-import java.util.Objects;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeRequest;
@@ -11,7 +10,6 @@ import roomescape.exception.RoomescapeException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 
-//todo 테스트코드 작성
 @Service
 public class ThemeService {
 

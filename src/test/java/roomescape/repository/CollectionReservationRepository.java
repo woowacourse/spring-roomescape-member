@@ -1,5 +1,7 @@
 package roomescape.repository;
 
+import static roomescape.exception.ExceptionType.RESERVATION_TIME_NOT_FOUND;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
@@ -7,6 +9,7 @@ import java.util.function.Predicate;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationRequest;
+import roomescape.exception.RoomescapeException;
 
 public class CollectionReservationRepository implements ReservationRepository {
     private final List<Reservation> reservations;
@@ -39,7 +42,7 @@ public class CollectionReservationRepository implements ReservationRepository {
         ReservationTime findTime = timeRepository.findAll().stream()
                 .filter(reservationTime -> reservationTime.getId() == reservation.getReservationTime().getId())
                 .findFirst()
-                .get();
+                .orElseThrow(() -> new RoomescapeException(RESERVATION_TIME_NOT_FOUND));
         Reservation saved = new Reservation(atomicLong.incrementAndGet(), reservation.getName(), reservation.getDate(),
                 findTime, reservation.getTheme());
         reservations.add(saved);
