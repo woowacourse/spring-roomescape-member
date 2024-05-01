@@ -10,10 +10,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 
 @Service
 @Transactional(readOnly = true)
@@ -21,13 +23,15 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
     private final Clock clock;
 
     public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository,
+                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository,
                               Clock clock) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
         this.clock = clock;
     }
 
@@ -42,7 +46,8 @@ public class ReservationService {
     @Transactional
     public ReservationResponse addReservation(ReservationRequest reservationRequest) {
         ReservationTime reservationTime = reservationTimeRepository.getById(reservationRequest.timeId());
-        Reservation reservation = reservationRequest.toReservation(reservationTime);
+        Theme theme = themeRepository.getById(reservationRequest.themeId());
+        Reservation reservation = reservationRequest.toReservation(reservationTime, theme);
 
         validateDateTimeNotPassed(reservation.getDate(), reservationTime.getStartAt());
         validateDuplicatedReservation(reservation);
@@ -62,7 +67,10 @@ public class ReservationService {
     }
 
     private void validateDuplicatedReservation(Reservation reservation) {
-        if (reservationRepository.existsByDateAndTimeId(reservation.getDate(), reservation.getTimeId())) {
+        if (reservationRepository.existsByDateAndTimeIdAndThemeId(
+                reservation.getDate(),
+                reservation.getTimeId(),
+                reservation.getThemeId())) {
             throw new IllegalArgumentException("해당 날짜/시간에 이미 예약이 존재합니다.");
         }
     }
