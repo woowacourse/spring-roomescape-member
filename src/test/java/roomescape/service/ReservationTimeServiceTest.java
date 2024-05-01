@@ -19,8 +19,7 @@ class ReservationTimeServiceTest {
     @BeforeEach
     void initService() {
         CollectionReservationTimeRepository reservationTimeRepository = new CollectionReservationTimeRepository();
-        CollectionReservationRepository reservationRepository =
-                new CollectionReservationRepository(reservationTimeRepository);
+        CollectionReservationRepository reservationRepository = new CollectionReservationRepository();
         reservationTimeService = new ReservationTimeService(reservationRepository, reservationTimeRepository);
     }
 

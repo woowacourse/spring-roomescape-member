@@ -41,7 +41,7 @@ class ReservationServiceTest {
     void initService() {
         CollectionReservationTimeRepository reservationTimeRepository = new CollectionReservationTimeRepository();
         ThemeRepository themeRepository = new CollectionThemeRepository();
-        reservationRepository = new CollectionReservationRepository(reservationTimeRepository);
+        reservationRepository = new CollectionReservationRepository();
         reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
 
         defaultTime = reservationTimeRepository.save(defaultTime);

@@ -36,7 +36,7 @@ class ThemeServiceTest {
     void initService() {
         themeRepository = new CollectionThemeRepository();
         reservationTimeRepository = new CollectionReservationTimeRepository();
-        reservationRepository = new CollectionReservationRepository(reservationTimeRepository);
+        reservationRepository = new CollectionReservationRepository();
         themeService = new ThemeService(themeRepository, reservationRepository);
     }
 

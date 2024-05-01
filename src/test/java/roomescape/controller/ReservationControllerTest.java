@@ -21,7 +21,6 @@ import roomescape.repository.CollectionReservationTimeRepository;
 import roomescape.repository.CollectionThemeRepository;
 import roomescape.service.ReservationService;
 
-//TODO : 전체적으로 테스트 수정
 class ReservationControllerTest {
     private static final long TIME_ID = 1L;
     private static final LocalTime TIME = LocalTime.now();
@@ -35,7 +34,7 @@ class ReservationControllerTest {
     void initController() {
         CollectionReservationTimeRepository timeRepository = new CollectionReservationTimeRepository();
         CollectionThemeRepository themeRepository = new CollectionThemeRepository();
-        collectionReservationRepository = new CollectionReservationRepository(timeRepository);
+        collectionReservationRepository = new CollectionReservationRepository();
         ReservationService reservationService = new ReservationService(collectionReservationRepository, timeRepository,
                 themeRepository);
         reservationController = new ReservationController(reservationService);
