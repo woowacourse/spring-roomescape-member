@@ -5,13 +5,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalTime;
-import java.time.format.DateTimeParseException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.dao.EmptyResultDataAccessException;
 import roomescape.console.dao.InMemoryReservationTimeDao;
 import roomescape.console.db.InMemoryReservationDb;
@@ -60,7 +56,7 @@ class InMemoryReservationTimeDaoTest {
                 .isInstanceOf(EmptyResultDataAccessException.class);
     }
 
-    @DisplayName("해당 id의 예약이 존재하는 지 여부를 반환한다.")
+    @DisplayName("중복된 예약 시간이 존재하는 지 여부를 반환한다.")
     @Test
     void existsByStartAt() {
         boolean existsFalse = reservationTimeDao.existByStartAt(LocalTime.of(10, 0));
@@ -88,7 +84,8 @@ class InMemoryReservationTimeDaoTest {
     @Test
     void deleteByIdDeletesReservationAlso() {
         reservationTimeDao.save(new ReservationTime("10:00"));
-        inMemoryReservationDb.insert("aa", "2024-10-11", new ReservationTime(1L, LocalTime.of(10, 00)));
+        inMemoryReservationDb.insert("aa", "2024-10-11",
+                new ReservationTime(1L, LocalTime.of(10, 00)));
 
         reservationTimeDao.deleteById(1L);
 

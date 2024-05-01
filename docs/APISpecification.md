@@ -10,6 +10,7 @@
 | POST   |                 | /reservations      | 예약 추가               |                         | name, date, timeId                  |
 |        | 201 CREATED     |                    | 예약 추가 성공            |                         | id, name, date, time{id, startAt}   |
 |        | 400 BAD REQUEST |                    | 입력 양식으로 인한 예약 추가 실패 |                         | error message                       |
+|        | 400 BAD REQUEST |                    | 중복으로 인한 예약 추가 실패    |                         | error message                       |
 | DELETE |                 | /reservations/{id} | 예약 삭제               |                         |                                     |
 |        | 204 NO CONTENT  |                    | 예약 삭제 성공            |                         |                                     |
 |        | 404 NOT FOUND   |                    | 예약 삭제 실패            |                         |                                     |

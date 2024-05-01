@@ -58,7 +58,7 @@ class ReservationControllerTest {
         //then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new ReservationRequest("브라운", "2023-08-05", savedReservationTime.getId()))
+                .body(new ReservationRequest("브라운", "9999-08-05", savedReservationTime.getId()))
                 .when().post("/reservations")
                 .then().log().all().assertThat().statusCode(HttpStatus.CREATED.value());
     }
@@ -89,6 +89,39 @@ class ReservationControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(new ReservationRequest("브라운", value, savedReservationTime.getId()))
+                .when().post("/reservations")
+                .then().log().all().assertThat().statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("지나간 시간 예약 시도 시 400을 응답한다.")
+    @Test
+    void outdatedReservation() {
+        //given
+        ReservationTime savedReservationTime = reservationTimeDao.save(
+                new ReservationTime("10:00"));
+        //when
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(new ReservationRequest("브라운", "2023-12-12", savedReservationTime.getId()))
+                .when().post("/reservations")
+                .then().log().all().assertThat().statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("중복된 시간 예약 시도 시 400을 응답한다.")
+    @Test
+    void duplicateReservation() {
+        //given
+        ReservationTime savedReservationTime = reservationTimeDao.save(
+                new ReservationTime("10:00"));
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(new ReservationRequest("브라운", "9999-12-12", savedReservationTime.getId()))
+                .when().post("/reservations")
+                .then().log().all();
+        //when&then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(new ReservationRequest("브라운", "9999-12-12", savedReservationTime.getId()))
                 .when().post("/reservations")
                 .then().log().all().assertThat().statusCode(HttpStatus.BAD_REQUEST.value());
     }

@@ -1,13 +1,13 @@
 package roomescape.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.dao.EmptyResultDataAccessException;
 import roomescape.console.dao.InMemoryReservationDao;
 import roomescape.console.db.InMemoryReservationDb;
 import roomescape.console.db.InMemoryReservationTimeDb;
@@ -31,6 +31,20 @@ class InMemoryReservationDaoTest {
         assertThat(reservationDao.findAll()).isEmpty();
     }
 
+    @DisplayName("날짜와 시간이 같은 예약이 존재하는지 여부를 반환한다.")
+    @Test
+    void duplicatedReservationTest() {
+        boolean existsFalse = reservationDao.existsByDateTime(LocalDate.of(9999, 12, 12), 1L);
+        reservationDao.save(new Reservation("asd", "9999-12-12", new ReservationTime(1L,
+                LocalTime.of(10, 0))));
+        boolean existsTrue = reservationDao.existsByDateTime(LocalDate.of(9999, 12, 12), 1L);
+
+        assertAll(
+                () -> assertThat(existsFalse).isFalse(),
+                () -> assertThat(existsTrue).isTrue()
+        );
+    }
+
     @DisplayName("예약을 저장한다.")
     @Test
     void save() {
@@ -38,7 +52,7 @@ class InMemoryReservationDaoTest {
         inMemoryReservationTimeDb.insert(LocalTime.of(10, 0));
         ReservationTime reservationTime = inMemoryReservationTimeDb.selectById(1L);
         //when
-        reservationDao.save(new Reservation("aa", "2023-10-10", reservationTime));
+        reservationDao.save(new Reservation("aa", "9999-10-10", reservationTime));
         //then
         assertThat(reservationDao.findAll()).hasSize(1);
     }
@@ -49,7 +63,7 @@ class InMemoryReservationDaoTest {
         //given
         inMemoryReservationTimeDb.insert(LocalTime.of(10, 0));
         ReservationTime reservationTime = inMemoryReservationTimeDb.selectById(1L);
-        reservationDao.save(new Reservation("aa", "2023-10-10", reservationTime));
+        reservationDao.save(new Reservation("aa", "9999-10-10", reservationTime));
         //when
         reservationDao.deleteById(1L);
         //then
@@ -62,7 +76,7 @@ class InMemoryReservationDaoTest {
         //given
         inMemoryReservationTimeDb.insert(LocalTime.of(10, 0));
         ReservationTime reservationTime = inMemoryReservationTimeDb.selectById(1L);
-        reservationDao.save(new Reservation("aa", "2023-10-10", reservationTime));
+        reservationDao.save(new Reservation("aa", "9999-10-10", reservationTime));
         //when
         boolean deleted = reservationDao.deleteById(1L);
         //then

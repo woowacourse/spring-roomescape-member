@@ -1,8 +1,8 @@
 package roomescape.dao;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -37,6 +37,13 @@ public class JdbcReservationDao implements ReservationDao {
                         new ReservationTime(rs.getLong("time_id"),
                                 rs.getTime("time_value"))
                 ));
+    }
+
+    @Override
+    public boolean existsByDateTime(LocalDate date, Long timeId) {
+        return jdbcTemplate.queryForObject(
+                "SELECT EXISTS(SELECT * FROM reservation WHERE date = ? AND time_id = ?)",
+                Boolean.class, date, timeId);
     }
 
     @Override

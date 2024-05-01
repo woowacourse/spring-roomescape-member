@@ -1,11 +1,10 @@
 package roomescape.console.dao;
 
+import java.time.LocalDate;
 import java.util.List;
 import roomescape.console.db.InMemoryReservationDb;
-import roomescape.console.db.InMemoryReservationTimeDb;
 import roomescape.dao.ReservationDao;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
 
 public class InMemoryReservationDao implements ReservationDao {
     private final InMemoryReservationDb inMemoryReservationDb;
@@ -17,6 +16,14 @@ public class InMemoryReservationDao implements ReservationDao {
     @Override
     public List<Reservation> findAll() {
         return inMemoryReservationDb.selectAll();
+    }
+
+    @Override
+    public boolean existsByDateTime(LocalDate date, Long timeId) {
+        return inMemoryReservationDb.selectAll()
+                .stream()
+                .filter(reservation -> reservation.getDate().equals(date))
+                .anyMatch(reservation -> reservation.hasSameTimeId(timeId));
     }
 
     @Override

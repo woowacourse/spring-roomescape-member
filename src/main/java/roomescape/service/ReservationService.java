@@ -8,7 +8,6 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
-import roomescape.dto.ReservationTimeResponse;
 
 @Service
 public class ReservationService {
@@ -30,8 +29,14 @@ public class ReservationService {
 
     public ReservationResponse save(ReservationRequest reservationRequest) {
         ReservationTime reservationTime = reservationTimeDao.findById(reservationRequest.timeId());
-        Reservation reservation = reservationDao.save(reservationRequest.toReservation(reservationTime));
-        return new ReservationResponse(reservation);
+        Reservation reservation = reservationRequest.toReservation(reservationTime);
+        boolean exists = reservationDao.existsByDateTime(reservation.getDate(),
+                reservationTime.getId());
+        if (exists) {
+            throw new IllegalArgumentException("중복된 예약 시간입니다.");
+        }
+        Reservation savedReservation = reservationDao.save(reservation);
+        return new ReservationResponse(savedReservation);
     }
 
     public boolean deleteById(long id) {
