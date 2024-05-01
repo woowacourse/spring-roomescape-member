@@ -55,8 +55,8 @@ public class ThemeJDBCRepository implements ThemeRepository {
     }
 
     @Override
-    public boolean existsByName(String otherName) {
+    public boolean existsByName(String name) {
         String sql = "SELECT COUNT(*) FROM theme WHERE name = ?";
-        return jdbcTemplate.queryForObject(sql, Integer.class, otherName) > 0;
+        return jdbcTemplate.queryForObject(sql, Integer.class, name) > 0;
     }
 }
