@@ -1,4 +1,4 @@
-package roomescape.application.classical;
+package roomescape.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import roomescape.application.ReservationTimeService;
 import roomescape.application.dto.ReservationTimeCreationRequest;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.theme.Theme;
