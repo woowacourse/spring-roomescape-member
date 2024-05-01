@@ -11,13 +11,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.request.ReservationTimeRequest;
 import roomescape.controller.dto.response.ReservationTimeResponse;
+import roomescape.dao.dto.AvailableReservationTimeResponse;
 import roomescape.exception.ExistReservationInReservationTimeException;
 import roomescape.exception.NotExistReservationTimeException;
 import roomescape.exception.ReservationTimeAlreadyExistsException;
 import roomescape.service.ReservationTimeService;
+import roomescape.service.dto.input.AvailableReservationTimeInput;
 import roomescape.service.dto.output.ReservationTimeOutput;
 
 @RestController
@@ -43,6 +46,15 @@ public class ReservationTimeController {
         return ResponseEntity.ok(ReservationTimeResponse.toResponses(output));
     }
 
+    @GetMapping("/available")
+    public ResponseEntity<List<AvailableReservationTimeResponse>> getAllReservationTimes(
+            @RequestParam String date,
+            @RequestParam Long themeId) {
+        List<AvailableReservationTimeResponse> response = reservationTimeService.getAvailableTimes(
+                new AvailableReservationTimeInput(themeId, date));
+        return ResponseEntity.ok(response);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservationTime(@PathVariable long id) {
         reservationTimeService.deleteReservationTime(id);
@@ -60,12 +72,14 @@ public class ReservationTimeController {
     }
 
     @ExceptionHandler(value = ExistReservationInReservationTimeException.class)
-    public ResponseEntity<String> handleExistReservationInReservationTimeException(ExistReservationInReservationTimeException exception) {
+    public ResponseEntity<String> handleExistReservationInReservationTimeException(
+            ExistReservationInReservationTimeException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(value = ReservationTimeAlreadyExistsException.class)
-    public ResponseEntity<String> handleReservationTimeAlreadyExistsException(ReservationTimeAlreadyExistsException exception) {
+    public ResponseEntity<String> handleReservationTimeAlreadyExistsException(
+            ReservationTimeAlreadyExistsException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
     }
 }

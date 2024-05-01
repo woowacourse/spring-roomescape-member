@@ -1,8 +1,10 @@
 package roomescape.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.dao.ReservationDao;
+import roomescape.dao.dto.AvailableReservationTimeResponse;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -17,6 +20,8 @@ import roomescape.exception.ExistReservationInReservationTimeException;
 import roomescape.exception.NotExistReservationTimeException;
 import roomescape.exception.ReservationTimeAlreadyExistsException;
 import roomescape.fixture.ThemeFixture;
+import roomescape.service.dto.input.AvailableReservationTimeInput;
+import roomescape.service.dto.input.ReservationInput;
 import roomescape.service.dto.input.ReservationTimeInput;
 import roomescape.service.dto.output.ReservationTimeOutput;
 import roomescape.service.dto.output.ThemeOutput;
@@ -29,6 +34,9 @@ public class ReservationTimeServiceTest {
 
     @Autowired
     ReservationTimeService reservationTimeService;
+
+    @Autowired
+    ReservationService reservationService;
 
     @Autowired
     ThemeService themeService;
@@ -91,5 +99,22 @@ public class ReservationTimeServiceTest {
         reservationTimeService.createReservationTime(new ReservationTimeInput("10:00"));
         assertThatThrownBy(() -> reservationTimeService.createReservationTime(new ReservationTimeInput("10:00")))
                 .isInstanceOf(ReservationTimeAlreadyExistsException.class);
+    }
+
+    @Test
+    @DisplayName("예약 가능한 시간을 조회한다.")
+    void get_available_reservationTime() {
+        long timeId1 = reservationTimeService.createReservationTime(new ReservationTimeInput("10:00")).id();
+        long timeId2 = reservationTimeService.createReservationTime(new ReservationTimeInput("11:00")).id();
+        long themeId = themeService.createTheme(ThemeFixture.getInput()).id();
+        reservationService.createReservation(new ReservationInput("조이썬", "2025-01-01", timeId2, themeId));
+
+        List<AvailableReservationTimeResponse> actual = reservationTimeService.getAvailableTimes(
+                new AvailableReservationTimeInput(themeId, "2025-01-01"));
+
+        assertThat(actual).containsExactly(
+                new AvailableReservationTimeResponse(false, timeId1, "10:00"),
+                new AvailableReservationTimeResponse(true, timeId2, "11:00")
+        );
     }
 }
