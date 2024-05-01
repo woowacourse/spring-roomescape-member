@@ -44,12 +44,12 @@ public class JdbcThemeRepository implements ThemeRepository{
     @Override
     public Theme save(Theme theme) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", theme.name())
-                .addValue("description", theme.description())
-                .addValue("thumbnail", theme.thumbnail());
+                .addValue("name", theme.getName())
+                .addValue("description", theme.getDescription())
+                .addValue("thumbnail", theme.getThumbnail());
         long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
 
-        return new Theme(id, theme.name(), theme.description(), theme.thumbnail());
+        return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 
     @Override
