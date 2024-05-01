@@ -22,6 +22,10 @@ public class Theme {
         this(id, theme.name, theme.description, theme.thumbnail);
     }
 
+    public boolean isDuplicated(Theme theme) {
+        return name.equals(theme.name);
+    }
+
     public Long getId() {
         return id;
     }

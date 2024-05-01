@@ -10,12 +10,12 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.dto.ThemeCreateRequest;
 import roomescape.dto.ThemeResponse;
+import roomescape.exception.BadRequestException;
 import roomescape.repository.ThemeRepository;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static roomescape.Fixtures.themeFixture;
 
@@ -38,8 +38,8 @@ class ThemeServiceTest {
         Mockito.when(themeRepository.save(any()))
                 .thenReturn(themeFixture);
         ThemeCreateRequest request = new ThemeCreateRequest(
-                "공포",
-                "완전 무서운 테마",
+                "힐링",
+                "완전 힐링되는 테마",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
         );
 
@@ -52,6 +52,22 @@ class ThemeServiceTest {
         softAssertions.assertThat(actual.description()).isEqualTo(themeFixture.getDescription());
         softAssertions.assertThat(actual.thumbnail()).isEqualTo(themeFixture.getThumbnail());
         softAssertions.assertAll();
+    }
+
+    @DisplayName("테마 서비스는 테마 생성 시 중복된 이름이 들어올 경우 예외가 발생한다.")
+    @Test
+    void validateDuplicated() {
+        // given
+        Mockito.when(themeRepository.findAll())
+                .thenReturn(List.of(themeFixture));
+        ThemeCreateRequest request = new ThemeCreateRequest(
+                "공포", "공포스러운 테마", "http://example.org"
+        );
+
+        // when & then
+        assertThatThrownBy(() -> themeService.createTheme(request))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessage("중복된 테마 이름입니다.");
     }
 
     @DisplayName("테마 서비스는 모든 테마를 조회한다.")

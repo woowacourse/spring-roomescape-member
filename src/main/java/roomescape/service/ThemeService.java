@@ -20,8 +20,17 @@ public class ThemeService {
 
     public ThemeResponse createTheme(ThemeCreateRequest request) {
         Theme theme = request.toTheme();
+        validateDuplicated(theme);
         Theme savedTheme = themeRepository.save(theme);
         return ThemeResponse.from(savedTheme);
+    }
+
+    private void validateDuplicated(Theme theme) {
+        boolean isDuplicatedName = themeRepository.findAll().stream()
+                .anyMatch(theme::isDuplicated);
+        if (isDuplicatedName) {
+            throw new BadRequestException("중복된 테마 이름입니다.");
+        }
     }
 
     public ThemeResponse readTheme(Long id) {
