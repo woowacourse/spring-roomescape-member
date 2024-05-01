@@ -18,5 +18,7 @@ CREATE TABLE reservation
     name VARCHAR(255) NOT NULL,
     date VARCHAR(255) NOT NULL,
     time_id BIGINT,
-    FOREIGN KEY (time_id) REFERENCES reservation_time(id)
+    theme_id BIGINT,
+    FOREIGN KEY (time_id) REFERENCES reservation_time(id),
+    FOREIGN KEY (theme_id) REFERENCES theme(id)
 );
