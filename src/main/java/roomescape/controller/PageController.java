@@ -25,4 +25,9 @@ public class PageController {
     public String adminThemePage() {
         return "admin/theme";
     }
+
+    @GetMapping("/reservation")
+    public String reservationPage() {
+        return "reservation";
+    }
 }
