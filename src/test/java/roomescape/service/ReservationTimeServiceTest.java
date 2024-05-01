@@ -10,13 +10,13 @@ import static org.mockito.Mockito.when;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
@@ -24,15 +24,14 @@ import roomescape.dto.app.ReservationTimeAppRequest;
 import roomescape.exception.DuplicatedReservationTimeException;
 import roomescape.exception.ReservationExistsException;
 
-@SpringBootTest
-@AutoConfigureTestDatabase
+@ExtendWith(MockitoExtension.class)
 class ReservationTimeServiceTest {
 
-    @Autowired
+    @InjectMocks
     private ReservationTimeService reservationTimeService;
-    @MockBean
+    @Mock
     private ReservationTimeRepository reservationTimeRepository;
-    @MockBean
+    @Mock
     private ReservationRepository reservationRepository;
 
     @DisplayName("예약 시간을 저장하고, 해당 시간을 id값과 함께 반환한다.")

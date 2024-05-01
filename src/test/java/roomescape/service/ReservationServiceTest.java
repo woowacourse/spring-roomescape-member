@@ -10,13 +10,13 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.EmptyResultDataAccessException;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
@@ -29,18 +29,17 @@ import roomescape.exception.DuplicatedReservationException;
 import roomescape.exception.PastReservationException;
 import roomescape.exception.ReservationTimeNotFoundException;
 
-@SpringBootTest
-@AutoConfigureTestDatabase
+@ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
 
-    @Autowired
+    @InjectMocks
     private ReservationService reservationService;
 
-    @MockBean
+    @Mock
     private ReservationRepository reservationRepository;
-    @MockBean
+    @Mock
     private ReservationTimeRepository reservationTimeRepository;
-    @MockBean
+    @Mock
     private ThemeRepository themeRepository;
 
     @DisplayName("예약을 저장하고, 해당 예약을 id값과 함께 반환한다.")
@@ -96,10 +95,6 @@ class ReservationServiceTest {
     @ParameterizedTest
     @ValueSource(strings = {"2030-13-01", "2030-12-32"})
     void save_IllegalDate(String rawDate) {
-        when(reservationTimeRepository.findById(1L))
-            .thenReturn(new ReservationTime(LocalTime.parse("10:00")));
-        when(themeRepository.findById(1L))
-            .thenReturn(new Theme("방탈출1", "방탈출1을 한다.", "https://url"));
         assertThatThrownBy(() -> reservationService.save(new ReservationAppRequest("brown", rawDate, 1L, 1L)))
             .isInstanceOf(IllegalArgumentException.class);
     }
@@ -109,8 +104,7 @@ class ReservationServiceTest {
     void save_TimeIdDoesntExist() {
         when(reservationTimeRepository.findById(1L))
             .thenThrow(EmptyResultDataAccessException.class);
-        when(themeRepository.findById(1L))
-            .thenReturn(new Theme("방탈출1", "방탈출1을 한다.", "https://url"));
+
         assertThatThrownBy(() -> reservationService.save(new ReservationAppRequest("brown", "2030-12-31", 1L, 1L)))
             .isInstanceOf(ReservationTimeNotFoundException.class);
     }
