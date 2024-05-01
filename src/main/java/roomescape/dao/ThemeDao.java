@@ -7,6 +7,8 @@ public interface ThemeDao {
 
     List<Theme> readAll();
 
+    Theme readById(Long id);
+
     Theme create(Theme theme);
 
     Boolean exist(long id);

@@ -24,6 +24,7 @@ import roomescape.controller.web.ReservationController;
 import roomescape.dto.reservation.ReservationCreateRequest;
 import roomescape.dto.reservation.ReservationResponse;
 import roomescape.dto.reservationtime.ReservationTimeResponse;
+import roomescape.dto.theme.ThemeResponse;
 import roomescape.service.ReservationService;
 
 @WebMvcTest(ReservationController.class)
@@ -64,12 +65,13 @@ class ReservationControllerTest {
         String expectedName = "daon";
         String expectedDate = "2024-11-29";
         String expectedStartAt = "00:01";
-        ReservationCreateRequest givenRequest = ReservationCreateRequest.of(expectedName, expectedDate, 1L);
+        ReservationCreateRequest givenRequest = ReservationCreateRequest.of(expectedName, expectedDate, 1L, 1L);
         ReservationResponse response = ReservationResponse.of(
                 1L,
                 expectedName,
                 expectedDate,
-                ReservationTimeResponse.of(1L, expectedStartAt)
+                ReservationTimeResponse.of(1L, expectedStartAt),
+                ThemeResponse.of(1L, "방탈출1", "1번 방탈출", "썸네일1")
         );
         given(reservationService.add(givenRequest)).willReturn(response);
         String givenJsonRequest = objectMapper.writeValueAsString(givenRequest);
@@ -99,7 +101,7 @@ class ReservationControllerTest {
     void createReservationByInvalidRequest() throws Exception {
         //given
         ReservationCreateRequest givenRequest
-                = ReservationCreateRequest.of("InvalidName", "InvalidDate", -1L);
+                = ReservationCreateRequest.of("InvalidName", "InvalidDate", -1L, 1L);
         when(reservationService.add(givenRequest))
                 .thenThrow(IllegalArgumentException.class);
         String requestBody = objectMapper.writeValueAsString(givenRequest);
@@ -118,13 +120,15 @@ class ReservationControllerTest {
                         1L,
                         firstName,
                         "2022-02-23",
-                        ReservationTimeResponse.of(1L, "12:12")
+                        ReservationTimeResponse.of(1L, "12:12"),
+                        ThemeResponse.of(1L, "방탈출1", "1번 방탈출", "썸네일1")
                 ),
                 ReservationResponse.of(
                         2L,
                         "ikjo",
                         secondDate,
-                        ReservationTimeResponse.of(2L, secondStartAt)
+                        ReservationTimeResponse.of(2L, secondStartAt),
+                        ThemeResponse.of(1L, "방탈출1", "1번 방탈출", "썸네일1")
                 )
         );
     }

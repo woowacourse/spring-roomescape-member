@@ -27,7 +27,8 @@ public class ConsoleReservationDao implements ReservationDao {
                 id,
                 reservation.getName(),
                 reservation.getDate(),
-                reservation.getReservationTime()
+                reservation.getReservationTime(),
+                reservation.getTheme()
         );
         store.put(id, newReservation);
         return newReservation;
@@ -54,5 +55,11 @@ public class ConsoleReservationDao implements ReservationDao {
     public boolean existByTimeId(Long timeId) {
         return store.values().stream()
                 .anyMatch(reservation -> Objects.equals(reservation.getReservationTime().getId(), timeId));
+    }
+
+    @Override
+    public boolean existByThemeId(Long themeId) {
+        return store.values().stream()
+                .anyMatch(reservation -> Objects.equals(reservation.getTheme().getId(), themeId));
     }
 }

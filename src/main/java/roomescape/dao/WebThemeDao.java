@@ -1,6 +1,8 @@
 package roomescape.dao;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Objects;
@@ -35,6 +37,16 @@ public class WebThemeDao implements ThemeDao {
                         resultSet.getString("thumbnail")
                 )
         );
+    }
+
+    @Override
+    public Theme readById(Long id) {
+        String sql = """
+                SELECT id, name, description, thumbnail
+                FROM theme
+                WHERE id = ?
+                """;
+        return jdbcTemplate.queryForObject(sql, (resultSet, rowNum) -> getTheme(resultSet), id);
     }
 
     @Override
@@ -81,5 +93,14 @@ public class WebThemeDao implements ThemeDao {
                 WHERE id = ?
                 """;
         jdbcTemplate.update(sql, id);
+    }
+
+    private Theme getTheme(ResultSet resultSet) throws SQLException {
+        return new Theme(
+                resultSet.getLong("id"),
+                resultSet.getString("name"),
+                resultSet.getString("description"),
+                resultSet.getString("thumbnail")
+        );
     }
 }

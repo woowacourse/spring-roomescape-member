@@ -1,6 +1,7 @@
 package roomescape.domain.reservation;
 
 import roomescape.domain.reservationtime.ReservationTime;
+import roomescape.domain.theme.Theme;
 
 public class Reservation {
 
@@ -8,15 +9,17 @@ public class Reservation {
     private final ReservationName reservationName;
     private final ReservationDate reservationDate;
     private final ReservationTime reservationTime;
+    private final Theme theme;
 
     public Reservation(Long id,
                        ReservationName reservationName,
                        ReservationDate reservationDate,
-                       ReservationTime reservationTime) {
+                       ReservationTime reservationTime, Theme theme) {
         this.id = id;
         this.reservationName = reservationName;
         this.reservationDate = reservationDate;
         this.reservationTime = reservationTime;
+        this.theme = theme;
     }
 
     public boolean isToday() {
@@ -37,5 +40,9 @@ public class Reservation {
 
     public ReservationTime getReservationTime() {
         return reservationTime;
+    }
+
+    public Theme getTheme() {
+        return theme;
     }
 }

@@ -21,7 +21,8 @@ public class Main {
 
         ReservationService reservationService = new ReservationService(
                 reservationDao,
-                reservationTimeDao
+                reservationTimeDao,
+                null
         );
 
         ReservationTimeService reservationTimeService = new ReservationTimeService(reservationTimeDao, reservationDao);

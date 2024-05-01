@@ -31,7 +31,9 @@ public class InputView {
         String date = SCANNER.nextLine();
         System.out.println("예약 시간 아이디를 입력해주세요.");
         long timeId = Long.parseLong(SCANNER.nextLine());
-        return ReservationCreateRequest.of(name, date, timeId);
+        System.out.println("테마를 입력해주세요.");
+        long themeId = Long.parseLong(SCANNER.nextLine());
+        return ReservationCreateRequest.of(name, date, timeId, themeId);
     }
 
     public Long readReservationId() {

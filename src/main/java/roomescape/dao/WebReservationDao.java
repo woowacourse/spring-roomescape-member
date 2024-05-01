@@ -15,6 +15,7 @@ import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.reservation.ReservationName;
 import roomescape.domain.reservationtime.ReservationStartAt;
 import roomescape.domain.reservationtime.ReservationTime;
+import roomescape.domain.theme.Theme;
 
 @Repository
 public class  WebReservationDao implements ReservationDao {
@@ -33,14 +34,21 @@ public class  WebReservationDao implements ReservationDao {
                     r.name,
                     r.`date`,
                     t.id AS time_id,
-                    t.start_at AS time_value
-                FROM reservation r
-                    INNER JOIN reservation_time t
-                    ON r.time_id = t.id;
+                    t.start_at AS time_value,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail AS theme_thumbnail
+                FROM
+                    reservation r
+                INNER JOIN
+                    reservation_time t ON r.time_id = t.id
+                INNER JOIN
+                    theme th ON r.theme_id = th.id;
                 """;
         return jdbcTemplate.query(
                 sql,
-                (resultSet, rowNum) -> getReservation(resultSet, getReservationTime(resultSet))
+                (resultSet, rowNum) -> getReservation(resultSet, getReservationTime(resultSet), getTheme(resultSet))
         );
     }
 
@@ -49,9 +57,9 @@ public class  WebReservationDao implements ReservationDao {
         String sql = """
                 INSERT
                 INTO reservation
-                    (name, date, time_id)
+                    (name, date, time_id, theme_id)
                 VALUES
-                    (?, ?, ?)
+                    (?, ?, ?, ?)
                 """;
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
@@ -63,7 +71,8 @@ public class  WebReservationDao implements ReservationDao {
                 id,
                 reservation.getName(),
                 reservation.getDate(),
-                reservation.getReservationTime()
+                reservation.getReservationTime(),
+                reservation.getTheme()
         );
     }
 
@@ -121,12 +130,26 @@ public class  WebReservationDao implements ReservationDao {
         return jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
     }
 
-    private Reservation getReservation(ResultSet resultSet, ReservationTime reservationTime) throws SQLException {
+    @Override
+    public boolean existByThemeId(Long themeId) {
+        String sql = """
+                SELECT
+                CASE
+                    WHEN EXISTS (SELECT 1 FROM reservation WHERE theme_id = ?)
+                    THEN TRUE
+                    ELSE FALSE
+                END
+                """;
+        return jdbcTemplate.queryForObject(sql, Boolean.class, themeId);
+    }
+
+    private Reservation getReservation(ResultSet resultSet, ReservationTime reservationTime, Theme theme) throws SQLException {
         return new Reservation(
                 resultSet.getLong("id"),
                 new ReservationName(resultSet.getString("name")),
                 ReservationDate.from(resultSet.getString("date")),
-                reservationTime
+                reservationTime,
+                theme
         );
     }
 
@@ -137,6 +160,15 @@ public class  WebReservationDao implements ReservationDao {
         );
     }
 
+    private Theme getTheme(ResultSet resultSet) throws SQLException {
+        return new Theme(
+                resultSet.getLong("theme_id"),
+                resultSet.getString("theme_name"),
+                resultSet.getString("theme_description"),
+                resultSet.getString("theme_thumbnail")
+        );
+    }
+
     private PreparedStatement getPreparedStatement(Reservation reservation,
                                                    Connection connection,
                                                    String sql) throws SQLException {
@@ -144,6 +176,7 @@ public class  WebReservationDao implements ReservationDao {
         preparedStatement.setString(1, reservation.getName().getValue());
         preparedStatement.setString(2, reservation.getDate().toStringDate());
         preparedStatement.setLong(3, reservation.getReservationTime().getId());
+        preparedStatement.setLong(4, reservation.getTheme().getId());
         return preparedStatement;
     }
 }

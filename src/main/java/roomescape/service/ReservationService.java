@@ -4,9 +4,11 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
+import roomescape.dao.ThemeDao;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.reservationtime.ReservationTime;
+import roomescape.domain.theme.Theme;
 import roomescape.dto.reservation.ReservationCreateRequest;
 import roomescape.dto.reservation.ReservationResponse;
 
@@ -15,10 +17,12 @@ public class ReservationService {
 
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
+    private final ThemeDao themeDao;
 
-    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao) {
+    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao, ThemeDao themeDao) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
+        this.themeDao = themeDao;
     }
 
     public List<ReservationResponse> findAll() {
@@ -31,7 +35,8 @@ public class ReservationService {
     public ReservationResponse add(ReservationCreateRequest request) {
         validateNotExistReservationTime(request.getTimeId());
         ReservationTime reservationTime = reservationTimeDao.readById(request.getTimeId());
-        Reservation reservation = request.toDomain(reservationTime);
+        Theme theme = themeDao.readById(request.getThemeId());
+        Reservation reservation = request.toDomain(reservationTime, theme);
         validateDuplicateDateAndTime(reservation.getDate(), reservation.getReservationTime());
         Reservation result = reservationDao.create(reservation);
         validatePastTimeWhenToday(reservation, reservationTime);

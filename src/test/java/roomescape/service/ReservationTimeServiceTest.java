@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,11 +19,13 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.dao.WebReservationDao;
 import roomescape.dao.WebReservationTimeDao;
+import roomescape.dao.WebThemeDao;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.reservation.ReservationName;
 import roomescape.domain.reservationtime.ReservationStartAt;
 import roomescape.domain.reservationtime.ReservationTime;
+import roomescape.domain.theme.Theme;
 import roomescape.dto.reservationtime.ReservationTimeCreateRequest;
 import roomescape.dto.reservationtime.ReservationTimeResponse;
 
@@ -36,20 +39,25 @@ class ReservationTimeServiceTest {
     @Autowired
     private WebReservationTimeDao reservationTimeDao;
     @Autowired
+    private WebThemeDao themeDao;
+    @Autowired
     private ReservationTimeService reservationTimeService;
 
     @BeforeEach
     void setUp() {
         reservationTimeDao.create(new ReservationTime(null, ReservationStartAt.from("12:02")));
         reservationTimeDao.create(new ReservationTime(null, ReservationStartAt.from("12:42")));
+        themeDao.create(new Theme(null, "방탈출1", "방탈출 1번", "섬네일1"));
     }
 
     @AfterEach
     void tearDown() {
         jdbcTemplate.update("DELETE FROM reservation");
         jdbcTemplate.update("DELETE FROM reservation_time");
+        jdbcTemplate.update("DELETE FROM theme");
         jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
     }
 
     @Test
@@ -163,8 +171,9 @@ class ReservationTimeServiceTest {
             reservationDao.create(new Reservation(
                     null,
                     new ReservationName("다온"),
-                    ReservationDate.from("2024-04-30"),
-                    new ReservationTime(1L, ReservationStartAt.from("12:02"))));
+                    ReservationDate.from(LocalDate.now().plusDays(1).toString()),
+                    new ReservationTime(1L, ReservationStartAt.from("12:02")),
+                    new Theme(1L, "방탈출1", "방탈출 1번", "섬네일1")));
 
             //when //then
             assertThatThrownBy(() -> reservationTimeService.delete(1L))

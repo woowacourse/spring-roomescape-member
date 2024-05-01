@@ -21,11 +21,13 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.dao.WebReservationDao;
 import roomescape.dao.WebReservationTimeDao;
+import roomescape.dao.WebThemeDao;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.reservation.ReservationName;
 import roomescape.domain.reservationtime.ReservationStartAt;
 import roomescape.domain.reservationtime.ReservationTime;
+import roomescape.domain.theme.Theme;
 import roomescape.dto.reservation.ReservationCreateRequest;
 import roomescape.dto.reservation.ReservationResponse;
 
@@ -39,6 +41,8 @@ class ReservationServiceTest {
     @Autowired
     private WebReservationTimeDao reservationTimeDao;
     @Autowired
+    private WebThemeDao themeDao;
+    @Autowired
     private ReservationService reservationService;
     private final String tomorrow = LocalDate.now().plusDays(1).toString();
 
@@ -48,13 +52,16 @@ class ReservationServiceTest {
                 null,
                 new ReservationName("daon"),
                 ReservationDate.from(tomorrow),
-                reservationTimeDao.create(new ReservationTime(null, ReservationStartAt.from("23:00")))
+                reservationTimeDao.create(new ReservationTime(null, ReservationStartAt.from("23:00"))),
+                themeDao.create(new Theme(null, "방탈출1", "방탈출 1번", "썸네일1"))
         );
+
         Reservation ikjo = new Reservation(
                 null,
                 new ReservationName("ikjo"),
                 ReservationDate.from(tomorrow),
-                reservationTimeDao.create(new ReservationTime(null, ReservationStartAt.from("22:00")))
+                reservationTimeDao.create(new ReservationTime(null, ReservationStartAt.from("22:00"))),
+                themeDao.create(new Theme(null, "방탈출1", "방탈출 1번", "썸네일1"))
         );
         reservationDao.create(daon);
         reservationDao.create(ikjo);
@@ -64,8 +71,10 @@ class ReservationServiceTest {
     void tearDown() {
         jdbcTemplate.update("DELETE FROM reservation");
         jdbcTemplate.update("DELETE FROM reservation_time");
+        jdbcTemplate.update("DELETE FROM theme");
         jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
     }
 
     @Test
@@ -94,8 +103,11 @@ class ReservationServiceTest {
             String givenDate = tomorrow;
             ReservationTime reservationTime = reservationTimeDao.create(
                     new ReservationTime(null, ReservationStartAt.from("12:00")));
+            Theme theme = themeDao.create(
+                    new Theme(null, "방탈출1", "방탈출 1번", "썸네일1")
+            );
             ReservationCreateRequest givenRequest =
-                    ReservationCreateRequest.of(givenName, givenDate, reservationTime.getId());
+                    ReservationCreateRequest.of(givenName, givenDate, reservationTime.getId(), theme.getId());
 
             //when
             ReservationResponse result = reservationService.add(givenRequest);
@@ -116,7 +128,7 @@ class ReservationServiceTest {
             Long given = -1L;
             String givenName = "wooteco";
             String givenDate = tomorrow;
-            ReservationCreateRequest givenRequest = ReservationCreateRequest.of(givenName, givenDate, given);
+            ReservationCreateRequest givenRequest = ReservationCreateRequest.of(givenName, givenDate, given, 1L);
 
             //when //then
             assertThatThrownBy(() -> reservationService.add(givenRequest))
@@ -128,7 +140,7 @@ class ReservationServiceTest {
         @DisplayName("예약자명에 null이나 공백 문자열이 입력되면 예외가 발생한다.")
         void createReservationByNullOrEmptyName(String given) {
             //given
-            ReservationCreateRequest request = ReservationCreateRequest.of(given, tomorrow, 1L);
+            ReservationCreateRequest request = ReservationCreateRequest.of(given, tomorrow, 1L, 1L);
 
             //when //then
             assertThatThrownBy(() -> reservationService.add(request))
@@ -140,7 +152,7 @@ class ReservationServiceTest {
         @DisplayName("예약 날짜에 null이나 공백 문자열이 입력되면 예외가 발생한다.")
         void createReservationByNullOrEmptyDate(String given) {
             //given
-            ReservationCreateRequest request = ReservationCreateRequest.of("다온", given, 1L);
+            ReservationCreateRequest request = ReservationCreateRequest.of("다온", given, 1L, 1L);
 
             //when //then
             assertThatThrownBy(() -> reservationService.add(request))
@@ -152,7 +164,7 @@ class ReservationServiceTest {
         @DisplayName("예약 날짜가 yyyy-MM-dd 형식이 아닌 경우 예외가 발생한다.")
         void createReservationByInvalidDate(String given) {
             //given
-            ReservationCreateRequest request = ReservationCreateRequest.of("다온", given, 1L);
+            ReservationCreateRequest request = ReservationCreateRequest.of("다온", given, 1L, 1L);
 
             //when //then
             assertThatThrownBy(() -> reservationService.add(request))
@@ -163,7 +175,7 @@ class ReservationServiceTest {
         @DisplayName("지나간 날짜에 대한 예약을 추가하면 예외가 발생한다.")
         void createReservationByPastDate() {
             //given
-            ReservationCreateRequest request = ReservationCreateRequest.of("다온", "2024-04-29", 1L);
+            ReservationCreateRequest request = ReservationCreateRequest.of("다온", "2024-04-29", 1L, 1L);
 
             //when //then
             assertThatThrownBy(() -> reservationService.add(request))
@@ -177,8 +189,11 @@ class ReservationServiceTest {
             String pastTime = LocalTime.now().minusHours(1).toString();
             ReservationTime reservationTime = reservationTimeDao.create(
                     new ReservationTime(null, ReservationStartAt.from(pastTime)));
+            Theme theme = themeDao.create(
+                    new Theme(null, "방탈출1", "방탈출 1번", "썸네일1")
+            );
             ReservationCreateRequest request =
-                    ReservationCreateRequest.of("다온", LocalDate.now().toString(), reservationTime.getId());
+                    ReservationCreateRequest.of("다온", LocalDate.now().toString(), reservationTime.getId(), theme.getId());
 
             //when //then
             assertThatThrownBy(() -> reservationService.add(request))
@@ -189,7 +204,7 @@ class ReservationServiceTest {
         @DisplayName("동일한 날짜와 시간에 대한 예약을 추가하면 예외가 발생한다.")
         void createReservationByDuplicated() {
             //given
-            ReservationCreateRequest request = ReservationCreateRequest.of("다온", tomorrow, 1L);
+            ReservationCreateRequest request = ReservationCreateRequest.of("다온", tomorrow, 1L, 1L);
 
             //when //then
             assertThatThrownBy(() -> reservationService.add(request))
