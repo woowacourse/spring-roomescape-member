@@ -34,7 +34,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 theme_id, t.name as theme_name, description, thumbnail from reservation as r
                 left join reservation_time as rt on time_id = rt.id
                 left join theme as t on theme_id = t.id
-                where rt.id = ?
+                where r.id = ?
                 """;
         try {
             Reservation reservation = jdbcTemplate.queryForObject(sql, ReservationRowMapper::joinedMapRow, id);
