@@ -42,9 +42,13 @@ public class ReservationTimeService {
     }
 
     public void deleteById(final long id) {
+        validateByReservation(id);
+        reservationTimeRepository.deleteById(id);
+    }
+
+    private void validateByReservation(long id) {
         if (reservationRepository.existsByTimeId(id)) {
             throw new InvalidReservationException("해당 시간에 예약이 존재해서 삭제할 수 없습니다.");
         }
-        reservationTimeRepository.deleteById(id);
     }
 }
