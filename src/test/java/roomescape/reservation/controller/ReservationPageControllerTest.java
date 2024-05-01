@@ -34,6 +34,6 @@ class ReservationPageControllerTest {
     void requestAdminReservation() throws Exception {
         mockMvc.perform(get("/admin/reservation"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("admin/reservation"));
+                .andExpect(view().name("admin/reservation-new"));
     }
 }
