@@ -2,6 +2,7 @@ package roomescape.time.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 import org.junit.jupiter.api.DisplayName;
@@ -10,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.repository.ReservationDao;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeDao;
 
@@ -23,8 +26,11 @@ public class ReservationTimeServiceTest {
     @Autowired
     private ReservationTimeDao reservationTimeDao;
 
-    @Test
+    @Autowired
+    private ReservationDao reservationDao;
+
     @DisplayName("이미 존재하는 예약 시간을 생성할 경우, 예외를 발생한다.")
+    @Test
     void createException() {
         insertReservationTime("10:00");
         ReservationTime reservationTime = new ReservationTime(0L, LocalTime.parse("10:00"));
@@ -33,7 +39,27 @@ public class ReservationTimeServiceTest {
                 .hasMessage("StartAt already exists");
     }
 
+    @DisplayName("예약이 있는 시간을 삭제하려 할 경우 예외를 발생한다.")
+    @Test
+    void deleteException() {
+        long firstId = insertReservationTimeAndGetId("10:00");
+        insertReservationTime("11:00");
+        insertReservation("brown", "2024-05-01", firstId);
+        assertThatThrownBy(() -> reservationTimeService.delete(firstId))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Cannot delete a reservation that refers to that time");
+    }
+
     void insertReservationTime(String time) {
-        reservationTimeDao.save(new ReservationTime(0, LocalTime.parse(time)));
+        insertReservationTimeAndGetId(time);
+    }
+
+    long insertReservationTimeAndGetId(String time) {
+        return reservationTimeDao.save(new ReservationTime(0, LocalTime.parse(time))).id();
+    }
+
+    void insertReservation(String name, String date, long timeId) {
+        ReservationTime time = reservationTimeDao.findById(timeId);
+        reservationDao.save(new Reservation(null, name, LocalDate.parse(date), time));
     }
 }

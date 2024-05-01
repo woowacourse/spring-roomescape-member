@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import roomescape.reservation.repository.ReservationDao;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeDao;
 
@@ -12,9 +13,11 @@ import roomescape.time.repository.ReservationTimeDao;
 public class ReservationTimeService {
 
     private final ReservationTimeDao reservationTimeDao;
+    private final ReservationDao reservationDao;
 
-    public ReservationTimeService(ReservationTimeDao reservationTimeDao) {
+    public ReservationTimeService(ReservationTimeDao reservationTimeDao, ReservationDao reservationDao) {
         this.reservationTimeDao = reservationTimeDao;
+        this.reservationDao = reservationDao;
     }
 
     public List<ReservationTime> findAll() {
@@ -33,6 +36,9 @@ public class ReservationTimeService {
     }
 
     public void delete(long id) {
+        if(reservationDao.existsTime(id)){
+            throw new IllegalArgumentException("Cannot delete a reservation that refers to that time");
+        }
         reservationTimeDao.delete(id);
     }
 }

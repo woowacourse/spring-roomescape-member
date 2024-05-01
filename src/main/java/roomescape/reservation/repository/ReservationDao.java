@@ -56,8 +56,15 @@ public class ReservationDao {
         String query = "SELECT r.id, r.name, r.date, t.id AS time_id, t.start_at "
                 + "FROM RESERVATION AS r "
                 + "INNER JOIN RESERVATION_TIME AS t "
-                + "ON r.id = ?";
+                + "ON r.time_id = t.id "
+                + "WHERE r.id = ?";
         return jdbcTemplate.queryForObject(query, reservationRowMapper, id);
+    }
+
+    public boolean existsTime(long id) {
+        String query = "SELECT COUNT(*) FROM RESERVATION WHERE TIME_ID = ?";
+        Integer count = jdbcTemplate.queryForObject(query, Integer.class, id);
+        return count != null && count > 0;
     }
 
     public void deleteById(long id) {
