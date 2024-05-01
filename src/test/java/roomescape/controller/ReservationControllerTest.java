@@ -115,4 +115,22 @@ class ReservationControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
     }
+
+    @DisplayName("과거 시간에 예약을 넣을 경우 -> 400")
+    @Test
+    void reserve_PastTime() throws Exception {
+        long timeId = 1L;
+        String rawDate = "2000-01-01";
+        String name = "brown";
+
+        when(reservationService.save(new ReservationAppRequest(timeId, rawDate, name)))
+            .thenThrow(IllegalArgumentException.class);
+
+        String requestBody = objectMapper.writeValueAsString(new ReservationWebRequest(name, rawDate, timeId));
+
+        mvc.perform(post("/reservations")
+                .content(requestBody)
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
 }

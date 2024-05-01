@@ -8,6 +8,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
+import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.dto.app.ReservationAppRequest;
 
@@ -29,13 +30,20 @@ public class ReservationService {
             // TODO : method 분리
             // TODO : 예약 커스터마이즈 -> 구체화
 
-            // 날짜 검증
-            LocalDate parsed = LocalDate.parse(request.date());
-            // 예약 데이터 검증
-            Reservation newReservation = new Reservation(request.name(), parsed,
-                reservationTimeRepository.findById(request.timeId()));
+            // 날짜 검증 -- 포맷
+            LocalDate date = LocalDate.parse(request.date());
+            // 예약 데이터 검증 -- 포맷
+            ReservationTime time = reservationTimeRepository.findById(request.timeId());
+            Reservation newReservation = new Reservation(request.name(), date, time);
+            // 과거 예약 검증
+            if (date.isBefore(LocalDate.now())) {
+                throw new IllegalArgumentException();
+            }
+            if (date.isEqual(LocalDate.now()) && time.isBeforeNow()) {
+                throw new IllegalArgumentException();
+            }
             // 중복 데이터 검증
-            long dataCount = reservationRepository.countByDateAndTimeId(parsed, request.timeId());
+            long dataCount = reservationRepository.countByDateAndTimeId(date, request.timeId());
             if (dataCount > 0) {
                 throw new IllegalArgumentException("예약이 이미 존재합니다.");
             }

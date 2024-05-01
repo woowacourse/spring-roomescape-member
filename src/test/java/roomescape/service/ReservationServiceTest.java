@@ -106,4 +106,35 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.save(new ReservationAppRequest(timeId, rawDate, "brown")))
             .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @DisplayName("실패: 어제 날짜에 대한 예약을 생성하면 예외가 발생한다.")
+    @Test
+    void save_PastDateReservation() {
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+
+        long timeId = 1L;
+        ReservationTime reservationTime = new ReservationTime(LocalTime.parse("10:00"));
+        when(reservationTimeRepository.findById(timeId))
+            .thenReturn(reservationTime);
+
+        assertThatThrownBy(
+            () -> reservationService.save(new ReservationAppRequest(timeId, yesterday.toString(), "brown"))
+        ).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("실패: 같은 날짜에 대한 과거 시간 예약을 생성하면 예외가 발생한다.")
+    @Test
+    void save_TodayPastTimeReservation() {
+        LocalDate today = LocalDate.now();
+        LocalTime oneMinuteAgo = LocalTime.now().minusMinutes(1);
+
+        long timeId = 1L;
+        ReservationTime reservationTime = new ReservationTime(oneMinuteAgo);
+        when(reservationTimeRepository.findById(1L))
+            .thenReturn(reservationTime);
+
+        assertThatThrownBy(
+            () -> reservationService.save(new ReservationAppRequest(timeId, today.toString(), "brown"))
+        ).isInstanceOf(IllegalArgumentException.class);
+    }
 }
