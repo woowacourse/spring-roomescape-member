@@ -13,9 +13,10 @@ import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 import roomescape.dto.app.ReservationAppRequest;
-import roomescape.exception.reservation.DuplicatedReservationException;
-import roomescape.exception.reservation.PastReservationException;
-import roomescape.exception.reservation.ReservationTimeNotFoundException;
+import roomescape.exception.DuplicatedReservationException;
+import roomescape.exception.PastReservationException;
+import roomescape.exception.ReservationTimeNotFoundException;
+import roomescape.exception.ThemeNotFoundException;
 
 @Service
 public class ReservationService {
@@ -72,7 +73,7 @@ public class ReservationService {
         try {
             return themeRepository.findById(themeId);
         } catch (EmptyResultDataAccessException e) {
-            throw new IllegalArgumentException("존재하지 않는 테마 id입니다.");
+            throw new ThemeNotFoundException();
         }
     }
 

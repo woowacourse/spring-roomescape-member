@@ -25,9 +25,9 @@ import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 import roomescape.dto.app.ReservationAppRequest;
-import roomescape.exception.reservation.DuplicatedReservationException;
-import roomescape.exception.reservation.PastReservationException;
-import roomescape.exception.reservation.ReservationTimeNotFoundException;
+import roomescape.exception.DuplicatedReservationException;
+import roomescape.exception.PastReservationException;
+import roomescape.exception.ReservationTimeNotFoundException;
 
 @SpringBootTest
 @AutoConfigureTestDatabase

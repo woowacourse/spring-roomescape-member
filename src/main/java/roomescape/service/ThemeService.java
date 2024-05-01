@@ -6,6 +6,8 @@ import roomescape.domain.ReservationRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 import roomescape.dto.app.ThemeAppRequest;
+import roomescape.exception.DuplicatedThemeException;
+import roomescape.exception.ReservationExistsException;
 
 @Service
 public class ThemeService {
@@ -26,13 +28,13 @@ public class ThemeService {
 
     private void validateDuplication(ThemeAppRequest request) {
         if (themeRepository.countByName(request.name()) > 0) {
-            throw new IllegalArgumentException();
+            throw new DuplicatedThemeException();
         }
     }
 
     public int delete(Long id) {
         if (reservationRepository.countByThemeId(id) > 0) {
-            throw new IllegalArgumentException();
+            throw new ReservationExistsException();
         }
         return themeRepository.deleteById(id);
     }

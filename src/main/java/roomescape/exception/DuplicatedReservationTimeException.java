@@ -1,4 +1,4 @@
-package roomescape.exception.reservationtime;
+package roomescape.exception;
 
 public class DuplicatedReservationTimeException extends RuntimeException {
 

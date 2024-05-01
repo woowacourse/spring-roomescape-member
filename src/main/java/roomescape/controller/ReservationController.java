@@ -17,9 +17,9 @@ import roomescape.dto.app.ReservationAppRequest;
 import roomescape.dto.web.ReservationTimeWebResponse;
 import roomescape.dto.web.ReservationWebRequest;
 import roomescape.dto.web.ReservationWebResponse;
-import roomescape.exception.reservation.DuplicatedReservationException;
-import roomescape.exception.reservation.PastReservationException;
-import roomescape.exception.reservation.ReservationTimeNotFoundException;
+import roomescape.exception.DuplicatedReservationException;
+import roomescape.exception.PastReservationException;
+import roomescape.exception.ReservationTimeNotFoundException;
 import roomescape.service.ReservationService;
 
 @RestController
