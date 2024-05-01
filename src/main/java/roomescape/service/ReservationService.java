@@ -26,9 +26,20 @@ public class ReservationService {
 
     public Reservation save(ReservationAppRequest request) {
         try {
+            // TODO : method 분리
+            // TODO : 예약 커스터마이즈 -> 구체화
+
+            // 날짜 검증
             LocalDate parsed = LocalDate.parse(request.date());
+            // 예약 데이터 검증
             Reservation newReservation = new Reservation(request.name(), parsed,
                 reservationTimeRepository.findById(request.timeId()));
+            // 중복 데이터 검증
+            long dataCount = reservationRepository.countByDateAndTimeId(parsed, request.timeId());
+            if (dataCount > 0) {
+                throw new IllegalArgumentException("예약이 이미 존재합니다.");
+            }
+
             return reservationRepository.save(newReservation);
         } catch (EmptyResultDataAccessException | DateTimeParseException | NullPointerException e) {
             throw new IllegalArgumentException("잘못된 예약 포맷을 입력했습니다.");

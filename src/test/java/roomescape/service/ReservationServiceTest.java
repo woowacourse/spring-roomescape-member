@@ -94,4 +94,16 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.save(new ReservationAppRequest(1L, "2030-12-31", "brown")))
             .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @DisplayName("실패: 중복 예약을 생성하면 예외가 발생한다.")
+    @Test
+    void save_Duplication() {
+        String rawDate = "2030-12-31";
+        long timeId = 1L;
+        when(reservationRepository.countByDateAndTimeId(LocalDate.parse(rawDate), timeId))
+            .thenReturn(1L);
+
+        assertThatThrownBy(() -> reservationService.save(new ReservationAppRequest(timeId, rawDate, "brown")))
+            .isInstanceOf(IllegalArgumentException.class);
+    }
 }

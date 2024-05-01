@@ -96,4 +96,14 @@ class JdbcReservationRepositoryImplTest {
 
         assertThat(actual).isEqualTo(2L);
     }
+
+    @DisplayName("date와 time_id로 예약 수를 가져온다.")
+    @Test
+    void countByDateAndTimeId() {
+        LocalDate date = LocalDate.parse("2040-01-01");
+        Reservation reservation = new Reservation("brown1", date, reservationTime);
+        reservationRepository.save(reservation);
+        long count = reservationRepository.countByDateAndTimeId(date, reservationTime.getId());
+        assertThat(count).isEqualTo(1L);
+    }
 }

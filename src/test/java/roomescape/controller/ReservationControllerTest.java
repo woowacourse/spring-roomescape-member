@@ -96,4 +96,23 @@ class ReservationControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
     }
+
+    @DisplayName("중복 예약 시도 -> 400")
+    @Test
+    void reserve_Duplication() throws Exception {
+        long timeId = 1L;
+        String rawDate = "2040-01-01";
+        String name = "brown";
+
+        String requestBody = objectMapper.writeValueAsString(new ReservationWebRequest(name, rawDate, timeId));
+
+        // TODO: 커스텀 예외 사용하여 테스트
+        when(reservationService.save(new ReservationAppRequest(timeId, rawDate, name)))
+            .thenThrow(IllegalArgumentException.class);
+
+        mvc.perform(post("/reservations")
+                .content(requestBody)
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
 }
