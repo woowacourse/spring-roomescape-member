@@ -28,11 +28,11 @@ public class H2ThemeRepository implements ThemeRepository {
     }
 
     public List<Theme> findAll() {
-        return jdbcTemplate.query("select * from theme;", rowMapper);
+        return jdbcTemplate.query("select * from theme", rowMapper);
     }
 
     public Optional<Theme> findById(long id) {
-        String sql = "select * from theme where id = ?;";
+        String sql = "select * from theme where id = ?";
 
         return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
     }
@@ -52,7 +52,7 @@ public class H2ThemeRepository implements ThemeRepository {
     }
 
     public void deleteById(long id) {
-        String sql = "delete from theme where id = ?;";
+        String sql = "delete from theme where id = ?";
         jdbcTemplate.update(sql, id);
     }
 

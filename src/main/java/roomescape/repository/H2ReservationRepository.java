@@ -56,14 +56,14 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     public List<Reservation> findByDateAndThemeId(LocalDate date, long themeId) {
-        String conditionQuery = " where r.date = ? and tm.id = ?;";
+        String conditionQuery = " where r.date = ? and tm.id = ?";
         String sql = getBasicSelectQuery() + conditionQuery;
 
         return jdbcTemplate.query(sql, rowMapper, date, themeId);
     }
 
     public List<Reservation> findByPeriod(LocalDate startDate, LocalDate endDate) {
-        String conditionQuery = " where r.date between ? and ?;";
+        String conditionQuery = " where r.date between ? and ?";
         String sql = getBasicSelectQuery() + conditionQuery;
 
         return jdbcTemplate.query(sql, rowMapper, startDate, endDate);
