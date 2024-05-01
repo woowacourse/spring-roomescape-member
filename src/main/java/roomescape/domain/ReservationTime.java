@@ -8,13 +8,19 @@ public class ReservationTime {
     private final LocalTime startAt;
 
     public ReservationTime(Long id, LocalTime startAt) {
+        validate(startAt);
         this.id = id;
         this.startAt = startAt;
     }
 
     public ReservationTime(LocalTime startAt) {
-        this.id = null;
-        this.startAt = startAt;
+        this(null, startAt);
+    }
+
+    private void validate(LocalTime startAt) {
+        if (startAt == null) {
+            throw new IllegalArgumentException("예약 시간이 입력되지 않았습니다.");
+        }
     }
 
     public Long getId() {
