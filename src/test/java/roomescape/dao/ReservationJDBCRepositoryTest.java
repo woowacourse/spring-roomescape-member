@@ -138,4 +138,28 @@ class ReservationJDBCRepositoryTest {
         //then
         assertThat(result).isFalse();
     }
+
+    @DisplayName("주어진 테마에 대한 예약이 존재한다.")
+    @Test
+    void existsByThemeIdTest() {
+        //given
+        Reservation reservation = new Reservation("브라운", date, reservationTime, theme);
+        reservationRepository.save(reservation);
+
+        //when
+        boolean result = reservationRepository.existsByThemeId(theme.getId());
+
+        //then
+        assertThat(result).isTrue();
+    }
+
+    @DisplayName("주어진 테마에 대한 예약이 존재하지 않는다.")
+    @Test
+    void notExistsByThemeIdTest() {
+        //when
+        boolean result = reservationRepository.existsByThemeId(theme.getId());
+
+        //then
+        assertThat(result).isFalse();
+    }
 }
