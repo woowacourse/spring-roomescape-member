@@ -53,6 +53,17 @@ class ReservationTimeDaoImplTest {
         assertThat(actualReservationTime).isEqualTo(expectedReservationTime);
     }
 
+    @DisplayName("동일한 시간의 예약시간이 존재하는지 확인할 수 있습니다.")
+    @Test
+    void should_return_true_when_same_time_is_already_exist() {
+        assertThat(reservationTimeDao.existByStartAt(LocalTime.of(10, 0))).isTrue();
+    }
+
+    @DisplayName("동일한 시간의 예약시간이 존재하지 않는 경우를 확인할 수 있습니다")
+    @Test
+    void should_return_false_when_same_time_is_no_exist() {
+        assertThat(reservationTimeDao.existByStartAt(LocalTime.of(11, 0))).isFalse();
+    }
 
     @DisplayName("예약시간을 추가할 수 있습니다.")
     @Test

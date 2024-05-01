@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +50,16 @@ public class ReservationTimeDaoImpl implements ReservationTimeDao {
         } catch (Exception e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public boolean existByStartAt(LocalTime startAt) {
+        String sql = "select exists ( "
+                + "    select 1 "
+                + "    from reservation_time "
+                + "    where start_at = ?"
+                + ")";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, startAt);
     }
 
     @Override

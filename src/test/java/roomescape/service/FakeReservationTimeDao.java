@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,11 @@ public class FakeReservationTimeDao implements ReservationTimeDao {
             return Optional.of(reservationTimes.get(id));
         }
         return Optional.empty();
+    }
+
+    @Override
+    public boolean existByStartAt(LocalTime startAt) {
+        return reservationTimes.containsValue(startAt);
     }
 
     @Override
