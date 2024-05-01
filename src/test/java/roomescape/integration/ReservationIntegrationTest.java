@@ -15,7 +15,7 @@ class ReservationIntegrationTest extends IntegrationTest {
     void 예약을_추가할_수_있다() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", "2023-08-06");
         params.put("timeId", "1");
 
         RestAssured.given().log().all()
@@ -29,10 +29,10 @@ class ReservationIntegrationTest extends IntegrationTest {
     }
 
     @Test
-    void 시간이_빈_값이면_예약을_생성할_수_없다() {
+    void 시간이_빈_값이면_예약을_추가할_수_없다() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", "2023-08-06");
         params.put("timeId", null);
 
         RestAssured.given().log().all()
@@ -44,7 +44,7 @@ class ReservationIntegrationTest extends IntegrationTest {
     }
 
     @Test
-    void 날짜의_형식이_다르면_예약을_생성할_수_없다() {
+    void 날짜의_형식이_다르면_예약을_추가할_수_없다() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", "2023-13-05");
@@ -56,6 +56,21 @@ class ReservationIntegrationTest extends IntegrationTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400);
+    }
+
+    @Test
+    void 중복된_예약은_추가할_수_없다() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "도라");
+        params.put("date", "2023-08-05");
+        params.put("timeId", "1");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(409);
     }
 
     @Test
