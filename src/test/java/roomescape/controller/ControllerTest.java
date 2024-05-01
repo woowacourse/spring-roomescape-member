@@ -7,6 +7,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.service.ReservationService;
 import roomescape.service.ReservationTimeService;
+import roomescape.service.ThemeService;
 
 @WebMvcTest
 public abstract class ControllerTest {
@@ -18,6 +19,9 @@ public abstract class ControllerTest {
 
     @MockBean
     protected ReservationTimeService reservationTimeService;
+
+    @MockBean
+    protected ThemeService themeService;
 
     @Autowired
     protected ObjectMapper objectMapper;

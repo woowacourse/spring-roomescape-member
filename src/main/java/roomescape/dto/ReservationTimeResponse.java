@@ -8,10 +8,10 @@ public record ReservationTimeResponse(
         Long id,
         String startAt
 ) {
-//    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
     public static ReservationTimeResponse from(ReservationTime reservationTime) {
-//        String startAt = reservationTime.getStartAt().format(FORMATTER);
-        return new ReservationTimeResponse(reservationTime.getId(), reservationTime.getStartAt().toString());
+        String startAt = reservationTime.getStartAt().format(FORMATTER);
+        return new ReservationTimeResponse(reservationTime.getId(), startAt);
     }
 }

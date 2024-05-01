@@ -20,7 +20,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static roomescape.TestFixture.*;
 
-class ReservationJdbcRepositoryTest extends RepositoryTest {
+class ReservationRepositoryTest extends RepositoryTest {
     @Autowired
     private ReservationRepository reservationRepository;
 
