@@ -13,16 +13,13 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(exception.getMessage(), exception.getStatus());
     }
 
-    // TODO: CustomException으로 안잡히는 문제 해결 필요
     @ExceptionHandler(value = HttpMessageNotReadableException.class)
-    public ResponseEntity<String> handleException(HttpMessageNotReadableException e) {
-        System.out.println(e.getClass());
-        return new ResponseEntity<>("에러입니다." + e.getMessage(), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<String> handleJsonParsingException() {
+        return new ResponseEntity<>("유효하지 않은 필드가 존재합니다.", HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(value = Exception.class)
-    public ResponseEntity<String> handleException(Exception e) {
-        System.out.println(e.getClass());
-        return new ResponseEntity<>("서버 에러입니다." + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<String> handleException() {
+        return new ResponseEntity<>("서버 에러입니다.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

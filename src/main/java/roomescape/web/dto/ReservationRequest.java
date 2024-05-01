@@ -4,7 +4,6 @@ import java.time.DateTimeException;
 import java.time.LocalDate;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.exception.InvalidRequestReservationException;
 
 public class ReservationRequest {
     private final LocalDate date;
@@ -18,19 +17,19 @@ public class ReservationRequest {
         this.timeId = Long.parseLong(timeId);
     }
 
-    public Reservation toReservation(ReservationTime reservationTime) {
-        return new Reservation(name, date, reservationTime);
-    }
-
     public void validate(String date, String name, String timeId) {
         if (date == null || name.isBlank() || timeId == null) {
-            throw new InvalidRequestReservationException();
+            throw new IllegalArgumentException();
         }
         try {
             LocalDate.parse(date);
         } catch (DateTimeException e) {
-            throw new InvalidRequestReservationException();
+            throw new IllegalArgumentException();
         }
+    }
+
+    public Reservation toReservation(ReservationTime reservationTime) {
+        return new Reservation(name, date, reservationTime);
     }
 
     public LocalDate date() {
