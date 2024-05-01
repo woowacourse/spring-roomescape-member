@@ -21,7 +21,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             new Reservation(
                     resultSet.getLong("reservation_id"),
                     resultSet.getString("name"),
-                    LocalDate.parse(resultSet.getString("date")),
+                    resultSet.getDate("date").toLocalDate(),
                     new ReservationTime(
                             resultSet.getLong("time_id"),
                             LocalTime.parse(resultSet.getString("time_value"))
@@ -119,5 +119,39 @@ public class JdbcReservationRepository implements ReservationRepository {
     public Boolean existDateAndTimeId(LocalDate date, Long timeId) {
         String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE date = ? AND time_id = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId);
+    }
+
+    @Override
+    public List<Long> findThemeReservationCountsForLastWeek() {
+        String sql = """
+                SELECT theme_id
+                FROM reservation
+                WHERE date BETWEEN CURRENT_DATE() - INTERVAL '7' DAY AND CURRENT_DATE()
+                GROUP BY theme_id
+                ORDER BY COUNT(*) DESC
+                LIMIT 10;
+                """;
+        return jdbcTemplate.query(sql, (resultSet, rowNum) -> resultSet.getLong("theme_id"));
+    }
+
+    @Override
+    public List<Reservation> findByDateAndThemeId(final LocalDate date, final Long themeId) {
+        String sql = """
+               SELECT
+                    r.id AS reservation_id,
+                    r.name,
+                    r.date,
+                    t.id AS time_id,
+                    t.start_at AS time_value,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail AS theme_thumbnail
+               FROM reservation AS r
+               INNER JOIN reservation_time AS t ON r.time_id = t.id
+               INNER JOIN theme AS th ON r.theme_id = th.id
+               WHERE r.date = ? AND th.id = ?
+                """;
+        return jdbcTemplate.query(sql, ROW_MAPPER, date, themeId);
     }
 }

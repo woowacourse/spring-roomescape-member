@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
@@ -44,6 +45,14 @@ public class ThemeService {
             throw new IllegalArgumentException("[ERROR] 해당 시간에 예약이 존재합니다.");
         }
         themeRepository.delete(id);
+    }
+
+    public List<ThemeResponse> getPopularThemes() {
+        List<Long> popularThemeIds = reservationRepository.findThemeReservationCountsForLastWeek();
+        return popularThemeIds.stream()
+                .map(themeRepository::findById)
+                .map(ThemeResponse::from)
+                .toList();
     }
 
     private void validateIdExist(Long id) {

@@ -19,4 +19,8 @@ public interface ReservationRepository {
     Boolean existTimeId(Long id);
 
     Boolean existDateAndTimeId(LocalDate date, Long timeId);
+
+    List<Long> findThemeReservationCountsForLastWeek();
+
+    List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId);
 }
