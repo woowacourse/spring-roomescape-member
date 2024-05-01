@@ -22,7 +22,7 @@ public class ReservationController {
 
     @GetMapping("/admin/reservation")
     public String getReservation() {
-        return "admin/reservation";
+        return "admin/reservation-new";
     }
 
     @GetMapping("/reservations")

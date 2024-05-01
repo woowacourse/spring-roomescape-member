@@ -54,18 +54,20 @@ public class ReservationDaoTest {
     @Test
     void insertTest() {
         Long index = jdbcTemplate.queryForObject("SELECT count(*) FROM reservation", Long.class);
-        Long id = reservationDao.insert("토미", "2024-01-02", 1L);
+        Long id = reservationDao.insert("토미", "2024-01-02", 1L, 1L);
 
         assertThat(id).isEqualTo(index + 1);
     }
 
     @Test
     void wrongInsertTest() {
-        assertThatThrownBy(() -> reservationDao.insert("토미".repeat(130), "2024-01-01", 1L))
+        assertThatThrownBy(() -> reservationDao.insert("토미".repeat(130), "2024-01-01", 1L, 1L))
                 .isInstanceOf(DataIntegrityViolationException.class);
-        assertThatThrownBy(() -> reservationDao.insert("토미", "2024-01-01", -1L))
+        assertThatThrownBy(() -> reservationDao.insert("토미", "2024-01-01", -1L, 1L))
                 .isInstanceOf(DataIntegrityViolationException.class);
-        assertThatThrownBy(() -> reservationDao.insert("토미", null, 1L))
+        assertThatThrownBy(() -> reservationDao.insert("토미", null, 1L, 1L))
+                .isInstanceOf(DataIntegrityViolationException.class);
+        assertThatThrownBy(() -> reservationDao.insert("토미", "2024-01-01", 1L, -1L))
                 .isInstanceOf(DataIntegrityViolationException.class);
     }
 
@@ -97,6 +99,20 @@ public class ReservationDaoTest {
     @Test
     void countByNullTimeIdTest() {
         int count = reservationDao.countByTimeId(null);
+
+        assertThat(count).isEqualTo(0);
+    }
+
+    @Test
+    void countByThemeIdTest() {
+        int count = reservationDao.countByThemeId(1L);
+
+        assertThat(count).isEqualTo(1);
+    }
+
+    @Test
+    void countByNullThemeIdTest() {
+        int count = reservationDao.countByThemeId(null);
 
         assertThat(count).isEqualTo(0);
     }
