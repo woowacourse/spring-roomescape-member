@@ -1,13 +1,15 @@
 package roomescape.reservation.dto.response;
 
+import roomescape.reservation.model.Reservation;
+import roomescape.util.CustomDateTimeFormatter;
+
 public record CreateReservationResponse(Long id, String name, String date, CreateTimeOfReservationsResponse time) {
-    // TODO: domain을 받느 수정
-    public static CreateReservationResponse of(final FindReservationResponse findReservationResponse) {
+    public static CreateReservationResponse of(final Reservation reservation) {
         return new CreateReservationResponse(
-                findReservationResponse.id(),
-                findReservationResponse.name(),
-                findReservationResponse.date(),
-                CreateTimeOfReservationsResponse.of(findReservationResponse.time())
+                reservation.getId(),
+                reservation.getName(),
+                CustomDateTimeFormatter.getFormattedDate(reservation.getDate()),
+                CreateTimeOfReservationsResponse.of(reservation.getReservationTime())
         );
     }
 }

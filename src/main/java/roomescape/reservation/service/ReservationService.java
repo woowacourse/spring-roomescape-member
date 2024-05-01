@@ -37,8 +37,7 @@ public class ReservationService {
             throw new IllegalStateException("동일한 시간의 예약이 존재합니다.");
         }
 
-        Long id = reservationRepository.save(reservation);
-        return CreateReservationResponse.of(getReservation(id));
+        return CreateReservationResponse.of(reservationRepository.save(reservation));
     }
 
     private void validateReservationDateTime(final LocalDate reservationDate, final LocalTime reservationTime) {
