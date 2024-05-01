@@ -30,12 +30,12 @@ class JdbcReservationRepositoryTest {
     @Test
     void shouldReturnReservationWhenReservationIdExist() {
         jdbcTemplate.update("insert into reservation_time (id, start_at) values (?, ?)", 1L, LocalTime.now());
-        jdbcTemplate.update("insert into reservation (id, name, date, time_id) values (?, ?, ?, ?)", 1L, "test",
-                LocalDate.now(), 1L);
+        jdbcTemplate.update("insert into reservation (id, name, date, time_id) values (?, ?, ?, ?)",
+                1L, "test", LocalDate.now(), 1L);
 
         Optional<Reservation> findReservation = jdbcReservationRepository.findById(1L);
 
-        assertThat(findReservation.isPresent()).isTrue();
+        assertThat(findReservation).isPresent();
         assertThat(findReservation.get().getId()).isEqualTo(1L);
     }
 
@@ -77,7 +77,7 @@ class JdbcReservationRepositoryTest {
                 new ReservationTime(1L, LocalTime.now())
         );
 
-        Reservation reservationWithId = jdbcReservationRepository.save(reservationWithoutId);
+        Reservation reservationWithId = jdbcReservationRepository.create(reservationWithoutId);
 
         assertThat(reservationWithId.getId()).isNotNull();
     }

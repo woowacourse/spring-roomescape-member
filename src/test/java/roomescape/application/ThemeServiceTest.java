@@ -31,12 +31,12 @@ class ThemeServiceTest {
     @Test
     void shouldReturnCreatedTheme() {
         ThemeRequest request = new ThemeRequest("테마", "테마 설명", "url");
-        given(themeRepository.save(any(Theme.class)))
+        given(themeRepository.create(any(Theme.class)))
                 .willReturn(new Theme(1L, new ThemeName("테마"), "테마 설명", "url"));
 
         ThemeResponse themeResponse = themeService.create(request);
 
-        then(themeRepository).should().save(request.toTheme());
+        then(themeRepository).should().create(request.toTheme());
     }
 
     @DisplayName("모든 테마 조회시 themeRepository findAll 메서드를 1회 호출하고 모든 테마를 반환한다.")

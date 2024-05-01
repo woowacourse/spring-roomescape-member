@@ -26,7 +26,7 @@ class JdbcThemeRepositoryTest {
     @Test
     void shouldSaveTheme() {
         Theme theme = new Theme(new ThemeName("테마"), "테마 설명", "url");
-        jdbcThemeRepository.save(theme);
+        jdbcThemeRepository.create(theme);
         String sql = "select count(*) from theme";
         int count = jdbcTemplate.queryForObject(sql, Integer.class);
         assertThat(count).isEqualTo(1);

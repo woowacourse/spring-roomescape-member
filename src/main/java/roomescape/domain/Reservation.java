@@ -1,6 +1,5 @@
 package roomescape.domain;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -10,7 +9,6 @@ public class Reservation {
     private final LocalDate date;
     private final ReservationTime time;
 
-    @JsonCreator
     public Reservation(Long id, PlayerName name, LocalDate date, ReservationTime time) {
         this.id = id;
         this.name = name;

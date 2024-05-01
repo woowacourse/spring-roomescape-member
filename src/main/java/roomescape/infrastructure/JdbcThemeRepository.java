@@ -24,7 +24,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public Theme save(Theme theme) {
+    public Theme create(Theme theme) {
         MapSqlParameterSource parameter = new MapSqlParameterSource()
                 .addValue("name", theme.getName())
                 .addValue("description", theme.getDescription())

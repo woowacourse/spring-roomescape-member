@@ -4,6 +4,7 @@ import java.util.Objects;
 
 public class PlayerName {
     public static final int NAME_MAX_LENGTH = 20;
+
     private final String name;
 
     public PlayerName(String name) {

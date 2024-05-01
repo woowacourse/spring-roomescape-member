@@ -10,7 +10,7 @@ public interface ReservationRepository {
 
     List<Reservation> findAll();
 
-    Reservation save(Reservation reservation);
+    Reservation create(Reservation reservation);
 
     void deleteById(long id);
 

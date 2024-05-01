@@ -33,7 +33,7 @@ public class ReservationService {
         validateRequestDateAfterCurrentTime(dateTime);
         validateUniqueReservation(request);
         Reservation reservation = request.toReservation(reservationTime);
-        return ReservationResponse.from(reservationRepository.save(reservation));
+        return ReservationResponse.from(reservationRepository.create(reservation));
     }
 
     private ReservationTime getReservationTime(ReservationRequest request) {

@@ -61,7 +61,7 @@ class ReservationServiceTest {
                 .willReturn(Optional.of(reservationTime));
         given(reservationRepository.existByDateAndTimeId(any(LocalDate.class), any(Long.class)))
                 .willReturn(false);
-        given(reservationRepository.save(any(Reservation.class)))
+        given(reservationRepository.create(any(Reservation.class)))
                 .willReturn(reservation);
 
         reservationService.create(reservationRequest);
@@ -69,7 +69,7 @@ class ReservationServiceTest {
         then(reservationTimeRepository).should(times(1)).findById(any(Long.class));
         then(reservationRepository).should(times(1))
                 .existByDateAndTimeId(any(LocalDate.class), any(Long.class));
-        then(reservationRepository).should(times(1)).save(any(Reservation.class));
+        then(reservationRepository).should(times(1)).create(any(Reservation.class));
     }
 
     @DisplayName("존재하지 않는 예약 시간으로 예약을 생성시 IllegalArgumentException 예외를 반환한다.")
@@ -82,7 +82,7 @@ class ReservationServiceTest {
         then(reservationTimeRepository).should().findById(any(Long.class));
         then(reservationRepository).should(times(0))
                 .existByDateAndTimeId(any(LocalDate.class), any(Long.class));
-        then(reservationRepository).should(times(0)).save(any(Reservation.class));
+        then(reservationRepository).should(times(0)).create(any(Reservation.class));
     }
 
     @DisplayName("중복된 예약을 하는 경우 IllegalStateException 예외를 반환한다.")
@@ -104,7 +104,7 @@ class ReservationServiceTest {
         then(reservationTimeRepository).should().findById(any(Long.class));
         then(reservationRepository).should()
                 .existByDateAndTimeId(any(LocalDate.class), any(Long.class));
-        then(reservationRepository).should(times(0)).save(any(Reservation.class));
+        then(reservationRepository).should(times(0)).create(any(Reservation.class));
     }
 
     @DisplayName("과거 시간을 예약하는 경우 IllegalArgumentException 예외를 반환한다.")
@@ -167,7 +167,8 @@ class ReservationServiceTest {
 
     private void setClockMock(int year, int month, int day, int hour, int minute) {
         given(clock.instant())
-            .willReturn(Instant.from(LocalDateTime.of(year, month, day, hour, minute).atZone(ZoneId.systemDefault())));
+                .willReturn(
+                        Instant.from(LocalDateTime.of(year, month, day, hour, minute).atZone(ZoneId.systemDefault())));
         given(clock.getZone())
                 .willReturn(ZoneId.systemDefault());
     }

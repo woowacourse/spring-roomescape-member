@@ -3,7 +3,7 @@ package roomescape.domain;
 import java.util.List;
 
 public interface ThemeRepository {
-    Theme save(Theme theme);
+    Theme create(Theme theme);
 
     List<Theme> findAll();
 

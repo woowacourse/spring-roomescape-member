@@ -53,7 +53,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation save(Reservation reservation) {
+    public Reservation create(Reservation reservation) {
         ReservationTime time = reservation.getTime();
         MapSqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
