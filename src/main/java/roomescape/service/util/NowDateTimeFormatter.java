@@ -3,13 +3,13 @@ package roomescape.service.util;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public class DateTimeUtil {
+public class NowDateTimeFormatter implements DateTimeFormatter {
 
-    public static LocalDate getNowDate() {
+    public LocalDate getDate() {
         return LocalDate.now();
     }
 
-    public static LocalTime getNowTime() {
+    public LocalTime getTime() {
         return LocalTime.now();
     }
 }

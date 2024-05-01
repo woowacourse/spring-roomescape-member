@@ -12,17 +12,20 @@ import roomescape.exception.PastTimeReservationException;
 import roomescape.exception.ReservationAlreadyExistsException;
 import roomescape.service.dto.ReservationInput;
 import roomescape.service.dto.ReservationOutput;
-import roomescape.service.util.DateTimeUtil;
+import roomescape.service.util.DateTimeFormatter;
 
 @Service
 public class ReservationService {
 
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
+    private final DateTimeFormatter dateTimeFormatter;
 
-    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao) {
+    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao,
+                              DateTimeFormatter dateTimeFormatter) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
+        this.dateTimeFormatter = dateTimeFormatter;
     }
 
     public ReservationOutput createReservation(ReservationInput input) {
@@ -37,7 +40,7 @@ public class ReservationService {
             throw new ReservationAlreadyExistsException(
                     String.format("%s 에 해당하는 예약이 있습니다.", reservation.getDateAndTimeFormat()));
         }
-        if (reservation.isBefore(DateTimeUtil.getNowDate(), DateTimeUtil.getNowTime())) {
+        if (reservation.isBefore(dateTimeFormatter.getDate(), dateTimeFormatter.getTime())) {
             throw new PastTimeReservationException(String.format("%s는 지난 시간입니다.", reservation.getDateAndTimeFormat()));
         }
         Reservation savedReservation = reservationDao.create(reservation);
