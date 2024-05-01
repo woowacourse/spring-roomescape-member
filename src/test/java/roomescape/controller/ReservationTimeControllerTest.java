@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.Reservation;
@@ -121,7 +120,7 @@ class ReservationTimeControllerTest {
         );
     }
 
-    @DisplayName("시간 생성에서 잘못된 값 입력시 예외메시지를 응답한다.")
+    @DisplayName("시간 생성에서 잘못된 값 입력시 400을 응답한다.")
     @ParameterizedTest
     @ValueSource(strings = {"", " ", "24:01", "12:60"})
     void createException(String startAt) {

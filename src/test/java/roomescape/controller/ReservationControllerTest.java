@@ -1,26 +1,22 @@
 package roomescape.controller;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.lang.reflect.Field;
-import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationRequest;
-import roomescape.service.ReservationService;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReservationControllerTest {
@@ -57,13 +53,27 @@ class ReservationControllerTest {
     @Test
     void createReservation() {
         //given
-        reservationTimeDao.save(new ReservationTime("10:00"));
+        ReservationTime savedReservationTime = reservationTimeDao.save(new ReservationTime("10:00"));
         //then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new ReservationRequest("브라운", "2023-08-05", 1L))
+                .body(new ReservationRequest("브라운", "2023-08-05", savedReservationTime.getId()))
                 .when().post("/reservations")
                 .then().log().all().assertThat().statusCode(HttpStatus.CREATED.value());
+    }
+
+    @DisplayName("사용자 이름에 null 혹은 빈문자열 입력시 400을 응답한다.")
+    @ParameterizedTest
+    @ValueSource(strings = {"", " "})
+    void createReservationException(String value) {
+        //given
+        ReservationTime savedReservationTime = reservationTimeDao.save(new ReservationTime("10:00"));
+        //then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(new ReservationRequest(value, "2023-08-05", savedReservationTime.getId()))
+                .when().post("/reservations")
+                .then().log().all().assertThat().statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("참조키가 존재하지 않음으로 인한 예약 추가 실패 테스트")

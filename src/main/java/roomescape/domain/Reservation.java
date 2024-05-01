@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 public class Reservation {
     private final Long id;
-    private final String name;
+    private final Name name; //TODO 어떻게 생성할지
     private final LocalDate date;
     private final ReservationTime time;
 
@@ -17,6 +17,10 @@ public class Reservation {
     }
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time) {
+        this(id, new Name(name), date, time);
+    }
+
+    public Reservation(Long id, Name name, LocalDate date, ReservationTime time) {
         this.id = id;
         this.name = name;
         this.date = date;
@@ -36,7 +40,7 @@ public class Reservation {
     }
 
     public String getName() {
-        return name;
+        return name.getName();
     }
 
     public LocalDate getDate() {
