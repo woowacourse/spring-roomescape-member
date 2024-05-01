@@ -9,6 +9,9 @@ import roomescape.domain.Theme;
 import roomescape.repository.ThemeRepository;
 
 import javax.sql.DataSource;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
 import java.util.Objects;
 
 @Repository
@@ -29,5 +32,20 @@ public class ThemeDao implements ThemeRepository {
         SqlParameterSource params = new BeanPropertySqlParameterSource(theme);
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
         return new Theme(Objects.requireNonNull(id), theme);
+    }
+
+    @Override
+    public List<Theme> findAll() {
+        String sql = "SELECT * FROM theme";
+        return jdbcTemplate.query(sql, this::rowMapper);
+    }
+
+    private Theme rowMapper(ResultSet resultSet, int rowNumber) throws SQLException {
+        return new Theme(
+                resultSet.getLong("id"),
+                resultSet.getString("name"),
+                resultSet.getString("description"),
+                resultSet.getString("thumbnail")
+        );
     }
 }

@@ -6,6 +6,8 @@ import roomescape.domain.Theme;
 import roomescape.dto.ThemeResponse;
 import roomescape.repository.ThemeRepository;
 
+import java.util.List;
+
 @Service
 @Transactional
 public class ThemeService {
@@ -17,7 +19,14 @@ public class ThemeService {
 
     public ThemeResponse create(Theme theme) {
         Theme savedTheme = themeRepository.save(theme);
-        return new ThemeResponse(
-                savedTheme.getId(), savedTheme.getName(), savedTheme.getDescription(), savedTheme.getThumbnail());
+        return ThemeResponse.from(savedTheme);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ThemeResponse> findAll() {
+        List<Theme> themes = themeRepository.findAll();
+        return themes.stream()
+                .map(ThemeResponse::from)
+                .toList();
     }
 }

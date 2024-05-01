@@ -7,7 +7,10 @@ import org.springframework.http.MediaType;
 import roomescape.dto.ThemeResponse;
 import roomescape.dto.ThemeSaveRequest;
 
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -36,5 +39,25 @@ class ThemeControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.description").value(THEME_DESCRIPTION))
                 .andExpect(jsonPath("$.thumbnail").value(THEME_THUMBNAIL))
                 .andExpect(jsonPath("$.id").value(1L));
+    }
+
+    @Test
+    @DisplayName("테마 목록 GET 요청 시 상태코드 200을 반환한다.")
+    void findAllThemes() throws Exception {
+        // given
+        ThemeResponse expectedResponse = new ThemeResponse(1L, THEME_NAME, THEME_DESCRIPTION, THEME_THUMBNAIL);
+
+        BDDMockito.given(themeService.findAll())
+                .willReturn(List.of(expectedResponse));
+
+        // when & then
+        mockMvc.perform(get("/themes")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].name").value(THEME_NAME))
+                .andExpect(jsonPath("$[0].description").value(THEME_DESCRIPTION))
+                .andExpect(jsonPath("$[0].thumbnail").value(THEME_THUMBNAIL))
+                .andExpect(jsonPath("$[0].id").value(1L));
     }
 }

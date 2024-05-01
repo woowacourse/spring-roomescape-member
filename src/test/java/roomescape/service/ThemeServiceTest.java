@@ -11,6 +11,8 @@ import roomescape.domain.Theme;
 import roomescape.dto.ThemeResponse;
 import roomescape.repository.ThemeRepository;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static roomescape.TestFixture.WOOTECO_THEME;
@@ -37,5 +39,23 @@ class ThemeServiceTest {
 
         // then
         assertThat(response.id()).isEqualTo(expectedTheme.getId());
+    }
+
+    @Test
+    @DisplayName("테마 목록을 조회한다.")
+    void findAll() {
+        // given
+        List<Theme> expectedThemes = List.of(WOOTECO_THEME(1L));
+
+        BDDMockito.given(themeRepository.findAll())
+                .willReturn(expectedThemes);
+
+        // when
+        List<ThemeResponse> responses = themeService.findAll();
+
+        // then
+        ThemeResponse expectedResponse = ThemeResponse.from(WOOTECO_THEME(1L));
+        assertThat(responses).hasSize(1)
+                .containsExactly(expectedResponse);
     }
 }

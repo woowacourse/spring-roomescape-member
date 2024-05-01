@@ -1,11 +1,14 @@
 package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static roomescape.TestFixture.*;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.domain.Theme;
+
+import java.util.List;
 
 public class ThemeRepositoryTest extends RepositoryTest {
     @Autowired
@@ -22,5 +25,19 @@ public class ThemeRepositoryTest extends RepositoryTest {
 
         // then
         assertThat(savedTheme.getId()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("테마 목록을 조회한다.")
+    public void findAll() {
+        // given
+        String insertSql = "INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)";
+        jdbcTemplate.update(insertSql, THEME_NAME, THEME_DESCRIPTION, THEME_THUMBNAIL);
+
+        // when
+        List<Theme> themes = themeRepository.findAll();
+
+        // then
+        assertThat(themes).hasSize(1);
     }
 }
