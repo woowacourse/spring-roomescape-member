@@ -6,12 +6,13 @@ import org.mockito.BDDMockito;
 import org.springframework.http.MediaType;
 import roomescape.dto.ThemeResponse;
 import roomescape.dto.ThemeSaveRequest;
+import roomescape.exception.NotFoundException;
 
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -59,5 +60,34 @@ class ThemeControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$[0].description").value(THEME_DESCRIPTION))
                 .andExpect(jsonPath("$[0].thumbnail").value(THEME_THUMBNAIL))
                 .andExpect(jsonPath("$[0].id").value(1L));
+    }
+
+    @Test
+    @DisplayName("테마 DELETE 요청 시 상태 코드 204를 반환한다.")
+    void deleteTheme() throws Exception {
+        // given
+        BDDMockito.willDoNothing()
+                .given(themeService)
+                .deleteById(anyLong());
+
+        // when & then
+        mockMvc.perform(delete("/themes/{id}", anyLong()))
+                .andDo(print())
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 테마 DELETE 요청 시 상태코드 404를 반환한다.")
+    void deleteNotExistingTheme() throws Exception {
+        // given
+        BDDMockito.willThrow(NotFoundException.class)
+                .given(themeService)
+                .deleteById(anyLong());
+
+        // when & then
+        mockMvc.perform(delete("/themes/{id}", anyLong()))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").exists());
     }
 }

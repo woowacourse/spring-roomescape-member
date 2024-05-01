@@ -29,4 +29,10 @@ public class ThemeController {
     public ResponseEntity<List<ThemeResponse>> findAll() {
         return ResponseEntity.ok(themeService.findAll());
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
+        themeService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
 }

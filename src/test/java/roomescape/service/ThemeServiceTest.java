@@ -9,12 +9,15 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeResponse;
+import roomescape.exception.NotFoundException;
 import roomescape.repository.ThemeRepository;
 
 import java.util.List;
+import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static roomescape.TestFixture.WOOTECO_THEME;
 
 @ExtendWith(MockitoExtension.class)
@@ -57,5 +60,31 @@ class ThemeServiceTest {
         ThemeResponse expectedResponse = ThemeResponse.from(WOOTECO_THEME(1L));
         assertThat(responses).hasSize(1)
                 .containsExactly(expectedResponse);
+    }
+
+    @Test
+    @DisplayName("테마를 삭제한다.")
+    void deleteById() {
+        // given
+        Theme theme = WOOTECO_THEME(1L);
+
+        BDDMockito.given(themeRepository.findById(anyLong()))
+                .willReturn(Optional.of(theme));
+
+        // when & then
+        assertThatCode(() -> themeService.deleteById(1L))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("삭제하려는 테마가 존재하지 않는 경우 예외가 발생한다.")
+    void deleteByNotExistId() {
+        // given
+        BDDMockito.given(themeRepository.findById(anyLong()))
+                .willReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> themeService.deleteById(1L))
+                .isInstanceOf(NotFoundException.class);
     }
 }

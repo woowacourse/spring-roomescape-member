@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeResponse;
+import roomescape.exception.NotFoundException;
 import roomescape.repository.ThemeRepository;
 
 import java.util.List;
@@ -28,5 +29,11 @@ public class ThemeService {
         return themes.stream()
                 .map(ThemeResponse::from)
                 .toList();
+    }
+
+    public void deleteById(Long id) {
+        Theme theme = themeRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(id + "에 해당하는 테마가 없습니다."));
+        themeRepository.deleteById(theme.getId());
     }
 }

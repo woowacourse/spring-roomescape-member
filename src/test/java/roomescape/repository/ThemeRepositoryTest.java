@@ -3,9 +3,13 @@ package roomescape.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static roomescape.TestFixture.*;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.domain.Theme;
 
 import java.util.List;
@@ -13,6 +17,15 @@ import java.util.List;
 public class ThemeRepositoryTest extends RepositoryTest {
     @Autowired
     private ThemeRepository themeRepository;
+
+    private SimpleJdbcInsert jdbcInsert;
+
+    @BeforeEach
+    void setUp() {
+        jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("theme")
+                .usingGeneratedKeyColumns("id");
+    }
 
     @Test
     @DisplayName("테마를 저장한다.")
@@ -39,5 +52,21 @@ public class ThemeRepositoryTest extends RepositoryTest {
 
         // then
         assertThat(themes).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("Id로 테마를 삭제한다.")
+    void deleteById() {
+        // given
+        Theme theme = WOOTECO_THEME();
+        SqlParameterSource params = new BeanPropertySqlParameterSource(theme);
+        Long id = jdbcInsert.executeAndReturnKey(params).longValue();
+
+        // when
+        themeRepository.deleteById(id);
+
+        // then
+        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from theme where id = ?", Integer.class, id);
+        assertThat(count).isEqualTo(0);
     }
 }
