@@ -70,4 +70,13 @@ class ThemeControllerTest {
                 .statusCode(200)
                 .body("size()", is(1));
     }
+
+    @Test
+    @DisplayName("특정 테마가 존재하지 않는데, 그 테마를 삭제하려 할 때 404을 반환한다.")
+    void return_404_when_not_exist_id() {
+        RestAssured.given()
+                .delete("/themes/-1")
+                .then()
+                .statusCode(404);
+    }
 }
