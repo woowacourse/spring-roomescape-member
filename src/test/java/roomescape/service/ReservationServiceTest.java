@@ -124,4 +124,32 @@ class ReservationServiceTest {
                 .isInstanceOf(InvalidReservationException.class)
                 .hasMessage("선택하신 테마와 일정은 이미 예약이 존재합니다.");
     }
+
+    @DisplayName("존재하지 않는 시간으로 예약을 추가하면 예외를 발생시킨다.")
+    @Test
+    void cannotCreateByUnknownTime() {
+        //given
+        String name = "lini";
+        String date = "2024-10-04";
+        ReservationRequest reservationRequest = new ReservationRequest(name, date, 0, theme.getId());
+
+        //when & then
+        assertThatThrownBy(() -> reservationService.create(reservationRequest))
+                .isInstanceOf(InvalidReservationException.class)
+                .hasMessage("더이상 존재하지 않는 시간입니다.");
+    }
+
+    @DisplayName("존재하지 않는 테마로 예약을 추가하면 예외를 발생시킨다.")
+    @Test
+    void cannotCreateByUnknownTheme() {
+        //given
+        String name = "lini";
+        String date = "2024-10-04";
+        ReservationRequest reservationRequest = new ReservationRequest(name, date, reservationTime.getId(), 0);
+
+        //when & then
+        assertThatThrownBy(() -> reservationService.create(reservationRequest))
+                .isInstanceOf(InvalidReservationException.class)
+                .hasMessage("더이상 존재하지 않는 테마입니다.");
+    }
 }
