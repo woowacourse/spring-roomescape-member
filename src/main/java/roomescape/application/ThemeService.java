@@ -31,6 +31,8 @@ public class ThemeService {
 
     @Transactional
     public void deleteById(long id) {
-        themeRepository.deleteById(id);
+        Theme theme = themeRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마 입니다."));
+        themeRepository.deleteById(theme.getId());
     }
 }

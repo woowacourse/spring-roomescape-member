@@ -16,9 +16,8 @@
   - [x] 과거 시간을 예약하는 경우
   - [x] 같은 날짜에 같은 시간을 예약하는 경우 중복 예약
   
-- [ ] 테마에서 발생할 수 있는 예외 사항 처리
-  - [ ] 중복되는 테마 이름
-  - [ ] 예약이 존재하는 테마를 삭제하는 경우
+  - [x] 테마에서 발생할 수 있는 예외 사항 처리
+    - [x] 예약이 존재하는 테마를 삭제하는 경우
 
 # 방탈출 API 명세
 
@@ -60,7 +59,8 @@
 {
   "date": "2023-08-05",
   "name": "브라운",
-  "timeId": 1
+  "timeId": 1,
+  "themeId": 1
 }
 ```
 
@@ -78,6 +78,12 @@
   "time": {
     "id": 1,
     "startAt": "10:00"
+  },
+  "theme": {
+    "id": 1,
+    "themeName": "테마",
+    "description": "설명",
+    "thumbnail": "url"
   }
 }
 ```
@@ -88,8 +94,7 @@
 
 ### Request
 
-- DELETE /reservations/{reservationId}
-- Path Variables : Long
+- DELETE /reservations/{id}
 
 ### Response
 
@@ -151,12 +156,11 @@
 
 ### Request
 
-- DELETE /times/{timeId}
-- PathVariable : Long
+- DELETE /times/{id}
 
 ### Response
 
-- 200 OK
+- 204 No Content
 
 ---
 

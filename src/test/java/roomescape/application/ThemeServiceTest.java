@@ -1,13 +1,12 @@
 package roomescape.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeName;
 import roomescape.domain.ThemeRepository;
@@ -47,6 +46,14 @@ class ThemeServiceTest {
         themeService.deleteById(theme.getId());
         List<Theme> themes = themeRepository.findAll();
         assertThat(themes).isEmpty();
+    }
+
+    @DisplayName("존재하지 않는 id로 테마를 삭제하면 예외가 발생한다.")
+    @Test
+    void shouldThrowIllegalArgumentExceptionWhenDeleteWithNonExistId() {
+        assertThatCode(() -> themeService.deleteById(1L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("존재하지 않는 테마 입니다.");
     }
 
     private Theme createTheme() {
