@@ -1,7 +1,9 @@
 package roomescape.theme.repository;
 
 import java.util.List;
+import java.util.Optional;
 import javax.sql.DataSource;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -46,5 +48,21 @@ public class JdbcThemeRepository implements ThemeRepository {
         long id = simpleJdbcInsert.executeAndReturnKey(source).longValue();
 
         return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
+    }
+
+    @Override
+    public Optional<Theme> findById(final Long id) {
+        String sql = " select id, name, description, thumbnail from theme where id = ? ";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, themeRowMapper, id));
+        } catch (EmptyResultDataAccessException emptyResultDataAccessException) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public void deleteById(final Long id) {
+        String sql = "delete from theme where id = ?";
+        jdbcTemplate.update(sql, id);
     }
 }
