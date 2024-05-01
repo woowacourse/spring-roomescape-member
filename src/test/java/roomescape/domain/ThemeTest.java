@@ -5,7 +5,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import roomescape.exception.InvalidRequestException;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.domain.Theme.DEFAULT_THUMBNAIL;
 
 class ThemeTest {
 
@@ -15,5 +17,16 @@ class ThemeTest {
     void validateNull(String name) {
         assertThatThrownBy(() -> Theme.from(name, "", ""))
                 .isInstanceOf(InvalidRequestException.class);
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @DisplayName("썸네일이 공백일 경우 기본 썸네일로 대체된다.")
+    void getDefaultThumbnailIfNotExists(String thumbnail) {
+        // given & when
+        final Theme theme = Theme.from("spring", "", thumbnail);
+
+        // then
+        assertThat(theme.getThumbnail()).isEqualTo(DEFAULT_THUMBNAIL);
     }
 }

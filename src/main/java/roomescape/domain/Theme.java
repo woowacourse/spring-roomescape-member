@@ -5,6 +5,9 @@ import roomescape.exception.InvalidRequestException;
 import java.util.Objects;
 
 public class Theme {
+
+    public static final String DEFAULT_THUMBNAIL = "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg";
+
     private final Long id;
     private final String name;
     private final String description;
@@ -19,7 +22,15 @@ public class Theme {
 
     public static Theme from(final String name, final String description, final String thumbnail) {
         validateNull(name);
-        return new Theme(null, name, description, thumbnail);
+        return new Theme(null, name, description, getDefaultThumbnailIfNotExists(thumbnail));
+    }
+
+    // TODO: 조금 더 개선
+    private static String getDefaultThumbnailIfNotExists(final String thumbnail) {
+        if (thumbnail == null || thumbnail.isBlank()) {
+            return DEFAULT_THUMBNAIL;
+        }
+        return thumbnail;
     }
 
     private static void validateNull(final String name) {
