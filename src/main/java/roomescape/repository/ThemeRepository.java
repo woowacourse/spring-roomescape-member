@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -21,4 +22,6 @@ public interface ThemeRepository {
     void deleteById(Long id);
 
     boolean existsByName(String name);
+
+    List<Theme> findTop10ThemesLastWeek(LocalDateTime now);
 }

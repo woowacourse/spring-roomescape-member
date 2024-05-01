@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -74,5 +75,27 @@ public class JdbcThemeRepository implements ThemeRepository {
         String sql = "SELECT EXISTS(SELECT 1 FROM theme WHERE name = ?)";
 
         return jdbcTemplate.queryForObject(sql, Boolean.class, name);
+    }
+
+    @Override
+    public List<Theme> findTop10ThemesLastWeek(LocalDateTime now) {
+        String sql = """
+                    SELECT
+                        th.id,
+                        th.name,
+                        th.description,
+                        th.thumbnail
+                    FROM theme as th
+                    JOIN reservation as r
+                    ON th.id = r.theme_id
+                    WHERE r.date BETWEEN ? AND ?
+                    GROUP BY th.id
+                    ORDER BY COUNT(th.id) DESC
+                    LIMIT 10;
+                """;
+
+        LocalDateTime startDate = now.minusDays(7);
+
+        return jdbcTemplate.query(sql, rowMapper, startDate, now);
     }
 }
