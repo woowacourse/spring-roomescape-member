@@ -6,7 +6,6 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class ThemeIntegrationTest extends IntegrationTest {
@@ -51,10 +50,10 @@ class ThemeIntegrationTest extends IntegrationTest {
                 .statusCode(400);
     }
 
-    @Disabled
     @Test
     void 테마를_삭제할_수_있다() {
-        // TODO: reservation과 연관관계 제거 필요
+        jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", 1);
+
         RestAssured.given().log().all()
                 .when().delete("/themes/1")
                 .then().log().all()
@@ -69,8 +68,11 @@ class ThemeIntegrationTest extends IntegrationTest {
                 .statusCode(404);
     }
 
-    @Disabled // TODO: 구현 필요
     @Test
     void 예약이_존재하는_테마는_삭제할_수_없다() {
+        RestAssured.given().log().all()
+                .when().delete("/themes/1")
+                .then().log().all()
+                .statusCode(400);
     }
 }
