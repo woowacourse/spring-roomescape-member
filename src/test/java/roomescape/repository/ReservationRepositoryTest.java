@@ -10,7 +10,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.jdbc.JdbcTestUtils;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.reservation.Reservation;
+import roomescape.domain.theme.Theme;
 import roomescape.domain.time.Time;
 
 import java.time.LocalDate;
@@ -21,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
+@Transactional
 public class ReservationRepositoryTest {
 
     @Autowired
@@ -30,16 +33,21 @@ public class ReservationRepositoryTest {
     private TimeRepository timeRepository;
 
     @Autowired
+    private ThemeRepository themeRepository;
+
+    @Autowired
     private JdbcTemplate jdbcTemplate;
 
     private Time time;
+    private Theme theme;
 
     private Reservation reservation;
 
     @BeforeEach
     void setUp() {
         time = timeRepository.save(new Time(LocalTime.of(17, 30)));
-        reservation = new Reservation("브라운", LocalDate.of(2024, 4, 25), time);
+        theme = themeRepository.save(new Theme("테마명", "설명", "썸네일URL"));
+        reservation = new Reservation("브라운", LocalDate.of(2024, 4, 25), time, theme);
     }
 
     @Test

@@ -1,9 +1,5 @@
 package roomescape.service;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import javax.sql.DataSource;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,13 +8,19 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import roomescape.domain.theme.Theme;
 import roomescape.domain.time.Time;
 import roomescape.dto.reservation.ReservationRequest;
 import roomescape.global.exception.model.ConflictException;
 import roomescape.repository.ReservationRepository;
+import roomescape.repository.ThemeRepository;
 import roomescape.repository.TimeRepository;
 
-import static org.assertj.core.api.Assertions.*;
+import javax.sql.DataSource;
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -32,23 +34,27 @@ class ReservationServiceTest {
 
     private ReservationService reservationService;
     private TimeRepository timeRepository;
+    private ThemeRepository themeRepository;
     private ReservationRepository reservationRepository;
 
     @BeforeEach
     void init() {
-        timeRepository = new TimeRepository(jdbcTemplate, dataSource);
         reservationRepository = new ReservationRepository(jdbcTemplate, dataSource);
-        reservationService = new ReservationService(reservationRepository, timeRepository);
+        timeRepository = new TimeRepository(jdbcTemplate, dataSource);
+        themeRepository = new ThemeRepository(jdbcTemplate, dataSource);
+        reservationService = new ReservationService(reservationRepository, timeRepository, themeRepository);
     }
 
     @Test
-    @DisplayName("동일한 날짜와 시간에 예약을 생성하면 예외가 발생한다")
+    @DisplayName("동일한 날짜와 시간과 테마에 예약을 생성하면 예외가 발생한다")
     void duplicateTimeReservationAddFail() {
         Time time = timeRepository.save(new Time(LocalTime.of(12, 30)));
-        reservationService.createReservation(new ReservationRequest("예약", LocalDate.now().plusDays(1L), time.getId()));
+        Theme theme = themeRepository.save(new Theme("테마명", "설명", "썸네일URL"));
+        reservationService.createReservation(
+                new ReservationRequest("예약", LocalDate.now().plusDays(1L), time.getId(), theme.getId()));
 
         assertThatThrownBy(() -> reservationService.createReservation(
-                        new ReservationRequest("예약", LocalDate.now().plusDays(1L), time.getId())))
+                new ReservationRequest("예약", LocalDate.now().plusDays(1L), time.getId(), theme.getId())))
                 .isInstanceOf(ConflictException.class);
     }
 
@@ -56,10 +62,11 @@ class ReservationServiceTest {
     @DisplayName("이미 지난 날짜로 예약을 생성하면 예외가 발생한다")
     void beforeDateReservationFail() {
         Time time = timeRepository.save(new Time(LocalTime.of(12, 30)));
+        Theme theme = themeRepository.save(new Theme("테마명", "설명", "썸네일URL"));
         LocalDate beforeDate = LocalDate.now().minusDays(1L);
 
         assertThatThrownBy(() -> reservationService.createReservation(
-                new ReservationRequest("예약", beforeDate, time.getId())))
+                new ReservationRequest("예약", beforeDate, time.getId(), theme.getId())))
                 .isInstanceOf(ConflictException.class);
     }
 
@@ -69,9 +76,10 @@ class ReservationServiceTest {
         LocalTime requestTime = LocalTime.now();
         LocalTime beforeTime = requestTime.minusHours(1L);
         Time time = timeRepository.save(new Time(beforeTime));
+        Theme theme = themeRepository.save(new Theme("테마명", "설명", "썸네일URL"));
 
         assertThatThrownBy(() -> reservationService.createReservation(
-                new ReservationRequest("예약", LocalDate.now(), time.getId())))
+                new ReservationRequest("예약", LocalDate.now(), time.getId(), theme.getId())))
                 .isInstanceOf(ConflictException.class);
     }
 }

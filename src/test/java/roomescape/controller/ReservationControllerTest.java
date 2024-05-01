@@ -1,13 +1,7 @@
 package roomescape.controller;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.is;
-
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.lang.reflect.Field;
-import java.time.LocalDate;
-import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,9 +10,18 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.lang.reflect.Field;
+import java.time.LocalDate;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@Transactional
 public class
 ReservationControllerTest {
 
@@ -30,10 +33,17 @@ ReservationControllerTest {
 
     private final Map<String, String> timeParams = Map.of("startAt", "17:00");
 
+    private final Map<String, String> themeParams = Map.of(
+            "name", "테마명",
+            "description", "설명",
+            "thumbnail", "썸네일 URL"
+    );
+
     private final Map<String, String> reservationParams = Map.of(
             "name", "썬",
             "date", LocalDate.now().plusDays(1L).toString(),
-            "timeId", "1"
+            "timeId", "1",
+            "themeId", "1"
     );
 
     @BeforeEach
@@ -43,6 +53,15 @@ ReservationControllerTest {
                 .port(port)
                 .body(timeParams)
                 .when().post("/times")
+                .then().log().all()
+                .statusCode(201)
+                .body("id", is(1));
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .port(port)
+                .body(themeParams)
+                .when().post("/themes")
                 .then().log().all()
                 .statusCode(201)
                 .body("id", is(1));

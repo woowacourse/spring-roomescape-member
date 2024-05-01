@@ -31,6 +31,12 @@ public class ThemeRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
+    public Theme findById(Long id) {
+        String sql = "SELECT * FROM theme WHERE id = ?";
+
+        return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
+    }
+
     public List<Theme> findAll() {
         String sql = "SELECT * FROM theme";
 

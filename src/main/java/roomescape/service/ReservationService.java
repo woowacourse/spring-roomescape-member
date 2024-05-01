@@ -1,26 +1,33 @@
 package roomescape.service;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.reservation.Reservation;
+import roomescape.domain.theme.Theme;
 import roomescape.domain.time.Time;
 import roomescape.dto.reservation.ReservationRequest;
 import roomescape.dto.reservation.ReservationResponse;
 import roomescape.global.exception.model.ConflictException;
 import roomescape.repository.ReservationRepository;
+import roomescape.repository.ThemeRepository;
 import roomescape.repository.TimeRepository;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
 
 @Service
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final TimeRepository timeRepository;
+    private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, TimeRepository timeRepository) {
+    public ReservationService(ReservationRepository reservationRepository,
+                              TimeRepository timeRepository,
+                              ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.timeRepository = timeRepository;
+        this.themeRepository = themeRepository;
     }
 
     public List<ReservationResponse> findAllReservations() {
@@ -35,18 +42,19 @@ public class ReservationService {
         LocalDate today = LocalDate.now();
         LocalDate requestDate = reservationRequest.date();
         Time time = timeRepository.findById(reservationRequest.timeId());
+        Theme theme = themeRepository.findById(reservationRequest.themeId());
 
         if (requestDate.isBefore(today) || (requestDate.isEqual(today) && time.getStartAt().isBefore(LocalTime.now()))) {
             throw new ConflictException("지난 날짜나 시간은 예약이 불가능합니다.");
         }
 
-        List<Reservation> duplicateTimeReservation = reservationRepository.findByTimeIdAndDate(
-                reservationRequest.timeId(), reservationRequest.date());
+        List<Reservation> duplicateTimeReservation = reservationRepository.findByTimeIdAndDateThemeId(
+                reservationRequest.timeId(), reservationRequest.date(), theme.getId());
         if (duplicateTimeReservation.size() > 0) {
-            throw new ConflictException("이미 해당 날짜와 시간에 예약이 존재합니다.");
+            throw new ConflictException("이미 해당 날짜/시간/테마에 예약이 존재합니다.");
         }
 
-        Reservation savedReservation = reservationRepository.save(reservationRequest.toReservation(time));
+        Reservation savedReservation = reservationRepository.save(reservationRequest.toReservation(time, theme));
 
         return ReservationResponse.from(savedReservation);
     }

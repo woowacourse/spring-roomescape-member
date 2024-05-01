@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.reservation.Reservation;
+import roomescape.domain.theme.Theme;
 import roomescape.domain.time.Time;
 
 import javax.sql.DataSource;
@@ -23,6 +24,12 @@ public class ReservationRepository {
             new Time(
                     resultSet.getLong("reservation_time.id"),
                     resultSet.getTime("reservation_time.start_at").toLocalTime()
+            ),
+            new Theme(
+                    resultSet.getLong("reservation.theme_id"),
+                    resultSet.getString("theme.name"),
+                    resultSet.getString("theme.description"),
+                    resultSet.getString("theme.thumbnail")
             )
     );
 
@@ -37,7 +44,11 @@ public class ReservationRepository {
     }
 
     public List<Reservation> findAll() {
-        String sql = "SELECT * FROM reservation r JOIN reservation_time rt ON r.time_id = rt.id";
+        String sql = """
+                SELECT * FROM reservation r 
+                JOIN reservation_time rt ON r.time_id = rt.id
+                JOIN theme t ON r.theme_id = t.id
+                """;
 
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
@@ -46,12 +57,17 @@ public class ReservationRepository {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", requestReservation.getName())
                 .addValue("date", requestReservation.getDate())
-                .addValue("time_id", requestReservation.getTime().getId());
+                .addValue("time_id", requestReservation.getTime().getId())
+                .addValue("theme_id", requestReservation.getTheme().getId());
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
 
         return new Reservation(
-                id, requestReservation.getName(),
-                requestReservation.getDate(), requestReservation.getTime());
+                id,
+                requestReservation.getName(),
+                requestReservation.getDate(),
+                requestReservation.getTime(),
+                requestReservation.getTheme()
+        );
     }
 
     public void delete(Long id) {
@@ -60,12 +76,22 @@ public class ReservationRepository {
     }
 
     public List<Reservation> findByTimeId(Long timeId) {
-        String sql = "SELECT * FROM reservation r JOIN reservation_time rt ON r.time_id = rt.id WHERE r.time_id = ?";
+        String sql = """
+                SELECT * FROM reservation r 
+                JOIN reservation_time rt ON r.time_id = rt.id 
+                JOIN theme t ON r.theme_id = t.id 
+                WHERE r.time_id = ?
+                """;
         return jdbcTemplate.query(sql, ROW_MAPPER, timeId);
     }
 
-    public List<Reservation> findByTimeIdAndDate(Long timeId, LocalDate date) {
-        String sql = "SELECT * FROM reservation r JOIN reservation_time rt ON r.time_id = rt.id WHERE r.time_id = ? AND r.date = ?";
-        return jdbcTemplate.query(sql, ROW_MAPPER, timeId, date);
+    public List<Reservation> findByTimeIdAndDateThemeId(Long timeId, LocalDate date, Long themeId) {
+        String sql = """
+                SELECT * FROM reservation r 
+                JOIN reservation_time rt ON r.time_id = rt.id
+                JOIN theme t ON r.theme_id = t.id
+                WHERE r.time_id = ? AND r.date = ? AND r.theme_id = ?
+                """;
+        return jdbcTemplate.query(sql, ROW_MAPPER, timeId, date, themeId);
     }
 }
