@@ -41,6 +41,6 @@ public abstract class IntegrationTest {
         databaseCleaner.execute();
         databaseInitializer.execute();
         given(clock.instant()).willReturn(Instant.parse("1999-09-19T19:19:00Z"));
-        given(clock.getZone()).willReturn(ZoneId.of("UCT"));
+        given(clock.getZone()).willReturn(ZoneId.of("UCT")); // TODO: 우리나라 시간 코드로 바꾸기
     }
 }

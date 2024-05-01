@@ -8,9 +8,12 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
+import roomescape.domain.Theme;
+import roomescape.domain.ThemeRepository;
 import roomescape.exception.reservation.DuplicatedReservationException;
 import roomescape.exception.reservation.InvalidDateTimeReservationException;
 import roomescape.exception.reservation.NotFoundReservationException;
+import roomescape.exception.theme.NotFoundThemeException;
 import roomescape.exception.time.NotFoundTimeException;
 import roomescape.web.dto.ReservationRequest;
 import roomescape.web.dto.ReservationResponse;
@@ -19,13 +22,16 @@ import roomescape.web.dto.ReservationResponse;
 public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
     private final Clock clock;
 
     public ReservationService(ReservationRepository reservationRepository,
                               ReservationTimeRepository reservationTimeRepository,
+                              ThemeRepository themeRepository,
                               Clock clock) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
         this.clock = clock;
     }
 
@@ -37,17 +43,29 @@ public class ReservationService {
     }
 
     public ReservationResponse saveReservation(ReservationRequest request) {
-        if (reservationRepository.existsByDateAndTimeId(request.getDate(), request.getTimeId())) {
+        ReservationTime time = findReservationTimeById(request.getTimeId());
+        Theme theme = findThemeById(request.getThemeId());
+
+        validateDateTimeReservation(request, time);
+        validateDuplicateReservation(request);
+
+        Reservation reservation = request.toReservation(time, theme);
+        Reservation savedReservation = reservationRepository.save(reservation);
+        return ReservationResponse.from(savedReservation);
+    }
+
+    private void validateDuplicateReservation(ReservationRequest request) {
+        if (reservationRepository.existsByDateAndTimeId(request.getDate(),
+                request.getTimeId())) { // TODO: 테마도 중복 검사 시 보기
             throw new DuplicatedReservationException();
         }
-        ReservationTime time = findReservationTimeById(request.getTimeId());
+    }
+
+    private void validateDateTimeReservation(ReservationRequest request, ReservationTime time) {
         LocalDateTime localDateTime = request.getDate().atTime(time.getStartAt());
         if (localDateTime.isBefore(LocalDateTime.now(clock))) {
             throw new InvalidDateTimeReservationException();
         }
-        Reservation reservation = request.toReservation(time);
-        Reservation savedReservation = reservationRepository.save(reservation);
-        return ReservationResponse.from(savedReservation);
     }
 
     public void deleteReservation(Long id) {
@@ -63,5 +81,10 @@ public class ReservationService {
     private ReservationTime findReservationTimeById(Long id) {
         return reservationTimeRepository.findById(id)
                 .orElseThrow(NotFoundTimeException::new);
+    }
+
+    private Theme findThemeById(Long id) {
+        return themeRepository.findById(id)
+                .orElseThrow(NotFoundThemeException::new);
     }
 }

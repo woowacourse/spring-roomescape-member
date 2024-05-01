@@ -28,7 +28,7 @@
     - [x] 존재 하지 않는 테마
 - [x] 예약 도메인에 테마 필드를 추가한다
 - [x] 예약 목록 조회 API에 테마 필드를 추가한다
-- [ ] 예약 추가 API에 테마 필드를 추가한다
+- [x] 예약 추가 API에 테마 필드를 추가한다
 - [ ] 클라이언트 코드를 수정한다
 
 # API 명세
@@ -79,7 +79,8 @@ content-type: application/json
 {
     "date": "2023-08-05",
     "name": "브라운",
-    "timeId": 1
+    "timeId": 1,
+    "themeId": 1
 }
 ```
 
@@ -96,6 +97,12 @@ Content-Type: application/json
     "time" : {
         "id": 1,
         "startAt" : "10:00"
+    },
+    "theme": {
+        "id": 1,
+        "name": "레벨2 탈출",
+        "description": "우테코 레벨2를 탈출하는 내용입니다.",
+        "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
     }
 }
 ```

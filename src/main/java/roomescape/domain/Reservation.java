@@ -17,10 +17,11 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public Reservation(String name, LocalDate date, ReservationTime time) {
+    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
         this.name = name;
         this.date = date;
         this.time = time;
+        this.theme = theme;
     }
 
     public Long getId() {
