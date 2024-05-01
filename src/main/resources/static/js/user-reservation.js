@@ -146,8 +146,7 @@ function onReservationButtonClick() {
     if (selectedDate && selectedThemeId && selectedTimeId) {
 
         /*
-        TODO: [3단계] 사용자 예약 - 예약 요청 API 호출
-              [5단계] 예약 생성 기능 변경 - 사용자
+        TODO: [5단계] 예약 생성 기능 변경 - 사용자
               request 명세에 맞게 설정
         */
         const reservationData = {
@@ -156,8 +155,6 @@ function onReservationButtonClick() {
             timeId: selectedTimeId,
             name: name
         };
-
-        console.log(reservationData);
 
         fetch('/reservations', {
             method: 'POST',
