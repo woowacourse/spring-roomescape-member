@@ -63,7 +63,7 @@ public class ThemeRepository {
                 ON t.id = r.theme_id
                 WHERE r.date <= ? AND r.date > ?
                 GROUP BY t.id
-                ORDER BY count
+                ORDER BY count DESC
                 LIMIT ?
                 """;
 
