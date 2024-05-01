@@ -10,7 +10,14 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 class ReservationIntegrationTest extends IntegrationTest {
-
+    @Test
+    void 예약_목록을_조회할_수_있다() {
+        RestAssured.given().log().all()
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(1));
+    }
 
     @Test
     void 예약을_추가할_수_있다() {
@@ -106,14 +113,5 @@ class ReservationIntegrationTest extends IntegrationTest {
                 .when().delete("/reservations/10")
                 .then().log().all()
                 .statusCode(404);
-    }
-
-    @Test
-    void 예약_목록을_조회할_수_있다() {
-        RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
     }
 }

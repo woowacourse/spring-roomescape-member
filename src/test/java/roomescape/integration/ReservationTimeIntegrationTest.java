@@ -11,6 +11,15 @@ import org.junit.jupiter.api.Test;
 
 class ReservationTimeIntegrationTest extends IntegrationTest {
     @Test
+    void 시간_목록을_조회할_수_있다() {
+        RestAssured.given().log().all()
+                .when().get("/times")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(1));
+    }
+
+    @Test
     void 시간을_추가할_수_있다() {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "11:00");
@@ -91,14 +100,5 @@ class ReservationTimeIntegrationTest extends IntegrationTest {
                 .when().delete("/times/1")
                 .then().log().all()
                 .statusCode(400);
-    }
-
-    @Test
-    void 시간_목록을_조회할_수_있다() {
-        RestAssured.given().log().all()
-                .when().get("/times")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
     }
 }
