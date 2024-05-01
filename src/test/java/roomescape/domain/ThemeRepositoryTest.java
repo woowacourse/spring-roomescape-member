@@ -3,6 +3,7 @@ package roomescape.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -75,5 +76,26 @@ public class ThemeRepositoryTest {
         // when, then
         assertThatThrownBy(() -> themeRepository.removeById(id))
                 .isInstanceOf(IllegalStateException.class);
+    }
+
+    // 테스트 데이터 - 테마아이디(해당테마 예약 갯수): 6(6), 5(5), 7(5), 4(4), 3(3), 1(1), 8(1), 2(0), 9(0), 10(0)
+    @Test
+    @Sql(scripts = {"/reset_test_data.sql", "/popular_themes_data.sql"},
+            executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
+    @DisplayName("최근 일주일간 인기 테마를 조회할 수 있다.")
+    void findPopularThemes() {
+        // given
+        LocalDate startDate = LocalDate.parse("2024-04-01");
+        LocalDate endDate = LocalDate.parse("2024-04-07");
+        int limit = 10;
+
+        // when
+        List<Theme> popularThemes = themeRepository.findPopularThemes(startDate, endDate, limit);
+
+        // then
+        assertThat(popularThemes)
+                .hasSize(10)
+                .extracting("id")
+                .containsExactly(6L, 5L, 7L, 4L, 3L, 1L, 8L, 2L, 9L, 10L);
     }
 }

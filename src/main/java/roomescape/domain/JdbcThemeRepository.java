@@ -57,7 +57,16 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     public List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, int limitCount) {
-        return null;
+        return jdbcTemplate.query("""
+                        SELECT t.id, t.name, t.description, t.thumbnail
+                        FROM theme as t
+                        LEFT JOIN reservation AS r
+                        ON t.id = r.theme_id
+                        AND convert(r.date, DATE) BETWEEN ? AND ?
+                        GROUP BY t.id
+                        ORDER BY count(r.id) DESC, t.id ASC
+                        LIMIT ?""",
+                getThemeRowMapper(), startDate, endDate, limitCount);
     }
 
     private RowMapper<Theme> getThemeRowMapper() {
