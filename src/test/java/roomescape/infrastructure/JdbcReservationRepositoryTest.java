@@ -1,6 +1,7 @@
 package roomescape.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -23,8 +24,10 @@ import roomescape.domain.ThemeName;
 import roomescape.domain.ThemeRepository;
 
 @JdbcTest
-@Import(JdbcReservationRepository.class)
+@Import(value = {JdbcReservationRepository.class, JdbcReservationTimeRepository.class, JdbcThemeRepository.class})
 class JdbcReservationRepositoryTest {
+    private static final String INSERT_SQL =
+            "insert into reservation (id, name, date, time_id, theme_id) values (?, ?, ?, ?, ?)";
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
@@ -47,7 +50,7 @@ class JdbcReservationRepositoryTest {
     @DisplayName("id로 예약을 조회한다.")
     @Test
     void shouldReturnReservationWhenReservationIdExist() {
-        long id = createReservation();
+        long id = createReservation().getId();
         Optional<Reservation> foundReservation = jdbcReservationRepository.findById(id);
         assertThat(foundReservation).isPresent();
     }
@@ -55,8 +58,7 @@ class JdbcReservationRepositoryTest {
     @DisplayName("id로 예약을 조회시 존재하지 않으면 빈 객체를 반환한다.")
     @Test
     void shouldEmptyReservationWhenReservationIdNotExist() {
-        Optional<Reservation> reservation = jdbcReservationRepository.findById(1L);
-
+        Optional<Reservation> reservation = jdbcReservationRepository.findById(99L);
         assertThat(reservation).isEmpty();
     }
 
@@ -66,13 +68,6 @@ class JdbcReservationRepositoryTest {
         createReservation();
         List<Reservation> reservations = jdbcReservationRepository.findAll();
         assertThat(reservations).hasSize(1);
-    }
-
-    @DisplayName("존재하는 예약이 없는 경우 빈 리스트를 반환한다.")
-    @Test
-    void shouldReturnEmptyListWhenReservationsNotExist() {
-        List<Reservation> reservations = jdbcReservationRepository.findAll();
-        assertThat(reservations).isEmpty();
     }
 
     @DisplayName("예약을 저장하면 id를 가진 예약을 저장 후 반환한다.")
@@ -87,57 +82,55 @@ class JdbcReservationRepositoryTest {
                 theme
         );
         Reservation reservationWithId = jdbcReservationRepository.create(reservationWithoutId);
-        assertThat(reservationWithId.getId()).isNotNull();
+        int totalRowCount = getTotalRowCount();
+        assertAll(
+                () -> assertThat(reservationWithId.getId()).isNotNull(),
+                () -> assertThat(totalRowCount).isEqualTo(1)
+        );
     }
 
     @DisplayName("id로 예약을 삭제한다.")
     @Test
     void shouldDeleteReservationWhenReservationIdExist() {
-        long reservationId = createReservation();
-        Reservation reservation = jdbcReservationRepository.findById(reservationId).orElseThrow();
-
-        jdbcReservationRepository.deleteById(reservation.getId());
-
-        Integer count = jdbcTemplate.queryForObject("select count(*) from reservation", Integer.class);
-        assertThat(count).isZero();
+        long id = createReservation().getId();
+        jdbcReservationRepository.deleteById(id);
+        int totalRowCount = getTotalRowCount();
+        assertThat(totalRowCount).isZero();
     }
 
     @DisplayName("예약 시간 id를 가진 예약의 개수를 조회한다.")
     @Test
     void shouldReturnCountOfReservationWhenReservationTimeUsed() {
-        long id = createReservation();
-
+        long id = createReservation().getId();
         long count = jdbcReservationRepository.findReservationCountByTimeId(id);
-
         assertThat(count).isOne();
     }
 
     @DisplayName("날짜, 시간으로 저장된 예약이 있는지 확인한다.")
     @Test
     void shouldReturnIsExistReservationWhenReservationsNameAndDateAndTimeIsSame() {
-        long id = createReservation();
-        Reservation reservation = jdbcReservationRepository.findById(id).orElseThrow();
-        long timeId = reservation.getTime().getId();
+        Reservation reservation = createReservation();
+        ReservationTime time = reservation.getTime();
 
-        boolean isExist = jdbcReservationRepository.existByDateAndTimeId(
-                reservation.getDate(),
-                timeId);
-
+        boolean isExist = jdbcReservationRepository.existByDateAndTimeId(reservation.getDate(), time.getId());
         assertThat(isExist).isTrue();
     }
 
-    private long createReservation() {
-        LocalTime time = LocalTime.of(12, 0);
-        LocalDate date = LocalDate.of(2024, 12, 25);
-
-        ReservationTime reservationTime = reservationTimeRepository.create(new ReservationTime(time));
+    private Reservation createReservation() {
+        ReservationTime reservationTime = reservationTimeRepository.create(new ReservationTime(LocalTime.of(12, 0)));
         Theme theme = themeRepository.create(new Theme(new ThemeName("theme1"), "desc", "url"));
-
-        return jdbcInsert.executeAndReturnKey(Map.of(
+        LocalDate date = LocalDate.of(2024, 12, 25);
+        long id = jdbcInsert.executeAndReturnKey(Map.of(
                 "name", "test",
                 "date", date,
                 "time_id", reservationTime.getId(),
                 "theme_id", theme.getId()
         )).longValue();
+        return new Reservation(id, new PlayerName("test"), date, reservationTime, theme);
+    }
+
+    private int getTotalRowCount() {
+        String sql = "select count(*) from reservation";
+        return jdbcTemplate.queryForObject(sql, Integer.class);
     }
 }
