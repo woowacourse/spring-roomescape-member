@@ -2,13 +2,14 @@ package roomescape.core.repository;
 
 import java.util.List;
 import roomescape.core.domain.ReservationTime;
+import roomescape.core.dto.BookingTimeResponseDto;
 
 public interface ReservationTimeRepository {
     Long save(final ReservationTime reservationTime);
 
     List<ReservationTime> findAll();
 
-    List<ReservationTime> findAvailableByDateAndThemeId(final String date, final long themeId);
+    List<BookingTimeResponseDto> findAllByDateAndThemeId(final String date, final long themeId);
 
     ReservationTime findById(final long id);
 

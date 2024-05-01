@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.core.domain.ReservationTime;
+import roomescape.core.dto.BookingTimeResponseDto;
 import roomescape.core.dto.ReservationTimeRequestDto;
 import roomescape.core.dto.ReservationTimeResponseDto;
 import roomescape.core.repository.ReservationRepository;
@@ -45,11 +46,8 @@ public class ReservationTimeService {
     }
 
     @Transactional(readOnly = true)
-    public List<ReservationTimeResponseDto> findBookable(final String date, final long themeId) {
-        return reservationTimeRepository.findAvailableByDateAndThemeId(date, themeId)
-            .stream()
-            .map(ReservationTimeResponseDto::new)
-            .toList();
+    public List<BookingTimeResponseDto> findBookable(final String date, final long themeId) {
+        return reservationTimeRepository.findAllByDateAndThemeId(date, themeId);
     }
 
     @Transactional
