@@ -36,7 +36,7 @@ public class ReservationTimeService {
     }
 
     public void delete(long id) {
-        if(reservationDao.existsTime(id)){
+        if (reservationDao.existsTime(id)) {
             throw new IllegalArgumentException("Cannot delete a reservation that refers to that time");
         }
         reservationTimeDao.delete(id);
