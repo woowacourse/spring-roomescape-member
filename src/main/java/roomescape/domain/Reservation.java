@@ -19,15 +19,6 @@ public class Reservation {
         isValid();
     }
 
-    public Reservation(long id, String name, String date, String time) {
-        this.id = id;
-        this.name = name;
-        this.date = LocalDate.parse(date);
-        this.time = new TimeSlot(time);
-
-        isValid();
-    }
-
     private void isValid() {
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("[ERROR] 이름은 비워둘 수 없습니다.");

@@ -15,7 +15,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public class ReservationDAO {
+public class ReservationDao {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
     private final RowMapper<Reservation> rowMapper =
@@ -28,7 +28,7 @@ public class ReservationDAO {
             );
 
 
-    public ReservationDAO(JdbcTemplate jdbcTemplate) {
+    public ReservationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
@@ -36,8 +36,7 @@ public class ReservationDAO {
                 .usingGeneratedKeyColumns("id");
     }
 
-    //TODO: findall로 변경
-    public List<Reservation> read() {
+    public List<Reservation> findAll() {
         String sql = """
                 SELECT
                     r.id as reservation_id,

@@ -13,7 +13,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Repository
-public class TimeDAO {
+public class TimeDao {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
     private final RowMapper<TimeSlot> rowMapper =
@@ -22,7 +22,7 @@ public class TimeDAO {
                     resultSet.getString("start_at")
             );
 
-    public TimeDAO(JdbcTemplate jdbcTemplate) {
+    public TimeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation_time")
