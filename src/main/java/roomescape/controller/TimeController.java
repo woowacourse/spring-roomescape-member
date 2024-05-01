@@ -7,6 +7,7 @@ import roomescape.domain.dto.TimeSlotRequest;
 import roomescape.domain.dto.TimeSlotResponse;
 import roomescape.service.TimeService;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -27,7 +28,7 @@ public class TimeController {
     @PostMapping
     public ResponseEntity<TimeSlotResponse> create(@RequestBody TimeSlotRequest timeSlotRequest) {
         TimeSlotResponse timeSlotResponse = timeService.create(timeSlotRequest);
-        return ResponseEntity.ok(timeSlotResponse);
+        return ResponseEntity.created(URI.create("/times/" + timeSlotResponse.id())).body(timeSlotResponse);
     }
 
     @DeleteMapping("/{id}")
