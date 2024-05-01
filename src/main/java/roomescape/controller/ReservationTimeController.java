@@ -46,8 +46,7 @@ public class ReservationTimeController {
         try {
             reservationTimeService.delete(id);
         } catch (NoSuchElementException e) {
-            return ResponseEntity.notFound()
-                    .build();
+            throw new IllegalArgumentException("존재하지 않는 예약 시간입니다.");
         }
         return ResponseEntity.noContent()
                 .build();

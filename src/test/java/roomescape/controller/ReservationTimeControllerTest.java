@@ -120,4 +120,13 @@ public class ReservationTimeControllerTest {
                 })
         );
     }
+
+    @Test
+    @DisplayName("존재하지 않는 예약 시간의 삭제가 불가능한지 확인한다")
+    void checkNotExistReservationTimeDelete() {
+        RestAssured.given().log().all()
+                .when().delete("times/1")
+                .then().log().all()
+                .statusCode(400);
+    }
 }

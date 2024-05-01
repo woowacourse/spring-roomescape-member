@@ -49,8 +49,7 @@ public class ReservationController {
         try {
             reservationService.delete(id);
         } catch (NoSuchElementException e) {
-            return ResponseEntity.notFound()
-                    .build();
+            throw new IllegalArgumentException("존재하지 않는 예약입니다.");
         }
         return ResponseEntity.noContent()
                 .build();

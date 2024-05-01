@@ -282,4 +282,13 @@ class ReservationControllerTest {
                 })
         );
     }
+
+    @Test
+    @DisplayName("존재하지 않는 예약의 삭제가 불가능한지 확인한다")
+    void checkNotExistReservationDelete() {
+        RestAssured.given().log().all()
+                .when().delete("reservations/1")
+                .then().log().all()
+                .statusCode(400);
+    }
 }
