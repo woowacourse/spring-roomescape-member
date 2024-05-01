@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -52,5 +53,20 @@ public class ThemeRepository {
 
     public void deleteById(final Long id) {
         jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id);
+    }
+
+    public List<Theme> findOneWeekOrderByReservationCount(final LocalDate localDate, final int count) {
+        final String sql = """
+                SELECT t.id, t.name, t.description, t.thumbnail, COUNT(t.id) AS count
+                FROM theme AS t
+                LEFT JOIN reservations AS r
+                ON t.id = r.theme_id
+                WHERE r.date <= ? AND r.date > ?
+                GROUP BY t.id
+                ORDER BY count
+                LIMIT ?
+                """;
+
+        return jdbcTemplate.query(sql, THEME_ROW_MAPPER, localDate, localDate.minusWeeks(1), count);
     }
 }

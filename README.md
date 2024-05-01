@@ -17,6 +17,9 @@
 - order 예약 수 desc
 - limit 10
 
+- 요청 : GET `/themes/popular`
+- 응답 : json [{ name : '', thumbnail : '', description = ''}]
+
 ## STEP2
 ### 테마
 - 추가

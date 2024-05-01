@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dto.ThemeResponse;
@@ -40,5 +41,12 @@ public class ThemeService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
 
         themeRepository.deleteById(id);
+    }
+
+    public List<ThemeResponse> getPopularThemes(final LocalDate localDate) {
+        return themeRepository.findOneWeekOrderByReservationCount(localDate, 10)
+                .stream()
+                .map(ThemeResponse::new)
+                .toList();
     }
 }
