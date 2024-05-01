@@ -131,4 +131,22 @@ public class JdbcReservationRepository implements ReservationRepository {
                 """; // TODO: 줄바꿈 고쳐라잉
         return jdbcTemplate.queryForObject(sql, Integer.class, date, timeId) != 0;
     }
+
+    // TODO: 메서드 순서
+
+    @Override
+    public List<Reservation> findAllByDateAndThemeId(final LocalDate date, final Long themeId) {
+        String sql = """
+                select r.id, r.name, r.date, 
+                    rt.id as time_id, rt.start_at,
+                    t.id as theme_id, t.name, t.description, t.thumbnail
+                from reservation as r
+                inner join reservation_time as rt
+                on r.time_id = rt.id
+                inner join theme as t
+                on r.theme_id = t.id 
+                where r.date = ? and r.theme_id = ?
+                """;
+        return jdbcTemplate.query(sql, reservationRowMapper, date, themeId);
+    }
 }

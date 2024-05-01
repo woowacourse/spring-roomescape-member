@@ -2,6 +2,7 @@ package roomescape.reservation.model;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Objects;
 import roomescape.reservationtime.model.ReservationTime;
 import roomescape.theme.model.Theme;
@@ -23,6 +24,10 @@ public class Reservation {
         this.date = date;
         this.reservationTime = reservationTime;
         this.theme = theme;
+    }
+
+    public boolean isSameTime(final ReservationTime reservationTime) {
+        return this.reservationTime.equals(reservationTime);
     }
 
     public Long getId() {
