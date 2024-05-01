@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.time.LocalTime;
+import java.util.Objects;
 
 public class ReservationTime {
     private final long id;
@@ -23,7 +24,20 @@ public class ReservationTime {
         return startAt;
     }
 
-    public boolean hasId(Long id) {
-        return this.id == id;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ReservationTime time = (ReservationTime) o;
+        return id == time.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
