@@ -7,6 +7,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.Reservation;
 import roomescape.dto.ReservationRequestDto;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
@@ -32,12 +33,12 @@ public class ReservationServiceTest {
 
     @Test
     void insertReservationTest() {
-        ReservationRequestDto reservationRequestDto = new ReservationRequestDto("test", "2024-01-01", 1L);
+        ReservationRequestDto reservationRequestDto = new ReservationRequestDto("test", LocalDate.parse("2024-01-01"), 1L);
         Reservation reservation = reservationService.insertReservation(reservationRequestDto);
 
         assertThat(reservation.getId()).isEqualTo(2L);
         assertThat(reservation.getName()).isEqualTo(reservationRequestDto.name());
-        assertThat(reservation.getDate()).isEqualTo(reservationRequestDto.date());
+        assertThat(reservation.getDate()).isEqualTo(reservationRequestDto.date().toString());
     }
 
     @Test

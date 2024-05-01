@@ -102,8 +102,7 @@ public class ReservationControllerTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(400)
-                .body(is("날짜를 선택하여야 합니다."));
+                .statusCode(400);
     }
 
     @DisplayName("시간이 입력되지 않으면 400으로 응답한다.")

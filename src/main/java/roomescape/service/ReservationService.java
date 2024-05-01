@@ -28,11 +28,11 @@ public class ReservationService {
     @Transactional
     public Reservation insertReservation(ReservationRequestDto reservationRequestDto) {
         Long id = reservationDao.insert(
-                reservationRequestDto.name(), reservationRequestDto.date(), reservationRequestDto.timeId());
+                reservationRequestDto.name(), reservationRequestDto.date().toString(), reservationRequestDto.timeId());
         ReservationTime reservationTime = reservationTimeDao.findById(reservationRequestDto.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("올바르지 않은 입력입니다."));
 
-        return new Reservation(id, reservationRequestDto.name(), reservationRequestDto.date(), reservationTime);
+        return new Reservation(id, reservationRequestDto.name(), reservationRequestDto.date().toString(), reservationTime);
     }
 
     public void deleteReservation(Long id) {
