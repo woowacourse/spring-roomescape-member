@@ -44,7 +44,7 @@ class ReservationTimeServiceTest {
     void deleteException() {
         long firstId = insertReservationTimeAndGetId("10:00");
         insertReservationTime("11:00");
-        insertReservation("brown", "2024-05-01", firstId);
+        insertReservation("brown", "2025-05-01", firstId);
         assertThatThrownBy(() -> reservationTimeService.delete(firstId))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Cannot delete a reservation that refers to that time");

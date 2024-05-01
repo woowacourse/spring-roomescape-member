@@ -40,8 +40,8 @@ class ReservationControllerTest {
     @DisplayName("저장된 모든 예약을 조회하고 상태코드 200을 응답한다.")
     void findAll() {
         long timeId = insertReservationTimeAndGetId("10:00");
-        insertReservation("브라운", "2023-08-05", timeId);
-        insertReservation("구구", "2023-08-06", timeId);
+        insertReservation("브라운", "2024-08-05", timeId);
+        insertReservation("구구", "2024-08-06", timeId);
         assertReservationCountIsEqualTo(2);
 
         List<Reservation> reservations = RestAssured.given().log().all()
@@ -58,12 +58,12 @@ class ReservationControllerTest {
     @DisplayName("예약을 추가하고 상태코드 201을 응답한다.")
     void create() {
         long timeId = insertReservationTimeAndGetId("10:00");
-        insertReservation("브라운", "2023-08-05", timeId);
+        insertReservation("브라운", "2024-08-05", timeId);
         assertReservationCountIsEqualTo(1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(reservationRequest("구구", "2023-08-06", timeId))
+                .body(reservationRequest("구구", "2024-08-06", timeId))
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);
@@ -75,7 +75,7 @@ class ReservationControllerTest {
     @DisplayName("저장된 예약을 삭제하고 상태코드 204을 응답한다.")
     void delete() {
         long timeId = insertReservationTimeAndGetId("10:00");
-        long id = insertReservationAndGetId("브라운", "2023-08-05", timeId);
+        long id = insertReservationAndGetId("브라운", "2024-08-05", timeId);
 
         RestAssured.given().log().all()
                 .when().delete("/reservations/" + id)
