@@ -9,4 +9,6 @@ public interface ThemeRepository {
     List<Theme> findAll();
 
     void deleteById(long id);
+
+    boolean existsByName(String otherName);
 }

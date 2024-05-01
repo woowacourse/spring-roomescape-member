@@ -65,4 +65,37 @@ class ThemeJDBCRepositoryTest {
         //then
         assertThat(themeRepository.findAll()).hasSize(expectedSize);
     }
+
+    @DisplayName("같은 테마 이름이 존재한다.")
+    @Test
+    void existsByName() {
+        //given
+        String name = "레벨2 탈출";
+        Theme theme = new Theme(name, "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        themeRepository.save(theme);
+
+        //when
+        boolean result = themeRepository.existsByName(name);
+
+        //then
+        assertThat(result).isTrue();
+    }
+
+    @DisplayName("같은 테마 이름이 존재하지 않는다.")
+    @Test
+    void notExistsByName() {
+        //given
+        String name = "레벨2 탈출";
+        Theme theme = new Theme(name, "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        themeRepository.save(theme);
+
+        //when
+        String otherName = "레벨3 탈출";
+        boolean result = themeRepository.existsByName(otherName);
+
+        //then
+        assertThat(result).isFalse();
+    }
 }
