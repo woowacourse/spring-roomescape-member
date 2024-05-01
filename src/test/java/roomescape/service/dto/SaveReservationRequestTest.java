@@ -15,7 +15,7 @@ class SaveReservationRequestTest {
     @Test
     @DisplayName("이름이 정상 입력될 경우 성공한다.")
     void checkNameBlank_Success() {
-        assertThatCode(() -> new SaveReservationRequest("capy", LocalDate.now(), 1L))
+        assertThatCode(() -> new SaveReservationRequest("capy", LocalDate.now(), 1L, 1L))
                 .doesNotThrowAnyException();
     }
 
@@ -23,7 +23,7 @@ class SaveReservationRequestTest {
     @ValueSource(strings = {"", " ", "  "})
     @DisplayName("이름이 빈칸인 경우 예외가 발생한다.")
     void checkNameBlank_Failure(String name) {
-        assertThatThrownBy(() -> new SaveReservationRequest(name, LocalDate.now(), 1L))
+        assertThatThrownBy(() -> new SaveReservationRequest(name, LocalDate.now(), 1L, 1L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이름은 빈칸일 수 없습니다.");
     }

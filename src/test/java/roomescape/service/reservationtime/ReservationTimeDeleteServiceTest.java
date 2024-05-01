@@ -6,11 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 import roomescape.service.dto.SaveReservationRequest;
 import roomescape.service.dto.SaveReservationTimeRequest;
+import roomescape.service.dto.SaveThemeRequest;
 import roomescape.service.reservation.ReservationCreateService;
+import roomescape.service.theme.ThemeCreateService;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -25,6 +29,7 @@ class ReservationTimeDeleteServiceTest {
     private ReservationTimeDeleteService reservationTimeDeleteService;
     private ReservationTimeCreateService reservationTimeCreateService;
     private ReservationCreateService reservationCreateService;
+    private ThemeCreateService themeCreateService;
 
     @Autowired
     public ReservationTimeDeleteServiceTest(JdbcTemplate jdbcTemplate) {
@@ -38,8 +43,10 @@ class ReservationTimeDeleteServiceTest {
         );
         reservationCreateService = new ReservationCreateService(
                 new ReservationRepository(jdbcTemplate),
-                new ReservationTimeRepository(jdbcTemplate)
+                new ReservationTimeRepository(jdbcTemplate),
+                new ThemeRepository(jdbcTemplate)
         );
+        themeCreateService = new ThemeCreateService(new ThemeRepository(jdbcTemplate));
     }
 
     @Test
@@ -55,7 +62,9 @@ class ReservationTimeDeleteServiceTest {
     @DisplayName("이미 예약중인 시간을 삭제할 시 예외가 발생한다.")
     void deleteReservedTime_Failure() {
         ReservationTime reservationTime = reservationTimeCreateService.createReservationTime(new SaveReservationTimeRequest(LocalTime.now().plusHours(1L)));
-        SaveReservationRequest request = new SaveReservationRequest("capy", LocalDate.now().plusDays(1L), reservationTime.getId());
+        Theme theme = themeCreateService.createTheme(
+                new SaveThemeRequest("capy", "caoyDescription", "caoyThumbnail"));
+        SaveReservationRequest request = new SaveReservationRequest("capy", LocalDate.now().plusDays(1L), reservationTime.getId(), theme.getId());
         reservationCreateService.createReservation(request);
 
         assertThatThrownBy(() -> reservationTimeDeleteService.deleteReservationTime(reservationTime.getId()))

@@ -6,17 +6,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 import roomescape.service.dto.SaveReservationRequest;
 import roomescape.service.dto.SaveReservationTimeRequest;
+import roomescape.service.dto.SaveThemeRequest;
 import roomescape.service.reservationtime.ReservationTimeCreateService;
+import roomescape.service.theme.ThemeCreateService;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
 @JdbcTest
 class ReservationCreateServiceTest {
@@ -24,17 +27,20 @@ class ReservationCreateServiceTest {
     private JdbcTemplate jdbcTemplate;
     private ReservationCreateService reservationCreateService;
     private ReservationTimeCreateService reservationTimeCreateService;
+    private ThemeCreateService themeCreateService;
 
     @Autowired
     public ReservationCreateServiceTest(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         reservationCreateService = new ReservationCreateService(
                 new ReservationRepository(jdbcTemplate),
-                new ReservationTimeRepository(jdbcTemplate)
+                new ReservationTimeRepository(jdbcTemplate),
+                new ThemeRepository(jdbcTemplate)
         );
         reservationTimeCreateService = new ReservationTimeCreateService(
                 new ReservationTimeRepository(jdbcTemplate)
         );
+        themeCreateService = new ThemeCreateService(new ThemeRepository(jdbcTemplate));
     }
 
     @Test
@@ -42,8 +48,10 @@ class ReservationCreateServiceTest {
     void checkDuplicateReservationTime_Success() {
         ReservationTime reservationTime = reservationTimeCreateService.createReservationTime(
                 new SaveReservationTimeRequest(LocalTime.now().plusHours(1L)));
+        Theme theme = themeCreateService.createTheme(
+                new SaveThemeRequest("capy", "caoyDescription", "caoyThumbnail"));
         SaveReservationRequest request = new SaveReservationRequest(
-                "capy", LocalDate.now().plusDays(1L), reservationTime.getId());
+                "capy", LocalDate.now().plusDays(1L), reservationTime.getId(), theme.getId());
 
         assertThatCode(() -> reservationCreateService.createReservation(request))
                 .doesNotThrowAnyException();
@@ -54,8 +62,10 @@ class ReservationCreateServiceTest {
     void checkDuplicateReservationTime_Failure() {
         ReservationTime reservationTime = reservationTimeCreateService.createReservationTime(
                 new SaveReservationTimeRequest(LocalTime.now().plusHours(1L)));
+        Theme theme = themeCreateService.createTheme(
+                new SaveThemeRequest("capy", "caoyDescription", "caoyThumbnail"));
         SaveReservationRequest request = new SaveReservationRequest(
-                "capy", LocalDate.now().plusDays(1L), reservationTime.getId());
+                "capy", LocalDate.now().plusDays(1L), reservationTime.getId(), theme.getId());
         reservationCreateService.createReservation(request);
 
         assertThatThrownBy(() -> reservationCreateService.createReservation(request))

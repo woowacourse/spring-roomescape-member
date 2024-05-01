@@ -13,8 +13,12 @@ class ReservationTest {
     @Test
     @DisplayName("성공 : id를 통해 동일한 예약인지 판별한다.")
     void checkSameReservation_Success() {
-        Reservation reservation1 = new Reservation(1L, "capy", LocalDate.now().plusDays(1L), new ReservationTime(LocalTime.of(10, 0)));
-        Reservation reservation2 = new Reservation(1L, "capy", LocalDate.now().plusDays(1L), new ReservationTime(LocalTime.of(10, 0)));
+        Reservation reservation1 = new Reservation(1L, "capy", LocalDate.now().plusDays(1L),
+                new ReservationTime(LocalTime.of(10, 0)),
+                new Theme("capyTheme", "capyDescription", "capyThumbnail"));
+        Reservation reservation2 = new Reservation(1L, "capy", LocalDate.now().plusDays(1L),
+                new ReservationTime(LocalTime.of(10, 0)),
+                new Theme("capyTheme", "capyDescription", "capyThumbnail"));
 
         assertThat(reservation1.isSameReservation(reservation2.getId())).isTrue();
     }
@@ -22,8 +26,12 @@ class ReservationTest {
     @Test
     @DisplayName("실패 : id를 통해 동일한 예약인지 판별한다.")
     void checkSameReservation_Failure() {
-        Reservation reservation1 = new Reservation(1L, "capy", LocalDate.now().plusDays(1L), new ReservationTime(LocalTime.of(10, 0)));
-        Reservation reservation2 = new Reservation(2L, "capy", LocalDate.now().plusDays(1L), new ReservationTime(LocalTime.of(11, 0)));
+        Reservation reservation1 = new Reservation(1L, "capy", LocalDate.now().plusDays(1L),
+                new ReservationTime(LocalTime.of(10, 0)),
+                new Theme("capyTheme", "capyDescription", "capyThumbnail"));
+        Reservation reservation2 = new Reservation(2L, "capy", LocalDate.now().plusDays(1L),
+                new ReservationTime(LocalTime.of(11, 0)),
+                new Theme("capyTheme", "capyDescription", "capyThumbnail"));
 
         assertThat(reservation1.isSameReservation(reservation2.getId())).isFalse();
     }
@@ -31,14 +39,18 @@ class ReservationTest {
     @Test
     @DisplayName("미래의 날짜와 시간에 대한 예약 생성이 가능하다.")
     void checkReservationDateTimeIsFuture_Success() {
-        assertThatCode(() -> new Reservation(1L, "capy", LocalDate.now().plusDays(1L), new ReservationTime(LocalTime.now())))
+        assertThatCode(() -> new Reservation(1L, "capy", LocalDate.now().plusDays(1L),
+                new ReservationTime(LocalTime.now()),
+                new Theme("capyTheme", "capyDescription", "capyThumbnail")))
                 .doesNotThrowAnyException();
     }
 
     @Test
     @DisplayName("지나간 날짜와 시간에 대한 예약 생성시 예외가 발생한다.")
     void checkReservationDateTimeIsFuture_Failure() {
-        assertThatThrownBy(() -> new Reservation(1L, "capy", LocalDate.now().minusDays(1L), new ReservationTime(LocalTime.now())))
+        assertThatThrownBy(() -> new Reservation(1L, "capy", LocalDate.now().minusDays(1L),
+                new ReservationTime(LocalTime.now()),
+                new Theme("capyTheme", "capyDescription", "capyThumbnail")))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("지나간 날짜와 시간에 대한 예약 생성은 불가능합니다.");
     }

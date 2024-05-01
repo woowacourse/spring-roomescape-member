@@ -167,17 +167,30 @@ public class ReservationControllerTest {
     void ReservationTime_CREATE_READ_Success() {
         Map<String, Object> reservation = Map.of("name", "브라운",
                 "date", LocalDate.now().plusDays(1L).toString(),
-                "timeId", 1
+                "timeId", 1,
+                "themeId", 1
         );
 
         Map<String, String> time = Map.of(
                 "startAt", "10:00"
         );
 
+        Map<String, Object> theme = Map.of("name", "테마",
+                "description", "테마 설명",
+                "thumbnail", "테마 썸네일"
+        );
+
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(time)
                 .when().post("/times")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(theme)
+                .when().post("/themes")
                 .then().log().all()
                 .statusCode(201);
 

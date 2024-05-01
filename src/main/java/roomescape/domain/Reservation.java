@@ -9,17 +9,19 @@ public class Reservation {
     private final String name;
     private final LocalDate date;
     private final ReservationTime reservationTime;
+    private final Theme theme;
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime reservationTime) {
+    public Reservation(Long id, String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
         validateDateIsFuture(toLocalDateTime(date, reservationTime));
         this.id = id;
         this.name = name;
         this.date = date;
         this.reservationTime = reservationTime;
+        this.theme = theme;
     }
 
-    public Reservation(String name, LocalDate date, ReservationTime reservationTime) {
-        this(null, name, date, reservationTime);
+    public Reservation(String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
+        this(null, name, date, reservationTime, theme);
     }
 
     private void validateDateIsFuture(LocalDateTime localDateTime) {
@@ -50,5 +52,9 @@ public class Reservation {
 
     public ReservationTime getReservationTime() {
         return reservationTime;
+    }
+
+    public Theme getTheme() {
+        return theme;
     }
 }
