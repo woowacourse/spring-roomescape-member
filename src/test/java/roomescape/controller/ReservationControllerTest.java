@@ -25,6 +25,7 @@ import roomescape.dto.app.ReservationAppRequest;
 import roomescape.dto.web.ReservationTimeWebResponse;
 import roomescape.dto.web.ReservationWebRequest;
 import roomescape.dto.web.ReservationWebResponse;
+import roomescape.dto.web.ThemeWebResponse;
 import roomescape.exception.DuplicatedReservationException;
 import roomescape.exception.PastReservationException;
 import roomescape.service.ReservationService;
@@ -55,7 +56,7 @@ class ReservationControllerTest {
         String requestBody = objectMapper.writeValueAsString(
             new ReservationWebRequest(name, date.toString(), timeId, themeId));
         String responseBody = objectMapper.writeValueAsString(new ReservationWebResponse(1L, name, date,
-            ReservationTimeWebResponse.from(reservation)));
+            ReservationTimeWebResponse.from(reservation), ThemeWebResponse.from(reservation)));
 
         mvc.perform(post("/reservations")
                 .content(requestBody)

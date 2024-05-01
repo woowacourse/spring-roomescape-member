@@ -17,6 +17,7 @@ import roomescape.dto.app.ReservationAppRequest;
 import roomescape.dto.web.ReservationTimeWebResponse;
 import roomescape.dto.web.ReservationWebRequest;
 import roomescape.dto.web.ReservationWebResponse;
+import roomescape.dto.web.ThemeWebResponse;
 import roomescape.exception.DuplicatedReservationException;
 import roomescape.exception.PastReservationException;
 import roomescape.exception.ReservationTimeNotFoundException;
@@ -41,7 +42,8 @@ public class ReservationController {
 
         ReservationWebResponse reservationWebResponse = new ReservationWebResponse(id, newReservation.getName(),
             newReservation.getDate(),
-            ReservationTimeWebResponse.from(newReservation));
+            ReservationTimeWebResponse.from(newReservation),
+            ThemeWebResponse.from(newReservation));
 
         return ResponseEntity.created(URI.create("/reservations/" + id))
             .body(reservationWebResponse);
@@ -58,9 +60,13 @@ public class ReservationController {
     public ResponseEntity<List<ReservationWebResponse>> getReservations() {
         List<Reservation> reservations = reservationService.findAll();
         List<ReservationWebResponse> reservationWebResponse = reservations.stream().
-            map(reservation -> new ReservationWebResponse(reservation.getId(), reservation.getName(),
-                reservation.getDate(), ReservationTimeWebResponse.from(reservation)))
-            .toList();
+            map(reservation -> new ReservationWebResponse(
+                reservation.getId(),
+                reservation.getName(),
+                reservation.getDate(),
+                ReservationTimeWebResponse.from(reservation),
+                ThemeWebResponse.from(reservation)
+            )).toList();
 
         return ResponseEntity.ok(reservationWebResponse);
     }
