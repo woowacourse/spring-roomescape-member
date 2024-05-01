@@ -5,12 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 @Repository
 public class ReservationDaoImpl implements ReservationDao {
@@ -21,7 +23,9 @@ public class ReservationDaoImpl implements ReservationDao {
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getDate("date").toLocalDate(),
-            new ReservationTime(resultSet.getLong("time_id"), resultSet.getTime("time_value").toLocalTime())
+            new ReservationTime(resultSet.getLong("time_id"), resultSet.getTime("time_value").toLocalTime()),
+            new Theme(resultSet.getLong("theme_id"), resultSet.getString("theme_name"),
+                    resultSet.getString("theme_description"), resultSet.getString("theme_thumbnail"))
     );
 
     public ReservationDaoImpl(JdbcTemplate jdbcTemplate) {
@@ -34,32 +38,44 @@ public class ReservationDaoImpl implements ReservationDao {
     @Override
     public List<Reservation> findAll() {
         String sql = "SELECT"
-                + "    r.id as reservation_id,"
-                + "    r.name,"
-                + "    r.date,"
-                + "    t.id as time_id,"
-                + "    t.start_at as time_value "
+                + "    r.id as reservation_id, "
+                + "    r.name, "
+                + "    r.date, "
+                + "    t.id as time_id, "
+                + "    t.start_at as time_value , "
+                + "    theme.id as theme_id, "
+                + "    theme.name as theme_name, "
+                + "    theme.description as theme_description, "
+                + "    theme.thumbnail as theme_thumbnail "
                 + "FROM reservation as r "
                 + "INNER JOIN reservation_time as t "
-                + "ON r.time_id = t.id ";
+                + "ON r.time_id = t.id "
+                + "INNER JOIN theme "
+                + "ON r.theme_id = theme.id";
         return jdbcTemplate.query(sql, rowMapper);
     }
 
     @Override
     public Optional<Reservation> findById(Long id) {
         String sql = "SELECT"
-                + "    r.id as reservation_id,"
-                + "    r.name,"
-                + "    r.date,"
-                + "    t.id as time_id,"
-                + "    t.start_at as time_value "
+                + "    r.id as reservation_id, "
+                + "    r.name, "
+                + "    r.date, "
+                + "    t.id as time_id, "
+                + "    t.start_at as time_value, "
+                + "    theme.id as theme_id, "
+                + "    theme.name as theme_name, "
+                + "    theme.description as theme_description, "
+                + "    theme.thumbnail as theme_thumbnail "
                 + "FROM reservation as r "
                 + "INNER JOIN reservation_time as t "
                 + "ON r.time_id = t.id "
+                + "INNER JOIN theme "
+                + "ON r.theme_id = theme.id "
                 + "WHERE r.id = ?";
         try {
             return Optional.of(jdbcTemplate.queryForObject(sql, rowMapper, id));
-        } catch (Exception e) {
+        } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
 
@@ -71,8 +87,10 @@ public class ReservationDaoImpl implements ReservationDao {
         reservationRow.put("name", reservation.getName());
         reservationRow.put("date", reservation.getDate());
         reservationRow.put("time_id", reservation.getTimeId());
+        reservationRow.put("theme_id", reservation.getThemeId());
         Long id = simpleJdbcInsert.executeAndReturnKey(reservationRow).longValue();
-        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime());
+        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
+                reservation.getTheme());
     }
 
     @Override
