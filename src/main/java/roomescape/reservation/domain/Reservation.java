@@ -4,21 +4,18 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
-public class Reservation {
+public record Reservation(long id, String name, LocalDate date, ReservationTime time, Theme theme) {
 
-    private final long id;
-    private final String name;
-    private final LocalDate date;
-    private final ReservationTime time;
-
-    public Reservation(long id, String name, LocalDate date, ReservationTime time) {
+    public Reservation(long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         this.id = id;
         this.name = validateName(name);
         LocalDateTime dateTime = validateDateTime(date, time.startAt());
         this.date = dateTime.toLocalDate();
         this.time = time;
+        this.theme = theme;
     }
 
     private String validateName(String name) {
@@ -37,21 +34,5 @@ public class Reservation {
             throw new IllegalArgumentException("Cannot create a reservation for a past date and time.");
         }
         return dateTime;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public ReservationTime getTime() {
-        return time;
     }
 }

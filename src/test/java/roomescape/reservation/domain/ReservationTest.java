@@ -9,6 +9,7 @@ import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
 public class ReservationTest {
@@ -17,8 +18,11 @@ public class ReservationTest {
     @DisplayName("이름에 빈 값이 들어간 경우 예외가 발생한다.")
     void nameEmptyException() {
         assertThatThrownBy(() -> new Reservation(
-                0L, " ", LocalDate.now(), new ReservationTime(0, LocalTime.now()))
-        ).isInstanceOf(IllegalArgumentException.class)
+                0L, " ", LocalDate.now(),
+                new ReservationTime(0, LocalTime.now()),
+                new Theme(0, "theme", "description", "thumbnail"))
+        )
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Name cannot be empty");
     }
 
@@ -26,8 +30,11 @@ public class ReservationTest {
     @DisplayName("이름이 10글자 초과일 경우 예외가 발생한다.")
     void nameLengthException() {
         assertThatThrownBy(() -> new Reservation(
-                0L, "abcdefghij1", LocalDate.now(), new ReservationTime(0, LocalTime.now())
-        )).isInstanceOf(IllegalArgumentException.class)
+                0L, "namelength12", LocalDate.now(),
+                new ReservationTime(0, LocalTime.now()),
+                new Theme(0, "theme", "description", "thumbnail"))
+        )
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Name cannot exceed 10 characters");
     }
 
@@ -39,15 +46,21 @@ public class ReservationTest {
                         0,
                         "brown",
                         LocalDate.now().minusDays(1),
-                        new ReservationTime(0, LocalTime.now()))
-                ).isInstanceOf(IllegalArgumentException.class),
+                        new ReservationTime(0, LocalTime.now()),
+                        new Theme(0, "theme", "description", "thumbnail"))
+                )
+                        .isInstanceOf(IllegalArgumentException.class)
+                        .hasMessage("Cannot create a reservation for a past date and time."),
 
                 () -> assertThatThrownBy(() -> new Reservation(
                         0,
                         "brown",
                         LocalDate.now(),
-                        new ReservationTime(0, LocalTime.now().minusHours(1)))
-                ).isInstanceOf(IllegalArgumentException.class)
+                        new ReservationTime(0, LocalTime.now().minusHours(1)),
+                        new Theme(0, "theme", "description", "thumbnail"))
+                )
+                        .isInstanceOf(IllegalArgumentException.class)
+                        .hasMessage("Cannot create a reservation for a past date and time.")
         );
     }
 }

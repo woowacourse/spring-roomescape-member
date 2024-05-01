@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import roomescape.reservation.domain.Reservation;
+import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
 @Repository
@@ -26,6 +27,12 @@ public class ReservationDao {
             new ReservationTime(
                     resultSet.getLong("time_id"),
                     resultSet.getTime("start_at").toLocalTime()
+            ),
+            new Theme(
+                    resultSet.getLong("theme_id"),
+                    resultSet.getString("theme_name"),
+                    resultSet.getString("theme_description"),
+                    resultSet.getString("theme_thumbnail")
             )
     );
 
@@ -37,27 +44,40 @@ public class ReservationDao {
     }
 
     public List<Reservation> findAll() {
-        String query = "SELECT r.id, r.name, r.date, t.id AS time_id, t.start_at "
+        String query = "SELECT "
+                + "r.id, r.name, r.date, "
+                + "t.id AS time_id, t.start_at, "
+                + "theme.id AS theme_id, theme.name as theme_name, "
+                + "theme.description AS theme_description, theme.thumbnail AS theme_thumbnail "
                 + "FROM RESERVATION AS r "
                 + "INNER JOIN RESERVATION_TIME AS t "
-                + "ON r.time_id = t.id";
+                + "ON r.time_id = t.id "
+                + "INNER JOIN THEME AS theme "
+                + "ON r.theme_id = theme.id";
         return jdbcTemplate.query(query, reservationRowMapper);
     }
 
     public Reservation save(Reservation reservation) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", reservation.getName())
-                .addValue("date", reservation.getDate())
-                .addValue("time_id", reservation.getTime().id());
+                .addValue("name", reservation.name())
+                .addValue("date", reservation.date())
+                .addValue("time_id", reservation.time().id())
+                .addValue("theme_id", reservation.theme().id());
         long id = jdbcInsert.executeAndReturnKey(params).longValue();
         return findById(id);
     }
 
     private Reservation findById(long id) {
-        String query = "SELECT r.id, r.name, r.date, t.id AS time_id, t.start_at "
+        String query = "SELECT "
+                + "r.id, r.name, r.date, "
+                + "t.id AS time_id, t.start_at, "
+                + "theme.id AS theme_id, theme.name as theme_name, "
+                + "theme.description AS theme_description, theme.thumbnail AS theme_thumbnail "
                 + "FROM RESERVATION AS r "
                 + "INNER JOIN RESERVATION_TIME AS t "
                 + "ON r.time_id = t.id "
+                + "INNER JOIN THEME AS theme "
+                + "ON r.theme_id = theme.id "
                 + "WHERE r.id = ?";
         return jdbcTemplate.queryForObject(query, reservationRowMapper, id);
     }
