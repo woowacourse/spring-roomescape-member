@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -46,5 +47,16 @@ class ReservationTimeServiceTest {
 
         reservationTimeService.createReservationTime(requestDto);
         verify(reservationTimeRepository, times(1)).insertReservationTime(requestDto.toReservationTime());
+    }
+
+    @DisplayName("중복된 시간을 생성하려고 하면 예외가 발생한다.")
+    @Test
+    void throw_exception_when_duplicate_time_create() {
+        ReservationTimeRequestDto requestDto = new ReservationTimeRequestDto("11:30");
+        given(reservationTimeRepository.isExistTimeOf(requestDto.getStartAt())).willReturn(true);
+
+        assertThatThrownBy(() -> reservationTimeService.createReservationTime(requestDto))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("중복된 시간을 입력할 수 없습니다.");
     }
 }
