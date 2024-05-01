@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Theme;
-import roomescape.service.ThemeAddRequest;
+import roomescape.dto.ThemeAddRequest;
 import roomescape.service.ThemeService;
 
 @RestController
