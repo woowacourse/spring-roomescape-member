@@ -2,11 +2,9 @@ package roomescape.dto.reservation;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import roomescape.application.dto.ReservationCreationRequest;
-import roomescape.global.validator.ValidLocalDate;
 
 public record ReservationRequest(
         @NotBlank(message = "예약자명은 필수입니다")
@@ -14,15 +12,13 @@ public record ReservationRequest(
         String name,
 
         @NotNull(message = "예약날짜는 필수입니다.")
-        @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "yyyy-MM-dd 형식이어야 합니다.")
-        @ValidLocalDate
-        String date,
+        LocalDate date,
 
-        @NotNull
+        @NotNull(message = "시간 아이디는 필수입니다.")
         Long timeId
 ) {
 
     public ReservationCreationRequest toReservationCreationRequest() {
-        return new ReservationCreationRequest(name, LocalDate.parse(date), timeId);
+        return new ReservationCreationRequest(name, date, timeId);
     }
 }

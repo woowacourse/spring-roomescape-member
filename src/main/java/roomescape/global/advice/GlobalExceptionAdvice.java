@@ -1,5 +1,6 @@
 package roomescape.global.advice;
 
+import java.time.format.DateTimeParseException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -25,5 +26,11 @@ public class GlobalExceptionAdvice {
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         ErrorResponse errorResponse = new ErrorResponse(e.getStatusCode().value(), e);
         return ResponseEntity.badRequest().body(errorResponse);
+    }
+
+    @ExceptionHandler(DateTimeParseException.class)
+    public ResponseEntity<String> handle(DateTimeParseException e) {
+        String message = "잘못된 날짜 혹은 시간입니다.";
+        return ResponseEntity.badRequest().body(message);
     }
 }

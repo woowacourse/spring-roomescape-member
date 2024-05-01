@@ -27,7 +27,7 @@ class ReservationControllerTest extends ControllerTest {
     void 예약을_생성한다() throws Exception {
         Reservation reservation = ReservationFixture.reservation();
         when(reservationService.reserve(any())).thenReturn(reservation);
-        ReservationRequest request = new ReservationRequest(reservation.getName(), reservation.getDate().toString(),
+        ReservationRequest request = new ReservationRequest(reservation.getName(), reservation.getDate(),
                 reservation.getTimeId());
         String content = objectMapper.writeValueAsString(request);
 
@@ -80,8 +80,7 @@ class ReservationControllerTest extends ControllerTest {
         ResultActions result = SimpleMockMvc.post(mockMvc, "/reservations", content);
 
         result.andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.fieldErrors[0].field").value("date"))
-                .andExpect(jsonPath("$.fieldErrors[0].rejectedValue").value("2024_04_30"))
+                .andExpect(jsonPath("$").value("잘못된 날짜 혹은 시간입니다."))
                 .andDo(print());
     }
 
@@ -92,8 +91,7 @@ class ReservationControllerTest extends ControllerTest {
         ResultActions result = SimpleMockMvc.post(mockMvc, "/reservations", content);
 
         result.andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.fieldErrors[0].field").value("date"))
-                .andExpect(jsonPath("$.fieldErrors[0].rejectedValue").value("2024-04-70"))
+                .andExpect(jsonPath("$").value("잘못된 날짜 혹은 시간입니다."))
                 .andDo(print());
     }
 }
