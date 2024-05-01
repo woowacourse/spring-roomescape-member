@@ -14,7 +14,6 @@ public class ReservationTime {
         this(null, startAt);
     }
 
-    //TODO 테스트 추가
     public ReservationTime(Long id, LocalTime startAt) {
         if (startAt == null) {
             throw new RoomescapeException(TIME_EMPTY);
