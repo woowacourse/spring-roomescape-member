@@ -31,8 +31,14 @@ public class ThemeController {
     }
 
     @GetMapping("/themes")
-    public ResponseEntity<List<ThemeResponse>> getReservationTimes() {
+    public ResponseEntity<List<ThemeResponse>> getThemes() {
         List<Theme> themes = themeFindService.findThemes();
+        return ResponseEntity.ok(ThemeResponse.listOf(themes));
+    }
+
+    @GetMapping("/themes/ranks")
+    public ResponseEntity<List<ThemeResponse>> getThemeRanks() {
+        List<Theme> themes = themeFindService.findTop10Recent7Days();
         return ResponseEntity.ok(ThemeResponse.listOf(themes));
     }
 

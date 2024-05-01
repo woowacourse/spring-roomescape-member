@@ -6,7 +6,9 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
 
+import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,6 +53,16 @@ public class ThemeRepository {
     public List<Theme> findAll() {
         String sql = "SELECT id, name, description, thumbnail FROM theme";
         return jdbcTemplate.query(sql, themeRowMapper);
+    }
+
+    public List<Theme> findTop10ByOrderByReservationCountBetween(LocalDate start, LocalDate end) {
+        String sql = "select t.id, t.name, t.description, t.thumbnail " +
+                "from theme as t inner join reservation as r " +
+                "on t.id = r.theme_id " +
+                "where r.date between ? and ? " +
+                "group by t.id " +
+                "order by count(t.id) desc";
+        return jdbcTemplate.query(sql, themeRowMapper, Date.valueOf(start), Date.valueOf(end));
     }
 
     public void deleteById(Long id) {
