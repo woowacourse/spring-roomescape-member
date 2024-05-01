@@ -21,7 +21,7 @@ class JdbcThemeRepositoryTest {
 
     @Test
     void 테마를_저장한다() {
-        Theme theme = new Theme("공포", "설명", "썸네일1");
+        Theme theme = new Theme("테마1", "설명", "썸네일1");
 
         Theme savedTheme = themeRepository.save(theme);
 
@@ -34,8 +34,8 @@ class JdbcThemeRepositoryTest {
 
     @Test
     void 모든_테마를_조회한다() {
-        Theme theme1 = new Theme("공포", "설명", "썸네일1");
-        Theme theme2 = new Theme("SF", "설명", "썸네일2");
+        Theme theme1 = new Theme("테마1", "설명", "썸네일1");
+        Theme theme2 = new Theme("테마2", "설명", "썸네일2");
         themeRepository.save(theme1);
         themeRepository.save(theme2);
 
@@ -49,7 +49,7 @@ class JdbcThemeRepositoryTest {
 
     @Test
     void 테마를_삭제한다() {
-        Theme theme = new Theme("공포", "설명", "썸네일1");
+        Theme theme = new Theme("테마1", "설명", "썸네일1");
         theme = themeRepository.save(theme);
 
         themeRepository.deleteById(theme.getId());
