@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.service.ReservationService;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.dto.ReservationInput;
@@ -26,6 +27,8 @@ public class ReservationTimeControllerTest {
 
     @Autowired
     ReservationTimeService reservationTimeService;
+    @Autowired
+    JdbcTemplate jdbcTemplate;
 
     @LocalServerPort
     int port;
@@ -33,6 +36,10 @@ public class ReservationTimeControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+        jdbcTemplate.update("TRUNCATE TABLE reservation");
+        jdbcTemplate.update("SET REFERENTIAL_INTEGRITY FALSE");
+        jdbcTemplate.update("TRUNCATE TABLE reservation_time");
+        jdbcTemplate.update("SET REFERENTIAL_INTEGRITY TRUE");
     }
 
     @Test
@@ -46,7 +53,7 @@ public class ReservationTimeControllerTest {
                 .body(params)
                 .when().post("/times")
                 .then()
-                .statusCode(200);
+                .statusCode(201);
 
         RestAssured.given()
                 .when().get("/times")
@@ -81,8 +88,8 @@ public class ReservationTimeControllerTest {
     @Test
     @DisplayName("특정 시간에 대한 예약이 존재하는데, 그 시간을 삭제하려 할 때 409를 반환한다.")
     void return_409_when_delete_id_that_exist_reservation() {
-        long id = reservationTimeService.createReservationTime(new ReservationTimeInput("10:00")).id();
-        reservationService.createReservation(new ReservationInput("제리", "2023-04-30", 1L));
+        long id = reservationTimeService.createReservationTime(new ReservationTimeInput("09:00")).id();
+        reservationService.createReservation(new ReservationInput("제리", "2025-04-30", 1L));
 
         RestAssured.given()
                 .delete("/times/" + id)

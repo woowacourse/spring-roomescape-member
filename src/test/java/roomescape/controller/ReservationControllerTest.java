@@ -11,12 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.test.context.ActiveProfiles;
+import roomescape.TestConfig;
 import roomescape.service.ReservationService;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.dto.ReservationInput;
 import roomescape.service.dto.ReservationTimeInput;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,classes = TestConfig.class)
+@ActiveProfiles("test")
 public class ReservationControllerTest {
 
     @Autowired
@@ -36,11 +39,11 @@ public class ReservationControllerTest {
     @Test
     @DisplayName("예약 생성에 성공하면, 201을 반환한다")
     void return_200_when_reservation_create_success() {
-        long id = reservationTimeService.createReservationTime(new ReservationTimeInput("10:00")).id();
+        long id = reservationTimeService.createReservationTime(new ReservationTimeInput("14:00")).id();
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", "2024-08-05");
         reservation.put("timeId", id);
 
         RestAssured.given().log().all()
@@ -54,7 +57,7 @@ public class ReservationControllerTest {
     @Test
     @DisplayName("예약 생성 시 예약자명, 날짜, 시간에 유효하지 않은 값이 입력되었을 때 400을 반환한다.")
     void return_400_when_reservation_create_input_is_invalid() {
-        long id = reservationTimeService.createReservationTime(new ReservationTimeInput("10:00")).id();
+        long id = reservationTimeService.createReservationTime(new ReservationTimeInput("12:00")).id();
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "");
@@ -81,12 +84,12 @@ public class ReservationControllerTest {
     @Test
     @DisplayName("중복된 예약을 생성하려 할 때 409를 반환한다.")
     void return_409_when_duplicate_reservation() {
-        long id = reservationTimeService.createReservationTime(new ReservationTimeInput("10:00")).id();
-        reservationService.createReservation(new ReservationInput("조이썬", "2024-04-30", id));
+        long id = reservationTimeService.createReservationTime(new ReservationTimeInput("13:00")).id();
+        reservationService.createReservation(new ReservationInput("조이썬", "2024-06-30", id));
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "제리");
-        reservation.put("date", "2024-04-30");
+        reservation.put("date", "2024-06-30");
         reservation.put("timeId", id);
 
         RestAssured.given()
@@ -104,7 +107,7 @@ public class ReservationControllerTest {
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "제리");
-        reservation.put("date", "2024-03-30");
+        reservation.put("date", "1024-03-30");
         reservation.put("timeId", id);
 
         RestAssured.given()
