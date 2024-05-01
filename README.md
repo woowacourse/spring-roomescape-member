@@ -30,6 +30,15 @@
     - [X] 예약이 존재하는 시간을 삭제하려고 하면 예외를 발생시키고 상태코드 400을 반환한다.
     - [X] 존재하지 않는 아이디를 삭제하려고 하면 예외를 발생시키고 상태코드 400을 반환한다.
 
+### Theme
+
+- [ ] `/themes` `GET` 요청 시 테마 목록을 조회하고 API 명세에 맞게 응답을 반환한다.
+- [ ] `/themes` `POST` 요청 시 테마를 추가하고 API 명세에 맞게 응답을 반환한다.
+    - [ ] 테마 이름, 테마 설명, 테마 썸네일이 비어있다면 예외를 발생시키고 상태코드 400을 반환한다.
+- [ ] `/themes` `DELETE` 요청 시 테마를 삭제하고 API 명세에 맞게 응답을 반환한다.
+    - [ ] 예약이 존재하는 테마를 삭제하려고 하면 예외를 발생시키고 상태코드 400을 반환한다.
+    - [ ] 존재하지 않는 아이디를 삭제하려고 하면 예외를 발생시키고 상태코드 400을 반환한다.
+
 # API 명세
 
 ## reservations
@@ -132,6 +141,64 @@ Content-Type: application/json
 
 ```http
 DELETE /times/1 HTTP/1.1
+```
+
+```http
+HTTP/1.1 204
+```
+
+## theme
+
+### Get
+
+```http
+GET /themes HTTP/1.1
+```
+
+```http
+HTTP/1.1 200 
+Content-Type: application/json
+
+[
+   {
+        "id": 1,
+        "name": "레벨2 탈출",
+        "description": "우테코 레벨2를 탈출하는 내용입니다.",
+        "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+    }
+]
+```
+
+### Post
+
+```http
+POST /themes HTTP/1.1
+content-type: application/json
+
+{
+    "name": "레벨2 탈출",
+    "description": "우테코 레벨2를 탈출하는 내용입니다.",
+    "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+}
+```
+
+```http
+HTTP/1.1 201
+Location: /themes/1
+Content-Type: application/json
+
+{
+    "id": 1,
+    "name": "레벨2 탈출",
+    "description": "우테코 레벨2를 탈출하는 내용입니다.",
+    "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+}
+```
+
+### Delete
+
+```http
+DELETE /themes/1 HTTP/1.1
 ```
 
 ```http
