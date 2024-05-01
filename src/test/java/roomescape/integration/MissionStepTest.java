@@ -14,8 +14,8 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.domain.Reservation;
 import roomescape.web.ReservationController;
+import roomescape.web.dto.ReservationResponse;
 
 class MissionStepTest extends IntegrationTest {
     @Autowired
@@ -94,11 +94,11 @@ class MissionStepTest extends IntegrationTest {
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)",
                 "브라운", "2023-08-05", "1");
 
-        List<Reservation> reservations = RestAssured.given().log().all()
+        List<ReservationResponse> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200).extract()
-                .jsonPath().getList(".", Reservation.class);
+                .jsonPath().getList(".", ReservationResponse.class);
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) FROM reservation", Integer.class);
 

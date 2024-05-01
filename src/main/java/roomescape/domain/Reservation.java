@@ -8,9 +8,6 @@ public class Reservation {
     private LocalDate date;
     private ReservationTime time;
 
-    public Reservation() {
-    }
-
     public Reservation(Long id, String name, LocalDate date, ReservationTime time) {
         this.id = id;
         this.name = name;
