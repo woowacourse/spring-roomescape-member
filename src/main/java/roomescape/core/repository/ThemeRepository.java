@@ -14,5 +14,5 @@ public interface ThemeRepository {
 
     Integer countByName(String name);
 
-    Theme deleteById(long id);
+    void deleteById(long id);
 }

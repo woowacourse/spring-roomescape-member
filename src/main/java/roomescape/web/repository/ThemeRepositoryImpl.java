@@ -53,7 +53,7 @@ public class ThemeRepositoryImpl implements ThemeRepository {
                 ORDER BY count(r.id) DESC
                 LIMIT 10
                 """;
-        
+
         return jdbcTemplate.query(query, getThemeRowMapper(), lastWeek, today);
     }
 
@@ -90,7 +90,7 @@ public class ThemeRepositoryImpl implements ThemeRepository {
     }
 
     @Override
-    public Theme deleteById(final long id) {
-        return null;
+    public void deleteById(final long id) {
+        jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id);
     }
 }

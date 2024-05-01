@@ -31,7 +31,6 @@ public class ThemeConsoleRepository implements ThemeRepository {
     }
 
     @Override
-    public Theme deleteById(final long id) {
-        return null;
+    public void deleteById(final long id) {
     }
 }
