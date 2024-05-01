@@ -2,6 +2,7 @@ package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,11 +10,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.UserName;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class ReservationTimeJdbcRepositoryTest {
+class ReservationJdbcRepositoryTest {
+
+    @Autowired
+    private ReservationRepository reservationRepository;
 
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
@@ -22,14 +28,24 @@ class ReservationTimeJdbcRepositoryTest {
     @DisplayName("중복된 예약 시간 추가가 불가능한 지 확인한다.")
     void checkDuplicatedReservationTIme() {
         //given
-        ReservationTime reservationTime1 = new ReservationTime(LocalTime.parse("10:00"));
-        ReservationTime reservationTime2 = new ReservationTime(LocalTime.parse("10:00"));
-        reservationTimeRepository.save(reservationTime1);
+        reservationTimeRepository.save(new ReservationTime(LocalTime.parse("10:00")));
+        ReservationTime reservationTime = reservationTimeRepository.findByTimeId(1L);
+        Reservation reservation1 = new Reservation(
+                new UserName("초롱"),
+                LocalDate.parse("2025-10-05"),
+                reservationTime
+        );
+        Reservation reservation2 = new Reservation(
+                new UserName("메이슨"),
+                LocalDate.parse("2025-10-05"),
+                reservationTime
+        );
+        reservationRepository.save(reservation1);
 
         //when & then
         assertThatThrownBy(() ->
-            reservationTimeRepository.save(reservationTime2)
+                reservationRepository.save(reservation2)
         ).isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미 추가된 예약 시간입니다.");
+                .hasMessage("이미 예약된 시간입니다.");
     }
 }

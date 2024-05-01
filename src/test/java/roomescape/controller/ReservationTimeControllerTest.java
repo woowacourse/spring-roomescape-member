@@ -91,7 +91,7 @@ public class ReservationTimeControllerTest {
 
     @TestFactory
     @DisplayName("중복된 예약 시간 추가가 불가능한지 확인한다.")
-    Stream<DynamicTest> duplicatedReservationTime() {
+    Stream<DynamicTest> checkDuplicatedReservationTime() {
         Map<String, String> params1 = Map.of(
                 "startAt", "10:00"
         );

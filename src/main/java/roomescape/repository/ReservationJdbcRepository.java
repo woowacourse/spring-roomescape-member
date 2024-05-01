@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import javax.sql.DataSource;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -59,17 +60,21 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     public Reservation save(Reservation reservation) {
-        SqlParameterSource parameterSource = new MapSqlParameterSource()
-                .addValue("name", reservation.getName().getUserName())
-                .addValue("date", reservation.getDate())
-                .addValue("time_id", reservation.getReservationTime().getId());
-        Long id = simpleJdbcInsert.executeAndReturnKey(parameterSource).longValue();
-        return new Reservation(
-                id,
-                reservation.getName(),
-                reservation.getDate(),
-                reservation.getReservationTime()
-        );
+        try {
+            SqlParameterSource parameterSource = new MapSqlParameterSource()
+                    .addValue("name", reservation.getName().getUserName())
+                    .addValue("date", reservation.getDate())
+                    .addValue("time_id", reservation.getReservationTime().getId());
+            Long id = simpleJdbcInsert.executeAndReturnKey(parameterSource).longValue();
+            return new Reservation(
+                    id,
+                    reservation.getName(),
+                    reservation.getDate(),
+                    reservation.getReservationTime()
+            );
+        } catch (DuplicateKeyException e) {
+            throw new IllegalArgumentException("이미 예약된 시간입니다.");
+        }
     }
 
     public int deleteById(Long id) {
