@@ -19,11 +19,11 @@
 ## 2단계
 - [x] 사용자 예약 시 지정할 테마 도메인 추가 
   - 모든 테마는 시작 시간과 소요 시간이 동일하다고 가정 
+- [x] 관리자 - 테마 관리 기능을 추가
   - [x] 테마 조회 기능 구현
   - [x] 테마 추가 기능 구현
   - [x] 테마 삭제 기능 구현
-- [ ] 관리자 - 테마 관리 기능을 추가
-  - [ ] `/admin/theme` 요청 시 `templates/admin/theme.html` 반환
+  - [x] `/admin/theme` 요청 시 `templates/admin/theme.html` 반환
 - [ ] 관리자 - 저장된 예약의 테마 변경 기능 추가(예약 관리)
-  - [ ] 방탈출 예약 페이지를 `templates/admin/reservation-new.html`로 변경
+  - [x] 방탈출 예약 페이지를 `templates/admin/reservation-new.html`로 변경
 - [ ] 프론트 코드 변경 - 예약 목록 조회 API 호출 후 렌더링. response 명세에 맞춰 값 설정
