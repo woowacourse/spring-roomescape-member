@@ -18,11 +18,15 @@ import roomescape.service.dto.ReservationRequest;
 import roomescape.service.dto.ReservationResponse;
 import roomescape.service.dto.ReservationTimeRequest;
 import roomescape.service.dto.ReservationTimeResponse;
+import roomescape.service.dto.ThemeRequest;
+import roomescape.service.dto.ThemeResponse;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 class ReservationTimeServiceTest {
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
+    @Autowired
+    private ThemeService themeService;
     @Autowired
     private ReservationTimeService reservationTimeService;
     @Autowired
@@ -35,6 +39,9 @@ class ReservationTimeServiceTest {
         }
         for (final ReservationTime reservationTime : reservationTimeRepository.findAll()) {
             reservationTimeRepository.deleteById(reservationTime.getId());
+        }
+        for (ThemeResponse themeResponse : themeService.findAll()) {
+            themeService.deleteById(themeResponse.id());
         }
     }
 
@@ -91,7 +98,11 @@ class ReservationTimeServiceTest {
         String startAt = "10:00";
         ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(startAt);
         ReservationTimeResponse reservationTimeResponse = reservationTimeService.create(reservationTimeRequest);
-        reservationService.create(new ReservationRequest("lilly", "2222-10-04", reservationTimeResponse.id()));
+        ThemeRequest themeRequest = new ThemeRequest("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        ThemeResponse themeResponse = themeService.create(themeRequest);
+        reservationService.create(
+                new ReservationRequest("lilly", "2222-10-04", reservationTimeResponse.id(), themeResponse.id()));
 
         //when&then
         assertThatThrownBy(() -> reservationTimeService.deleteById(reservationTimeResponse.id()))

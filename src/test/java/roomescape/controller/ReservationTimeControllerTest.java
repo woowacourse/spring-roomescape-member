@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import roomescape.service.dto.ReservationRequest;
 import roomescape.service.dto.ReservationTimeRequest;
+import roomescape.service.dto.ThemeRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReservationTimeControllerTest {
@@ -114,18 +115,24 @@ class ReservationTimeControllerTest {
     @Test
     void cannotDeleteReservationTime() {
         //given
-        long id = (int) RestAssured.given().contentType(ContentType.JSON).body(new ReservationTimeRequest("10:00"))
+        long timeId = (int) RestAssured.given().contentType(ContentType.JSON).body(new ReservationTimeRequest("10:00"))
                 .when().post("/times")
+                .then().extract().response().jsonPath().get("id");
+
+        ThemeRequest themeRequest = new ThemeRequest("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        long themeId = (int) RestAssured.given().contentType(ContentType.JSON).body(themeRequest)
+                .when().post("/themes")
                 .then().extract().response().jsonPath().get("id");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new ReservationRequest("브라운", "2222-04-30", id))
+                .body(new ReservationRequest("브라운", "2222-04-30", timeId, themeId))
                 .when().post("/reservations");
 
         //when&then
         RestAssured.given().log().all()
-                .when().delete("/times/" + id)
+                .when().delete("/times/" + timeId)
                 .then().log().all()
                 .assertThat().statusCode(400).body("message", is("해당 시간에 예약이 존재해서 삭제할 수 없습니다."));
         RestAssured.given().log().all()

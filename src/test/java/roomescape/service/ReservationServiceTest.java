@@ -13,8 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.dao.ReservationRepository;
 import roomescape.dao.ReservationTimeRepository;
+import roomescape.dao.ThemeRepository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.exception.InvalidReservationException;
 import roomescape.service.dto.ReservationRequest;
 import roomescape.service.dto.ReservationResponse;
@@ -26,12 +28,18 @@ class ReservationServiceTest {
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
     @Autowired
+    private ThemeRepository themeRepository;
+    @Autowired
     private ReservationService reservationService;
     private ReservationTime reservationTime;
+    private Theme theme;
 
     @BeforeEach
     void setUp() {
         reservationTime = reservationTimeRepository.save(new ReservationTime("10:00"));
+        theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+
     }
 
     @AfterEach
@@ -50,7 +58,8 @@ class ReservationServiceTest {
         //given
         String name = "lini";
         String date = "2024-10-04";
-        ReservationRequest reservationRequest = new ReservationRequest(name, date, reservationTime.getId());
+        ReservationRequest reservationRequest = new ReservationRequest(name, date, reservationTime.getId(),
+                theme.getId());
 
         //when
         ReservationResponse result = reservationService.create(reservationRequest);
@@ -71,7 +80,8 @@ class ReservationServiceTest {
         //given
         String name = "lini";
         String date = "2024-10-04";
-        ReservationRequest reservationRequest = new ReservationRequest(name, date, reservationTime.getId());
+        ReservationRequest reservationRequest = new ReservationRequest(name, date, reservationTime.getId(),
+                theme.getId());
         reservationService.create(reservationRequest);
 
         //when
@@ -87,7 +97,8 @@ class ReservationServiceTest {
         //given
         String name = "lini";
         String date = "2024-10-04";
-        ReservationRequest reservationRequest = new ReservationRequest(name, date, reservationTime.getId());
+        ReservationRequest reservationRequest = new ReservationRequest(name, date, reservationTime.getId(),
+                theme.getId());
         ReservationResponse target = reservationService.create(reservationRequest);
 
         //when
@@ -103,7 +114,8 @@ class ReservationServiceTest {
         //given
         String name = "lini";
         String date = "2024-10-04";
-        ReservationRequest reservationRequest = new ReservationRequest(name, date, reservationTime.getId());
+        ReservationRequest reservationRequest = new ReservationRequest(name, date, reservationTime.getId(),
+                theme.getId());
         reservationService.create(reservationRequest);
 
         //when & then

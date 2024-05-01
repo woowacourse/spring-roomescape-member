@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import roomescape.service.dto.ReservationRequest;
 import roomescape.service.dto.ReservationTimeRequest;
+import roomescape.service.dto.ThemeRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class ReservationControllerTest {
@@ -23,10 +24,12 @@ public class ReservationControllerTest {
 
     private String date;
     private long timeId;
+    private long themeId;
 
     @BeforeEach
     void init() {
         RestAssured.port = port;
+
         date = LocalDate.now().plusDays(1).toString();
         String startAt = LocalTime.now().toString();
         timeId = RestAssured.given()
@@ -34,6 +37,12 @@ public class ReservationControllerTest {
                 .body(new ReservationTimeRequest(startAt))
                 .when().post("/times")
                 .then().extract().jsonPath().getLong("id");
+
+        ThemeRequest themeRequest = new ThemeRequest("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        themeId = (int) RestAssured.given().contentType(ContentType.JSON).body(themeRequest)
+                .when().post("/themes")
+                .then().extract().response().jsonPath().get("id");
     }
 
     @AfterEach
@@ -45,6 +54,10 @@ public class ReservationControllerTest {
         RestAssured.get("/times")
                 .then().extract().body().jsonPath().getList("id")
                 .forEach(id -> RestAssured.delete("/times/" + id));
+
+        RestAssured.get("/themes")
+                .then().extract().response().body().jsonPath().getList("id")
+                .forEach(id -> RestAssured.delete("/themes/" + id));
     }
 
     @DisplayName("예약 추가 성공 테스트")
@@ -52,7 +65,7 @@ public class ReservationControllerTest {
     void createReservation() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new ReservationRequest("브라운", date, timeId))
+                .body(new ReservationRequest("브라운", date, timeId, themeId))
                 .when().post("/reservations")
                 .then().log().all()
                 .assertThat().statusCode(201).body("id", is(greaterThan(0)));
@@ -64,13 +77,13 @@ public class ReservationControllerTest {
         //given
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new ReservationRequest("lilly", date, timeId))
+                .body(new ReservationRequest("lilly", date, timeId, themeId))
                 .when().post("/reservations");
 
         //when&then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new ReservationRequest("lilly", date, timeId))
+                .body(new ReservationRequest("lilly", date, timeId, themeId))
                 .when().post("/reservations")
                 .then().log().all()
                 .assertThat().statusCode(400).body("message", is("이미 같은 일정으로 예약이 존재합니다."));
@@ -81,7 +94,7 @@ public class ReservationControllerTest {
     void createInvalidNameReservation() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new ReservationRequest("", date, timeId))
+                .body(new ReservationRequest("", date, timeId, themeId))
                 .when().post("/reservations")
                 .then().log().all()
                 .assertThat().statusCode(400).body("message", is("이름은 1자 이상, 5자 이하여야 합니다."));
@@ -96,7 +109,7 @@ public class ReservationControllerTest {
         //when&then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new ReservationRequest("lini", invalidDate, timeId))
+                .body(new ReservationRequest("lini", invalidDate, timeId, themeId))
                 .when().post("/reservations")
                 .then().log().all()
                 .assertThat().statusCode(400).body("message", is("현재보다 이전으로 일정을 설정할 수 없습니다."));
@@ -111,7 +124,7 @@ public class ReservationControllerTest {
         //when&then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new ReservationRequest("lini", invalidDate, timeId))
+                .body(new ReservationRequest("lini", invalidDate, timeId, themeId))
                 .when().post("/reservations")
                 .then().log().all()
                 .assertThat().statusCode(400).body("message", is("올바르지 않은 날짜입니다."));
@@ -121,7 +134,7 @@ public class ReservationControllerTest {
     @Test
     void findAllReservations() {
         //given
-        RestAssured.given().contentType(ContentType.JSON).body(new ReservationRequest("브라운", date, timeId))
+        RestAssured.given().contentType(ContentType.JSON).body(new ReservationRequest("브라운", date, timeId, themeId))
                 .when().post("/reservations");
 
         //when & then
@@ -135,7 +148,8 @@ public class ReservationControllerTest {
     @Test
     void deleteReservationSuccess() {
         //given
-        var id = RestAssured.given().contentType(ContentType.JSON).body(new ReservationRequest("브라운", date, timeId))
+        var id = RestAssured.given().contentType(ContentType.JSON)
+                .body(new ReservationRequest("브라운", date, timeId, themeId))
                 .when().post("/reservations")
                 .then().extract().body().jsonPath().get("id");
 
