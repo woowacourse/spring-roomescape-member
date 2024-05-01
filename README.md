@@ -40,10 +40,10 @@
 
 - [x] 사용자 예약 페이지 응답(templates/reservation.html)
 - [x] 인기 테마 페이지 응답(templates/index.html)
-- [ ] 사용자 예약
-  - [ ] 예약 가능한 시간 조회(date, themeId)(GET)(/reservations/{date}/{themeId})
-  - [ ] 예약 기능(POST)(/reservations)
-  - [ ] 클라이언트 코드 수정
+- [x] 사용자 예약
+  - [x] 예약 가능한 시간 조회(date, themeId)(GET)(/reservations?date={date}&themeID={themeId})
+  - [x] 예약 기능(POST)(/reservations)
+  - [x] 클라이언트 코드 수정
 - [ ] 인기 테마(GET)(/themes/populars)
   - [ ] 일주일을 기준으로 예약이 많은 테마 10개 확인
     - 4월 8일인 경우, 게임 날짜가 4월 1일부터 4월 7일까지인 예약 건수가 많은 순서대로 10개의 테마를 조회

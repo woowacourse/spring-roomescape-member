@@ -12,6 +12,8 @@ public interface ReservationDao {
 
     List<Reservation> readAll();
 
+    List<Long> readTimeIdsByDateAndThemeId(ReservationDate reservationDate, Long themeId);
+
     Reservation create(Reservation reservation);
 
     Boolean exist(long id);

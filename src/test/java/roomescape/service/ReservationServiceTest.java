@@ -31,6 +31,7 @@ import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemeDescription;
 import roomescape.domain.theme.ThemeName;
 import roomescape.domain.theme.ThemeThumbnail;
+import roomescape.dto.reservation.AvailableReservationResponse;
 import roomescape.dto.reservation.ReservationCreateRequest;
 import roomescape.dto.reservation.ReservationResponse;
 
@@ -56,7 +57,8 @@ class ReservationServiceTest {
                 new ReservationName("daon"),
                 ReservationDate.from(tomorrow),
                 reservationTimeDao.create(new ReservationTime(null, ReservationStartAt.from("23:00"))),
-                themeDao.create(new Theme(null, ThemeName.from("방탈출1"), ThemeDescription.from("방탈출 1번"), ThemeThumbnail.from("섬네일1")))
+                themeDao.create(new Theme(null, ThemeName.from("방탈출1"), ThemeDescription.from("방탈출 1번"),
+                        ThemeThumbnail.from("섬네일1")))
         );
 
         Reservation ikjo = new Reservation(
@@ -64,7 +66,8 @@ class ReservationServiceTest {
                 new ReservationName("ikjo"),
                 ReservationDate.from(tomorrow),
                 reservationTimeDao.create(new ReservationTime(null, ReservationStartAt.from("22:00"))),
-                themeDao.create(new Theme(null, ThemeName.from("방탈출1"), ThemeDescription.from("방탈출 1번"), ThemeThumbnail.from("섬네일1")))
+                themeDao.create(new Theme(null, ThemeName.from("방탈출1"), ThemeDescription.from("방탈출 1번"),
+                        ThemeThumbnail.from("섬네일1")))
         );
         reservationDao.create(daon);
         reservationDao.create(ikjo);
@@ -95,6 +98,25 @@ class ReservationServiceTest {
         );
     }
 
+    @Test
+    @DisplayName("이용 가능한 예약 시간을 조회한다.")
+    void findTimeByDateAndThemeId() {
+        //given
+        Long themeId = 2L;
+
+        //when
+        List<AvailableReservationResponse> responses
+                = reservationService.findTimeByDateAndThemeID(tomorrow, themeId);
+        AvailableReservationResponse notBooked = responses.get(0);
+        AvailableReservationResponse alreadyBooked = responses.get(1);
+
+        //then
+        assertAll(
+                () -> assertThat(notBooked.isAlreadyBooked()).isFalse(),
+                () -> assertThat(alreadyBooked.isAlreadyBooked()).isTrue()
+        );
+    }
+
     @Nested
     @DisplayName("예약 추가")
     class create {
@@ -107,7 +129,8 @@ class ReservationServiceTest {
             ReservationTime reservationTime = reservationTimeDao.create(
                     new ReservationTime(null, ReservationStartAt.from("12:00")));
             Theme theme = themeDao.create(
-                    new Theme(null, ThemeName.from("방탈출1"), ThemeDescription.from("방탈출 1번"), ThemeThumbnail.from("섬네일1"))
+                    new Theme(null, ThemeName.from("방탈출1"), ThemeDescription.from("방탈출 1번"),
+                            ThemeThumbnail.from("섬네일1"))
             );
             ReservationCreateRequest givenRequest =
                     ReservationCreateRequest.of(givenName, givenDate, reservationTime.getId(), theme.getId());
@@ -193,10 +216,12 @@ class ReservationServiceTest {
             ReservationTime reservationTime = reservationTimeDao.create(
                     new ReservationTime(null, ReservationStartAt.from(pastTime)));
             Theme theme = themeDao.create(
-                    new Theme(null, ThemeName.from("방탈출1"), ThemeDescription.from("방탈출 1번"), ThemeThumbnail.from("섬네일1"))
+                    new Theme(null, ThemeName.from("방탈출1"), ThemeDescription.from("방탈출 1번"),
+                            ThemeThumbnail.from("섬네일1"))
             );
             ReservationCreateRequest request =
-                    ReservationCreateRequest.of("다온", LocalDate.now().toString(), reservationTime.getId(), theme.getId());
+                    ReservationCreateRequest.of("다온", LocalDate.now().toString(), reservationTime.getId(),
+                            theme.getId());
 
             //when //then
             assertThatThrownBy(() -> reservationService.add(request))

@@ -22,6 +22,11 @@ public class ConsoleReservationDao implements ReservationDao {
     }
 
     @Override
+    public List<Long> readTimeIdsByDateAndThemeId(ReservationDate reservationDate, Long themeId) {
+        return List.of();
+    }
+
+    @Override
     public Reservation create(Reservation reservation) {
         long id = reservationId.getAndIncrement();
         Reservation newReservation = new Reservation(

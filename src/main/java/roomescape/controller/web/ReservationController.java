@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.dto.reservation.AvailableReservationResponse;
 import roomescape.dto.reservation.ReservationCreateRequest;
 import roomescape.dto.reservation.ReservationResponse;
 import roomescape.service.ReservationService;
@@ -27,6 +29,11 @@ public class ReservationController {
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> readAll() {
         return ResponseEntity.ok(reservationService.findAll());
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<List<AvailableReservationResponse>> readReservationTimes(@RequestParam String date, @RequestParam Long themeId) {
+        return ResponseEntity.ok(reservationService.findTimeByDateAndThemeID(date, themeId));
     }
 
     @PostMapping

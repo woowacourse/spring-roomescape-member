@@ -9,6 +9,7 @@ import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
+import roomescape.dto.reservation.AvailableReservationResponse;
 import roomescape.dto.reservation.ReservationCreateRequest;
 import roomescape.dto.reservation.ReservationResponse;
 
@@ -29,6 +30,20 @@ public class ReservationService {
         List<Reservation> reservations = reservationDao.readAll();
         return reservations.stream()
                 .map(ReservationResponse::from)
+                .toList();
+    }
+
+    public List<AvailableReservationResponse> findTimeByDateAndThemeID(String date, Long themeId) {
+        ReservationDate reservationDate = ReservationDate.from(date);
+        List<ReservationTime> reservationTimes = reservationTimeDao.readAll();
+        List<Long> ids = reservationDao.readTimeIdsByDateAndThemeId(reservationDate, themeId);
+        return reservationTimes.stream()
+                .map(time ->
+                    AvailableReservationResponse.of(
+                            time.getStartAt().toStringTime(),
+                            time.getId(),
+                            ids.contains(time.getId())
+                    ))
                 .toList();
     }
 

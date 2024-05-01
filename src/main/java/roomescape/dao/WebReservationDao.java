@@ -56,6 +56,21 @@ public class  WebReservationDao implements ReservationDao {
     }
 
     @Override
+    public List<Long> readTimeIdsByDateAndThemeId(ReservationDate reservationDate, Long themeId) {
+        String sql = """
+                SELECT
+                time_id
+                FROM
+                reservation
+                WHERE date = ? AND theme_id = ?
+                """;
+        return jdbcTemplate.query(sql,
+                (resultSet, rowNum) -> resultSet.getLong("time_id"),
+                reservationDate.toStringDate(),
+                themeId);
+    }
+
+    @Override
     public Reservation create(Reservation reservation) {
         String sql = """
                 INSERT
