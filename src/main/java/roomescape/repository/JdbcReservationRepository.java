@@ -77,6 +77,16 @@ public class JdbcReservationRepository implements ReservationRepository {
         return count > 0;
     }
 
+    @Override
+    public boolean isExistReservationAtDateTime(Reservation reservation) {
+        String sql = "SELECT COUNT(*) FROM reservation WHERE date = :date AND time_id = :timeId";
+        SqlParameterSource parameterSource = new MapSqlParameterSource()
+                .addValue("date", reservation.getDate())
+                .addValue("timeId", reservation.getTimeId());
+        int count = jdbcTemplate.queryForObject(sql, parameterSource, Integer.class);
+        return count > 0;
+    }
+
     private Reservation findReservationById(long savedId) {
         String sql = """
                 SELECT 

@@ -101,4 +101,24 @@ class JdbcReservationRepositoryTest {
                 () -> assertThat(notExist).isFalse()
         );
     }
+
+    @Test
+    @DisplayName("테이블에 특정 시간 및 날짜의 예약 존재 여부를 판단한다.")
+    void is_exist_reservation_at_date_time() {
+        Reservation sameDateReservation = new Reservation(null, "atto", "2024-09-08", 2L, "12:00");
+        Reservation sameTimeReservation = new Reservation(null, "atto", "2024-09-07", 1L, "00:00");
+        reservationRepository.insertReservation(reservation1);
+
+        boolean allSame = reservationRepository.isExistReservationAtDateTime(reservation1);
+        boolean onlySameDate = reservationRepository.isExistReservationAtDateTime(sameDateReservation);
+        boolean onlySameTime = reservationRepository.isExistReservationAtDateTime(sameTimeReservation);
+        boolean allDifference = reservationRepository.isExistReservationAtDateTime(reservation2);
+
+        assertAll(
+                () -> assertThat(allSame).isTrue(),
+                () -> assertThat(onlySameDate).isFalse(),
+                () -> assertThat(onlySameTime).isFalse(),
+                () -> assertThat(allDifference).isFalse()
+        );
+    }
 }
