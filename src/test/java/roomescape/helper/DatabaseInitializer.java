@@ -6,10 +6,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 @Component
 public class DatabaseInitializer {
     private final JdbcTemplate jdbcTemplate;
+    private Theme theme;
     private ReservationTime time;
     private Reservation reservation;
 
@@ -18,8 +20,15 @@ public class DatabaseInitializer {
     }
 
     public void execute() {
+        theme = createTheme();
         time = createInitTime();
         reservation = createInitReservation(time);
+    }
+
+    private Theme createTheme() {
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
+                "레벨2", "내용이다.", "https://www.naver.com/");
+        return new Theme(1L, "레벨2", "내용이다.", "https://www.naver.com/");
     }
 
     private ReservationTime createInitTime() {

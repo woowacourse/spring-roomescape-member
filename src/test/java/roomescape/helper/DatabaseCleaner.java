@@ -14,6 +14,7 @@ public class DatabaseCleaner {
     public void execute() {
         clearReservation();
         clearTime();
+        clearTheme();
     }
 
     private void clearReservation() {
@@ -24,5 +25,10 @@ public class DatabaseCleaner {
     private void clearTime() {
         jdbcTemplate.update("DELETE FROM reservation_time");
         jdbcTemplate.update("ALTER TABLE reservation_time ALTER COLUMN id RESTART");
+    }
+
+    private void clearTheme() {
+        jdbcTemplate.update("DELETE FROM theme");
+        jdbcTemplate.update("ALTER TABLE theme ALTER COLUMN id RESTART");
     }
 }
