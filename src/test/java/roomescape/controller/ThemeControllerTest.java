@@ -60,4 +60,19 @@ public class ThemeControllerTest {
         assertThat(count).isEqualTo(1);
     }
 
+    @DisplayName("삭제할 id를 받아서 DB에서 해당 테마를 삭제 할 수 있다.")
+    @Test
+    void deleteTime() {
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
+                "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg");
+
+        RestAssured.given().log().all()
+                .port(port)
+                .when().delete("/themes/1")
+                .then().log().all()
+                .statusCode(204);
+
+        Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from theme", Integer.class);
+        assertThat(countAfterDelete).isEqualTo(0);
+    }
 }

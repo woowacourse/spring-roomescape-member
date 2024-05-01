@@ -50,4 +50,9 @@ public class ThemeDao {
         return theme.changeId(id);
     }
 
+    public void deleteTheme(Long id) {
+        String sql = "DELETE FROM theme WHERE id = ?";
+        jdbcTemplate.update(sql, id);
+    }
+
 }

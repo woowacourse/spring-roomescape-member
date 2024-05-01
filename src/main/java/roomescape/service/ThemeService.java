@@ -23,4 +23,8 @@ public class ThemeService {
     public Theme createTheme(ThemeCreateRequest dto) {
         return themeDao.createTheme(dto.createTheme());
     }
+
+    public void deleteTheme(Long id) {
+        themeDao.deleteTheme(id);
+    }
 }
