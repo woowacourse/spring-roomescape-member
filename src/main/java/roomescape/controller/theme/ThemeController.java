@@ -25,13 +25,13 @@ public class ThemeController {
     }
 
     @GetMapping
-    public List<ThemeResponse> getThemes() {
+    public List<CreateThemeResponse> getThemes() {
         return themeService.getThemes();
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponse> addTheme(@RequestBody final ThemeRequest themeRequest) {
-        final ThemeResponse theme = themeService.addTheme(themeRequest);
+    public ResponseEntity<CreateThemeResponse> addTheme(@RequestBody final CreateThemeRequest createThemeRequest) {
+        final CreateThemeResponse theme = themeService.addTheme(createThemeRequest);
         URI uri = UriComponentsBuilder.fromPath("/themes/{id}")
                 .buildAndExpand(theme.id())
                 .toUri();
