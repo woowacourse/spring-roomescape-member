@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,5 +64,12 @@ public class ReservationTimeDAO implements ReservationTimeRepository {
         String sql = "select count(id) from reservation_time where id = ?";
         return jdbcTemplate.queryForObject(sql, (resultSet, ignored) ->
                 resultSet.getLong(1), id);
+    }
+
+    @Override
+    public Long countReservationTimeByStartAt(LocalTime startAt) {
+        String sql = "select count(id) from reservation_time where start_at = ?";
+        return jdbcTemplate.queryForObject(sql, (resultSet, ignored) ->
+                resultSet.getLong(1), startAt);
     }
 }

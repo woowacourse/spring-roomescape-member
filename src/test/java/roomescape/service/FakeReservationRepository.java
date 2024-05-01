@@ -14,7 +14,7 @@ class FakeReservationRepository implements ReservationRepository {
 
     private List<Reservation> reservations = new ArrayList<>(List.of(
             new Reservation(1, "브라운", LocalDate.of(2023, 8, 5),
-                    new ReservationTime(1, LocalTime.of(10, 0))),
+                    new ReservationTime(2, LocalTime.of(11, 0))),
             new Reservation(1, "리사", LocalDate.of(2023, 8, 1),
                     new ReservationTime(2, LocalTime.of(11, 0)))));
 

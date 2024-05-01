@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.time.LocalTime;
 import java.util.List;
 import roomescape.model.ReservationTime;
 
@@ -13,4 +14,6 @@ public interface ReservationTimeRepository {
     void deleteReservationTime(long id);
 
     Long countReservationTimeById(long id);
+
+    Long countReservationTimeByStartAt(LocalTime startAt);
 }

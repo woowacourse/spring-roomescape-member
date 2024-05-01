@@ -49,4 +49,11 @@ class FakeReservationTimeRepository implements ReservationTimeRepository {
                 .filter(reservationTime -> reservationTime.getId() == id)
                 .count();
     }
+
+    @Override
+    public Long countReservationTimeByStartAt(LocalTime startAt) {
+        return reservationTimes.stream()
+                .filter(reservationTime -> reservationTime.getStartAt() == startAt)
+                .count();
+    }
 }
