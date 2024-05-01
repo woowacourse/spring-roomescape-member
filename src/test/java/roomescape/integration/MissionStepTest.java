@@ -47,7 +47,7 @@ public class MissionStepTest extends IntegrationTest {
     void 삼단계() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", "2023-08-06");
         params.put("timeId", "1");
 
         RestAssured.given().log().all()
@@ -109,7 +109,7 @@ public class MissionStepTest extends IntegrationTest {
     void 육단계() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", "2023-08-06");
         params.put("timeId", "1");
 
         RestAssured.given().log().all()
@@ -164,7 +164,7 @@ public class MissionStepTest extends IntegrationTest {
     void 팔단계() {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", "2023-08-06");
         reservation.put("timeId", 1);
 
         RestAssured.given().log().all()

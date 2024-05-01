@@ -52,6 +52,12 @@ public class ReservationDao implements ReservationRepository {
     }
 
     @Override
+    public Boolean existsByDateAndTimeId(LocalDate date, Long timeId) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE date = ? AND time_id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId);
+    }
+
+    @Override
     public Reservation save(Reservation reservation) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("name", reservation.getName());

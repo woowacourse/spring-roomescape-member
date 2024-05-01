@@ -6,6 +6,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
+import roomescape.exception.DuplicatedReservationException;
 import roomescape.exception.NotFoundTimeException;
 import roomescape.web.dto.ReservationRequest;
 import roomescape.web.dto.ReservationResponse;
@@ -29,6 +30,9 @@ public class ReservationService {
     }
 
     public ReservationResponse saveReservation(ReservationRequest request) {
+        if (reservationRepository.existsByDateAndTimeId(request.date(), request.timeId())) {
+            throw new DuplicatedReservationException();
+        }
         ReservationTime time = findReservationTimeById(request.timeId());
         Reservation reservation = request.toReservation(time);
         Reservation savedReservation = reservationRepository.save(reservation);
