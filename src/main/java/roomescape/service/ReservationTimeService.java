@@ -59,13 +59,12 @@ public class ReservationTimeService {
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
         List<Reservation> reservations = reservationRepository.findByDateAndThemeId(date, themeId);
 
-        return reservationTimes.stream().map(
-                reservationTime -> new AvailableReservationTimeResponse(
+        return reservationTimes.stream()
+                .map(reservationTime -> new AvailableReservationTimeResponse(
                         reservationTime.getId(),
                         reservationTime.getStartAt(),
                         reservations.stream()
-                                .anyMatch(reservation -> reservation.getTimeId().equals(reservationTime.getId()))
-                )
-        ).toList();
+                                .anyMatch(reservation -> reservationTime.equals(reservation.getTime())))
+                ).toList();
     }
 }
