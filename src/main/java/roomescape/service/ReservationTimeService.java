@@ -27,7 +27,7 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponse saveReservationTime(ReservationTimeRequest request) {
-        if (reservationTimeRepository.existsByStartAt(request.startAt())) {
+        if (reservationTimeRepository.existsByStartAt(request.getStartAt())) {
             throw new DuplicatedTimeException();
         }
         ReservationTime reservationTime = request.toReservationTime();

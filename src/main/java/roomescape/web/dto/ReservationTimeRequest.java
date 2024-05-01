@@ -26,7 +26,7 @@ public class ReservationTimeRequest {
     }
 
     @JsonFormat(shape = Shape.STRING, pattern = "HH:mm")
-    public LocalTime startAt() {
+    public LocalTime getStartAt() {
         return startAt;
     }
 }

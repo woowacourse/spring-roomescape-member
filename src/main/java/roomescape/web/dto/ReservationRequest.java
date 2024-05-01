@@ -32,15 +32,15 @@ public class ReservationRequest {
         return new Reservation(name, date, reservationTime);
     }
 
-    public LocalDate date() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public String name() {
+    public String getName() {
         return name;
     }
 
-    public Long timeId() {
+    public Long getTimeId() {
         return timeId;
     }
 }

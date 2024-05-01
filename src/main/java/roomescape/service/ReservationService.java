@@ -37,11 +37,11 @@ public class ReservationService {
     }
 
     public ReservationResponse saveReservation(ReservationRequest request) {
-        if (reservationRepository.existsByDateAndTimeId(request.date(), request.timeId())) {
+        if (reservationRepository.existsByDateAndTimeId(request.getDate(), request.getTimeId())) {
             throw new DuplicatedReservationException();
         }
-        ReservationTime time = findReservationTimeById(request.timeId());
-        LocalDateTime localDateTime = request.date().atTime(time.getStartAt());
+        ReservationTime time = findReservationTimeById(request.getTimeId());
+        LocalDateTime localDateTime = request.getDate().atTime(time.getStartAt());
         if (localDateTime.isBefore(LocalDateTime.now(clock))) {
             throw new InvalidDateTimeReservationException();
         }

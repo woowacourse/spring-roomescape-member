@@ -6,7 +6,7 @@ POST localhost:8080/reservations
 Content-Type: application/json
 
 {
-  "date": "2018-13-11",
+  "date": "2024-10-11",
   "name": "브라운",
   "timeId": 1
 }
