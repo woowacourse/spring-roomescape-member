@@ -55,7 +55,7 @@ public class ThemeRepository {
         jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id);
     }
 
-    public List<Theme> findOneWeekOrderByReservationCount(final LocalDate localDate, final int count) {
+    public List<Theme> findOneWeekOrderByReservationCount(final LocalDate localDate, final int limit) {
         final String sql = """
                 SELECT t.id, t.name, t.description, t.thumbnail, COUNT(t.id) AS count
                 FROM theme AS t
@@ -67,6 +67,6 @@ public class ThemeRepository {
                 LIMIT ?
                 """;
 
-        return jdbcTemplate.query(sql, THEME_ROW_MAPPER, localDate, localDate.minusWeeks(1), count);
+        return jdbcTemplate.query(sql, THEME_ROW_MAPPER, localDate, localDate.minusWeeks(1), limit);
     }
 }
