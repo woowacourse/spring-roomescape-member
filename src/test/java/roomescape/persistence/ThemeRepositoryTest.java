@@ -13,7 +13,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.domain.Theme;
-import roomescape.domain.ThemeRepository;
 
 @JdbcTest
 @Sql(scripts = "/reset_test_data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_CLASS)
@@ -25,7 +24,7 @@ public class ThemeRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        themeRepository = new JdbcThemeRepository(jdbcTemplate);
+        themeRepository = new ThemeRepository(jdbcTemplate);
     }
 
     @Test

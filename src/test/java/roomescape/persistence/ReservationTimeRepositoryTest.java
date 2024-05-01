@@ -13,7 +13,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.ReservationTimeRepository;
 
 /*
  * 테스트 데이터베이스 초기 데이터
@@ -36,7 +35,7 @@ class ReservationTimeRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        reservationTimeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
+        reservationTimeRepository = new ReservationTimeRepository(jdbcTemplate);
     }
 
     @Test
