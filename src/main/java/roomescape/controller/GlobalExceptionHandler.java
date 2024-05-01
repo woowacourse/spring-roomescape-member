@@ -7,8 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    
-    //TODO : 예외 사항 분리 필요
+
     @ExceptionHandler(value = HttpMessageNotReadableException.class)
     private ResponseEntity<String> handleHttpMessageNotReadableException() {
         return ResponseEntity.badRequest().build();
