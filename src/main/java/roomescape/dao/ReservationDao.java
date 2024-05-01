@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 import javax.sql.DataSource;
 import java.sql.Date;
@@ -37,13 +38,21 @@ public class ReservationDao {
                     r.name,
                     r.date,
                     t.id AS time_id,
-                    t.start_at AS time_value
-                FROM
-                    reservation AS r
-                INNER JOIN
-                    reservation_time AS t
-                ON
+                    t.start_at AS time_value,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail AS theme_thumbnail
+                FROM 
+                    reservation AS r 
+                INNER JOIN 
+                    reservation_time AS t 
+                ON 
                     r.time_id = t.id
+                INNER JOIN 
+                    theme AS th
+                ON
+                    r.theme_id = th.id
                 """;
         return jdbcTemplate.query(sql, this::rowMapper);
     }
@@ -55,13 +64,21 @@ public class ReservationDao {
                     r.name,
                     r.date,
                     t.id AS time_id,
-                    t.start_at AS time_value
+                    t.start_at AS time_value,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail AS theme_thumbnail
                 FROM 
                     reservation AS r 
                 INNER JOIN 
                     reservation_time AS t 
                 ON 
-                    r.time_id = t.id 
+                    r.time_id = t.id
+                INNER JOIN 
+                    theme AS th
+                ON
+                    r.theme_id = th.id
                 WHERE 
                     `date` = ? AND t.start_at = ?
                 """;
@@ -72,14 +89,15 @@ public class ReservationDao {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
                 .addValue("date", reservation.getDate())
-                .addValue("time_id", reservation.getReservationTimeId());
+                .addValue("time_id", reservation.getReservationTimeId())
+                .addValue("theme_id", reservation.getThemeId());
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
         return Objects.requireNonNull(id);
     }
 
     public Reservation selectById(Long id) {
         try {
-            String sql = "SELECT id AS reservation_id, name, date, time_id FROM reservation WHERE id = ?";
+            String sql = "SELECT id AS reservation_id, name, date, time_id, theme_id FROM reservation WHERE id = ?";
             return jdbcTemplate.queryForObject(sql, this::lazyRowMapper, id);
         } catch (EmptyResultDataAccessException e) {
             return null;
@@ -101,20 +119,28 @@ public class ReservationDao {
                 resultSet.getLong("time_id"),
                 resultSet.getString("time_value")
         );
-        return reservationMapper(resultSet, reservationTime);
+        Theme theme = new Theme(
+                resultSet.getLong("theme_id"),
+                resultSet.getString("theme_name"),
+                resultSet.getString("theme_description"),
+                resultSet.getString("theme_thumbnail")
+        );
+        return reservationMapper(resultSet, reservationTime, theme);
     }
 
     private Reservation lazyRowMapper(ResultSet resultSet, int rowNumber) throws SQLException {
         ReservationTime reservationTime = new ReservationTime(resultSet.getLong("time_id"));
-        return reservationMapper(resultSet, reservationTime);
+        Theme theme = new Theme(resultSet.getLong("theme_id"));
+        return reservationMapper(resultSet, reservationTime, theme);
     }
 
-    private Reservation reservationMapper(ResultSet resultSet, ReservationTime reservationTime) throws SQLException {
+    private Reservation reservationMapper(ResultSet resultSet, ReservationTime reservationTime, Theme theme) throws SQLException {
         return new Reservation(
                 resultSet.getLong("reservation_id"),
                 resultSet.getString("name"),
                 resultSet.getString("date"),
-                reservationTime
+                reservationTime,
+                theme
         );
     }
 }

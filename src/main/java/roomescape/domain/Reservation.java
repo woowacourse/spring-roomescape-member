@@ -13,9 +13,10 @@ public class Reservation {
     private final String name;
     private final LocalDate date;
     private final ReservationTime time;
+    private final Theme theme;
 
-    public Reservation(String name, String date, ReservationTime time) {
-        this(null, name, date, time);
+    public Reservation(String name, String date, ReservationTime time, Theme theme) {
+        this(null, name, date, time, theme);
     }
 
     public Reservation(Long id, Reservation reservation) {
@@ -23,9 +24,10 @@ public class Reservation {
         this.name = reservation.name;
         this.date = reservation.date;
         this.time = reservation.time;
+        this.theme = reservation.theme;
     }
 
-    public Reservation(Long id, String name, String dateInput, ReservationTime time) {
+    public Reservation(Long id, String name, String dateInput, ReservationTime time, Theme theme) {
         validateName(name);
         LocalDate date = convertToLocalDate(dateInput);
         validateDate(date);
@@ -33,6 +35,7 @@ public class Reservation {
         this.name = name;
         this.date = date;
         this.time = time;
+        this.theme = theme;
     }
 
     private void validateName(String name) {
@@ -74,6 +77,10 @@ public class Reservation {
         return time.getId();
     }
 
+    public Long getThemeId() {
+        return theme.getId();
+    }
+
     public Long getId() {
         return id;
     }
@@ -88,6 +95,10 @@ public class Reservation {
 
     public ReservationTime getTime() {
         return time;
+    }
+
+    public Theme getTheme() {
+        return theme;
     }
 
     @Override

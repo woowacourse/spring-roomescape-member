@@ -18,15 +18,18 @@ public class TestFixture {
     public static final String THEME_THUMBNAIL = "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg";
 
     public static Reservation MIA_RESERVATION() {
-        return MIA_RESERVATION(new ReservationTime(MIA_RESERVATION_TIME));
+        return MIA_RESERVATION(new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME());
     }
 
-    public static Reservation MIA_RESERVATION(ReservationTime time) {
-        return new Reservation(USER_MIA, MIA_RESERVATION_DATE, time);
+    public static Reservation MIA_RESERVATION(ReservationTime time, Theme theme) {
+        return new Reservation(USER_MIA, MIA_RESERVATION_DATE, time, theme);
     }
 
     public static Reservation TOMMY_RESERVATION() {
-        return new Reservation(USER_TOMMY, TOMMY_RESERVATION_DATE, new ReservationTime(TOMMY_RESERVATION_TIME));
+        return new Reservation(
+                USER_TOMMY, TOMMY_RESERVATION_DATE,
+                new ReservationTime(TOMMY_RESERVATION_TIME), WOOTECO_THEME()
+        );
     }
 
     public static Theme WOOTECO_THEME() {

@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.domain.Theme;
 
 import java.util.List;
+import java.util.Optional;
 
 public class ThemeRepositoryTest extends RepositoryTest {
     @Autowired
@@ -52,6 +53,34 @@ public class ThemeRepositoryTest extends RepositoryTest {
 
         // then
         assertThat(themes).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("Id로 테마를 조회한다.")
+    void findById() {
+        // given
+        Theme theme = WOOTECO_THEME();
+        SqlParameterSource params = new BeanPropertySqlParameterSource(theme);
+        Long id = jdbcInsert.executeAndReturnKey(params).longValue();
+
+        // when
+        Optional<Theme> foundTheme = themeRepository.findById(id);
+
+        // then
+        assertThat(foundTheme).isNotEmpty();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 Id로 테마를 조회하면 빈 Optional을 반환한다.")
+    void findByNotExistingId() {
+        // given
+        Long notExistingId = 1L;
+
+        // when
+        Optional<Theme> foundTheme = themeRepository.findById(notExistingId);
+
+        // then
+        assertThat(foundTheme).isEmpty();
     }
 
     @Test

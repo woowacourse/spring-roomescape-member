@@ -19,7 +19,7 @@ class ReservationTest {
     @DisplayName("예약자 이름은 빈칸이거나 숫자로만 구성될 수 없다.")
     void validateName(String invalidName) {
         // when & then
-        assertThatThrownBy(() -> new Reservation(invalidName, MIA_RESERVATION_DATE, new ReservationTime(MIA_RESERVATION_TIME)))
+        assertThatThrownBy(() -> new Reservation(invalidName, MIA_RESERVATION_DATE, new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -28,7 +28,7 @@ class ReservationTest {
     @DisplayName("예약 날짜는 현재 날짜 이후이다.")
     void validateDate(LocalDate invalidDate) {
         // when & then
-        assertThatThrownBy(() -> new Reservation(USER_MIA, invalidDate.toString(), new ReservationTime(MIA_RESERVATION_TIME)))
+        assertThatThrownBy(() -> new Reservation(USER_MIA, invalidDate.toString(), new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -45,7 +45,7 @@ class ReservationTest {
     @DisplayName("예약 날짜 입력 값이 유효하지 않으면 변환할 수 없다.")
     void convertToLocalDate(String invalidDate) {
         // when & then
-        assertThatThrownBy(() -> new Reservation(USER_MIA, invalidDate, new ReservationTime(MIA_RESERVATION_TIME)))
+        assertThatThrownBy(() -> new Reservation(USER_MIA, invalidDate, new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -54,7 +54,7 @@ class ReservationTest {
     @DisplayName("예약이 동일한 예약 시간을 갖는지 확인한다.")
     void hasSameDateTime(LocalDate date, String time, boolean expectedResult) {
         // given
-        Reservation reservation = MIA_RESERVATION(new ReservationTime(MIA_RESERVATION_TIME));
+        Reservation reservation = MIA_RESERVATION(new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME());
 
         // when
         boolean actualResult = reservation.hasSameDateTime(date, new ReservationTime(time));

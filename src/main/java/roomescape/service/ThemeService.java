@@ -31,6 +31,13 @@ public class ThemeService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public ThemeResponse findById(Long id) {
+        Theme theme = themeRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(id + "에 해당하는 테마가 없습니다."));
+        return ThemeResponse.from(theme);
+    }
+
     public void deleteById(Long id) {
         Theme theme = themeRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(id + "에 해당하는 테마가 없습니다."));

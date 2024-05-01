@@ -10,6 +10,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationResponse;
+import roomescape.dto.ReservationTimeResponse;
+import roomescape.dto.ReservedThemeResponse;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -18,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static roomescape.TestFixture.*;
 
@@ -70,17 +73,17 @@ class ReservationServiceTest {
     @DisplayName("동일한 시간대에 최대 4팀이 예약할 수 있다. 초과되면 예외가 발생한다.")
     void createLimitedReservations() {
         // given
-        Reservation miaReservation = new Reservation(USER_MIA, MIA_RESERVATION_DATE, new ReservationTime(MIA_RESERVATION_TIME));
-        Reservation tommyReservation = new Reservation(USER_TOMMY, MIA_RESERVATION_DATE, new ReservationTime(MIA_RESERVATION_TIME));
-        Reservation wonnyReservation = new Reservation("wonny", MIA_RESERVATION_DATE, new ReservationTime(MIA_RESERVATION_TIME));
-        Reservation neoReservation = new Reservation("neo", MIA_RESERVATION_DATE, new ReservationTime(MIA_RESERVATION_TIME));
+        Reservation miaReservation = new Reservation(USER_MIA, MIA_RESERVATION_DATE, new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME(1L));
+        Reservation tommyReservation = new Reservation(USER_TOMMY, MIA_RESERVATION_DATE, new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME(1L));
+        Reservation wonnyReservation = new Reservation("wonny", MIA_RESERVATION_DATE, new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME(1L));
+        Reservation neoReservation = new Reservation("neo", MIA_RESERVATION_DATE, new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME(1L));
 
         BDDMockito.given(reservationTimeRepository.findById(any()))
                 .willReturn(Optional.of(new ReservationTime(MIA_RESERVATION_TIME)));
         BDDMockito.given(reservationRepository.findAllByDateAndTime(any(), any()))
                 .willReturn(List.of(miaReservation, tommyReservation, wonnyReservation, neoReservation));
 
-        Reservation newReservation = new Reservation("new", MIA_RESERVATION_DATE, new ReservationTime(MIA_RESERVATION_TIME));
+        Reservation newReservation = new Reservation("new", MIA_RESERVATION_DATE, new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME(1L));
 
         // when & then
         assertThatThrownBy(() -> reservationService.create(newReservation))
@@ -101,9 +104,17 @@ class ReservationServiceTest {
         List<ReservationResponse> reservations = reservationService.findAll();
 
         // then
-        assertThat(reservations).hasSize(2)
-                .extracting(ReservationResponse::name)
-                .containsExactly(USER_MIA, USER_TOMMY);
+        assertAll(() -> {
+            assertThat(reservations).hasSize(2)
+                    .extracting(ReservationResponse::name)
+                    .containsExactly(USER_MIA, USER_TOMMY);
+            assertThat(reservations).extracting(ReservationResponse::time)
+                    .extracting(ReservationTimeResponse::startAt)
+                    .containsExactly(MIA_RESERVATION_TIME, TOMMY_RESERVATION_TIME);
+            assertThat(reservations).extracting(ReservationResponse::theme)
+                    .extracting(ReservedThemeResponse::name)
+                    .containsExactly(THEME_NAME, THEME_NAME);
+        });
     }
 
     @Test

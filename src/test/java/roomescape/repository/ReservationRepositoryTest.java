@@ -8,6 +8,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.TestFixture.*;
 
 class ReservationRepositoryTest extends RepositoryTest {
@@ -28,6 +30,8 @@ class ReservationRepositoryTest extends RepositoryTest {
     void setUp() {
         String insertTimeSql = "INSERT INTO reservation_time (start_at) VALUES (?)";
         jdbcTemplate.update(insertTimeSql, Time.valueOf(LocalTime.parse(MIA_RESERVATION_TIME)));
+        String insertThemeSql = "INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)";
+        jdbcTemplate.update(insertThemeSql, THEME_NAME, THEME_DESCRIPTION, THEME_THUMBNAIL);
     }
 
     @Test
@@ -35,7 +39,7 @@ class ReservationRepositoryTest extends RepositoryTest {
     public void save() {
         // given
         Long timeId = 1L;
-        Reservation reservation = MIA_RESERVATION(new ReservationTime(timeId, MIA_RESERVATION_TIME));
+        Reservation reservation = MIA_RESERVATION(new ReservationTime(timeId, MIA_RESERVATION_TIME), WOOTECO_THEME());
 
         // when
         Reservation savedReservation = reservationRepository.save(reservation);
@@ -49,11 +53,12 @@ class ReservationRepositoryTest extends RepositoryTest {
     public void findAllByDateAndTime() {
         // given
         Long timeId = 1L;
-        String insertSql = "INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?), (?, ?, ?)";
+        Long themeId = 1L;
+        String insertSql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?), (?, ?, ?, ?)";
         jdbcTemplate.update(
                 insertSql,
-                USER_MIA, Date.valueOf(MIA_RESERVATION_DATE), timeId,
-                USER_TOMMY, Date.valueOf(MIA_RESERVATION_DATE), timeId
+                USER_MIA, Date.valueOf(MIA_RESERVATION_DATE), timeId, themeId,
+                USER_TOMMY, Date.valueOf(MIA_RESERVATION_DATE), timeId, themeId
         );
 
         // when
@@ -71,15 +76,24 @@ class ReservationRepositoryTest extends RepositoryTest {
     public void findAll() {
         // given
         Long timeId = 1L;
-        String insertSql = "INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)";
-        jdbcTemplate.update(insertSql, USER_MIA, MIA_RESERVATION_DATE, timeId);
+        Long themeId = 1L;
+        String insertSql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
+        jdbcTemplate.update(insertSql, USER_MIA, MIA_RESERVATION_DATE, timeId, themeId);
 
         // when
         List<Reservation> reservations = reservationRepository.findAll();
 
         // then
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-        assertThat(reservations.size()).isEqualTo(count);
+        assertAll(() -> {
+            assertThat(reservations.size()).isEqualTo(count);
+            assertThat(reservations).extracting(Reservation::getTheme)
+                    .extracting(Theme::getName)
+                    .containsExactly(THEME_NAME);
+            assertThat(reservations).extracting(Reservation::getTime)
+                    .extracting(ReservationTime::getStartAt)
+                    .containsExactly(LocalTime.parse(MIA_RESERVATION_TIME));
+        });
     }
 
     @Test
@@ -87,13 +101,15 @@ class ReservationRepositoryTest extends RepositoryTest {
     public void findById() {
         // given
         long timeId = 1L;
-        String insertSql = "INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)";
+        long themeId = 1L;
+        String insertSql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(insertSql, new String[]{"id"});
             ps.setString(1, USER_MIA);
             ps.setDate(2, Date.valueOf(MIA_RESERVATION_DATE));
             ps.setLong(3, timeId);
+            ps.setLong(4, themeId);
             return ps;
         }, keyHolder);
         Long id = keyHolder.getKey().longValue();
