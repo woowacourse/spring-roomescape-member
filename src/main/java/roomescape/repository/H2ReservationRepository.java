@@ -65,6 +65,14 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public boolean existsByThemeId(final Long themeId) {
+        String sql = "SELECT * FROM reservation WHERE theme_id = ? LIMIT 1";
+
+        return !jdbcTemplate.query(sql, this::mapRowReservation, themeId)
+                .isEmpty();
+    }
+
+    @Override
     public Reservation save(final Reservation reservation) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())

@@ -4,6 +4,8 @@ import org.springframework.stereotype.Service;
 import roomescape.controller.theme.CreateThemeRequest;
 import roomescape.controller.theme.CreateThemeResponse;
 import roomescape.domain.Theme;
+import roomescape.exception.ThemeUsedException;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 
 import java.util.List;
@@ -11,9 +13,11 @@ import java.util.List;
 @Service
 public class ThemeService {
 
+    private final ReservationRepository reservationRepository;
     private final ThemeRepository themeRepository;
 
-    public ThemeService(final ThemeRepository themeRepository) {
+    public ThemeService(final ReservationRepository reservationRepository, final ThemeRepository themeRepository) {
+        this.reservationRepository = reservationRepository;
         this.themeRepository = themeRepository;
     }
 
@@ -30,6 +34,9 @@ public class ThemeService {
     }
 
     public int deleteTheme(final Long id) {
+        if (reservationRepository.existsByThemeId(id)) {
+            throw new ThemeUsedException("예약된 테마는 삭제할 수 없습니다.");
+        }
         return themeRepository.delete(id);
     }
 }
