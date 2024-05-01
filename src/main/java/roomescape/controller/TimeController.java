@@ -2,7 +2,6 @@ package roomescape.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.domain.ReservationTime;
 import roomescape.dto.ErrorResponse;
 import roomescape.dto.TimeCreateRequest;
 import roomescape.dto.TimeResponse;
@@ -22,16 +21,13 @@ public class TimeController {
 
     @GetMapping
     public ResponseEntity<List<TimeResponse>> readTimes() {
-        List<TimeResponse> response = service.readTimes().stream()
-                .map(TimeResponse::from)
-                .toList();
+        List<TimeResponse> response = service.readTimes();
         return ResponseEntity.ok(response);
     }
 
     @PostMapping
     public ResponseEntity<TimeResponse> createTime(@RequestBody TimeCreateRequest dto) {
-        ReservationTime time = service.createTime(dto);
-        TimeResponse response = TimeResponse.from(time);
+        TimeResponse response = service.createTime(dto);
 
         URI location = URI.create("/times/" + response.id());
         return ResponseEntity

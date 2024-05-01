@@ -5,6 +5,7 @@ import roomescape.dao.ReservationDao;
 import roomescape.dao.TimeDao;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.TimeCreateRequest;
+import roomescape.dto.TimeResponse;
 
 import java.util.List;
 
@@ -18,15 +19,18 @@ public class TimeService {
         this.reservationDao = reservationDao;
     }
 
-    public List<ReservationTime> readTimes() {
-        return timeDao.readTimes();
+    public List<TimeResponse> readTimes() {
+        return timeDao.readTimes().stream()
+                .map(TimeResponse::from)
+                .toList();
     }
 
-    public ReservationTime createTime(TimeCreateRequest dto) {
+    public TimeResponse createTime(TimeCreateRequest dto) {
         if (timeDao.isExistTimeByStartAt(dto.startAt())) {
             throw new IllegalArgumentException("해당 시간은 이미 존재합니다.");
         }
-        return timeDao.createTime(dto.createReservationTime());
+        ReservationTime createdTime = timeDao.createTime(dto.createReservationTime());
+        return TimeResponse.from(createdTime);
     }
 
     public void deleteTime(Long id) {

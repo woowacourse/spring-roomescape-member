@@ -5,6 +5,7 @@ import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeCreateRequest;
+import roomescape.dto.ThemeResponse;
 
 import java.util.List;
 
@@ -19,15 +20,18 @@ public class ThemeService {
         this.reservationDao = reservationDao;
     }
 
-    public List<Theme> readThemes() {
-        return themeDao.readThemes();
+    public List<ThemeResponse> readThemes() {
+        return themeDao.readThemes().stream()
+                .map(ThemeResponse::from)
+                .toList();
     }
 
-    public Theme createTheme(ThemeCreateRequest dto) {
+    public ThemeResponse createTheme(ThemeCreateRequest dto) {
         if (themeDao.isExistThemeByName(dto.name())) {
             throw new IllegalArgumentException("해당 테마 이름은 이미 존재합니다.");
         }
-        return themeDao.createTheme(dto.createTheme());
+        Theme createdTheme = themeDao.createTheme(dto.createTheme());
+        return ThemeResponse.from(createdTheme);
     }
 
     public void deleteTheme(Long id) {
