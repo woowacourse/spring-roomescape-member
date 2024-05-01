@@ -59,6 +59,21 @@ public class ReservationControllerTest {
                 .statusCode(201);
     }
 
+    @DisplayName("이름이 null인 예약을 추가할 시, 400 bad request를 응답한다,")
+    @Test
+    void should_response_bad_request_when_post_request_reservations_with_null_name() {
+        ReservationAddRequest reservationAddRequest = new ReservationAddRequest(
+                LocalDate.now().plusDays(3L),
+                null,
+                1L);
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationAddRequest)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
     @DisplayName("존재하는 리소스에 대한 삭제 요청시, 204 no content를 응답한다.")
     @Test
     void should_remove_reservation_when_delete_request_reservations_id() {
