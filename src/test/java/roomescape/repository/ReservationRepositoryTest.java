@@ -49,7 +49,7 @@ class ReservationRepositoryTest extends RepositoryTest {
     }
 
     @Test
-    @DisplayName("동일시간대의 예약 목록을 조회한다.")
+    @DisplayName("동일 시간대의 예약 목록을 조회한다.")
     public void findAllByDateAndTime() {
         // given
         Long timeId = 1L;
@@ -171,4 +171,23 @@ class ReservationRepositoryTest extends RepositoryTest {
         assertThat(count).isEqualTo(0);
     }
 
+    @Test
+    @DisplayName("날짜와 themeId로 예약 목록을 조회한다.")
+    void findAllByDateAndThemeId() {
+        // given
+        Long timeId = 1L;
+        Long themeId = 1L;
+        String insertSql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?), (?, ?, ?, ?)";
+        jdbcTemplate.update(
+                insertSql,
+                USER_MIA, Date.valueOf(MIA_RESERVATION_DATE), timeId, themeId,
+                USER_TOMMY, Date.valueOf(MIA_RESERVATION_DATE), timeId, themeId
+        );
+
+        // when
+        List<Reservation> reservationsByDateAndThemeId = reservationRepository.findAllByDateAndThemeId(LocalDate.parse(MIA_RESERVATION_DATE), themeId);
+
+        // then
+        assertThat(reservationsByDateAndThemeId).hasSize(2);
+    }
 }

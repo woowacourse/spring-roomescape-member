@@ -114,6 +114,21 @@ public class ReservationDao {
         return jdbcTemplate.queryForObject(sql, Integer.class, timeId);
     }
 
+    public List<Reservation> selectAllByDateAndThemeId(LocalDate date, Long themeId) {
+        String sql = """
+                SELECT 
+                    id AS reservation_id,
+                    name,
+                    date,
+                    time_id,
+                    theme_id 
+                FROM 
+                    reservation 
+                WHERE date = ? AND theme_id = ?
+                """;
+        return jdbcTemplate.query(sql, this::lazyRowMapper, Date.valueOf(date), themeId);
+    }
+
     private Reservation rowMapper(ResultSet resultSet, int rowNumber) throws SQLException {
         ReservationTime reservationTime = new ReservationTime(
                 resultSet.getLong("time_id"),

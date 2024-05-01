@@ -5,11 +5,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.springframework.http.MediaType;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.AvailableReservationTimeResponse;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.ReservationTimeSaveRequest;
 import roomescape.exception.NotFoundException;
 
-import java.time.LocalTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -20,6 +21,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static roomescape.TestFixture.MIA_RESERVATION_DATE;
 import static roomescape.TestFixture.MIA_RESERVATION_TIME;
 
 class ReservationTimeControllerTest extends ControllerTest {
@@ -105,5 +107,25 @@ class ReservationTimeControllerTest extends ControllerTest {
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").exists());
+    }
+
+    @Test
+    @DisplayName("에약 가능 시간 목록 GET 요청 시 상태 코드를 200을 반환한다.")
+    void findAllByDateAndThemeId() throws Exception {
+        // given
+        LocalDate date = LocalDate.parse(MIA_RESERVATION_DATE);
+        Long themeId = 1L;
+        BDDMockito.given(reservationTimeService.findAvailableReservationTimes(date, themeId))
+                .willReturn(List.of(AvailableReservationTimeResponse.of(new ReservationTime(MIA_RESERVATION_TIME), true)));
+
+        // when & then
+        mockMvc.perform(get("/times/available")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("date", date.toString())
+                        .param("themeId", themeId.toString()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].startAt").value(MIA_RESERVATION_TIME))
+                .andExpect(jsonPath("$[0].isReserved").value(true));
     }
 }

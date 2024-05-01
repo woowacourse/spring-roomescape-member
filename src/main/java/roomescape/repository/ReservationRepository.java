@@ -20,4 +20,6 @@ public interface ReservationRepository {
     void deleteById(Long id);
 
     int countByTimeId(Long timeId);
+
+    List<Reservation> findAllByDateAndThemeId(LocalDate date, Long themeId);
 }

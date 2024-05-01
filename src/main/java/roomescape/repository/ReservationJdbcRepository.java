@@ -47,4 +47,9 @@ public class ReservationJdbcRepository implements ReservationRepository {
     public int countByTimeId(Long timeId) {
         return reservationDao.countByTimeId(timeId);
     }
+
+    @Override
+    public List<Reservation> findAllByDateAndThemeId(LocalDate date, Long themeId) {
+        return reservationDao.selectAllByDateAndThemeId(date, themeId);
+    }
 }

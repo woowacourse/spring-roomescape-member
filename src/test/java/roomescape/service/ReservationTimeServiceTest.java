@@ -7,11 +7,14 @@ import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.AvailableReservationTimeResponse;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,7 +22,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static roomescape.TestFixture.MIA_RESERVATION_TIME;
+import static roomescape.TestFixture.*;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationTimeServiceTest {
@@ -98,5 +101,38 @@ class ReservationTimeServiceTest {
         // when & then
         assertThatThrownBy(() -> reservationTimeService.delete(1L))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("선택한 날짜와 테마로 예약 가능한 시간 목록을 조회한다.")
+    void findAvailableReservationTimes() {
+        // given
+        LocalDate date = LocalDate.parse(MIA_RESERVATION_DATE);
+        Long themeId = 1L;
+        ReservationTime reservedTime = new ReservationTime(1L, MIA_RESERVATION_TIME);
+        Reservation reservation = new Reservation(1L, USER_MIA, MIA_RESERVATION_DATE, reservedTime, WOOTECO_THEME());
+
+        BDDMockito.given(reservationRepository.findAllByDateAndThemeId(date, themeId))
+                .willReturn(List.of(reservation));
+        BDDMockito.given(reservationTimeRepository.findAll())
+                .willReturn(List.of(reservedTime, new ReservationTime(2L, "16:00")));
+
+        // when
+        List<AvailableReservationTimeResponse> availableReservationTimes
+                = reservationTimeService.findAvailableReservationTimes(date, themeId);
+
+        // then
+        assertAll(() -> {
+            assertThat(isReserved(availableReservationTimes, MIA_RESERVATION_TIME)).isTrue();
+            assertThat(isReserved(availableReservationTimes, "16:00")).isFalse();
+        });
+    }
+
+    private boolean isReserved(List<AvailableReservationTimeResponse> availableReservationTimes, String time) {
+        return availableReservationTimes.stream()
+                .filter(response -> response.startAt().equals(time))
+                .findFirst()
+                .get()
+                .isReserved();
     }
 }
