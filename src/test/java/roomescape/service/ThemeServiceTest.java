@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.Fixtures;
 import roomescape.dto.ThemeCreateRequest;
 import roomescape.dto.ThemeResponse;
 import roomescape.exception.BadRequestException;
@@ -15,6 +16,7 @@ import roomescape.repository.ThemeRepository;
 import roomescape.repository.reservation.ReservationRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -90,17 +92,26 @@ class ThemeServiceTest {
 
     @DisplayName("테마 서비스는 최근 일주일 간의 인기 있는 테마를 조회힌다.")
     @Test
-    // TODO: 테스트 하기
     void readPopularThemes() {
         // given
-//        Mockito.when(reservationRepository.findByDateBetween(any(), any()))
-//                .thenReturn(List.of(
-//                        new Reservation(1L, '')
-//                ));
+        List<Long> expected = List.of(5L, 1L, 2L, 3L, 4L);
+        for (Long id : expected) {
+            int index = id.intValue() - 1;
+            Mockito.when(themeRepository.findById(id))
+                    .thenReturn(Optional.ofNullable(Fixtures.themeFixtures.get(index)));
+        }
+        Mockito.when(reservationRepository.findByDateBetween(any(), any()))
+                .thenReturn(Fixtures.reservationFixturesForPopularTheme);
 
         // when
+        List<ThemeResponse> popularThemes = themeService.readPopularThemes();
+        List<Long> actual = popularThemes.stream()
+                .mapToLong(ThemeResponse::id)
+                .boxed()
+                .toList();
 
         // then
+        assertThat(actual).isEqualTo(expected);
     }
 
     @DisplayName("테마 서비스는 id에 해당하는 테마를 삭제한다.")

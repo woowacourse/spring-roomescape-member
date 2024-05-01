@@ -38,7 +38,7 @@ class ReservationControllerTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(2));
+                .body("size()", is(7));
     }
 
     @DisplayName("예약 컨트롤러는 예약 생성 시 생성된 값을 반환한다.")
@@ -62,7 +62,7 @@ class ReservationControllerTest {
                 .when().get("/reservations")
                 .then()
                 .statusCode(200)
-                .body("size()", is(3));
+                .body("size()", is(8));
     }
 
     @DisplayName("예약 컨트롤러는 잘못된 형식의 날짜로 예약 생성 요청 시 400을 응답한다.")
@@ -115,6 +115,6 @@ class ReservationControllerTest {
                 .when().get("/reservations")
                 .then()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", is(6));
     }
 }
