@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.domain.Theme;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -34,4 +35,14 @@ class ThemeDaoImplTest {
     void should_find_all() {
         assertThat(themeDao.findAll()).hasSize(1);
     }
+
+    @DisplayName("테마를 추가할 수 있습니다")
+    @Test
+    void should_insert_theme() {
+        Theme theme = new Theme(null, "리비", "멋짐", "url");
+        Theme inserted = themeDao.insert(theme);
+
+        assertThat(inserted.getId()).isNotNull();
+    }
+
 }
