@@ -1,4 +1,18 @@
 # 기능 구현 목록
+## STEP3
+### 사용자 예약
+- reservation 요청 응답페이지(templates/reservation.html)
+- (조회) 사용자는 날짜와 테마를 선택하면 예약 가능한 시간을 확인할 수 있습니다.
+- (추가) 사용자는 예약 가능한 시간을 확인하고, 원하는 시간에 예약을 할 수 있습니다.
+  - 사용자의 이름으로 구분
+
+### 인기테마
+- home 화면 - templates/index.html
+- select 테마
+- where 최근 일주일
+- order 예약 수 desc
+- limit 10
+
 ## STEP2
 ### 테마
 - 추가
