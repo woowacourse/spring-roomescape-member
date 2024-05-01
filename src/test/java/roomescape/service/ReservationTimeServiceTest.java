@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.service.dto.ReservationTimeRequestDto;
@@ -21,6 +22,9 @@ class ReservationTimeServiceTest {
 
     @Mock
     private ReservationTimeRepository reservationTimeRepository;
+
+    @Mock
+    private ReservationRepository reservationRepository;
 
     @InjectMocks
     private ReservationTimeService reservationTimeService;
@@ -58,5 +62,26 @@ class ReservationTimeServiceTest {
         assertThatThrownBy(() -> reservationTimeService.createReservationTime(requestDto))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("중복된 시간을 입력할 수 없습니다.");
+    }
+
+    @DisplayName("예약이 존재하는 시간을 삭제하려고 하면 예외가 발생한다.")
+    @Test
+    void throw_exception_when_exist_reservation_delete() {
+        long timeId = 1L;
+        given(reservationRepository.hasReservationOf(timeId)).willReturn(true);
+
+        assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(timeId))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("해당 시간에 예약이 있어 삭제할 수 없습니다.");
+    }
+
+    @DisplayName("예약이 존재하지 않는 시간을 삭제할 수 있다.")
+    @Test
+    void delete_reservation_time() {
+        long timeId = 1L;
+        given(reservationRepository.hasReservationOf(timeId)).willReturn(false);
+
+        reservationTimeService.deleteReservationTime(timeId);
+        verify(reservationTimeRepository, times(1)).deleteReservationTimeById(timeId);
     }
 }
