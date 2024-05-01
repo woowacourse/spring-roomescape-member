@@ -37,7 +37,7 @@ public class ReservationService {
         ReservationTime reservationTime = reservationTimeDao.readById(request.getTimeId());
         Theme theme = themeDao.readById(request.getThemeId());
         Reservation reservation = request.toDomain(reservationTime, theme);
-        validateDuplicateDateAndTime(reservation.getDate(), reservation.getReservationTime());
+        validateDuplicateDateAndTime(reservation.getDate(), reservation.getReservationTime(), reservation.getTheme());
         Reservation result = reservationDao.create(reservation);
         validatePastTimeWhenToday(reservation, reservationTime);
         return ReservationResponse.from(result);
@@ -49,8 +49,8 @@ public class ReservationService {
         reservationDao.delete(id);
     }
 
-    private void validateDuplicateDateAndTime(ReservationDate reservationDate, ReservationTime reservationTime) {
-        if (reservationDao.exist(reservationDate, reservationTime)) {
+    private void validateDuplicateDateAndTime(ReservationDate reservationDate, ReservationTime reservationTime, Theme theme) {
+        if (reservationDao.exist(reservationDate, reservationTime, theme)) {
             throw new IllegalArgumentException("중복된 예약을 생성할 수 없습니다.");
         }
     }

@@ -93,11 +93,11 @@ public class  WebReservationDao implements ReservationDao {
     }
 
     @Override
-    public Boolean exist(ReservationDate reservationDate, ReservationTime reservationTime) {
+    public Boolean exist(ReservationDate reservationDate, ReservationTime reservationTime, Theme theme) {
         String sql = """
                 SELECT
                 CASE
-                    WHEN EXISTS (SELECT 1 FROM reservation WHERE date = ? AND time_id = ?)
+                    WHEN EXISTS (SELECT 1 FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?)
                     THEN TRUE
                     ELSE FALSE
                 END
@@ -106,7 +106,8 @@ public class  WebReservationDao implements ReservationDao {
                 sql,
                 Boolean.class,
                 reservationDate.toStringDate(),
-                reservationTime.getId()
+                reservationTime.getId(),
+                theme.getId()
         );
     }
 

@@ -204,7 +204,7 @@ class ReservationServiceTest {
         }
 
         @Test
-        @DisplayName("동일한 날짜와 시간에 대한 예약을 추가하면 예외가 발생한다.")
+        @DisplayName("동일한 테마, 날짜, 시간에 대한 예약을 추가하면 예외가 발생한다.")
         void createReservationByDuplicated() {
             //given
             ReservationCreateRequest request = ReservationCreateRequest.of("다온", tomorrow, 1L, 1L);

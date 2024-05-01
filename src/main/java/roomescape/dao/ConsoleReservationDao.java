@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.reservationtime.ReservationTime;
+import roomescape.domain.theme.Theme;
 
 public class ConsoleReservationDao implements ReservationDao {
 
@@ -40,10 +41,11 @@ public class ConsoleReservationDao implements ReservationDao {
     }
 
     @Override
-    public Boolean exist(ReservationDate reservationDate, ReservationTime reservationTime) {
+    public Boolean exist(ReservationDate reservationDate, ReservationTime reservationTime, Theme theme) {
         return store.values().stream()
                 .anyMatch(value -> value.getDate() == reservationDate
-                        && value.getReservationTime() == reservationTime);
+                        && value.getReservationTime() == reservationTime
+                        && value.getTheme() == theme);
     }
 
     @Override
