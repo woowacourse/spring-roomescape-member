@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
+import roomescape.domain.ReservationTimeRepository;
 import roomescape.service.dto.ReservationRequestDto;
 import roomescape.service.dto.ReservationResponseDto;
 
@@ -11,9 +12,12 @@ import roomescape.service.dto.ReservationResponseDto;
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
+    private final ReservationTimeRepository reservationTimeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository) {
+    public ReservationService(ReservationRepository reservationRepository,
+                              ReservationTimeRepository reservationTimeRepository) {
         this.reservationRepository = reservationRepository;
+        this.reservationTimeRepository = reservationTimeRepository;
     }
 
     public List<ReservationResponseDto> findAllReservations() {
@@ -25,6 +29,9 @@ public class ReservationService {
 
     public ReservationResponseDto createReservation(ReservationRequestDto requestDto) {
         Reservation reservation = requestDto.toReservation();
+        if (!reservationTimeRepository.isExistTimeOf(reservation.getTimeId())) {
+            throw new IllegalArgumentException("예약 하려는 시간이 저장되어 있지 않습니다.");
+        }
         if (reservationRepository.isExistReservationAtDateTime(reservation)) {
             throw new IllegalArgumentException("같은 시간에 이미 예약이 존재합니다.");
         }
