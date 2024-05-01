@@ -10,8 +10,9 @@ public class ReservationRequest {
     private LocalDate date;
     private String name;
     private long timeId;
+    private long themeId;
 
-    public ReservationRequest(String date, String name, long timeId) {
+    public ReservationRequest(String date, String name, long timeId, long themeId) {
         validateName(name);
         validateDate(date);
         try {
@@ -21,6 +22,7 @@ public class ReservationRequest {
         }
         this.name = name;
         this.timeId = timeId;
+        this.themeId = themeId;
     }
 
     private ReservationRequest() {
@@ -48,5 +50,9 @@ public class ReservationRequest {
 
     public long getTimeId() {
         return timeId;
+    }
+
+    public long getThemeId() {
+        return themeId;
     }
 }

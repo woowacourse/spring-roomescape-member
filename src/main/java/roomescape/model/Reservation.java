@@ -13,17 +13,19 @@ public class Reservation {
     private Reservation() {
     }
 
-    public Reservation(long id, String name, LocalDate date, ReservationTime time) {
+    public Reservation(long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
+        this.theme = theme;
     }
 
-    public Reservation(String name, LocalDate date, ReservationTime time) {
+    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
         this.name = name;
         this.date = date;
         this.time = time;
+        this.theme = theme;
     }
 
     public long getId() {

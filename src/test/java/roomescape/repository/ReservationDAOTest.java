@@ -18,6 +18,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
+import roomescape.model.Theme;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -36,6 +37,8 @@ class ReservationDAOTest {
 
     SimpleJdbcInsert reservationInsertActor;
 
+    SimpleJdbcInsert themeInsertActor;
+
     @BeforeEach
     void setUp() {
         jdbcTemplate.execute("TRUNCATE TABLE reservation RESTART IDENTITY");
@@ -49,12 +52,18 @@ class ReservationDAOTest {
         reservationInsertActor = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
+        themeInsertActor = new SimpleJdbcInsert(dataSource)
+                .withTableName("theme")
+                .usingGeneratedKeyColumns("id");
 
         insertReservationTime("10:00");
         insertReservationTime("11:00");
 
-        insertToReservation("브라운", "2023-08-05", "1");
-        insertToReservation("리사", "2023-08-01", "2");
+        insertTheme("에버", "공포", "공포.jpg");
+        insertTheme("배키", "스릴러", "스릴러.jpg");
+
+        insertReservation("브라운", "2023-08-05", "1", "1");
+        insertReservation("리사", "2023-08-01", "2", "2");
     }
 
     private void insertReservationTime(String startAt) {
@@ -63,12 +72,21 @@ class ReservationDAOTest {
         reservationTimeInsertActor.execute(parameters);
     }
 
-    private void insertToReservation(String name, String date, String timeId) {
+    private void insertReservation(String name, String date, String timeId, String themeId) {
         Map<String, Object> parameters = new HashMap<>(3);
         parameters.put("name", name);
         parameters.put("date", date);
         parameters.put("time_id", timeId);
+        parameters.put("theme_id", themeId);
         reservationInsertActor.execute(parameters);
+    }
+
+    private void insertTheme(String name, String description, String thumbnail) {
+        Map<String, Object> parameters = new HashMap<>(3);
+        parameters.put("name", name);
+        parameters.put("description", description);
+        parameters.put("thumbnail", thumbnail);
+        themeInsertActor.execute(parameters);
     }
 
     @DisplayName("모든 예약을 조회한다")
@@ -89,8 +107,11 @@ class ReservationDAOTest {
     @Test
     void should_add_reservation() {
         ReservationTime reservationTime = new ReservationTime(1, LocalTime.of(10, 0));
-        reservationRepository.addReservation(
-                new Reservation("네오", LocalDate.of(2024, 9, 1), reservationTime));
+        Theme theme = new Theme(1, "에버", "공포", "공포.jpg");
+        Reservation reservation = new Reservation("네오", LocalDate.of(2024, 9, 1), reservationTime, theme);
+
+        reservationRepository.addReservation(reservation);
+
         Integer count = jdbcTemplate.queryForObject("select count(1) from reservation", Integer.class);
         assertThat(count).isEqualTo(3);
     }

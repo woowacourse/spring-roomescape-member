@@ -9,19 +9,24 @@ import roomescape.exception.DuplicatedException;
 import roomescape.exception.NotFoundException;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
+import roomescape.model.Theme;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 
 @Service
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
-    private final ReservationTimeRepository reservationTimeDAO;
+    private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository) {
+                              ReservationTimeRepository reservationTimeRepository,
+                              ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
-        this.reservationTimeDAO = reservationTimeRepository;
+        this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
     }
 
     public List<Reservation> findAllReservations() {
@@ -29,7 +34,9 @@ public class ReservationService {
     }
 
     public Reservation addReservation(ReservationRequest request) {
-        ReservationTime reservationTime = reservationTimeDAO.findReservationById(request.getTimeId());
+        ReservationTime reservationTime = reservationTimeRepository.findReservationById(request.getTimeId());
+        Theme theme = themeRepository.findThemeById(request.getThemeId());
+
         LocalDateTime reservationDateTime = LocalDateTime.of(request.getDate(), reservationTime.getStartAt());
         if (reservationDateTime.isBefore(LocalDateTime.now())) {
             throw new BadRequestException("[ERROR] 현재 이전 예약은 할 수 없습니다.");
@@ -38,7 +45,8 @@ public class ReservationService {
         if (countReservation == null || countReservation > 0) {
             throw new DuplicatedException("[ERROR] 중복되는 예약은 추가할 수 없습니다.");
         }
-        return reservationRepository.addReservation(new Reservation(request.getName(), request.getDate(), reservationTime));
+        Reservation reservation = new Reservation(request.getName(), request.getDate(), reservationTime, theme);
+        return reservationRepository.addReservation(reservation);
     }
 
     public void deleteReservation(long id) {
