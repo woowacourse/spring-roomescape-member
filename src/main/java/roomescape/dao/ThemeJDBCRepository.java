@@ -2,11 +2,14 @@ package roomescape.dao;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
+import roomescape.exception.InvalidReservationException;
 
 @Repository
 public class ThemeJDBCRepository implements ThemeRepository {
@@ -58,5 +61,15 @@ public class ThemeJDBCRepository implements ThemeRepository {
     public boolean existsByName(String name) {
         String sql = "SELECT COUNT(*) FROM theme WHERE name = ?";
         return jdbcTemplate.queryForObject(sql, Integer.class, name) > 0;
+    }
+
+    @Override
+    public Optional<Theme> findById(long id) {
+        String sql = "SELECT * FROM theme WHERE id = ?";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
+        } catch (DataAccessException e) {
+            return Optional.empty();
+        }
     }
 }
