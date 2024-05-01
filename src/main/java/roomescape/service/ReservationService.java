@@ -24,8 +24,12 @@ public class ReservationService {
     }
 
     public ReservationResponseDto createReservation(ReservationRequestDto requestDto) {
-        Reservation reservation = reservationRepository.insertReservation(requestDto.toReservation());
-        return new ReservationResponseDto(reservation);
+        Reservation reservation = requestDto.toReservation();
+        if (reservationRepository.isExistReservationAtDateTime(reservation)) {
+            throw new IllegalArgumentException("같은 시간에 이미 예약이 존재합니다.");
+        }
+        Reservation savedReservation = reservationRepository.insertReservation(reservation);
+        return new ReservationResponseDto(savedReservation);
     }
 
     public void deleteReservation(long id) {

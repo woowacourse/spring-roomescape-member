@@ -48,6 +48,17 @@ class ReservationServiceTest {
         verify(reservationRepository, times(1)).insertReservation(requestDto.toReservation());
     }
 
+    @DisplayName("이미 예약된 날짜와 시간에 예약을 생성하려고 하면 예외가 발생한다.")
+    @Test
+    void throw_exception_when_duplicate_datetime_create() {
+        ReservationRequestDto requestDto = new ReservationRequestDto("재즈", "2024-04-21", 1L);
+        given(reservationRepository.isExistReservationAtDateTime(requestDto.toReservation())).willReturn(true);
+
+        assertThatThrownBy(() -> reservationService.createReservation(requestDto))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("같은 시간에 이미 예약이 존재합니다.");
+    }
+
     @DisplayName("존재하지 않는 아이디를 삭제하려고 하면 예외가 발생한다.")
     @Test
     void throw_exception_when_not_exist_id_delete() {
