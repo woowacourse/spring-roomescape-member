@@ -9,6 +9,7 @@ import roomescape.dto.ReservationCreateRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.service.ReservationService;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -32,9 +33,10 @@ public class ReservationController {
     public ResponseEntity<ReservationResponse> createReservation(@RequestBody ReservationCreateRequest dto) {
         Reservation reservation = service.createReservation(dto);
         ReservationResponse response = ReservationResponse.from(reservation);
+
+        URI location = URI.create("/reservations/" + response.id());
         return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .header("Location", "/reservations/" + reservation.getId())
+                .created(location)
                 .body(response);
     }
 

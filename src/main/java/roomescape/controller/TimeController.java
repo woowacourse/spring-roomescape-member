@@ -9,6 +9,7 @@ import roomescape.dto.TimeCreateRequest;
 import roomescape.dto.TimeResponse;
 import roomescape.service.TimeService;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -32,7 +33,10 @@ public class TimeController {
     public ResponseEntity<TimeResponse> createTime(@RequestBody TimeCreateRequest dto) {
         ReservationTime time = service.createTime(dto);
         TimeResponse response = TimeResponse.from(time);
-        return ResponseEntity.status(HttpStatus.CREATED)
+
+        URI location = URI.create("/times/" + response.id());
+        return ResponseEntity
+                .created(location)
                 .body(response);
     }
 
