@@ -14,7 +14,7 @@ public class LoadController {
 
     @GetMapping("/reservation")
     public String loadReservationPage() {
-        return "/admin/reservation";
+        return "/admin/reservation-new";
     }
 
     @GetMapping("/time")
