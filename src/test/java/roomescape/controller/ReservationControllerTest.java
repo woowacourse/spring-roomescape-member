@@ -5,8 +5,6 @@ import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,14 +28,13 @@ public class ReservationControllerTest {
     void init() {
         RestAssured.port = port;
 
-        date = LocalDate.now().plusDays(1).toString();
-        String startAt = LocalTime.now().toString();
-        timeId = RestAssured.given()
+        date = "2222-05-01";
+        String startAt = "17:46";
+        timeId = (int) RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body(new ReservationTimeRequest(startAt))
                 .when().post("/times")
-                .then().extract().jsonPath().getLong("id");
-
+                .then().extract().response().jsonPath().get("id");
         ThemeRequest themeRequest = new ThemeRequest("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         themeId = (int) RestAssured.given().contentType(ContentType.JSON).body(themeRequest)
