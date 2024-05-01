@@ -2,7 +2,7 @@ package roomescape.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -13,7 +13,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(exception.getMessage(), exception.getStatus());
     }
 
-    @ExceptionHandler(value = HttpMessageNotReadableException.class)
+    @ExceptionHandler(value = HttpMessageConversionException.class)
     public ResponseEntity<String> handleJsonParsingException() {
         return new ResponseEntity<>("유효하지 않은 필드가 존재합니다.", HttpStatus.BAD_REQUEST);
     }
