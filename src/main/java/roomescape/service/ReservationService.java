@@ -5,8 +5,10 @@ import roomescape.controller.request.ReservationRequest;
 import roomescape.controller.response.ReservationResponse;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,13 +17,16 @@ import java.util.List;
 public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
 
     public ReservationService(
             ReservationRepository reservationRepository,
-            ReservationTimeRepository reservationTimeRepository
+            ReservationTimeRepository reservationTimeRepository,
+            ThemeRepository themeRepository
     ) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
     }
 
     public List<ReservationResponse> findAll() {
@@ -35,7 +40,10 @@ public class ReservationService {
     public ReservationResponse save(ReservationRequest reservationRequest) {
         ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("예약할 수 없는 시간입니다. timeId: " + reservationRequest.timeId()));
-        Reservation reservation = reservationRequest.toEntity(reservationTime);
+        Theme theme = themeRepository.findById(reservationRequest.themeId())
+                .orElseThrow(() -> new IllegalArgumentException("예약할 수 없는 테마입니다. themeId: " + reservationRequest.themeId()));
+
+        Reservation reservation = reservationRequest.toEntity(reservationTime, theme);
 
         rejectPastTimeReservation(reservation);
         rejectDuplicateDateTime(reservation);

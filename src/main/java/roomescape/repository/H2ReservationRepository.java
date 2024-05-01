@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -31,10 +32,16 @@ public class H2ReservationRepository implements ReservationRepository {
                         r.name as reservation_name,
                         r.date as reservation_date,
                         t.id as time_id,
-                        t.start_at as time_value
+                        t.start_at as time_value,
+                        tm.id as theme_id,
+                        tm.name as theme_name,
+                        tm.description as theme_description,
+                        tm.thumbnail as theme_thumbnail
                     from reservation as r
                     inner join reservation_time as t
                     on r.time_id = t.id
+                    inner join theme as tm
+                    on r.theme_id = tm.id
                 """;
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> new Reservation(
@@ -43,7 +50,13 @@ public class H2ReservationRepository implements ReservationRepository {
                 rs.getDate("date").toLocalDate(),
                 new ReservationTime(
                         rs.getLong("time_id"),
-                        rs.getTime("time_value").toLocalTime())));
+                        rs.getTime("time_value").toLocalTime()),
+                new Theme(
+                        rs.getLong("theme_id"),
+                        rs.getString("theme_name"),
+                        rs.getString("theme_description"),
+                        rs.getString("theme_thumbnail")
+                )));
     }
 
     @Override
@@ -51,14 +64,16 @@ public class H2ReservationRepository implements ReservationRepository {
         long reservationId = jdbcInsert.executeAndReturnKey(Map.of(
                         "name", reservation.getName().value(),
                         "date", reservation.getDate(),
-                        "time_id", reservation.getTime().getId()))
+                        "time_id", reservation.getTime().getId(),
+                        "theme_id", reservation.getTheme().getId()))
                 .longValue();
 
         return new Reservation(
                 reservationId,
                 reservation.getName(),
                 reservation.getDate(),
-                reservation.getTime());
+                reservation.getTime(),
+                reservation.getTheme());
     }
 
     @Override

@@ -8,6 +8,7 @@ import roomescape.domain.Theme;
 import javax.sql.DataSource;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class ThemeRepository {
@@ -28,6 +29,17 @@ public class ThemeRepository {
                 rs.getString("description"),
                 rs.getString("thumbnail")
         ));
+    }
+
+    public Optional<Theme> findById(long id) {
+        String sql = "select * from theme where id = ?";
+
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new Theme(
+                rs.getLong("id"),
+                rs.getString("name"),
+                rs.getString("description"),
+                rs.getString("thumbnail")
+        ), id));
     }
 
     public Theme save(Theme theme) {
