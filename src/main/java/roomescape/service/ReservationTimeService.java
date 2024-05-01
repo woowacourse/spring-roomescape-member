@@ -2,6 +2,7 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
@@ -48,6 +49,10 @@ public class ReservationTimeService {
 
     @Transactional
     public void deleteReservationTimeById(Long id) {
+        if (!reservationTimeRepository.existsById(id)) {
+            throw new NoSuchElementException("해당 ID의 시간이 존재하지 않습니다.");
+        }
+
         if (reservationRepository.existsByTimeId(id)) {
             throw new IllegalArgumentException("해당 시간을 사용하는 예약이 존재합니다.");
         }

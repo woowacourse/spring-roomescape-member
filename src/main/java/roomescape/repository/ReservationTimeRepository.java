@@ -21,5 +21,7 @@ public interface ReservationTimeRepository {
 
     void deleteById(Long id);
 
+    boolean existsById(Long id);
+
     boolean existsByStartAt(LocalTime startAt);
 }

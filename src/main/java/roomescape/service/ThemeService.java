@@ -3,6 +3,7 @@ package roomescape.service;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Theme;
@@ -49,6 +50,10 @@ public class ThemeService {
 
     @Transactional
     public void deleteThemeById(Long id) {
+        if (!themeRepository.existsById(id)) {
+            throw new NoSuchElementException("해당 ID의 테마가 존재하지 않습니다.");
+        }
+
         if (reservationRepository.existsByThemeId(id)) {
             throw new IllegalArgumentException("해당 테마를 사용하는 예약이 존재합니다.");
         }

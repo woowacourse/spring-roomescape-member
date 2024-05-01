@@ -77,8 +77,9 @@ public class ReservationService {
 
     @Transactional
     public void deleteReservationById(Long id) {
-        reservationRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("해당 id의 예약이 존재하지 않습니다."));
+        if (!reservationRepository.existsById(id)) {
+            throw new NoSuchElementException("해당 예약이 존재하지 않습니다.");
+        }
 
         reservationRepository.deleteById(id);
     }

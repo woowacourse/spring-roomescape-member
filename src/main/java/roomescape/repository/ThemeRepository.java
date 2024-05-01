@@ -21,6 +21,8 @@ public interface ThemeRepository {
 
     void deleteById(Long id);
 
+    boolean existsById(Long id);
+
     boolean existsByName(String name);
 
     List<Theme> findTop10ThemesLastWeek(LocalDateTime now);
