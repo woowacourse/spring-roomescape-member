@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import io.restassured.RestAssured;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -13,19 +12,17 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@SpringBootTest(webEnvironment = WebEnvironment.NONE)
+@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 class ReservationRepositoryTest {
-
-    @LocalServerPort
-    int port;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -35,7 +32,6 @@ class ReservationRepositoryTest {
 
     @BeforeEach
     void init() {
-        RestAssured.port = port;
         jdbcTemplate.update("INSERT INTO reservation_times (start_at) VALUES (?), (?)", "08:00", "07:00");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", " 이름", "설명", "썸네일");
         jdbcTemplate.update("INSERT INTO reservations (name, date, time_id, theme_id) VALUES (?, ?, ?, ?), (?, ?, ?, ?)",

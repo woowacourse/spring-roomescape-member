@@ -61,7 +61,7 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
     @Override
     public boolean existByStartAt(final LocalTime startAt) {
         String sql = """
-                SELECT 
+                SELECT
                 CASE WHEN EXISTS (
                         SELECT 1
                         FROM reservation_times

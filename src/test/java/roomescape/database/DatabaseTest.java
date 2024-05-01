@@ -1,33 +1,22 @@
 package roomescape.database;
 
-import io.restassured.RestAssured;
-import org.junit.jupiter.api.BeforeEach;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
-
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class DatabaseTest {
-
-    @LocalServerPort
-    int port;
+@SpringBootTest(webEnvironment = WebEnvironment.NONE)
+class DatabaseTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-
-    @BeforeEach
-    void initPort() {
-        RestAssured.port = port;
-    }
 
     @DisplayName("reservations 테이블 생성")
     @Test
