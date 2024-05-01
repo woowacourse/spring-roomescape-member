@@ -4,8 +4,7 @@ public class BookingTimeResponseDto {
     private Long id;
     private String startAt;
     private boolean alreadyBooked;
-
-
+    
     public BookingTimeResponseDto() {
     }
 
