@@ -82,7 +82,7 @@ class ReservationControllerTest {
                 "name", "브라운",
                 "date", "2025-08-05",
                 "timeId", 1L,
-                "id", 1L);
+                "themeId", 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
