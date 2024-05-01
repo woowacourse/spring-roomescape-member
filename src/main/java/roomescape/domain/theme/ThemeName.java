@@ -11,7 +11,14 @@ public class ThemeName {
     }
 
     public static ThemeName from(String value) {
+        validateNull(value);
         return new ThemeName(value);
+    }
+
+    private static void validateNull(String value) {
+        if (value == null || value.isBlank()) {
+            throw new IllegalArgumentException("테마명은 공백일 수 없습니다.");
+        }
     }
 
     public String getValue() {

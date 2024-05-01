@@ -11,7 +11,14 @@ public class ThemeDescription {
     }
 
     public static ThemeDescription from(String value) {
+        validateNull(value);
         return new ThemeDescription(value);
+    }
+
+    private static void validateNull(String value) {
+        if (value == null || value.isBlank()) {
+            throw new IllegalArgumentException("테마 설명은 공백일 수 없습니다.");
+        }
     }
 
     public String getValue() {
