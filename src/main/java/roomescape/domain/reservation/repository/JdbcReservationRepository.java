@@ -27,7 +27,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             rs.getString("name"),
             rs.getDate("reservation_date").toLocalDate(),
             new ReservationTime(rs.getLong("time_id"), rs.getTime("start_at").toLocalTime()),
-            new Theme(rs.getLong("theme_id"), rs.getString("theme_name"), rs.getString("description"),
+            new Theme(rs.getLong("theme_id"), rs.getString("theme.name"), rs.getString("description"),
                     rs.getString("thumbnail"))
     );
 

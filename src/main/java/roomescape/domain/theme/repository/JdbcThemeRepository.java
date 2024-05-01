@@ -18,7 +18,7 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     private static final RowMapper<Theme> ROW_MAPPER = (rs, rowNum) -> new Theme(
             rs.getLong("id"),
-            rs.getString("theme_name"),
+            rs.getString("name"),
             rs.getString("description"),
             rs.getString("thumbnail")
     );
@@ -45,7 +45,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public Theme save(Theme theme) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("theme_name", theme.getName())
+                .addValue("name", theme.getName())
                 .addValue("description", theme.getDescription())
                 .addValue("thumbnail", theme.getThumbnail());
         long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
@@ -61,7 +61,7 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public boolean existsByName(String name) {
-        String query = "SELECT id FROM theme WHERE EXISTS (SELECT 1 FROM theme WHERE theme_name = ?)";
+        String query = "SELECT id FROM theme WHERE EXISTS (SELECT 1 FROM theme WHERE name = ?)";
 
         try {
             jdbcTemplate.queryForObject(query, Long.class, name);
