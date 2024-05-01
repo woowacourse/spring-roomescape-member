@@ -1,5 +1,9 @@
 package roomescape.service;
 
+import java.time.Clock;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
@@ -17,11 +21,14 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
+    private final Clock clock;
 
     public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository) {
+                              ReservationTimeRepository reservationTimeRepository,
+                              Clock clock) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
+        this.clock = clock;
     }
 
     public List<ReservationResponse> getAllReservations() {
@@ -37,13 +44,27 @@ public class ReservationService {
         ReservationTime reservationTime = reservationTimeRepository.getById(reservationRequest.timeId());
         Reservation reservation = reservationRequest.toReservation(reservationTime);
 
-        if(reservationRepository.existsByDateAndTimeId(reservation.getDate(), reservation.getTimeId())) {
-            throw new IllegalArgumentException("해당 날짜/시간에 이미 예약이 존재합니다.");
-        }
+        validateDateTimeNotPassed(reservation.getDate(), reservationTime.getStartAt());
+        validateDuplicatedReservation(reservation);
 
         Reservation savedReservation = reservationRepository.save(reservation);
 
         return ReservationResponse.from(savedReservation);
+    }
+
+    private void validateDateTimeNotPassed(LocalDate date, LocalTime startAt) {
+        LocalDateTime now = LocalDateTime.now(clock);
+        LocalDateTime reservationDateTime = LocalDateTime.of(date, startAt);
+
+        if (reservationDateTime.isBefore(now)) {
+            throw new IllegalArgumentException("현재 시간 이후의 시간만 예약 가능합니다.");
+        }
+    }
+
+    private void validateDuplicatedReservation(Reservation reservation) {
+        if (reservationRepository.existsByDateAndTimeId(reservation.getDate(), reservation.getTimeId())) {
+            throw new IllegalArgumentException("해당 날짜/시간에 이미 예약이 존재합니다.");
+        }
     }
 
     @Transactional
