@@ -8,6 +8,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -26,15 +27,23 @@ public class ReservationDao {
                 resultSet.getString("date"),
                 new ReservationTime(
                         resultSet.getLong("time_id"),
-                        resultSet.getString("start_at"))
+                        resultSet.getString("start_at")),
+                new Theme(
+                        resultSet.getLong("theme_id"),
+                        resultSet.getString("theme_name"),
+                        resultSet.getString("description"),
+                        resultSet.getString("thumbnail"))
         );
     }
 
     public List<Reservation> readReservations() {
         String sql = """
-                SELECT reservation.id, reservation.name, reservation.date, reservation.time_id, reservation_time.start_at
+                SELECT reservation.id, reservation.name, reservation.date, reservation.time_id, reservation.theme_id,
+                        reservation_time.start_at,
+                        theme.name AS theme_name, theme.description, theme.thumbnail
                 FROM reservation
-                JOIN reservation_time ON reservation.time_id = reservation_time.id;
+                JOIN reservation_time ON reservation.time_id = reservation_time.id
+                JOIN theme ON reservation.theme_id = theme.id;
                 """;
         return jdbcTemplate.query(sql, rowMapper);
     }
@@ -74,9 +83,12 @@ public class ReservationDao {
 
     private Optional<Reservation> readReservationById(Long id) {
         String sql = """
-                SELECT reservation.id, reservation.name, reservation.date, reservation.time_id, reservation_time.start_at
+                SELECT reservation.id, reservation.name, reservation.date, reservation.time_id, reservation.theme_id,
+                        reservation_time.start_at,
+                        theme.name AS theme_name, theme.description, theme.thumbnail
                 FROM reservation
                 JOIN reservation_time ON reservation.time_id = reservation_time.id
+                JOIN theme ON reservation.theme_id = theme.id
                 WHERE reservation.id = ?
                 """;
         try {
@@ -88,13 +100,14 @@ public class ReservationDao {
 
     public Reservation createReservation(Reservation reservation) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        String sql = "INSERT INTO reservation (name, date, time_id) values (?, ?, ?)";
+        String sql = "INSERT INTO reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)";
 
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
             preparedStatement.setString(1, reservation.getName());
             preparedStatement.setString(2, reservation.getDate());
             preparedStatement.setLong(3, reservation.getTime().getId());
+            preparedStatement.setLong(4, reservation.getTheme().getId());
             return preparedStatement;
         }, keyHolder);
 

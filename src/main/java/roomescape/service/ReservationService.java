@@ -2,9 +2,11 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
+import roomescape.dao.ThemeDao;
 import roomescape.dao.TimeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.dto.ReservationCreateRequest;
 
 import java.time.LocalDateTime;
@@ -14,10 +16,12 @@ import java.util.List;
 public class ReservationService {
     private final ReservationDao reservationDao;
     private final TimeDao timeDao;
+    private final ThemeDao themeDao;
 
-    public ReservationService(ReservationDao reservationDao, TimeDao timeDao) {
+    public ReservationService(ReservationDao reservationDao, TimeDao timeDao, ThemeDao themeDao) {
         this.reservationDao = reservationDao;
         this.timeDao = timeDao;
+        this.themeDao = themeDao;
     }
 
     public List<Reservation> readReservations() {
@@ -27,7 +31,9 @@ public class ReservationService {
     public Reservation createReservation(ReservationCreateRequest dto) {
         ReservationTime time = timeDao.readTimeById(dto.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 예약 시간이 존재하지 않습니다."));
-        Reservation reservation = dto.createReservation(time);
+        Theme theme = themeDao.readThemeById(dto.themeId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 테마가 존재하지 않습니다."));
+        Reservation reservation = dto.createReservation(time, theme);
 
         validate(reservation);
         return reservationDao.createReservation(reservation);

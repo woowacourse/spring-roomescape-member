@@ -26,8 +26,10 @@ class ReservationControllerTest {
     @Test
     void readReservations() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)"
-                , "브라운", "2023-08-05", "1");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
+                "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg");
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)"
+                , "브라운", "2023-08-05", 1, 1);
 
         int size = RestAssured.given().log().all()
                 .port(port)
@@ -45,8 +47,10 @@ class ReservationControllerTest {
     @Test
     void createReservation() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
+                "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg");
         ReservationCreateRequest params = new ReservationCreateRequest
-                ("브라운", "2040-08-05", 1L);
+                ("브라운", "2040-08-05", 1L, 1L);
 
         RestAssured.given().log().all()
                 .port(port)
@@ -65,8 +69,10 @@ class ReservationControllerTest {
     @Test
     void createReservation_whenNameIsNull() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
+                "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg");
         ReservationCreateRequest params = new ReservationCreateRequest
-                (null, "2040-08-05", 1L);
+                (null, "2040-08-05", 1L, 1L);
 
         RestAssured.given().log().all()
                 .port(port)
@@ -82,8 +88,10 @@ class ReservationControllerTest {
     @Test
     void deleteReservation() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)"
-                , "브라운", "2040-08-05", "1");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
+                "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg");
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)"
+                , "브라운", "2040-08-05", 1, 1);
 
         RestAssured.given().log().all()
                 .port(port)
