@@ -8,14 +8,19 @@
 | GET    | `/admin/reservation` | 예약 관리 페이지 요청    | `templates/admin/reservation-new.html` | `@Controller`     |
 | GET    | `/admin/time`        | 예약 시간 관리 페이지 요청 | `templates/admin/time.html`            | `@Controller`     |
 | GET    | `/admin/theme`       | 테마 관리 페이지 요청    | `templates/admin/theme.html`           | `@Controller`     |
-| GET    | `/reservations`      | 예약 정보           |                                        | `@RestController` |
+| GET    | `/reservations`      | 예약 정보 조회        |                                        | `@RestController` |
 | POST   | `/reservations`      | 예약 추가           |                                        | `@RestController` |
 | DELETE | `/reservations/{id}` | 예약 취소           |                                        | `@RestController` |
 | GET    | `/times`             | 예약 시간 조회        |                                        | `@RestController` |
-| POST   | `/times`             | 예약 시간 삭제        |                                        | `@RestController` |
 | DELETE | `/times/{id}`        | 예약 시간 추가        |                                        | `@RestController` |
+| POST   | `/times`             | 예약 시간 삭제        |                                        | `@RestController` |
+| GET    | `/themes`            | 테마 정보 조회        |                                        | `@RestController` |
+| POST   | `/themes`            | 테마 추가           |                                        | `@RestController` |
+| DELETE | `/themes/{id}`       | 테마 삭제           |                                        | `@RestController` |
 
-### 예약 목록 조회 API
+---
+
+### 예약 정보 조회 API
 
 - Request
 
@@ -41,6 +46,8 @@ Content-Type: application/json
     }
 ]
 ```
+
+---
 
 ### 예약 추가 API
 
@@ -74,6 +81,8 @@ Content-Type: application/json
 }
 ```
 
+---
+
 ### 예약 취소 API
 
 - Request
@@ -88,7 +97,9 @@ DELETE /reservations/1 HTTP/1.1
 HTTP/1.1 204
 ```
 
-### 시간 목록 조회 API
+---
+
+### 예약 시간 조회 API
 
 - Request
 
@@ -110,7 +121,9 @@ Content-Type: application/json
 ]
 ```
 
-### 시간 추가 API
+---
+
+### 예약 시간 추가 API
 
 - Request
 
@@ -135,7 +148,9 @@ Content-Type: application/json
 }
 ```
 
-### 시간 삭제 API
+---
+
+### 예약 시간 삭제 API
 
 - Request
 
@@ -144,6 +159,80 @@ DELETE /times/1 HTTP/1.1
 ```
 
 - Response
+
+```
+HTTP/1.1 204
+```
+
+---
+
+### 테마 정보 조회 API
+
+- Request
+
+```
+GET /themes HTTP/1.1
+```
+
+- response
+
+```
+HTTP/1.1 200
+Content-Type: application/json
+
+[
+    {
+        "id": 1,
+        "name": "레벨2 탈출",
+        "description": "우테코 레벨2를 탈출하는 내용입니다.",
+        "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+    }
+]
+```
+
+---
+
+### 테마 추가 API
+
+- Request
+
+```
+POST /themes HTTP/1.1
+content-type: application/json
+
+{
+    "name": "레벨2 탈출",
+    "description": "우테코 레벨2를 탈출하는 내용입니다.",
+    "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+}
+```
+
+- response
+
+```
+HTTP/1.1 201
+Location: /themes/1
+Content-Type: application/json
+
+{
+    "id": 1,
+    "name": "레벨2 탈출",
+    "description": "우테코 레벨2를 탈출하는 내용입니다.",
+    "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+}
+```
+
+---
+
+### 테마 삭제 API
+
+- Request
+
+```
+DELETE /themes/1 HTTP/1.1
+```
+
+- response
 
 ```
 HTTP/1.1 204
