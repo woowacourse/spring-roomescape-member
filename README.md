@@ -33,7 +33,7 @@
 - 사용자 - 예약 페이지
   - [ ] 사용자가 예약 가능한 시간 조회
   - [ ] 사용자가 예약 가능한 시간 추가/변경
-  - [ ] `/reservation` 요청 시 `templates/reservation.html` 반환
+  - [x] `/reservation` 요청 시 `templates/reservation.html` 반환
 - 인기 테마
   - [ ] `/` 요청 시 `templates/index.html` 반환
   - [ ] 인기 테마 조회 기능을 추가 
