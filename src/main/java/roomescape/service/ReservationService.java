@@ -33,17 +33,24 @@ public class ReservationService {
         ReservationTime reservationTime = reservationTimeDao.findById(reservationRequestDto.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("올바르지 않은 입력입니다."));
         LocalDate date = reservationRequestDto.date();
-        validateDateAndTime(date, LocalTime.parse(reservationTime.getStartAt()));
+        validatePast(date, LocalTime.parse(reservationTime.getStartAt()));
+        validateDuplicated(date, reservationRequestDto.timeId());
         Long id = reservationDao.insert(
                 reservationRequestDto.name(), reservationRequestDto.date().toString(), reservationRequestDto.timeId());
 
         return new Reservation(id, reservationRequestDto.name(), reservationRequestDto.date().toString(), reservationTime);
     }
 
-    private void validateDateAndTime(LocalDate localDate, LocalTime localTime) {
+    private void validatePast(LocalDate localDate, LocalTime localTime) {
         LocalDateTime inputDateTime = LocalDateTime.of(localDate, localTime);
         if (LocalDateTime.now().isAfter(inputDateTime)) {
             throw new IllegalArgumentException("지나간 날짜와 시간에 대한 예약 생성은 불가능합니다.");
+        }
+    }
+
+    private void validateDuplicated(LocalDate date, Long timeId) {
+        if (reservationDao.count(date.toString(), timeId) != 0) {
+            throw new IllegalArgumentException("이미 해당 시간에 예약이 존재합니다.");
         }
     }
 
