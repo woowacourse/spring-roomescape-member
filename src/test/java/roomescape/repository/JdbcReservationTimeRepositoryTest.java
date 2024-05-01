@@ -79,12 +79,16 @@ class JdbcReservationTimeRepositoryTest {
     void is_Exist_reservation_time() {
         reservationTimeRepository.insertReservationTime(time1);
 
-        boolean exist = reservationTimeRepository.isExistTimeOf(time1.getStartAt().toString());
-        boolean notExist = reservationTimeRepository.isExistTimeOf(time2.getStartAt().toString());
+        boolean existOfTime = reservationTimeRepository.isExistTimeOf(time1.getStartAt().toString());
+        boolean existOfId = reservationTimeRepository.isExistTimeOf(1L);
+        boolean notExistOfTime = reservationTimeRepository.isExistTimeOf(time2.getStartAt().toString());
+        boolean notExistOfId = reservationTimeRepository.isExistTimeOf(2L);
 
         assertAll(
-                () -> assertThat(exist).isTrue(),
-                () -> assertThat(notExist).isFalse()
+                () -> assertThat(existOfTime).isTrue(),
+                () -> assertThat(existOfId).isTrue(),
+                () -> assertThat(notExistOfTime).isFalse(),
+                () -> assertThat(notExistOfId).isFalse()
         );
     }
 }

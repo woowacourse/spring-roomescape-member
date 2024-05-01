@@ -11,4 +11,6 @@ public interface ReservationTimeRepository {
     void deleteReservationTimeById(long id);
 
     boolean isExistTimeOf(String startAt);
+
+    boolean isExistTimeOf(long timeId);
 }
