@@ -24,7 +24,7 @@ public class ReservationDao {
 
     public List<Reservation> findAll() {
         String findAllSql = """
-                SELECT r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at as time_value, tm.id as theme_id, tm.name, tm.description, tm.thumbnail \
+                SELECT r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at as time_value, tm.id as theme_id, tm.name as theme_name, tm.description, tm.thumbnail \
                 FROM reservation as r inner join reservation_time as t on r.time_id = t.id inner join theme as tm on r.theme_id = tm.id
         """;
         return jdbcTemplate.query(findAllSql,
@@ -38,7 +38,7 @@ public class ReservationDao {
                         ),
                         new ReservationTheme(
                                 resultSet.getLong("theme_id"),
-                                resultSet.getString("name"),
+                                resultSet.getString("theme_name"),
                                 resultSet.getString("description"),
                                 resultSet.getString("thumbnail")
                         )
