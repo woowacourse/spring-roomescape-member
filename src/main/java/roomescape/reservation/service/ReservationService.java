@@ -1,6 +1,5 @@
 package roomescape.reservation.service;
 
-import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.domain.Reservation;
@@ -17,31 +16,20 @@ public class ReservationService {
     }
 
     public ReservationResponse addReservation(ReservationRequest reservationRequest) {
-        Reservation reservation = fromRequest(reservationRequest);
+        Reservation reservation = reservationRequest.fromRequest();
         Reservation savedReservation = reservationRepository.saveReservation(reservation);
-        return toResponse(savedReservation);
+        return ReservationResponse.fromReservation(savedReservation);
     }
 
     public List<ReservationResponse> findReservations() {
         List<Reservation> reservations = reservationRepository.findAllReservation();
 
         return reservations.stream()
-                .map(this::toResponse)
+                .map(ReservationResponse::fromReservation)
                 .toList();
     }
 
     public void removeReservations(long reservationId) {
         reservationRepository.deleteReservationById(reservationId);
-    }
-
-    private Reservation fromRequest(ReservationRequest reservationRequest) {
-        String name = reservationRequest.name();
-        LocalDate date = reservationRequest.date();
-        return new Reservation(name, date, reservationRequest.timeId());
-    }
-
-    private ReservationResponse toResponse(Reservation reservation) {
-        return new ReservationResponse(reservation.getId(), reservation.getName(), reservation.getDate(),
-                reservation.getReservationTime());
     }
 }
