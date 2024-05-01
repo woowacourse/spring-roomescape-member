@@ -10,10 +10,12 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.dto.reservation.ReservationCreateRequest;
 import roomescape.dto.reservation.ReservationResponse;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ResourceNotFoundException;
+import roomescape.repository.ThemeRepository;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationtime.ReservationTimeRepository;
 
@@ -24,6 +26,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static roomescape.Fixtures.themeFixture;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("예약 서비스")
@@ -34,6 +37,8 @@ class ReservationServiceTest {
     private ReservationTimeRepository reservationTimeRepository;
     @Mock
     private ReservationRepository reservationRepository;
+    @Mock
+    private ThemeRepository themeRepository;
     private Long id;
     private String name;
     private LocalTime startAt;
@@ -42,12 +47,16 @@ class ReservationServiceTest {
 
     @BeforeEach
     void setUp() {
-        this.reservationService = new ReservationService(reservationRepository, reservationTimeRepository);
+        this.reservationService = new ReservationService(
+                reservationRepository,
+                reservationTimeRepository,
+                themeRepository
+        );
         this.id = 1L;
         this.name = "클로버";
         this.startAt = LocalTime.of(10, 10);
         this.date = LocalDate.of(2024, 11, 16);
-        this.reservationFixture = new Reservation(id, name, date, new ReservationTime(id, startAt));
+        this.reservationFixture = new Reservation(id, name, date, new ReservationTime(id, startAt), themeFixture);
     }
 
     @DisplayName("예약 서비스는 예약들을 조회한다.")
@@ -87,7 +96,9 @@ class ReservationServiceTest {
         // given
         Mockito.when(reservationTimeRepository.findById(id))
                 .thenReturn(Optional.of(new ReservationTime(id, startAt)));
-        ReservationCreateRequest request = new ReservationCreateRequest(name, date, 1L);
+        Mockito.when(themeRepository.findById(id))
+                .thenReturn(Optional.of(new Theme(id, themeFixture)));
+        ReservationCreateRequest request = new ReservationCreateRequest(name, date, 1L, 1L);
         Mockito.when(reservationRepository.save(any()))
                 .thenReturn(reservationFixture);
 
@@ -108,9 +119,11 @@ class ReservationServiceTest {
         // given
         Mockito.when(reservationTimeRepository.findById(id))
                 .thenReturn(Optional.of(new ReservationTime(id, startAt)));
+        Mockito.when(themeRepository.findById(id))
+                .thenReturn(Optional.of(new Theme(id, themeFixture)));
 
         LocalDate date = LocalDate.MIN;
-        ReservationCreateRequest request = new ReservationCreateRequest(name, date, id);
+        ReservationCreateRequest request = new ReservationCreateRequest(name, date, id, id);
 
         // when & then
         assertThatThrownBy(() -> reservationService.createReservation(request))
@@ -124,11 +137,14 @@ class ReservationServiceTest {
         // given
         Mockito.when(reservationTimeRepository.findById(id))
                 .thenReturn(Optional.of(new ReservationTime(id, startAt)));
+        Mockito.when(themeRepository.findById(id))
+                        .thenReturn(Optional.of(new Theme(id, themeFixture)));
         Mockito.when(reservationRepository.findAll())
                 .thenReturn(List.of(reservationFixture));
         ReservationCreateRequest request = new ReservationCreateRequest(
                 reservationFixture.getName(),
                 reservationFixture.getDate(),
+                id,
                 id
         );
 
@@ -145,7 +161,7 @@ class ReservationServiceTest {
         Mockito.when(reservationTimeRepository.findById(id))
                 .thenReturn(Optional.empty());
 
-        ReservationCreateRequest request = new ReservationCreateRequest(name, date, id);
+        ReservationCreateRequest request = new ReservationCreateRequest(name, date, id, id);
 
         // when & then
         assertThatThrownBy(() -> reservationService.createReservation(request))

@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.Fixtures.themeFixture;
 
 class ReservationTest {
 
@@ -17,7 +18,7 @@ class ReservationTest {
     @ParameterizedTest
     void validateName(String blankName) {
         ReservationTime time = new ReservationTime(LocalTime.MAX);
-        assertThatThrownBy(() -> new Reservation(blankName, LocalDate.MAX, time))
+        assertThatThrownBy(() -> new Reservation(blankName, LocalDate.MAX, time, themeFixture))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage("이름은 공백일 수 없습니다.");
     }

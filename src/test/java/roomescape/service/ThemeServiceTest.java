@@ -8,7 +8,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.domain.Theme;
 import roomescape.dto.ThemeCreateRequest;
 import roomescape.dto.ThemeResponse;
 import roomescape.repository.ThemeRepository;
@@ -18,6 +17,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
+import static roomescape.Fixtures.themeFixture;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("테마 서비스")
@@ -26,12 +26,6 @@ class ThemeServiceTest {
     private ThemeService themeService;
     @Mock
     private ThemeRepository themeRepository;
-    private final Theme themeFixture = new Theme(
-            "공포",
-            "완전 무서운 테마",
-            "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
-    );
-
     @BeforeEach
     void setUp() {
         this.themeService = new ThemeService(themeRepository);
