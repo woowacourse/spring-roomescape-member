@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -31,7 +32,7 @@ public class ReservationDao implements ReservationRepository {
 
     public ReservationDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
-        this.jdbcInsert = new SimpleJdbcInsert(dataSource)
+        jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
     }
@@ -52,9 +53,9 @@ public class ReservationDao implements ReservationRepository {
     }
 
     @Override
-    public Boolean existsByDateAndTimeId(LocalDate date, Long timeId) {
+    public boolean existsByDateAndTimeId(LocalDate date, Long timeId) {
         String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE date = ? AND time_id = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId);
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId));
     }
 
     @Override

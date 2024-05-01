@@ -17,7 +17,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Reservation;
 import roomescape.web.ReservationController;
 
-public class MissionStepTest extends IntegrationTest {
+class MissionStepTest extends IntegrationTest {
     @Autowired
     private ReservationController reservationController;
 
@@ -102,7 +102,7 @@ public class MissionStepTest extends IntegrationTest {
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) FROM reservation", Integer.class);
 
-        assertThat(reservations.size()).isEqualTo(count);
+        assertThat(reservations).hasSize(count);
     }
 
     @Test
