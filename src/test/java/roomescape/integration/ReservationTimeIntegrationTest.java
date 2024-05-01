@@ -26,6 +26,32 @@ class ReservationTimeIntegrationTest extends IntegrationTest {
     }
 
     @Test
+    void 시작_시간이_빈_값이면_시간을_추가할_수_없다() {
+        Map<String, String> params = new HashMap<>();
+        params.put("startAt", null);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    void 시작_시간의_형식이_다르면_시간을_추가할_수_없다() {
+        Map<String, String> params = new HashMap<>();
+        params.put("startAt", "25:00");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
     void 시간을_삭제할_수_있다() {
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", 1);
 
