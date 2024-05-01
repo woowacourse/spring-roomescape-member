@@ -19,7 +19,7 @@ import roomescape.domain.ThemeRepository;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @TestPropertySource(locations = "classpath:application-test.properties")
-class AdminEndPointTest {
+class AdminEndPointTest { //todo: 페이지 관련 이름으로 수정 필요
 
     @Autowired
     private ReservationRepository reservationRepository;
