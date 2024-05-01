@@ -37,4 +37,9 @@ public class ReservationTimeService {
         }
         reservationTimeDao.deleteById(id);
     }
+
+    public boolean isBooked(String date, Long timeId, Long themeId) {
+        int count = reservationDao.count(date, timeId, themeId);
+        return count > 0;
+    }
 }

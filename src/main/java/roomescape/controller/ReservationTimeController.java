@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeRequestDto;
+import roomescape.dto.ReservationTimeResponseDto;
 import roomescape.service.ReservationTimeService;
 
 import java.net.URI;
@@ -32,8 +33,11 @@ public class ReservationTimeController {
 
     @ResponseBody
     @GetMapping("/times")
-    public List<ReservationTime> getTimes() {
-        return reservationTimeService.getAllReservationTimes();
+    public List<ReservationTimeResponseDto> getSpecificTimes(@RequestParam String date, @RequestParam Long themeId) {
+        List<ReservationTime> reservationTimes = reservationTimeService.getAllReservationTimes();
+        return reservationTimes.stream()
+                .map(time -> new ReservationTimeResponseDto(time.getId(), time.getStartAt(), reservationTimeService.isBooked(date, time.getId(), themeId)))
+                .toList();
     }
 
     @DeleteMapping("/times/{id}")
