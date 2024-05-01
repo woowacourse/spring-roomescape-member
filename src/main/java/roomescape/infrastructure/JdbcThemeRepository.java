@@ -56,4 +56,11 @@ public class JdbcThemeRepository implements ThemeRepository {
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
         return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
+
+    @Override
+    public void deleteById(Long id) {
+        String sql = "DELETE FROM theme WHERE id = ?";
+
+        jdbcTemplate.update(sql, id);
+    }
 }

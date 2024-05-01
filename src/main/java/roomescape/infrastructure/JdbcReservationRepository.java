@@ -61,10 +61,11 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAllByReservationTimeId(Long id) {
+    public int countByReservationTimeId(Long id) {
         String sql = basicSelectQuery + "where time_id = ?";
+        List<Reservation> reservations = jdbcTemplate.query(sql, reservationRowMapper, id);
 
-        return jdbcTemplate.query(sql, reservationRowMapper, id);
+        return reservations.size();
     }
 
     @Override
@@ -109,5 +110,13 @@ public class JdbcReservationRepository implements ReservationRepository {
         List<Reservation> reservations = jdbcTemplate.query(sql, reservationRowMapper, date, id);
 
         return !reservations.isEmpty();
+    }
+
+    @Override
+    public int countByThemeId(Long id) {
+        String sql = basicSelectQuery + "where theme_id = ?";
+        List<Reservation> reservations = jdbcTemplate.query(sql, reservationRowMapper, id);
+
+        return reservations.size();
     }
 }

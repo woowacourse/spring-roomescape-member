@@ -7,7 +7,7 @@ public interface ReservationRepository {
 
     List<Reservation> findAll();
 
-    List<Reservation> findAllByReservationTimeId(Long id);
+    int countByReservationTimeId(Long id);
 
     Reservation findById(Long id);
 
@@ -16,4 +16,6 @@ public interface ReservationRepository {
     void deleteById(Long id);
 
     boolean existByDateAndTimeId(LocalDate date, Long id);
+
+    int countByThemeId(Long id);
 }
