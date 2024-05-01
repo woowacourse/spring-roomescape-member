@@ -93,4 +93,109 @@ class ReservationControllerTest {
                 })
         );
     }
+
+    @TestFactory
+    @DisplayName("예약자명이 잘못된 경우 응답 코드 400을 반환한다.")
+    Stream<DynamicTest> checkReservationUserName() {
+
+        Map<String, String> reservationParams = Map.of(
+                "name", "초롱!!",
+                "date", "2023-08-05",
+                "timeId", "1"
+        );
+
+        Map<String, String> reservationTimeParams = Map.of(
+                "id", "1",
+                "startAt", "10:00"
+        );
+
+        return Stream.of(
+                dynamicTest("예약 시간을 추가한다.", () -> {
+                    RestAssured.given().log().all()
+                            .contentType(ContentType.JSON)
+                            .body(reservationTimeParams)
+                            .when().post("/times")
+                            .then().log().all()
+                            .statusCode(201);
+                }),
+
+                dynamicTest("예약을 추가한다", () -> {
+                    RestAssured.given().log().all()
+                            .contentType(ContentType.JSON).body(reservationParams)
+                            .when().post("/reservations")
+                            .then().log().all()
+                            .statusCode(400);
+                })
+        );
+    }
+
+    @TestFactory
+    @DisplayName("예약 날짜가 누락된 경우 응답 코드 400을 반환한다.")
+    Stream<DynamicTest> checkReservationDate() {
+
+        Map<String, String> reservationParams = Map.of(
+                "name", "초롱",
+                "date", "",
+                "timeId", "1"
+        );
+
+        Map<String, String> reservationTimeParams = Map.of(
+                "id", "1",
+                "startAt", "10:00"
+        );
+
+        return Stream.of(
+                dynamicTest("예약 시간을 추가한다.", () -> {
+                    RestAssured.given().log().all()
+                            .contentType(ContentType.JSON)
+                            .body(reservationTimeParams)
+                            .when().post("/times")
+                            .then().log().all()
+                            .statusCode(201);
+                }),
+
+                dynamicTest("예약을 추가한다", () -> {
+                    RestAssured.given().log().all()
+                            .contentType(ContentType.JSON).body(reservationParams)
+                            .when().post("/reservations")
+                            .then().log().all()
+                            .statusCode(400);
+                })
+        );
+    }
+
+    @TestFactory
+    @DisplayName("예약 시간이 누락된 경우 응답 코드 400을 반환한다.")
+    Stream<DynamicTest> checkReservationTime() {
+
+        Map<String, String> reservationParams = Map.of(
+                "name", "초롱",
+                "date", "2024-10-10",
+                "timeId", "시간 선택"
+        );
+
+        Map<String, String> reservationTimeParams = Map.of(
+                "id", "1",
+                "startAt", "10:00"
+        );
+
+        return Stream.of(
+                dynamicTest("예약 시간을 추가한다.", () -> {
+                    RestAssured.given().log().all()
+                            .contentType(ContentType.JSON)
+                            .body(reservationTimeParams)
+                            .when().post("/times")
+                            .then().log().all()
+                            .statusCode(201);
+                }),
+
+                dynamicTest("예약을 추가한다", () -> {
+                    RestAssured.given().log().all()
+                            .contentType(ContentType.JSON).body(reservationParams)
+                            .when().post("/reservations")
+                            .then().log().all()
+                            .statusCode(400);
+                })
+        );
+    }
 }
