@@ -69,7 +69,8 @@ public class H2ReservationRepository implements ReservationRepository {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
                 .addValue("date", reservation.getDate().format(DateTimeFormatter.ISO_LOCAL_DATE))
-                .addValue("time_id", reservation.getTime().getId());
+                .addValue("time_id", reservation.getTime().getId())
+                .addValue("theme_id", reservation.getTheme().getId());
 
         Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
         return reservation.assignId(id);

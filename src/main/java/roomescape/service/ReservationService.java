@@ -74,7 +74,6 @@ public class ReservationService {
         }
 
         Reservation savedReservation = reservationRepository.save(parsedReservation);
-        System.out.println("savedReservation = " + savedReservation);
         return ReservationResponse.from(savedReservation);
     }
 

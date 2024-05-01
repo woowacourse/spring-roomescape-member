@@ -28,7 +28,6 @@ public class Reservation {
         validateNull(name);
         validateNull(date);
         validateFormat(date);
-        System.out.println("theme = " + theme);
         return new Reservation(id, name, LocalDate.parse(date), time, theme);
     }
 
