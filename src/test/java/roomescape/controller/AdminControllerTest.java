@@ -50,4 +50,14 @@ public class AdminControllerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK.value());
     }
+
+    @DisplayName("Admin Theme Page 접근 성공 테스트")
+    @Test
+    void responseThemePage() {
+        Response response = RestAssured.given().log().all()
+                .when().get("/admin/theme")
+                .then().log().all().extract().response();
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+    }
 }
