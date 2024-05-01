@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import roomescape.controller.dto.request.ThemeCreateRequest;
 import roomescape.controller.dto.response.ThemeResponse;
+import roomescape.exception.ExistReservationInThemeException;
 import roomescape.exception.NotExistThemeException;
 import roomescape.service.ThemeService;
 import roomescape.service.dto.output.ThemeOutput;
@@ -55,5 +56,9 @@ public class ThemeController {
     @ExceptionHandler(value = NotExistThemeException.class)
     public ResponseEntity<String> handleNotExistThemeException(NotExistThemeException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
+    }
+    @ExceptionHandler(value = ExistReservationInThemeException.class)
+    public ResponseEntity<String> handleExistReservationInThemeException(ExistReservationInThemeException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
     }
 }
