@@ -10,7 +10,7 @@ import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.dto.ResponseTime;
+import roomescape.time.dto.TimeResponse;
 import roomescape.time.repository.ReservationTimeRepository;
 
 @Service
@@ -48,20 +48,20 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약입니다."));
 
-        ResponseTime responseTime = new ResponseTime(reservation.getTime().getId(),
+        TimeResponse timeResponse = new TimeResponse(reservation.getTime().getId(),
                 reservation.getTime().getStartAt());
 
         return new ReservationResponse(reservation.getId(),
-                reservation.getName(), reservation.getDate(), responseTime);
+                reservation.getName(), reservation.getDate(), timeResponse);
     }
 
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAll().stream()
                 .map(reservation -> {
-                    ResponseTime responseTime = new ResponseTime(reservation.getTime().getId(),
+                    TimeResponse timeResponse = new TimeResponse(reservation.getTime().getId(),
                             reservation.getTime().getStartAt());
                     return new ReservationResponse(reservation.getId(),
-                            reservation.getName(), reservation.getDate(), responseTime);
+                            reservation.getName(), reservation.getDate(), timeResponse);
                 })
                 .collect(Collectors.toList());
     }
