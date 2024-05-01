@@ -26,7 +26,7 @@ class JdbcThemeRepositoryTest {
         Theme savedTheme = themeRepository.save(theme);
 
         assertAll(
-                () -> assertThat(savedTheme.getName()).isEqualTo("공포"),
+                () -> assertThat(savedTheme.getName()).isEqualTo("테마1"),
                 () -> assertThat(savedTheme.getDescription()).isEqualTo("설명"),
                 () -> assertThat(savedTheme.getThumbnail()).isEqualTo("썸네일1")
         );
@@ -42,8 +42,8 @@ class JdbcThemeRepositoryTest {
         List<Theme> themes = themeRepository.findAll();
         assertAll(
                 () -> assertThat(themes).hasSize(2),
-                () -> assertThat(themes.get(0).getName()).isEqualTo("공포"),
-                () -> assertThat(themes.get(1).getName()).isEqualTo("SF")
+                () -> assertThat(themes.get(0).getName()).isEqualTo("테마1"),
+                () -> assertThat(themes.get(1).getName()).isEqualTo("테마2")
         );
     }
 
@@ -60,9 +60,9 @@ class JdbcThemeRepositoryTest {
 
     @Test
     void 테마_이름으로_테마를_찾는다() {
-        Theme theme = new Theme("공포", "설명", "썸네일1");
+        Theme theme = new Theme("테마1", "설명", "썸네일1");
         theme = themeRepository.save(theme);
 
-        assertThat(themeRepository.existsByName("공포")).isTrue();
+        assertThat(themeRepository.existsByName("테마1")).isTrue();
     }
 }
