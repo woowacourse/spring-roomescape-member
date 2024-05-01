@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
@@ -18,5 +19,10 @@ public class ThemeService {
     public ThemeOutput createTheme(ThemeInput input) {
         Theme theme = themeDao.create(Theme.of(null, input.name(), input.description(), input.thumbnail()));
         return ThemeOutput.toOutput(theme);
+    }
+
+    public List<ThemeOutput> getAllThemes() {
+        List<Theme> themes = themeDao.getAll();
+        return ThemeOutput.toOutputs(themes);
     }
 }
