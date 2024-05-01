@@ -46,7 +46,7 @@ public class ReservationTimeService {
     @Transactional
     public void deleteReservationTimeById(Long id) {
         if (reservationRepository.existsByTimeId(id)) {
-            throw new IllegalArgumentException("해당 시간에 예약이 존재합니다.");
+            throw new IllegalArgumentException("해당 시간을 사용하는 예약이 존재합니다.");
         }
 
         reservationTimeRepository.deleteById(id);
