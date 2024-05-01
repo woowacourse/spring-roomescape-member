@@ -1,5 +1,7 @@
 package roomescape.domain;
 
+import roomescape.exception.InvalidRequestException;
+
 import java.util.Objects;
 
 public class Theme {
@@ -13,6 +15,17 @@ public class Theme {
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
+    }
+
+    public static Theme from(final String name, final String description, final String thumbnail) {
+        validateNull(name);
+        return new Theme(null, name, description, thumbnail);
+    }
+
+    private static void validateNull(final String name) {
+        if (name == null || name.isBlank()) {
+            throw new InvalidRequestException("공백일 수 없습니다.");
+        }
     }
 
     public Theme assignId(final Long id) {
