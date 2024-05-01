@@ -49,7 +49,7 @@ public class ReservationTimeService {
         List<Reservation> reservations = reservationRepository.findAll();
         //TODO : 지역변수 네이밍 고민
         boolean invalidDelete = reservations.stream()
-                .anyMatch(reservation -> reservation.getReservationTime().getId() == id);
+                .anyMatch(reservation -> reservation.isReservationTimeOf(id));
         if (invalidDelete) {
             throw new RoomescapeException(INVALID_DELETE_TIME);
         }

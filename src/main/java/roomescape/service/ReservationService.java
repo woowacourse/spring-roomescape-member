@@ -67,16 +67,11 @@ public class ReservationService {
     }
 
     private boolean validateDuplicateReservation(Reservation beforeSave, Reservation reservation) {
-        return mapToLocalDateTime(reservation).equals(mapToLocalDateTime(beforeSave))
-                && beforeSave.getTheme().equals(reservation.getTheme());
+        return reservation.isSameDateTime(beforeSave)
+                && beforeSave.isSameTheme(reservation);
     }
 
-    private LocalDateTime mapToLocalDateTime(Reservation reservation) {
-        LocalDate date = reservation.getDate();
-        LocalTime time = reservation.getReservationTime().getStartAt();
-        return LocalDateTime.of(date, time);
-    }
-
+    //TODO : 도메인에게 넘길 수 있을 것 같은데
     private static boolean isBefore(Reservation beforeSave) {
         return LocalDateTime.of(beforeSave.getDate(), beforeSave.getTime())
                 .isBefore(LocalDateTime.now());

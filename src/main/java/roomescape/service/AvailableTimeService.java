@@ -25,9 +25,8 @@ public class AvailableTimeService {
     //todo : 메서드 개선
     public List<AvailableTimeResponse> findByThemeAndDate(LocalDate date, long themeId) {
         Set<Long> alreadyReservedTimeIds = reservationRepository.findAll().stream()
-                .filter(reservation -> reservation.getDate().equals(date))
-                //todo Reservation에 메서드 구현하기
-                .filter(reservation -> reservation.getTheme().getId().equals(themeId))
+                .filter(reservation -> reservation.isDateOf(date))
+                .filter(reservation -> reservation.isThemeOf(themeId))
                 .map(Reservation::getReservationTime)
                 .map(ReservationTime::getId)
                 .collect(Collectors.toSet());

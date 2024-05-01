@@ -25,7 +25,7 @@ public class ThemeService {
 
     public ThemeResponse save(ThemeRequest themeRequest) {
         boolean hasDuplicateTheme = themeRepository.findAll().stream()
-                .anyMatch(theme -> theme.getName().equals(themeRequest.name()));
+                .anyMatch(theme -> theme.isNameOf(themeRequest.name()));
         if (hasDuplicateTheme) {
             throw new RoomescapeException(ExceptionType.DUPLICATE_THEME);
         }
@@ -47,7 +47,7 @@ public class ThemeService {
     public void delete(long id) {
         //todo : 변수명 고민
         boolean invalidDelete = reservationRepository.findAll().stream()
-                .anyMatch(reservation -> Objects.equals(reservation.getTheme().getId(), id));
+                .anyMatch(reservation -> reservation.isThemeOf(id));
         if (invalidDelete) {
             throw new RoomescapeException(ExceptionType.INVALID_DELETE_THEME);
         }

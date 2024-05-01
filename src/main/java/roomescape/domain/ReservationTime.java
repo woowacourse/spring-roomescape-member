@@ -22,6 +22,10 @@ public class ReservationTime {
         this.startAt = startAt;
     }
 
+    public boolean isIdOf(long id) {
+        return this.id == id;
+    }
+
     public Long getId() {
         return id;
     }
