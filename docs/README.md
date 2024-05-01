@@ -21,9 +21,9 @@
   - [x] 특정 시간에 대한 예약이 존재하는데, 특정 시간을 삭제하려고 할 때
 
 ### 2단계
- - [ ] `/admin/theme` 요청 시 테마 관리 페이지를 응답.
-  - [ ] 페이지는 `templates/admin/theme.html` 파일을 이용.
- - [ ] 어드민에 방탈출 예약 시, 테마 정보를 포함할 수 있도록 신규 페이지 파일을 사용합니다.
+ - [x] `/admin/theme` 요청 시 테마 관리 페이지 응답
+  - [x] 페이지는 `templates/admin/theme.html` 파일 이용
+ - [ ] 어드민에 방탈출 예약 시, 테마 정보를 포함할 수 있도록 신규 페이지 파일 사용
    - [ ] TO-BE: templates/admin/reservation-new.html
  - [ ] 테마 기능 추가
    - [ ] 테마 조회

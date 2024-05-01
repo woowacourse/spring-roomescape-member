@@ -36,9 +36,17 @@ class AdminControllerTest {
 
     @DisplayName("Admin Time Page 접근 성공 테스트")
     @Test
-    void responseAdminTImePage() {
+    void responseAdminTimePage() {
         RestAssured.given().log().all()
                 .when().get("/admin/time")
+                .then().log().all().assertThat().statusCode(HttpStatus.OK.value());
+    }
+
+    @DisplayName("Admin Theme Page 접근 성공 테스트")
+    @Test
+    void responseAdminThemePage() {
+        RestAssured.given().log().all()
+                .when().get("/admin/theme")
                 .then().log().all().assertThat().statusCode(HttpStatus.OK.value());
     }
 }
