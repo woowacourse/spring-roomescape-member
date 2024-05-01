@@ -3,7 +3,9 @@ package roomescape.service;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.controller.request.ReservationRequest;
+import roomescape.controller.request.ReservationTimeRequest;
 import roomescape.exception.BadRequestException;
+import roomescape.exception.DuplicatedException;
 import roomescape.exception.NotFoundException;
 import roomescape.model.Reservation;
 
@@ -70,5 +72,14 @@ class ReservationServiceTest {
         ReservationRequest request = new ReservationRequest("2030-01-11", "에버", 1);
         assertThatCode(() -> reservationService.addReservation(request))
                 .doesNotThrowAnyException();
+    }
+
+    @DisplayName("날짜, 시간이 일치하는 예약을 추가하려 할 때 예외가 발생한다.")
+    @Test
+    void should_throw_exception_when_add_exist_reservation() {
+        ReservationRequest request = new ReservationRequest("2030-08-05", "배키", 2);
+        assertThatThrownBy(() -> reservationService.addReservation(request))
+                .isInstanceOf(DuplicatedException.class)
+                .hasMessage("[ERROR] 중복되는 예약은 추가할 수 없습니다.");
     }
 }
