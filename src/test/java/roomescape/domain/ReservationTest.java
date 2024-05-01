@@ -14,9 +14,9 @@ class ReservationTest {
     @Test
     void validateDateTest_whenDateFormatIsNotMatch() {
         String date = "20-20-20";
-        ReservationTime time = new ReservationTime(null, "09:00");
+        ReservationTime time = new ReservationTime("09:00");
 
-        assertThatThrownBy(() -> new Reservation(null, "커찬", date, time))
+        assertThatThrownBy(() -> new Reservation("커찬", date, time))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("날짜(%s)가 yyyy-MM-dd에 맞지 않습니다.".formatted(date));
     }
@@ -25,7 +25,7 @@ class ReservationTest {
     @Test
     void validateReservationTest_whenNameIsNull() {
         String date = "2024-10-20";
-        ReservationTime time = new ReservationTime(null, "09:00");
+        ReservationTime time = new ReservationTime("09:00");
 
         assertThatThrownBy(() ->
                 new Reservation(1L, null, date, time))
@@ -36,7 +36,7 @@ class ReservationTest {
     @DisplayName("날짜 비어있을 때 예외를 던진다.")
     @Test
     void validateReservationTest_whenDateIsNull() {
-        ReservationTime time = new ReservationTime(null, "09:00");
+        ReservationTime time = new ReservationTime("09:00");
 
         assertThatThrownBy(() ->
                 new Reservation(1L, "커찬", null, time))

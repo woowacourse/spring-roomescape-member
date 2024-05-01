@@ -15,7 +15,11 @@ public class Reservation {
     private final ReservationTime time;
 
     public Reservation(Long id, String name, String date, ReservationTime time) {
-        this(id, name, toLocalDate(date), time);
+        this(Objects.requireNonNull(id, "인자 중 null 값이 존재합니다."), name, toLocalDate(date), time);
+    }
+
+    public Reservation(String name, String date, ReservationTime time) {
+        this(null, name, toLocalDate(date), time);
     }
 
     private Reservation(Long id, String name, LocalDate date, ReservationTime time) {

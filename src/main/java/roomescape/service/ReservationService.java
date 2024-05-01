@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.TimeDao;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationCreateRequest;
 
 import java.time.LocalDateTime;
@@ -24,7 +25,10 @@ public class ReservationService {
     }
 
     public Reservation createReservation(ReservationCreateRequest dto) {
-        Reservation reservation = dto.createReservation();
+        ReservationTime time = timeDao.readTimeById(dto.timeId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 예약 시간이 존재하지 않습니다."));
+        Reservation reservation = dto.createReservation(time);
+
         validate(reservation);
         return reservationDao.createReservation(reservation);
     }
@@ -33,9 +37,6 @@ public class ReservationService {
         if (reservation.isAfter(LocalDateTime.now())) {
             throw new IllegalArgumentException("예약은 현재 시간 이후여야 합니다.");
         }
-        timeDao.readTimeById(reservation.getTime().getId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 예약 시간이 존재하지 않습니다."));
-
         if (reservationDao.isReservationsByTimeIdAndDate(reservation.getTime().getId(), reservation.getDate())) {
             throw new IllegalArgumentException("해당 시간대 예약은 이미 존재합니다.");
         }

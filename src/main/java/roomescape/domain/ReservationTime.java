@@ -12,20 +12,20 @@ public class ReservationTime {
     private final LocalTime startAt;
 
     public ReservationTime(Long id, String startAt) {
-        this.id = id;
-        this.startAt = toLocalTime(startAt);
+        this(Objects.requireNonNull(id, "인자 중 null 값이 존재합니다."), toLocalTime(startAt));
+    }
+
+    public ReservationTime(String startAt) {
+        this(null, toLocalTime(startAt));
     }
 
     private ReservationTime(Long id, LocalTime startAt) {
         this.id = id;
-        this.startAt = Objects.requireNonNull(startAt, "인자 중 null 값이 존재합니다.");
+        this.startAt = Objects.requireNonNull(startAt, "인자 중 null 값이 존재합니다.");;
     }
 
     private static LocalTime toLocalTime(String time) {
-        if (time == null) {
-            return null;
-        }
-
+        Objects.requireNonNull(time, "인자 중 null 값이 존재합니다.");
         try {
             return LocalTime.parse(time, TIME_FORMATTER);
         } catch (DateTimeParseException e) {

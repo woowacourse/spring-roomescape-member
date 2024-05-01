@@ -14,7 +14,7 @@ class ReservationTimeTest {
     void validateTimeTest_whenTimeFormatIsNotMatch() {
         String time = "9-00";
 
-        assertThatThrownBy(() -> new ReservationTime(null, time))
+        assertThatThrownBy(() -> new ReservationTime(time))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("시간(%s)이 HH:mm 형식에 맞지 않습니다.".formatted(time));
     }
@@ -24,7 +24,7 @@ class ReservationTimeTest {
     void timeTest_whenTimeFormatIsMatch() {
         String time = "09:00";
 
-        assertThatCode(() -> new ReservationTime(null, time))
+        assertThatCode(() -> new ReservationTime(time))
                 .doesNotThrowAnyException();
     }
 
