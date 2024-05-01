@@ -70,6 +70,8 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.createReservation(requestDto))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약 하려는 시간이 저장되어 있지 않습니다.");
+
+        verify(reservationRepository, never()).insertReservation(requestDto.toReservation());
     }
 
     @DisplayName("지나간 날짜와 시간에 대한 예약을 생성하려고 하면 예외가 발생한다.")
@@ -97,6 +99,8 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.createReservation(requestDto))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("같은 시간에 이미 예약이 존재합니다.");
+
+        verify(reservationRepository, never()).insertReservation(requestDto.toReservation());
     }
 
     @DisplayName("존재하지 않는 아이디를 삭제하려고 하면 예외가 발생한다.")
@@ -108,5 +112,7 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.deleteReservation(id))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("존재하지 않는 아이디입니다.");
+
+        verify(reservationRepository, never()).deleteReservationById(requestDto.getTimeId());
     }
 }
