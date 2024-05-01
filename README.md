@@ -1,13 +1,19 @@
 # 방탈출 예약 관리
 
-## 응답 페이지
-
-- `/` : 웰컴 페이지
-- `/admin` : 어드민 메인 페이지
-- `/admin/reservation` : 예약 관리 페이지
-- `/admin/time` : 예약 시간 관리 페이지
-
 ## API 명세
+
+| Method | Endpoint             | Description     | File Path                              | Controller Type   |
+|--------|----------------------|-----------------|----------------------------------------|-------------------|
+| GET    | `/admin`             | 어드민 페이지 요청      | `templates/admin/index.html`           | `@Controller`     |
+| GET    | `/admin/reservation` | 예약 관리 페이지 요청    | `templates/admin/reservation-new.html` | `@Controller`     |
+| GET    | `/admin/time`        | 예약 시간 관리 페이지 요청 | `templates/admin/time.html`            | `@Controller`     |
+| GET    | `/admin/theme`       | 테마 관리 페이지 요청    | `templates/admin/theme.html`           | `@Controller`     |
+| GET    | `/reservations`      | 예약 정보           |                                        | `@RestController` |
+| POST   | `/reservations`      | 예약 추가           |                                        | `@RestController` |
+| DELETE | `/reservations/{id}` | 예약 취소           |                                        | `@RestController` |
+| GET    | `/times`             | 예약 시간 조회        |                                        | `@RestController` |
+| POST   | `/times`             | 예약 시간 삭제        |                                        | `@RestController` |
+| DELETE | `/times/{id}`        | 예약 시간 추가        |                                        | `@RestController` |
 
 ### 예약 목록 조회 API
 
