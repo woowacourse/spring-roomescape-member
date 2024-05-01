@@ -79,41 +79,4 @@ class ReservationServiceTest {
         assertThatCode(() -> reservationService.addReservation(request))
                 .doesNotThrowAnyException();
     }
-
-    class FakeReservationRepository implements ReservationRepository {
-
-        private List<Reservation> reservations = new ArrayList<>(List.of(
-                new Reservation(1, "브라운", LocalDate.of(2023, 8, 5),
-                        new ReservationTime(1, LocalTime.of(10, 0))),
-                new Reservation(1, "리사", LocalDate.of(2023, 8, 1),
-                        new ReservationTime(2, LocalTime.of(11, 0)))));
-
-        @Override
-        public List<Reservation> getAllReservations() {
-            return reservations;
-        }
-
-        @Override
-        public Reservation addReservation(Reservation reservation) {
-            reservations.add(reservation);
-            return reservation;
-        }
-
-        @Override
-        public long deleteReservation(long id) {
-            Reservation foundReservation = reservations.stream()
-                    .filter(reservation -> reservation.getId() == id)
-                    .findFirst()
-                    .orElseThrow(() -> new NoSuchElementException("아이디가 존재하지 않습니다."));
-            reservations.remove(foundReservation);
-            return id;
-        }
-
-        @Override
-        public Long countReservationById(long id) {
-            return reservations.stream()
-                    .filter(reservation -> reservation.getId() == id)
-                    .count();
-        }
-    }
 }
