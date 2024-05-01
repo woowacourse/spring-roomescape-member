@@ -10,8 +10,7 @@ import roomescape.dto.ReservationTimeRequestDto;
 import java.time.LocalTime;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -47,5 +46,11 @@ public class ReservationTimeServiceTest {
         int sizeBeforeDelete = reservationTimeService.getAllReservationTimes().size();
         assertThatCode(() -> reservationTimeService.deleteReservationTime(reservationTime.getId())).doesNotThrowAnyException();
         assertThat(reservationTimeService.getAllReservationTimes().size()).isEqualTo(sizeBeforeDelete - 1);
+    }
+
+    @Test
+    void deleteInvalidTimeIdTest() {
+        assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1L))
+                .isInstanceOf(IllegalStateException.class);
     }
 }

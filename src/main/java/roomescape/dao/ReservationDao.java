@@ -73,4 +73,9 @@ public class ReservationDao {
                 ), id);
         return Optional.ofNullable(DataAccessUtils.singleResult(reservations));
     }
+
+    public int countByTimeId(Long timeId) {
+        String findByIdSql = "SELECT count(*) FROM reservation WHERE time_id =?";
+        return jdbcTemplate.queryForObject(findByIdSql, Integer.class, timeId);
+    }
 }

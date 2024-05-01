@@ -46,4 +46,9 @@ public class ReservationTimeController {
     public ResponseEntity<String> handleNullPointerException(NullPointerException e) {
         return ResponseEntity.badRequest().body("시간을 선택해야 합니다.");
     }
+
+    @ExceptionHandler(value = IllegalStateException.class)
+    public ResponseEntity<String> handleIllegalStateException() {
+        return ResponseEntity.badRequest().body("예약이 존재하는 시간은 삭제할 수 없습니다.");
+    }
 }

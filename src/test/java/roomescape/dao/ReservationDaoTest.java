@@ -86,4 +86,18 @@ public class ReservationDaoTest {
 
         assertThat(reservationDao.findById(key)).isEqualTo(Optional.empty());
     }
+
+    @Test
+    void countByTimeIdTest() {
+        int count = reservationDao.countByTimeId(1L);
+
+        assertThat(count).isEqualTo(1);
+    }
+
+    @Test
+    void countByNullTimeIdTest() {
+        int count = reservationDao.countByTimeId(null);
+
+        assertThat(count).isEqualTo(0);
+    }
 }
