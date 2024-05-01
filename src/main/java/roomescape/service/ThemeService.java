@@ -24,6 +24,9 @@ public class ThemeService {
     }
 
     public void removeTheme(Long id) {
+        if (themeDao.findById(id).isEmpty()) {
+            throw new IllegalArgumentException("해당 id를 가진 테마가 존재하지 않습니다.");
+        }
         themeDao.deleteById(id);
     }
 }
