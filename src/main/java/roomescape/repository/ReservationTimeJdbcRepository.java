@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
 
 @Repository
-public class ReservationTimeJdbcRepository implements ReservationTimeRepository{
+public class ReservationTimeJdbcRepository implements ReservationTimeRepository {
 
     private static final String TABLE_NAME = "reservation_time";
 
