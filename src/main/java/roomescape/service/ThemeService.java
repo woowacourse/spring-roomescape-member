@@ -27,4 +27,22 @@ public class ThemeService {
         Theme result = themeDao.create(theme);
         return ThemeResponse.from(result);
     }
+
+    public void delete(Long id) {
+        validateNull(id);
+        validateNotExistTheme(id);
+        themeDao.delete(id);
+    }
+
+    private void validateNull(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("테마 아이디는 비어있을 수 없습니다.");
+        }
+    }
+
+    private void validateNotExistTheme(Long id) {
+        if (!themeDao.exist(id)) {
+            throw new IllegalArgumentException("테마 아이디에 해당하는 테마가 존재하지 않습니다.");
+        }
+    }
 }

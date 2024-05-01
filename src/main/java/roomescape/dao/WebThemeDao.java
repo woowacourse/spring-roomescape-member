@@ -59,4 +59,27 @@ public class WebThemeDao implements ThemeDao {
         long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
         return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
+
+    @Override
+    public Boolean exist(long id) {
+        String sql = """
+                SELECT
+                CASE
+                    WHEN EXISTS (SELECT 1 FROM theme WHERE id = ?)
+                    THEN TRUE
+                    ELSE FALSE
+                END
+                """;
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
+    }
+
+    @Override
+    public void delete(long id) {
+        String sql = """
+                DELETE
+                FROM theme
+                WHERE id = ?
+                """;
+        jdbcTemplate.update(sql, id);
+    }
 }

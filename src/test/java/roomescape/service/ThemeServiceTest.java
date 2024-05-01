@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
@@ -72,5 +73,41 @@ class ThemeServiceTest {
                 () -> assertThat(result.getDescription()).isEqualTo(givenDescription),
                 () -> assertThat(result.getThumbnail()).isEqualTo(givenThumbnail)
         );
+    }
+
+    @Test
+    @DisplayName("테마를 삭제한다.")
+    void delete() {
+        //given
+        long givenId = 1L;
+
+        //when
+        themeService.delete(givenId);
+        List<ThemeResponse> results = themeService.findAll();
+
+        //then
+        assertThat(results).isEmpty();
+    }
+
+    @Test
+    @DisplayName("테마 삭제시 아이디가 비어있으면 예외가 발생한다.")
+    void deleteNullId() {
+        //given
+        Long givenId = null;
+
+        //when //then
+        assertThatThrownBy(() -> themeService.delete(givenId))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("테마 삭제시 아이디가 존재하지 않는다면 예외가 발생한다.")
+    void deleteNotExistId() {
+        //given
+        long givenId = 100L;
+
+        //when //then
+        assertThatThrownBy(() -> themeService.delete(givenId))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }
