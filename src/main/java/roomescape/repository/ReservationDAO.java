@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,5 +76,11 @@ public class ReservationDAO implements ReservationRepository {
     public Long countReservationByTimeId(long timeId) {
         String sql = "select count(id) from reservation where time_id = ?";
         return jdbcTemplate.queryForObject(sql, (resultSet, ignored) -> resultSet.getLong(1), timeId);
+    }
+
+    @Override
+    public Long countReservationByDateAndTimeId(LocalDate date, long timeId) {
+        String sql = "select count(id) from reservation where date = ? and time_id = ?";
+        return jdbcTemplate.queryForObject(sql, (resultSet, ignored) -> resultSet.getLong(1), date, timeId);
     }
 }

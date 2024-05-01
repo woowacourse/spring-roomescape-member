@@ -13,9 +13,9 @@ import java.util.NoSuchElementException;
 class FakeReservationRepository implements ReservationRepository {
 
     private List<Reservation> reservations = new ArrayList<>(List.of(
-            new Reservation(1, "브라운", LocalDate.of(2023, 8, 5),
+            new Reservation(1, "브라운", LocalDate.of(2030, 8, 5),
                     new ReservationTime(2, LocalTime.of(11, 0))),
-            new Reservation(1, "리사", LocalDate.of(2023, 8, 1),
+            new Reservation(1, "리사", LocalDate.of(2030, 8, 1),
                     new ReservationTime(2, LocalTime.of(11, 0)))));
 
     @Override
@@ -50,6 +50,14 @@ class FakeReservationRepository implements ReservationRepository {
     public Long countReservationByTimeId(long timeId) {
         return reservations.stream()
                 .filter(reservation -> reservation.getTime().getId() == timeId)
+                .count();
+    }
+
+    @Override
+    public Long countReservationByDateAndTimeId(LocalDate date, long timeId) {
+        return reservations.stream()
+                .filter(reservation -> reservation.getDate().isEqual(date)
+                        && reservation.getTime().getId() == timeId)
                 .count();
     }
 }
