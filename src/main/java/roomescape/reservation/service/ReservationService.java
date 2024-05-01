@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.dto.request.CreateReservationRequest;
 import roomescape.reservation.dto.response.CreateReservationResponse;
@@ -32,12 +31,13 @@ public class ReservationService {
                 .orElseThrow(() -> new NoSuchElementException("해당하는 예약 시간이 존재하지 않습니다."));
 
         validateReservationDateTime(createReservationRequest.date(), reservationTime.getTime());
+        Reservation reservation = createReservationRequest.toReservation(reservationTime);
 
-        if (reservationRepository.existByReservation(createReservationRequest.toReservation(reservationTime))) {
+        if (reservationRepository.existByReservationDateAndTime(reservation)) {
             throw new IllegalStateException("동일한 시간의 예약이 존재합니다.");
         }
 
-        Long id = reservationRepository.save(createReservationRequest.toReservation(reservationTime));
+        Long id = reservationRepository.save(reservation);
         return CreateReservationResponse.of(getReservation(id));
     }
 

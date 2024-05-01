@@ -16,5 +16,5 @@ public interface ReservationRepository {
     List<Reservation> findAllByTimeId(Long timeId);
 
     // TODO: existByReservation 이름 고민
-    boolean existByReservation(Reservation reservation);
+    boolean existByReservationDateAndTime(Reservation reservation);
 }

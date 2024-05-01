@@ -53,4 +53,28 @@ class JdbcReservationRepositoryTest extends DummyDataFixture {
         jdbcReservationRepository.deleteById(2L);
         assertThat(jdbcReservationRepository.findById(2L)).isNotPresent();
     }
+
+    @Test
+    @DisplayName("날짜와 시간 컬럼의 값이 동일할 경우 참을 반환한다..")
+    void existByReservation_whenSameName() {
+        Reservation reservation = new Reservation(null, "아서", LocalDate.of(2024, 04, 24),
+                1L, LocalTime.of(15, 40));
+        assertThat(jdbcReservationRepository.existByReservationDateAndTime(reservation)).isTrue();
+    }
+
+    @Test
+    @DisplayName("날짜와 시간 컬럼의 값이 동일할 경우 참을 반환한다..")
+    void existByReservation_whenNotSameName() {
+        Reservation reservation = new Reservation(null, "마크", LocalDate.of(2024, 04, 24),
+                1L, LocalTime.of(15, 40));
+        assertThat(jdbcReservationRepository.existByReservationDateAndTime(reservation)).isTrue();
+    }
+
+    @Test
+    @DisplayName("날짜 또는 시간 중 하나라도 다를 경우 거짓을 반환한다.")
+    void existByReservation_isFalse() {
+        Reservation reservation = new Reservation(null, "아서", LocalDate.of(2024, 05, 24),
+                1L, LocalTime.of(15, 40));
+        assertThat(jdbcReservationRepository.existByReservationDateAndTime(reservation)).isFalse();
+    }
 }

@@ -90,16 +90,15 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existByReservation(final Reservation reservation) {
+    public boolean existByReservationDateAndTime(final Reservation reservation) {
         String sql = """
                 select count(*)
                 from reservation as r
                 inner join reservation_time as t
                 on r.time_id = t.id
-                where r.name = ? and r.date = ? and r.time_id = ?
+                where r.date = ? and r.time_id = ?
                 """; // TODO: 줄바꿈 고쳐라잉
         return jdbcTemplate.queryForObject(sql, Integer.class,
-                reservation.getName(),
                 reservation.getDate(),
                 reservation.getReservationTime().getId()) != 0;
     }
