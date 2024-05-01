@@ -9,7 +9,7 @@ public interface ReservationRepository {
 
     Optional<Reservation> findById(Long id);
 
-    boolean existsByDateAndTimeId(LocalDate date, Long timeId);
+    boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId);
 
     Reservation save(Reservation reservation);
 

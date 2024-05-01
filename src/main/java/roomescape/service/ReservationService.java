@@ -55,8 +55,8 @@ public class ReservationService {
     }
 
     private void validateDuplicateReservation(ReservationRequest request) {
-        if (reservationRepository.existsByDateAndTimeId(request.getDate(),
-                request.getTimeId())) { // TODO: 테마도 중복 검사 시 보기
+        if (reservationRepository.existsByDateAndTimeIdAndThemeId(
+                request.getDate(), request.getTimeId(), request.getThemeId())) {
             throw new DuplicatedReservationException();
         }
     }
