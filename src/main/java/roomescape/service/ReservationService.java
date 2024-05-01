@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.dto.AvailableReservationTimeResponse;
 import roomescape.dto.SaveReservationRequest;
 import roomescape.dto.SaveReservationTimeRequest;
 import roomescape.dto.SaveThemeRequest;
@@ -11,6 +12,7 @@ import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -98,5 +100,23 @@ public class ReservationService {
         }
 
         themeRepository.deleteById(themeId);
+    }
+
+    // TODO : 서비스가 컨트롤러에서 응답용으로 생성할 DTO를 만드는게 좋은걸까...? 고민이 필요
+    // TODO : AvailableReservationTimeResponse를 별도의 객체로 변환할 수 있지 않을까
+    public List<AvailableReservationTimeResponse> getAvailableReservationTimes(final LocalDate date, final Long themeId) {
+        final List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
+        final List<Reservation> reservations = reservationRepository.findAllByDateAndThemeId(date, themeId);
+
+        return reservationTimes.stream()
+                .map(reservationTime -> AvailableReservationTimeResponse.of(reservationTime, reservations))
+                .toList();
+    }
+
+    public List<Theme> getPopularThemes() {
+        final LocalDate startAt = LocalDate.now().minusDays(7);
+        final LocalDate endAt = LocalDate.now().minusDays(1);
+
+        return themeRepository.findPopularThemes(startAt, endAt);
     }
 }

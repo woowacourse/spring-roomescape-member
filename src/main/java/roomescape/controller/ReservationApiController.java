@@ -6,10 +6,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.dto.AvailableReservationTimeResponse;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.SaveReservationRequest;
@@ -19,6 +21,7 @@ import roomescape.dto.ThemeResponse;
 import roomescape.service.ReservationService;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -93,5 +96,18 @@ public class ReservationApiController {
     public ResponseEntity<Void> deleteTheme(@PathVariable final Long themeId) {
         reservationService.deleteTheme(themeId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/available-reservation-times")
+    public List<AvailableReservationTimeResponse> getAvailableReservationTimes(@RequestParam("date") LocalDate date, @RequestParam("theme-id") Long themeId) {
+        return reservationService.getAvailableReservationTimes(date, themeId);
+    }
+
+    @GetMapping("/popular-themes")
+    public List<ThemeResponse> getPopularThemes() {
+        return reservationService.getPopularThemes()
+                .stream()
+                .map(ThemeResponse::from)
+                .toList();
     }
 }

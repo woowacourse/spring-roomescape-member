@@ -11,6 +11,7 @@ import roomescape.domain.Theme;
 import roomescape.domain.ThemeDescription;
 import roomescape.domain.ThemeName;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -85,5 +86,24 @@ public class H2ThemeRepository implements ThemeRepository {
                 .addValue("themeId", themeId);
 
         return Boolean.TRUE.equals(template.queryForObject(sql, param, Boolean.class));
+    }
+
+    @Override
+    public List<Theme> findPopularThemes(final LocalDate startAt, final LocalDate endAt) {
+        String sql = "SELECT "
+                + "th.id, th.name, th.description, th.thumbnail "
+                + "FROM reservation as r "
+                + "inner join theme as th "
+                + "on r.theme_id = th.id "
+                + "WHERE r.date BETWEEN :startAt AND :endAt "
+                + "GROUP BY r.theme_id "
+                + "ORDER BY COUNT(r.theme_id) DESC "
+                + "LIMIT 10 ";
+
+        MapSqlParameterSource param = new MapSqlParameterSource()
+                .addValue("startAt", startAt)
+                .addValue("endAt", endAt);
+
+        return template.query(sql, param, itemRowMapper());
     }
 }
