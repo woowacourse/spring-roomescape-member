@@ -18,6 +18,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import roomescape.controller.api.ReservationController;
 import roomescape.dto.ReservationResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -81,7 +82,7 @@ class ReservationControllerTest {
                 "name", "브라운",
                 "date", "2025-08-05",
                 "timeId", 1L,
-                "themeId", 1L);
+                "id", 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
