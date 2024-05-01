@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
+import roomescape.exception.reservation.IllegalReservationFormatException;
 
 public class Reservation {
 
@@ -22,8 +23,8 @@ public class Reservation {
     }
 
     private static void validateName(String name) {
-        if (name.isBlank()) {
-            throw new IllegalArgumentException("예약자명은 1글자 이상입니다.");
+        if (name == null || name.isBlank()) {
+            throw new IllegalReservationFormatException();
         }
     }
 

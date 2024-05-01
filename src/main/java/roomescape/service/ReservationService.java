@@ -11,6 +11,10 @@ import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.dto.app.ReservationAppRequest;
+import roomescape.exception.reservation.DuplicatedReservationException;
+import roomescape.exception.reservation.IllegalDateFormatException;
+import roomescape.exception.reservation.PastReservationException;
+import roomescape.exception.reservation.ReservationTimeNotFoundException;
 
 @Service
 public class ReservationService {
@@ -26,31 +30,47 @@ public class ReservationService {
     }
 
     public Reservation save(ReservationAppRequest request) {
+        LocalDate date = parseDate(request.date());
+        ReservationTime time = findTime(request.timeId());
+        Reservation reservation = new Reservation(request.name(), date, time);
+        validatePastReservation(date, time);
+        validateDuplication(date, request.timeId());
+
+        return reservationRepository.save(reservation);
+    }
+
+    private LocalDate parseDate(String rawDate) {
         try {
-            // TODO : method 분리
-            // TODO : 예약 커스터마이즈 -> 구체화
+            return LocalDate.parse(rawDate);
+        } catch (DateTimeParseException | NullPointerException e) {
+            throw new IllegalDateFormatException();
+        }
+    }
 
-            // 날짜 검증 -- 포맷
-            LocalDate date = LocalDate.parse(request.date());
-            // 예약 데이터 검증 -- 포맷
-            ReservationTime time = reservationTimeRepository.findById(request.timeId());
-            Reservation newReservation = new Reservation(request.name(), date, time);
-            // 과거 예약 검증
-            if (date.isBefore(LocalDate.now())) {
-                throw new IllegalArgumentException();
-            }
-            if (date.isEqual(LocalDate.now()) && time.isBeforeNow()) {
-                throw new IllegalArgumentException();
-            }
-            // 중복 데이터 검증
-            long dataCount = reservationRepository.countByDateAndTimeId(date, request.timeId());
-            if (dataCount > 0) {
-                throw new IllegalArgumentException("예약이 이미 존재합니다.");
-            }
+    private ReservationTime findTime(Long timeId) {
+        if (timeId == null) {
+            throw new ReservationTimeNotFoundException();
+        }
+        try {
+            return reservationTimeRepository.findById(timeId);
+        } catch (EmptyResultDataAccessException e) {
+            throw new ReservationTimeNotFoundException();
+        }
+    }
 
-            return reservationRepository.save(newReservation);
-        } catch (EmptyResultDataAccessException | DateTimeParseException | NullPointerException e) {
-            throw new IllegalArgumentException("잘못된 예약 포맷을 입력했습니다.");
+    private void validatePastReservation(LocalDate date, ReservationTime time) {
+        if (date.isBefore(LocalDate.now())) {
+            throw new PastReservationException();
+        }
+        if (date.isEqual(LocalDate.now()) && time.isBeforeNow()) {
+            throw new PastReservationException();
+        }
+    }
+
+    private void validateDuplication(LocalDate date, Long timeId) {
+        long dataCount = reservationRepository.countByDateAndTimeId(date, timeId);
+        if (dataCount > 0) {
+            throw new DuplicatedReservationException();
         }
     }
 

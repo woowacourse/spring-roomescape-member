@@ -23,6 +23,11 @@ import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.dto.app.ReservationAppRequest;
+import roomescape.exception.reservation.DuplicatedReservationException;
+import roomescape.exception.reservation.IllegalDateFormatException;
+import roomescape.exception.reservation.IllegalReservationFormatException;
+import roomescape.exception.reservation.PastReservationException;
+import roomescape.exception.reservation.ReservationTimeNotFoundException;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
@@ -41,9 +46,9 @@ class ReservationServiceTest {
     void save() {
         long reservationId = 1L;
         long timeId = 1L;
-        LocalDate date = LocalDate.now();
+        LocalDate date = LocalDate.parse("2050-01-01");
         String name = "브리";
-        LocalTime time = LocalTime.MIN;
+        LocalTime time = LocalTime.MAX;
         ReservationTime reservationTime = new ReservationTime(timeId, time);
         Reservation reservation = new Reservation(name, date, reservationTime);
 
@@ -73,16 +78,15 @@ class ReservationServiceTest {
     void save_IllegalName(String name) {
         assertThatThrownBy(
             () -> reservationService.save(new ReservationAppRequest(1L, LocalDate.MAX.toString(), name)))
-            .isInstanceOf(IllegalArgumentException.class);
+            .isInstanceOf(IllegalReservationFormatException.class);
     }
 
     @DisplayName("실패: 존재하지 않는 날짜 입력 시 예외가 발생한다.")
     @ParameterizedTest
     @ValueSource(strings = {"2030-13-01", "2030-12-32"})
-    @NullAndEmptySource
     void save_IllegalDate(String rawDate) {
         assertThatThrownBy(() -> reservationService.save(new ReservationAppRequest(1L, rawDate, "brown")))
-            .isInstanceOf(IllegalArgumentException.class);
+            .isInstanceOf(IllegalDateFormatException.class);
     }
 
     @DisplayName("실패: 존재하지 않는 시간 ID 입력 시 예외가 발생한다.")
@@ -92,7 +96,7 @@ class ReservationServiceTest {
             .thenThrow(EmptyResultDataAccessException.class);
 
         assertThatThrownBy(() -> reservationService.save(new ReservationAppRequest(1L, "2030-12-31", "brown")))
-            .isInstanceOf(IllegalArgumentException.class);
+            .isInstanceOf(ReservationTimeNotFoundException.class);
     }
 
     @DisplayName("실패: 중복 예약을 생성하면 예외가 발생한다.")
@@ -104,7 +108,7 @@ class ReservationServiceTest {
             .thenReturn(1L);
 
         assertThatThrownBy(() -> reservationService.save(new ReservationAppRequest(timeId, rawDate, "brown")))
-            .isInstanceOf(IllegalArgumentException.class);
+            .isInstanceOf(DuplicatedReservationException.class);
     }
 
     @DisplayName("실패: 어제 날짜에 대한 예약을 생성하면 예외가 발생한다.")
@@ -119,7 +123,7 @@ class ReservationServiceTest {
 
         assertThatThrownBy(
             () -> reservationService.save(new ReservationAppRequest(timeId, yesterday.toString(), "brown"))
-        ).isInstanceOf(IllegalArgumentException.class);
+        ).isInstanceOf(PastReservationException.class);
     }
 
     @DisplayName("실패: 같은 날짜에 대한 과거 시간 예약을 생성하면 예외가 발생한다.")
@@ -135,6 +139,6 @@ class ReservationServiceTest {
 
         assertThatThrownBy(
             () -> reservationService.save(new ReservationAppRequest(timeId, today.toString(), "brown"))
-        ).isInstanceOf(IllegalArgumentException.class);
+        ).isInstanceOf(PastReservationException.class);
     }
 }

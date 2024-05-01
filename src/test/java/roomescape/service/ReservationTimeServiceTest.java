@@ -21,6 +21,9 @@ import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.dto.app.ReservationTimeAppRequest;
+import roomescape.exception.reservationtime.DuplicatedReservationTimeException;
+import roomescape.exception.reservationtime.IllegalReservationTimeFormatException;
+import roomescape.exception.reservationtime.ReservationExistsException;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
@@ -57,7 +60,7 @@ class ReservationTimeServiceTest {
     @NullAndEmptySource
     void save_IllegalTimeFormat(String time) {
         assertThatThrownBy(() -> reservationTimeService.save(new ReservationTimeAppRequest(time)))
-            .isInstanceOf(IllegalArgumentException.class);
+            .isInstanceOf(IllegalReservationTimeFormatException.class);
     }
 
     @DisplayName("실패: 이미 존재하는 시간을 추가할 수 없다.")
@@ -69,7 +72,7 @@ class ReservationTimeServiceTest {
             .thenReturn(1L);
 
         assertThatThrownBy(() -> reservationTimeService.save(new ReservationTimeAppRequest(rawTime)))
-            .isInstanceOf(IllegalArgumentException.class);
+            .isInstanceOf(DuplicatedReservationTimeException.class);
     }
 
     @DisplayName("실패: 시간을 사용하는 예약이 존재하는 경우 시간을 삭제할 수 없다.")
@@ -80,6 +83,6 @@ class ReservationTimeServiceTest {
             .thenReturn(1L);
 
         assertThatThrownBy(() -> reservationTimeService.delete(timeId))
-            .isInstanceOf(IllegalArgumentException.class);
+            .isInstanceOf(ReservationExistsException.class);
     }
 }

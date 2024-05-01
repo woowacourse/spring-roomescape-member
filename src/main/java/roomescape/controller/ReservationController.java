@@ -17,6 +17,11 @@ import roomescape.dto.app.ReservationAppRequest;
 import roomescape.dto.web.ReservationTimeWebResponse;
 import roomescape.dto.web.ReservationWebRequest;
 import roomescape.dto.web.ReservationWebResponse;
+import roomescape.exception.reservation.DuplicatedReservationException;
+import roomescape.exception.reservation.IllegalDateFormatException;
+import roomescape.exception.reservation.IllegalReservationFormatException;
+import roomescape.exception.reservation.PastReservationException;
+import roomescape.exception.reservation.ReservationTimeNotFoundException;
 import roomescape.service.ReservationService;
 
 @RestController
@@ -62,8 +67,28 @@ public class ReservationController {
         return ResponseEntity.ok(reservationWebResponse);
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Void> handleException(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().build();
+    @ExceptionHandler(IllegalDateFormatException.class)
+    public ResponseEntity<String> handleIllegalDateFormatException(IllegalDateFormatException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(ReservationTimeNotFoundException.class)
+    public ResponseEntity<String> handleReservationTimeNotFoundException(ReservationTimeNotFoundException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(PastReservationException.class)
+    public ResponseEntity<String> handlePastReservationException(PastReservationException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(DuplicatedReservationException.class)
+    public ResponseEntity<String> handleDuplicatedReservationException(DuplicatedReservationException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(IllegalReservationFormatException.class)
+    public ResponseEntity<String> handleIllegalReservationFormatException(IllegalReservationFormatException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
 }

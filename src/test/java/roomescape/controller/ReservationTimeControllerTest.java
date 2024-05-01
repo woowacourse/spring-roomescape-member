@@ -20,6 +20,9 @@ import roomescape.domain.ReservationTime;
 import roomescape.dto.app.ReservationTimeAppRequest;
 import roomescape.dto.web.ReservationTimeWebRequest;
 import roomescape.dto.web.ReservationTimeWebResponse;
+import roomescape.exception.reservationtime.DuplicatedReservationTimeException;
+import roomescape.exception.reservationtime.IllegalReservationTimeFormatException;
+import roomescape.exception.reservationtime.ReservationExistsException;
 import roomescape.service.ReservationTimeService;
 
 @WebMvcTest(ReservationTimeController.class)
@@ -80,7 +83,7 @@ class ReservationTimeControllerTest {
         String requestBody = objectMapper.writeValueAsString(new ReservationTimeWebRequest(1L, illegalTime));
 
         when(reservationTimeService.save(new ReservationTimeAppRequest(illegalTime)))
-            .thenThrow(IllegalArgumentException.class);
+            .thenThrow(IllegalReservationTimeFormatException.class);
 
         mvc.perform(post("/times")
                 .content(requestBody)
@@ -96,7 +99,7 @@ class ReservationTimeControllerTest {
         ReservationTime reservationTime = new ReservationTime(timeId, time);
 
         when(reservationTimeService.delete(timeId))
-            .thenThrow(IllegalArgumentException.class);
+            .thenThrow(ReservationExistsException.class);
 
         mvc.perform(delete("/times/" + reservationTime.getId()))
             .andExpect(status().isBadRequest());
@@ -107,7 +110,7 @@ class ReservationTimeControllerTest {
     void create_Duplicate() throws Exception {
         String rawTime = "19:00";
         when(reservationTimeService.save(new ReservationTimeAppRequest(rawTime)))
-            .thenThrow(IllegalArgumentException.class);
+            .thenThrow(DuplicatedReservationTimeException.class);
 
         String requestBody = objectMapper.writeValueAsString(new ReservationTimeWebRequest(4L, rawTime));
 

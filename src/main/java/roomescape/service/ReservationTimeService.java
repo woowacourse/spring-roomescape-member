@@ -9,6 +9,9 @@ import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.dto.app.ReservationTimeAppRequest;
+import roomescape.exception.reservationtime.DuplicatedReservationTimeException;
+import roomescape.exception.reservationtime.IllegalReservationTimeFormatException;
+import roomescape.exception.reservationtime.ReservationExistsException;
 
 @Service
 public class ReservationTimeService {
@@ -24,27 +27,31 @@ public class ReservationTimeService {
     }
 
     public ReservationTime save(ReservationTimeAppRequest request) {
+        LocalTime parsedTime = parseTime(request.startAt());
+        validateDuplication(parsedTime);
+        ReservationTime newReservationTime = new ReservationTime(parsedTime);
+
+        return reservationTimeRepository.save(newReservationTime);
+    }
+
+    private LocalTime parseTime(String rawTime) {
         try {
-            LocalTime parsedTime = LocalTime.parse(request.startAt());
-            validateDuplication(parsedTime);
-            ReservationTime newReservationTime = new ReservationTime(parsedTime);
-            return reservationTimeRepository.save(newReservationTime);
-        } catch (DateTimeParseException | NullPointerException exception) {
-            throw new IllegalArgumentException("잘못된 시간 입력입니다.");
+            return LocalTime.parse(rawTime);
+        } catch (DateTimeParseException | NullPointerException e) {
+            throw new IllegalReservationTimeFormatException();
         }
     }
 
     private void validateDuplication(LocalTime parsedTime) {
         if (reservationTimeRepository.countByStartTime(parsedTime) > 0) {
-            throw new IllegalArgumentException("예약 시간이 이미 존재합니다.");
+            throw new DuplicatedReservationTimeException();
         }
     }
 
-    // TODO: void 메소드일 때도 모킹이 가능한지 확인
     public int delete(Long id) {
         long count = reservationRepository.countByTimeId(id);
         if (count > 0) {
-            throw new IllegalArgumentException("해당 시간을 사용하는 예약이 존재합니다.");
+            throw new ReservationExistsException();
         }
         return reservationTimeRepository.deleteById(id);
     }

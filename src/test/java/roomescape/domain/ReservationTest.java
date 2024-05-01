@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import roomescape.exception.reservation.IllegalReservationFormatException;
 
 class ReservationTest {
 
@@ -27,6 +28,6 @@ class ReservationTest {
     @ValueSource(strings = {"", " "})
     void create_WithBlankName(String name) {
         assertThatThrownBy(() -> new Reservation(name, LocalDate.MAX, new ReservationTime(LocalTime.MAX)))
-            .isInstanceOf(IllegalArgumentException.class);
+            .isInstanceOf(IllegalReservationFormatException.class);
     }
 }

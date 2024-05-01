@@ -23,6 +23,9 @@ import roomescape.dto.app.ReservationAppRequest;
 import roomescape.dto.web.ReservationTimeWebResponse;
 import roomescape.dto.web.ReservationWebRequest;
 import roomescape.dto.web.ReservationWebResponse;
+import roomescape.exception.reservation.DuplicatedReservationException;
+import roomescape.exception.reservation.IllegalReservationFormatException;
+import roomescape.exception.reservation.PastReservationException;
 import roomescape.service.ReservationService;
 
 @WebMvcTest(ReservationController.class)
@@ -89,7 +92,7 @@ class ReservationControllerTest {
         String requestBody = objectMapper.writeValueAsString(new ReservationWebRequest(name, rawDate, timeId));
 
         when(reservationService.save(new ReservationAppRequest(timeId, rawDate, name)))
-            .thenThrow(IllegalArgumentException.class);
+            .thenThrow(IllegalReservationFormatException.class);
 
         mvc.perform(post("/reservations")
                 .content(requestBody)
@@ -106,9 +109,8 @@ class ReservationControllerTest {
 
         String requestBody = objectMapper.writeValueAsString(new ReservationWebRequest(name, rawDate, timeId));
 
-        // TODO: 커스텀 예외 사용하여 테스트
         when(reservationService.save(new ReservationAppRequest(timeId, rawDate, name)))
-            .thenThrow(IllegalArgumentException.class);
+            .thenThrow(DuplicatedReservationException.class);
 
         mvc.perform(post("/reservations")
                 .content(requestBody)
@@ -124,7 +126,7 @@ class ReservationControllerTest {
         String name = "brown";
 
         when(reservationService.save(new ReservationAppRequest(timeId, rawDate, name)))
-            .thenThrow(IllegalArgumentException.class);
+            .thenThrow(PastReservationException.class);
 
         String requestBody = objectMapper.writeValueAsString(new ReservationWebRequest(name, rawDate, timeId));
 
