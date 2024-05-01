@@ -45,12 +45,12 @@ public class Reservation {
         return this.date.asString() + " " + this.time.getStartAtAsString();
     }
 
-    public boolean isBefore(LocalDate reservationDate, LocalTime reservationTime) {
-        if (this.date.isBefore(reservationDate)) {
+    public boolean isBefore(LocalDate localDate, LocalTime localTime) {
+        if (this.date.isBefore(localDate)) {
             return true;
         }
-        if (this.date.equals(reservationDate)) {
-            return this.time.isBefore(reservationTime);
+        if (this.date.isEqual(localDate)) {
+            return this.time.isBefore(localTime);
         }
         return false;
     }

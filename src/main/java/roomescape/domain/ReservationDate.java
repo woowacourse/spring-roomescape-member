@@ -20,4 +20,8 @@ public record ReservationDate(LocalDate date) {
     public String asString() {
         return date.toString();
     }
+
+    public boolean isEqual(LocalDate date) {
+        return this.date.equals(date);
+    }
 }
