@@ -53,7 +53,8 @@ class ReservationControllerTest {
     @Test
     void createReservation() {
         //given
-        ReservationTime savedReservationTime = reservationTimeDao.save(new ReservationTime("10:00"));
+        ReservationTime savedReservationTime = reservationTimeDao.save(
+                new ReservationTime("10:00"));
         //then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -67,11 +68,27 @@ class ReservationControllerTest {
     @ValueSource(strings = {"", " "})
     void createReservationException(String value) {
         //given
-        ReservationTime savedReservationTime = reservationTimeDao.save(new ReservationTime("10:00"));
+        ReservationTime savedReservationTime = reservationTimeDao.save(
+                new ReservationTime("10:00"));
         //then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(new ReservationRequest(value, "2023-08-05", savedReservationTime.getId()))
+                .when().post("/reservations")
+                .then().log().all().assertThat().statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("날짜 양식을 잘못 입력할 시 400을 응답한다.")
+    @ParameterizedTest
+    @ValueSource(strings = {"20223-10-11", "2024-13-1", "2024-11-31"})
+    void createReservationExceptionByDate(String value) {
+        //given
+        ReservationTime savedReservationTime = reservationTimeDao.save(
+                new ReservationTime("10:00"));
+        //then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(new ReservationRequest("브라운", value, savedReservationTime.getId()))
                 .when().post("/reservations")
                 .then().log().all().assertThat().statusCode(HttpStatus.BAD_REQUEST.value());
     }

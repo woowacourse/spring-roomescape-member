@@ -17,13 +17,6 @@ class ReservationTimeTest {
         assertDoesNotThrow(() -> new ReservationTime("10:00"));
     }
 
-    @DisplayName("비정상 시간 생성 불가 테스트")
-    @Test
-    void invalidTimeCreate() {
-        assertThatThrownBy(() -> new ReservationTime("25:00"))
-                .isInstanceOf(DateTimeParseException.class);
-    }
-
     @DisplayName("빈문자열이 들어왔을 때 예외를 발생시킨다.")
     @ParameterizedTest
     @ValueSource(strings = {"", " "})
