@@ -16,4 +16,6 @@ public interface ReservationRepository {
     Long countByThemeId(Long id);
 
     Long countDuplication(LocalDate date, Long timeId, Long themeId);
+
+    List<Reservation> findAllByDateAndThemeId(LocalDate date, Long themeId);
 }

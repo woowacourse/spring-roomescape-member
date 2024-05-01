@@ -98,4 +98,36 @@ public class JdbcReservationRepositoryImpl implements ReservationRepository {
         String sql = "SELECT COUNT(id) FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?";
         return jdbcTemplate.queryForObject(sql, Long.class, date, timeId, themeId);
     }
+
+    @Override
+    public List<Reservation> findAllByDateAndThemeId(LocalDate date, Long themeId) {
+        String sql = """
+            SELECT 
+                r.id AS reservation_id, 
+                r.name AS reservation_name , 
+                r.date AS reservation_date, 
+                t.id AS time_id, 
+                t.start_at AS time_value,
+                th.id AS theme_id,
+                th.name AS theme_name,
+                th.description AS theme_description,
+                th.thumbnail AS theme_thumbnail 
+            FROM reservation AS r 
+            INNER JOIN reservation_time AS t ON r.time_id = t.id
+            INNER JOIN theme AS th ON r.theme_id = th.id
+            WHERE date = ? AND theme_id = ?
+            """;
+
+        return jdbcTemplate.query(
+            sql,
+            ((rs, rowNum) ->
+                new Reservation(
+                    rs.getLong("reservation_id"),
+                    rs.getString("reservation_name"),
+                    LocalDate.parse(rs.getString("reservation_date")),
+                    new ReservationTime(rs.getLong("time_id"), LocalTime.parse(rs.getString("time_value"))),
+                    new Theme(rs.getString("theme_name"), rs.getString("theme_description"),
+                        rs.getString("theme_thumbnail")))
+            ), date, themeId);
+    }
 }

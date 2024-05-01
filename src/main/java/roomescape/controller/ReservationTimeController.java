@@ -1,6 +1,7 @@
 package roomescape.controller;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -11,9 +12,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.app.ReservationTimeAppRequest;
+import roomescape.dto.app.ReservationTimeAppResponse;
+import roomescape.dto.web.ReservationTimeUserWebResponse;
 import roomescape.dto.web.ReservationTimeWebRequest;
 import roomescape.dto.web.ReservationTimeWebResponse;
 import roomescape.exception.DuplicatedReservationTimeException;
@@ -60,6 +64,19 @@ public class ReservationTimeController {
             .toList();
 
         return ResponseEntity.ok(reservationTimeWebResponses);
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<List<ReservationTimeUserWebResponse>> getReservationTimesWithAvailability(
+        @RequestParam LocalDate date, @RequestParam Long id) {
+
+        List<ReservationTimeAppResponse> appResponses = reservationTimeService.findAllWithBookAvailability(
+            date, id);
+        List<ReservationTimeUserWebResponse> webResponses = appResponses.stream()
+            .map(response ->
+                new ReservationTimeUserWebResponse(response.id(), response.startAt(), response.alreadyBooked()))
+            .toList();
+        return ResponseEntity.ok(webResponses);
     }
 
     @ExceptionHandler(ReservationExistsException.class)

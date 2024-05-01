@@ -1,14 +1,17 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.dto.app.ReservationTimeAppRequest;
+import roomescape.dto.app.ReservationTimeAppResponse;
 import roomescape.exception.DuplicatedReservationTimeException;
 import roomescape.exception.ReservationExistsException;
 
@@ -57,5 +60,20 @@ public class ReservationTimeService {
 
     public List<ReservationTime> findAll() {
         return reservationTimeRepository.findAll();
+    }
+
+    public List<ReservationTimeAppResponse> findAllWithBookAvailability(LocalDate date, Long themeId) {
+        List<Reservation> reservations = reservationRepository.findAllByDateAndThemeId(date, themeId);
+        List<ReservationTime> reservedTimes = reservations.stream()
+            .map(Reservation::getTime)
+            .toList();
+
+        return findAll().stream()
+            .map(time -> new ReservationTimeAppResponse(
+                    time.getId(),
+                    time.getStartAt(),
+                    reservedTimes.contains(time)
+                )
+            ).toList();
     }
 }
