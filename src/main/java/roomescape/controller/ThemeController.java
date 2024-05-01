@@ -19,8 +19,11 @@ import roomescape.service.ThemeService;
 @RequestMapping("/themes")
 public class ThemeController {
 
-    @Autowired
-    private ThemeService themeService;
+    private final ThemeService themeService;
+
+    public ThemeController(ThemeService themeService) {
+        this.themeService = themeService;
+    }
 
     @PostMapping
     public ResponseEntity<ThemeResponse> addTheme(@RequestBody ThemeRequest themeRequest) {
