@@ -70,4 +70,10 @@ public class ReservationDAO implements ReservationRepository {
         String sql = "select count(id) from reservation where id = ?";
         return jdbcTemplate.queryForObject(sql, (resultSet, ignored) -> resultSet.getLong(1), id);
     }
+
+    @Override
+    public Long countReservationByTimeId(long timeId) {
+        String sql = "select count(id) from reservation where time_id = ?";
+        return jdbcTemplate.queryForObject(sql, (resultSet, ignored) -> resultSet.getLong(1), timeId);
+    }
 }

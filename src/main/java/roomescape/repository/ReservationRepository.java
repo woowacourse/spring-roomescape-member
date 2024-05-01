@@ -11,4 +11,6 @@ public interface ReservationRepository {
     long deleteReservation(long id);
 
     Long countReservationById(long id);
+
+    Long countReservationByTimeId(long timeId);
 }
