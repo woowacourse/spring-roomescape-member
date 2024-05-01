@@ -44,4 +44,11 @@ public class ThemeController {
 
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/tops")
+    public ResponseEntity<List<ThemeResponse>> findTops() {
+        List<ThemeResponse> themeResponses = themeService.findTops();
+
+        return ResponseEntity.ok(themeResponses);
+    }
 }
