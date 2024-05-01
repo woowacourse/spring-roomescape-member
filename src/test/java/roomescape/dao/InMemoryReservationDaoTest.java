@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.console.dao.InMemoryReservationDao;
 import roomescape.console.db.InMemoryReservationDb;
 import roomescape.console.db.InMemoryReservationTimeDb;
+import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 
@@ -35,7 +36,7 @@ class InMemoryReservationDaoTest {
     @Test
     void duplicatedReservationTest() {
         boolean existsFalse = reservationDao.existsByDateTime(LocalDate.of(9999, 12, 12), 1L);
-        reservationDao.save(new Reservation("asd", "9999-12-12", new ReservationTime(1L,
+        reservationDao.save(new Reservation(new Name("asd"), LocalDate.parse("9999-12-12"), new ReservationTime(1L,
                 LocalTime.of(10, 0))));
         boolean existsTrue = reservationDao.existsByDateTime(LocalDate.of(9999, 12, 12), 1L);
 
@@ -52,7 +53,7 @@ class InMemoryReservationDaoTest {
         inMemoryReservationTimeDb.insert(LocalTime.of(10, 0));
         ReservationTime reservationTime = inMemoryReservationTimeDb.selectById(1L);
         //when
-        reservationDao.save(new Reservation("aa", "9999-10-10", reservationTime));
+        reservationDao.save(new Reservation(new Name("aa"), LocalDate.parse("9999-10-10"), reservationTime));
         //then
         assertThat(reservationDao.findAll()).hasSize(1);
     }
@@ -63,7 +64,7 @@ class InMemoryReservationDaoTest {
         //given
         inMemoryReservationTimeDb.insert(LocalTime.of(10, 0));
         ReservationTime reservationTime = inMemoryReservationTimeDb.selectById(1L);
-        reservationDao.save(new Reservation("aa", "9999-10-10", reservationTime));
+        reservationDao.save(new Reservation(new Name("aa"), LocalDate.parse("9999-10-10"), reservationTime));
         //when
         reservationDao.deleteById(1L);
         //then
@@ -76,7 +77,7 @@ class InMemoryReservationDaoTest {
         //given
         inMemoryReservationTimeDb.insert(LocalTime.of(10, 0));
         ReservationTime reservationTime = inMemoryReservationTimeDb.selectById(1L);
-        reservationDao.save(new Reservation("aa", "9999-10-10", reservationTime));
+        reservationDao.save(new Reservation(new Name("aa"), LocalDate.parse("9999-10-10"), reservationTime));
         //when
         boolean deleted = reservationDao.deleteById(1L);
         //then

@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,6 +20,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
+import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeRequest;
@@ -80,7 +83,7 @@ class ReservationTimeControllerTest {
     @Test
     void deleteReservationTImeSuccess() {
         //given
-        ReservationTime reservationTime = reservationTimeDao.save(new ReservationTime("10:00"));
+        ReservationTime reservationTime = reservationTimeDao.save(new ReservationTime(LocalTime.parse("10:00")));
         Long id = reservationTime.getId();
         //then
         RestAssured.given().log().all()
@@ -103,8 +106,8 @@ class ReservationTimeControllerTest {
     @Test
     void deleteReservationTimeDeletesReservationAlso() {
         //given
-        ReservationTime reservationTime = reservationTimeDao.save(new ReservationTime("10:00"));
-        reservationDao.save(new Reservation("brown", "2024-11-15", reservationTime));
+        ReservationTime reservationTime = reservationTimeDao.save(new ReservationTime(LocalTime.parse("10:00")));
+        reservationDao.save(new Reservation(new Name("brown"), LocalDate.parse("2024-11-15"), reservationTime));
         Long timeId = reservationTime.getId();
         //when
         Response deleteResponse = RestAssured.given().log().all()

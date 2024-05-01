@@ -7,20 +7,12 @@ import java.time.LocalTime;
 
 public class Reservation {
     private final Long id;
-    private final Name name; //TODO 어떻게 생성할지
+    private final Name name;
     private final LocalDate date;
     private final ReservationTime time;
 
-    public Reservation(String name, String date, ReservationTime time) {
+    public Reservation(Name name, LocalDate date, ReservationTime time) {
         this(null, name, date, time);
-    }
-
-    public Reservation(Long id, String name, String date, ReservationTime time) {
-        this(id, name, LocalDate.parse(date), time);
-    }
-
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time) {
-        this(id, new Name(name), date, time);
     }
 
     public Reservation(Long id, Name name, LocalDate date, ReservationTime time) {
@@ -39,8 +31,9 @@ public class Reservation {
         return time.hasSameId(timeId);
     }
 
-    public void validateDateTime(LocalDate date, LocalTime time) {
-        if (LocalDateTime.of(date, time).isBefore(LocalDateTime.now(Clock.systemDefaultZone()))) {
+    private void validateDateTime(LocalDate date, LocalTime time) {
+        LocalDateTime now = LocalDateTime.now(Clock.systemDefaultZone());
+        if (LocalDateTime.of(date, time).isBefore(now)) {
             throw new IllegalArgumentException("예약할 수 없는 날짜입니다.");
         }
     }

@@ -2,7 +2,6 @@ package roomescape.controller;
 
 import java.net.URI;
 import java.util.List;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,12 +31,8 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(
             @RequestBody ReservationRequest reservationRequest) {
-        try {
-            ReservationResponse reservationResponse = reservationService.save(reservationRequest);
-            return ResponseEntity.created(URI.create("admin/reservation")).body(reservationResponse);
-        } catch (IncorrectResultSizeDataAccessException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        ReservationResponse reservationResponse = reservationService.save(reservationRequest);
+        return ResponseEntity.created(URI.create("admin/reservation")).body(reservationResponse);
     }
 
     @DeleteMapping("/{id}")

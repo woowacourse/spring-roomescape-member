@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
@@ -30,16 +31,21 @@ public class ReservationService {
     public ReservationResponse save(ReservationRequest reservationRequest) {
         ReservationTime reservationTime = reservationTimeDao.findById(reservationRequest.timeId());
         Reservation reservation = reservationRequest.toReservation(reservationTime);
-        boolean exists = reservationDao.existsByDateTime(reservation.getDate(),
-                reservationTime.getId());
-        if (exists) {
-            throw new IllegalArgumentException("중복된 예약 시간입니다.");
-        }
+
+        validateDateTimeExistence(reservation.getDate(), reservationTime.getId());
+
         Reservation savedReservation = reservationDao.save(reservation);
         return new ReservationResponse(savedReservation);
     }
 
     public boolean deleteById(long id) {
         return reservationDao.deleteById(id);
+    }
+
+    private void validateDateTimeExistence(LocalDate date, Long timeId) {
+        boolean exists = reservationDao.existsByDateTime(date, timeId);
+        if (exists) {
+            throw new IllegalArgumentException("중복된 예약 시간입니다.");
+        }
     }
 }

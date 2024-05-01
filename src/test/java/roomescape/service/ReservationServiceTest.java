@@ -3,6 +3,7 @@ package roomescape.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -41,7 +42,7 @@ class ReservationServiceTest {
     @Test
     void save() {
         //given
-        reservationTimeDao.save(new ReservationTime("10:00"));
+        reservationTimeDao.save(new ReservationTime(LocalTime.parse("10:00")));
         ReservationRequest reservationRequest = new ReservationRequest("aa", "2024-10-10", 1L);
         //when
         ReservationResponse response = reservationService.save(reservationRequest);
@@ -60,7 +61,7 @@ class ReservationServiceTest {
     @Test
     void deleteById() {
         //given
-        reservationTimeDao.save(new ReservationTime("10:00"));
+        reservationTimeDao.save(new ReservationTime(LocalTime.parse("10:00")));
         reservationService.save(new ReservationRequest("aa", "2024-10-10", 1L));
         //when
         reservationService.deleteById(1);

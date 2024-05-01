@@ -35,7 +35,7 @@ class InMemoryReservationTimeDaoTest {
     @Test
     void save() {
         //when
-        reservationTimeDao.save(new ReservationTime("10:00"));
+        reservationTimeDao.save(new ReservationTime(LocalTime.parse("10:00")));
         //then
         assertThat(reservationTimeDao.findAll()).hasSize(1);
     }
@@ -44,9 +44,9 @@ class InMemoryReservationTimeDaoTest {
     @Test
     void findById() {
         //when
-        reservationTimeDao.save(new ReservationTime("10:00"));
+        reservationTimeDao.save(new ReservationTime(LocalTime.parse("10:00")));
         //then
-        assertThat(reservationTimeDao.findById(1L).getStartAt()).isEqualTo("10:00");
+        assertThat(reservationTimeDao.findById(1L).getStartAt()).isEqualTo(LocalTime.parse("10:00"));
     }
 
     @DisplayName("해당 id의 예약 시간이 없는 경우, 예외가 발생한다.")
@@ -60,7 +60,7 @@ class InMemoryReservationTimeDaoTest {
     @Test
     void existsByStartAt() {
         boolean existsFalse = reservationTimeDao.existByStartAt(LocalTime.of(10, 0));
-        reservationTimeDao.save(new ReservationTime("10:00"));
+        reservationTimeDao.save(new ReservationTime(LocalTime.parse("10:00")));
         boolean existsTrue = reservationTimeDao.existByStartAt(LocalTime.of(10, 0));
 
         assertAll(
@@ -73,7 +73,7 @@ class InMemoryReservationTimeDaoTest {
     @Test
     void deleteById() {
         //given
-        reservationTimeDao.save(new ReservationTime("10:00"));
+        reservationTimeDao.save(new ReservationTime(LocalTime.parse("10:00")));
         //when
         reservationTimeDao.deleteById(1L);
         //then
@@ -83,9 +83,9 @@ class InMemoryReservationTimeDaoTest {
     @DisplayName("해당 id의 예약 시간을 삭제하는 경우, 그 id를 참조하는 예약도 삭제한다.")
     @Test
     void deleteByIdDeletesReservationAlso() {
-        reservationTimeDao.save(new ReservationTime("10:00"));
+        reservationTimeDao.save(new ReservationTime(LocalTime.parse("10:00")));
         inMemoryReservationDb.insert("aa", "2024-10-11",
-                new ReservationTime(1L, LocalTime.of(10, 00)));
+                new ReservationTime(1L, LocalTime.of(10, 0)));
 
         reservationTimeDao.deleteById(1L);
 
@@ -96,7 +96,7 @@ class InMemoryReservationTimeDaoTest {
     @Test
     void returnTrueWhenDeleted() {
         //given
-        reservationTimeDao.save(new ReservationTime("10:00"));
+        reservationTimeDao.save(new ReservationTime(LocalTime.parse("10:00")));
         //when
         boolean deleted = reservationTimeDao.deleteById(1L);
         //then

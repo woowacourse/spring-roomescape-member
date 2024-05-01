@@ -2,6 +2,8 @@ package roomescape.controller;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,6 +16,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
+import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationRequest;
@@ -54,7 +57,7 @@ class ReservationControllerTest {
     void createReservation() {
         //given
         ReservationTime savedReservationTime = reservationTimeDao.save(
-                new ReservationTime("10:00"));
+                new ReservationTime(LocalTime.parse("10:00")));
         //then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -69,7 +72,7 @@ class ReservationControllerTest {
     void createReservationException(String value) {
         //given
         ReservationTime savedReservationTime = reservationTimeDao.save(
-                new ReservationTime("10:00"));
+                new ReservationTime(LocalTime.parse("10:00")));
         //then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -84,7 +87,7 @@ class ReservationControllerTest {
     void createReservationExceptionByDate(String value) {
         //given
         ReservationTime savedReservationTime = reservationTimeDao.save(
-                new ReservationTime("10:00"));
+                new ReservationTime(LocalTime.parse("10:00")));
         //then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -98,7 +101,7 @@ class ReservationControllerTest {
     void outdatedReservation() {
         //given
         ReservationTime savedReservationTime = reservationTimeDao.save(
-                new ReservationTime("10:00"));
+                new ReservationTime(LocalTime.parse("10:00")));
         //when
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -112,7 +115,7 @@ class ReservationControllerTest {
     void duplicateReservation() {
         //given
         ReservationTime savedReservationTime = reservationTimeDao.save(
-                new ReservationTime("10:00"));
+                new ReservationTime(LocalTime.parse("10:00")));
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(new ReservationRequest("브라운", "9999-12-12", savedReservationTime.getId()))
@@ -140,9 +143,9 @@ class ReservationControllerTest {
     @Test
     void deleteReservationSuccess() {
         //given
-        ReservationTime reservationTime = reservationTimeDao.save(new ReservationTime("10:00"));
+        ReservationTime reservationTime = reservationTimeDao.save(new ReservationTime(LocalTime.parse("10:00")));
         Reservation reservation = reservationDao.save(
-                new Reservation("brown", "2024-11-15", reservationTime));
+                new Reservation(new Name("brown"), LocalDate.parse("2024-11-15"), reservationTime));
         Long id = reservation.getId();
         //then
         RestAssured.given().log().all()

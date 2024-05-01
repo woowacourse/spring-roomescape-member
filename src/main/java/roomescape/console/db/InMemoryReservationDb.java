@@ -1,9 +1,11 @@
 package roomescape.console.db;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 
@@ -19,7 +21,7 @@ public class InMemoryReservationDb {
 
     public long insert(String name, String date, ReservationTime reservationTime) {
         long thisId = id.getAndIncrement();
-        reservations.put(thisId, new Reservation(thisId, name, date, reservationTime));
+        reservations.put(thisId, new Reservation(thisId, new Name(name), LocalDate.parse(date), reservationTime));
         return thisId;
     }
 

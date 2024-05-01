@@ -26,7 +26,7 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
         return jdbcTemplate.query("SELECT * FROM reservation_time",
                 (rs, rowNum) -> new ReservationTime(
                         rs.getLong("id"),
-                        rs.getTime("start_at")
+                        rs.getTime("start_at").toLocalTime()
                 ));
     }
 
@@ -35,7 +35,7 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
         return jdbcTemplate.queryForObject("SELECT * FROM reservation_time WHERE id = ?",
                 (rs, rowNum) -> new ReservationTime(
                         rs.getLong("id"),
-                        rs.getTime("start_at")
+                        rs.getTime("start_at").toLocalTime()
                 ), id);
     }
 
