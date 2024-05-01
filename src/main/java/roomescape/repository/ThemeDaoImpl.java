@@ -43,4 +43,9 @@ public class ThemeDaoImpl implements ThemeDao {
         Long id = simpleJdbcInsert.executeAndReturnKey(themeRow).longValue();
         return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
+
+    @Override
+    public void deleteById(Long id) {
+        jdbcTemplate.update("delete from theme where id = ?", id);
+    }
 }

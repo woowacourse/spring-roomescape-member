@@ -45,4 +45,12 @@ class ThemeDaoImplTest {
         assertThat(inserted.getId()).isNotNull();
     }
 
+    @DisplayName("원하는 ID의 테마를 삭제할 수 있습니다")
+    @Test
+    void should_deleteById() {
+        themeDao.deleteById(1L);
+        int count = jdbcTemplate.queryForObject("select count(*) from reservation_time where id = 1", Integer.class);
+
+        assertThat(count).isZero();
+    }
 }
