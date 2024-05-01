@@ -87,15 +87,15 @@ public class ReservationDao {
         return jdbcTemplate.queryForObject(sql, Boolean.class, themeId);
     }
 
-    public boolean isExistReservationByTimeIdAndDate(Long timeId, String date) {
+    public boolean isExistReservationByDateAndTimeIdAndThemeId(String date, Long timeId, Long themeId) {
         String sql = """
                 SELECT EXISTS (
                     SELECT 1
                     FROM reservation
-                    WHERE time_id = ? AND date = ?
+                    WHERE date = ? AND time_id = ? AND theme_id = ?
                 )
                 """;
-        return jdbcTemplate.queryForObject(sql, Boolean.class, timeId, date);
+        return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
     }
 
     public Reservation createReservation(Reservation reservation) {
