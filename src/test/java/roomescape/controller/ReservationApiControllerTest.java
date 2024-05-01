@@ -50,7 +50,7 @@ class ReservationApiControllerTest {
                 .andExpect(jsonPath("$.length()", is(2)));
     }
 
-    @DisplayName("/reservations POST 요청 시 저장된 예약과 200 상태 코드를 응답한다.")
+    @DisplayName("/reservations POST 요청 시 저장된 예약과 201 상태 코드를 응답한다.")
     @Test
     void return_200_status_code_and_saved_reservation_when_post_request() throws Exception {
         ReservationRequestDto requestDto = new ReservationRequestDto("재즈", "2024-04-22", 1L);
@@ -65,7 +65,7 @@ class ReservationApiControllerTest {
         mockMvc.perform(post("/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.name", is("재즈")))
                 .andExpect(jsonPath("$.date", is("2024-04-22")))
@@ -73,10 +73,10 @@ class ReservationApiControllerTest {
                 .andExpect(jsonPath("$.time.startAt", is("15:30")));
     }
 
-    @DisplayName("/reservations/{id} DELETE 요청 시 200 상태 코드를 응답한다.")
+    @DisplayName("/reservations/{id} DELETE 요청 시 204 상태 코드를 응답한다.")
     @Test
     void return_200_status_code_when_delete_request() throws Exception {
         mockMvc.perform(delete("/reservations/{id}", 1))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
     }
 }

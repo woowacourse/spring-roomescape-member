@@ -50,7 +50,7 @@ class ReservationTimeApiControllerTest {
                 .andExpect(jsonPath("$.length()", is(2)));
     }
 
-    @DisplayName("/times POST 요청 시 저장된 예약 시간과 200 상태 코드를 응답한다.")
+    @DisplayName("/times POST 요청 시 저장된 예약 시간과 201 상태 코드를 응답한다.")
     @Test
     void return_200_status_code_and_saved_reservation_time_when_post_request() throws Exception {
         ReservationTimeRequestDto requestDto = new ReservationTimeRequestDto("01:34");
@@ -63,15 +63,15 @@ class ReservationTimeApiControllerTest {
         mockMvc.perform(post("/times")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.startAt", is("01:34")));
     }
 
-    @DisplayName("/times/{id} DELETE 요청 시 200 상태 코드를 응답한다.")
+    @DisplayName("/times/{id} DELETE 요청 시 204 상태 코드를 응답한다.")
     @Test
     void return_200_status_code_when_delete_request() throws Exception {
         mockMvc.perform(delete("/times/{id}", 1))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
     }
 }

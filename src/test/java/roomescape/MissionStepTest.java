@@ -70,7 +70,7 @@ public class MissionStepTest {
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         RestAssured.given().log().all()
                 .when().get("/times")
@@ -81,7 +81,7 @@ public class MissionStepTest {
         RestAssured.given().log().all()
                 .when().delete("/times/1")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
     }
 
     @DisplayName("예약에 대한 CRD 테스트")
@@ -99,7 +99,7 @@ public class MissionStepTest {
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -110,7 +110,7 @@ public class MissionStepTest {
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
     }
 
     private static void initializeTimesData() {
@@ -122,7 +122,7 @@ public class MissionStepTest {
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
     }
 
     @DisplayName("컨트롤러에서 영속 계층 의존성이 제거되었는지 테스트")
