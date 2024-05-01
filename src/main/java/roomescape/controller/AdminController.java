@@ -11,8 +11,8 @@ public class AdminController {
         return "/admin/index";
     }
 
-    @GetMapping("/")
-    public String welcome() {
-        return "redirect:/admin";
-    }
+//    @GetMapping("/")
+//    public String welcome() {
+//        return "redirect:/admin";
+//    }
 }

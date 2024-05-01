@@ -6,6 +6,7 @@ import roomescape.dao.ReservationThemeDao;
 import roomescape.domain.ReservationTheme;
 import roomescape.dto.ReservationThemeRequestDto;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -32,5 +33,18 @@ public class ReservationThemeService {
             throw new IllegalStateException();
         }
         reservationThemeDao.deleteById(id);
+    }
+
+    public List<ReservationTheme> getWeeklyBestThemes() {
+        LocalDate now = LocalDate.now();
+        LocalDate from = now.minusWeeks(1);
+        LocalDate to = now.minusDays(1);
+
+        List<Long> bestTheme = reservationDao.findBestThemeIdInWeek(from.toString(), to.toString());
+        return bestTheme.stream()
+                .map(themeId -> reservationThemeDao.findById(themeId)
+                        .orElseThrow(IllegalArgumentException::new))
+                .limit(10)
+                .toList();
     }
 }
