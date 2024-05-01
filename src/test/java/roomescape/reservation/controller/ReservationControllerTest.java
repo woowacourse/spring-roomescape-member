@@ -20,16 +20,18 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.time.domain.Time;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
+import roomescape.theme.domain.Theme;
+import roomescape.time.domain.Time;
 
 @WebMvcTest(ReservationController.class)
 class ReservationControllerTest {
+
     private final Reservation reservation = new Reservation(1L, "polla", LocalDate.now(),
-            new Time(1L, LocalTime.now()));
+            new Time(1L, LocalTime.now()), new Theme(1L, "polla", "폴라 방탈출", "이미지~"));
 
     @Autowired
     private MockMvc mockMvc;
@@ -41,12 +43,11 @@ class ReservationControllerTest {
     @DisplayName("예약 정보를 잘 저장하는지 확인한다.")
     void saveReservation() throws Exception {
         Mockito.when(reservationService.addReservation(any()))
-                .thenReturn(toResponse(reservation));
+                .thenReturn(ReservationResponse.fromReservation(reservation));
 
         String content = new ObjectMapper()
                 .registerModule(new JavaTimeModule())
-                .writeValueAsString(
-                        new ReservationRequest(reservation.getDate(), "polla", 1L));
+                .writeValueAsString(new ReservationRequest(reservation.getDate(), "polla", 1L, 1L));
 
         mockMvc.perform(post("/reservations")
                         .content(content)
@@ -61,7 +62,7 @@ class ReservationControllerTest {
     @DisplayName("예약 정보를 잘 불러오는지 확인한다.")
     void findAllReservations() throws Exception {
         Mockito.when(reservationService.findReservations())
-                .thenReturn(List.of(toResponse(reservation)));
+                .thenReturn(List.of(ReservationResponse.fromReservation(reservation)));
 
         mockMvc.perform(get("/reservations"))
                 .andDo(print())
@@ -74,10 +75,5 @@ class ReservationControllerTest {
         mockMvc.perform(delete("/reservations/1"))
                 .andDo(print())
                 .andExpect(status().isNoContent());
-    }
-
-    private ReservationResponse toResponse(Reservation reservation) {
-        return new ReservationResponse(reservation.getId(),
-                reservation.getName(), reservation.getDate(), reservation.getReservationTime());
     }
 }
