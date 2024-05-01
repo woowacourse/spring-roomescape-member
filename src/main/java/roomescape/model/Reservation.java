@@ -2,7 +2,6 @@ package roomescape.model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 public class Reservation {
 
@@ -31,8 +30,8 @@ public class Reservation {
         }
     }
 
-    public String getFormattedDate() {
-        return date.format(DateTimeFormatter.ISO_DATE);
+    public boolean isTime(final ReservationTime time) {
+        return this.time.equals(time);
     }
 
     public LocalDateTime getDateTime() {

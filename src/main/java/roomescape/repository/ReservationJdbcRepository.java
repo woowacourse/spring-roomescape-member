@@ -80,30 +80,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
             INNER JOIN theme as t
             ON r.theme_id = t.id
         """;
-        return jdbcTemplate.query(selectQuery, ROW_MAPPER)
-                .stream()
-                .toList();
-    }
-
-    @Override
-    public void deleteById(final Long id) {
-        jdbcTemplate.update("DELETE FROM reservations WHERE id = ?", id);
-    }
-
-    @Override
-    public boolean existByTimeId(final Long timeId) {
-        String sql = """
-                SELECT 
-                CASE WHEN EXISTS (
-                        SELECT 1
-                        FROM reservations
-                        WHERE time_id = ?
-                    )
-                    THEN TRUE
-                    ELSE FALSE
-                END""";
-
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, timeId));
+        return jdbcTemplate.query(selectQuery, ROW_MAPPER);
     }
 
     @Override
@@ -136,19 +113,43 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existByDateAndTimeIdAndThemeId(final LocalDate date, final Long timeId, final Long themeId) {
+    public List<Reservation> findByDateAndThemeId(final LocalDate date, final Long themeId) {
+        final String selectQuery = """
+            SELECT
+                r.id as reservation_id,
+                r.name,
+                r.date,
+                rt.id as time_id,
+                rt.start_at,
+                t.id as theme_id,
+                t.name as theme_name,
+                t.description,
+                t.thumbnail
+            FROM reservations as r
+            INNER JOIN reservation_times as rt
+            ON r.time_id = rt.id
+            INNER JOIN theme as t
+            ON r.theme_id = t.id
+            WHERE r.date = ? AND r.theme_id = ?
+        """;
+
+        return jdbcTemplate.query(selectQuery, ROW_MAPPER, date, themeId);
+    }
+
+    @Override
+    public boolean existByTimeId(final Long timeId) {
         String sql = """
                 SELECT 
                 CASE WHEN EXISTS (
                         SELECT 1
                         FROM reservations
-                        WHERE date = ? AND time_id = ? AND theme_id = ?
+                        WHERE time_id = ?
                     )
                     THEN TRUE
                     ELSE FALSE
                 END""";
 
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId));
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, timeId));
     }
 
     @Override
@@ -165,5 +166,26 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 END""";
 
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, themeId));
+    }
+
+    @Override
+    public boolean existByDateAndTimeIdAndThemeId(final LocalDate date, final Long timeId, final Long themeId) {
+        String sql = """
+                SELECT 
+                CASE WHEN EXISTS (
+                        SELECT 1
+                        FROM reservations
+                        WHERE date = ? AND time_id = ? AND theme_id = ?
+                    )
+                    THEN TRUE
+                    ELSE FALSE
+                END""";
+
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId));
+    }
+
+    @Override
+    public void deleteById(final Long id) {
+        jdbcTemplate.update("DELETE FROM reservations WHERE id = ?", id);
     }
 }
