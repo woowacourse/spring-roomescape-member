@@ -21,9 +21,9 @@ class JdbcThemeRepositoryTest {
     @Test
     void save() {
         Theme theme = new Theme("방탈출", "방탈출을 한다.", "https://url");
-        Theme savedTheme = themeRepository.save(theme);
-
-        assertThat(savedTheme).isEqualTo(savedTheme);
+        Theme actual = themeRepository.save(theme);
+        Theme expected = new Theme(actual.getId(), theme.getName(), theme.getDescription(), theme.getThumbnail());
+        assertThat(actual).isEqualTo(expected);
     }
 
     @DisplayName("전체 테마 정보를 불러온다.")
