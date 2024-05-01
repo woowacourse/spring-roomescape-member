@@ -23,6 +23,7 @@ import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
+import roomescape.domain.ThemeRepository;
 import roomescape.dto.app.ReservationAppRequest;
 import roomescape.exception.reservation.DuplicatedReservationException;
 import roomescape.exception.reservation.IllegalDateFormatException;
@@ -41,6 +42,8 @@ class ReservationServiceTest {
     private ReservationRepository reservationRepository;
     @MockBean
     private ReservationTimeRepository reservationTimeRepository;
+    @MockBean
+    private ThemeRepository themeRepository;
 
     @DisplayName("예약을 저장하고, 해당 예약을 id값과 함께 반환한다.")
     @Test
@@ -82,8 +85,12 @@ class ReservationServiceTest {
     @ParameterizedTest
     @NullAndEmptySource
     void save_IllegalName(String name) {
+        when(reservationTimeRepository.findById(1L))
+            .thenReturn(new ReservationTime(LocalTime.parse("10:00")));
+        when(themeRepository.findById(1L))
+            .thenReturn(new Theme("방탈출1", "방탈출1을 한다.", "https://url"));
         assertThatThrownBy(
-            () -> reservationService.save(new ReservationAppRequest(name, LocalDate.MAX.toString(), 1L, 1L)))
+            () -> reservationService.save(new ReservationAppRequest(name, "2050-01-01", 1L, 1L)))
             .isInstanceOf(IllegalReservationFormatException.class);
     }
 
@@ -91,9 +98,12 @@ class ReservationServiceTest {
     @ParameterizedTest
     @ValueSource(strings = {"2030-13-01", "2030-12-32"})
     void save_IllegalDate(String rawDate) {
+        when(reservationTimeRepository.findById(1L))
+            .thenReturn(new ReservationTime(LocalTime.parse("10:00")));
+        when(themeRepository.findById(1L))
+            .thenReturn(new Theme("방탈출1", "방탈출1을 한다.", "https://url"));
         assertThatThrownBy(() -> reservationService.save(new ReservationAppRequest("brown", rawDate, 1L, 1L)))
             .isInstanceOf(IllegalDateFormatException.class);
-
     }
 
     @DisplayName("실패: 존재하지 않는 시간 ID 입력 시 예외가 발생한다.")
@@ -101,10 +111,10 @@ class ReservationServiceTest {
     void save_TimeIdDoesntExist() {
         when(reservationTimeRepository.findById(1L))
             .thenThrow(EmptyResultDataAccessException.class);
-
+        when(themeRepository.findById(1L))
+            .thenReturn(new Theme("방탈출1", "방탈출1을 한다.", "https://url"));
         assertThatThrownBy(() -> reservationService.save(new ReservationAppRequest("brown", "2030-12-31", 1L, 1L)))
             .isInstanceOf(ReservationTimeNotFoundException.class);
-
     }
 
     @DisplayName("실패: 중복 예약을 생성하면 예외가 발생한다.")
@@ -113,8 +123,11 @@ class ReservationServiceTest {
         String rawDate = "2030-12-31";
         long timeId = 1L;
         long themeId = 1L;
+
         when(reservationRepository.countByDateAndTimeId(LocalDate.parse(rawDate), timeId))
-            .thenReturn(1L);
+            .thenReturn(timeId);
+        when(themeRepository.findById(themeId))
+            .thenReturn(new Theme("방탈출1", "방탈출1을 한다.", "https://url"));
 
         assertThatThrownBy(() -> reservationService.save(new ReservationAppRequest("brown", rawDate, timeId, themeId)))
             .isInstanceOf(DuplicatedReservationException.class);
@@ -127,9 +140,12 @@ class ReservationServiceTest {
 
         long timeId = 1L;
         long themeId = 1L;
+
         ReservationTime reservationTime = new ReservationTime(LocalTime.parse("10:00"));
         when(reservationTimeRepository.findById(timeId))
             .thenReturn(reservationTime);
+        when(themeRepository.findById(themeId))
+            .thenReturn(new Theme("방탈출1", "방탈출1을 한다.", "https://url"));
 
         assertThatThrownBy(
             () -> reservationService.save(new ReservationAppRequest("brown", yesterday.toString(), timeId, themeId))
@@ -144,9 +160,14 @@ class ReservationServiceTest {
 
         long timeId = 1L;
         long themeId = 1L;
+
         ReservationTime reservationTime = new ReservationTime(oneMinuteAgo);
-        when(reservationTimeRepository.findById(1L))
+        Theme theme = new Theme("방탈출1", "방탈출1을 한다.", "https://url");
+
+        when(reservationTimeRepository.findById(timeId))
             .thenReturn(reservationTime);
+        when(themeRepository.findById(themeId))
+            .thenReturn(theme);
 
         assertThatThrownBy(
             () -> reservationService.save(new ReservationAppRequest("brown", today.toString(), timeId, themeId))

@@ -11,6 +11,7 @@ import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
+import roomescape.domain.ThemeRepository;
 import roomescape.dto.app.ReservationAppRequest;
 import roomescape.exception.reservation.DuplicatedReservationException;
 import roomescape.exception.reservation.IllegalDateFormatException;
@@ -22,19 +23,24 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
 
     @Autowired
-    public ReservationService(ReservationRepository reservationRepository,
-        ReservationTimeRepository reservationTimeRepository) {
+    public ReservationService(
+        ReservationRepository reservationRepository,
+        ReservationTimeRepository reservationTimeRepository,
+        ThemeRepository themeRepository) {
+
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
     }
 
     public Reservation save(ReservationAppRequest request) {
         LocalDate date = parseDate(request.date());
         ReservationTime time = findTime(request.timeId());
-        Reservation reservation = new Reservation(request.name(), date, time,
-            new Theme("방탈출", "방탈출하는 게임", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        Theme theme = findTheme(request.themeId());
+        Reservation reservation = new Reservation(request.name(), date, time, theme);
         validatePastReservation(date, time);
         validateDuplication(date, request.timeId());
 
@@ -57,6 +63,17 @@ public class ReservationService {
             return reservationTimeRepository.findById(timeId);
         } catch (EmptyResultDataAccessException e) {
             throw new ReservationTimeNotFoundException();
+        }
+    }
+
+    private Theme findTheme(Long themeId) {
+        if (themeId == null) {
+            throw new IllegalArgumentException("테마 id는 null이 입력될 수 없습니다.");
+        }
+        try {
+            return themeRepository.findById(themeId);
+        } catch (EmptyResultDataAccessException e) {
+            throw new IllegalArgumentException("존재하지 않는 테마 id입니다.");
         }
     }
 

@@ -13,5 +13,7 @@ public interface ReservationRepository {
 
     Long countByTimeId(Long id);
 
-    Long countByDateAndTimeId(LocalDate date, Long timeId);
+    Long countByThemeId(Long id);
+
+    Long countByDateAndTimeId(LocalDate date, Long timeId); // TODO: themeId 인자 추가
 }

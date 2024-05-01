@@ -55,4 +55,21 @@ public class JdbcThemeRepository implements ThemeRepository {
                 rs.getString("thumbnail")
             ));
     }
+
+    @Override
+    public Theme findById(Long id) {
+        String sql = "SELECT * FROM theme WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new Theme(
+            rs.getLong("id"),
+            rs.getString("name"),
+            rs.getString("description"),
+            rs.getString("thumbnail")
+        ), id);
+    }
+
+    @Override
+    public Long countByName(String name) {
+        String sql = "SELECT COUNT(id) FROM theme WHERE name = ?";
+        return jdbcTemplate.queryForObject(sql, Long.class, name);
+    }
 }

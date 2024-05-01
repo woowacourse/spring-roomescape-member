@@ -2,27 +2,38 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.domain.ReservationRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
+import roomescape.dto.app.ThemeAppRequest;
 
 @Service
 public class ThemeService {
 
     private final ThemeRepository themeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ThemeService(ThemeRepository themeRepository) {
+    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository) {
         this.themeRepository = themeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
-    public Theme save(Theme theme) {
-        // TODO: 포맷팅 검증
-        // TODO: 이름 중복 검증
+    public Theme save(ThemeAppRequest request) {
+        Theme theme = new Theme(request.name(), request.description(), request.thumbnail());
+        validateDuplication(request);
         return themeRepository.save(theme);
     }
 
+    private void validateDuplication(ThemeAppRequest request) {
+        if (themeRepository.countByName(request.name()) > 0) {
+            throw new IllegalArgumentException();
+        }
+    }
+
     public int delete(Long id) {
-        // TODO: 테마 사용하는 예약이 존재하면 삭제 불가
-        // TODO: id 값이 없으면 예외 발생
+        if (reservationRepository.countByThemeId(id) > 0) {
+            throw new IllegalArgumentException();
+        }
         return themeRepository.deleteById(id);
     }
 

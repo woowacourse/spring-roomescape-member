@@ -17,15 +17,15 @@ public class Reservation {
     }
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        this.theme = theme;
         validateName(name);
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
+        this.theme = theme;
     }
 
-    private static void validateName(String name) {
+    private void validateName(String name) {
         if (name == null || name.isBlank()) {
             throw new IllegalReservationFormatException();
         }
