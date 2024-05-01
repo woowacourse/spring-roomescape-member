@@ -1,5 +1,7 @@
 package roomescape.domain;
 
+import roomescape.exception.BadRequestException;
+
 public class Theme {
 
     private final Long id;
@@ -8,10 +10,17 @@ public class Theme {
     private final String thumbnail;
 
     public Theme(Long id, String name, String description, String thumbnail) {
+        validateNotBlank(name, description, thumbnail);
         this.id = id;
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
+    }
+
+    private void validateNotBlank(String name, String description, String thumbnail) {
+        if (name.isBlank() || description.isBlank() || thumbnail.isBlank()) {
+            throw new BadRequestException("테마의 정보는 비어있을 수 없습니다.");
+        }
     }
 
     public Theme(String name, String description, String thumbnail) {
