@@ -34,4 +34,14 @@ class ThemeRepositoryTest {
 
         assertThat(theme.getId()).isEqualTo(1);
     }
+
+
+    @Test
+    @DisplayName("테마 id를 통해 데이터베이스에서 테마를 삭제한다.")
+    void deleteTheme() {
+        Theme theme = themeRepository.save(new Theme("name", "description", "thumbnail"));
+
+        int deleteCount = themeRepository.delete(theme.getId());
+        assertThat(deleteCount).isEqualTo(1);
+    }
 }

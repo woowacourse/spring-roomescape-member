@@ -54,4 +54,31 @@ class ThemeControllerTest {
                 .body("id", is(1))
                 .header("Location", "/themes/1");
     }
+
+    @Test
+    @DisplayName("테마를 삭제한다.")
+    void deleteThems() {
+        Map<String, String> params = Map.of(
+                "name", "테마명",
+                "description", "설명",
+                "thumbnail", "http://testsfasdgasd.com"
+        );
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .port(port)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201)
+                .body("id", is(1))
+                .header("Location", "/themes/1");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .port(port)
+                .when().delete("/themes/1")
+                .then().log().all()
+                .statusCode(204);
+    }
 }

@@ -1,10 +1,5 @@
 package roomescape.repository;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,6 +12,12 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.time.Time;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -66,6 +67,7 @@ public class ReservationRepositoryTest {
     void readReservationsSizeFromDbAfterPostAndDelete() {
         Reservation saved = reservationRepository.save(reservation);
 
+        // TODO: count 쿼리를 날리는 대신 repository에서 삭제 시 반환하는 count 값을 사용하도록 변경
         reservationRepository.delete(saved.getId());
         int count = JdbcTestUtils.countRowsInTable(jdbcTemplate, "reservation");
 
