@@ -44,8 +44,8 @@ class ThemeControllerTest {
         String themeResponseJson = objectMapper.writeValueAsString(themeResponse);
 
         mvc.perform(post("/themes")
-                .contentType("application/json")
-                .content(themeRequestJson))
+                        .contentType("application/json")
+                        .content(themeRequestJson))
                 .andExpect(status().isCreated())
                 .andExpect(content().json(themeResponseJson));
     }

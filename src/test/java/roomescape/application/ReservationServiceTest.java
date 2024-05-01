@@ -2,7 +2,6 @@ package roomescape.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.mockito.ArgumentMatchers.any;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -11,11 +10,6 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.jdbc.Sql;
-import roomescape.config.TestConfig;
 import roomescape.domain.PlayerName;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
@@ -113,7 +107,8 @@ class ReservationServiceTest {
     void shouldThrowsIllegalArgumentExceptionWhenReservationDateIsBeforeCurrentDate() {
         ReservationTime time = reservationTimeRepository.create(new ReservationTime(1L, LocalTime.of(12, 0)));
         Theme theme = themeRepository.create(new Theme(new ThemeName("test"), "test", "test"));
-        ReservationRequest reservationRequest = new ReservationRequest("test", LocalDate.of(1999, 12, 25), time.getId(), theme.getId());
+        ReservationRequest reservationRequest = new ReservationRequest("test", LocalDate.of(1999, 12, 25), time.getId(),
+                theme.getId());
 
         assertThatCode(() -> reservationService.create(reservationRequest))
                 .isInstanceOf(IllegalArgumentException.class)
