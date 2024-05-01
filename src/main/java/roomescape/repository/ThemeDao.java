@@ -8,4 +8,6 @@ public interface ThemeDao {
     List<Theme> findAll();
 
     Theme insert(Theme theme);
+
+    void deleteById(Long id);
 }
