@@ -6,15 +6,19 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
 @Service
 @Transactional(readOnly = true)
 public class ReservationTimeService {
 
+    private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
 
-    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository) {
+    public ReservationTimeService(ReservationRepository reservationRepository,
+                                  ReservationTimeRepository reservationTimeRepository) {
+        this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
@@ -36,6 +40,10 @@ public class ReservationTimeService {
 
     @Transactional
     public void deleteReservationTimeById(Long id) {
+        if(reservationRepository.existsByTimeId(id)) {
+            throw new IllegalArgumentException("해당 시간에 예약이 존재합니다.");
+        }
+
         reservationTimeRepository.deleteById(id);
     }
 }

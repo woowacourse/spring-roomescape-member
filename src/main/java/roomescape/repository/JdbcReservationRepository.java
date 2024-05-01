@@ -3,6 +3,8 @@ package roomescape.repository;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -54,6 +56,18 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public Optional<Reservation> findById(Long id) {
+        String sql = "SELECT * FROM reservation WHERE id = ?";
+
+        try {
+            Reservation reservation = jdbcTemplate.queryForObject(sql, rowMapper, id);
+            return Optional.of(reservation);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public Reservation save(Reservation reservation) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
@@ -70,5 +84,12 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = "DELETE FROM reservation WHERE id = ?";
 
         jdbcTemplate.update(sql, id);
+    }
+
+    @Override
+    public boolean existsByTimeId(Long id) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE time_id = ?)";
+
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
     }
 }

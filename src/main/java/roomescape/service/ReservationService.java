@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
@@ -43,6 +44,9 @@ public class ReservationService {
 
     @Transactional
     public void deleteReservationById(Long id) {
+        reservationRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("해당 id의 예약이 존재하지 않습니다."));
+
         reservationRepository.deleteById(id);
     }
 }
