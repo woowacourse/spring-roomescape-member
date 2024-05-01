@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -9,13 +10,17 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.dto.ReservationTimeBookedResponse;
 import roomescape.model.ReservationTime;
 
 @Repository
 public class ReservationTimeJdbcRepository implements ReservationTimeRepository {
 
-    private static final RowMapper<ReservationTime> ROW_MAPPER = (selectedTime, rowNum) ->
+    private static final RowMapper<ReservationTime> TIME_ROW_MAPPER = (selectedTime, rowNum) ->
             new ReservationTime(selectedTime.getLong("id"), LocalTime.parse(selectedTime.getString("start_at")));
+    private static final RowMapper<ReservationTimeBookedResponse> TIME_WITH_BOOKED_ROW_MAPPER = (selectedTime, rowNum) ->
+            new ReservationTimeBookedResponse(selectedTime.getLong("id"), LocalTime.parse(selectedTime.getString("start_at")), selectedTime.getBoolean("already_booked"));
+
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert reservationTimeInsert;
@@ -38,7 +43,7 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
     public Optional<ReservationTime> findById(final Long id) {
         final String selectQuery = "SELECT id, start_at FROM reservation_times WHERE id = ?";
         try {
-            final ReservationTime time = jdbcTemplate.queryForObject(selectQuery, ROW_MAPPER, id);
+            final ReservationTime time = jdbcTemplate.queryForObject(selectQuery, TIME_ROW_MAPPER, id);
             return Optional.ofNullable(time);
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
@@ -48,9 +53,7 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
     @Override
     public List<ReservationTime> findAll() {
         final String selectQuery = "SELECT id, start_at FROM reservation_times";
-        return jdbcTemplate.query(selectQuery, ROW_MAPPER)
-                .stream()
-                .toList();
+        return jdbcTemplate.query(selectQuery, TIME_ROW_MAPPER);
     }
 
     @Override
@@ -60,7 +63,7 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
 
     @Override
     public boolean existByStartAt(final LocalTime startAt) {
-        String sql = """
+        final String sql = """
                 SELECT
                 CASE WHEN EXISTS (
                         SELECT 1
@@ -72,5 +75,24 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
                 END""";
 
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, startAt));
+    }
+
+    @Override
+    public List<ReservationTimeBookedResponse> findTimesWithBooked(final LocalDate date, final Long themeId) {
+        final String sql = """
+                SELECT 
+                    rt.start_at, 
+                    rt.id, 
+                    r.id is not null AS already_booked        
+                FROM reservation_times AS rt
+                LEFT JOIN
+                    (SELECT id, time_id
+                    FROM reservations
+                    WHERE date = ? AND theme_id = ?) AS r
+                    ON rt.id = r.time_id
+                ORDER BY start_at
+                """;
+
+        return jdbcTemplate.query(sql, TIME_WITH_BOOKED_ROW_MAPPER, date, themeId);
     }
 }

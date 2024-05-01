@@ -2,6 +2,8 @@ package roomescape.controller.api;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import roomescape.dto.ReservationTimeBookedRequest;
+import roomescape.dto.ReservationTimeBookedResponse;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.ReservationTimeSaveRequest;
 import roomescape.service.ReservationTimeService;
@@ -17,6 +19,12 @@ public class ReservationTimeController {
 
     public ReservationTimeController(final ReservationTimeService reservationTimeService) {
         this.reservationTimeService = reservationTimeService;
+    }
+
+    @GetMapping(params = {"date", "themeId"})
+    public ResponseEntity<List<ReservationTimeBookedResponse>> getTimesWithBooked(@ModelAttribute final ReservationTimeBookedRequest reservationTimeBookedRequest) {
+        final List<ReservationTimeBookedResponse> reservationTimeBookedResponses = reservationTimeService.getTimesWithBooked(reservationTimeBookedRequest);
+        return ResponseEntity.ok(reservationTimeBookedResponses);
     }
 
     @GetMapping
