@@ -35,6 +35,21 @@ public class ReservationDao {
                     resultSet.getString("theme_thumbnail")
             )
     );
+    private final RowMapper<Theme> themeRowMapper = (resultSet, __) -> new Theme(
+            resultSet.getLong("name"),
+            resultSet.getString("thumbnail"),
+            resultSet.getDate("descr").toLocalDate(),
+            new ReservationTime(
+                    resultSet.getLong("time_id"),
+                    resultSet.getTime("start_at").toLocalTime()
+            ),
+            new Theme(
+                    resultSet.getLong("theme_id"),
+                    resultSet.getString("theme_name"),
+                    resultSet.getString("theme_description"),
+                    resultSet.getString("theme_thumbnail")
+            )
+    );
 
     public ReservationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -97,4 +112,14 @@ public class ReservationDao {
         Integer count = jdbcTemplate.queryForObject(query, Integer.class, timeId, date);
         return count != null && count > 0;
     }
+
+    public List<Theme> getRanking(){
+        String query="SELECT t.name, t.thumbnail, t.description, COUNT(*) AS count\n"
+                + "FROM RESERVATION r "
+                + "INNER JOIN THEME t ON r.theme_id = t.id "
+                + "GROUP BY r.theme_id "
+                + "ORDER BY count DESC "
+                + "LIMIT 10";
+    }
+
 }

@@ -41,4 +41,8 @@ public class ReservationService {
     public void delete(long id) {
         reservationDao.deleteById(id);
     }
+
+    public List<Theme> getRanking(){
+        return reservationDao.getRanking();
+    }
 }
