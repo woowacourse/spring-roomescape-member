@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.domain.UserName;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -24,21 +25,28 @@ class ReservationJdbcRepositoryTest {
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
 
+    @Autowired
+    private ThemeRepository themeRepository;
+
     @Test
     @DisplayName("중복된 예약 시간 추가가 불가능한 지 확인한다.")
     void checkDuplicatedReservationTIme() {
         //given
         reservationTimeRepository.save(new ReservationTime(LocalTime.parse("10:00")));
         ReservationTime reservationTime = reservationTimeRepository.findByTimeId(1L);
+        themeRepository.save(new Theme("테마명", "테마 설명", "테마 이미지"));
+        Theme theme = themeRepository.findByThemeId(1L);
         Reservation reservation1 = new Reservation(
                 new UserName("초롱"),
                 LocalDate.parse("2025-10-05"),
-                reservationTime
+                reservationTime,
+                theme
         );
         Reservation reservation2 = new Reservation(
                 new UserName("메이슨"),
                 LocalDate.parse("2025-10-05"),
-                reservationTime
+                reservationTime,
+                theme
         );
         reservationRepository.save(reservation1);
 

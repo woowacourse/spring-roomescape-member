@@ -44,12 +44,20 @@ class ReservationControllerTest {
         Map<String, String> reservationParams = Map.of(
                 "name", "브라운",
                 "date", "2025-08-05",
-                "timeId", "1"
+                "timeId", "1",
+                "themeId", "1"
         );
 
         Map<String, String> reservationTimeParams = Map.of(
                 "id", "1",
                 "startAt", "10:00"
+        );
+
+        Map<String, String> themeParams = Map.of(
+                "id", "1",
+                "name", "테마명",
+                "description", "테마 설명",
+                "thumbnail", "테마 이미지"
         );
 
         return Stream.of(
@@ -58,6 +66,15 @@ class ReservationControllerTest {
                             .contentType(ContentType.JSON)
                             .body(reservationTimeParams)
                             .when().post("/times")
+                            .then().log().all()
+                            .statusCode(201);
+                }),
+
+                dynamicTest("테마를 추가한다.", () -> {
+                    RestAssured.given().log().all()
+                            .contentType(ContentType.JSON)
+                            .body(themeParams)
+                            .when().post("/themes")
                             .then().log().all()
                             .statusCode(201);
                 }),
@@ -101,12 +118,20 @@ class ReservationControllerTest {
         Map<String, String> reservationParams = Map.of(
                 "name", "초롱!!",
                 "date", "2023-08-05",
-                "timeId", "1"
+                "timeId", "1",
+                "themeId", "1"
         );
 
         Map<String, String> reservationTimeParams = Map.of(
                 "id", "1",
                 "startAt", "10:00"
+        );
+
+        Map<String, String> themeParams = Map.of(
+                "id", "1",
+                "name", "테마명",
+                "description", "테마 설명",
+                "thumbnail", "테마 이미지"
         );
 
         return Stream.of(
@@ -115,6 +140,15 @@ class ReservationControllerTest {
                             .contentType(ContentType.JSON)
                             .body(reservationTimeParams)
                             .when().post("/times")
+                            .then().log().all()
+                            .statusCode(201);
+                }),
+
+                dynamicTest("테마를 추가한다.", () -> {
+                    RestAssured.given().log().all()
+                            .contentType(ContentType.JSON)
+                            .body(themeParams)
+                            .when().post("/themes")
                             .then().log().all()
                             .statusCode(201);
                 }),
@@ -136,12 +170,20 @@ class ReservationControllerTest {
         Map<String, String> reservationParams = Map.of(
                 "name", "초롱",
                 "date", "",
-                "timeId", "1"
+                "timeId", "1",
+                "themeId", "1"
         );
 
         Map<String, String> reservationTimeParams = Map.of(
                 "id", "1",
                 "startAt", "10:00"
+        );
+
+        Map<String, String> themeParams = Map.of(
+                "id", "1",
+                "name", "테마명",
+                "description", "테마 설명",
+                "thumbnail", "테마 이미지"
         );
 
         return Stream.of(
@@ -150,6 +192,15 @@ class ReservationControllerTest {
                             .contentType(ContentType.JSON)
                             .body(reservationTimeParams)
                             .when().post("/times")
+                            .then().log().all()
+                            .statusCode(201);
+                }),
+
+                dynamicTest("테마를 추가한다.", () -> {
+                    RestAssured.given().log().all()
+                            .contentType(ContentType.JSON)
+                            .body(themeParams)
+                            .when().post("/themes")
                             .then().log().all()
                             .statusCode(201);
                 }),
@@ -171,12 +222,20 @@ class ReservationControllerTest {
         Map<String, String> reservationParams = Map.of(
                 "name", "초롱",
                 "date", "2024-10-10",
-                "timeId", "시간 선택"
+                "timeId", "시간 선택",
+                "themeId", "1"
         );
 
         Map<String, String> reservationTimeParams = Map.of(
                 "id", "1",
                 "startAt", "10:00"
+        );
+
+        Map<String, String> themeParams = Map.of(
+                "id", "1",
+                "name", "테마명",
+                "description", "테마 설명",
+                "thumbnail", "테마 이미지"
         );
 
         return Stream.of(
@@ -185,6 +244,15 @@ class ReservationControllerTest {
                             .contentType(ContentType.JSON)
                             .body(reservationTimeParams)
                             .when().post("/times")
+                            .then().log().all()
+                            .statusCode(201);
+                }),
+
+                dynamicTest("테마를 추가한다.", () -> {
+                    RestAssured.given().log().all()
+                            .contentType(ContentType.JSON)
+                            .body(themeParams)
+                            .when().post("/themes")
                             .then().log().all()
                             .statusCode(201);
                 }),
@@ -206,12 +274,20 @@ class ReservationControllerTest {
         Map<String, String> reservationParams = Map.of(
                 "name", "초롱",
                 "date", "2020-05-01",
-                "timeId", "1"
+                "timeId", "1",
+                "themeId", "1"
         );
 
         Map<String, String> reservationTimeParams = Map.of(
                 "id", "1",
                 "startAt", "10:00"
+        );
+
+        Map<String, String> themeParams = Map.of(
+                "id", "1",
+                "name", "테마명",
+                "description", "테마 설명",
+                "thumbnail", "테마 이미지"
         );
 
         return Stream.of(
@@ -220,6 +296,15 @@ class ReservationControllerTest {
                             .contentType(ContentType.JSON)
                             .body(reservationTimeParams)
                             .when().post("/times")
+                            .then().log().all()
+                            .statusCode(201);
+                }),
+
+                dynamicTest("테마를 추가한다.", () -> {
+                    RestAssured.given().log().all()
+                            .contentType(ContentType.JSON)
+                            .body(themeParams)
+                            .when().post("/themes")
                             .then().log().all()
                             .statusCode(201);
                 }),
@@ -241,18 +326,27 @@ class ReservationControllerTest {
         Map<String, String> reservationParams1 = Map.of(
                 "name", "초롱",
                 "date", "2025-05-01",
-                "timeId", "1"
+                "timeId", "1",
+                "themeId", "1"
         );
 
         Map<String, String> reservationParams2 = Map.of(
                 "name", "메이슨",
                 "date", "2025-05-01",
-                "timeId", "1"
+                "timeId", "1",
+                "themeId", "1"
         );
 
         Map<String, String> reservationTimeParams = Map.of(
                 "id", "1",
                 "startAt", "10:00"
+        );
+
+        Map<String, String> themeParams = Map.of(
+                "id", "1",
+                "name", "테마명",
+                "description", "테마 설명",
+                "thumbnail", "테마 이미지"
         );
 
         return Stream.of(
@@ -261,6 +355,15 @@ class ReservationControllerTest {
                             .contentType(ContentType.JSON)
                             .body(reservationTimeParams)
                             .when().post("/times")
+                            .then().log().all()
+                            .statusCode(201);
+                }),
+
+                dynamicTest("테마를 추가한다.", () -> {
+                    RestAssured.given().log().all()
+                            .contentType(ContentType.JSON)
+                            .body(themeParams)
+                            .when().post("/themes")
                             .then().log().all()
                             .statusCode(201);
                 }),

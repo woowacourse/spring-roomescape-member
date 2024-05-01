@@ -1,11 +1,14 @@
 package roomescape.domain;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 public class Theme {
     private final Long id;
     private final String name;
     private final String description;
     private final String thumbnail;
 
+    @JsonCreator
     public Theme(Long id, String name, String description, String thumbnail) {
         validate(name, description, thumbnail);
         this.id = id;

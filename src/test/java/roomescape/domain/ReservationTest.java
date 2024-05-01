@@ -14,9 +14,10 @@ class ReservationTest {
         //given
         ReservationTime reservationTime = new ReservationTime(LocalTime.parse("20:00"));
         UserName userName = new UserName("chorong");
+        Theme theme = new Theme("테마명", "테마 설명", "테마 이미지");
 
         //when & then
-        assertThatThrownBy(() -> new Reservation(userName, null, reservationTime))
+        assertThatThrownBy(() -> new Reservation(userName, null, reservationTime, theme))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약 날짜가 입력되지 않았습니다.");
     }
