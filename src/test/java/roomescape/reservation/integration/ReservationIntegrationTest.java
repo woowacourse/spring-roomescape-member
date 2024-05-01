@@ -4,8 +4,7 @@ import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.util.HashMap;
-import java.util.Map;
+import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,10 +12,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
+import roomescape.reservation.dto.ReservationRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "/data-test.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 class ReservationIntegrationTest {
+
     @LocalServerPort
     private int port;
 
@@ -28,14 +29,11 @@ class ReservationIntegrationTest {
     @Test
     @DisplayName("예약을 잘 등록하고 확인하며, 삭제도 가능하다.")
     void adminReservationPageWork() {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "범블비");
-        params.put("date", "2024-08-05");
-        params.put("timeId", "3");
+        ReservationRequest reservationRequest = new ReservationRequest(LocalDate.now(), "polla", 1L, 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
+                .body(reservationRequest)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);
@@ -61,14 +59,11 @@ class ReservationIntegrationTest {
     @Test
     @DisplayName("저장하는 경우, 존재하는 시간이 아닌 id일 경우 에러를 발생한다.")
     void notExistTime() {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "범블비");
-        params.put("date", "2024-08-05");
-        params.put("timeId", "6");
+        ReservationRequest reservationRequest = new ReservationRequest(LocalDate.now(), "polla", 1L, 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
+                .body(reservationRequest)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(500);
