@@ -5,7 +5,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 
 import java.sql.PreparedStatement;
@@ -46,7 +45,7 @@ public class ThemeDao {
             return preparedStatement;
         }, keyHolder);
 
-        long id = keyHolder.getKey().longValue();
+        Long id = keyHolder.getKey().longValue();
         return theme.changeId(id);
     }
 

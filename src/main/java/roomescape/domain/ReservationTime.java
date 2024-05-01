@@ -21,7 +21,7 @@ public class ReservationTime {
 
     private ReservationTime(Long id, LocalTime startAt) {
         this.id = id;
-        this.startAt = Objects.requireNonNull(startAt, "인자 중 null 값이 존재합니다.");;
+        this.startAt = Objects.requireNonNull(startAt, "인자 중 null 값이 존재합니다.");
     }
 
     private static LocalTime toLocalTime(String time) {

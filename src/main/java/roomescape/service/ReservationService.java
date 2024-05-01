@@ -42,7 +42,7 @@ public class ReservationService {
         }
     }
 
-    public void deleteReservation(long id) {
+    public void deleteReservation(Long id) {
         reservationDao.deleteReservation(id);
     }
 

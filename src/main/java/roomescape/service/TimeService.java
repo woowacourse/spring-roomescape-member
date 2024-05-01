@@ -29,7 +29,7 @@ public class TimeService {
         return timeDao.createTime(dto.createReservationTime());
     }
 
-    public void deleteTime(long id) {
+    public void deleteTime(Long id) {
         if (reservationDao.isReservationsByTimeId(id)) {
             throw new IllegalArgumentException("해당 시간을 사용하는 예약이 존재합니다.");
         }
