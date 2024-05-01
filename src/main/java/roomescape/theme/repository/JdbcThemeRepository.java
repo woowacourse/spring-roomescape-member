@@ -65,4 +65,18 @@ public class JdbcThemeRepository implements ThemeRepository {
         String sql = "delete from theme where id = ?";
         jdbcTemplate.update(sql, id);
     }
+
+    @Override // TODO: sql 확인
+    public List<Theme> findOrderByReservation() {
+        String sql = """
+                select t.id, t.name, t.description, t.thumbnail, count(t.id) as count
+                from theme as t
+                left join reservation as r
+                on r.theme_id = t.id
+                group by t.id
+                order by count desc
+                limit 10
+                """;
+        return jdbcTemplate.query(sql, themeRowMapper);
+    }
 }

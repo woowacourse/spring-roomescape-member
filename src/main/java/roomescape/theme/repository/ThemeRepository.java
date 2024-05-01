@@ -13,4 +13,6 @@ public interface ThemeRepository {
     Optional<Theme> findById(Long id);
 
     void deleteById(Long id);
+
+    List<Theme> findOrderByReservation();
 }
