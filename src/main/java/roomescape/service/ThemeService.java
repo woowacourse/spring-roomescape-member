@@ -21,6 +21,9 @@ public class ThemeService {
     }
 
     public Theme createTheme(ThemeCreateRequest dto) {
+        if (themeDao.isThemeByName(dto.name())) {
+            throw new IllegalArgumentException("해당 테마 이름은 이미 존재합니다.");
+        }
         return themeDao.createTheme(dto.createTheme());
     }
 

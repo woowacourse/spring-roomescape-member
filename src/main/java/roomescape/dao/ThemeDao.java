@@ -33,6 +33,17 @@ public class ThemeDao {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
+    public boolean isThemeByName(String name) {
+        String sql = """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM theme
+                    WHERE name = ?
+                )
+                """;
+        return jdbcTemplate.queryForObject(sql, Boolean.class, name);
+    }
+
     public Theme createTheme(Theme theme) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "INSERT INTO theme (name, description, thumbnail) values (?, ?, ?)";
@@ -53,5 +64,4 @@ public class ThemeDao {
         String sql = "DELETE FROM theme WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
-
 }
