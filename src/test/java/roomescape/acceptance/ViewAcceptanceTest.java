@@ -43,4 +43,13 @@ public class ViewAcceptanceTest {
                 .then().log().all()
                 .statusCode(200);
     }
+
+    @Test
+    @DisplayName("[2 - Step3] 사용자 예약 페이지를 조회한다.")
+    void getReservationPage() {
+        RestAssured.given().log().all()
+                .when().get("/reservation")
+                .then().log().all()
+                .statusCode(200);
+    }
 }
