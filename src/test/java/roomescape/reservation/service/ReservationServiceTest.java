@@ -17,6 +17,8 @@ import roomescape.reservation.domain.Name;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.repository.ReservationRepository;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
 
@@ -25,6 +27,9 @@ class ReservationServiceTest {
 
     @Mock
     private ReservationRepository reservationRepository;
+
+    @Mock
+    private ThemeRepository themeRepository;
 
     @Mock
     private ReservationTimeRepository reservationTimeRepository;
@@ -40,7 +45,7 @@ class ReservationServiceTest {
         doReturn(Optional.empty()).when(reservationTimeRepository)
                 .findById(timeId);
 
-        ReservationRequest reservationRequest = new ReservationRequest("hogi", LocalDate.now(), timeId);
+        ReservationRequest reservationRequest = new ReservationRequest("hogi", LocalDate.now(), 1L, timeId);
         assertThatThrownBy(() -> reservationService.save(reservationRequest))
                 .isInstanceOf(IllegalArgumentException.class);
     }
@@ -48,7 +53,7 @@ class ReservationServiceTest {
     @Test
     @DisplayName("지나간 날짜를 예약 하면 예외가 발생한다")
     void beforeDateExceptionTest() {
-        ReservationRequest reservationRequest = new ReservationRequest("hogi", LocalDate.parse("1998-03-14"), 1L);
+        ReservationRequest reservationRequest = new ReservationRequest("hogi", LocalDate.parse("1998-03-14"), 1L, 1L);
 
         assertThatThrownBy(() -> reservationService.save(reservationRequest))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -57,17 +62,19 @@ class ReservationServiceTest {
     @Test
     @DisplayName("중복된 예약이 있다면 예외가 발생한다.")
     void duplicateReservationExceptionTest() {
+        Theme theme = new Theme(new Name("공포"), "무서운 테마", "https://i.pinimg.com/236x.jpg");
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
-        Reservation reservation = new Reservation(1L, new Name("hogi"), LocalDate.parse("1998-03-14"),
-                reservationTime);
 
         doReturn(Optional.of(reservationTime)).when(reservationTimeRepository)
+                .findById(1L);
+
+        doReturn(Optional.of(theme)).when(themeRepository)
                 .findById(1L);
 
         doReturn(true).when(reservationRepository)
                 .existReservation(Mockito.any(Reservation.class));
 
-        ReservationRequest reservationRequest = new ReservationRequest("hogi", LocalDate.parse("1998-03-14"), 1L);
+        ReservationRequest reservationRequest = new ReservationRequest("hogi", LocalDate.parse("2025-03-14"), 1L, 1L);
         assertThatThrownBy(() -> reservationService.save(reservationRequest))
                 .isInstanceOf(IllegalArgumentException.class);
     }

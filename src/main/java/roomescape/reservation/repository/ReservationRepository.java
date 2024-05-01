@@ -12,6 +12,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Name;
 import roomescape.reservation.domain.Reservation;
+import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
 @Repository
@@ -24,7 +25,7 @@ public class ReservationRepository {
     }
 
     public Long save(Reservation reservation) {
-        String sql = "insert into reservation (name, date, time_id) values (?, ?, ?)";
+        String sql = "insert into reservation (name, date, theme_id, time_id) values (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(con -> {
@@ -33,7 +34,8 @@ public class ReservationRepository {
             );
             ps.setString(1, reservation.getName());
             ps.setString(2, String.valueOf(reservation.getDate()));
-            ps.setString(3, String.valueOf(reservation.getTime().getId()));
+            ps.setLong(3, reservation.getTheme().getId());
+            ps.setLong(4, reservation.getTime().getId());
             return ps;
         }, keyHolder);
 
@@ -46,11 +48,17 @@ public class ReservationRepository {
                 r.id,
                 r.name,
                 r.date,
-                t.id as time_id,
-                t.start_at
+                t.id as theme_id,
+                t.name,
+                t.description,
+                t.thumbnail,
+                rt.id as time_id,
+                rt.start_at
                 from reservation r
-                inner join reservation_time t
-                on r.time_id = t.id
+                join reservation_time rt
+                on r.time_id = rt.id
+                join theme t
+                on r.theme_id = t.id
                 where r.id = ?
                 """;
         try {
@@ -66,23 +74,30 @@ public class ReservationRepository {
                 r.id,
                 r.name,
                 r.date,
-                t.id as time_id,
-                t.start_at
-                from reservation r 
-                inner join reservation_time t
-                on r.time_id = t.id
+                t.id as theme_id,
+                t.name,
+                t.description,
+                t.thumbnail,
+                rt.id as time_id,
+                rt.start_at
+                from reservation r
+                join reservation_time rt
+                on r.time_id = rt.id
+                join theme t
+                on r.theme_id = t.id
                 """;
         return jdbcTemplate.query(sql, createReservationRowMapper());
     }
 
     public boolean existReservation(Reservation reservation) {
         String sql = """
-                select exists(select 1 from reservation r
-                join reservation_time t on r.time_id = t.id
-                where r.date = ? and t.start_at = ?)
+                select exists (select 1
+                from reservation r
+                join reservation_time t on r.time_id = t.id where r.date = ? and t.start_at = ?)
                 """;
-        return !jdbcTemplate.query(sql, (rs, rw) -> 0, reservation.getDate().toString(),
-                reservation.getTime().getStartAt().toString()).isEmpty();
+
+        return jdbcTemplate.queryForObject(sql, Boolean.class, reservation.getDate().toString(),
+                reservation.getTime().getStartAt().toString());
     }
 
     public void delete(Long id) {
@@ -96,6 +111,12 @@ public class ReservationRepository {
                     rs.getLong("id"),
                     new Name(rs.getString("name")),
                     rs.getDate("date").toLocalDate(),
+                    new Theme(
+                            rs.getLong("theme_id"),
+                            new Name(rs.getString("name")),
+                            rs.getString("description"),
+                            rs.getString("thumbnail")
+                    ),
                     new ReservationTime(
                             rs.getLong("time_id"),
                             rs.getTime("start_at").toLocalTime()

@@ -9,6 +9,9 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.repository.ReservationRepository;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.dto.ThemeResponse;
+import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.dto.TimeResponse;
 import roomescape.time.repository.ReservationTimeRepository;
@@ -18,23 +21,28 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository) {
+                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
     }
 
     public Long save(ReservationRequest reservationRequest) {
         ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
 
+        Theme theme = themeRepository.findById(reservationRequest.themeId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
+
         if (LocalDate.now().isAfter(reservationRequest.date())) {
             throw new IllegalArgumentException("지난 날짜는 예약할 수 없습니다.");
         }
 
         Reservation reservation = new Reservation(new Name(reservationRequest.name()),
-                reservationRequest.date(),
+                reservationRequest.date(), theme,
                 reservationTime);
 
         if (reservationRepository.existReservation(reservation)) {
@@ -51,8 +59,12 @@ public class ReservationService {
         TimeResponse timeResponse = new TimeResponse(reservation.getTime().getId(),
                 reservation.getTime().getStartAt());
 
+        ThemeResponse themeResponse = new ThemeResponse(reservation.getTheme().getId(),
+                reservation.getTheme().getName(), reservation.getTheme().getDescription(),
+                reservation.getTheme().getThumbnail());
+
         return new ReservationResponse(reservation.getId(),
-                reservation.getName(), reservation.getDate(), timeResponse);
+                reservation.getName(), reservation.getDate(), themeResponse, timeResponse);
     }
 
     public List<ReservationResponse> findAll() {
@@ -60,8 +72,11 @@ public class ReservationService {
                 .map(reservation -> {
                     TimeResponse timeResponse = new TimeResponse(reservation.getTime().getId(),
                             reservation.getTime().getStartAt());
+                    ThemeResponse themeResponse = new ThemeResponse(reservation.getTheme().getId(),
+                            reservation.getTheme().getName(), reservation.getTheme().getDescription(),
+                            reservation.getTheme().getThumbnail());
                     return new ReservationResponse(reservation.getId(),
-                            reservation.getName(), reservation.getDate(), timeResponse);
+                            reservation.getName(), reservation.getDate(), themeResponse, timeResponse);
                 })
                 .collect(Collectors.toList());
     }
