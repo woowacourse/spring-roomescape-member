@@ -6,23 +6,26 @@ public class Reservation {
     private final long id;
     private final MemberName name;
     private final Schedule schedule;
+    private final Theme theme;
 
-    public Reservation(final long id, final MemberName name, final Schedule schedule) {
+    public Reservation(final long id, final MemberName name, final Schedule schedule, final Theme theme) {
         this.id = id;
         this.name = name;
         this.schedule = schedule;
+        this.theme = theme;
     }
 
     public Reservation(final long id, final Reservation reservation) {
-        this(id, reservation.name, reservation.schedule);
+        this(id, reservation.name, reservation.schedule, reservation.theme);
     }
 
-    public Reservation(final long id, final String name, final String date, final ReservationTime reservationTime) {
-        this(id, new MemberName(name), new Schedule(new ReservationDate(date), reservationTime));
+    public Reservation(final long id, final String name, final String date, final ReservationTime reservationTime,
+                       final Theme theme) {
+        this(id, new MemberName(name), new Schedule(new ReservationDate(date), reservationTime), theme);
     }
 
-    public Reservation(final String name, final String date, final ReservationTime reservationTime) {
-        this(NO_ID, new MemberName(name), new Schedule(new ReservationDate(date), reservationTime));
+    public Reservation(final String name, final String date, final ReservationTime reservationTime, final Theme theme) {
+        this(NO_ID, new MemberName(name), new Schedule(new ReservationDate(date), reservationTime), theme);
     }
 
     public long getId() {
@@ -43,5 +46,9 @@ public class Reservation {
 
     public ReservationTime getReservationTime() {
         return schedule.getReservationTime();
+    }
+
+    public Theme getTheme() {
+        return theme;
     }
 }

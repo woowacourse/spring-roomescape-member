@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 @Repository
 public class ReservationJDBCRepository implements ReservationRepository {
@@ -18,11 +19,14 @@ public class ReservationJDBCRepository implements ReservationRepository {
     private final RowMapper<Reservation> rowMapper = (resultSet, rowNum) -> {
         ReservationTime reservationTime = new ReservationTime(resultSet.getLong("time_id"),
                 resultSet.getString("start_at"));
+        Theme theme = new Theme(resultSet.getLong("theme_id"), resultSet.getString("theme_name"),
+                resultSet.getString("description"), resultSet.getString("thumbnail"));
         Reservation reservation = new Reservation(
                 resultSet.getLong("reservation_id"),
-                resultSet.getString("name"),
+                resultSet.getString("reservation_name"),
                 resultSet.getString("date"),
-                reservationTime);
+                reservationTime,
+                theme);
         return reservation;
     };
 
@@ -35,7 +39,11 @@ public class ReservationJDBCRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findAll() {
-        String sql = "SELECT r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at FROM reservation as r inner join reservation_time as t on r.time_id = t.id";
+        String sql = "SELECT r.id as reservation_id, r.name as reservation_name, r.date, "
+                + "rt.id as time_id, rt.start_at, "
+                + "t.id as theme_id, t.name as theme_name, t.description, t.thumbnail FROM reservation as r "
+                + "inner join reservation_time as rt on r.time_id = rt.id "
+                + "inner join theme as t on r.theme_id = t.id";
         List<Reservation> reservations = jdbcTemplate.query(sql, rowMapper);
         return reservations;
     }
@@ -45,7 +53,8 @@ public class ReservationJDBCRepository implements ReservationRepository {
         Map<String, ?> params = Map.of(
                 "name", reservation.getName(),
                 "date", reservation.getDate(),
-                "time_id", reservation.getReservationTime().getId());
+                "time_id", reservation.getReservationTime().getId(),
+                "theme_id", reservation.getTheme().getId());
         long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
         return new Reservation(id, reservation);
     }

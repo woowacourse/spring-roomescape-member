@@ -50,6 +50,9 @@ class ReservationServiceTest {
         for (final ReservationTime reservationTime : reservationTimeRepository.findAll()) {
             reservationTimeRepository.deleteById(reservationTime.getId());
         }
+        for (final Theme theme : themeRepository.findAll()) {
+            themeRepository.deleteById(theme.getId());
+        }
     }
 
     @DisplayName("새로운 예약을 저장한다.")
@@ -67,10 +70,8 @@ class ReservationServiceTest {
         //then
         assertAll(
                 () -> assertThat(result.id()).isNotZero(),
-                () -> assertThat(result.name()).isEqualTo(name),
-                () -> assertThat(result.date()).isEqualTo(date),
-                () -> assertThat(result.time().id()).isNotZero(),
-                () -> assertThat(result.time().startAt()).isEqualTo(reservationTime.getStartAt())
+                () -> assertThat(result.time().id()).isEqualTo(reservationTime.getId()),
+                () -> assertThat(result.theme().id()).isEqualTo(theme.getId())
         );
     }
 

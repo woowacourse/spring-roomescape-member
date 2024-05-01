@@ -4,8 +4,10 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationRepository;
 import roomescape.dao.ReservationTimeRepository;
+import roomescape.dao.ThemeRepository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.exception.InvalidReservationException;
 import roomescape.service.dto.ReservationRequest;
 import roomescape.service.dto.ReservationResponse;
@@ -14,18 +16,22 @@ import roomescape.service.dto.ReservationResponse;
 public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
 
     public ReservationService(final ReservationRepository reservationRepository,
-                              final ReservationTimeRepository reservationTimeRepository) {
+                              final ReservationTimeRepository reservationTimeRepository,
+                              ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
     }
 
     public ReservationResponse create(final ReservationRequest reservationRequest) {
         validateDuplicated(reservationRequest);
         ReservationTime reservationTime = findTimeById(reservationRequest.timeId());
-        Reservation reservation = new Reservation(reservationRequest.name(), reservationRequest.date(),
-                reservationTime);
+        Theme theme = findThemeById(reservationRequest.themeId());
+        Reservation reservation = new Reservation(reservationRequest.name(), reservationRequest.date(), reservationTime,
+                theme);
         Reservation newReservation = reservationRepository.save(reservation);
         return new ReservationResponse(newReservation);
     }
@@ -38,8 +44,12 @@ public class ReservationService {
 
     private ReservationTime findTimeById(final long timeId) {
         return reservationTimeRepository.findById(timeId)
-                .orElseThrow(
-                        () -> new InvalidReservationException("존재하지 않는 예약 시간입니다. id: " + timeId));
+                .orElseThrow(() -> new InvalidReservationException("존재하지 않는 예약 시간입니다. id: " + timeId));
+    }
+
+    private Theme findThemeById(long themeId) {
+        return themeRepository.findById(themeId).
+                orElseThrow(() -> new InvalidReservationException("존재하지 않는 테마입니다. id: " + themeId));
     }
 
     public List<ReservationResponse> findAll() {

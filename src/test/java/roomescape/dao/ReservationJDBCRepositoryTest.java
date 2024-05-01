@@ -13,14 +13,15 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 @JdbcTest
 class ReservationJDBCRepositoryTest {
     private final JdbcTemplate jdbcTemplate;
     private ReservationRepository reservationRepository;
-    private ReservationTimeRepository reservationTimeRepository;
     private String date;
     private ReservationTime reservationTime;
+    private Theme theme;
 
     @Autowired
     ReservationJDBCRepositoryTest(final JdbcTemplate jdbcTemplate) {
@@ -30,17 +31,21 @@ class ReservationJDBCRepositoryTest {
     @BeforeEach
     void setUp() {
         reservationRepository = new ReservationJDBCRepository(jdbcTemplate);
-        reservationTimeRepository = new ReservationTimeJDBCRepository(jdbcTemplate);
+        ReservationTimeRepository reservationTimeRepository = new ReservationTimeJDBCRepository(jdbcTemplate);
+        ThemeRepository themeRepository = new ThemeJDBCRepository(jdbcTemplate);
+
         date = LocalDate.now().plusDays(1).toString();
         String startAt = LocalTime.now().toString();
         reservationTime = reservationTimeRepository.save(new ReservationTime(startAt));
+        theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
     }
 
     @DisplayName("새로운 예약을 저장한다.")
     @Test
     void saveReservation() {
         //given
-        Reservation reservation = new Reservation("브라운", date, reservationTime);
+        Reservation reservation = new Reservation("브라운", date, reservationTime, theme);
 
         //when
         Reservation result = reservationRepository.save(reservation);
@@ -53,7 +58,7 @@ class ReservationJDBCRepositoryTest {
     @Test
     void findAllReservationTest() {
         //given
-        Reservation reservation = new Reservation("브라운", date, reservationTime);
+        Reservation reservation = new Reservation("브라운", date, reservationTime, theme);
         reservationRepository.save(reservation);
         int expectedSize = 1;
 
@@ -68,7 +73,7 @@ class ReservationJDBCRepositoryTest {
     @Test
     void deleteReservationByIdTest() {
         //given
-        Reservation reservation = new Reservation("브라운", date, reservationTime);
+        Reservation reservation = new Reservation("브라운", date, reservationTime, theme);
         Reservation target = reservationRepository.save(reservation);
         int expectedSize = 0;
 
@@ -83,7 +88,7 @@ class ReservationJDBCRepositoryTest {
     @Test
     void existsByDateAndTimeTest() {
         //given
-        Reservation reservation = new Reservation("브라운", date, reservationTime);
+        Reservation reservation = new Reservation("브라운", date, reservationTime, theme);
         reservationRepository.save(reservation);
 
         //when
@@ -98,7 +103,7 @@ class ReservationJDBCRepositoryTest {
     void notExistsByDateAndTimeTest() {
         //given
         String newDate = LocalDate.now().plusDays(2).toString();
-        Reservation reservation = new Reservation("브라운", date, reservationTime);
+        Reservation reservation = new Reservation("브라운", date, reservationTime, theme);
         reservationRepository.save(reservation);
 
         //when
@@ -112,7 +117,7 @@ class ReservationJDBCRepositoryTest {
     @Test
     void existsByTimeIdTest() {
         //given
-        Reservation reservation = new Reservation("브라운", date, reservationTime);
+        Reservation reservation = new Reservation("브라운", date, reservationTime, theme);
         reservationRepository.save(reservation);
 
         //when
