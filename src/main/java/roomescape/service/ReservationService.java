@@ -42,13 +42,11 @@ public class ReservationService {
                         () -> new InvalidReservationException("존재하지 않는 예약 시간입니다. id: " + timeId));
     }
 
-
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAll().stream()
                 .map(ReservationResponse::new)
                 .toList();
     }
-
 
     public void deleteById(final long id) {
         reservationRepository.deleteById(id);
