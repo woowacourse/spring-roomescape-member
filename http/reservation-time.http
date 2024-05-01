@@ -1,6 +1,9 @@
 ### 예약 시간 목록 조회 요청
 GET localhost:8080/times
 
+### 예약 가능 시간 목록 조회 요청
+GET localhost:8080/times/available?date=2024-08-05&theme-id=1
+
 ### 예약 시간 추가 요청
 POST localhost:8080/times
 Content-Type: application/json

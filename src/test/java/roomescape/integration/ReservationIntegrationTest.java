@@ -73,7 +73,7 @@ class ReservationIntegrationTest extends IntegrationTest {
     void 시간대와_테마가_똑같은_중복된_예약은_추가할_수_없다() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "도라");
-        params.put("date", "2023-08-05");
+        params.put("date", "2024-08-05");
         params.put("timeId", "1");
         params.put("themeId", "1");
 

@@ -20,6 +20,24 @@ class ReservationTimeIntegrationTest extends IntegrationTest {
     }
 
     @Test
+    void 예약이_가능한_시간을_조회할_수_있다() {
+        RestAssured.given().log().all()
+                .when().get("/times/available?date=2024-10-05&theme-id=1")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(1));
+    }
+
+    @Test
+    void 예약이_불가한_시간을_필터링해_조회할_수_있다() {
+        RestAssured.given().log().all()
+                .when().get("/times/available?date=2024-08-05&theme-id=1")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(0));
+    }
+
+    @Test
     void 시간을_추가할_수_있다() {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "11:00");

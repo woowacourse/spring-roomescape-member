@@ -36,8 +36,8 @@
 ## 3단계
 
 - [x] 사용자 예약 페이지를 제공한다
-- [ ] 예약 가능 시간 조회 API를 구현한다
-    - [ ] 날짜와 테마id로 필터링
+- [x] 예약 가능 시간 목록 조회 API를 구현한다
+    - [x] 날짜와 테마id로 필터링
 - [ ] 예약 추가 API를 구현한다 (날짜, 시간id, 테마id, 예약자명)
     - [ ] 빈 값 혹은 형식이 다른 예약
 - [ ] 인기 테마 조회 API를 구현한다 (인기 테마는 최근 일주일동안 예약 많은 테마)
@@ -141,6 +141,28 @@ Request
 
 ```
 GET /times HTTP/1.1
+```
+
+Response
+
+```
+HTTP/1.1 200 
+Content-Type: application/json
+
+[
+   {
+        "id": 1,
+        "startAt": "10:00"
+    }
+]
+```
+
+### 예약 가능 시간 목록 조회 API
+
+Request
+
+```
+GET /times/available?date=$&time-id=$ HTTP/1.1
 ```
 
 Response
@@ -266,5 +288,3 @@ Response
 ```
 HTTP/1.1 204
 ```
-
-## / 
