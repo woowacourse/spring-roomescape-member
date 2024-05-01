@@ -24,10 +24,17 @@ public class ReservationService {
     }
 
     public Reservation addReservation(ReservationAddRequest reservationAddRequest) {
-        ReservationTime reservationTime = reservationTimeDao.findById(reservationAddRequest.getTimeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재 하지 않는 예약시각으로 예약할 수 없습니다."));
+        if (reservationDao.existByDateAndTimeId(reservationAddRequest.getDate(), reservationAddRequest.getTimeId())) {
+            throw new IllegalArgumentException("예약 날짜와 예약시간이 겹치는 예약은 할 수 없습니다.");
+        }
+        ReservationTime reservationTime = getReservationTime(reservationAddRequest.getTimeId());
         Reservation reservationRequest = reservationAddRequest.toEntity(reservationTime);
         return reservationDao.insert(reservationRequest);
+    }
+
+    private ReservationTime getReservationTime(Long reservationTimeId) {
+        return reservationTimeDao.findById(reservationTimeId)
+                .orElseThrow(() -> new IllegalArgumentException("존재 하지 않는 예약시각으로 예약할 수 없습니다."));
     }
 
     public void removeReservation(Long id) {

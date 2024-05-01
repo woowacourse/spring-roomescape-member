@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
@@ -48,6 +49,12 @@ public class FakeReservationDao implements ReservationDao {
                         LocalTime.of(10, 0)));
         reservations.put(id, reservation);
         return reservation;
+    }
+
+    @Override
+    public boolean existByDateAndTimeId(LocalDate date, Long timeId) {
+        return reservations.values().stream()
+                .anyMatch(reservation -> reservation.getTimeId().equals(timeId) && reservation.getDate().equals(date));
     }
 
     @Override

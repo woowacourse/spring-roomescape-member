@@ -48,7 +48,7 @@ public class ReservationControllerTest {
     @Test
     void should_add_reservation_when_post_request_reservations() {
         ReservationAddRequest reservationAddRequest = new ReservationAddRequest(
-                LocalDate.now().plusDays(2L),
+                LocalDate.now().plusDays(3L),
                 "브라운",
                 1L);
         RestAssured.given().log().all()
