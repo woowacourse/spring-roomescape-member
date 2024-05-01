@@ -5,15 +5,19 @@
 - localhost:8080/admin 요청 시 어드민 메인 페이지가 응답할 수 있도록 구현한다.
 - /admin/reservation 요청 시 예약 관리 페이지가 응답할 수 있도록 구현한다.
 - /admin/time 요청 시 시간 관리 페이지가 응답할 수 있도록 구현한다.
+- /admin/theme 요청 시 테마 관리 페이지가 응답할 수 있도록 구현한다.
 - API 명세를 따라 예약 관리 페이지 로드 시 호출되는 예약 목록 조회 API도 함께 구현한다.
 - API 명세를 따라 예약 추가 API와 삭제 API를 구현한다.
 - API 명세를 따라 시간 관리 페이지 로드 시 호출되는 시간 목록 조회 API도 함께 구현한다.
 - API 명세를 따라 시간 추가 API와 삭제 API를 구현한다. 
+- API 명세를 따라 테마 관리 페이지 로드 시 호출되는 테마 목록 조회 API도 함께 구현한다.
+- API 명세를 따라 테마 추가 API와 삭제 API를 구현한다.
 
 ## 2. 요구 사항 목록
 
 - [x] 어드민 페이지를 응답한다.
 - [x] 예약 페이지를 응답한다.
+- [ ] 테마 페이지를 응답한다.
 - [x] 예약 목록을 조회한다.
 - [x] 예약을 추가한다.
   - [x] 예약 생성 시 예약자명, 날짜, 시간에 유효하지 않은 값이 입력 되었을 때 예외로 처리한다.
@@ -37,6 +41,19 @@
 - [x] 예약 시간을 삭제한다.
   - [x] 특정 시간에 대한 예약이 존재하는데, 그 시간을 삭제하려 할 때 예외로 처리한다.
   - [x] 존재하지 않는 예약 시간을 삭제하려고 할 때 예외로 처리한다.
+- [ ] 테마 목록을 조회한다.
+- [ ] 테마를 추가한다.
+  - [ ] 테마 생성 시 테마명, 설명, 이미지에 유효하지 않은 값이 입력 되었을 때 예외로 처리한다.
+    - 테마명
+      - [ ] 빈 값이 입력 되었을 때 예외로 처리한다.
+    - 설명
+      - [ ] 빈 값이 입력 되었을 때 예외로 처리한다.
+    - 이미지
+      - [ ] 빈 값이 입력 되었을 때 예외로 처리한다.
+- [ ] 테마를 삭제한다.
+  - [ ] 존재하지 않는 테마를 삭제하려고 할 때 예외로 처리한다.
+  - [ ] 특정 테마에 대한 예약이 존재하는데, 그 테마를 삭제하려 할 때 예외로 처리한다.
+
 ## 3. API 명세
 
 ### 예약 조회
@@ -149,6 +166,65 @@ Content-Type: application/json
 - Request
 ```http request
 DELETE /times/1 HTTP/1.1
+```
+- Response
+```http request
+HTTP/1.1 204
+```
+
+### 테마 조회
+- Request
+```http request
+GET /themes HTTP/1.1
+```
+- Response
+```http request
+HTTP/1.1 200
+Content-Type: application/json
+```
+```json
+[
+  {
+    "id": 1,
+    "name": "레벨2 탈출",
+    "description": "우테코 레벨2를 탈출하는 내용입니다.",
+    "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+  }
+]
+```
+
+### 테마 추가
+- Request
+```http request
+POST /themes HTTP/1.1
+content-type: application/json
+```
+```json
+{
+  "name": "레벨2 탈출",
+  "description": "우테코 레벨2를 탈출하는 내용입니다.",
+  "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+}
+```
+- Response
+```http request
+HTTP/1.1 201
+Location: /themes/1
+Content-Type: application/json
+```
+```json
+{
+  "id": 1,
+  "name": "레벨2 탈출",
+  "description": "우테코 레벨2를 탈출하는 내용입니다.",
+  "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+}
+```
+
+### 테마 삭제
+- Request
+```http request
+DELETE /themes/1 HTTP/1.1
 ```
 - Response
 ```http request
