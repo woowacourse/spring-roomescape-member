@@ -101,6 +101,14 @@ class ReservationIntegrationTest extends IntegrationTest {
     }
 
     @Test
+    void 존재하지_않는_예약은_삭제할_수_없다() {
+        RestAssured.given().log().all()
+                .when().delete("/reservations/10")
+                .then().log().all()
+                .statusCode(404);
+    }
+
+    @Test
     void 예약_목록을_조회할_수_있다() {
         RestAssured.given().log().all()
                 .when().get("/reservations")
