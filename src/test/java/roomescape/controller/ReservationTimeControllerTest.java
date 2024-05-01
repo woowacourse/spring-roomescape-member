@@ -64,6 +64,19 @@ class ReservationTimeControllerTest {
                 .then().log().all().assertThat().statusCode(HttpStatus.CREATED.value());
     }
 
+    @DisplayName("중복된 시간 추가 시도 시, 추가되지 않고 400을 응답한다.")
+    @Test
+    void duplicateReservationTime() {
+        //given
+        createReservationTime();
+        //when&then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(new ReservationTimeRequest("10:00"))
+                .when().post("/times")
+                .then().log().all().assertThat().statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
     @DisplayName("예약 시간 삭제 성공 테스트")
     @Test
     void deleteReservationTImeSuccess() {

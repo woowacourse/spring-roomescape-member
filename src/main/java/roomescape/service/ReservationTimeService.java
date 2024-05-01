@@ -23,9 +23,13 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponse save(ReservationTimeRequest reservationTimeRequest) {
-        ReservationTime reservationTime = reservationTimeDao
-                .save(reservationTimeRequest.toReservationTime());
-        return new ReservationTimeResponse(reservationTime);
+        ReservationTime reservationTime = reservationTimeRequest.toReservationTime();
+        boolean exists = reservationTimeDao.existByStartAt(reservationTime.getStartAt());
+        if(exists) {
+            throw new IllegalArgumentException("이미 존재하는 예약 시간입니다.");
+        }
+        ReservationTime savedReservationTime = reservationTimeDao.save(reservationTime);
+        return new ReservationTimeResponse(savedReservationTime);
     }
 
     public boolean deleteById(long id) {

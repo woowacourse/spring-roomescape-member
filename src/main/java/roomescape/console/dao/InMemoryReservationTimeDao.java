@@ -1,5 +1,6 @@
 package roomescape.console.dao;
 
+import java.time.LocalTime;
 import java.util.List;
 import roomescape.console.db.InMemoryReservationDb;
 import roomescape.console.db.InMemoryReservationTimeDb;
@@ -24,6 +25,12 @@ public class InMemoryReservationTimeDao implements ReservationTimeDao {
     @Override
     public ReservationTime findById(Long id) {
         return inMemoryReservationTimeDb.selectById(id);
+    }
+
+    @Override
+    public boolean existByStartAt(LocalTime startAt) {
+        return inMemoryReservationTimeDb.selectAll().stream()
+                .anyMatch(r -> r.getStartAt().equals(startAt));
     }
 
     @Override

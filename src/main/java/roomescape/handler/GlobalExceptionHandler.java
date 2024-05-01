@@ -7,7 +7,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler({NullPointerException.class, DateTimeException.class})
+    @ExceptionHandler({
+            NullPointerException.class,
+            DateTimeException.class,
+            IllegalArgumentException.class})
     public ResponseEntity<String> handleException(RuntimeException runtimeException) {
         return ResponseEntity.badRequest().body(runtimeException.getMessage());
     }

@@ -1,5 +1,6 @@
 package roomescape.dao;
 
+import java.time.LocalTime;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -36,6 +37,13 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
                         rs.getLong("id"),
                         rs.getTime("start_at")
                 ), id);
+    }
+
+    @Override
+    public boolean existByStartAt(LocalTime startAt) {
+        return jdbcTemplate.queryForObject(
+                "SELECT EXISTS(SELECT * FROM reservation_time WHERE start_at = ?)",
+                Boolean.class, startAt);
     }
 
     @Override

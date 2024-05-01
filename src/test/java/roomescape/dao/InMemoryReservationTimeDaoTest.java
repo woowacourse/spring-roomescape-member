@@ -2,6 +2,7 @@ package roomescape.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
@@ -57,6 +58,19 @@ class InMemoryReservationTimeDaoTest {
     void findByNotExistingId() {
         assertThatThrownBy(() -> reservationTimeDao.findById(1L))
                 .isInstanceOf(EmptyResultDataAccessException.class);
+    }
+
+    @DisplayName("해당 id의 예약이 존재하는 지 여부를 반환한다.")
+    @Test
+    void existsByStartAt() {
+        boolean existsFalse = reservationTimeDao.existByStartAt(LocalTime.of(10, 0));
+        reservationTimeDao.save(new ReservationTime("10:00"));
+        boolean existsTrue = reservationTimeDao.existByStartAt(LocalTime.of(10, 0));
+
+        assertAll(
+                () -> assertThat(existsFalse).isFalse(),
+                () -> assertThat(existsTrue).isTrue()
+        );
     }
 
     @DisplayName("해당 id의 예약 시간을 삭제한다.")

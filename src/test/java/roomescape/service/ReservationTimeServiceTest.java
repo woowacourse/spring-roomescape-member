@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -40,6 +41,18 @@ class ReservationTimeServiceTest {
                 () -> assertThat(response.id()).isEqualTo(1),
                 () -> assertThat(response.startAt()).isEqualTo("10:00")
         );
+    }
+
+    @DisplayName("중복된 예약 시간을 저장하려 하면 예외가 발생한다.")
+    @Test
+    void duplicatedTimeSaveThrowsException() {
+        //given
+        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest("10:00");
+        reservationTimeService.save(reservationTimeRequest);
+        // when&then
+        assertThatThrownBy(() -> reservationTimeService.save(reservationTimeRequest))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이미 존재하는 예약 시간입니다.");
     }
 
     @DisplayName("예약 시간을 삭제한다.")
