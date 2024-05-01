@@ -17,4 +17,13 @@ public class ThemeService {
     public List<Theme> findAllTheme() {
         return themeDao.findAll();
     }
+
+    public Theme addTheme(ThemeAddRequest themeAddRequest) {
+        Theme theme = themeAddRequest.toEntity();
+        return themeDao.insert(theme);
+    }
+
+    public void removeTheme(Long id) {
+        themeDao.deleteById(id);
+    }
 }
