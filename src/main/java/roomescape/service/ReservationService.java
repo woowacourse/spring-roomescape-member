@@ -4,9 +4,7 @@ import static roomescape.exception.ExceptionType.DUPLICATE_RESERVATION;
 import static roomescape.exception.ExceptionType.PAST_TIME;
 import static roomescape.exception.ExceptionType.RESERVATION_TIME_NOT_FOUND;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
