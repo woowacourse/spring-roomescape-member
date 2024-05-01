@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS theme
 (
     id          BIGINT       NOT NULL AUTO_INCREMENT,
-    theme_name  VARCHAR(255) NOT NULL,
+    name        VARCHAR(255) NOT NULL,
     description VARCHAR(255) NOT NULL,
     thumbnail   VARCHAR(255) NOT NULL,
     PRIMARY KEY (id)
