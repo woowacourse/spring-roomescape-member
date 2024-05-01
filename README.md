@@ -90,7 +90,7 @@ content-type: application/json
   HTTP/1.1 400
   
   {
-    "message": "이미 같은 일정으로 예약이 존재합니다."
+    "message": "선택하신 테마와 일정은 이미 예약이 존재합니다."
   }
   ```
   - 추가 실패 : 이름 길이 오류
