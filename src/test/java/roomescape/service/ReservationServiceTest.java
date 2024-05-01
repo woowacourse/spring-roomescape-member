@@ -26,8 +26,6 @@ import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 import roomescape.dto.app.ReservationAppRequest;
 import roomescape.exception.reservation.DuplicatedReservationException;
-import roomescape.exception.reservation.IllegalDateFormatException;
-import roomescape.exception.reservation.IllegalReservationFormatException;
 import roomescape.exception.reservation.PastReservationException;
 import roomescape.exception.reservation.ReservationTimeNotFoundException;
 
@@ -91,7 +89,7 @@ class ReservationServiceTest {
             .thenReturn(new Theme("방탈출1", "방탈출1을 한다.", "https://url"));
         assertThatThrownBy(
             () -> reservationService.save(new ReservationAppRequest(name, "2050-01-01", 1L, 1L)))
-            .isInstanceOf(IllegalReservationFormatException.class);
+            .isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("실패: 존재하지 않는 날짜 입력 시 예외가 발생한다.")
@@ -103,7 +101,7 @@ class ReservationServiceTest {
         when(themeRepository.findById(1L))
             .thenReturn(new Theme("방탈출1", "방탈출1을 한다.", "https://url"));
         assertThatThrownBy(() -> reservationService.save(new ReservationAppRequest("brown", rawDate, 1L, 1L)))
-            .isInstanceOf(IllegalDateFormatException.class);
+            .isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("실패: 존재하지 않는 시간 ID 입력 시 예외가 발생한다.")

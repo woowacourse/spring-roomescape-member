@@ -22,7 +22,6 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.dto.app.ReservationTimeAppRequest;
 import roomescape.exception.reservationtime.DuplicatedReservationTimeException;
-import roomescape.exception.reservationtime.IllegalReservationTimeFormatException;
 import roomescape.exception.reservationtime.ReservationExistsException;
 
 @SpringBootTest
@@ -60,7 +59,7 @@ class ReservationTimeServiceTest {
     @NullAndEmptySource
     void save_IllegalTimeFormat(String time) {
         assertThatThrownBy(() -> reservationTimeService.save(new ReservationTimeAppRequest(time)))
-            .isInstanceOf(IllegalReservationTimeFormatException.class);
+            .isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("실패: 이미 존재하는 시간을 추가할 수 없다.")

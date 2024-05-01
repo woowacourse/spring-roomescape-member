@@ -10,7 +10,6 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.dto.app.ReservationTimeAppRequest;
 import roomescape.exception.reservationtime.DuplicatedReservationTimeException;
-import roomescape.exception.reservationtime.IllegalReservationTimeFormatException;
 import roomescape.exception.reservationtime.ReservationExistsException;
 
 @Service
@@ -38,7 +37,7 @@ public class ReservationTimeService {
         try {
             return LocalTime.parse(rawTime);
         } catch (DateTimeParseException | NullPointerException e) {
-            throw new IllegalReservationTimeFormatException();
+            throw new IllegalArgumentException("잘못된 시간 형식을 입력하셨습니다.");
         }
     }
 

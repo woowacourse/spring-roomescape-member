@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -25,7 +26,6 @@ import roomescape.dto.web.ReservationTimeWebResponse;
 import roomescape.dto.web.ReservationWebRequest;
 import roomescape.dto.web.ReservationWebResponse;
 import roomescape.exception.reservation.DuplicatedReservationException;
-import roomescape.exception.reservation.IllegalReservationFormatException;
 import roomescape.exception.reservation.PastReservationException;
 import roomescape.service.ReservationService;
 
@@ -88,7 +88,7 @@ class ReservationControllerTest {
             .andExpect(status().isOk());
     }
 
-    @DisplayName("실패: 잘못된 이름, 날짜, 시간으로 예약 -> 400")
+    @DisplayName("실패: 예약 추가에서 IllegalArgumentException 발생 시 -> 400")
     @Test
     void reserve_BadRequest() throws Exception {
         long timeId = 1L;
@@ -98,8 +98,8 @@ class ReservationControllerTest {
 
         String requestBody = objectMapper.writeValueAsString(new ReservationWebRequest(name, rawDate, timeId, themeId));
 
-        when(reservationService.save(new ReservationAppRequest(name, rawDate, timeId, themeId)))
-            .thenThrow(IllegalReservationFormatException.class);
+        when(reservationService.save(any(ReservationAppRequest.class)))
+            .thenThrow(IllegalArgumentException.class);
 
         mvc.perform(post("/reservations")
                 .content(requestBody)

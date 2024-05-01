@@ -1,7 +1,6 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
-import roomescape.exception.reservation.IllegalReservationFormatException;
 
 public class Reservation {
 
@@ -27,7 +26,7 @@ public class Reservation {
 
     private void validateName(String name) {
         if (name == null || name.isBlank()) {
-            throw new IllegalReservationFormatException();
+            throw new IllegalArgumentException("예약자 이름은 비어 있을 수 없습니다.");
         }
     }
 

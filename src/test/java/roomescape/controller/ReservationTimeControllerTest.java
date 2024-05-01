@@ -21,7 +21,6 @@ import roomescape.dto.app.ReservationTimeAppRequest;
 import roomescape.dto.web.ReservationTimeWebRequest;
 import roomescape.dto.web.ReservationTimeWebResponse;
 import roomescape.exception.reservationtime.DuplicatedReservationTimeException;
-import roomescape.exception.reservationtime.IllegalReservationTimeFormatException;
 import roomescape.exception.reservationtime.ReservationExistsException;
 import roomescape.service.ReservationTimeService;
 
@@ -83,7 +82,7 @@ class ReservationTimeControllerTest {
         String requestBody = objectMapper.writeValueAsString(new ReservationTimeWebRequest(1L, illegalTime));
 
         when(reservationTimeService.save(new ReservationTimeAppRequest(illegalTime)))
-            .thenThrow(IllegalReservationTimeFormatException.class);
+            .thenThrow(IllegalArgumentException.class);
 
         mvc.perform(post("/times")
                 .content(requestBody)

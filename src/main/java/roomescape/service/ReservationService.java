@@ -14,7 +14,6 @@ import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 import roomescape.dto.app.ReservationAppRequest;
 import roomescape.exception.reservation.DuplicatedReservationException;
-import roomescape.exception.reservation.IllegalDateFormatException;
 import roomescape.exception.reservation.PastReservationException;
 import roomescape.exception.reservation.ReservationTimeNotFoundException;
 
@@ -51,7 +50,7 @@ public class ReservationService {
         try {
             return LocalDate.parse(rawDate);
         } catch (DateTimeParseException | NullPointerException e) {
-            throw new IllegalDateFormatException();
+            throw new IllegalArgumentException("잘못된 날짜 형식을 입력하셨습니다.");
         }
     }
 

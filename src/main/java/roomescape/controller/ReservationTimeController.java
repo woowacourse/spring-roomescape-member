@@ -17,7 +17,6 @@ import roomescape.dto.app.ReservationTimeAppRequest;
 import roomescape.dto.web.ReservationTimeWebRequest;
 import roomescape.dto.web.ReservationTimeWebResponse;
 import roomescape.exception.reservationtime.DuplicatedReservationTimeException;
-import roomescape.exception.reservationtime.IllegalReservationTimeFormatException;
 import roomescape.exception.reservationtime.ReservationExistsException;
 import roomescape.service.ReservationTimeService;
 
@@ -65,11 +64,6 @@ public class ReservationTimeController {
 
     @ExceptionHandler(ReservationExistsException.class)
     public ResponseEntity<String> handleReservationExistsException(ReservationExistsException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
-
-    @ExceptionHandler(IllegalReservationTimeFormatException.class)
-    public ResponseEntity<String> handleIllegalReservationTimeFormatException(IllegalReservationTimeFormatException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
