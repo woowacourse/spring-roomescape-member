@@ -47,4 +47,13 @@ class AdminPageControllerTest {
                 .then().log().all()
                 .statusCode(200);
     }
+
+    @Test
+    @DisplayName("방탈출 테마 관리 페이지 조회를 확인한다")
+    void showThemePage() {
+        RestAssured.given().log().all()
+                .when().get("/admin/theme")
+                .then().log().all()
+                .statusCode(200);
+    }
 }
