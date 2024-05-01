@@ -7,7 +7,7 @@ import java.time.format.DateTimeParseException;
 
 public class ReservationTimeRequest {
 
-    private final LocalTime startAt;
+    private LocalTime startAt;
 
     public ReservationTimeRequest(String startAt) {
         validate(startAt);
@@ -16,6 +16,9 @@ public class ReservationTimeRequest {
         } catch (DateTimeParseException exception) {
             throw new BadRequestException("[ERROR] 유효하지 않은 요청입니다.");
         }
+    }
+
+    private ReservationTimeRequest() {
     }
 
     private void validate(String startAt) {
