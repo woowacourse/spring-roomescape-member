@@ -9,6 +9,8 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
+import roomescape.domain.Theme;
+import roomescape.domain.ThemeRepository;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 
@@ -16,29 +18,31 @@ import roomescape.dto.ReservationResponse;
 public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
     private final Clock clock;
 
     public ReservationService(ReservationRepository reservationRepository,
                               ReservationTimeRepository reservationTimeRepository,
+                              ThemeRepository themeRepository,
                               Clock clock) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
         this.clock = clock;
     }
 
     @Transactional
     public ReservationResponse create(ReservationRequest request) {
-        ReservationTime reservationTime = getReservationTime(request);
+        Theme theme = themeRepository.findById(request.themeId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마 입니다."));
+        ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간 입니다."));
+
         LocalDateTime dateTime = LocalDateTime.of(request.date(), reservationTime.getStartAt());
         validateRequestDateAfterCurrentTime(dateTime);
         validateUniqueReservation(request);
-        Reservation reservation = request.toReservation(reservationTime);
+        Reservation reservation = request.toReservation(reservationTime, theme);
         return ReservationResponse.from(reservationRepository.create(reservation));
-    }
-
-    private ReservationTime getReservationTime(ReservationRequest request) {
-        return reservationTimeRepository.findById(request.timeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간 입니다."));
     }
 
     private void validateRequestDateAfterCurrentTime(LocalDateTime dateTime) {

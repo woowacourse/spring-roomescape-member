@@ -28,6 +28,7 @@ import roomescape.application.ReservationService;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationTimeResponse;
+import roomescape.dto.ThemeResponse;
 
 @WebMvcTest(ReservationController.class)
 class ReservationControllerTest {
@@ -44,8 +45,10 @@ class ReservationControllerTest {
     @DisplayName("저장된 모든 예약을 반환한다.")
     @Test
     void shouldReturnReservationResponsesWhenReservationsExist() throws Exception {
-        ReservationResponse reservationResponse = new ReservationResponse(1L, "test", LocalDate.now(),
-                new ReservationTimeResponse(1L, LocalTime.now()));
+        ReservationResponse reservationResponse = new ReservationResponse(
+                1L, "test", LocalDate.of(2024, 12, 25),
+                new ReservationTimeResponse(1L, LocalTime.now()),
+                new ThemeResponse(1L, "test", "test", "test"));
         String reservationResponsesJson = objectMapper.writeValueAsString(List.of(reservationResponse));
 
         given(reservationService.findAll())
@@ -72,11 +75,13 @@ class ReservationControllerTest {
     @DisplayName("존재하지 않는 새로운 예약을 저장하면 201 Created 응답과 ReservationResponse가 반환된다.")
     @Test
     void shouldReturn201CreatedWithReservationResponseWhenNotExistReservationCreate() throws Exception {
-        ReservationRequest reservationRequest = new ReservationRequest("test", LocalDate.now(), 1L);
+        ReservationRequest reservationRequest = new ReservationRequest("test", LocalDate.now(), 1L, 1L);
         String reservationRequestJson = objectMapper.writeValueAsString(reservationRequest);
 
-        ReservationResponse reservationResponse = new ReservationResponse(1L, "test", LocalDate.now(),
-                new ReservationTimeResponse(1L, LocalTime.now()));
+        ReservationResponse reservationResponse = new ReservationResponse(
+                1L, "test", LocalDate.of(2024, 12, 25),
+                new ReservationTimeResponse(1L, LocalTime.now()),
+                new ThemeResponse(1L, "test", "test", "test"));
         String reservationResponseJson = objectMapper.writeValueAsString(reservationResponse);
 
         given(reservationService.create(reservationRequest))
@@ -92,7 +97,7 @@ class ReservationControllerTest {
     @DisplayName("존재하지 않는 예약 시간으로 예약을 생성하려고 하면 400 Bad Request 응답을 반환한다.")
     @Test
     void shouldReturn400BadRequestWhenNotFoundReservationTimeCreate() throws Exception {
-        ReservationRequest reservationRequest = new ReservationRequest("test", LocalDate.now(), 1L);
+        ReservationRequest reservationRequest = new ReservationRequest("test", LocalDate.now(), 1L, 1L);
         String reservationRequestJson = objectMapper.writeValueAsString(reservationRequest);
 
         given(reservationService.create(any(ReservationRequest.class)))
@@ -108,7 +113,7 @@ class ReservationControllerTest {
     @DisplayName("이미 존재하는 예약을 생성하려고 하면 409 Conflict 응답을 반환한다.")
     @Test
     void shouldReturn400ConflictWhenAlreadyExistReservationCreate() throws Exception {
-        ReservationRequest reservationRequest = new ReservationRequest("test", LocalDate.now(), 1L);
+        ReservationRequest reservationRequest = new ReservationRequest("test", LocalDate.now(), 1L, 1L);
         String reservationRequestJson = objectMapper.writeValueAsString(reservationRequest);
 
         given(reservationService.create(reservationRequest))

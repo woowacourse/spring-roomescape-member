@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.infrastructure.rowmapper.ReservationRowMapper;
 
 @Repository
@@ -22,20 +23,21 @@ public class JdbcReservationRepository implements ReservationRepository {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
-                .usingColumns("name", "date", "time_id")
+                .usingColumns("name", "date", "time_id", "theme_id")
                 .usingGeneratedKeyColumns("id");
     }
 
     @Override
     public Optional<Reservation> findById(long id) {
         String sql = """
-                select reservation.id as id, name, date, time_id, start_at \s
-                from reservation left join reservation_time \s
-                on time_id = reservation_time.id \s
-                where reservation.id = ?
+                select r.id as id, r.name as reservation_name, date, time_id, start_at,
+                theme_id, t.name as theme_name, description, thumbnail from reservation as r
+                left join reservation_time as rt on time_id = rt.id
+                left join theme as t on theme_id = t.id
+                where rt.id = ?
                 """;
         try {
-            Reservation reservation = jdbcTemplate.queryForObject(sql, ReservationRowMapper.getInstance(), id);
+            Reservation reservation = jdbcTemplate.queryForObject(sql, ReservationRowMapper::joinedMapRow, id);
             return Optional.of(reservation);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -45,20 +47,23 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {
         String sql = """
-                select reservation.id as id, name, date, time_id, start_at \s
-                from reservation left join reservation_time \s
-                on time_id = reservation_time.id
+                select r.id as id, r.name as reservation_name, date, time_id, start_at,
+                theme_id, t.name as theme_name, description, thumbnail from reservation as r
+                left join reservation_time as rt on time_id = rt.id
+                left join theme as t on theme_id = t.id
                 """;
-        return jdbcTemplate.query(sql, ReservationRowMapper.getInstance());
+        return jdbcTemplate.query(sql, ReservationRowMapper::joinedMapRow);
     }
 
     @Override
     public Reservation create(Reservation reservation) {
         ReservationTime time = reservation.getTime();
+        Theme theme = reservation.getTheme();
         MapSqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
                 .addValue("date", reservation.getDate())
-                .addValue("time_id", time.getId());
+                .addValue("time_id", time.getId())
+                .addValue("theme_id", theme.getId());
         long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
         return reservation.withId(id);
     }

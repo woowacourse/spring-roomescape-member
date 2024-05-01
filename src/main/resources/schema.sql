@@ -25,3 +25,6 @@ create table reservation
     foreign key (time_id) references reservation_time (id),
     foreign key (theme_id) references theme (id)
 );
+--
+-- insert into theme (name, description, thumbnail) values ('Theme 1', 'Description 1', 'thumbnail1.jpg');
+-- insert into reservation_time (start_at) values ('10:00:00');

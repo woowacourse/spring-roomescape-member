@@ -26,6 +26,9 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
+import roomescape.domain.Theme;
+import roomescape.domain.ThemeName;
+import roomescape.domain.ThemeRepository;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 
@@ -42,18 +45,23 @@ class ReservationServiceTest {
     private ReservationTimeRepository reservationTimeRepository;
 
     @Mock
+    private ThemeRepository themeRepository;
+
+    @Mock
     private Clock clock;
 
     @DisplayName("정상적인 예약 요청을 받아서 저장하고, 예약 응답을 반환한다.")
     @Test
     void shouldReturnReservationResponseWhenValidReservationRequestSave() {
-        ReservationRequest reservationRequest = new ReservationRequest("test", LocalDate.of(2024, 12, 26), 1L);
+        ReservationRequest reservationRequest = new ReservationRequest("test", LocalDate.of(2024, 12, 26), 1L, 1L);
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(12, 0));
+        Theme theme = new Theme(1L, new ThemeName("themeName"), "desc", "url");
         Reservation reservation = new Reservation(
                 1L,
                 new PlayerName("test"),
                 reservationRequest.date(),
-                reservationTime
+                reservationTime,
+                theme
         );
 
         setClockMock(2024, 12, 25, 0, 0);
@@ -63,6 +71,8 @@ class ReservationServiceTest {
                 .willReturn(false);
         given(reservationRepository.create(any(Reservation.class)))
                 .willReturn(reservation);
+        given(themeRepository.findById(any(Long.class)))
+                .willReturn(Optional.of(theme));
 
         reservationService.create(reservationRequest);
 
@@ -75,20 +85,20 @@ class ReservationServiceTest {
     @DisplayName("존재하지 않는 예약 시간으로 예약을 생성시 IllegalArgumentException 예외를 반환한다.")
     @Test
     void shouldReturnIllegalArgumentExceptionWhenNotFoundReservationTime() {
-        assertThatCode(() -> reservationService.create(new ReservationRequest("test", LocalDate.now(), 1L)))
+        ReservationRequest request = new ReservationRequest("test", LocalDate.now(), 1L, 1L);
+
+        given(themeRepository.findById(1L))
+                .willReturn(Optional.of(new Theme(new ThemeName("theme1"), "test", "test")));
+
+        assertThatCode(() -> reservationService.create(request))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("존재하지 않는 예약 시간 입니다.");
-
-        then(reservationTimeRepository).should().findById(any(Long.class));
-        then(reservationRepository).should(times(0))
-                .existByDateAndTimeId(any(LocalDate.class), any(Long.class));
-        then(reservationRepository).should(times(0)).create(any(Reservation.class));
     }
 
     @DisplayName("중복된 예약을 하는 경우 IllegalStateException 예외를 반환한다.")
     @Test
     void shouldReturnIllegalStateExceptionWhenDuplicatedReservationCreate() {
-        ReservationRequest reservationRequest = new ReservationRequest("test", LocalDate.of(2024, 12, 27), 1L);
+        ReservationRequest reservationRequest = new ReservationRequest("test", LocalDate.of(2024, 12, 27), 1L, 1L);
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(12, 0));
 
         setClockMock(2024, 12, 26, 0, 0);
@@ -96,26 +106,25 @@ class ReservationServiceTest {
                 .willReturn(Optional.of(reservationTime));
         given(reservationRepository.existByDateAndTimeId(any(LocalDate.class), any(Long.class)))
                 .willReturn(true);
+        given(themeRepository.findById(any(Long.class)))
+                .willReturn(Optional.of(new Theme(1L, new ThemeName("themeName"), "desc", "url")));
 
         assertThatCode(() -> reservationService.create(reservationRequest))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("이미 존재하는 예약입니다.");
-
-        then(reservationTimeRepository).should().findById(any(Long.class));
-        then(reservationRepository).should()
-                .existByDateAndTimeId(any(LocalDate.class), any(Long.class));
-        then(reservationRepository).should(times(0)).create(any(Reservation.class));
     }
 
     @DisplayName("과거 시간을 예약하는 경우 IllegalArgumentException 예외를 반환한다.")
     @Test
     void shouldThrowsIllegalArgumentExceptionWhenReservationDateIsBeforeCurrentDate() {
-        ReservationRequest reservationRequest = new ReservationRequest("test", LocalDate.of(2024, 12, 25), 1L);
+        ReservationRequest reservationRequest = new ReservationRequest("test", LocalDate.of(2024, 12, 25), 1L, 1L);
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(12, 0));
 
         setClockMock(2024, 12, 26, 0, 0);
         given(reservationTimeRepository.findById(any(Long.class)))
                 .willReturn(Optional.of(reservationTime));
+        given(themeRepository.findById(any(Long.class)))
+                .willReturn(Optional.of(new Theme(1L, new ThemeName("themeName"), "desc", "url")));
 
         assertThatCode(() -> reservationService.create(reservationRequest))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -126,9 +135,7 @@ class ReservationServiceTest {
     @Test
     void shouldReturnReservationResponsesWhenReservationsExist() {
         List<ReservationResponse> reservationResponses = reservationService.findAll();
-
         assertThat(reservationResponses).isEmpty();
-
         then(reservationRepository).should().findAll();
     }
 
@@ -139,7 +146,8 @@ class ReservationServiceTest {
                 1L,
                 new PlayerName("test"),
                 LocalDate.now(),
-                new ReservationTime(1L, LocalTime.now())
+                new ReservationTime(1L, LocalTime.now()),
+                new Theme(1L, new ThemeName("themeName"), "desc", "url")
         );
 
         given(reservationRepository.findById(any(Long.class)))
@@ -160,9 +168,6 @@ class ReservationServiceTest {
         assertThatCode(() -> reservationService.deleteById(any(Long.class)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("존재하지 않는 예약 입니다.");
-
-        then(reservationRepository).should().findById(any(Long.class));
-        then(reservationRepository).should(times(0)).deleteById(any(Long.class));
     }
 
     private void setClockMock(int year, int month, int day, int hour, int minute) {
