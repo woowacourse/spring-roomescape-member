@@ -56,11 +56,6 @@ public class ReservationController {
                 .build();
     }
 
-    @ExceptionHandler(value = IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-    }
-
     @ExceptionHandler(value = DateTimeParseException.class)
     public ResponseEntity<String> handleDateTimeParseException(DateTimeParseException e) {
         return new ResponseEntity<>(e.getParsedString() + "은(는) 올바른 시간 형식이 아닙니다.", HttpStatus.BAD_REQUEST);
