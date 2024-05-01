@@ -1,6 +1,7 @@
 package roomescape.dao;
 
 import java.time.LocalTime;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,13 @@ public class ReservationTimeDao implements ReservationTimeRepository {
         String sql = "SELECT * FROM reservation_time WHERE id = ?";
         List<ReservationTime> time = jdbcTemplate.query(sql, timeRowMapper, id);
         return DataAccessUtils.optionalResult(time);
+    }
+
+    @Override
+    public List<ReservationTime> hasNotId(List<Long> unavailableTimeIds) {
+        String placeholders = String.join(",", Collections.nCopies(unavailableTimeIds.size(), "?"));
+        String sql = "SELECT * FROM reservation_time WHERE id NOT IN (" + placeholders + ")";
+        return jdbcTemplate.query(sql, timeRowMapper, unavailableTimeIds.toArray());
     }
 
     @Override

@@ -9,6 +9,8 @@ public interface ReservationTimeRepository {
 
     Optional<ReservationTime> findById(Long id);
 
+    List<ReservationTime> hasNotId(List<Long> unavailableTimeIds);
+
     boolean existsByStartAt(LocalTime startAt);
 
     ReservationTime save(ReservationTime time);

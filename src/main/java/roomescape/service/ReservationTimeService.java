@@ -1,8 +1,10 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.exception.time.DuplicatedTimeException;
@@ -14,13 +16,24 @@ import roomescape.web.dto.ReservationTimeResponse;
 @Service
 public class ReservationTimeService {
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository) {
+    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository,
+                                  ReservationRepository reservationRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public List<ReservationTimeResponse> findAllReservationTime() {
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
+        return reservationTimes.stream()
+                .map(ReservationTimeResponse::from)
+                .toList();
+    }
+
+    public List<ReservationTimeResponse> findAllAvailableTime(LocalDate date, Long themeId) {
+        List<Long> unavailableTimeIds = reservationRepository.findTimeIdByDateAndThemeId(date, themeId);
+        List<ReservationTime> reservationTimes = reservationTimeRepository.hasNotId(unavailableTimeIds); // TODO: 이름 수정
         return reservationTimes.stream()
                 .map(ReservationTimeResponse::from)
                 .toList();
