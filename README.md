@@ -16,7 +16,7 @@ GET /admin HTTP/1.1
 HTTP/1.1 200
 Content-Type : text/html
 
-index.html
+admin/index.html
 ```
 ---
 
@@ -34,7 +34,7 @@ GET /admin/reservation HTTP/1.1
 HTTP/1.1 200
 Content-Type : text/html
 
-reservation-legacy.html
+admin/reservation-new.html
 ```
 
 ---
@@ -53,7 +53,7 @@ GET /admin/time HTTP/1.1
 HTTP/1.1 200
 Content-Type : text/html
 
-templates/admin/time.html
+admin/time.html
 ```
 
 ---
@@ -83,14 +83,22 @@ Content-Type: application/json
             "id": 1,
             "startAt": "10:00"
         }
+        "theme" : {
+            "id" : 1,
+            "name" : "theme 1"
+        }
     },
     {
         "id": 2,
         "name": "ted",
         "date": "2024-04-01",
         "time": {
-            "id": 1,
-            "startAt": "10:00"
+            "id": 2,
+            "startAt": "11:00"
+        }
+        "theme" : {
+            "id" : 1,
+            "name" : "theme 1"
         }
     }
 ]
@@ -120,6 +128,10 @@ Content-Type: application/json
         "id": 1,
         "startAt" : "10:00"
     }
+    "theme" : {
+            "id" : 1,
+            "name" : "theme 1"
+        }
 }
 ```
 
@@ -136,7 +148,8 @@ Content-type: application/json
 {
     "name": "ted",
     "date": "2024-04-01",
-    "timeId": 1
+    "timeId": 1,
+    "themeId" : 1
 }
 ```
 
