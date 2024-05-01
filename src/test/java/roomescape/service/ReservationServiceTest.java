@@ -109,7 +109,7 @@ class ReservationServiceTest {
         assertThat(reservationService.findAll()).hasSize(0);
     }
 
-    @DisplayName("해당 시간과 날짜로 예약이 존재하면 예외를 발생시킨다.")
+    @DisplayName("해당 테마와 일정으로 예약이 존재하면 예외를 발생시킨다.")
     @Test
     void duplicatedReservation() {
         //given
@@ -122,6 +122,6 @@ class ReservationServiceTest {
         //when & then
         assertThatThrownBy(() -> reservationService.create(reservationRequest))
                 .isInstanceOf(InvalidReservationException.class)
-                .hasMessage("이미 같은 일정으로 예약이 존재합니다.");
+                .hasMessage("선택하신 테마와 일정은 이미 예약이 존재합니다.");
     }
 }

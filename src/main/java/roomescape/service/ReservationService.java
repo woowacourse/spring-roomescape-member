@@ -37,8 +37,9 @@ public class ReservationService {
     }
 
     private void validateDuplicated(ReservationRequest reservationRequest) {
-        if (reservationRepository.existsByDateAndTime(reservationRequest.date(), reservationRequest.timeId())) {
-            throw new InvalidReservationException("이미 같은 일정으로 예약이 존재합니다.");
+        if (reservationRepository.existsByDateAndTimeAndTheme(reservationRequest.date(), reservationRequest.timeId(),
+                reservationRequest.themeId())) {
+            throw new InvalidReservationException("선택하신 테마와 일정은 이미 예약이 존재합니다.");
         }
     }
 
