@@ -20,6 +20,9 @@ public class ReservationTimeService {
     }
 
     public ReservationTime addReservationTime(ReservationTimeAddRequest reservationTimeAddRequest) {
+        if (reservationTimeDao.existByStartAt(reservationTimeAddRequest.getStartAt())) {
+            throw new IllegalArgumentException("이미 존재하는 예약시간은 추가할 수 없습니다.");
+        }
         return reservationTimeDao.insert(reservationTimeAddRequest.toEntity());
     }
 
