@@ -26,4 +26,12 @@ class ThemeRepositoryTest {
 
         assertThat(themes.size()).isEqualTo(0);
     }
+
+    @Test
+    @DisplayName("데이터베이스에 테마 정보를 추가한다.")
+    void saveTheme() {
+        Theme theme = themeRepository.save(new Theme("name", "description", "thumbnail"));
+
+        assertThat(theme.getId()).isEqualTo(1);
+    }
 }

@@ -1,8 +1,5 @@
 package roomescape.repository;
 
-import java.time.LocalDate;
-import java.util.List;
-import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -11,6 +8,10 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.time.Time;
+
+import javax.sql.DataSource;
+import java.time.LocalDate;
+import java.util.List;
 
 @Repository
 public class ReservationRepository {
@@ -41,8 +42,7 @@ public class ReservationRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
-    public Reservation
-    save(Reservation requestReservation) {
+    public Reservation save(Reservation requestReservation) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", requestReservation.getName())
                 .addValue("date", requestReservation.getDate())

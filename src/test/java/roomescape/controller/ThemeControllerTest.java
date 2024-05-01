@@ -9,6 +9,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 
+import java.util.Map;
+
 import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -31,5 +33,25 @@ class ThemeControllerTest {
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
+    }
+
+    @Test
+    @DisplayName("테마를 추가한다.")
+    void createThemes() {
+        Map<String, String> params = Map.of(
+                "name", "테마명",
+                "description", "설명",
+                "thumbnail", "http://testsfasdgasd.com"
+        );
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .port(port)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201)
+                .body("id", is(1))
+                .header("Location", "/themes/1");
     }
 }
