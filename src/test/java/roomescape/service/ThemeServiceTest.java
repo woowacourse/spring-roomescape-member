@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.exception.NotExistThemeException;
 import roomescape.service.dto.input.ThemeInput;
 
 @SpringBootTest
@@ -65,5 +66,12 @@ public class ThemeServiceTest {
 
         var result = themeService.getAllThemes();
         assertThat(result).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 테마 ID 를 삭제하려 하면 에외를 발생한다.")
+    void throw_exception_when_not_exist_id() {
+        assertThatThrownBy(() -> themeService.deleteTheme(-1))
+                .isInstanceOf(NotExistThemeException.class);
     }
 }
