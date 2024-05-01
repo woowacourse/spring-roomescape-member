@@ -3,7 +3,9 @@ package roomescape.time;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -68,6 +70,20 @@ class ReservationTimeControllerTest {
                 .statusCode(204);
 
         assertReservationTimeCountIsEqualTo(0);
+    }
+
+    @DisplayName("예약시간 추가 시 startAt의 형식이 잘못된 경우 상태코드 400을 응답한다.")
+    @Test
+    void timeFormatException() {
+        Map<String, String> request = new HashMap<>();
+        request.put("id", "0");
+        request.put("startAt", null);
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(400);
     }
 
     ReservationTime reservationTime(String time) {

@@ -4,9 +4,12 @@ import java.time.LocalTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-public record ReservationTime(long id, LocalTime startAt) {
-    @JsonFormat(pattern = "HH:mm")
-    public LocalTime startAt() {
-        return startAt;
+public record ReservationTime(long id, @JsonFormat(pattern = "HH:mm") LocalTime startAt) {
+    public ReservationTime(long id, LocalTime startAt) {
+        if (startAt == null) {
+            throw new IllegalArgumentException("Start time cannot be null");
+        }
+        this.id = id;
+        this.startAt = startAt;
     }
 }
