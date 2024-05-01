@@ -50,7 +50,7 @@ class ReservationControllerTest {
     void createReservation() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
         ReservationCreateRequest params = new ReservationCreateRequest
-                ("브라운", "2023-08-05", 1);
+                ("브라운", "2040-08-05", 1L);
 
         RestAssured.given().log().all()
                 .port(port)
@@ -70,7 +70,7 @@ class ReservationControllerTest {
     void createReservation_whenNameIsNull() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
         ReservationCreateRequest params = new ReservationCreateRequest
-                (null, "2023-08-05", 1);
+                (null, "2040-08-05", 1L);
 
         RestAssured.given().log().all()
                 .port(port)
@@ -87,7 +87,7 @@ class ReservationControllerTest {
     void deleteReservation() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)"
-                , "브라운", "2023-08-05", "1");
+                , "브라운", "2040-08-05", "1");
 
         RestAssured.given().log().all()
                 .port(port)

@@ -34,7 +34,7 @@ public class ReservationService {
     }
 
     private void validate(Reservation reservation) {
-        if (reservation.isAfter(LocalDateTime.now())) {
+        if (reservation.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("예약은 현재 시간 이후여야 합니다.");
         }
         if (reservationDao.isReservationsByTimeIdAndDate(reservation.getTime().getId(), reservation.getDate())) {

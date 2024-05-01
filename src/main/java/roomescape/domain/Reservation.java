@@ -39,19 +39,15 @@ public class Reservation {
         }
     }
 
-    public Reservation changeId(Long id) {
-        return new Reservation(id, this.name, this.date, this.time);
-    }
-
-    public boolean isAfter(LocalDateTime currentDateTime) {
+    public boolean isBefore(LocalDateTime currentDateTime) {
         LocalDate currentDate = currentDateTime.toLocalDate();
-        if (date.isAfter(currentDate)) {
+        if (date.isBefore(currentDate)) {
             return true;
         }
-        if (date.isBefore(currentDate)) {
+        if (date.isAfter(currentDate)) {
             return false;
         }
-        return time.isAfter(currentDateTime.toLocalTime());
+        return time.isBefore(currentDateTime.toLocalTime());
     }
 
     public Long getId() {

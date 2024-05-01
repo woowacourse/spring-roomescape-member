@@ -41,7 +41,7 @@ class ReservationTimeTest {
     void isAfterTest_whenTimeIsBefore() {
         ReservationTime time = new ReservationTime(1L, "09:00");
         LocalTime localTime = LocalTime.of(9, 1);
-        assertThat(time.isAfter(localTime)).isFalse();
+        assertThat(time.isBefore(localTime)).isTrue();
     }
 
     @DisplayName("시간을 통해 특정 시간대 이후임을 알 수 있다.")
@@ -49,6 +49,6 @@ class ReservationTimeTest {
     void isAfterTest_whenTimeIsAfter() {
         ReservationTime time = new ReservationTime(1L, "09:00");
         LocalTime localTime = LocalTime.of(8, 59);
-        assertThat(time.isAfter(localTime)).isTrue();
+        assertThat(time.isBefore(localTime)).isFalse();
     }
 }

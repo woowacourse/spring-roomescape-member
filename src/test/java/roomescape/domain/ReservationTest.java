@@ -61,7 +61,7 @@ class ReservationTest {
         Reservation reservation = new Reservation(1L, "커찬", "2024-04-30", new ReservationTime(1L, "09:00"));
         LocalDateTime currentDateTime = LocalDateTime.of(2024, 5, 1, 10, 0);
 
-        assertThat(reservation.isAfter(currentDateTime)).isFalse();
+        assertThat(reservation.isBefore(currentDateTime)).isTrue();
     }
 
     @DisplayName("날짜를 통해 특정 시간대 이후임을 알 수 있다.")
@@ -70,7 +70,7 @@ class ReservationTest {
         Reservation reservation = new Reservation(1L, "커찬", "2024-04-30", new ReservationTime(1L, "09:00"));
         LocalDateTime currentDateTime = LocalDateTime.of(2024, 4, 29, 10, 0);
 
-        assertThat(reservation.isAfter(currentDateTime)).isTrue();
+        assertThat(reservation.isBefore(currentDateTime)).isFalse();
     }
 
     @DisplayName("날짜가 같은 경우, 시간을 통해 판단한다.")
@@ -79,6 +79,6 @@ class ReservationTest {
         Reservation reservation = new Reservation(1L, "커찬", "2024-04-30", new ReservationTime(1L, "09:00"));
         LocalDateTime currentDateTime = LocalDateTime.of(2024, 4, 30, 10, 0);
 
-        assertThat(reservation.isAfter(currentDateTime)).isFalse();
+        assertThat(reservation.isBefore(currentDateTime)).isTrue();
     }
 }
