@@ -13,4 +13,6 @@ public interface ReservationTimeRepository {
     boolean isExistTimeOf(String startAt);
 
     boolean isExistTimeOf(long timeId);
+
+    ReservationTime findReservationTimeById(long savedId);
 }

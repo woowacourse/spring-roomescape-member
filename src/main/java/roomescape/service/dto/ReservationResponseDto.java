@@ -13,7 +13,7 @@ public class ReservationResponseDto {
         this.id = reservation.getId();
         this.name = reservation.getName();
         this.date = reservation.getDate().toString();
-        this.time = new ReservationTimeResponseDto(reservation.getTime());
+        this.time = new ReservationTimeResponseDto(reservation.getReservationTime());
     }
 
     public long getId() {

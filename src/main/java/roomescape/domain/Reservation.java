@@ -34,8 +34,12 @@ public class Reservation {
         return date.getDate();
     }
 
-    public ReservationTime getTime() {
+    public ReservationTime getReservationTime() {
         return time;
+    }
+
+    public LocalTime getLocalTime() {
+        return time.getStartAt();
     }
 
     public Long getTimeId() {

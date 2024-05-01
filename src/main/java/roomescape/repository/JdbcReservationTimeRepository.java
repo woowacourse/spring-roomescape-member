@@ -66,7 +66,8 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         return count > 0;
     }
 
-    private ReservationTime findReservationTimeById(long savedId) {
+    @Override
+    public ReservationTime findReservationTimeById(long savedId) {
         String sql = """
                 SELECT 
                 t.id, 

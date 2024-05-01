@@ -2,9 +2,11 @@ package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
+import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.service.dto.ReservationRequestDto;
 
@@ -28,6 +31,10 @@ class ReservationServiceTest {
 
     @InjectMocks
     private ReservationService reservationService;
+
+    private final ReservationTime time = new ReservationTime(1L, "15:30");
+    private final LocalDate validDate = LocalDate.now().plusDays(10);
+    private final ReservationRequestDto requestDto = new ReservationRequestDto("재즈", validDate.toString(), 1L);
 
     @DisplayName("모든 예약 정보 조회 및 의존 객체 상호작용 테스트")
     @Test
@@ -44,10 +51,11 @@ class ReservationServiceTest {
     @DisplayName("예약 저장 및 의존 객체 상호작용 테스트")
     @Test
     void create_reservation_test() {
-        ReservationRequestDto requestDto = new ReservationRequestDto("재즈", "2024-04-21", 1L);
-        Reservation reservation = new Reservation(1L, "재즈", "2024-04-21", 1L, "15:30");
-        given(reservationTimeRepository.isExistTimeOf(reservation.getTimeId())).willReturn(true);
+        given(reservationTimeRepository.isExistTimeOf(requestDto.getTimeId())).willReturn(true);
         given(reservationRepository.isExistReservationAtDateTime(requestDto.toReservation())).willReturn(false);
+        given(reservationTimeRepository.findReservationTimeById(requestDto.getTimeId())).willReturn(time);
+
+        Reservation reservation = new Reservation(1L, "재즈", "2024-04-21", 1L, "15:30");
         given(reservationRepository.insertReservation(requestDto.toReservation())).willReturn(reservation);
 
         reservationService.createReservation(requestDto);
@@ -57,7 +65,6 @@ class ReservationServiceTest {
     @DisplayName("존재하지 않는 시간의 예약을 생성하려고 하면 예외가 발생한다.")
     @Test
     void throw_exception_when_not_exist_time_id_create() {
-        ReservationRequestDto requestDto = new ReservationRequestDto("재즈", "2024-04-21", 1L);
         given(reservationTimeRepository.isExistTimeOf(requestDto.getTimeId())).willReturn(false);
 
         assertThatThrownBy(() -> reservationService.createReservation(requestDto))
@@ -65,11 +72,26 @@ class ReservationServiceTest {
                 .hasMessage("예약 하려는 시간이 저장되어 있지 않습니다.");
     }
 
+    @DisplayName("지나간 날짜와 시간에 대한 예약을 생성하려고 하면 예외가 발생한다.")
+    @Test
+    void throw_exception_when_past_datetime_create() {
+        LocalDate pastDate = LocalDate.now().minusDays(10);
+        ReservationRequestDto invalidDateRequest = new ReservationRequestDto("재즈", pastDate.toString(), 1L);
+        given(reservationTimeRepository.isExistTimeOf(invalidDateRequest.getTimeId())).willReturn(true);
+        given(reservationTimeRepository.findReservationTimeById(requestDto.getTimeId())).willReturn(time);
+
+        assertThatThrownBy(() -> reservationService.createReservation(invalidDateRequest))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("지나간 날짜와 시간에 대한 예약은 불가능합니다.");
+
+        verify(reservationRepository, never()).insertReservation(requestDto.toReservation());
+    }
+
     @DisplayName("이미 예약된 날짜와 시간에 예약을 생성하려고 하면 예외가 발생한다.")
     @Test
     void throw_exception_when_duplicate_datetime_create() {
-        ReservationRequestDto requestDto = new ReservationRequestDto("재즈", "2024-04-21", 1L);
         given(reservationTimeRepository.isExistTimeOf(requestDto.getTimeId())).willReturn(true);
+        given(reservationTimeRepository.findReservationTimeById(requestDto.getTimeId())).willReturn(time);
         given(reservationRepository.isExistReservationAtDateTime(requestDto.toReservation())).willReturn(true);
 
         assertThatThrownBy(() -> reservationService.createReservation(requestDto))
