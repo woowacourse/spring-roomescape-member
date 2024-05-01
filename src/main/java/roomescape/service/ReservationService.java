@@ -4,26 +4,35 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 
 @Service
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository timeRepository;
+    private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, ReservationTimeRepository timeRepository) {
+    public ReservationService(
+            ReservationRepository reservationRepository,
+            ReservationTimeRepository timeRepository,
+            ThemeRepository themeRepository
+    ) {
         this.reservationRepository = reservationRepository;
         this.timeRepository = timeRepository;
+        this.themeRepository = themeRepository;
     }
 
     public Long addReservation(ReservationRequest reservationRequest) {
         ReservationTime reservationTime = findReservationTime(reservationRequest);
+        Theme theme = findTheme(reservationRequest);
         validateReservationNotDuplicate(reservationRequest);
-        Reservation reservationToSave = reservationRequest.toEntity(reservationTime);
+        Reservation reservationToSave = reservationRequest.toEntity(reservationTime, theme);
         return reservationRepository.save(reservationToSave);
     }
 
@@ -57,6 +66,14 @@ public class ReservationService {
             throw new IllegalArgumentException("[ERROR] time_id가 존재하지 않습니다 : " + timeId);
         }
         return timeRepository.findById(timeId);
+    }
+
+    private Theme findTheme(ReservationRequest reservationRequest) {
+        Long themeId = reservationRequest.themeId();
+        if (!themeRepository.existId(themeId)) {
+            throw new IllegalArgumentException("[ERROR] theme_id가 존재하지 않습니다 : " + themeId);
+        }
+        return themeRepository.findById(themeId);
     }
 
     private void validateReservationNotDuplicate(ReservationRequest reservationRequest) {

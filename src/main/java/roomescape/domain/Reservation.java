@@ -9,20 +9,22 @@ public class Reservation {
     private Name name;
     private LocalDate date;
     private ReservationTime time;
+    private Theme theme;
 
     public Reservation() {
     }
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime reservationTime) {
+    public Reservation(Long id, String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
         validateUnpassedDate(date, reservationTime.getStartAt());
         this.id = id;
         this.name = new Name(name);
         this.date = date;
         this.time = reservationTime;
+        this.theme = theme;
     }
 
-    public Reservation(String name, LocalDate date, ReservationTime reservationTime) {
-        this(null, name, date, reservationTime);
+    public Reservation(String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
+        this(null, name, date, reservationTime, theme);
     }
 
     private void validateUnpassedDate(LocalDate date, LocalTime time) {
@@ -45,5 +47,9 @@ public class Reservation {
 
     public ReservationTime getTime() {
         return time;
+    }
+
+    public Theme getTheme() {
+        return theme;
     }
 }
