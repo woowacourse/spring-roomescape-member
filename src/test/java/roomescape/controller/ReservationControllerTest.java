@@ -13,8 +13,10 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import roomescape.TestConfig;
+import roomescape.fixture.ThemeFixture;
 import roomescape.service.ReservationService;
 import roomescape.service.ReservationTimeService;
+import roomescape.service.ThemeService;
 import roomescape.service.dto.input.ReservationInput;
 import roomescape.service.dto.input.ReservationTimeInput;
 
@@ -24,7 +26,8 @@ public class ReservationControllerTest {
 
     @Autowired
     ReservationService reservationService;
-
+    @Autowired
+    ThemeService themeService;
     @Autowired
     ReservationTimeService reservationTimeService;
 
@@ -39,12 +42,14 @@ public class ReservationControllerTest {
     @Test
     @DisplayName("예약 생성에 성공하면, 201을 반환한다")
     void return_200_when_reservation_create_success() {
-        long id = reservationTimeService.createReservationTime(new ReservationTimeInput("14:00")).id();
+        long timeId = reservationTimeService.createReservationTime(new ReservationTimeInput("14:00")).id();
+        long themeId = themeService.createTheme(ThemeFixture.getInput()).id();
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", "2024-08-05");
-        reservation.put("timeId", id);
+        reservation.put("timeId", timeId);
+        reservation.put("themeId", themeId);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -57,12 +62,14 @@ public class ReservationControllerTest {
     @Test
     @DisplayName("예약 생성 시 예약자명, 날짜, 시간에 유효하지 않은 값이 입력되었을 때 400을 반환한다.")
     void return_400_when_reservation_create_input_is_invalid() {
-        long id = reservationTimeService.createReservationTime(new ReservationTimeInput("12:00")).id();
+        long timeId = reservationTimeService.createReservationTime(new ReservationTimeInput("12:00")).id();
+        long themeId = themeService.createTheme(ThemeFixture.getInput()).id();
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "");
         reservation.put("date", "2023-08-05");
-        reservation.put("timeId", id);
+        reservation.put("timeId", timeId);
+        reservation.put("themeId", themeId);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -84,13 +91,15 @@ public class ReservationControllerTest {
     @Test
     @DisplayName("중복된 예약을 생성하려 할 때 409를 반환한다.")
     void return_409_when_duplicate_reservation() {
-        long id = reservationTimeService.createReservationTime(new ReservationTimeInput("13:00")).id();
-        reservationService.createReservation(new ReservationInput("조이썬", "2024-06-30", id));
+        long timeId = reservationTimeService.createReservationTime(new ReservationTimeInput("13:00")).id();
+        long themeId = themeService.createTheme(ThemeFixture.getInput()).id();
+        reservationService.createReservation(new ReservationInput("조이썬", "2024-06-30", timeId, themeId));
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "제리");
         reservation.put("date", "2024-06-30");
-        reservation.put("timeId", id);
+        reservation.put("timeId", themeId);
+        reservation.put("themeId", themeId);
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
@@ -103,12 +112,14 @@ public class ReservationControllerTest {
     @Test
     @DisplayName("지나간 날짜와 시간으로 예약 생성 시 400를 반환한다.")
     void return_400_when_create_past_time_reservation() {
-        long id = reservationTimeService.createReservationTime(new ReservationTimeInput("10:00")).id();
+        long timeId = reservationTimeService.createReservationTime(new ReservationTimeInput("10:00")).id();
+        long themeId = themeService.createTheme(ThemeFixture.getInput()).id();
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "제리");
         reservation.put("date", "1024-03-30");
-        reservation.put("timeId", id);
+        reservation.put("timeId", timeId);
+        reservation.put("themeId", themeId);
 
         RestAssured.given()
                 .contentType(ContentType.JSON)

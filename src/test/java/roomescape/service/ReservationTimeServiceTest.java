@@ -12,11 +12,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.dao.ReservationDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.exception.ExistReservationInReservationTimeException;
 import roomescape.exception.NotExistReservationTimeException;
 import roomescape.exception.ReservationTimeAlreadyExistsException;
+import roomescape.fixture.ThemeFixture;
 import roomescape.service.dto.input.ReservationTimeInput;
 import roomescape.service.dto.output.ReservationTimeOutput;
+import roomescape.service.dto.output.ThemeOutput;
 
 @SpringBootTest
 public class ReservationTimeServiceTest {
@@ -26,6 +29,9 @@ public class ReservationTimeServiceTest {
 
     @Autowired
     ReservationTimeService reservationTimeService;
+
+    @Autowired
+    ThemeService themeService;
 
     @Autowired
     JdbcTemplate jdbcTemplate;
@@ -64,12 +70,18 @@ public class ReservationTimeServiceTest {
     @Test
     @DisplayName("특정 시간에 대한 예약이 존재하면 그 시간을 삭제하려 할 때 예외를 발생한다.")
     void throw_exception_when_delete_id_that_exist_reservation() {
-        ReservationTimeOutput output = reservationTimeService.createReservationTime(
+        ReservationTimeOutput timeOutput = reservationTimeService.createReservationTime(
                 new ReservationTimeInput("10:00"));
-        reservationDao.create(Reservation.from(null, "제리", "2024-04-30",
-                ReservationTime.from(output.id(), output.startAt())));
+        ThemeOutput themeOutput = themeService.createTheme(ThemeFixture.getInput());
+        reservationDao.create(Reservation.from(
+                null,
+                "제리",
+                "2024-04-30",
+                ReservationTime.from(timeOutput.id(), timeOutput.startAt()),
+                Theme.of(themeOutput.id(), themeOutput.name(), themeOutput.description(), themeOutput.thumbnail())
+        ));
 
-        assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(output.id()))
+        assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(timeOutput.id()))
                 .isInstanceOf(ExistReservationInReservationTimeException.class);
     }
 

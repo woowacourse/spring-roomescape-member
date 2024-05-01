@@ -9,16 +9,18 @@ public class Reservation {
     private final Name name;
     private final ReservationDate date;
     private final ReservationTime time;
+    private final Theme theme;
 
-    public Reservation(Long id, Name name, ReservationDate date, ReservationTime time) {
+    public Reservation(Long id, Name name, ReservationDate date, ReservationTime time, Theme theme) {
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
+        this.theme = theme;
     }
 
-    public static Reservation from(Long id, String name, String date, ReservationTime time) {
-        return new Reservation(id, new Name(name), ReservationDate.from(date), time);
+    public static Reservation from(Long id, String name, String date, ReservationTime time, Theme theme) {
+        return new Reservation(id, new Name(name), ReservationDate.from(date), time, theme);
     }
 
     public Long getId() {
@@ -39,6 +41,10 @@ public class Reservation {
 
     public ReservationTime getTime() {
         return time;
+    }
+
+    public Theme getTheme() {
+        return theme;
     }
 
     public String getDateAndTimeFormat() {

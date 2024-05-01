@@ -8,6 +8,7 @@ import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 @Component
 public class ReservationRowMapper implements RowMapper<Reservation> {
@@ -19,7 +20,12 @@ public class ReservationRowMapper implements RowMapper<Reservation> {
         String date = rs.getString("date");
         long timeId = rs.getLong("time_id");
         String startAt = rs.getString("time_value");
+        long themeId = rs.getLong("theme_id");
+        String themeName = rs.getString("theme_name");
+        String description = rs.getString("theme_description");
+        String thumbnail = rs.getString("theme_thumbnail");
         return new Reservation(reservationId, new Name(name), ReservationDate.from(date),
-                ReservationTime.from(timeId, startAt));
+                ReservationTime.from(timeId, startAt),
+                Theme.of(themeId, themeName, description, thumbnail));
     }
 }

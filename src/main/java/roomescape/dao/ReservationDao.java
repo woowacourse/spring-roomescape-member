@@ -30,9 +30,11 @@ public class ReservationDao {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.getNameAsString())
                 .addValue("date", reservation.getDate().asString())
-                .addValue("time_id", reservation.getTime().getId());
+                .addValue("time_id", reservation.getTime().getId())
+                .addValue("theme_id", reservation.getTheme().getId());
         long id = jdbcInsert.executeAndReturnKey(params).longValue();
-        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime());
+        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
+                reservation.getTheme());
     }
 
     public boolean isExistByReservationAndTime(ReservationDate date, long timeId) {
@@ -40,9 +42,14 @@ public class ReservationDao {
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, date.asString(), timeId));
     }
 
-    public boolean isExistByTimeId(long timdId) {
+    public boolean isExistByTimeId(long timeId) {
         String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE time_id = ?)";
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, timdId));
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, timeId));
+    }
+
+    public boolean isExistByThemeId(long themeId) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE theme_id = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, themeId));
     }
 
     public boolean isExistById(long id) {
