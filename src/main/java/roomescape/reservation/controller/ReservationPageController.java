@@ -7,7 +7,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class ReservationPageController {
 
     @GetMapping("/reservation")
-    public String reservationPage() {
+    public String userReservationPage() {
+        return "reservation";
+    }
+
+    @GetMapping("/admin/reservation")
+    public String adminReservationPage() {
         return "admin/reservation";
     }
 }
