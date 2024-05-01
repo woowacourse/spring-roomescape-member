@@ -41,7 +41,7 @@ public class ReservationService {
         ReservationTime reservationTime = getReservationTime(createDto.timeId());
         Theme theme = getTheme(createDto.themeId());
         Reservation reservation = createDto.toDomain(reservationTime, theme);
-        validateDateAndTime(reservation, reservationTime);
+        validate(reservation, reservationTime);
 
         Reservation createdReservation = reservationRepository.create(reservation);
         return ReservationResponse.from(createdReservation);
@@ -57,7 +57,7 @@ public class ReservationService {
                 .orElseThrow(() -> new NoSuchElementException("해당되는 테마가 없습니다."));
     }
 
-    private void validateDateAndTime(Reservation reservation, ReservationTime reservationTime) {
+    private void validate(Reservation reservation, ReservationTime reservationTime) {
         LocalDate nowDate = LocalDate.now();
         LocalTime nowTime = LocalTime.now();
         LocalDate reservationDate = reservation.getDate();
@@ -69,8 +69,8 @@ public class ReservationService {
         if (reservationDate.isEqual(nowDate) && reservationStartAt.isBefore(nowTime)) {
             throw new IllegalStateException("예약 시간은 현재 시간보다 이전일 수 없습니다.");
         }
-        if (reservationRepository.hasDuplicateDateTimeReservation(reservation)) {
-            throw new IllegalStateException("해당 날짜와 시간에 예약이 존재합니다.");
+        if (reservationRepository.hasDuplicateReservation(reservation)) {
+            throw new IllegalStateException("중복된 예약이 존재합니다.");
         }
     }
 }

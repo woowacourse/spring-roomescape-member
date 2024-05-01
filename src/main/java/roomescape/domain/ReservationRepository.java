@@ -11,5 +11,5 @@ public interface ReservationRepository {
 
     void removeById(Long id);
 
-    boolean hasDuplicateDateTimeReservation(Reservation reservation);
+    boolean hasDuplicateReservation(Reservation reservation);
 }

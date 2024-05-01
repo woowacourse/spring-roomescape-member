@@ -92,16 +92,17 @@ class ReservationRepositoryTest {
     }
 
     @Test
-    @DisplayName("동일한 날짜, 시간의 예약이 있는지 확인한다.")
-    void hasDuplicateDateTimeReservation() {
+    @DisplayName("동일한 날짜, 시간, 테마의 예약이 있는지 확인한다.")
+    void hasDuplicateDateTimeThemeReservation() {
         // given
         Name name = new Name("아톰");
         LocalDate date = LocalDate.parse("2024-05-04");
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.parse("10:00"));
-        Reservation reservation = new Reservation(name, date, reservationTime, null);
+        Theme theme = new Theme(1L, "테마1", "테마1설명", "테마1이미지");
+        Reservation reservation = new Reservation(name, date, reservationTime, theme);
 
         // when
-        boolean result = reservationRepository.hasDuplicateDateTimeReservation(reservation);
+        boolean result = reservationRepository.hasDuplicateReservation(reservation);
 
         // then
         assertThat(result).isTrue();

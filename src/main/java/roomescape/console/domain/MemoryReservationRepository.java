@@ -48,7 +48,7 @@ public class MemoryReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean hasDuplicateDateTimeReservation(Reservation reservation) {
+    public boolean hasDuplicateReservation(Reservation reservation) {
         return false;
     }
 }

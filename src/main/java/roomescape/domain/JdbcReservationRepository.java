@@ -84,14 +84,15 @@ public class JdbcReservationRepository implements ReservationRepository {
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
     }
 
-    public boolean hasDuplicateDateTimeReservation(Reservation reservation) {
+    public boolean hasDuplicateReservation(Reservation reservation) {
 
         return jdbcTemplate.queryForObject(
                 """
                         SELECT count(*)
                         FROM reservation
-                        WHERE date = ? AND time_id = ?""",
-                Integer.class, reservation.getDate(), reservation.getTime().getId()) > 0;
+                        WHERE date = ? AND time_id = ? AND theme_id = ?""",
+                Integer.class, reservation.getDate(), reservation.getTime().getId(), reservation.getTheme().getId())
+                > 0;
     }
 
     private RowMapper<Reservation> reservationRowMapper() {
