@@ -38,8 +38,8 @@
 
 ## 3단계 요구사항
 
-- [ ] 사용자 예약 페이지 응답(templates/reservation.html)
-- [ ] 인기 테마 페이지 응답(templates/index.html)
+- [x] 사용자 예약 페이지 응답(templates/reservation.html)
+- [x] 인기 테마 페이지 응답(templates/index.html)
 - [ ] 사용자 예약
   - [ ] 예약 가능한 시간 조회(date, themeId)(GET)(/reservations/{date}/{themeId})
   - [ ] 예약 기능(POST)(/reservations)
