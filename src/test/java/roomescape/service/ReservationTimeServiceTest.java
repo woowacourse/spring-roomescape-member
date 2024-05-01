@@ -69,22 +69,12 @@ class ReservationTimeServiceTest {
     @Test
     void throw_exception_when_exist_reservation_delete() {
         long timeId = 1L;
+        given(reservationTimeRepository.isExistTimeOf(timeId)).willReturn(true);
         given(reservationRepository.hasReservationOf(timeId)).willReturn(true);
 
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(timeId))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("해당 시간에 예약이 있어 삭제할 수 없습니다.");
-    }
-
-    @DisplayName("예약이 존재하지 않는 시간을 삭제할 수 있다.")
-    @Test
-    void delete_reservation_time() {
-        long timeId = 1L;
-        given(reservationRepository.hasReservationOf(timeId)).willReturn(false);
-        given(reservationTimeRepository.isExistTimeOf(timeId)).willReturn(true);
-
-        reservationTimeService.deleteReservationTime(timeId);
-        verify(reservationTimeRepository, times(1)).deleteReservationTimeById(timeId);
     }
 
     @DisplayName("존재하지 않는 아이디를 삭제하려고 하면 예외가 발생한다.")
@@ -96,5 +86,16 @@ class ReservationTimeServiceTest {
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(timeId))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("존재하지 않는 아이디입니다.");
+    }
+
+    @DisplayName("예약이 존재하지 않는 시간을 삭제할 수 있다.")
+    @Test
+    void delete_reservation_time() {
+        long timeId = 1L;
+        given(reservationTimeRepository.isExistTimeOf(timeId)).willReturn(true);
+        given(reservationRepository.hasReservationOf(timeId)).willReturn(false);
+
+        reservationTimeService.deleteReservationTime(timeId);
+        verify(reservationTimeRepository, times(1)).deleteReservationTimeById(timeId);
     }
 }
