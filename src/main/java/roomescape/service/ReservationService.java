@@ -35,8 +35,12 @@ public class ReservationService {
     @Transactional
     public ReservationResponse addReservation(ReservationRequest reservationRequest) {
         ReservationTime reservationTime = reservationTimeRepository.getById(reservationRequest.timeId());
-
         Reservation reservation = reservationRequest.toReservation(reservationTime);
+
+        if(reservationRepository.existsByDateAndTimeId(reservation.getDate(), reservation.getTimeId())) {
+            throw new IllegalArgumentException("해당 날짜/시간에 이미 예약이 존재합니다.");
+        }
+
         Reservation savedReservation = reservationRepository.save(reservation);
 
         return ReservationResponse.from(savedReservation);

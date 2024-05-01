@@ -33,6 +33,11 @@ public class ReservationTimeService {
     @Transactional
     public ReservationTimeResponse addReservationTime(ReservationTimeRequest reservationTimeRequest) {
         ReservationTime reservationTime = reservationTimeRequest.toReservationTime();
+
+        if (reservationTimeRepository.existsByStartAt(reservationTime.getStartAt())) {
+            throw new IllegalArgumentException("해당 시간은 이미 존재합니다.");
+        }
+
         ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
 
         return ReservationTimeResponse.from(savedReservationTime);
@@ -40,7 +45,7 @@ public class ReservationTimeService {
 
     @Transactional
     public void deleteReservationTimeById(Long id) {
-        if(reservationRepository.existsByTimeId(id)) {
+        if (reservationRepository.existsByTimeId(id)) {
             throw new IllegalArgumentException("해당 시간에 예약이 존재합니다.");
         }
 

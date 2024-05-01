@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -19,4 +20,6 @@ public interface ReservationTimeRepository {
     ReservationTime save(ReservationTime reservationTime);
 
     void deleteById(Long id);
+
+    boolean existsByStartAt(LocalTime startAt);
 }
