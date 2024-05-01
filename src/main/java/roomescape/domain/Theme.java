@@ -13,6 +13,17 @@ public class Theme {
         this.thumbnail = thumbnail;
     }
 
+    public Theme(String name, String description, String thumbnail) {
+        this.id = null;
+        this.name = name;
+        this.description = description;
+        this.thumbnail = thumbnail;
+    }
+
+    public Theme changeId(Long id) {
+        return new Theme(id, this.name, this.description, this.thumbnail);
+    }
+
     public Long getId() {
         return id;
     }
