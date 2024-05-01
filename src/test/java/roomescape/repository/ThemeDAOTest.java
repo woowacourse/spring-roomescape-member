@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.*;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ThemeDAOTest {
@@ -56,6 +58,14 @@ class ThemeDAOTest {
     @Test
     void should_find_all_themes() {
         List<Theme> allThemes = themeRepository.findAllThemes();
-        Assertions.assertThat(allThemes).hasSize(2);
+        assertThat(allThemes).hasSize(2);
+    }
+
+    @DisplayName("테마를 저장한다.")
+    @Test
+    void should_add_theme() {
+        Theme theme = new Theme("브라운", "공포", "공포.jpg");
+        themeRepository.addTheme(theme);
+        assertThat(themeRepository.findAllThemes()).hasSize(3);
     }
 }
