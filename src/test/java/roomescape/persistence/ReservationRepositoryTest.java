@@ -58,7 +58,7 @@ class ReservationRepositoryTest {
 
         // then
         assertAll(
-                () -> assertThat(findReservations.getName().getValue()).isEqualTo("엘라"),
+                () -> assertThat(findReservations.getName().value()).isEqualTo("엘라"),
                 () -> assertThat(findReservations.getDate()).isEqualTo("2024-05-04")
         );
 

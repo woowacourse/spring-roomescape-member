@@ -74,7 +74,7 @@ public class ReservationRepository {
 
     public Reservation create(Reservation reservation) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", reservation.getName().getValue())
+                .addValue("name", reservation.getName().value())
                 .addValue("date", reservation.getDate().format(DATE_FORMATTER))
                 .addValue("time_id", reservation.getTime().getId())
                 .addValue("theme_id", reservation.getTheme().getId());
