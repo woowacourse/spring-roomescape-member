@@ -38,7 +38,7 @@ public class ReservationService {
                 .orElseThrow(() -> new IllegalArgumentException("올바르지 않은 입력입니다."));
         LocalDate date = reservationRequestDto.date();
         validatePast(date, LocalTime.parse(reservationTime.getStartAt()));
-        validateDuplicated(date, reservationRequestDto.timeId());
+        validateDuplicated(date, reservationRequestDto.timeId(), reservationRequestDto.themeId());
         Long id = reservationDao.insert(
                 reservationRequestDto.name(), reservationRequestDto.date().toString(), reservationRequestDto.timeId(), reservationRequestDto.themeId());
         ReservationTheme reservationTheme = reservationThemeDao.findById(reservationRequestDto.themeId())
@@ -53,8 +53,8 @@ public class ReservationService {
         }
     }
 
-    private void validateDuplicated(LocalDate date, Long timeId) {
-        if (reservationDao.count(date.toString(), timeId) != 0) {
+    private void validateDuplicated(LocalDate date, Long timeId, Long themeId) {
+        if (reservationDao.count(date.toString(), timeId, themeId) != 0) {
             throw new IllegalArgumentException("이미 해당 시간에 예약이 존재합니다.");
         }
     }
