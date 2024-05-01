@@ -10,23 +10,37 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.dao.ReservationDao;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
+import roomescape.exception.ExistReservationInThemeException;
 import roomescape.exception.NotExistThemeException;
+import roomescape.fixture.ThemeFixture;
+import roomescape.service.dto.input.ReservationTimeInput;
 import roomescape.service.dto.input.ThemeInput;
+import roomescape.service.dto.output.ReservationTimeOutput;
+import roomescape.service.dto.output.ThemeOutput;
 
 @SpringBootTest
 public class ThemeServiceTest {
 
     @Autowired
     ThemeService themeService;
+    @Autowired
+    ReservationTimeService reservationTimeService;
+    @Autowired
+    ReservationDao reservationDao;
 
     @Autowired
     JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
-
+        jdbcTemplate.update("TRUNCATE TABLE reservation");
         jdbcTemplate.update("SET REFERENTIAL_INTEGRITY FALSE");
         jdbcTemplate.update("TRUNCATE TABLE theme");
+        jdbcTemplate.update("TRUNCATE TABLE reservation_time");
         jdbcTemplate.update("SET REFERENTIAL_INTEGRITY TRUE");
     }
 
@@ -73,5 +87,26 @@ public class ThemeServiceTest {
     void throw_exception_when_not_exist_id() {
         assertThatThrownBy(() -> themeService.deleteTheme(-1))
                 .isInstanceOf(NotExistThemeException.class);
+    }
+
+    @Test
+    @DisplayName("특정 테마에 대한 예약이 존재하면 예외를 발생한다.")
+    void throw_exception_when_delete_id_that_exist_reservation() {
+        ThemeOutput themeOutput = themeService.createTheme(
+                ThemeFixture.getInput());
+
+        ReservationTimeOutput timeOutput = reservationTimeService.createReservationTime(
+                new ReservationTimeInput("10:00"));
+
+        reservationDao.create(Reservation.from(
+                null,
+                "제리",
+                "2024-04-30",
+                ReservationTime.from(timeOutput.id(), timeOutput.startAt()),
+                Theme.of(themeOutput.id(), themeOutput.name(), themeOutput.description(), themeOutput.thumbnail())
+        ));
+
+        assertThatThrownBy(() -> themeService.deleteTheme(themeOutput.id()))
+                .isInstanceOf(ExistReservationInThemeException.class);
     }
 }
