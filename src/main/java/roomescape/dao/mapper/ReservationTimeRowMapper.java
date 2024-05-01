@@ -1,4 +1,4 @@
-package roomescape.dao;
+package roomescape.dao.mapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
