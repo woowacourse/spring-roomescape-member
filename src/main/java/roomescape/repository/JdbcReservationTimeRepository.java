@@ -48,6 +48,15 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         jdbcTemplate.update(sql, parameterSource);
     }
 
+    @Override
+    public boolean isExistTimeOf(String startAt) {
+        String sql = "SELECT COUNT(*) FROM reservation_time WHERE start_at = :startAt";
+        SqlParameterSource parameterSource = new MapSqlParameterSource()
+                .addValue("startAt", startAt);
+        int count = jdbcTemplate.queryForObject(sql, parameterSource, Integer.class);
+        return count > 0;
+    }
+
     private ReservationTime findReservationTimeById(long savedId) {
         String sql = """
                 SELECT 

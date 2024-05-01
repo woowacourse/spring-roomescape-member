@@ -9,4 +9,6 @@ public interface ReservationTimeRepository {
     ReservationTime insertReservationTime(ReservationTime reservationTime);
 
     void deleteReservationTimeById(long id);
+
+    boolean isExistTimeOf(String startAt);
 }

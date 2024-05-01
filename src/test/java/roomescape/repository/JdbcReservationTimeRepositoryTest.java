@@ -73,4 +73,18 @@ class JdbcReservationTimeRepositoryTest {
                 () -> assertThat(afterSize).isEqualTo(0)
         );
     }
+
+    @Test
+    @DisplayName("테이블에 시간 존재 여부를 판단한다.")
+    void is_Exist_reservation_time() {
+        reservationTimeRepository.insertReservationTime(time1);
+
+        boolean exist = reservationTimeRepository.isExistTimeOf(time1.getStartAt().toString());
+        boolean notExist = reservationTimeRepository.isExistTimeOf(time2.getStartAt().toString());
+
+        assertAll(
+                () -> assertThat(exist).isTrue(),
+                () -> assertThat(notExist).isFalse()
+        );
+    }
 }
