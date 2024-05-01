@@ -35,7 +35,7 @@
   - [ ] 사용자가 예약 가능한 시간 추가/변경
   - [x] `/reservation` 요청 시 `templates/reservation.html` 반환
 - 인기 테마
-  - [ ] `/` 요청 시 `templates/index.html` 반환
+  - [x] `/` 요청 시 `templates/index.html` 반환
   - [ ] 인기 테마 조회 기능을 추가 
     - 최근 일주일을 기준으로 예약이 많은 테마 10개를 확인
 - [ ] [3단계] 주석을 검색하여 안내사항에 맞게 클라이언트 코드를 수정
