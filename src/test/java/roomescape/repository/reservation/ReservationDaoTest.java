@@ -87,6 +87,20 @@ class ReservationDaoTest {
         assertThat(reservations.size()).isEqualTo(2);
     }
 
+    @DisplayName("예약 DAO는 주어진 기간 동안의 모든 예약을 반환한다.")
+    @Test
+    void findByDateBetween() {
+        // given
+        LocalDate startDate = LocalDate.of(2024, 12, 1);
+        LocalDate endDate = LocalDate.of(2024, 12, 8);
+
+        // when
+        List<Reservation> reservations = reservationRepository.findByDateBetween(startDate, endDate);
+
+        // then
+        assertThat(reservations).hasSize(5);
+    }
+
     @DisplayName("예약 DAO는 삭제 요청이 들어오면 id에 맞는 값을 삭제한다.")
     @Test
     void deleteById() {

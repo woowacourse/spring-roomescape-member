@@ -2,6 +2,7 @@ package roomescape.repository.reservation;
 
 import roomescape.domain.Reservation;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,4 +19,6 @@ public interface ReservationRepository {
     boolean existsByTimeId(Long timeId);
 
     boolean existsByThemeId(Long themeId);
+
+    List<Reservation> findByDateBetween(LocalDate start, LocalDate end);
 }

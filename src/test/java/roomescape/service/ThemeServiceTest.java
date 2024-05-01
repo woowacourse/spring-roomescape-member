@@ -88,6 +88,21 @@ class ThemeServiceTest {
         assertThat(themeResponses).hasSize(1);
     }
 
+    @DisplayName("테마 서비스는 최근 일주일 간의 인기 있는 테마를 조회힌다.")
+    @Test
+    // TODO: 테스트 하기
+    void readPopularThemes() {
+        // given
+//        Mockito.when(reservationRepository.findByDateBetween(any(), any()))
+//                .thenReturn(List.of(
+//                        new Reservation(1L, '')
+//                ));
+
+        // when
+
+        // then
+    }
+
     @DisplayName("테마 서비스는 id에 해당하는 테마를 삭제한다.")
     @Test
     void delete() {

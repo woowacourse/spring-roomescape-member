@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeCreateRequest;
 import roomescape.dto.ThemeResponse;
@@ -8,7 +9,11 @@ import roomescape.exception.BadRequestException;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.reservation.ReservationRepository;
 
+import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ThemeService {
@@ -45,6 +50,20 @@ public class ThemeService {
     public List<ThemeResponse> readThemes() {
         return themeRepository.findAll().stream()
                 .map(ThemeResponse::from)
+                .toList();
+    }
+
+    public List<ThemeResponse> readPopularThemes() {
+        LocalDate end = LocalDate.now().minusDays(1L);
+        LocalDate start = end.minusDays(7L);
+
+        Map<Long, List<Reservation>> reservationMap = reservationRepository.findByDateBetween(start, end).stream()
+                .collect(Collectors.groupingBy(reservation -> reservation.getTheme().getId()));
+
+        return reservationMap.keySet().stream()
+                .sorted(Comparator.comparing(k -> reservationMap.get(k).size()).reversed())
+                .limit(10L)
+                .map(this::readTheme)
                 .toList();
     }
 
