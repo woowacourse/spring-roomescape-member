@@ -36,8 +36,8 @@ class ReservationControllerTest {
     @Autowired
     private ReservationController reservationController;
 
-    @DisplayName("저장된 모든 예약을 조회하고 상태코드 200을 응답한다.")
     @Test
+    @DisplayName("저장된 모든 예약을 조회하고 상태코드 200을 응답한다.")
     void findAll() {
         long timeId = insertReservationTimeAndGetId("10:00");
         insertReservation("브라운", "2023-08-05", timeId);
@@ -54,8 +54,8 @@ class ReservationControllerTest {
         assertThat(reservations.size()).isEqualTo(count);
     }
 
-    @DisplayName("예약을 추가하고 상태코드 201을 응답한다.")
     @Test
+    @DisplayName("예약을 추가하고 상태코드 201을 응답한다.")
     void create() {
         long timeId = insertReservationTimeAndGetId("10:00");
         insertReservation("브라운", "2023-08-05", timeId);
@@ -71,8 +71,8 @@ class ReservationControllerTest {
         assertReservationCountIsEqualTo(2);
     }
 
-    @DisplayName("저장된 예약을 삭제하고 상태코드 204을 응답한다.")
     @Test
+    @DisplayName("저장된 예약을 삭제하고 상태코드 204을 응답한다.")
     void delete() {
         long timeId = insertReservationTimeAndGetId("10:00");
         long id = insertReservationAndGetId("브라운", "2023-08-05", timeId);
@@ -85,8 +85,8 @@ class ReservationControllerTest {
         assertReservationCountIsEqualTo(0);
     }
 
-    @DisplayName("컨트롤러와 DB 관련 로직 클래스의 분리를 확인한다.")
     @Test
+    @DisplayName("컨트롤러와 DB 관련 로직 클래스의 분리를 확인한다.")
     void layeredStructure() {
         boolean isJdbcTemplateInjected = false;
 
@@ -114,7 +114,7 @@ class ReservationControllerTest {
 
     long insertReservationAndGetId(String name, String date, long timeId) {
         ReservationTime time = reservationTimeDao.findById(timeId);
-        return reservationDao.save(new Reservation(null, name, LocalDate.parse(date), time)).id();
+        return reservationDao.save(new Reservation(0, name, LocalDate.parse(date), time)).getId();
     }
 
     void assertReservationCountIsEqualTo(int count) {

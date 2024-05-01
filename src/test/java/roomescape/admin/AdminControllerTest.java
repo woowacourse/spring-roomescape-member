@@ -11,8 +11,8 @@ import io.restassured.RestAssured;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class AdminControllerTest {
 
-    @DisplayName("방탈출 관리 홈페이지를 매핑한다.")
     @Test
+    @DisplayName("방탈출 관리 홈페이지를 매핑한다.")
     void index() {
         RestAssured.given().log().all()
                 .when().get("/admin")
@@ -20,8 +20,8 @@ class AdminControllerTest {
                 .statusCode(200);
     }
 
-    @DisplayName("방탈출 예약 관리 페이지를 매핑한다.")
     @Test
+    @DisplayName("방탈출 예약 관리 페이지를 매핑한다.")
     void reservation() {
         RestAssured.given().log().all()
                 .when().get("/admin/reservation")

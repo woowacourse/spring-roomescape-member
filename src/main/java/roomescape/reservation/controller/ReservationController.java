@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,12 +35,17 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<Reservation> create(@RequestBody ReservationRequest request) {
         Reservation createdReservation = reservationService.save(request);
-        return ResponseEntity.created(URI.create("/reservations/" + createdReservation.id())).body(createdReservation);
+        return ResponseEntity.created(URI.create("/reservations/" + createdReservation.getId())).body(createdReservation);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable long id) {
         reservationService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Void> handleIllegalArgumentException(IllegalArgumentException e) {
+        return ResponseEntity.badRequest().build();
     }
 }

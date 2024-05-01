@@ -25,8 +25,8 @@ class ReservationTimeControllerTest {
     @Autowired
     private ReservationTimeDao reservationTimeDao;
 
-    @DisplayName("저장된 모든 예약시간을 조회하고 상태코드 200을 응답한다.")
     @Test
+    @DisplayName("저장된 모든 예약시간을 조회하고 상태코드 200을 응답한다.")
     void findAll() {
         insertReservationTime("09:00");
         insertReservationTime("10:00");
@@ -42,8 +42,8 @@ class ReservationTimeControllerTest {
         assertThat(times.size()).isEqualTo(count);
     }
 
-    @DisplayName("예약시간을 추가하고 상태코드 201을 응답한다.")
     @Test
+    @DisplayName("예약시간을 추가하고 상태코드 201을 응답한다.")
     void create() {
         insertReservationTime("11:00");
         assertReservationTimeCountIsEqualTo(1);
@@ -58,8 +58,8 @@ class ReservationTimeControllerTest {
         assertReservationTimeCountIsEqualTo(2);
     }
 
-    @DisplayName("저장된 예약시간을 삭제하고 상태코드 204을 응답한다.")
     @Test
+    @DisplayName("저장된 예약시간을 삭제하고 상태코드 204을 응답한다.")
     void delete() {
         long id = insertReservationTimeAndGetId("13:00");
         assertReservationTimeCountIsEqualTo(1);
@@ -72,8 +72,8 @@ class ReservationTimeControllerTest {
         assertReservationTimeCountIsEqualTo(0);
     }
 
-    @DisplayName("예약시간 추가 시 startAt의 형식이 잘못된 경우 상태코드 400을 응답한다.")
     @Test
+    @DisplayName("예약시간 추가 시 startAt의 형식이 잘못된 경우 상태코드 400을 응답한다.")
     void timeFormatException() {
         Map<String, String> request = new HashMap<>();
         request.put("id", "0");

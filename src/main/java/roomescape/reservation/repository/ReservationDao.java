@@ -45,9 +45,9 @@ public class ReservationDao {
 
     public Reservation save(Reservation reservation) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", reservation.name())
-                .addValue("date", reservation.date())
-                .addValue("time_id", reservation.time().id());
+                .addValue("name", reservation.getName())
+                .addValue("date", reservation.getDate())
+                .addValue("time_id", reservation.getTime().id());
         long id = jdbcInsert.executeAndReturnKey(params).longValue();
         return findById(id);
     }

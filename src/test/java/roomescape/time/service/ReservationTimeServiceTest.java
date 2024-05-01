@@ -29,8 +29,8 @@ class ReservationTimeServiceTest {
     @Autowired
     private ReservationDao reservationDao;
 
-    @DisplayName("이미 존재하는 예약 시간을 생성할 경우, 예외를 발생한다.")
     @Test
+    @DisplayName("이미 존재하는 예약 시간을 생성할 경우, 예외를 발생한다.")
     void createException() {
         insertReservationTime("10:00");
         ReservationTime reservationTime = new ReservationTime(0L, LocalTime.parse("10:00"));
@@ -39,8 +39,8 @@ class ReservationTimeServiceTest {
                 .hasMessage("StartAt already exists");
     }
 
-    @DisplayName("예약이 있는 시간을 삭제하려 할 경우 예외를 발생한다.")
     @Test
+    @DisplayName("예약이 있는 시간을 삭제하려 할 경우 예외를 발생한다.")
     void deleteException() {
         long firstId = insertReservationTimeAndGetId("10:00");
         insertReservationTime("11:00");
@@ -60,6 +60,6 @@ class ReservationTimeServiceTest {
 
     void insertReservation(String name, String date, long timeId) {
         ReservationTime time = reservationTimeDao.findById(timeId);
-        reservationDao.save(new Reservation(null, name, LocalDate.parse(date), time));
+        reservationDao.save(new Reservation(0, name, LocalDate.parse(date), time));
     }
 }
