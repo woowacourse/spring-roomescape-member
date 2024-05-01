@@ -10,6 +10,7 @@ import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
+import roomescape.domain.ThemeRepository;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 
@@ -18,11 +19,14 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository) {
+                              ReservationTimeRepository reservationTimeRepository,
+                              ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
     }
 
     public List<ReservationResponse> getAllReservations() {
@@ -36,9 +40,10 @@ public class ReservationService {
         ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId());
         validateNotPast(reservationRequest.date(), reservationTime.getStartAt());
         validateNotDuplicatedTime(reservationRequest.date(), reservationRequest.timeId());
+        Theme theme = themeRepository.findById(reservationRequest.themeId());
 
         Reservation reservation = new Reservation(reservationRequest.name(), reservationRequest.date(), reservationTime,
-                new Theme(1L, "테마", "내용", "썸네일"));
+                theme);
         Reservation savedReservation = reservationRepository.save(reservation);
 
         return ReservationResponse.from(savedReservation);

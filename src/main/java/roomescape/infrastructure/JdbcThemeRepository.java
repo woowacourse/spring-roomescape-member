@@ -1,16 +1,18 @@
 package roomescape.infrastructure;
 
 import java.util.List;
+import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
-
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert jdbcInsert;
     private final RowMapper<Theme> themeRowMapper = (resultSet, rowNum) -> new Theme(
             resultSet.getLong("id"),
             resultSet.getString("name"),
@@ -20,10 +22,38 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     public JdbcThemeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getDataSource())
+                .withTableName("theme")
+                .usingGeneratedKeyColumns("id");
     }
 
+    @Override
     public List<Theme> findAll() {
         String sql = "SELECT * FROM theme";
+
         return jdbcTemplate.query(sql, themeRowMapper);
+    }
+
+    @Override
+    public Theme findById(Long id) {
+        String sql = "SELECT * FROM theme WHERE id = ?";
+        Theme theme = jdbcTemplate.queryForObject(sql, themeRowMapper, id);
+        if (theme == null) {
+            throw new IllegalArgumentException("존재하지 않는 테마입니다");
+        }
+
+        return theme;
+    }
+
+    @Override
+    public Theme save(Theme theme) {
+        Map<String, String> params = Map.of(
+                "name", theme.getName(),
+                "description", theme.getDescription(),
+                "thumbnail", theme.getThumbnail()
+        );
+
+        Long id = jdbcInsert.executeAndReturnKey(params).longValue();
+        return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 }

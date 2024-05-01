@@ -1,5 +1,8 @@
 package roomescape.endpoint;
 
+import static org.hamcrest.Matchers.notNullValue;
+import static roomescape.endpoint.RequestFixture.themeRequest;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,7 +16,13 @@ public class ThemeEndPointTest {
 
     @DisplayName("테마 목록 조회")
     @Test
-    void themePageLoad() {
-        HttpRestTestTemplate.assertGetOk("/admin/theme");
+    void getThemes() {
+        HttpRestTestTemplate.assertGetOk("/themes");
+    }
+
+    @DisplayName("테마 추가")
+    @Test
+    void addTheme() {
+        HttpRestTestTemplate.assertPostCreated(themeRequest, "/themes", "id", notNullValue());
     }
 }
