@@ -1,5 +1,7 @@
 package roomescape.service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
@@ -32,6 +34,7 @@ public class ReservationService {
         ReservationTime reservationTime = findReservationTime(reservationRequest);
         Theme theme = findTheme(reservationRequest);
         validateReservationNotDuplicate(reservationRequest);
+        validateUnpassedDate(reservationRequest.date(),reservationTime.getStartAt());
         Reservation reservationToSave = reservationRequest.toEntity(reservationTime, theme);
         return reservationRepository.save(reservationToSave);
     }
@@ -52,6 +55,12 @@ public class ReservationService {
     public void deleteReservation(Long id) {
         validateIdExist(id);
         reservationRepository.delete(id);
+    }
+
+    private void validateUnpassedDate(LocalDate date, LocalTime time) {
+        if (date.isBefore(LocalDate.now()) && time.isBefore(LocalTime.now())) {
+            throw new IllegalArgumentException("[ERROR] 지나간 날짜와 시간에 대한 예약 생성은 불가능합니다. : " + date + " " + time);
+        }
     }
 
     public void validateIdExist(Long id) {

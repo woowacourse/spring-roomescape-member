@@ -41,8 +41,8 @@ public class ThemeService {
 
     public void deleteTheme(Long id) {
         validateIdExist(id);
-        if (reservationRepository.existTimeId(id)) {
-            throw new IllegalArgumentException("[ERROR] 해당 시간에 예약이 존재합니다.");
+        if (reservationRepository.existThemeId(id)) {
+            throw new IllegalArgumentException("[ERROR] 해당 테마는 예약이 존재합니다.");
         }
         themeRepository.delete(id);
     }
