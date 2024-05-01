@@ -55,6 +55,7 @@ public class ReservationService {
     private void rejectDuplicateDateTime(Reservation reservation) {
         LocalDateTime reservationDateTime = LocalDateTime.of(reservation.getDate(), reservation.getTime().getStartAt());
         boolean isDuplicateReservationPresent = reservationRepository.findAll().stream()
+                .filter(reservation1 -> reservation.getTheme().equals(reservation1.getTheme()))
                 .map(savedReservation -> LocalDateTime.of(savedReservation.getDate(), savedReservation.getTime().getStartAt()))
                 .anyMatch(dateTime -> dateTime.equals(reservationDateTime));
 
