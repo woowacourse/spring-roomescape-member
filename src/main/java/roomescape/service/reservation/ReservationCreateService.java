@@ -9,6 +9,9 @@ import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.service.dto.SaveReservationRequest;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Service
 public class ReservationCreateService {
 
@@ -30,8 +33,19 @@ public class ReservationCreateService {
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(request.date(), request.timeId(), request.themeId())) {
             throw new IllegalArgumentException("해당 시간에 이미 예약된 테마입니다.");
         }
-        Reservation reservation = SaveReservationRequest.toEntity(request, reservationTime, theme);
+        validateDateIsFuture(toLocalDateTime(request.date(), reservationTime));
 
+        Reservation reservation = SaveReservationRequest.toEntity(request, reservationTime, theme);
         return reservationRepository.save(reservation);
+    }
+
+    private void validateDateIsFuture(LocalDateTime localDateTime) {
+        if (localDateTime.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("지나간 날짜와 시간에 대한 예약 생성은 불가능합니다.");
+        }
+    }
+
+    private LocalDateTime toLocalDateTime(LocalDate date, ReservationTime reservationTime) {
+        return LocalDateTime.of(date, reservationTime.getStartAt());
     }
 }
