@@ -20,7 +20,6 @@ public class ReservationService {
 
     private static final String RESERVATION_NOT_FOUND = "존재하지 않는 예약입니다.";
     private static final String RESERVATION_TIME_NOT_FOUND = "존재하지 않는 예약 시간입니다.";
-    private static final String RESERVATION_IS_DUPLICATED = "중복된 예약입니다.";
     private static final String RESERVATION_DATETIME_IS_INVALID = "이미 지난 날짜는 예약할 수 없습니다.";
     public static final String THEME_NOT_FOUND = "존재하지 않는 테마입니다.";
 
@@ -55,11 +54,26 @@ public class ReservationService {
         Theme theme = findThemeById(request.themeId());
         Reservation reservation = request.toReservation(reservationTime, theme);
 
-        validateRequestedTime(reservation, reservationTime);
         validateDuplicated(reservation);
+        validateRequestedTime(reservation, reservationTime);
 
         Reservation newReservation = reservationRepository.save(reservation);
         return ReservationResponse.from(newReservation);
+    }
+
+    private void validateDuplicated(Reservation reservation) {
+        reservationRepository.findAll().stream()
+                .filter(reservation::isDuplicated)
+                .findFirst()
+                .ifPresent(duplicatedReservation -> validateSameUser(duplicatedReservation, reservation));
+    }
+
+    private void validateSameUser(Reservation duplicatedReservation, Reservation reservation) {
+        if (duplicatedReservation.isSameUser(reservation)) {
+            throw new BadRequestException("중복된 예약입니다.");
+        }
+
+        throw new BadRequestException("이미 예약된 테마입니다.");
     }
 
     private Theme findThemeById(Long id) {
@@ -70,15 +84,6 @@ public class ReservationService {
     private ReservationTime findReservationTimeById(Long id) {
         return reservationTimeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(RESERVATION_TIME_NOT_FOUND));
-    }
-
-    private void validateDuplicated(Reservation reservation) {
-        List<Reservation> reservations = reservationRepository.findAll();
-        boolean isDuplicated = reservations.stream()
-                .anyMatch(reservation::isSame);
-        if (isDuplicated) {
-            throw new BadRequestException(RESERVATION_IS_DUPLICATED);
-        }
     }
 
     private void validateRequestedTime(Reservation reservation, ReservationTime reservationTime) {

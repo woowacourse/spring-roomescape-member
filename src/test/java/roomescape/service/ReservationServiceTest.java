@@ -56,7 +56,9 @@ class ReservationServiceTest {
         this.name = "클로버";
         this.startAt = LocalTime.of(10, 10);
         this.date = LocalDate.of(2024, 11, 16);
-        this.reservationFixture = new Reservation(id, name, date, new ReservationTime(id, startAt), themeFixture);
+        this.reservationFixture = new Reservation(id, name, date,
+                new ReservationTime(id, startAt),
+                new Theme(id, themeFixture));
     }
 
     @DisplayName("예약 서비스는 예약들을 조회한다.")
@@ -167,6 +169,24 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.createReservation(request))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("존재하지 않는 예약 시간입니다.");
+    }
+
+    @DisplayName("예약 서비스는 요청받은 테마가 동시간대에 이미 예약된 경우 예외가 발생한다.")
+    @Test
+    void createWithReservedTheme() {
+        // given
+        Mockito.when(reservationTimeRepository.findById(id))
+                .thenReturn(Optional.of(new ReservationTime(id, startAt)));
+        Mockito.when(themeRepository.findById(id))
+                .thenReturn(Optional.of(new Theme(id, themeFixture)));
+        Mockito.when(reservationRepository.findAll())
+                .thenReturn(List.of(reservationFixture));
+        ReservationCreateRequest request = new ReservationCreateRequest("페드로", date, id, id);
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.createReservation(request))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessage("이미 예약된 테마입니다.");
     }
 
     @DisplayName("예약 서비스는 id에 맞는 예약을 삭제한다.")
