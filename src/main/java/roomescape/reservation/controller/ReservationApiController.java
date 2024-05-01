@@ -33,6 +33,7 @@ public class ReservationApiController {
     public ResponseEntity<ReservationResponse> create(@RequestBody ReservationRequest reservationRequest) {
         Long id = reservationService.save(reservationRequest);
         ReservationResponse reservationResponse = reservationService.findById(id);
+
         return ResponseEntity.created(URI.create("/reservations/" + id)).body(reservationResponse);
     }
 
