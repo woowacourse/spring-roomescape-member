@@ -2,7 +2,7 @@ package roomescape.model;
 
 public class Theme {
 
-    private long id;
+    private long themeId;
     private String name;
     private String description;
     private String thumbnail;
@@ -10,8 +10,8 @@ public class Theme {
     private Theme() {
     }
 
-    public Theme(long id, String name, String description, String thumbnail) {
-        this.id = id;
+    public Theme(long themeId, String name, String description, String thumbnail) {
+        this.themeId = themeId;
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
@@ -23,8 +23,8 @@ public class Theme {
         this.thumbnail = thumbnail;
     }
 
-    public long getId() {
-        return id;
+    public long getThemeId() {
+        return themeId;
     }
 
     public String getName() {
