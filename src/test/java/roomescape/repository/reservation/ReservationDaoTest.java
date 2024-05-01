@@ -26,7 +26,7 @@ import static roomescape.Fixtures.themeFixture;
 @JdbcTest
 @Import(ReservationDao.class)
 @DisplayName("예약 DAO")
-@Sql(value = {"/recreate_reservation.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(value = {"/recreate_table.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class ReservationDaoTest {
 
     private final ReservationRepository reservationRepository;

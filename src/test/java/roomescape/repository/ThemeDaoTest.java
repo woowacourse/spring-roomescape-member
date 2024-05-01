@@ -14,7 +14,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
-@Sql(value = {"/recreate_theme.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(value = {"/recreate_table.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class ThemeDaoTest {
 
     private final ThemeRepository themeRepository;
@@ -49,14 +49,14 @@ class ThemeDaoTest {
         List<Theme> themes = themeRepository.findAll();
 
         // then
-        assertThat(themes).hasSize(2);
+        assertThat(themes).hasSize(3);
     }
 
     @DisplayName("테마 DAO는 삭제 요청이 들어오면 id에 맞는 값을 삭제한다.")
     @Test
     void delete() {
         // given
-        Long id = 1L;
+        Long id = 3L;
 
         // when
         themeRepository.delete(id);

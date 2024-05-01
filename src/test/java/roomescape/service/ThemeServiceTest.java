@@ -12,6 +12,7 @@ import roomescape.dto.ThemeCreateRequest;
 import roomescape.dto.ThemeResponse;
 import roomescape.exception.BadRequestException;
 import roomescape.repository.ThemeRepository;
+import roomescape.repository.reservation.ReservationRepository;
 
 import java.util.List;
 
@@ -26,9 +27,12 @@ class ThemeServiceTest {
     private ThemeService themeService;
     @Mock
     private ThemeRepository themeRepository;
+    @Mock
+    private ReservationRepository reservationRepository;
+
     @BeforeEach
     void setUp() {
-        this.themeService = new ThemeService(themeRepository);
+        this.themeService = new ThemeService(themeRepository, reservationRepository);
     }
 
     @DisplayName("테마 서비스는 테마를 생성한다.")
@@ -89,10 +93,26 @@ class ThemeServiceTest {
     void delete() {
         // given
         Long id = 1L;
+        Mockito.when(reservationRepository.existsByThemeId(id))
+                .thenReturn(false);
         Mockito.doNothing().when(themeRepository).delete(id);
 
         // when & then
         assertThatCode(() -> themeService.deleteTheme(id))
                 .doesNotThrowAnyException();
+    }
+
+    @DisplayName("테마 서비스는 id에 해당하는 테마 삭제 시 예약이 있는 경우 예외가 발생한다.")
+    @Test
+    void deleteThemeWithExistsReservation() {
+        // given
+        Long id = 1L;
+        Mockito.when(reservationRepository.existsByThemeId(id))
+                .thenReturn(true);
+
+        // when & then
+        assertThatThrownBy(() -> themeService.deleteTheme(id))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessage("해당 테마에 예약이 존재합니다.");
     }
 }

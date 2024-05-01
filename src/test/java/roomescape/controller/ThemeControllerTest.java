@@ -14,7 +14,7 @@ import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
 
-@Sql(value = {"/recreate_theme.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(value = {"/recreate_table.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DisplayName("테마 컨트롤러")
 class ThemeControllerTest {
@@ -31,7 +31,7 @@ class ThemeControllerTest {
     @Test
     void createTheme() {
         Map<String, String> params = new HashMap<>();
-        params.put("name", "공포");
+        params.put("name", "리얼공포");
         params.put("description", "완전 무서움");
         params.put("thumbnail", "http://something");
 
@@ -51,7 +51,7 @@ class ThemeControllerTest {
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(2));
+                .body("size()", is(3));
     }
 
     @DisplayName("테마 컨트롤러는 테마 삭제 요청이 들어오면 204를 반환한다.")
@@ -59,7 +59,7 @@ class ThemeControllerTest {
     void deleteTheme() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .when().delete("/themes/1")
+                .when().delete("/themes/3")
                 .then().log().all()
                 .statusCode(204);
     }

@@ -6,6 +6,7 @@ import roomescape.dto.ThemeCreateRequest;
 import roomescape.dto.ThemeResponse;
 import roomescape.exception.BadRequestException;
 import roomescape.repository.ThemeRepository;
+import roomescape.repository.reservation.ReservationRepository;
 
 import java.util.List;
 
@@ -13,9 +14,11 @@ import java.util.List;
 public class ThemeService {
 
     private final ThemeRepository themeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ThemeService(ThemeRepository themeRepository) {
+    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository) {
         this.themeRepository = themeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public ThemeResponse createTheme(ThemeCreateRequest request) {
@@ -46,6 +49,9 @@ public class ThemeService {
     }
 
     public void deleteTheme(Long id) {
+        if (reservationRepository.existsByThemeId(id)) {
+            throw new BadRequestException("해당 테마에 예약이 존재합니다.");
+        }
         themeRepository.delete(id);
     }
 }
