@@ -89,6 +89,6 @@ public class ReservationControllerTest {
         RestAssured.given().log().all()
                 .when().delete("/reservations/2")
                 .then().log().all()
-                .statusCode(500);
+                .statusCode(400);
     }
 }
