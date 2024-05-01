@@ -2,6 +2,9 @@ package roomescape.dto.theme;
 
 import java.util.Objects;
 import roomescape.domain.theme.Theme;
+import roomescape.domain.theme.ThemeDescription;
+import roomescape.domain.theme.ThemeName;
+import roomescape.domain.theme.ThemeThumbnail;
 
 public class ThemeCreateRequest {
 
@@ -20,7 +23,12 @@ public class ThemeCreateRequest {
     }
 
     public Theme toDomain() {
-        return new Theme(null, name, description, thumbnail);
+        return new Theme(
+                null,
+                ThemeName.from(name),
+                ThemeDescription.from(description),
+                ThemeThumbnail.from(thumbnail)
+        );
     }
 
     public String getName() {

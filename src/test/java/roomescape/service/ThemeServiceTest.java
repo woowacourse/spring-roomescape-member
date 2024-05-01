@@ -15,6 +15,9 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.dao.WebThemeDao;
 import roomescape.domain.theme.Theme;
+import roomescape.domain.theme.ThemeDescription;
+import roomescape.domain.theme.ThemeName;
+import roomescape.domain.theme.ThemeThumbnail;
 import roomescape.dto.theme.ThemeCreateRequest;
 import roomescape.dto.theme.ThemeResponse;
 
@@ -30,7 +33,7 @@ class ThemeServiceTest {
 
     @BeforeEach
     void setUp() {
-        themeDao.create(new Theme(null, "방탈출1", "1번 방탈출", "썸네일1"));
+        themeDao.create(new Theme(null, ThemeName.from("방탈출1"), ThemeDescription.from("방탈출 1번"), ThemeThumbnail.from("섬네일1")));
     }
 
     @AfterEach
@@ -50,8 +53,8 @@ class ThemeServiceTest {
         assertAll(
                 () -> assertThat(results).hasSize(1),
                 () -> assertThat(firstResponse.getName()).isEqualTo("방탈출1"),
-                () -> assertThat(firstResponse.getDescription()).isEqualTo("1번 방탈출"),
-                () -> assertThat(firstResponse.getThumbnail()).isEqualTo("썸네일1")
+                () -> assertThat(firstResponse.getDescription()).isEqualTo("방탈출 1번"),
+                () -> assertThat(firstResponse.getThumbnail()).isEqualTo("섬네일1")
         );
     }
 

@@ -16,6 +16,9 @@ import roomescape.domain.reservation.ReservationName;
 import roomescape.domain.reservationtime.ReservationStartAt;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
+import roomescape.domain.theme.ThemeDescription;
+import roomescape.domain.theme.ThemeName;
+import roomescape.domain.theme.ThemeThumbnail;
 
 @Repository
 public class  WebReservationDao implements ReservationDao {
@@ -163,9 +166,9 @@ public class  WebReservationDao implements ReservationDao {
     private Theme getTheme(ResultSet resultSet) throws SQLException {
         return new Theme(
                 resultSet.getLong("theme_id"),
-                resultSet.getString("theme_name"),
-                resultSet.getString("theme_description"),
-                resultSet.getString("theme_thumbnail")
+                ThemeName.from(resultSet.getString("theme_name")),
+                ThemeDescription.from(resultSet.getString("theme_description")),
+                ThemeThumbnail.from(resultSet.getString("theme_thumbnail"))
         );
     }
 

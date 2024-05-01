@@ -11,6 +11,9 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.theme.Theme;
+import roomescape.domain.theme.ThemeDescription;
+import roomescape.domain.theme.ThemeName;
+import roomescape.domain.theme.ThemeThumbnail;
 
 @Repository
 public class WebThemeDao implements ThemeDao {
@@ -30,12 +33,7 @@ public class WebThemeDao implements ThemeDao {
                 """;
         return jdbcTemplate.query(
                 sql,
-                (resultSet, rowNum) -> new Theme(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("description"),
-                        resultSet.getString("thumbnail")
-                )
+                (resultSet, rowNum) -> getTheme(resultSet)
         );
     }
 
@@ -62,9 +60,9 @@ public class WebThemeDao implements ThemeDao {
         jdbcTemplate.update(
                 connection -> {
                     PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-                    ps.setString(1, theme.getName());
-                    ps.setString(2, theme.getDescription());
-                    ps.setString(3, theme.getThumbnail());
+                    ps.setString(1, theme.getName().getValue());
+                    ps.setString(2, theme.getDescription().getValue());
+                    ps.setString(3, theme.getThumbnail().getValue());
                     return ps;
                 },
                 keyHolder);
@@ -98,9 +96,9 @@ public class WebThemeDao implements ThemeDao {
     private Theme getTheme(ResultSet resultSet) throws SQLException {
         return new Theme(
                 resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getString("description"),
-                resultSet.getString("thumbnail")
+                ThemeName.from(resultSet.getString("name")),
+                ThemeDescription.from(resultSet.getString("description")),
+                ThemeThumbnail.from(resultSet.getString("thumbnail"))
         );
     }
 }

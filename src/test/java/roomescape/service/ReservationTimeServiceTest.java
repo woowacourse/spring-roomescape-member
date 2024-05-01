@@ -26,6 +26,9 @@ import roomescape.domain.reservation.ReservationName;
 import roomescape.domain.reservationtime.ReservationStartAt;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
+import roomescape.domain.theme.ThemeDescription;
+import roomescape.domain.theme.ThemeName;
+import roomescape.domain.theme.ThemeThumbnail;
 import roomescape.dto.reservationtime.ReservationTimeCreateRequest;
 import roomescape.dto.reservationtime.ReservationTimeResponse;
 
@@ -47,7 +50,7 @@ class ReservationTimeServiceTest {
     void setUp() {
         reservationTimeDao.create(new ReservationTime(null, ReservationStartAt.from("12:02")));
         reservationTimeDao.create(new ReservationTime(null, ReservationStartAt.from("12:42")));
-        themeDao.create(new Theme(null, "방탈출1", "방탈출 1번", "섬네일1"));
+        themeDao.create(new Theme(null, ThemeName.from("방탈출1"), ThemeDescription.from("방탈출 1번"), ThemeThumbnail.from("섬네일1")));
     }
 
     @AfterEach
@@ -173,7 +176,7 @@ class ReservationTimeServiceTest {
                     new ReservationName("다온"),
                     ReservationDate.from(LocalDate.now().plusDays(1).toString()),
                     new ReservationTime(1L, ReservationStartAt.from("12:02")),
-                    new Theme(1L, "방탈출1", "방탈출 1번", "섬네일1")));
+                    new Theme(1L, ThemeName.from("방탈출1"), ThemeDescription.from("방탈출 1번"), ThemeThumbnail.from("섬네일1"))));
 
             //when //then
             assertThatThrownBy(() -> reservationTimeService.delete(1L))

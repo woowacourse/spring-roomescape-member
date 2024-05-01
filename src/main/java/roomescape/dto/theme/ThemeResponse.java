@@ -18,7 +18,12 @@ public class ThemeResponse {
     }
 
     public static ThemeResponse from(Theme theme) {
-        return new ThemeResponse(theme.getId(), theme.getName(), theme.getDescription(), theme.getThumbnail());
+        return new ThemeResponse(
+                theme.getId(),
+                theme.getName().getValue(),
+                theme.getDescription().getValue(),
+                theme.getThumbnail().getValue()
+        );
     }
 
     public static ThemeResponse of(Long id, String name, String description, String thumbnail) {
