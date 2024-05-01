@@ -34,4 +34,13 @@ public class ViewAcceptanceTest {
                 .then().log().all()
                 .statusCode(200);
     }
+
+    @Test
+    @DisplayName("[2 - Step2] 어드민 테마 관리 페이지를 조회한다.")
+    void getThemePage() {
+        RestAssured.given().log().all()
+                .when().get("/admin/theme")
+                .then().log().all()
+                .statusCode(200);
+    }
 }

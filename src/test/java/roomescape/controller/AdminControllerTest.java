@@ -12,17 +12,35 @@ public class AdminControllerTest extends ControllerTest {
     @Test
     @DisplayName("어드민 메인 페이지를 반환한다.")
     void mainPage() throws Exception {
-        // whe & then
+        // when & then
         mockMvc.perform(get("/admin"))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
 
     @Test
-    @DisplayName("어드민 예약 페이지를 반환한다.")
+    @DisplayName("어드민 예약 관리 페이지를 반환한다.")
     void reservationPage() throws Exception {
-        // whe & then
+        // when & then
         mockMvc.perform(get("/admin/reservation"))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("어드민 예약 시간 관리 페이지를 반환한다.")
+    void timePage() throws Exception {
+        // when & then
+        mockMvc.perform(get("/admin/time"))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("어드민 테마 관리 페이지를 반환한다.")
+    void themePage() throws Exception {
+        // when & then
+        mockMvc.perform(get("/admin/theme"))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
