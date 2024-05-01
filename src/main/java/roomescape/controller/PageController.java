@@ -6,6 +6,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class PageController {
 
+    @GetMapping("/")
+    public String mainPage() {
+        return "index";
+    }
+
+    @GetMapping("/reservation")
+    public String reservationPage() {
+        return "reservation";
+    }
+
     @GetMapping("/admin")
     public String adminPage() {
         return "admin/index";
@@ -24,10 +34,5 @@ public class PageController {
     @GetMapping("/admin/theme")
     public String adminThemePage() {
         return "admin/theme";
-    }
-
-    @GetMapping("/reservation")
-    public String reservationPage() {
-        return "reservation";
     }
 }
