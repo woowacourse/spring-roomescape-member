@@ -25,7 +25,7 @@ public class ReservationService {
 
     public Reservation addReservation(ReservationAddRequest reservationAddRequest) {
         ReservationTime reservationTime = reservationTimeDao.findById(reservationAddRequest.getTimeId())
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new IllegalArgumentException("존재 하지 않는 예약시각으로 예약할 수 없습니다."));
         Reservation reservationRequest = reservationAddRequest.toEntity(reservationTime);
         return reservationDao.insert(reservationRequest);
     }
