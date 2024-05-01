@@ -8,6 +8,7 @@ public class Reservation {
     private String name;
     private LocalDate date;
     private ReservationTime time;
+    private Theme theme;
 
     private Reservation() {
     }
@@ -39,5 +40,9 @@ public class Reservation {
 
     public ReservationTime getTime() {
         return time;
+    }
+
+    public Theme getTheme() {
+        return theme;
     }
 }
