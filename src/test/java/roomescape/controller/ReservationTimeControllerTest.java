@@ -19,7 +19,6 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
-
 import roomescape.domain.ReservationTime;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -83,7 +82,8 @@ public class ReservationTimeControllerTest {
                 }),
 
                 dynamicTest("예약이 정상적으로 삭제되었는지 확인한다", () -> {
-                    Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(*) from reservation_time", Integer.class);
+                    Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(*) from reservation_time",
+                            Integer.class);
                     assertThat(countAfterDelete).isEqualTo(0);
                 })
         );

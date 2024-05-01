@@ -1,7 +1,6 @@
 package roomescape.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 import io.restassured.RestAssured;
@@ -44,7 +43,7 @@ public class ThemeControllerTest {
                 "테마명",
                 "테마 설명",
                 "테마 이미지"
-                );
+        );
 
         List<Theme> themes = RestAssured.given().log().all()
                 .when().get("/themes")

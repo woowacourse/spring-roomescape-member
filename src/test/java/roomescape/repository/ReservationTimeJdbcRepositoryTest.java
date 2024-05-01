@@ -38,7 +38,7 @@ class ReservationTimeJdbcRepositoryTest {
 
         //when & then
         assertThatThrownBy(() ->
-            reservationTimeRepository.save(reservationTime2)
+                reservationTimeRepository.save(reservationTime2)
         ).isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 추가된 예약 시간입니다.");
     }

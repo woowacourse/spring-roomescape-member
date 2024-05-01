@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
 
 @Repository
-public class ThemeJdbcRepository implements ThemeRepository{
+public class ThemeJdbcRepository implements ThemeRepository {
 
     private static final String TABLE_NAME = "theme";
 

@@ -9,8 +9,8 @@ import org.springframework.test.annotation.DirtiesContext;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class RoomescapeApplicationTest {
 
-        @Test
-        void contextLoads() {
-        }
+    @Test
+    void contextLoads() {
+    }
 
 }

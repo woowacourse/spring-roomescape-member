@@ -1,7 +1,5 @@
 package roomescape.dto;
 
-import java.time.format.DateTimeFormatter;
-import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 
 public record ThemeResponse(Long id, String name, String description, String thumbnail) {
