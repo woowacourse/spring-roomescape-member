@@ -7,12 +7,15 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.application.ReservationService;
 import roomescape.application.ReservationTimeService;
+import roomescape.application.ThemeService;
 import roomescape.controller.ReservationController;
 import roomescape.controller.ReservationTimeController;
+import roomescape.controller.ThemeController;
 
 @WebMvcTest(controllers = {
         ReservationController.class,
-        ReservationTimeController.class
+        ReservationTimeController.class,
+        ThemeController.class
 })
 public class ControllerTest {
     @Autowired
@@ -23,4 +26,6 @@ public class ControllerTest {
     private ReservationService reservationService;
     @MockBean
     private ReservationTimeService reservationTimeService;
+    @MockBean
+    private ThemeService themeService;
 }
