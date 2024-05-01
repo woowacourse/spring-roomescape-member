@@ -19,6 +19,9 @@ import roomescape.domain.ReservationTime;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationDaoImplTest {
 
+    private static final LocalDate DATE_AFTER_TWO = LocalDate.now().plusDays(2);
+    private static final LocalDate DATE_AFTER_THREE = LocalDate.now().plusDays(3);
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
     @Autowired
@@ -27,7 +30,7 @@ class ReservationDaoImplTest {
     @BeforeEach
     void setUp() {
         jdbcTemplate.update("insert into reservation_time values(1,'10:00')");
-        jdbcTemplate.update("insert into reservation (name, date, time_id) values('브라운','2020-12-12',1)");
+        jdbcTemplate.update("insert into reservation (name, date, time_id) values(?,?,?)", "브라운", DATE_AFTER_TWO, 1L);
     }
 
     @AfterEach
@@ -45,11 +48,12 @@ class ReservationDaoImplTest {
         assertThat(actualSize).isEqualTo(expectedSize);
     }
 
+
     @DisplayName("원하는 ID의 예약을 불러옵니다.")
     @Test
     void should_findById() {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
-        Reservation expectedReservation = new Reservation(1L, "브라운", LocalDate.of(2020, 12, 12), reservationTime);
+        Reservation expectedReservation = new Reservation(1L, "브라운", DATE_AFTER_TWO, reservationTime);
 
         Reservation actualReservation = reservationDaoImpl.findById(1L).get();
 
@@ -60,7 +64,7 @@ class ReservationDaoImplTest {
     @Test
     void should_insert() {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
-        Reservation reservation = new Reservation(null, "도도", LocalDate.of(2020, 11, 11), reservationTime);
+        Reservation reservation = new Reservation(null, "도도", DATE_AFTER_THREE, reservationTime);
 
         Reservation actualReservation = reservationDaoImpl.insert(reservation);
 
