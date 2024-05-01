@@ -46,6 +46,7 @@ class ReservationTimeServiceTest {
     void create_reservation_time_test() {
         ReservationTimeRequestDto requestDto = new ReservationTimeRequestDto("11:30");
         ReservationTime reservationTime = new ReservationTime(1L, "11:30");
+        given(reservationTimeRepository.isExistTimeOf(requestDto.getStartAt())).willReturn(false);
         given(reservationTimeRepository.insertReservationTime(requestDto.toReservationTime())).willReturn(
                 reservationTime);
 
