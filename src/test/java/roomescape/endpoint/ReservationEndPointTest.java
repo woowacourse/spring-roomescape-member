@@ -5,17 +5,30 @@ import static org.hamcrest.Matchers.notNullValue;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.TestPropertySource;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationTimeRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@TestPropertySource(locations = "classpath:application-test.properties")
 public class ReservationEndPointTest {
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @AfterEach
+    void cleanUp() {
+        jdbcTemplate.update("DELETE FROM reservation");
+    }
 
     @DisplayName("[예약 시간 추가 - 예약 추가 - 예약 삭제] 시나리오")
     @TestFactory
