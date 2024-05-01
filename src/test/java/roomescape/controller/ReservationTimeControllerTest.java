@@ -20,10 +20,12 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
+import roomescape.dao.RoomThemeDao;
 import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.ReservationTimeRequest;
+import roomescape.domain.RoomTheme;
+import roomescape.dto.request.ReservationTimeRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReservationTimeControllerTest {
@@ -34,6 +36,8 @@ class ReservationTimeControllerTest {
     private ReservationDao reservationDao;
     @Autowired
     private ReservationTimeDao reservationTimeDao;
+    @Autowired
+    private RoomThemeDao roomThemeDao;
 
     @BeforeEach
     void setUp() {
@@ -45,6 +49,10 @@ class ReservationTimeControllerTest {
         List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
         for (ReservationTime reservationTime : reservationTimes) {
             reservationTimeDao.deleteById(reservationTime.getId());
+        }
+        List<RoomTheme> roomThemes = roomThemeDao.findAll();
+        for (RoomTheme roomTheme : roomThemes) {
+            roomThemeDao.deleteById(roomTheme.getId());
         }
     }
 
@@ -107,7 +115,10 @@ class ReservationTimeControllerTest {
     void deleteReservationTimeDeletesReservationAlso() {
         //given
         ReservationTime reservationTime = reservationTimeDao.save(new ReservationTime(LocalTime.parse("10:00")));
-        reservationDao.save(new Reservation(new Name("brown"), LocalDate.parse("2024-11-15"), reservationTime));
+        RoomTheme roomTheme = roomThemeDao.save(new RoomTheme("레벨 2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        reservationDao.save(new Reservation(
+                new Name("brown"), LocalDate.parse("2024-11-15"), reservationTime, roomTheme));
         Long timeId = reservationTime.getId();
         //when
         Response deleteResponse = RestAssured.given().log().all()

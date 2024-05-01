@@ -1,8 +1,8 @@
 package roomescape.console;
 
 import java.util.List;
-import roomescape.dto.ReservationResponse;
-import roomescape.dto.ReservationTimeResponse;
+import roomescape.dto.response.ReservationResponse;
+import roomescape.dto.response.ReservationTimeResponse;
 
 public class OutputView {
     public static void printErrorMessage(String errorMessage) {

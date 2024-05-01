@@ -29,7 +29,7 @@ public class InMemoryReservationDao implements ReservationDao {
     @Override
     public Reservation save(Reservation reservation) {
         Long id = inMemoryReservationDb.insert(
-                reservation.getName(), reservation.getDate().toString(), reservation.getTime());
+                reservation.getName(), reservation.getDate().toString(), reservation.getTime(), reservation.getTheme());
         return reservation.withId(id);
     }
 

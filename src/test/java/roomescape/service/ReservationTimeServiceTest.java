@@ -10,8 +10,8 @@ import org.junit.jupiter.api.Test;
 import roomescape.console.dao.InMemoryReservationTimeDao;
 import roomescape.console.db.InMemoryReservationDb;
 import roomescape.console.db.InMemoryReservationTimeDb;
-import roomescape.dto.ReservationTimeRequest;
-import roomescape.dto.ReservationTimeResponse;
+import roomescape.dto.request.ReservationTimeRequest;
+import roomescape.dto.response.ReservationTimeResponse;
 
 class ReservationTimeServiceTest {
     private ReservationTimeService reservationTimeService;

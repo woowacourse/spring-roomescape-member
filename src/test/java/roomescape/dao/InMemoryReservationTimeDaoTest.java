@@ -13,6 +13,7 @@ import roomescape.console.dao.InMemoryReservationTimeDao;
 import roomescape.console.db.InMemoryReservationDb;
 import roomescape.console.db.InMemoryReservationTimeDb;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.RoomTheme;
 
 class InMemoryReservationTimeDaoTest {
     private InMemoryReservationDb inMemoryReservationDb;
@@ -85,7 +86,9 @@ class InMemoryReservationTimeDaoTest {
     void deleteByIdDeletesReservationAlso() {
         reservationTimeDao.save(new ReservationTime(LocalTime.parse("10:00")));
         inMemoryReservationDb.insert("aa", "2024-10-11",
-                new ReservationTime(1L, LocalTime.of(10, 0)));
+                new ReservationTime(1L, LocalTime.of(10, 0)),
+                new RoomTheme(1L, "레벨 2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
+                        "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
 
         reservationTimeDao.deleteById(1L);
 

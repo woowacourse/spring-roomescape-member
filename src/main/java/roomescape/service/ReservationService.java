@@ -5,20 +5,24 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
+import roomescape.dao.RoomThemeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.ReservationRequest;
-import roomescape.dto.ReservationResponse;
+import roomescape.domain.RoomTheme;
+import roomescape.dto.request.ReservationRequest;
+import roomescape.dto.response.ReservationResponse;
 
 @Service
 public class ReservationService {
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
+    private final RoomThemeDao roomThemeDao;
 
-    public ReservationService(ReservationDao reservationDao,
-                              ReservationTimeDao reservationTimeDao) {
+    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao,
+                              RoomThemeDao roomThemeDao) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
+        this.roomThemeDao = roomThemeDao;
     }
 
     public List<ReservationResponse> findAll() {
@@ -30,7 +34,8 @@ public class ReservationService {
 
     public ReservationResponse save(ReservationRequest reservationRequest) {
         ReservationTime reservationTime = reservationTimeDao.findById(reservationRequest.timeId());
-        Reservation reservation = reservationRequest.toReservation(reservationTime);
+        RoomTheme roomTheme = roomThemeDao.findById(reservationRequest.themeId());
+        Reservation reservation = reservationRequest.toReservation(reservationTime, roomTheme);
 
         validateDateTimeExistence(reservation.getDate(), reservationTime.getId());
 

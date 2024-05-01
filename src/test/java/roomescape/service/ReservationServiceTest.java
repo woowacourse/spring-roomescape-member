@@ -9,27 +9,33 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.console.dao.InMemoryReservationDao;
 import roomescape.console.dao.InMemoryReservationTimeDao;
+import roomescape.console.dao.InMemoryRoomThemeDao;
 import roomescape.console.db.InMemoryReservationDb;
 import roomescape.console.db.InMemoryReservationTimeDb;
+import roomescape.console.db.InMemoryRoomThemeDb;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
+import roomescape.dao.RoomThemeDao;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.ReservationRequest;
-import roomescape.dto.ReservationResponse;
+import roomescape.domain.RoomTheme;
+import roomescape.dto.request.ReservationRequest;
+import roomescape.dto.response.ReservationResponse;
 
 class ReservationServiceTest {
     private ReservationService reservationService;
     private ReservationTimeDao reservationTimeDao;
+    private RoomThemeDao roomThemeDao;
 
     @BeforeEach
     void setUp() {
         InMemoryReservationDb inMemoryReservationDb = new InMemoryReservationDb();
         InMemoryReservationTimeDb inMemoryReservationTimeDb = new InMemoryReservationTimeDb();
+        InMemoryRoomThemeDb inMemoryRoomThemeDb = new InMemoryRoomThemeDb();
         reservationTimeDao = new InMemoryReservationTimeDao(
                 inMemoryReservationDb, inMemoryReservationTimeDb);
         ReservationDao reservationDao = new InMemoryReservationDao(inMemoryReservationDb);
-        reservationService = new ReservationService(
-                reservationDao, reservationTimeDao);
+        roomThemeDao = new InMemoryRoomThemeDao(inMemoryRoomThemeDb);
+        reservationService = new ReservationService(reservationDao, reservationTimeDao, roomThemeDao);
     }
 
     @DisplayName("모든 예약 검색")
@@ -42,8 +48,10 @@ class ReservationServiceTest {
     @Test
     void save() {
         //given
-        reservationTimeDao.save(new ReservationTime(LocalTime.parse("10:00")));
-        ReservationRequest reservationRequest = new ReservationRequest("aa", "2024-10-10", 1L);
+        ReservationTime savedReservationTime = reservationTimeDao.save(new ReservationTime(LocalTime.parse("10:00")));
+        RoomTheme savedRoomTheme = roomThemeDao.save(new RoomTheme("레벨 2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        ReservationRequest reservationRequest = new ReservationRequest("aa", "2024-10-10", savedReservationTime.getId(), savedRoomTheme.getId());
         //when
         ReservationResponse response = reservationService.save(reservationRequest);
         //then
@@ -61,8 +69,10 @@ class ReservationServiceTest {
     @Test
     void deleteById() {
         //given
-        reservationTimeDao.save(new ReservationTime(LocalTime.parse("10:00")));
-        reservationService.save(new ReservationRequest("aa", "2024-10-10", 1L));
+        ReservationTime savedReservationTime = reservationTimeDao.save(new ReservationTime(LocalTime.parse("10:00")));
+        RoomTheme savedRoomTheme = roomThemeDao.save(new RoomTheme("레벨 2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        ReservationRequest reservationRequest = new ReservationRequest("aa", "2024-10-10", savedReservationTime.getId(), savedRoomTheme.getId());
         //when
         reservationService.deleteById(1);
         //then

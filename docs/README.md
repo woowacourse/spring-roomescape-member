@@ -25,7 +25,7 @@
   - [x] 페이지는 `templates/admin/theme.html` 파일 이용
  - [x] 어드민에 방탈출 예약 시, 테마 정보를 포함할 수 있도록 신규 페이지 파일 사용
    - [x] TO-BE: templates/admin/reservation-new.html
- - [ ] 테마 기능 추가
-   - [ ] 테마 조회
-   - [ ] 테마 추가
-   - [ ] 테마 삭제
+ - [x] 테마 기능 추가
+   - [x] 테마 조회
+   - [x] 테마 추가
+   - [x] 테마 삭제

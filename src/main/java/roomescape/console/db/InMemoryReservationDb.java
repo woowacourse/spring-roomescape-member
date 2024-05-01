@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.RoomTheme;
 
 public class InMemoryReservationDb {
     private final Map<Long, Reservation> reservations = new ConcurrentHashMap<>();
@@ -19,9 +20,9 @@ public class InMemoryReservationDb {
                 .toList();
     }
 
-    public long insert(String name, String date, ReservationTime reservationTime) {
+    public long insert(String name, String date, ReservationTime reservationTime, RoomTheme roomTheme) {
         long thisId = id.getAndIncrement();
-        reservations.put(thisId, new Reservation(thisId, new Name(name), LocalDate.parse(date), reservationTime));
+        reservations.put(thisId, new Reservation(thisId, new Name(name), LocalDate.parse(date), reservationTime, roomTheme));
         return thisId;
     }
 

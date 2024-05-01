@@ -1,8 +1,8 @@
 package roomescape.console;
 
 import java.util.Scanner;
-import roomescape.dto.ReservationRequest;
-import roomescape.dto.ReservationTimeRequest;
+import roomescape.dto.request.ReservationRequest;
+import roomescape.dto.request.ReservationTimeRequest;
 
 public class InputView {
     private static final Scanner SCANNER = new Scanner(System.in);
@@ -15,12 +15,12 @@ public class InputView {
     }
 
     public static ReservationRequest inputReservationRequest() {
-        System.out.println("input reservation request(name,date,timeId)."
-                + " (ex - harry" + DELIMITER + "2024-05-11" + DELIMITER + "1)");
+        System.out.println("input reservation request(name,date,timeId,themeId)."
+                + " (ex - harry" + DELIMITER + "2024-05-11" + DELIMITER + "1" + DELIMITER + "1)");
         String input = SCANNER.nextLine();
         String[] split = input.split(DELIMITER);
-        if (split.length == 3) {
-            return new ReservationRequest(split[0], split[1], Long.parseLong(split[2]));
+        if (split.length == 4) {
+            return new ReservationRequest(split[0], split[1], Long.parseLong(split[2]), Long.parseLong(split[3]));
         }
         throw new IllegalArgumentException("invalid reservation request: " + input);
     }

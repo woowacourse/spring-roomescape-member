@@ -11,17 +11,21 @@ import org.junit.jupiter.api.Test;
 import roomescape.console.dao.InMemoryReservationDao;
 import roomescape.console.db.InMemoryReservationDb;
 import roomescape.console.db.InMemoryReservationTimeDb;
+import roomescape.console.db.InMemoryRoomThemeDb;
 import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.RoomTheme;
 
 class InMemoryReservationDaoTest {
     private InMemoryReservationTimeDb inMemoryReservationTimeDb;
+    private InMemoryRoomThemeDb inMemoryRoomThemeDb;
     private ReservationDao reservationDao;
 
     @BeforeEach
     void setUp() {
         inMemoryReservationTimeDb = new InMemoryReservationTimeDb();
+        inMemoryRoomThemeDb = new InMemoryRoomThemeDb();
         reservationDao = new InMemoryReservationDao(
                 new InMemoryReservationDb());
     }
@@ -36,8 +40,11 @@ class InMemoryReservationDaoTest {
     @Test
     void duplicatedReservationTest() {
         boolean existsFalse = reservationDao.existsByDateTime(LocalDate.of(9999, 12, 12), 1L);
-        reservationDao.save(new Reservation(new Name("asd"), LocalDate.parse("9999-12-12"), new ReservationTime(1L,
-                LocalTime.of(10, 0))));
+        reservationDao.save(new Reservation(new Name("asd"),
+                LocalDate.parse("9999-12-12"),
+                new ReservationTime(1L, LocalTime.of(10, 0)),
+                new RoomTheme(1L, "레벨 2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
+                        "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg")));
         boolean existsTrue = reservationDao.existsByDateTime(LocalDate.of(9999, 12, 12), 1L);
 
         assertAll(
@@ -50,10 +57,13 @@ class InMemoryReservationDaoTest {
     @Test
     void save() {
         //given
-        inMemoryReservationTimeDb.insert(LocalTime.of(10, 0));
-        ReservationTime reservationTime = inMemoryReservationTimeDb.selectById(1L);
+        long timeId = inMemoryReservationTimeDb.insert(LocalTime.of(10, 0));
+        ReservationTime reservationTime = inMemoryReservationTimeDb.selectById(timeId);
+        long roomThemeId = inMemoryRoomThemeDb.insert(new RoomTheme("레벨 2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        RoomTheme roomTheme = inMemoryRoomThemeDb.selectById(roomThemeId);
         //when
-        reservationDao.save(new Reservation(new Name("aa"), LocalDate.parse("9999-10-10"), reservationTime));
+        reservationDao.save(new Reservation(new Name("aa"), LocalDate.parse("9999-10-10"), reservationTime, roomTheme));
         //then
         assertThat(reservationDao.findAll()).hasSize(1);
     }
@@ -62,24 +72,32 @@ class InMemoryReservationDaoTest {
     @Test
     void deleteById() {
         //given
-        inMemoryReservationTimeDb.insert(LocalTime.of(10, 0));
-        ReservationTime reservationTime = inMemoryReservationTimeDb.selectById(1L);
-        reservationDao.save(new Reservation(new Name("aa"), LocalDate.parse("9999-10-10"), reservationTime));
+        long timeId = inMemoryReservationTimeDb.insert(LocalTime.of(10, 0));
+        ReservationTime reservationTime = inMemoryReservationTimeDb.selectById(timeId);
+        long roomThemeId = inMemoryRoomThemeDb.insert(new RoomTheme("레벨 2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        RoomTheme roomTheme = inMemoryRoomThemeDb.selectById(roomThemeId);
+        Reservation savedReservation = reservationDao.save(
+                new Reservation(new Name("aa"), LocalDate.parse("9999-10-10"), reservationTime, roomTheme));
         //when
-        reservationDao.deleteById(1L);
+        reservationDao.deleteById(savedReservation.getId());
         //then
-        assertThat(reservationDao.findAll()).hasSize(0);
+        assertThat(reservationDao.findAll()).isEmpty();
     }
 
     @DisplayName("삭제 대상이 존재하면 true를 반환한다.")
     @Test
     void returnTrueWhenDeleted() {
         //given
-        inMemoryReservationTimeDb.insert(LocalTime.of(10, 0));
-        ReservationTime reservationTime = inMemoryReservationTimeDb.selectById(1L);
-        reservationDao.save(new Reservation(new Name("aa"), LocalDate.parse("9999-10-10"), reservationTime));
+        long timeId = inMemoryReservationTimeDb.insert(LocalTime.of(10, 0));
+        ReservationTime reservationTime = inMemoryReservationTimeDb.selectById(timeId);
+        long roomThemeId = inMemoryRoomThemeDb.insert(new RoomTheme("레벨 2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        RoomTheme roomTheme = inMemoryRoomThemeDb.selectById(roomThemeId);
+        Reservation savedReservation = reservationDao.save(
+                new Reservation(new Name("aa"), LocalDate.parse("9999-10-10"), reservationTime, roomTheme));
         //when
-        boolean deleted = reservationDao.deleteById(1L);
+        boolean deleted = reservationDao.deleteById(savedReservation.getId());
         //then
         assertThat(deleted).isTrue();
     }
