@@ -34,16 +34,22 @@ public class ReservationService {
     public List<ReservationResponse> getReservations() {
         return reservationRepository.findAll().stream()
                 .map(this::assignTime)
+                .map(this::assignTheme)
                 .map(ReservationResponse::from)
                 .toList();
     }
 
-    // TODO: assignTheme 추가하기
+    // TODO assignTime 과 assignTheme 합치는거 고려하기
     private Reservation assignTime(final Reservation reservation) {
-        ReservationTime time = reservationTimeRepository
-                .findById(reservation.getTime().getId())
+        ReservationTime time = reservationTimeRepository.findById(reservation.getTime().getId())
                 .orElse(reservation.getTime());
         return reservation.assignTime(time);
+    }
+
+    private Reservation assignTheme(final Reservation reservation) {
+        Theme theme = themeRepository.findById(reservation.getTheme().getId())
+                .orElse(reservation.getTheme());
+        return reservation.assignTheme(theme);
     }
 
     public ReservationResponse addReservation(final ReservationRequest reservationRequest) {

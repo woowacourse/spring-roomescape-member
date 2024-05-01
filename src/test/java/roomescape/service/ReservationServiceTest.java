@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.controller.reservation.ReservationRequest;
 import roomescape.controller.reservation.ReservationResponse;
+import roomescape.controller.theme.ReservationThemeResponse;
 import roomescape.controller.time.TimeResponse;
 import roomescape.exception.DuplicateReservation;
 import roomescape.exception.PreviousTimeException;
@@ -35,8 +36,10 @@ class ReservationServiceTest {
     void getReservations() {
         // given
         List<ReservationResponse> expected = List.of(
-                new ReservationResponse(1L, "al", "2025-01-20", new TimeResponse(1L, "10:15"), null),
-                new ReservationResponse(2L, "be", "2025-02-19", new TimeResponse(2L, "11:20"), null)
+                new ReservationResponse(1L, "al", "2025-01-20", new TimeResponse(1L, "10:15"),
+                        new ReservationThemeResponse("spring")),
+                new ReservationResponse(2L, "be", "2025-02-19", new TimeResponse(2L, "11:20"),
+                        new ReservationThemeResponse("summer"))
         );
 
         // when
@@ -52,7 +55,7 @@ class ReservationServiceTest {
         // given
         ReservationRequest request = new ReservationRequest("cha", "2025-03-18", 3L, 2L);
         ReservationResponse expected = new ReservationResponse(3L, "cha", "2025-03-18", new TimeResponse(3L, "12:25")
-                , null);
+                , new ReservationThemeResponse("summer"));
 
         // when
         ReservationResponse actual = reservationService.addReservation(request);
