@@ -1,8 +1,8 @@
-package roomescape.handler;
+package roomescape.web.exception.response;
 
 import org.springframework.validation.FieldError;
 
-record ErrorDetail(String field, String message) {
+public record ErrorDetail(String field, String message) {
     public ErrorDetail(FieldError error) {
         this(error.getField(), error.getDefaultMessage());
     }

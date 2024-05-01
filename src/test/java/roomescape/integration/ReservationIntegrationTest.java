@@ -13,7 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.dto.ReservationRequest;
+import roomescape.service.request.ReservationRequest;
 
 /*
  * 테스트 데이터베이스 초기 데이터

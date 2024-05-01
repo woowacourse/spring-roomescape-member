@@ -1,4 +1,4 @@
-package roomescape.handler;
+package roomescape.web.exception;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -13,6 +13,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import roomescape.web.exception.response.ErrorResponse;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {

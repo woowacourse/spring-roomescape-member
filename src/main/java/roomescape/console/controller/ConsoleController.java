@@ -4,12 +4,12 @@ import java.util.function.Supplier;
 import roomescape.console.view.Command;
 import roomescape.console.view.InputView;
 import roomescape.console.view.OutputView;
-import roomescape.dto.ReservationRequest;
-import roomescape.dto.ReservationResponse;
-import roomescape.dto.ReservationTimeRequest;
-import roomescape.dto.ReservationTimeResponse;
 import roomescape.service.ReservationService;
 import roomescape.service.ReservationTimeService;
+import roomescape.service.request.ReservationRequest;
+import roomescape.service.request.ReservationTimeRequest;
+import roomescape.service.response.ReservationResponse;
+import roomescape.service.response.ReservationTimeResponse;
 
 public class ConsoleController {
     private final OutputView outputView;
@@ -81,7 +81,6 @@ public class ConsoleController {
         reservationTimeService.deleteReservationTime(id);
         outputView.printDeleteTimeSuccessMessage();
     }
-
 
     private <T> T repeatUntilSuccess(Supplier<T> supplier) {
         try {

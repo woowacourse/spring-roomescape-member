@@ -1,4 +1,4 @@
-package roomescape.dto;
+package roomescape.service.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -8,7 +8,7 @@ import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.handler.DateValid;
+import roomescape.web.exception.DateValid;
 
 public record ReservationRequest(
         @NotBlank(message = "예약자 이름은 필수입니다.") String name,

@@ -6,8 +6,8 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Scanner;
 import roomescape.domain.Name;
-import roomescape.dto.ReservationRequest;
-import roomescape.dto.ReservationTimeRequest;
+import roomescape.service.request.ReservationRequest;
+import roomescape.service.request.ReservationTimeRequest;
 
 public class InputView {
     public static final int NAME_INDEX = 0;
