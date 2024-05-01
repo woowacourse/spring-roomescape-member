@@ -77,18 +77,12 @@ public class ReservationRepository {
 
     public boolean existReservation(Reservation reservation) {
         String sql = """
-                select count(*)
-                from reservation r
+                select exists(select 1 from reservation r
                 join reservation_time t on r.time_id = t.id
-                where r.date = ? and t.start_at = ?
+                where r.date = ? and t.start_at = ?)
                 """;
-        try {
-            jdbcTemplate.queryForObject(sql, Integer.class, reservation.getDate().toString(),
-                    reservation.getTime().getStartAt().toString());
-            return true;
-        } catch (DataAccessException exception) {
-            return false;
-        }
+        return !jdbcTemplate.query(sql, (rs, rw) -> 0, reservation.getDate().toString(),
+                reservation.getTime().getStartAt().toString()).isEmpty();
     }
 
     public void delete(Long id) {
