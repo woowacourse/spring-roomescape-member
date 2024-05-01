@@ -28,7 +28,7 @@ public class ReservationService {
     public List<ReservationResponse> findAll() {
         return reservationDao.findAll()
                 .stream()
-                .map(ReservationResponse::new)
+                .map(ReservationResponse::fromReservation)
                 .toList();
     }
 
@@ -40,7 +40,7 @@ public class ReservationService {
         validateDateTimeExistence(reservation.getDate(), reservationTime.getId());
 
         Reservation savedReservation = reservationDao.save(reservation);
-        return new ReservationResponse(savedReservation);
+        return ReservationResponse.fromReservation(savedReservation);
     }
 
     public boolean deleteById(long id) {

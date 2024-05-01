@@ -9,11 +9,12 @@ public record ReservationResponse(
         String date,
         ReservationTimeResponse time,
         RoomThemeResponse theme) {
-    public ReservationResponse(Reservation reservation) {
-        this(reservation.getId(),
+
+    public static ReservationResponse fromReservation(Reservation reservation) {
+        return new ReservationResponse(reservation.getId(),
                 reservation.getName(),
                 reservation.getDate().format(DateTimeFormatter.ISO_DATE),
-                new ReservationTimeResponse(reservation.getTime()), //TODO 정팩매 사용
+                ReservationTimeResponse.fromReservationTime(reservation.getTime()),
                 RoomThemeResponse.fromRoomTheme(reservation.getTheme()));
     }
 }
