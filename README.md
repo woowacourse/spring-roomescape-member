@@ -33,8 +33,8 @@
 
 # 3단계 - 사용자 기능
 ## 예약
-- [ ] `/reservation` 요청 시 `templates/reservation.html`가 응답한다.
+- [x] `/reservation` 요청 시 `templates/reservation.html`가 응답한다.
 
 ## 테마
-- [ ] `/` 요청 시 `templates/index.html`가 응답한다.
+- [x] `/` 요청 시 `templates/index.html`가 응답한다.
 - [ ] 최근 일주일을 기준으로 예약이 많은 상위 10개 테마를 조회할 수 있다. 
