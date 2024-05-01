@@ -36,8 +36,8 @@ class ReservationTimeServiceTest extends DummyDataFixture {
         CreateReservationTimeRequest createReservationTimeRequest = new CreateReservationTimeRequest(
                 LocalTime.of(11, 11));
 
-        // stub
-        Mockito.when(reservationTimeRepository.save(any(ReservationTime.class))).thenReturn(10L);
+        // stub // TODO:반환 타입 지정
+        Mockito.when(reservationTimeRepository.save(any(ReservationTime.class))).thenReturn(any(ReservationTime.class));
 
         // when
         CreateReservationTimeResponse reservationTime = reservationTimeService.createReservationTime(

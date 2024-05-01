@@ -25,11 +25,8 @@ public class ReservationTimeService {
 
     public CreateReservationTimeResponse createReservationTime(
             final CreateReservationTimeRequest createReservationTimeRequest) {
-        Long id = reservationTimeRepository.save(createReservationTimeRequest.toReservationTime());
-
-        // TODO: 수정
-        FindReservationTimeResponse findReservationTimeResponse = getReservationTime(id);
-        return CreateReservationTimeResponse.of(findReservationTimeResponse);
+        ReservationTime reservationTime = reservationTimeRepository.save(createReservationTimeRequest.toReservationTime());
+        return CreateReservationTimeResponse.of(reservationTime);
     }
 
     public List<FindReservationTimeResponse> getReservationTimes() {

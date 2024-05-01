@@ -32,10 +32,11 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                     resultSet.getTime("start_at").toLocalTime()
             );
 
-    public Long save(final ReservationTime reservationTime) {
+    public ReservationTime save(final ReservationTime reservationTime) {
         SqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
                 .addValue("start_at", Time.valueOf(reservationTime.getTime()));
-        return simpleJdbcInsert.executeAndReturnKey(mapSqlParameterSource).longValue();
+        long id = simpleJdbcInsert.executeAndReturnKey(mapSqlParameterSource).longValue();
+        return new ReservationTime(id, reservationTime.getTime());
     }
 
     @Override

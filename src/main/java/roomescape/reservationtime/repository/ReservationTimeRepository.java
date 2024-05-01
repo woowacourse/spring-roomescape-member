@@ -6,7 +6,7 @@ import roomescape.reservationtime.model.ReservationTime;
 
 public interface ReservationTimeRepository {
 
-    Long save(ReservationTime reservationTime);
+    ReservationTime save(ReservationTime reservationTime);
 
     List<ReservationTime> findAll();
 
