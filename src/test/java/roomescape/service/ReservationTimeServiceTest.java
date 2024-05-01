@@ -38,6 +38,20 @@ class ReservationTimeServiceTest {
         assertThat(actualReservationTime).isEqualTo(expectedReservationTime);
     }
 
+    @DisplayName("중복되는 예약 시각을 추가할 경우 예외가 발생합니다.")
+    @Test
+    void should_throw_IllegalArgumentException_when_reservation_time_is_duplicated() {
+        ReservationTimeService reservationTimeService = new ReservationTimeService(new FakeReservationTimeDao(
+                Arrays.asList(new ReservationTime(1L, LocalTime.of(10, 0)))
+        ));
+
+        ReservationTimeAddRequest reservationTimeAddRequest = new ReservationTimeAddRequest(LocalTime.of(10, 0));
+
+        assertThatThrownBy(() -> reservationTimeService.addReservationTime(reservationTimeAddRequest))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이미 존재하는 예약시간은 추가할 수 없습니다.");
+    }
+
     @DisplayName("원하는 id의 예약시간을 삭제합니다")
     @Test
     void should_remove_reservation_time_with_exist_id() {
@@ -58,7 +72,7 @@ class ReservationTimeServiceTest {
         ReservationTimeService reservationTimeService = new ReservationTimeService(fakeReservationTimeDao);
 
         assertThatThrownBy(() -> reservationTimeService.removeReservationTime(1L)).isInstanceOf(
-                IllegalArgumentException.class)
+                        IllegalArgumentException.class)
                 .hasMessage("해당 id를 가진 예약시간이 존재하지 않습니다.");
     }
 }
