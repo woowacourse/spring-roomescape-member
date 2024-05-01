@@ -88,4 +88,36 @@ public class ReservationTimeControllerTest {
                 })
         );
     }
+
+    @TestFactory
+    @DisplayName("중복된 예약 시간 추가가 불가능한지 확인한다.")
+    Stream<DynamicTest> duplicatedReservationTime() {
+        Map<String, String> params1 = Map.of(
+                "startAt", "10:00"
+        );
+
+        Map<String, String> params2 = Map.of(
+                "startAt", "10:00"
+        );
+
+        return Stream.of(
+                dynamicTest("예약 시간을 추가한다", () -> {
+                    RestAssured.given().log().all()
+                            .contentType(ContentType.JSON)
+                            .body(params1)
+                            .when().post("/times")
+                            .then().log().all()
+                            .statusCode(201);
+                }),
+
+                dynamicTest("중복된 예약 시간을 추가한다", () -> {
+                    RestAssured.given().log().all()
+                            .contentType(ContentType.JSON)
+                            .body(params2)
+                            .when().post("/times")
+                            .then().log().all()
+                            .statusCode(400);
+                })
+        );
+    }
 }

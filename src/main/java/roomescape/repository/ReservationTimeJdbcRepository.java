@@ -3,6 +3,7 @@ package roomescape.repository;
 import java.time.LocalTime;
 import java.util.List;
 import javax.sql.DataSource;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -46,10 +47,14 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository{
     }
 
     public ReservationTime save(ReservationTime reservationTime) {
-        SqlParameterSource parameterSource = new MapSqlParameterSource()
-                .addValue("start_at", reservationTime.getStartAt());
-        Long id = simpleJdbcInsert.executeAndReturnKey(parameterSource).longValue();
-        return new ReservationTime(id, reservationTime.getStartAt());
+        try {
+            SqlParameterSource parameterSource = new MapSqlParameterSource()
+                    .addValue("start_at", reservationTime.getStartAt());
+            Long id = simpleJdbcInsert.executeAndReturnKey(parameterSource).longValue();
+            return new ReservationTime(id, reservationTime.getStartAt());
+        } catch (DuplicateKeyException e) {
+            throw new IllegalArgumentException("이미 추가된 예약 시간입니다.");
+        }
     }
 
     public int deleteById(Long id) {
