@@ -1,56 +1,55 @@
 package roomescape.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
 
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeName;
 import roomescape.domain.ThemeRepository;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
 
-@ExtendWith(MockitoExtension.class)
+@ServiceTest
 class ThemeServiceTest {
 
-    @InjectMocks
+    @Autowired
     private ThemeService themeService;
 
-    @Mock
+    @Autowired
     private ThemeRepository themeRepository;
 
     @DisplayName("테마를 생성한다.")
     @Test
     void shouldReturnCreatedTheme() {
         ThemeRequest request = new ThemeRequest("테마", "테마 설명", "url");
-        given(themeRepository.create(any(Theme.class)))
-                .willReturn(new Theme(1L, new ThemeName("테마"), "테마 설명", "url"));
-
-        ThemeResponse themeResponse = themeService.create(request);
-
-        then(themeRepository).should().create(request.toTheme());
+        themeService.create(request);
+        List<Theme> themes = themeRepository.findAll();
+        assertThat(themes).hasSize(1);
     }
 
-    @DisplayName("모든 테마 조회시 themeRepository findAll 메서드를 1회 호출하고 모든 테마를 반환한다.")
+    @DisplayName("모든 테마를 조회한다.")
     @Test
     void shouldReturnAllThemes() {
-        List<ThemeResponse> responses = themeService.findAll();
-        assertThat(responses).isEmpty();
-        then(themeRepository).should().findAll();
+        createTheme();
+        List<ThemeResponse> themes = themeService.findAll();
+        assertThat(themes).hasSize(1);
     }
 
-    @DisplayName("테마 삭제시 themeRepository deleteById 메서드를 1회 호출한다.")
+    @DisplayName("id로 테마를 삭제한다.")
     @Test
-    void shouldDeleteThemeById() {
-        themeService.deleteById(1L);
-        then(themeRepository).should().deleteById(1L);
+    void shouldDeleteThemeWhenDeleteWithId() {
+        Theme theme = createTheme();
+        themeService.deleteById(theme.getId());
+        List<Theme> themes = themeRepository.findAll();
+        assertThat(themes).isEmpty();
+    }
+
+    private Theme createTheme() {
+        return themeRepository.create(new Theme(new ThemeName("테마"), "테마 설명", "url"));
     }
 }
