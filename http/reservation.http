@@ -8,7 +8,8 @@ Content-Type: application/json
 {
   "date": "2024-10-11",
   "name": "브라운",
-  "timeId": 1
+  "timeId": 1,
+  "theme": 1
 }
 
 ### 예약 삭제 요청
