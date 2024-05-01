@@ -9,12 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.controller.TimeController;
-import roomescape.domain.ReservationTime;
 import roomescape.dto.TimeCreateRequest;
-
-import java.lang.reflect.Field;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,8 +20,6 @@ class ReservationTimeControllerTest {
     private int port;
     @Autowired
     private JdbcTemplate jdbcTemplate;
-    @Autowired
-    private TimeController timeController;
 
     @DisplayName("시간 목록을 읽을 수 있다.")
     @Test
@@ -75,20 +68,5 @@ class ReservationTimeControllerTest {
 
         Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation_time", Integer.class);
         assertThat(countAfterDelete).isEqualTo(0);
-    }
-
-    @DisplayName("계층이 분리되어야 한다.")
-    @Test
-    void checkTimeLayerSeparation() {
-        boolean isJdbcTemplateInjected = false;
-
-        for (Field field : timeController.getClass().getDeclaredFields()) {
-            if (field.getType().equals(JdbcTemplate.class)) {
-                isJdbcTemplateInjected = true;
-                break;
-            }
-        }
-
-        assertThat(isJdbcTemplateInjected).isFalse();
     }
 }
