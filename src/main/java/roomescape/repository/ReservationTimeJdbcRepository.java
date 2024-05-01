@@ -3,6 +3,7 @@ package roomescape.repository;
 import java.time.LocalTime;
 import java.util.List;
 import javax.sql.DataSource;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -59,6 +60,10 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository{
 
     public int deleteById(Long id) {
         String sql = "DELETE FROM " + TABLE_NAME + " WHERE id = ?";
-        return jdbcTemplate.update(sql, id);
+        try {
+            return jdbcTemplate.update(sql, id);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException("현 예약 시간에 예약이 존재합니다.");
+        }
     }
 }
