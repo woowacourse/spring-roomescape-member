@@ -9,4 +9,6 @@ public interface ReservationRepository {
     Reservation insertReservation(Reservation reservation);
 
     void deleteReservationById(long id);
+
+    boolean hasReservationOf(long timeId);
 }
