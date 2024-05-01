@@ -18,7 +18,7 @@ public class ReservationTimeService {
     }
 
     public Long save(TimeRequest timeRequest) {
-        ReservationTime reservationTime = new ReservationTime(timeRequest.startAt());
+        ReservationTime reservationTime = timeRequest.toReservationTime();
         return reservationTimeRepository.save(reservationTime);
     }
 
@@ -26,12 +26,12 @@ public class ReservationTimeService {
         ReservationTime reservationTime = reservationTimeRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다"));
 
-        return new TimeResponse(reservationTime.getId(), reservationTime.getStartAt());
+        return TimeResponse.toResponse(reservationTime);
     }
 
     public List<TimeResponse> findAll() {
         return reservationTimeRepository.findAll().stream()
-                .map(time -> new TimeResponse(time.getId(), time.getStartAt()))
+                .map(TimeResponse::toResponse)
                 .collect(Collectors.toList());
     }
 

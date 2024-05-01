@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
-import roomescape.reservation.domain.Name;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
@@ -41,9 +40,7 @@ public class ReservationService {
             throw new IllegalArgumentException("지난 날짜는 예약할 수 없습니다.");
         }
 
-        Reservation reservation = new Reservation(new Name(reservationRequest.name()),
-                reservationRequest.date(), theme,
-                reservationTime);
+        Reservation reservation = reservationRequest.toReservation(theme, reservationTime);
 
         if (reservationRepository.existReservation(reservation)) {
             throw new IllegalArgumentException("중복된 예약이 있습니다.");
@@ -55,28 +52,18 @@ public class ReservationService {
     public ReservationResponse findById(Long id) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약입니다."));
+        TimeResponse timeResponse = TimeResponse.toResponse(reservation.getTime());
+        ThemeResponse themeResponse = ThemeResponse.toResponse(reservation.getTheme());
 
-        TimeResponse timeResponse = new TimeResponse(reservation.getTime().getId(),
-                reservation.getTime().getStartAt());
-
-        ThemeResponse themeResponse = new ThemeResponse(reservation.getTheme().getId(),
-                reservation.getTheme().getName(), reservation.getTheme().getDescription(),
-                reservation.getTheme().getThumbnail());
-
-        return new ReservationResponse(reservation.getId(),
-                reservation.getName(), reservation.getDate(), themeResponse, timeResponse);
+        return ReservationResponse.toResponse(reservation);
     }
 
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAll().stream()
                 .map(reservation -> {
-                    TimeResponse timeResponse = new TimeResponse(reservation.getTime().getId(),
-                            reservation.getTime().getStartAt());
-                    ThemeResponse themeResponse = new ThemeResponse(reservation.getTheme().getId(),
-                            reservation.getTheme().getName(), reservation.getTheme().getDescription(),
-                            reservation.getTheme().getThumbnail());
-                    return new ReservationResponse(reservation.getId(),
-                            reservation.getName(), reservation.getDate(), themeResponse, timeResponse);
+                    TimeResponse timeResponse = TimeResponse.toResponse(reservation.getTime());
+                    ThemeResponse themeResponse = ThemeResponse.toResponse(reservation.getTheme());
+                    return ReservationResponse.toResponse(reservation);
                 })
                 .collect(Collectors.toList());
     }
