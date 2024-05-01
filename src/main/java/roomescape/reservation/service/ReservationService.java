@@ -26,6 +26,9 @@ public class ReservationService {
     }
 
     public Reservation save(ReservationRequest request) {
+        if(reservationDao.existsByDateTime(request.date(), request.timeId())){
+            throw new IllegalArgumentException("Reservation already exists");
+        }
         ReservationTime reservationTime = reservationTimeDao.findById(request.timeId());
         return reservationDao.save(new Reservation(0, request.name(), request.date(), reservationTime));
     }

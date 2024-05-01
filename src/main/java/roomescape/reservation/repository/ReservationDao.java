@@ -1,5 +1,6 @@
 package roomescape.reservation.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -69,5 +70,11 @@ public class ReservationDao {
 
     public void deleteById(long id) {
         jdbcTemplate.update("DELETE FROM RESERVATION WHERE ID = ?", id);
+    }
+
+    public boolean existsByDateTime(LocalDate date, long timeId) {
+        String query = "SELECT COUNT(*) FROM RESERVATION WHERE time_id = ? AND date = ?";
+        Integer count = jdbcTemplate.queryForObject(query, Integer.class, timeId, date);
+        return count != null && count > 0;
     }
 }
