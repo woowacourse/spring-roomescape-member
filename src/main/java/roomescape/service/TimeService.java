@@ -23,14 +23,14 @@ public class TimeService {
     }
 
     public ReservationTime createTime(TimeCreateRequest dto) {
-        if (timeDao.isReservationTimeByStartAt(dto.startAt())) {
+        if (timeDao.isExistTimeByStartAt(dto.startAt())) {
             throw new IllegalArgumentException("해당 시간은 이미 존재합니다.");
         }
         return timeDao.createTime(dto.createReservationTime());
     }
 
     public void deleteTime(Long id) {
-        if (reservationDao.isReservationsByTimeId(id)) {
+        if (reservationDao.isExistReservationByTimeId(id)) {
             throw new IllegalArgumentException("해당 시간을 사용하는 예약이 존재합니다.");
         }
         timeDao.deleteTime(id);

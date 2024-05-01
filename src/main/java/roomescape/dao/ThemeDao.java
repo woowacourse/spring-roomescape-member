@@ -44,7 +44,7 @@ public class ThemeDao {
         }
     }
 
-    public boolean isThemeByName(String name) {
+    public boolean isExistThemeByName(String name) {
         String sql = """
                 SELECT EXISTS (
                     SELECT 1

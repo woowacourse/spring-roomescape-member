@@ -39,7 +39,7 @@ public class TimeDao {
         }
     }
 
-    public boolean isReservationTimeByStartAt(String startAt) {
+    public boolean isExistTimeByStartAt(String startAt) {
         String sql = """
                 SELECT EXISTS (
                     SELECT 1

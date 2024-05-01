@@ -48,39 +48,6 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public boolean isReservationsByTimeId(Long timeId) {
-        String sql = """
-                SELECT EXISTS (
-                    SELECT 1
-                    FROM reservation
-                    WHERE time_id = ?
-                )
-                """;
-        return jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
-    }
-
-    public boolean isReservationsByThemeId(Long themeId) {
-        String sql = """
-                SELECT EXISTS (
-                    SELECT 1
-                    FROM reservation
-                    WHERE theme_id = ?
-                )
-                """;
-        return jdbcTemplate.queryForObject(sql, Boolean.class, themeId);
-    }
-
-    public boolean isReservationsByTimeIdAndDate(Long timeId, String date) {
-        String sql = """
-                SELECT EXISTS (
-                    SELECT 1
-                    FROM reservation
-                    WHERE time_id = ? AND date = ?
-                )
-                """;
-        return jdbcTemplate.queryForObject(sql, Boolean.class, timeId, date);
-    }
-
     private Optional<Reservation> readReservationById(Long id) {
         String sql = """
                 SELECT reservation.id, reservation.name, reservation.date, reservation.time_id, reservation.theme_id,
@@ -96,6 +63,39 @@ public class ReservationDao {
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
         }
+    }
+
+    public boolean isExistReservationByTimeId(Long timeId) {
+        String sql = """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM reservation
+                    WHERE time_id = ?
+                )
+                """;
+        return jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
+    }
+
+    public boolean isExistReservationByThemeId(Long themeId) {
+        String sql = """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM reservation
+                    WHERE theme_id = ?
+                )
+                """;
+        return jdbcTemplate.queryForObject(sql, Boolean.class, themeId);
+    }
+
+    public boolean isExistReservationByTimeIdAndDate(Long timeId, String date) {
+        String sql = """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM reservation
+                    WHERE time_id = ? AND date = ?
+                )
+                """;
+        return jdbcTemplate.queryForObject(sql, Boolean.class, timeId, date);
     }
 
     public Reservation createReservation(Reservation reservation) {

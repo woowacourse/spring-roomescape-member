@@ -43,7 +43,7 @@ public class ReservationService {
         if (reservation.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("예약은 현재 시간 이후여야 합니다.");
         }
-        if (reservationDao.isReservationsByTimeIdAndDate(reservation.getTime().getId(), reservation.getDate())) {
+        if (reservationDao.isExistReservationByTimeIdAndDate(reservation.getTime().getId(), reservation.getDate())) {
             throw new IllegalArgumentException("해당 시간대 예약은 이미 존재합니다.");
         }
     }

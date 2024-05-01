@@ -24,14 +24,14 @@ public class ThemeService {
     }
 
     public Theme createTheme(ThemeCreateRequest dto) {
-        if (themeDao.isThemeByName(dto.name())) {
+        if (themeDao.isExistThemeByName(dto.name())) {
             throw new IllegalArgumentException("해당 테마 이름은 이미 존재합니다.");
         }
         return themeDao.createTheme(dto.createTheme());
     }
 
     public void deleteTheme(Long id) {
-        if (reservationDao.isReservationsByThemeId(id)) {
+        if (reservationDao.isExistReservationByThemeId(id)) {
             throw new IllegalArgumentException("해당 테마를 사용하는 예약이 존재합니다.");
         }
         themeDao.deleteTheme(id);
