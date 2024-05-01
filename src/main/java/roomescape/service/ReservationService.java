@@ -1,9 +1,11 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.controller.request.ReservationRequest;
+import roomescape.controller.response.MemberReservationTimeResponse;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.DuplicatedException;
 import roomescape.exception.NotFoundException;
@@ -55,5 +57,26 @@ public class ReservationService {
             throw new NotFoundException("[ERROR] 존재하지 않는 예약입니다.");
         }
         reservationRepository.deleteReservation(id);
+    }
+
+    public List<MemberReservationTimeResponse> getMemberReservationTimes(LocalDate date, long themeId) {
+        List<ReservationTime> allTimes = reservationTimeRepository.findAllReservationTimes();
+
+        List<ReservationTime> alreadyBookedTimes = reservationRepository.findReservationTimeByDateAndTheme(date, themeId);
+
+        List<MemberReservationTimeResponse> responses = allTimes.stream()
+                .map(time -> new MemberReservationTimeResponse(time.getId(), time.getStartAt(), false))
+                .toList();
+
+        for (MemberReservationTimeResponse response : responses) {
+            for (ReservationTime alreadyBookedTime : alreadyBookedTimes) {
+                if (response.getTimeId() == alreadyBookedTime.getId()) {
+                    response.setAlreadyBooked(true);
+                }
+            }
+        }
+        // TODO: 리팩토링
+
+        return responses;
     }
 }

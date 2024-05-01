@@ -27,7 +27,7 @@ public class ThemeController {
     public ResponseEntity<Theme> addTheme(@RequestBody ThemeRequest themeRequest) {
         Theme theme = themeService.addTheme(themeRequest);
         return ResponseEntity
-                .created(URI.create("/themes/" + theme.getId()))
+                .created(URI.create("/themes/" + theme.getThemeId()))
                 .body(theme);
     }
 

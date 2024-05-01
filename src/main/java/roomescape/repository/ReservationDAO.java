@@ -67,7 +67,7 @@ public class ReservationDAO implements ReservationRepository {
         parameters.put("name", reservation.getName());
         parameters.put("date", reservation.getDate());
         parameters.put("time_id", reservation.getTime().getId());
-        parameters.put("theme_id", reservation.getTheme().getId());
+        parameters.put("theme_id", reservation.getTheme().getThemeId());
         Number newId = insertActor.executeAndReturnKey(parameters);
         return new Reservation(newId.longValue(), reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
     }
@@ -94,5 +94,19 @@ public class ReservationDAO implements ReservationRepository {
     public Long countReservationByDateAndTimeId(LocalDate date, long timeId) {
         String sql = "select count(id) from reservation where date = ? and time_id = ?";
         return jdbcTemplate.queryForObject(sql, (resultSet, ignored) -> resultSet.getLong(1), date, timeId);
+    }
+
+    @Override
+    public List<ReservationTime> findReservationTimeByDateAndTheme(LocalDate date, long themeId) {
+        String sql = """
+                select t.id as time_id, t.start_at as start_at
+                from reservation as r inner join reservation_time as t on r.time_id = t.id
+                where date = ? and theme_id = ?
+                """;
+        return jdbcTemplate.query(sql, (resultSet, rowNum) ->
+                new ReservationTime(
+                        resultSet.getLong("time_id"),
+                        resultSet.getTime("start_at").toLocalTime()
+                ), date, themeId);
     }
 }

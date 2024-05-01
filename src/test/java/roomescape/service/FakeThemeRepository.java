@@ -33,7 +33,7 @@ public class FakeThemeRepository implements ThemeRepository {
     @Override
     public void deleteTheme(long id) {
         Theme targetTheme = themes.stream()
-                .filter(theme -> theme.getId() == id)
+                .filter(theme -> theme.getThemeId() == id)
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 테마입니다."));
         themes.remove(targetTheme);
@@ -42,7 +42,7 @@ public class FakeThemeRepository implements ThemeRepository {
     @Override
     public Theme findThemeById(long id) {
         return themes.stream()
-                .filter(theme -> theme.getId() == id)
+                .filter(theme -> theme.getThemeId() == id)
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 테마입니다."));
     }
