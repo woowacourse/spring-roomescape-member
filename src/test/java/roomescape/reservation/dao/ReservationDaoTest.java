@@ -15,6 +15,7 @@ import roomescape.reservation.domain.Reservation;
 @JdbcTest
 @Sql(scripts = "/data-test.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 class ReservationDaoTest {
+
     private final ReservationJdbcDao reservationDao;
 
     @Autowired
@@ -25,10 +26,10 @@ class ReservationDaoTest {
     @Test
     @DisplayName("데이터들이 잘 저장되는지 확인.")
     void saveReservation() {
-        Reservation reservation = new Reservation("범블비", LocalDate.now(), 1L);
+        Reservation reservation = new Reservation("범블비", LocalDate.now(), 1L, 1L);
         reservationDao.save(reservation);
 
-        Assertions.assertThat(reservation.getId()).isNotEqualTo(0);
+        Assertions.assertThat(reservation.getId()).isEqualTo(3);
     }
 
     @Test

@@ -12,15 +12,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.time.dao.TimeJdbcDao;
-import roomescape.time.domain.Time;
 import roomescape.reservation.dao.ReservationJdbcDao;
 import roomescape.reservation.domain.Reservation;
+import roomescape.theme.domain.Theme;
+import roomescape.time.dao.TimeJdbcDao;
+import roomescape.time.domain.Time;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationRepositoryTest {
+
     private final Reservation reservation = new Reservation(1L, "polla", LocalDate.now(),
-            new Time(1L, LocalTime.now()));
+            new Time(1L, LocalTime.now()), new Theme(1L, "pollaBang", "폴라 방탈출", "thumbnail"));
     private final Time time = new Time(1L, LocalTime.of(17, 3));
 
     @InjectMocks

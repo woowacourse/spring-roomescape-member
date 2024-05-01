@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import roomescape.reservation.domain.Reservation;
+import roomescape.theme.domain.Theme;
 import roomescape.time.domain.Time;
 
 @Component
@@ -34,7 +35,8 @@ public class ReservationJdbcDao implements ReservationDao {
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
                 .addValue(RESERVATION_NAME_ATTRIBUTE, reservation.getName())
                 .addValue(RESERVATION_DATE_ATTRIBUTE, reservation.getDate())
-                .addValue(TIME_TABLE_KEY, reservation.getReservationTime().getId());
+                .addValue(TIME_TABLE_KEY, reservation.getReservationTime().getId())
+                .addValue("theme_id", reservation.getTheme().getId());
 
         long id = jdbcInsert.executeAndReturnKey(sqlParameterSource).longValue();
         reservation.setId(id);
@@ -43,17 +45,24 @@ public class ReservationJdbcDao implements ReservationDao {
 
     @Override
     public List<Reservation> findAllOrderByDateAndReservationTime() {
-        String findAllReservationSql = "SELECT r.id, r.name, r.`date`, t.id AS timeId, t.start_at "
+        String findAllReservationSql = "SELECT r.id, r.name, r.date, "
+                + "t.id AS timeId, t.start_at, "
+                + "th.id AS themeId, th.name AS themeName, th.description, th.thumbnail "
                 + "FROM reservation r "
-                + "INNER JOIN reservation_time t "
-                + "ON r.time_id = t.id "
-                + "ORDER BY r.date ASC , t.`start_at` ASC";
+                + "INNER JOIN reservation_time t ON r.time_id = t.id "
+                + "INNER JOIN theme th ON r.theme_id = th.id "
+                + "ORDER BY r.date ASC, t.start_at ASC";
+
         return jdbcTemplate.query(findAllReservationSql, (resultSet, rowNum) -> new Reservation(
                 resultSet.getLong(TABLE_KEY),
                 resultSet.getString(RESERVATION_NAME_ATTRIBUTE),
                 resultSet.getDate(RESERVATION_DATE_ATTRIBUTE).toLocalDate(),
                 new Time(resultSet.getLong(TIME_TABLE_KEY),
-                        resultSet.getTime(TIME_TABLE_START_TIME_ATTRIBUTE).toLocalTime())));
+                        resultSet.getTime(TIME_TABLE_START_TIME_ATTRIBUTE).toLocalTime()),
+                new Theme(resultSet.getLong("themeId"),
+                        resultSet.getString("themeName"),
+                        resultSet.getString("description"),
+                        resultSet.getString("thumbnail"))));
     }
 
     @Override

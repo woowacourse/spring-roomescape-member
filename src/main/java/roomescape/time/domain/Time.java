@@ -22,6 +22,10 @@ public class Time {
         this.startAt = startAt;
     }
 
+    public Time(long id) {
+        this(id, null);
+    }
+
     public long getId() {
         return id;
     }

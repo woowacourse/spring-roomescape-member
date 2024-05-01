@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 import java.util.regex.Pattern;
 import roomescape.exception.BadRequestException;
+import roomescape.theme.domain.Theme;
 import roomescape.time.domain.Time;
 
 public class Reservation {
@@ -12,17 +13,19 @@ public class Reservation {
     private final String name;
     private final LocalDate date;
     private Time time;
+    private Theme theme;
 
-    public Reservation(String name, LocalDate date, long timeId) {
-        this(0, name, date, new Time(timeId, null));
+    public Reservation(String name, LocalDate date, long timeId, long themeId) {
+        this(0, name, date, new Time(timeId), new Theme(themeId));
         validate();
     }
 
-    public Reservation(long id, String name, LocalDate date, Time time) {
+    public Reservation(long id, String name, LocalDate date, Time time, Theme theme) {
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
+        this.theme = theme;
     }
 
     public boolean hasSameId(long id) {
@@ -45,6 +48,10 @@ public class Reservation {
         return time;
     }
 
+    public Theme getTheme() {
+        return theme;
+    }
+
     public void setId(long id) {
         this.id = id;
     }
@@ -60,7 +67,8 @@ public class Reservation {
         if (date.isBefore(LocalDate.now())) {
             throw new BadRequestException("지난 날짜의 예약을 시도하였습니다.");
         }
-        if (ILLEGAL_NAME_REGEX.matcher(name).matches()){
+        if (ILLEGAL_NAME_REGEX.matcher(name)
+                .matches()) {
             throw new BadRequestException("특수문자가 포함된 이름으로 예약을 시도하였습니다.");
         }
     }
