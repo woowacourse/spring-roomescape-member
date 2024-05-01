@@ -4,6 +4,7 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.dao.support.DataAccessUtils;
@@ -25,7 +26,7 @@ public class ReservationTimeDao implements ReservationTimeRepository {
 
     public ReservationTimeDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
-        this.jdbcInsert = new SimpleJdbcInsert(dataSource)
+        jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation_time")
                 .usingGeneratedKeyColumns("id");
     }
@@ -41,6 +42,12 @@ public class ReservationTimeDao implements ReservationTimeRepository {
         String sql = "SELECT * FROM reservation_time WHERE id = ?";
         List<ReservationTime> time = jdbcTemplate.query(sql, timeRowMapper, id);
         return DataAccessUtils.optionalResult(time);
+    }
+
+    @Override
+    public boolean existsByStartAt(final LocalTime startAt) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM reservation_time WHERE start_at = ?)";
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, Boolean.class, startAt));
     }
 
     @Override

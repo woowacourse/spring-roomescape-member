@@ -5,6 +5,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
+import roomescape.exception.DuplicatedReservationTimeException;
 import roomescape.exception.NotFoundTimeException;
 import roomescape.exception.ReservationReferencedTimeException;
 import roomescape.web.dto.ReservationTimeRequest;
@@ -26,6 +27,9 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponse saveReservationTime(ReservationTimeRequest request) {
+        if (reservationTimeRepository.existsByStartAt(request.startAt())) {
+            throw new DuplicatedReservationTimeException();
+        }
         ReservationTime reservationTime = request.toReservationTime();
         ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
         return ReservationTimeResponse.from(savedReservationTime);

@@ -135,7 +135,7 @@ class MissionStepTest extends IntegrationTest {
     @Test
     void 칠단계() {
         Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10:00");
+        params.put("startAt", "11:00");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
