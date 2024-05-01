@@ -3,6 +3,10 @@
 ### 사용자 예약
 - reservation 요청 응답페이지(templates/reservation.html)
 - (조회) 사용자는 날짜와 테마를 선택하면 예약 가능한 시간을 확인할 수 있습니다.
+  - 시간 예약 여부 조회 (startAt 정렬)
+    - 요청 : GET `/times/date=${date}&themeId=${themeId}`
+    - 응답 : json [{ startAt : '', timeId : '', alreadyBooked = ''}]
+
 - (추가) 사용자는 예약 가능한 시간을 확인하고, 원하는 시간에 예약을 할 수 있습니다.
   - 사용자의 이름으로 구분
 
