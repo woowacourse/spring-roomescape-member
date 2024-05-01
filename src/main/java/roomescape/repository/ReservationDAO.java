@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
+import roomescape.model.Theme;
 
 @Repository
 public class ReservationDAO implements ReservationRepository {
@@ -33,10 +34,14 @@ public class ReservationDAO implements ReservationRepository {
                     r.name,
                     r.date,
                     t.id as time_id,
-                    t.start_at as time_start_at
+                    t.start_at as time_start_at,
+                    th.id as theme_id,
+                    th.name as theme_name,
+                    th.description,
+                    th.thumbnail
                 from reservation as r
-                inner join reservation_time as t
-                on r.time_id = t.id
+                inner join reservation_time as t on r.time_id = t.id
+                inner join theme as th on r.theme_id = th.id
                 """;
         return jdbcTemplate.query(sql, (resultSet, rowNum) ->
                 new Reservation(
@@ -46,6 +51,12 @@ public class ReservationDAO implements ReservationRepository {
                         new ReservationTime(
                                 resultSet.getLong("time_id"),
                                 resultSet.getTime("time_start_at").toLocalTime()
+                        ),
+                        new Theme(
+                                resultSet.getLong("theme_id"),
+                                resultSet.getString("theme_name"),
+                                resultSet.getString("description"),
+                                resultSet.getString("thumbnail")
                         )
                 ));
     }
@@ -56,14 +67,15 @@ public class ReservationDAO implements ReservationRepository {
         parameters.put("name", reservation.getName());
         parameters.put("date", reservation.getDate());
         parameters.put("time_id", reservation.getTime().getId());
+        parameters.put("theme_id", reservation.getTheme().getId());
         Number newId = insertActor.executeAndReturnKey(parameters);
-        return new Reservation(newId.longValue(), reservation.getName(), reservation.getDate(), reservation.getTime());
+        return new Reservation(newId.longValue(), reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
     }
 
     @Override
-    public long deleteReservation(long id) {
+    public void deleteReservation(long id) {
         String sql = "delete from reservation where id = ?";
-        return jdbcTemplate.update(sql, id);
+        jdbcTemplate.update(sql, id);
     }
 
     @Override

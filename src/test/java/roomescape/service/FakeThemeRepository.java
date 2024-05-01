@@ -38,4 +38,12 @@ public class FakeThemeRepository implements ThemeRepository {
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 테마입니다."));
         themes.remove(targetTheme);
     }
+
+    @Override
+    public Theme findThemeById(long id) {
+        return themes.stream()
+                .filter(theme -> theme.getId() == id)
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 테마입니다."));
+    }
 }

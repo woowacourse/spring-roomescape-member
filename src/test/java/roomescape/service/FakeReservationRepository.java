@@ -2,6 +2,7 @@ package roomescape.service;
 
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
+import roomescape.model.Theme;
 import roomescape.repository.ReservationRepository;
 
 import java.time.LocalDate;
@@ -14,9 +15,11 @@ class FakeReservationRepository implements ReservationRepository {
 
     private List<Reservation> reservations = new ArrayList<>(List.of(
             new Reservation(1, "브라운", LocalDate.of(2030, 8, 5),
-                    new ReservationTime(2, LocalTime.of(11, 0))),
+                    new ReservationTime(2, LocalTime.of(11, 0)),
+                    new Theme(1, "에버", "공포", "공포.jpg")),
             new Reservation(1, "리사", LocalDate.of(2030, 8, 1),
-                    new ReservationTime(2, LocalTime.of(11, 0)))));
+                    new ReservationTime(2, LocalTime.of(11, 0)),
+                    new Theme(2, "배키", "스릴러", "스릴러.jpg"))));
 
     @Override
     public List<Reservation> getAllReservations() {
@@ -30,13 +33,12 @@ class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public long deleteReservation(long id) {
+    public void deleteReservation(long id) {
         Reservation foundReservation = reservations.stream()
                 .filter(reservation -> reservation.getId() == id)
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("아이디가 존재하지 않습니다."));
         reservations.remove(foundReservation);
-        return id;
     }
 
     @Override
