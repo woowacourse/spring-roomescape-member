@@ -1,5 +1,6 @@
 package roomescape.domain;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -53,6 +54,10 @@ public class JdbcThemeRepository implements ThemeRepository {
         } catch (Exception exception) {
             return Optional.empty();
         }
+    }
+
+    public List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, int limitCount) {
+        return null;
     }
 
     private RowMapper<Theme> getThemeRowMapper() {
