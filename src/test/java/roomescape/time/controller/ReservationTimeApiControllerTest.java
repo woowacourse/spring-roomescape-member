@@ -1,6 +1,7 @@
 package roomescape.time.controller;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -53,7 +54,7 @@ class ReservationTimeApiControllerTest {
         TimeResponse timeResponse = new TimeResponse(1L, timeRequest.startAt());
 
         doReturn(1L).when(reservationTimeService)
-                .save(timeRequest);
+                .save(any(TimeRequest.class));
 
         doReturn(timeResponse).when(reservationTimeService)
                 .findById(1L);

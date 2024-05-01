@@ -21,7 +21,7 @@ class ThemeRepositoryTest {
     @Test
     @DisplayName("id 로 엔티티를 찾는다.")
     void findByIdTest() {
-        Theme theme = new Theme(new Name("kaaaaki"), "남자", "https://i.pinimg.com/236x.jpg");
+        Theme theme = new Theme(new Name("공포"), "무서운 테마", "https://i.pinimg.com/236x.jpg");
         Long themeId = themeRepository.save(theme);
         Theme findTheme = themeRepository.findById(themeId).get();
 
@@ -31,8 +31,8 @@ class ThemeRepositoryTest {
     @Test
     @DisplayName("전체 엔티티를 조회한다.")
     void findAllTest() {
-        Theme theme1 = new Theme(new Name("kaaaaki"), "남자", "https://i.pinimg.com/236x.jpg");
-        Theme theme2 = new Theme(new Name("hogi"), "여자", "https://i.pinimg.com/123x.jpg");
+        Theme theme1 = new Theme(new Name("공포"), "무서운 테마", "https://i.pinimg.com/236x.jpg");
+        Theme theme2 = new Theme(new Name("SF"), "미래 테마", "https://i.pinimg.com/123x.jpg");
         themeRepository.save(theme1);
         themeRepository.save(theme2);
         List<Theme> themes = themeRepository.findAll();
@@ -43,7 +43,7 @@ class ThemeRepositoryTest {
     @Test
     @DisplayName("id를 받아 삭제한다.")
     void deleteTest() {
-        Theme theme = new Theme(new Name("kaaaaki"), "남자", "https://i.pinimg.com/236x.jpg");
+        Theme theme = new Theme(new Name("공포"), "무서운 테마", "https://i.pinimg.com/236x.jpg");
         Long themeId = themeRepository.save(theme);
         themeRepository.delete(themeId);
         List<Theme> themes = themeRepository.findAll();
