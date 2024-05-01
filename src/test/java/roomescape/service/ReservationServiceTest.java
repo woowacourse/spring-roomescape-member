@@ -4,21 +4,32 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Arrays;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.dto.ReservationAddRequest;
 
 class ReservationServiceTest {
 
+    ReservationService reservationService;
+    FakeReservationDao fakeReservationDao;
+    FakeReservationTimeDao fakeReservationTimeDao;
+    FakeThemeDao fakeThemeDao;
+
+    @BeforeEach
+    void setUp() {
+        fakeReservationDao = new FakeReservationDao();
+        fakeReservationTimeDao = new FakeReservationTimeDao();
+        fakeThemeDao = new FakeThemeDao();
+        reservationService = new ReservationService(fakeReservationDao, fakeReservationTimeDao, fakeThemeDao);
+    }
+
     @DisplayName("없는 id의 예약을 삭제하면 예외를 발생합니다.")
     @Test
     void should_false_when_remove_reservation_with_non_exist_id() {
-        ReservationService reservationService = new ReservationService(new FakeReservationDao(),
-                new FakeReservationTimeDao());
-
         assertThatThrownBy(() -> reservationService.removeReservation(1L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 id를 가진 예약이 존재하지 않습니다.");
@@ -27,11 +38,8 @@ class ReservationServiceTest {
     @DisplayName("존재하지 않는 예약시각으로 예약 시 예외가 발생합니다.")
     @Test
     void should_throw_IllegalArgumentException_when_reserve_non_exist_time() {
-        ReservationService reservationService = new ReservationService(new FakeReservationDao(),
-                new FakeReservationTimeDao());
-
         LocalDate reservationDate = LocalDate.now().plusDays(2L);
-        ReservationAddRequest reservationAddRequest = new ReservationAddRequest(reservationDate, "dodo", 1L);
+        ReservationAddRequest reservationAddRequest = new ReservationAddRequest(reservationDate, "dodo", 1L, 1L);
 
         assertThatThrownBy(() -> reservationService.addReservation(reservationAddRequest))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -42,12 +50,16 @@ class ReservationServiceTest {
     @Test
     void should_throw_IllegalArgumentException_when_reserve_date_and_time_duplicated() {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(12, 0));
-        ReservationService reservationService = new ReservationService(new FakeReservationDao(
-                Arrays.asList(new Reservation(1L, "lib", LocalDate.now().plusDays(1), reservationTime))
-        ),
-                new FakeReservationTimeDao(Arrays.asList(reservationTime)));
+        Theme theme = new Theme(1L, "dummy", "description", "url");
+
+        Reservation reservation = new Reservation(1L, "lib", LocalDate.now().plusDays(1), reservationTime, theme);
+        fakeReservationDao.insert(reservation);
+
+        Reservation conflictReservation = new Reservation(2L, "lib", LocalDate.now().plusDays(1), reservationTime,
+                theme);
+
         ReservationAddRequest reservationAddRequest = new ReservationAddRequest(LocalDate.now().plusDays(1), "dodo",
-                1L);
+                1L, 1L);
 
         assertThatThrownBy(() -> reservationService.addReservation(reservationAddRequest))
                 .isInstanceOf(IllegalArgumentException.class)

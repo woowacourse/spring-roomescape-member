@@ -25,8 +25,10 @@ public class ReservationControllerTest {
     @BeforeEach
     void setUp() {
         jdbcTemplate.update("insert into reservation_time values(1,'10:00')");
+        jdbcTemplate.update("insert into theme values(1,'리비', '리비 설명', 'url')");
         LocalDate reservationDate = LocalDate.now().plusDays(2);
-        jdbcTemplate.update("insert into reservation (name, date, time_id) values(?,?,?)", "브라운", reservationDate, 1);
+        jdbcTemplate.update("insert into reservation (name, date, time_id, theme_id) values(?,?,?,?)", "브라운",
+                reservationDate, 1, 1);
     }
 
     @AfterEach
@@ -50,7 +52,8 @@ public class ReservationControllerTest {
         ReservationAddRequest reservationAddRequest = new ReservationAddRequest(
                 LocalDate.now().plusDays(3L),
                 "브라운",
-                1L);
+                1L
+                , 1L);
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservationAddRequest)
@@ -65,7 +68,8 @@ public class ReservationControllerTest {
         ReservationAddRequest reservationAddRequest = new ReservationAddRequest(
                 LocalDate.now().plusDays(3L),
                 null,
-                1L);
+                1L
+                , 1L);
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservationAddRequest)
