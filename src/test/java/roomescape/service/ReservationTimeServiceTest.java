@@ -80,8 +80,20 @@ class ReservationTimeServiceTest {
     void delete_reservation_time() {
         long timeId = 1L;
         given(reservationRepository.hasReservationOf(timeId)).willReturn(false);
+        given(reservationTimeRepository.isExistTimeOf(timeId)).willReturn(true);
 
         reservationTimeService.deleteReservationTime(timeId);
         verify(reservationTimeRepository, times(1)).deleteReservationTimeById(timeId);
+    }
+
+    @DisplayName("존재하지 않는 아이디를 삭제하려고 하면 예외가 발생한다.")
+    @Test
+    void throw_exception_when_not_exist_id_delete() {
+        long timeId = 1L;
+        given(reservationTimeRepository.isExistTimeOf(timeId)).willReturn(false);
+
+        assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(timeId))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("존재하지 않는 아이디입니다.");
     }
 }
