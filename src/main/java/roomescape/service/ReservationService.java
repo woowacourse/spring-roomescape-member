@@ -29,6 +29,9 @@ public class ReservationService {
     }
 
     public void deleteReservation(long id) {
+        if (!reservationRepository.isExistReservationOf(id)) {
+            throw new IllegalArgumentException("존재하지 않는 아이디입니다.");
+        }
         reservationRepository.deleteReservationById(id);
     }
 }

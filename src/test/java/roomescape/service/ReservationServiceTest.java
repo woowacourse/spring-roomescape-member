@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -45,5 +46,16 @@ class ReservationServiceTest {
 
         reservationService.createReservation(requestDto);
         verify(reservationRepository, times(1)).insertReservation(requestDto.toReservation());
+    }
+
+    @DisplayName("존재하지 않는 아이디를 삭제하려고 하면 예외가 발생한다.")
+    @Test
+    void throw_exception_when_not_exist_id_delete() {
+        long id = 1L;
+        given(reservationRepository.isExistReservationOf(id)).willReturn(false);
+
+        assertThatThrownBy(() -> reservationService.deleteReservation(id))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("존재하지 않는 아이디입니다.");
     }
 }
