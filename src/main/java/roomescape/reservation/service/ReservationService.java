@@ -13,25 +13,33 @@ import roomescape.reservation.model.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.model.ReservationTime;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
+import roomescape.theme.model.Theme;
+import roomescape.theme.repository.ThemeRepository;
 
 @Service
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
 
     public ReservationService(final ReservationRepository reservationRepository,
-                              final ReservationTimeRepository reservationTimeRepository) {
+                              final ReservationTimeRepository reservationTimeRepository,
+                              final ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
     }
 
     public CreateReservationResponse createReservation(final CreateReservationRequest createReservationRequest) {
         ReservationTime reservationTime = reservationTimeRepository.findById(createReservationRequest.timeId())
                 .orElseThrow(() -> new NoSuchElementException("해당하는 예약 시간이 존재하지 않습니다."));
 
+        Theme theme = themeRepository.findById(createReservationRequest.themeId())
+                .orElseThrow(() -> new NoSuchElementException("해당하는 테마가 존재하지 않습니다."));
+
         validateReservationDateTime(createReservationRequest.date(), reservationTime.getTime());
-        Reservation reservation = createReservationRequest.toReservation(reservationTime);
+        Reservation reservation = createReservationRequest.toReservation(reservationTime, theme);
         // TODO: 추가한 예외 처리 테스트 작성하기
         if (reservationRepository.existsByDateAndTime(reservation.getDate(), reservationTime.getId())) {
             throw new IllegalStateException("동일한 시간의 예약이 존재합니다.");

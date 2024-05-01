@@ -24,6 +24,7 @@
   - [x] 테마 추가 기능 구현
   - [x] 테마 삭제 기능 구현
   - [x] `/admin/theme` 요청 시 `templates/admin/theme.html` 반환
-- [ ] 관리자 - 저장된 예약의 테마 변경 기능 추가(예약 관리)
+- [x] 관리자 - 저장된 예약의 테마 변경 기능 추가(예약 관리)
   - [x] 방탈출 예약 페이지를 `templates/admin/reservation-new.html`로 변경
-- [ ] 프론트 코드 변경 - 예약 목록 조회 API 호출 후 렌더링. response 명세에 맞춰 값 설정
+  - [x] 예약 시 테마 기능 추가
+- [x] ~~프론트 코드 변경 - 예약 목록 조회 API 호출 후 렌더링. response 명세에 맞춰 값 설정~~

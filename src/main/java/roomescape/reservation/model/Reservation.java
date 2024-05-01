@@ -4,18 +4,25 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Objects;
 import roomescape.reservationtime.model.ReservationTime;
+import roomescape.theme.model.Theme;
 
 public class Reservation {
     private final Long id;
     private final String name;
     private final LocalDate date;
     private final ReservationTime reservationTime;
+    private final Theme theme;
 
-    public Reservation(final Long id, final String name, final LocalDate date, final Long timeId, final LocalTime time) {
+    public Reservation(final Long id,
+                       final String name,
+                       final LocalDate date,
+                       final ReservationTime reservationTime,
+                       final Theme theme) {
         this.id = id;
         this.name = name;
         this.date = date;
-        this.reservationTime = new ReservationTime(timeId, time);
+        this.reservationTime = reservationTime;
+        this.theme = theme;
     }
 
     public Long getId() {
@@ -32,6 +39,10 @@ public class Reservation {
 
     public ReservationTime getReservationTime() {
         return reservationTime;
+    }
+
+    public Theme getTheme() {
+        return theme;
     }
 
     @Override

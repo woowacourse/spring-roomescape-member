@@ -18,6 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.reservation.dto.request.CreateReservationRequest;
 import roomescape.reservation.dto.response.CreateReservationResponse;
 import roomescape.reservation.dto.response.FindReservationResponse;
+import roomescape.reservation.dto.response.FindThemeOfReservationResponse;
 import roomescape.reservation.dto.response.FindTimeOfReservationsResponse;
 import roomescape.reservation.model.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
@@ -42,7 +43,7 @@ class ReservationServiceTest extends DummyDataFixture {
     void createReservation() {
         // given
         CreateReservationRequest createReservationRequest = new CreateReservationRequest(
-                LocalDate.of(3000, 10, 10), "포비", 1L);
+                LocalDate.of(3000, 10, 10), "포비", 1L, 1L);
 
         // stub
         Mockito.when(reservationRepository.save(any(Reservation.class))).thenReturn(any(Reservation.class));
@@ -62,7 +63,7 @@ class ReservationServiceTest extends DummyDataFixture {
     void createReservation_ifNotExist_throwException() {
         // given
         CreateReservationRequest createReservationRequest = new CreateReservationRequest(
-                LocalDate.of(10, 10, 10), "포비", 1L);
+                LocalDate.of(10, 10, 10), "포비", 1L, 1L);
 
         // stub
         Mockito.when(reservationTimeRepository.findById(1L)).thenReturn(Optional.empty());
@@ -82,8 +83,12 @@ class ReservationServiceTest extends DummyDataFixture {
 
         // when & then
         assertThat(reservationService.getReservations()).containsExactly(
-                new FindReservationResponse(1L, "아서", "2024-04-24", new FindTimeOfReservationsResponse(1L, "15:40")),
-                new FindReservationResponse(2L, "몰리", "2024-04-23", new FindTimeOfReservationsResponse(2L, "10:00"))
+                new FindReservationResponse(1L, "아서", "2024-04-24",
+                        new FindTimeOfReservationsResponse(1L, "15:40"),
+                        new FindThemeOfReservationResponse(1L, "공포", "아아", "ㅠㅠ")),
+                new FindReservationResponse(2L, "몰리", "2024-04-23",
+                        new FindTimeOfReservationsResponse(2L, "10:00"),
+                        new FindThemeOfReservationResponse(1L, "공포", "아아", "ㅠㅠ"))
         );
     }
 
@@ -97,9 +102,11 @@ class ReservationServiceTest extends DummyDataFixture {
         Mockito.when(reservationRepository.findById(timeId))
                 .thenReturn(Optional.ofNullable(super.getReservationById(timeId)));
 
-        // when & then
+        // when & then // TODO: fixture 사용해 변경
         assertThat(reservationService.getReservation(timeId)).isEqualTo(
-                new FindReservationResponse(1L, "아서", "2024-04-24", new FindTimeOfReservationsResponse(1L, "15:40")));
+                new FindReservationResponse(1L, "아서", "2024-04-24",
+                        new FindTimeOfReservationsResponse(1L, "15:40"),
+                        new FindThemeOfReservationResponse(1L, "공포", "아아", "ㅠㅠ")));
     }
 
     @Test

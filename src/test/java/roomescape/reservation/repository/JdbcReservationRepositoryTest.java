@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.reservation.model.Reservation;
+import roomescape.reservationtime.model.ReservationTime;
+import roomescape.theme.model.Theme;
 import roomescape.util.DummyDataFixture;
 
 @SpringBootTest
@@ -23,8 +25,15 @@ class JdbcReservationRepositoryTest extends DummyDataFixture {
     @Test
     @DisplayName("Reservation를 저장한 후 저장한 row의 id값을 반환한다.")
     void save() {
-        Reservation newReservation = new Reservation(null, "포비", LocalDate.of(2024, 4, 23), 2L, LocalTime.of(10, 00));
-        assertThat(jdbcReservationRepository.save(newReservation)).isEqualTo(new Reservation(3L, "포비", LocalDate.of(2024, 4, 23), 2L, LocalTime.of(10, 00)));
+        ReservationTime reservationTime = new ReservationTime(2L, LocalTime.of(10, 00));
+        Theme theme = new Theme(1L, "공포", "아아", "ㅠㅠ");
+        Reservation newReservation = new Reservation(null, "포비", LocalDate.of(2024, 4, 23),
+                reservationTime,
+                theme);
+        assertThat(jdbcReservationRepository.save(newReservation))
+                .isEqualTo(new Reservation(3L, "포비", LocalDate.of(2024, 4, 23),
+                        reservationTime,
+                        theme));
     }
 
     @Test
@@ -57,24 +66,35 @@ class JdbcReservationRepositoryTest extends DummyDataFixture {
     @Test
     @DisplayName("날짜와 시간 컬럼의 값이 동일할 경우 참을 반환한다..")
     void existByReservation_whenSameName() {
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(15, 40));
+        Theme theme = new Theme(1L, "공포", "아아", "ㅠㅠ");
         Reservation reservation = new Reservation(null, "아서", LocalDate.of(2024, 04, 24),
-                1L, LocalTime.of(15, 40));
-        assertThat(jdbcReservationRepository.existsByDateAndTime(reservation.getDate(), reservation.getReservationTime().getId())).isTrue();
+                reservationTime, theme);
+        assertThat(jdbcReservationRepository.existsByDateAndTime(reservation.getDate(),
+                reservation.getReservationTime().getId())).isTrue();
     }
 
     @Test
     @DisplayName("날짜와 시간 컬럼의 값이 동일할 경우 참을 반환한다..")
     void existByReservation_whenNotSameName() {
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(15, 40));
+        Theme theme = new Theme(1L, "공포", "아아", "ㅠㅠ");
         Reservation reservation = new Reservation(null, "마크", LocalDate.of(2024, 04, 24),
-                1L, LocalTime.of(15, 40));
-        assertThat(jdbcReservationRepository.existsByDateAndTime(reservation.getDate(), reservation.getReservationTime().getId())).isTrue();
+                reservationTime, theme);
+        assertThat(jdbcReservationRepository.existsByDateAndTime(
+                reservation.getDate(),
+                reservation.getReservationTime().getId())).isTrue();
     }
 
     @Test
     @DisplayName("날짜 또는 시간 중 하나라도 다를 경우 거짓을 반환한다.")
     void existByReservation_isFalse() {
+        ReservationTime reservationTime = new ReservationTime(2L, LocalTime.of(10, 00));
+        Theme theme = new Theme(1L, "공포", "아아", "ㅠㅠ");
         Reservation reservation = new Reservation(null, "아서", LocalDate.of(2024, 05, 24),
-                1L, LocalTime.of(15, 40));
-        assertThat(jdbcReservationRepository.existsByDateAndTime(reservation.getDate(), reservation.getReservationTime().getId())).isFalse();
+                reservationTime, theme);
+        assertThat(jdbcReservationRepository.existsByDateAndTime(
+                reservation.getDate(),
+                reservation.getReservationTime().getId())).isFalse();
     }
 }
