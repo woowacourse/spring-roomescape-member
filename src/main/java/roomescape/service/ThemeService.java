@@ -32,21 +32,26 @@ public class ThemeService {
                 .toList();
     }
 
-    public void deleteTheme(final Long id) {
-        final boolean isReservationExist = reservationRepository.existByThemeId(id);
-        if (isReservationExist) {
-            throw new IllegalArgumentException("예약이 존재하는 테마입니다.");
-        }
-        themeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
-
-        themeRepository.deleteById(id);
-    }
-
     public List<ThemeResponse> getPopularThemes(final LocalDate localDate) {
         return themeRepository.findOneWeekOrderByReservationCount(localDate, 10)
                 .stream()
                 .map(ThemeResponse::new)
                 .toList();
+    }
+
+    public void deleteTheme(final Long id) {
+        validateDeleteTheme(id);
+
+        themeRepository.deleteById(id);
+    }
+
+    private void validateDeleteTheme(final Long id) {
+        if (reservationRepository.existByThemeId(id)) {
+            throw new IllegalArgumentException("예약이 존재하는 테마입니다.");
+        }
+
+        if (themeRepository.findById(id).isEmpty()) {
+            throw new IllegalArgumentException("존재하지 않는 테마입니다.");
+        }
     }
 }

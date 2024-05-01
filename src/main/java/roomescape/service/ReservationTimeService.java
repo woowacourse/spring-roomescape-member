@@ -55,18 +55,20 @@ public class ReservationTimeService {
     }
 
     private void validateDeleteTime(final Long id) {
-        reservationTimeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
+        if (reservationTimeRepository.findById(id).isEmpty()) {
+            throw new IllegalArgumentException("존재하지 않는 시간입니다.");
+        }
 
-        final boolean existByTimeId = reservationRepository.existByTimeId(id);
-        if (existByTimeId) {
+        if (reservationRepository.existByTimeId(id)) {
             throw new IllegalArgumentException("예약이 존재하는 시간입니다.");
         }
     }
 
     public List<ReservationTimeBookedResponse> getTimesWithBooked(final ReservationTimeBookedRequest reservationTimeBookedRequest) {
-        themeRepository.findById(reservationTimeBookedRequest.themeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
+        if (themeRepository.findById(reservationTimeBookedRequest.themeId()).isEmpty()) {
+            throw new IllegalArgumentException("존재하지 않는 테마입니다.");
+        }
+
         return reservationTimeRepository.findTimesWithBooked(reservationTimeBookedRequest.date(), reservationTimeBookedRequest.themeId());
     }
 }

@@ -80,10 +80,10 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
     @Override
     public List<ReservationTimeBookedResponse> findTimesWithBooked(final LocalDate date, final Long themeId) {
         final String sql = """
-                SELECT 
-                    rt.start_at, 
-                    rt.id, 
-                    r.id is not null AS already_booked        
+                SELECT
+                    rt.start_at,
+                    rt.id,
+                    r.id is not null AS already_booked
                 FROM reservation_times AS rt
                 LEFT JOIN
                     (SELECT id, time_id
