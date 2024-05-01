@@ -6,8 +6,10 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
 
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Time;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -51,6 +53,13 @@ public class ReservationTimeRepository {
         String sql = "SELECT id, start_at FROM reservation_time where start_at = ?";
         List<ReservationTime> reservationTimes = jdbcTemplate.query(sql, reservationTimeRowMapper, Time.valueOf(startAt));
         return reservationTimes.isEmpty() ? Optional.empty() : Optional.of(reservationTimes.get(0));
+    }
+
+    public List<ReservationTime> findReservedBy(LocalDate date, Long themeId) {
+        String sql = "SELECT rt.id, rt.start_at FROM reservation_time as rt INNER JOIN reservation as r " +
+                "ON rt.id = r.reservation_time_id " +
+                "WHERE r.date = ? AND r.theme_id = ?";
+        return jdbcTemplate.query(sql, reservationTimeRowMapper, Date.valueOf(date), themeId);
     }
 
     public List<ReservationTime> findAll() {
