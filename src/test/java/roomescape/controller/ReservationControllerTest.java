@@ -80,7 +80,8 @@ class ReservationControllerTest extends ControllerTest {
         ResultActions result = SimpleMockMvc.post(mockMvc, "/reservations", content);
 
         result.andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$").value("yyyy-MM-dd 형식이어야 합니다."))
+                .andExpect(jsonPath("$.fieldErrors[0].field").value("date"))
+                .andExpect(jsonPath("$.fieldErrors[0].rejectedValue").value("2024_04_30"))
                 .andDo(print());
     }
 
@@ -91,7 +92,8 @@ class ReservationControllerTest extends ControllerTest {
         ResultActions result = SimpleMockMvc.post(mockMvc, "/reservations", content);
 
         result.andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$").value("잘못된 날짜입니다."))
+                .andExpect(jsonPath("$.fieldErrors[0].field").value("date"))
+                .andExpect(jsonPath("$.fieldErrors[0].rejectedValue").value("2024-04-70"))
                 .andDo(print());
     }
 }

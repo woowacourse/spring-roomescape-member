@@ -1,30 +1,26 @@
 package roomescape.dto.reservation;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
-import java.util.Objects;
-import java.util.regex.Pattern;
-
 import roomescape.application.dto.ReservationCreationRequest;
+import roomescape.global.validator.ValidLocalDate;
 
-public record ReservationRequest(String name, String date, Long timeId) {
-    private static final Pattern DATE_FORMAT = Pattern.compile("^\\d{4}-\\d{2}-\\d{2}$");
+public record ReservationRequest(
+        @NotBlank(message = "예약자명은 필수입니다")
+        @Size(min = 2, max = 10, message = "이름 길이는 2글자 이상, 10글자 이하여야 합니다.")
+        String name,
 
-    public ReservationRequest {
-        Objects.requireNonNull(name, "예약자명은 필수입니다.");
-        Objects.requireNonNull(date, "예약날짜는 필수입니다.");
-        Objects.requireNonNull(timeId, "예약시간은 필수입니다.");
+        @NotNull(message = "예약날짜는 필수입니다.")
+        @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "yyyy-MM-dd 형식이어야 합니다.")
+        @ValidLocalDate
+        String date,
 
-        if (!DATE_FORMAT.matcher(date).matches()) {
-            throw new IllegalArgumentException("yyyy-MM-dd 형식이어야 합니다.");
-        }
-
-        try {
-            LocalDate.parse(date);
-        } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("잘못된 날짜입니다.");
-        }
-    }
+        @NotNull
+        Long timeId
+) {
 
     public ReservationCreationRequest toReservationCreationRequest() {
         return new ReservationCreationRequest(name, LocalDate.parse(date), timeId);
