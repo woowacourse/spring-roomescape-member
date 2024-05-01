@@ -13,8 +13,16 @@ public class ReservationTime {
     }
 
     public ReservationTime(Long id, LocalTime startAt) {
+        validate(startAt);
+
         this.id = id;
         this.startAt = startAt;
+    }
+
+    private void validate(LocalTime startAt) {
+        if (startAt == null) {
+            throw new IllegalArgumentException("startAt은 필수 값입니다.");
+        }
     }
 
     @Override

@@ -2,6 +2,7 @@ package roomescape.domain;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import org.springframework.util.Assert;
 
 public class Reservation {
 
@@ -15,10 +16,24 @@ public class Reservation {
     }
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time) {
+        validate(name, date, time);
+
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
+    }
+
+    private void validate(String name, LocalDate date, ReservationTime time) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("name은 필수 값입니다.");
+        }
+        if (date == null) {
+            throw new IllegalArgumentException("date는 필수 값입니다.");
+        }
+        if (time == null) {
+            throw new IllegalArgumentException("time은 필수 값입니다.");
+        }
     }
 
     @Override
