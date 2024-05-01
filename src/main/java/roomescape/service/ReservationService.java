@@ -8,10 +8,10 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
-import roomescape.exception.DuplicatedReservationException;
-import roomescape.exception.InvalidDateTimeReservationException;
-import roomescape.exception.NotFoundReservationException;
-import roomescape.exception.NotFoundTimeException;
+import roomescape.exception.reservation.DuplicatedReservationException;
+import roomescape.exception.reservation.InvalidDateTimeReservationException;
+import roomescape.exception.reservation.NotFoundReservationException;
+import roomescape.exception.time.NotFoundTimeException;
 import roomescape.web.dto.ReservationRequest;
 import roomescape.web.dto.ReservationResponse;
 
