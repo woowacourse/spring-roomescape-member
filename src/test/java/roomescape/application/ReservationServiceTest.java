@@ -3,7 +3,6 @@ package roomescape.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
-import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -35,9 +34,6 @@ class ReservationServiceTest {
 
     @Autowired
     private ThemeRepository themeRepository;
-
-    @Autowired
-    private Clock clock;
 
     @DisplayName("정상적인 예약 요청을 받아서 저장한다.")
     @Test
