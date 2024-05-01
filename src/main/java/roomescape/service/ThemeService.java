@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
+import roomescape.web.dto.ThemeRequest;
 import roomescape.web.dto.ThemeResponse;
 
 @Service
@@ -19,5 +20,11 @@ public class ThemeService {
         return themes.stream()
                 .map(ThemeResponse::from)
                 .toList();
+    }
+
+    public ThemeResponse saveTheme(ThemeRequest request) {
+        Theme theme = request.toTheme();
+        Theme savedTheme = themeRepository.save(theme);
+        return ThemeResponse.from(savedTheme);
     }
 }
