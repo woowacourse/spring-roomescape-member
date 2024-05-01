@@ -46,11 +46,7 @@ public class ReservationController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
-        try {
-            reservationService.delete(id);
-        } catch (NoSuchElementException e) {
-            throw new IllegalArgumentException("존재하지 않는 예약입니다.");
-        }
+        reservationService.delete(id);
         return ResponseEntity.noContent()
                 .build();
     }

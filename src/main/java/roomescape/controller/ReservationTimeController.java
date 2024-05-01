@@ -43,11 +43,7 @@ public class ReservationTimeController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
-        try {
-            reservationTimeService.delete(id);
-        } catch (NoSuchElementException e) {
-            throw new IllegalArgumentException("존재하지 않는 예약 시간입니다.");
-        }
+        reservationTimeService.delete(id);
         return ResponseEntity.noContent()
                 .build();
     }

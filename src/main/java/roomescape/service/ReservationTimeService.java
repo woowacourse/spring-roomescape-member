@@ -32,7 +32,7 @@ public class ReservationTimeService {
 
     public void delete(Long id) {
         if (reservationTimeRepository.deleteById(id) == 0) {
-            throw new NoSuchElementException("삭제할 예약 시간이 존재하지 않습니다");
+            throw new IllegalArgumentException("삭제할 예약 시간이 존재하지 않습니다");
         }
     }
 }
