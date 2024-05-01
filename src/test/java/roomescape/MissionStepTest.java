@@ -68,7 +68,7 @@ public class MissionStepTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0)); // 아직 생성 요청이 없으니 Controller에서 임의로 넣어준 Reservation 갯수 만큼 검증하거나 0개임을 확인하세요.
+                .body("size()", is(1)); // 아직 생성 요청이 없으니 Controller에서 임의로 넣어준 Reservation 갯수 만큼 검증하거나 0개임을 확인하세요.
     }
 
     @DisplayName("h2 데이터베이스가 연결되었는지 확인한다.")
@@ -86,23 +86,23 @@ public class MissionStepTest {
     @Test
     void 칠단계() {
         Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10:00");
+        params.put("startAt", "10:10");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         RestAssured.given().log().all()
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", is(2));
 
         RestAssured.given().log().all()
-                .when().delete("/times/1")
+                .when().delete("/times/2")
                 .then().log().all()
                 .statusCode(204);
     }
@@ -114,30 +114,20 @@ public class MissionStepTest {
         reservation.put("name", "브라운");
         reservation.put("date", "2999-12-31");
         reservation.put("timeId", 1);
-
-        Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10:00");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(200);
+        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200);
-
+                .statusCode(201);
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", is(2));
 
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
@@ -225,6 +215,7 @@ public class MissionStepTest {
         reservation.put("name", "브라운");
         reservation.put("date", LocalDate.now().toString());
         reservation.put("timeId", 1); // 10:00
+        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -242,6 +233,7 @@ public class MissionStepTest {
         reservation.put("name", "포케");
         reservation.put("date", "2099-04-30");
         reservation.put("timeId", 1); // 10:00
+        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -309,5 +301,51 @@ public class MissionStepTest {
                 .then().log().all()
                 .statusCode(400)
                 .body(containsString("[ERROR] 예약이 등록된 시간은 제거할 수 없습니다"));
+    }
+
+    @DisplayName("theme 페이지 URL 요청이 올바르게 연결된다.")
+    @Test
+    void given_when_GetThemePage_then_statusCodeIsOkay() {
+        RestAssured.given().log().all()
+                .when().get("/admin/theme")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @DisplayName("theme 목록 조회 요청이 올바르게 동작한다.")
+    @Test
+    void given_when_GetThemes_then_statusCodeIsOkay() {
+        RestAssured.given().log().all()
+                .when().get("/themes")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(1));
+    }
+
+    @DisplayName("theme 등록 및 삭제 요청이 올바르게 동작한다.")
+    @Test
+    void given_themeRequest_when_postAndDeleteTheme_then_statusCodeIsOkay() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "우테코 레벨 1 탈출");
+        params.put("description", "우테코 레벨 1 탈출하는 내용");
+        params.put("thumbnail", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .when().get("/themes")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(2));
+
+        RestAssured.given().log().all()
+                .when().delete("/themes/2")
+                .then().log().all()
+                .statusCode(204);
     }
 }

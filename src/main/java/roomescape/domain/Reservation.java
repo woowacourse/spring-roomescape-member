@@ -7,12 +7,14 @@ public class Reservation {
     private final String name;
     private final LocalDate date;
     private final TimeSlot time;
+    private final Theme theme;
 
-    public Reservation(Long id, String name, LocalDate date, TimeSlot time) {
+    public Reservation(Long id, String name, LocalDate date, TimeSlot time, Theme theme) {
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
+        this.theme = theme;
 
         isValid();
     }
@@ -54,5 +56,9 @@ public class Reservation {
 
     public TimeSlot getTime() {
         return time;
+    }
+
+    public Theme getTheme() {
+        return theme;
     }
 }

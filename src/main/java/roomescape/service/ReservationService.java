@@ -3,10 +3,12 @@ package roomescape.service;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
+import roomescape.domain.Theme;
 import roomescape.domain.TimeSlot;
 import roomescape.domain.dto.ReservationRequest;
 import roomescape.domain.dto.ReservationResponse;
 import roomescape.repository.ReservationDAO;
+import roomescape.repository.ThemeDao;
 import roomescape.repository.TimeDAO;
 
 import java.time.LocalDate;
@@ -16,10 +18,13 @@ import java.util.List;
 public class ReservationService {
     private final TimeDAO timeDAO;
     private final ReservationDAO reservationDAO;
+    private final ThemeDao themeDao;
 
-    public ReservationService(TimeDAO timeDAO, ReservationDAO reservationDAO) {
+    public ReservationService(final
+                              TimeDAO timeDAO, final ReservationDAO reservationDAO, final ThemeDao themeDao) {
         this.timeDAO = timeDAO;
         this.reservationDAO = reservationDAO;
+        this.themeDao = themeDao;
     }
 
     public List<ReservationResponse> findEntireReservationList() {
@@ -30,11 +35,11 @@ public class ReservationService {
     }
 
     public ReservationResponse create(ReservationRequest reservationRequest) {
-        TimeSlot timeSlot;
-        timeSlot = getTimeSlot(reservationRequest);
+        TimeSlot timeSlot = getTimeSlot(reservationRequest);
+        Theme theme = themeDao.findById(reservationRequest.themeId());
         validate(reservationRequest.date(), timeSlot);
         Long reservationId = reservationDAO.create(reservationRequest);
-        Reservation reservation = reservationRequest.toEntity(reservationId, timeSlot);
+        Reservation reservation = reservationRequest.toEntity(reservationId, timeSlot, theme);
         return ReservationResponse.from(reservation);
     }
 
@@ -58,7 +63,7 @@ public class ReservationService {
             throw new IllegalArgumentException("[ERROR] 예약이 찼어요 ㅜㅜ 죄송해요~~");
         }
     }
-    
+
     public void delete(Long id) {
         reservationDAO.delete(id);
     }

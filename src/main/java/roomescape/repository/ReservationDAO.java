@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
+import roomescape.domain.Theme;
 import roomescape.domain.TimeSlot;
 import roomescape.domain.dto.ReservationRequest;
 
@@ -22,7 +23,8 @@ public class ReservationDAO {
                     resultSet.getLong("id"),
                     resultSet.getString("name"),
                     LocalDate.parse(resultSet.getString("date")),
-                    new TimeSlot(resultSet.getLong("time_id"), resultSet.getString("time_value"))
+                    new TimeSlot(resultSet.getLong("time_id"), resultSet.getString("time_value")),
+                    new Theme(resultSet.getLong("theme_id"), resultSet.getString("theme_name"), resultSet.getString("theme_description"), resultSet.getString("theme_thumbnail"))
             );
 
 
@@ -30,20 +32,26 @@ public class ReservationDAO {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
-                .usingColumns("name", "date", "time_id")
+                .usingColumns("name", "date", "time_id", "theme_id")
                 .usingGeneratedKeyColumns("id");
     }
 
+    //TODO: findall로 변경
     public List<Reservation> read() {
         String sql = """
                 SELECT
-                r.id as reservation_id,
-                r.name,
-                r.date,
-                t.id as time_id,
-                t.start_at as time_value
-                FROM reservation as r inner join reservation_time as t
-                on r.time_id = t.id
+                    r.id as reservation_id,
+                    r.name,
+                    r.date,
+                    t.id as time_id,
+                    t.start_at as time_value,
+                    th.id as theme_id,
+                    th.name as theme_name,
+                    th.description as theme_description,
+                    th.thumbnail as theme_thumbnail
+                FROM reservation as r
+                INNER JOIN reservation_time as t ON r.time_id = t.id
+                INNER JOIN theme as th ON r.theme_id = th.id;
                 """;
         return jdbcTemplate.query(sql, rowMapper);
     }
@@ -52,7 +60,8 @@ public class ReservationDAO {
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("name", reservationRequest.name())
                 .addValue("date", reservationRequest.date())
-                .addValue("time_id", reservationRequest.timeId());
+                .addValue("time_id", reservationRequest.timeId())
+                .addValue("theme_id", reservationRequest.themeId());
         return jdbcInsert.executeAndReturnKey(parameterSource).longValue();
     }
 
@@ -66,7 +75,7 @@ public class ReservationDAO {
                 SELECT
                 count(*)
                 FROM reservation
-                WHERE date = ? AND time_id = ? 
+                WHERE date = ? AND time_id = ?
                 """;
         return jdbcTemplate.queryForObject(sql, Integer.class, date, timeId) != 0;
     }
