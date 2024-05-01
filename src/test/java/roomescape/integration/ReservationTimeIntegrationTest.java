@@ -52,6 +52,19 @@ class ReservationTimeIntegrationTest extends IntegrationTest {
     }
 
     @Test
+    void 중복된_시간은_추가할_수_없다() {
+        Map<String, String> params = new HashMap<>();
+        params.put("startAt", "10:00");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(409);
+    }
+
+    @Test
     void 시간을_삭제할_수_있다() {
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", 1);
 
