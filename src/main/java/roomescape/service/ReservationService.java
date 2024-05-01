@@ -33,20 +33,18 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    //ToDo 테스트 작성
     public ReservationResponse save(ReservationRequest reservationRequest) {
-        //TODO 변수명
-        ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId())
-                .orElseThrow(() -> new RoomescapeException(RESERVATION_TIME_NOT_FOUND));
 
-        Theme theme = themeRepository.findById(reservationRequest.themeId())
+        ReservationTime requestedTime = reservationTimeRepository.findById(reservationRequest.timeId())
+                .orElseThrow(() -> new RoomescapeException(RESERVATION_TIME_NOT_FOUND));
+        Theme requestedTheme = themeRepository.findById(reservationRequest.themeId())
                 .orElseThrow(() -> new RoomescapeException(ExceptionType.THEME_NOT_FOUND));
 
         Reservation beforeSave = new Reservation(
                 reservationRequest.name(),
                 reservationRequest.date(),
-                reservationTime,
-                theme
+                requestedTime,
+                requestedTheme
         );
         boolean isDuplicate = reservationRepository.findAll()
                 .stream()
@@ -55,7 +53,6 @@ public class ReservationService {
             throw new RoomescapeException(DUPLICATE_RESERVATION);
         }
 
-        //todo 테스트
         if (isBefore(beforeSave)) {
             throw new RoomescapeException(PAST_TIME);
         }
