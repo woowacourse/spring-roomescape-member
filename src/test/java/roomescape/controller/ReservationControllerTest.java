@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.is;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.lang.reflect.Field;
+import java.time.LocalDate;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,7 +32,7 @@ ReservationControllerTest {
 
     private final Map<String, String> reservationParams = Map.of(
             "name", "썬",
-            "date", "2024-04-18",
+            "date", LocalDate.now().plusDays(1L).toString(),
             "timeId", "1"
     );
 

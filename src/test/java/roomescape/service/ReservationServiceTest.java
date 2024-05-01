@@ -18,6 +18,8 @@ import roomescape.global.exception.model.ConflictException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.TimeRepository;
 
+import static org.assertj.core.api.Assertions.*;
+
 @JdbcTest
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationServiceTest {
@@ -45,8 +47,31 @@ class ReservationServiceTest {
         Time time = timeRepository.save(new Time(LocalTime.of(12, 30)));
         reservationService.createReservation(new ReservationRequest("예약", LocalDate.now().plusDays(1L), time.getId()));
 
-        Assertions.assertThatThrownBy(() -> reservationService.createReservation(
+        assertThatThrownBy(() -> reservationService.createReservation(
                         new ReservationRequest("예약", LocalDate.now().plusDays(1L), time.getId())))
+                .isInstanceOf(ConflictException.class);
+    }
+
+    @Test
+    @DisplayName("이미 지난 날짜로 예약을 생성하면 예외가 발생한다")
+    void beforeDateReservationFail() {
+        Time time = timeRepository.save(new Time(LocalTime.of(12, 30)));
+        LocalDate beforeDate = LocalDate.now().minusDays(1L);
+
+        assertThatThrownBy(() -> reservationService.createReservation(
+                new ReservationRequest("예약", beforeDate, time.getId())))
+                .isInstanceOf(ConflictException.class);
+    }
+
+    @Test
+    @DisplayName("현재 날짜가 예약 당일이지만, 이미 지난 시간으로 예약을 생성하면 예외가 발생한다")
+    void beforeTimeReservationFail() {
+        LocalTime requestTime = LocalTime.now();
+        LocalTime beforeTime = requestTime.minusHours(1L);
+        Time time = timeRepository.save(new Time(beforeTime));
+
+        assertThatThrownBy(() -> reservationService.createReservation(
+                new ReservationRequest("예약", LocalDate.now(), time.getId())))
                 .isInstanceOf(ConflictException.class);
     }
 }
