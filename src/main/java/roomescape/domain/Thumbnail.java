@@ -33,4 +33,8 @@ public class Thumbnail {
             throw new IllegalArgumentException(String.format("%s 확장자만 가능합니다.", ALLOW_EXTENSIONS_PATTERN));
         }
     }
+
+    public String asString() {
+        return value;
+    }
 }
