@@ -3,7 +3,6 @@ package roomescape.application.classical;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,9 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.application.ReservationTimeService;
 import roomescape.application.dto.ReservationTimeCreationRequest;
-import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.repository.ReservationRepository;
+import roomescape.domain.theme.Theme;
+import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.time.ReservationTime;
+import roomescape.fixture.ReservationFixture;
+import roomescape.fixture.ThemeFixture;
 import roomescape.support.extension.TableTruncateExtension;
 
 @SpringBootTest
@@ -23,6 +25,8 @@ public class ReservationTimeServiceTest {
     private ReservationTimeService reservationTimeService;
     @Autowired
     private ReservationRepository reservationRepository;
+    @Autowired
+    private ThemeRepository themeRepository;
 
     @Test
     void 예약_시간을_성공적으로_등록한다() {
@@ -68,8 +72,8 @@ public class ReservationTimeServiceTest {
         LocalTime startAt = LocalTime.of(13, 0);
         ReservationTimeCreationRequest request = new ReservationTimeCreationRequest(startAt);
         ReservationTime reservationTime = reservationTimeService.register(request);
-
-        reservationRepository.save(new Reservation("prin", LocalDate.parse("2024-04-30"), reservationTime));
+        Theme theme = themeRepository.save(ThemeFixture.theme());
+        reservationRepository.save(ReservationFixture.reservation("prin", "2024-04-30", reservationTime, theme));
 
         assertThatThrownBy(() -> reservationTimeService.delete(reservationTime.getId()))
                 .isExactlyInstanceOf(IllegalArgumentException.class)

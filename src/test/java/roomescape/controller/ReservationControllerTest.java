@@ -28,7 +28,7 @@ class ReservationControllerTest extends ControllerTest {
         Reservation reservation = ReservationFixture.reservation();
         when(reservationService.reserve(any())).thenReturn(reservation);
         ReservationRequest request = new ReservationRequest(reservation.getName(), reservation.getDate(),
-                reservation.getTimeId());
+                reservation.getTimeId(), reservation.getTheme().getId());
         String content = objectMapper.writeValueAsString(request);
 
         ResultActions result = SimpleMockMvc.post(mockMvc, "/reservations", content);

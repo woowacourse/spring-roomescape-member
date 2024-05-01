@@ -15,10 +15,13 @@ public record ReservationRequest(
         LocalDate date,
 
         @NotNull(message = "시간 아이디는 필수입니다.")
-        Long timeId
+        Long timeId,
+
+        @NotNull(message = "테마 아이디는 필수입니다.")
+        Long themeId
 ) {
 
     public ReservationCreationRequest toReservationCreationRequest() {
-        return new ReservationCreationRequest(name, date, timeId);
+        return new ReservationCreationRequest(name, date, timeId, themeId);
     }
 }

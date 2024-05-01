@@ -31,7 +31,8 @@ class ReservationAcceptanceTest extends AcceptanceTest {
     private static final Map<String, Object> BODY = Map.of(
             "name", "브라운",
             "date", "2023-08-05",
-            "timeId", 1L
+            "timeId", 1L,
+            "themeId", 1L
     );
 
     @Autowired
@@ -77,8 +78,8 @@ class ReservationAcceptanceTest extends AcceptanceTest {
     @Test
     void step5() {
         LocalDate date = LocalDate.of(2023, 8, 5);
-        jdbcTemplate.update("INSERT INTO reservation (name, reservation_date, time_id) VALUES (?, ?, ?)", "브라운", date,
-                1L);
+        jdbcTemplate.update("INSERT INTO reservation (name, reservation_date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "브라운", date, 1L, 1L);
 
         List<ReservationResponse> reservations = SimpleRestAssured.get(PATH)
                 .statusCode(200).extract()

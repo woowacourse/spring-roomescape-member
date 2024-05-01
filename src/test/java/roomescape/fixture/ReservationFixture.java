@@ -3,6 +3,7 @@ package roomescape.fixture;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import roomescape.domain.reservation.Reservation;
+import roomescape.domain.theme.Theme;
 import roomescape.domain.time.ReservationTime;
 
 public class ReservationFixture {
@@ -11,11 +12,11 @@ public class ReservationFixture {
     }
 
     public static Reservation reservation(long id) {
-        return new Reservation(id, "prin", LocalDate.of(2024, 4, 23), reservationTime());
+        return new Reservation(id, "prin", LocalDate.of(2024, 4, 23), reservationTime(), ThemeFixture.theme());
     }
 
-    public static Reservation reservation(String name, String date, ReservationTime time) {
-        return new Reservation(name, LocalDate.parse(date), time);
+    public static Reservation reservation(String name, String date, ReservationTime time, Theme theme) {
+        return new Reservation(name, LocalDate.parse(date), time, theme);
     }
 
     public static ReservationTime reservationTime() {
