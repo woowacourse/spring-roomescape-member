@@ -14,4 +14,6 @@ public interface ReservationRepository {
     boolean hasDuplicateReservation(Reservation reservation);
 
     boolean hasByTimeId(Long id);
+
+    boolean hasByThemeId(Long id);
 }

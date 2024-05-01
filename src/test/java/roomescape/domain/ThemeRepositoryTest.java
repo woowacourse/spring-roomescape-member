@@ -1,7 +1,6 @@
 package roomescape.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -65,17 +64,6 @@ public class ThemeRepositoryTest {
         // then
         List<Theme> themes = themeRepository.findAll();
         assertThat(themes).hasSize(1);
-    }
-
-    @Test
-    @DisplayName("테마를 사용하고 있는 예약이 존재하면, 삭제하지 않는다.")
-    void cantDelete() {
-        // given
-        Long id = 1L;
-
-        // when, then
-        assertThatThrownBy(() -> themeRepository.removeById(id))
-                .isInstanceOf(IllegalStateException.class);
     }
 
     // 테스트 데이터 - 테마아이디(해당테마 예약 갯수): 6(6), 5(5), 7(5), 4(4), 3(3), 1(1), 8(1), 2(0), 9(0), 10(0)

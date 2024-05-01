@@ -56,4 +56,9 @@ public class MemoryReservationRepository implements ReservationRepository {
     public boolean hasByTimeId(Long id) {
         return false;
     }
+
+    @Override
+    public boolean hasByThemeId(Long id) {
+        return false;
+    }
 }

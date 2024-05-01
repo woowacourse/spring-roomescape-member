@@ -3,7 +3,6 @@ package roomescape.domain;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -38,11 +37,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     public void removeById(Long id) {
-        try {
-            jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id);
-        } catch (DataIntegrityViolationException exception) {
-            throw new IllegalStateException("해당 테마를 사용하고 있는 예약이 존재합니다.");
-        }
+        jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id);
     }
 
     public Optional<Theme> findById(Long id) {
