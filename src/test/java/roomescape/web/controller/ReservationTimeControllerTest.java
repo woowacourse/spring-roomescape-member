@@ -1,5 +1,7 @@
 package roomescape.web.controller;
 
+import static org.hamcrest.Matchers.is;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;
@@ -57,6 +59,16 @@ class ReservationTimeControllerTest {
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(400);
+    }
+
+    @Test
+    @DisplayName("날짜와 테마 정보가 주어지면 예약 가능한 시간 목록을 조회한다.")
+    void findBookable() {
+        RestAssured.given().log().all()
+                .when().get("/times?date=" + TOMORROW_DATE + "&themeId=1")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(1));
     }
 
     @Test
