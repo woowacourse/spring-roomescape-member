@@ -1,9 +1,10 @@
 package roomescape.domain.theme.repository;
 
 import java.util.List;
+import java.util.Optional;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -13,7 +14,7 @@ import roomescape.domain.theme.Theme;
 import roomescape.global.query.QueryBuilder;
 
 @Repository
-public class JdbcThemeRepository implements ThemeRepository{
+public class JdbcThemeRepository implements ThemeRepository {
 
     private static final RowMapper<Theme> ROW_MAPPER = (rs, rowNum) -> new Theme(
             rs.getLong("id"),
@@ -56,5 +57,28 @@ public class JdbcThemeRepository implements ThemeRepository{
     public void deleteById(long id) {
         String query = "DELETE FROM theme WHERE id = ?";
         jdbcTemplate.update(query, id);
+    }
+
+    @Override
+    public boolean existsByName(String name) {
+        String query = "SELECT id FROM theme WHERE EXISTS (SELECT 1 FROM theme WHERE name = ?)";
+
+        try {
+            jdbcTemplate.queryForObject(query, Long.class, name);
+            return true;
+        } catch (DataAccessException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public Optional<Theme> findById(long id) {
+        String query = "SELECT * FROM theme WHERE id = ?";
+        try {
+            Theme theme = jdbcTemplate.queryForObject(query, ROW_MAPPER, id);
+            return Optional.ofNullable(theme);
+        } catch (DataAccessException e) {
+            return Optional.empty();
+        }
     }
 }

@@ -1,7 +1,7 @@
 package roomescape.domain.theme.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -56,5 +56,13 @@ class JdbcThemeRepositoryTest {
 
         List<Theme> themes = themeRepository.findAll();
         assertThat(themes).isEmpty();
+    }
+
+    @Test
+    void 테마_이름으로_테마를_찾는다() {
+        Theme theme = new Theme("공포", "설명", "썸네일1");
+        theme = themeRepository.save(theme);
+
+        assertThat(themeRepository.existsByName("공포")).isTrue();
     }
 }
