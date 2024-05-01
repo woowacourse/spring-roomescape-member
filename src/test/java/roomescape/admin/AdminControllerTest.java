@@ -28,4 +28,13 @@ class AdminControllerTest {
                 .then().log().all()
                 .statusCode(200);
     }
+
+    @Test
+    @DisplayName("방탈출 테마 관리 페이지를 매핑한다.")
+    void theme() {
+        RestAssured.given().log().all()
+                .when().get("/admin/theme")
+                .then().log().all()
+                .statusCode(200);
+    }
 }
