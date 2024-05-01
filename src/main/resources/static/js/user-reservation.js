@@ -87,6 +87,7 @@ function fetchAvailableTimes(date, themeId) {
         headers: {
             'Content-Type': 'application/json',
         },
+        // TODO: [3단계] 2. 인자로 받은 날짜와 테마를 body : {} 를 추가하여 넣고 요청 하도록 변경
     }).then(response => {
         if (response.status === 200) return response.json();
         throw new Error('Read failed');
@@ -110,6 +111,7 @@ function renderAvailableTimes(times) {
         const startAt = time.startAt;
         const timeId = time.id;
         const alreadyBooked = false;
+        // TODO: [3단계] 1. API response 에 booked 필드가 boolean 으로 필요한 것 확인
 
         const div = createSlot('time', startAt, timeId, alreadyBooked); // createSlot('time', 시작 시간, time id, 예약 여부)
         timeSlots.appendChild(div);

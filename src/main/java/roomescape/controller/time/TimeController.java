@@ -26,6 +26,7 @@ public class TimeController {
 
     @GetMapping
     public List<TimeResponse> getTimes() {
+        // TODO: [3단계] 3. 요청에 body로 날짜와 테마를 받고 서비스에게 새로운 함수로 요청
         return timeService.getTimes();
     }
 

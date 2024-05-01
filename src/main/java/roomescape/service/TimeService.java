@@ -9,7 +9,6 @@ import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 
 @Service
 public class TimeService {
@@ -27,6 +26,9 @@ public class TimeService {
                 .map(TimeResponse::from)
                 .toList();
     }
+
+    // TODO: [3단계] 4. getTimeAvailable(date, themeId) 같은 함수 만들어서 컨트롤러의 요청에 대해 응답
+    // TODO: [3단계] 6. timeRepository.findAll 과 reservationRepository.findAllByDateAndThemeId 을 이용해서 response list 반환, 끝!
 
     public TimeResponse addTime(final TimeRequest timeRequest) {
         ReservationTime parsedTime = timeRequest.toDomain();
