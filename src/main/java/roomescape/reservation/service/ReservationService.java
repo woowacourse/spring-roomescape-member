@@ -29,7 +29,7 @@ public class ReservationService {
         ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
 
-        if (LocalDate.now().isBefore(reservationRequest.date())) {
+        if (LocalDate.now().isAfter(reservationRequest.date())) {
             throw new IllegalArgumentException("지난 날짜는 예약할 수 없습니다.");
         }
 
