@@ -87,4 +87,18 @@ class JdbcReservationRepositoryTest {
                 () -> assertThat(afterSize).isEqualTo(0)
         );
     }
+
+    @Test
+    @DisplayName("테이블에 예약 존재 여부를 판단한다.")
+    void is_exist_reservation() {
+        reservationRepository.insertReservation(reservation1);
+
+        boolean exist = reservationRepository.isExistReservationOf(1L);
+        boolean notExist = reservationRepository.isExistReservationOf(2L);
+
+        assertAll(
+                () -> assertThat(exist).isTrue(),
+                () -> assertThat(notExist).isFalse()
+        );
+    }
 }
