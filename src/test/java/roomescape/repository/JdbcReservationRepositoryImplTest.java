@@ -38,7 +38,7 @@ class JdbcReservationRepositoryImplTest {
     private Theme theme;
 
     @BeforeEach
-    void saveUp() {
+    void setUp() {
         reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.of(5, 30)));
         theme = themeRepository.save(
             new Theme("방탈출", "방탈출하는 게임", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
@@ -111,13 +111,13 @@ class JdbcReservationRepositoryImplTest {
         assertThat(actual).isEqualTo(2L);
     }
 
-    @DisplayName("date와 time_id로 예약 수를 가져온다.")
+    @DisplayName("date, time_id, theme_id로 중복 예약 수를 가져온다.")
     @Test
-    void countByDateAndTimeId() {
+    void countDuplication() {
         LocalDate date = LocalDate.parse("2040-01-01");
         Reservation reservation = new Reservation("brown1", date, reservationTime, theme);
         reservationRepository.save(reservation);
-        long count = reservationRepository.countByDateAndTimeId(date, reservationTime.getId());
+        long count = reservationRepository.countDuplication(date, reservationTime.getId(), theme.getId());
         assertThat(count).isEqualTo(1L);
     }
 }

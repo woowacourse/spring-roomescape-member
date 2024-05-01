@@ -42,7 +42,7 @@ public class ReservationService {
         Theme theme = findTheme(request.themeId());
         Reservation reservation = new Reservation(request.name(), date, time, theme);
         validatePastReservation(date, time);
-        validateDuplication(date, request.timeId());
+        validateDuplication(date, request.timeId(), request.themeId());
 
         return reservationRepository.save(reservation);
     }
@@ -86,8 +86,8 @@ public class ReservationService {
         }
     }
 
-    private void validateDuplication(LocalDate date, Long timeId) {
-        long dataCount = reservationRepository.countByDateAndTimeId(date, timeId);
+    private void validateDuplication(LocalDate date, Long timeId, Long themeId) {
+        long dataCount = reservationRepository.countDuplication(date, timeId, themeId);
         if (dataCount > 0) {
             throw new DuplicatedReservationException();
         }

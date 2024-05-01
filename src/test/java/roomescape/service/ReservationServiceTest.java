@@ -124,8 +124,8 @@ class ReservationServiceTest {
         long timeId = 1L;
         long themeId = 1L;
 
-        when(reservationRepository.countByDateAndTimeId(LocalDate.parse(rawDate), timeId))
-            .thenReturn(timeId);
+        when(reservationRepository.countDuplication(LocalDate.parse(rawDate), timeId, themeId))
+            .thenReturn(1L);
         when(themeRepository.findById(themeId))
             .thenReturn(new Theme("방탈출1", "방탈출1을 한다.", "https://url"));
 
