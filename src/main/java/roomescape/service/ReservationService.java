@@ -53,7 +53,7 @@ public class ReservationService {
 
     private void validateReservation(final Reservation reservation) {
         validateDateTime(reservation);
-        validateDuplicateTime(reservation);
+        validateUnique(reservation);
     }
 
     private void validateDateTime(final Reservation reservation) {
@@ -64,12 +64,12 @@ public class ReservationService {
         }
     }
 
-    private void validateDuplicateTime(final Reservation reservation) {
-        final boolean isDuplicated = reservationRepository.existByDateAndTimeId(reservation.getDate(),
-                reservation.getTimeId());
+    private void validateUnique(final Reservation reservation) {
+        final boolean isReservationExist = reservationRepository.existByDateAndTimeIdAndThemeId(reservation.getDate(),
+                reservation.getTimeId(), reservation.getThemeId());
 
-        if (isDuplicated) {
-            throw new IllegalArgumentException("이미 예약된 시간입니다.");
+        if (isReservationExist) {
+            throw new IllegalArgumentException("이미 존재하는 예약입니다.");
         }
     }
 
