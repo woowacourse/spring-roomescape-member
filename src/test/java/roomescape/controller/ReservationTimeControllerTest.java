@@ -35,7 +35,7 @@ class ReservationTimeControllerTest {
     @DisplayName("예약 시간을 추가 성공할 시, 201 created를 응답한다.")
     @Test
     void should_add_reservation_time_to_db() {
-        ReservationTimeAddRequest reservationTimeAddRequest = new ReservationTimeAddRequest(LocalTime.of(10, 0));
+        ReservationTimeAddRequest reservationTimeAddRequest = new ReservationTimeAddRequest(LocalTime.of(11, 0));
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

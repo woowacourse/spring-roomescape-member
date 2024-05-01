@@ -6,14 +6,14 @@ import java.util.Objects;
 public class Reservation {
 
     private final Long id;
-    private final String name;
-    private final LocalDate date;
+    private final Name name;
+    private final ReservationDate date;
     private final ReservationTime time;
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time) {
         this.id = id;
-        this.name = name;
-        this.date = date;
+        this.name = new Name(name);
+        this.date = new ReservationDate(date);
         this.time = time;
     }
 
@@ -26,11 +26,11 @@ public class Reservation {
     }
 
     public String getName() {
-        return name;
+        return name.getName();
     }
 
     public LocalDate getDate() {
-        return date;
+        return date.getDate();
     }
 
     public ReservationTime getTime() {

@@ -25,7 +25,8 @@ public class ReservationControllerTest {
     @BeforeEach
     void setUp() {
         jdbcTemplate.update("insert into reservation_time values(1,'10:00')");
-        jdbcTemplate.update("insert into reservation (name, date, time_id) values('브라운','2020-12-12',1)");
+        LocalDate reservationDate = LocalDate.now().plusDays(2);
+        jdbcTemplate.update("insert into reservation (name, date, time_id) values(?,?,?)", "브라운", reservationDate, 1);
     }
 
     @AfterEach
@@ -47,10 +48,9 @@ public class ReservationControllerTest {
     @Test
     void should_add_reservation_when_post_request_reservations() {
         ReservationAddRequest reservationAddRequest = new ReservationAddRequest(
-                LocalDate.of(2023, 8, 5),
+                LocalDate.now().plusDays(2L),
                 "브라운",
                 1L);
-
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservationAddRequest)
