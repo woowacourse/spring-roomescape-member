@@ -10,6 +10,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
+import roomescape.domain.Theme;
 import roomescape.dto.app.ReservationAppRequest;
 import roomescape.exception.reservation.DuplicatedReservationException;
 import roomescape.exception.reservation.IllegalDateFormatException;
@@ -32,7 +33,8 @@ public class ReservationService {
     public Reservation save(ReservationAppRequest request) {
         LocalDate date = parseDate(request.date());
         ReservationTime time = findTime(request.timeId());
-        Reservation reservation = new Reservation(request.name(), date, time);
+        Reservation reservation = new Reservation(request.name(), date, time,
+            new Theme("방탈출", "방탈출하는 게임", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
         validatePastReservation(date, time);
         validateDuplication(date, request.timeId());
 

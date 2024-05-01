@@ -19,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.dto.app.ReservationAppRequest;
 import roomescape.dto.web.ReservationTimeWebResponse;
 import roomescape.dto.web.ReservationWebRequest;
@@ -41,15 +42,18 @@ class ReservationControllerTest {
     @DisplayName("예약을 저장한다. -> 201")
     @Test
     void reserve() throws Exception {
-        long time_id = 1L;
+        long timeId = 1L;
+        long themeId = 1L;
         LocalDate date = LocalDate.EPOCH;
         String name = "브리";
-        Reservation reservation = new Reservation(1L, name, date, new ReservationTime(LocalTime.MIN));
+        Reservation reservation = new Reservation(1L, name, date, new ReservationTime(LocalTime.MIN),
+            new Theme("방탈출", "방탈출하는 게임", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
 
-        when(reservationService.save(new ReservationAppRequest(time_id, date.toString(), name)))
+        when(reservationService.save(new ReservationAppRequest(name, date.toString(), timeId, themeId)))
             .thenReturn(reservation);
 
-        String requestBody = objectMapper.writeValueAsString(new ReservationWebRequest(name, date.toString(), time_id));
+        String requestBody = objectMapper.writeValueAsString(
+            new ReservationWebRequest(name, date.toString(), timeId, themeId));
         String responseBody = objectMapper.writeValueAsString(new ReservationWebResponse(1L, name, date,
             ReservationTimeWebResponse.from(reservation)));
 
@@ -63,12 +67,14 @@ class ReservationControllerTest {
     @DisplayName("예약을 삭제한다. -> 204")
     @Test
     void deleteBy() throws Exception {
-        long time_id = 1L;
+        long timeId = 1L;
+        long themeId = 1L;
         LocalDate date = LocalDate.EPOCH;
         String name = "브리";
-        Reservation reservation = new Reservation(1L, name, date, new ReservationTime(LocalTime.MIN));
+        Reservation reservation = new Reservation(1L, name, date, new ReservationTime(LocalTime.MIN),
+            new Theme("방탈출", "방탈출하는 게임", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
 
-        when(reservationService.save(new ReservationAppRequest(time_id, date.toString(), name)))
+        when(reservationService.save(new ReservationAppRequest(name, date.toString(), timeId, themeId)))
             .thenReturn(reservation);
 
         mvc.perform(delete("/reservations/" + reservation.getId()))
@@ -86,12 +92,13 @@ class ReservationControllerTest {
     @Test
     void reserve_BadRequest() throws Exception {
         long timeId = 1L;
+        long themeId = 1L;
         String rawDate = "2040-01-01";
         String name = "brown";
 
-        String requestBody = objectMapper.writeValueAsString(new ReservationWebRequest(name, rawDate, timeId));
+        String requestBody = objectMapper.writeValueAsString(new ReservationWebRequest(name, rawDate, timeId, themeId));
 
-        when(reservationService.save(new ReservationAppRequest(timeId, rawDate, name)))
+        when(reservationService.save(new ReservationAppRequest(name, rawDate, timeId, themeId)))
             .thenThrow(IllegalReservationFormatException.class);
 
         mvc.perform(post("/reservations")
@@ -104,12 +111,13 @@ class ReservationControllerTest {
     @Test
     void reserve_Duplication() throws Exception {
         long timeId = 1L;
+        long themeId = 1L;
         String rawDate = "2040-01-01";
         String name = "brown";
 
-        String requestBody = objectMapper.writeValueAsString(new ReservationWebRequest(name, rawDate, timeId));
+        String requestBody = objectMapper.writeValueAsString(new ReservationWebRequest(name, rawDate, timeId, themeId));
 
-        when(reservationService.save(new ReservationAppRequest(timeId, rawDate, name)))
+        when(reservationService.save(new ReservationAppRequest(name, rawDate, timeId, themeId)))
             .thenThrow(DuplicatedReservationException.class);
 
         mvc.perform(post("/reservations")
@@ -122,13 +130,14 @@ class ReservationControllerTest {
     @Test
     void reserve_PastTime() throws Exception {
         long timeId = 1L;
+        long themeId = 1L;
         String rawDate = "2000-01-01";
         String name = "brown";
 
-        when(reservationService.save(new ReservationAppRequest(timeId, rawDate, name)))
+        when(reservationService.save(new ReservationAppRequest(name, rawDate, timeId, themeId)))
             .thenThrow(PastReservationException.class);
 
-        String requestBody = objectMapper.writeValueAsString(new ReservationWebRequest(name, rawDate, timeId));
+        String requestBody = objectMapper.writeValueAsString(new ReservationWebRequest(name, rawDate, timeId, themeId));
 
         mvc.perform(post("/reservations")
                 .content(requestBody)

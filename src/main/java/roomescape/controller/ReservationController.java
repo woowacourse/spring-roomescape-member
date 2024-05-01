@@ -38,7 +38,7 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<ReservationWebResponse> reserve(@RequestBody ReservationWebRequest request) {
         Reservation newReservation = reservationService.save(
-            new ReservationAppRequest(request.timeId(), request.date(), request.name()));
+            new ReservationAppRequest(request.name(), request.date(), request.timeId(), request.themeId()));
         Long id = newReservation.getId();
 
         ReservationWebResponse reservationWebResponse = new ReservationWebResponse(id, newReservation.getName(),

@@ -1,5 +1,5 @@
 package roomescape.dto.app;
 
-public record ReservationAppRequest(Long timeId, String date, String name) {
+public record ReservationAppRequest(String name, String date, Long timeId, Long themeId) {
 
 }

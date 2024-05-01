@@ -19,6 +19,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
+import roomescape.domain.Theme;
 
 @SpringBootTest
 @Transactional
@@ -40,11 +41,18 @@ class JdbcReservationRepositoryImplTest {
     @Test
     void save() {
         LocalDate date = LocalDate.MAX;
-        Reservation reservation = new Reservation("브리", date, reservationTime);
+        Reservation reservation = new Reservation(
+            "브리", date, reservationTime,
+            new Theme(1L, "방탈출", "방탈출하는 게임",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
 
         Reservation actual = reservationRepository.save(reservation);
-        Reservation expected = new Reservation(actual.getId(), reservation.getName(), reservation.getDate(),
-            reservation.getTime());
+        Reservation expected = new Reservation(
+            actual.getId(),
+            reservation.getName(),
+            reservation.getDate(),
+            reservation.getTime(),
+            reservation.getTheme());
 
         assertAll(
             () -> assertEquals(expected.getDate(), actual.getDate()),
@@ -57,8 +65,10 @@ class JdbcReservationRepositoryImplTest {
     @Test
     void findAll() {
         LocalDate date = LocalDate.MAX;
-        Reservation save1 = reservationRepository.save(new Reservation("브리", date, reservationTime));
-        Reservation save2 = reservationRepository.save(new Reservation("솔라", date, reservationTime));
+        Reservation save1 = reservationRepository.save(new Reservation("브리", date, reservationTime,
+            new Theme("방탈출", "방탈출하는 게임", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg")));
+        Reservation save2 = reservationRepository.save(new Reservation("솔라", date, reservationTime,
+            new Theme("방탈출", "방탈출하는 게임", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg")));
 
         List<Reservation> actual = reservationRepository.findAll();
         List<Reservation> expected = List.of(save1, save2);
@@ -76,7 +86,8 @@ class JdbcReservationRepositoryImplTest {
     @Test
     void deleteById() {
         LocalDate date = LocalDate.MAX;
-        Reservation reservation = new Reservation("브리", date, reservationTime);
+        Reservation reservation = new Reservation("브리", date, reservationTime,
+            new Theme("방탈출", "방탈출하는 게임", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
         Reservation save = reservationRepository.save(reservation);
 
         reservationRepository.deleteById(save.getId());
@@ -87,8 +98,10 @@ class JdbcReservationRepositoryImplTest {
     @DisplayName("time_id값을 통해 예약 수를 가져온다.")
     @Test
     void countByTimeId() {
-        Reservation reservation1 = new Reservation("brown1", LocalDate.MAX, reservationTime);
-        Reservation reservation2 = new Reservation("brown2", LocalDate.MIN, reservationTime);
+        Reservation reservation1 = new Reservation("brown1", LocalDate.MAX, reservationTime,
+            new Theme("방탈출", "방탈출하는 게임", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        Reservation reservation2 = new Reservation("brown2", LocalDate.MIN, reservationTime,
+            new Theme("방탈출", "방탈출하는 게임", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
         reservationRepository.save(reservation1);
         reservationRepository.save(reservation2);
 
@@ -101,7 +114,8 @@ class JdbcReservationRepositoryImplTest {
     @Test
     void countByDateAndTimeId() {
         LocalDate date = LocalDate.parse("2040-01-01");
-        Reservation reservation = new Reservation("brown1", date, reservationTime);
+        Reservation reservation = new Reservation("brown1", date, reservationTime,
+            new Theme("방탈출", "방탈출하는 게임", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
         reservationRepository.save(reservation);
         long count = reservationRepository.countByDateAndTimeId(date, reservationTime.getId());
         assertThat(count).isEqualTo(1L);

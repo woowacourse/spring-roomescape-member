@@ -22,6 +22,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
+import roomescape.domain.Theme;
 import roomescape.dto.app.ReservationAppRequest;
 import roomescape.exception.reservation.DuplicatedReservationException;
 import roomescape.exception.reservation.IllegalDateFormatException;
@@ -46,23 +47,28 @@ class ReservationServiceTest {
     void save() {
         long reservationId = 1L;
         long timeId = 1L;
+        long themeId = 1L;
         LocalDate date = LocalDate.parse("2050-01-01");
         String name = "브리";
         LocalTime time = LocalTime.MAX;
         ReservationTime reservationTime = new ReservationTime(timeId, time);
-        Reservation reservation = new Reservation(name, date, reservationTime);
+        Reservation reservation = new Reservation(name, date, reservationTime,
+            new Theme("방탈출", "방탈출하는 게임", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
 
         when(reservationTimeRepository.findById(timeId))
             .thenReturn(reservationTime);
 
         when(reservationRepository.save(any(Reservation.class)))
             .thenReturn(
-                new Reservation(reservationId, reservation.getName(), reservation.getDate(), reservationTime));
+                new Reservation(reservationId, reservation.getName(), reservation.getDate(), reservationTime,
+                    new Theme("방탈출", "방탈출하는 게임",
+                        "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg")));
 
-        ReservationAppRequest request = new ReservationAppRequest(timeId, date.toString(), name);
+        ReservationAppRequest request = new ReservationAppRequest(name, date.toString(), timeId, themeId);
 
         Reservation actual = reservationService.save(request);
-        Reservation expected = new Reservation(1L, reservation.getName(), reservation.getDate(), reservation.getTime());
+        Reservation expected = new Reservation(1L, reservation.getName(), reservation.getDate(), reservation.getTime(),
+            new Theme("방탈출", "방탈출하는 게임", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
 
         assertAll(
             () -> assertEquals(expected.getId(), actual.getId()),
@@ -77,7 +83,7 @@ class ReservationServiceTest {
     @NullAndEmptySource
     void save_IllegalName(String name) {
         assertThatThrownBy(
-            () -> reservationService.save(new ReservationAppRequest(1L, LocalDate.MAX.toString(), name)))
+            () -> reservationService.save(new ReservationAppRequest(name, LocalDate.MAX.toString(), 1L, 1L)))
             .isInstanceOf(IllegalReservationFormatException.class);
     }
 
@@ -85,8 +91,9 @@ class ReservationServiceTest {
     @ParameterizedTest
     @ValueSource(strings = {"2030-13-01", "2030-12-32"})
     void save_IllegalDate(String rawDate) {
-        assertThatThrownBy(() -> reservationService.save(new ReservationAppRequest(1L, rawDate, "brown")))
+        assertThatThrownBy(() -> reservationService.save(new ReservationAppRequest("brown", rawDate, 1L, 1L)))
             .isInstanceOf(IllegalDateFormatException.class);
+
     }
 
     @DisplayName("실패: 존재하지 않는 시간 ID 입력 시 예외가 발생한다.")
@@ -95,8 +102,9 @@ class ReservationServiceTest {
         when(reservationTimeRepository.findById(1L))
             .thenThrow(EmptyResultDataAccessException.class);
 
-        assertThatThrownBy(() -> reservationService.save(new ReservationAppRequest(1L, "2030-12-31", "brown")))
+        assertThatThrownBy(() -> reservationService.save(new ReservationAppRequest("brown", "2030-12-31", 1L, 1L)))
             .isInstanceOf(ReservationTimeNotFoundException.class);
+
     }
 
     @DisplayName("실패: 중복 예약을 생성하면 예외가 발생한다.")
@@ -104,10 +112,11 @@ class ReservationServiceTest {
     void save_Duplication() {
         String rawDate = "2030-12-31";
         long timeId = 1L;
+        long themeId = 1L;
         when(reservationRepository.countByDateAndTimeId(LocalDate.parse(rawDate), timeId))
             .thenReturn(1L);
 
-        assertThatThrownBy(() -> reservationService.save(new ReservationAppRequest(timeId, rawDate, "brown")))
+        assertThatThrownBy(() -> reservationService.save(new ReservationAppRequest("brown", rawDate, timeId, themeId)))
             .isInstanceOf(DuplicatedReservationException.class);
     }
 
@@ -117,12 +126,13 @@ class ReservationServiceTest {
         LocalDate yesterday = LocalDate.now().minusDays(1);
 
         long timeId = 1L;
+        long themeId = 1L;
         ReservationTime reservationTime = new ReservationTime(LocalTime.parse("10:00"));
         when(reservationTimeRepository.findById(timeId))
             .thenReturn(reservationTime);
 
         assertThatThrownBy(
-            () -> reservationService.save(new ReservationAppRequest(timeId, yesterday.toString(), "brown"))
+            () -> reservationService.save(new ReservationAppRequest("brown", yesterday.toString(), timeId, themeId))
         ).isInstanceOf(PastReservationException.class);
     }
 
@@ -133,12 +143,13 @@ class ReservationServiceTest {
         LocalTime oneMinuteAgo = LocalTime.now().minusMinutes(1);
 
         long timeId = 1L;
+        long themeId = 1L;
         ReservationTime reservationTime = new ReservationTime(oneMinuteAgo);
         when(reservationTimeRepository.findById(1L))
             .thenReturn(reservationTime);
 
         assertThatThrownBy(
-            () -> reservationService.save(new ReservationAppRequest(timeId, today.toString(), "brown"))
+            () -> reservationService.save(new ReservationAppRequest("brown", today.toString(), timeId, themeId))
         ).isInstanceOf(PastReservationException.class);
     }
 }
