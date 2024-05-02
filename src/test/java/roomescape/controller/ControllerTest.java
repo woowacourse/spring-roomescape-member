@@ -1,4 +1,4 @@
-package roomescape.acceptance;
+package roomescape.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -19,7 +19,7 @@ import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
 
-class AcceptanceTest extends BaseAcceptanceTest {
+class ControllerTest extends BaseControllerTest {
 
     @TestFactory
     @DisplayName("예약을 생성한다.")

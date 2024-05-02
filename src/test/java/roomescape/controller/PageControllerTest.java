@@ -1,4 +1,4 @@
-package roomescape.acceptance;
+package roomescape.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -9,7 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
-class PageAcceptanceTest extends BaseAcceptanceTest {
+class PageControllerTest extends BaseControllerTest {
 
     @Test
     @DisplayName("메인 페이지를 조회한다.")
