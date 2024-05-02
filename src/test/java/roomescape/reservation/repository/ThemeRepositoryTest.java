@@ -52,7 +52,7 @@ class ThemeRepositoryTest {
     }
 
     @Test
-    @DisplayName("예약이 많은 순으로 10개의 테마를 조회한다.")
+    @DisplayName("최근 1주일을 기준하여 예약이 많은 순으로 10개의 테마를 조회한다.")
     void findPopularThemeLimitTen() {
         Long timeId = reservationTimeRepository.save(new ReservationTime(LocalTime.now()));
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId).get();
@@ -64,11 +64,11 @@ class ThemeRepositoryTest {
         Theme theme2 = themeRepository.findById(theme2Id).get();
 
         reservationRepository.save(
-                new Reservation(new Name("hogi"), LocalDate.parse("2024-12-12"), theme1, reservationTime));
+                new Reservation(new Name("hogi"), LocalDate.now(), theme1, reservationTime));
         reservationRepository.save(
-                new Reservation(new Name("kaki"), LocalDate.parse("2024-05-05"), theme2, reservationTime));
+                new Reservation(new Name("kaki"), LocalDate.now(), theme2, reservationTime));
         reservationRepository.save(
-                new Reservation(new Name("neo"), LocalDate.parse("2024-05-06"), theme2, reservationTime));
+                new Reservation(new Name("neo"), LocalDate.now(), theme2, reservationTime));
 
         List<Theme> themes = themeRepository.findPopularThemeLimitTen();
 
