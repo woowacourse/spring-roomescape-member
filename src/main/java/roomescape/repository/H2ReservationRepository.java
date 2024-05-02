@@ -42,7 +42,7 @@ public class H2ReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findAll() {
-        String sql = """
+        final String sql = """
                 SELECT r.id, r.name, r.date, r.time_id, r.theme_id, rt.start_at, t.name FROM reservation AS R
                 LEFT JOIN reservation_time RT on RT.ID = R.TIME_ID
                 LEFT JOIN THEME T on T.ID = R.THEME_ID
@@ -60,7 +60,7 @@ public class H2ReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findAllByDateAndThemeId(final LocalDate date, final Long themeId) {
-        String sql = """
+        final String sql = """
                 SELECT r.id, r.name, r.date, r.time_id, r.theme_id, rt.start_at, t.name FROM reservation AS R
                 JOIN reservation_time RT on RT.id = R.time_id
                 JOIN theme T on T.id = R.theme_id
@@ -80,7 +80,7 @@ public class H2ReservationRepository implements ReservationRepository {
 
     @Override
     public Optional<Reservation> findById(final Long id) {
-        String sql = "SELECT * FROM reservation WHERE id = ?";
+        final String sql = "SELECT * FROM reservation WHERE id = ?";
 
         return jdbcTemplate.query(sql, this::mapRowReservation, id)
                 .stream()
@@ -89,7 +89,7 @@ public class H2ReservationRepository implements ReservationRepository {
 
     @Override
     public boolean existsByTimeId(final Long timeId) {
-        String sql = "SELECT * FROM reservation WHERE time_id = ? LIMIT 1";
+        final String sql = "SELECT * FROM reservation WHERE time_id = ? LIMIT 1";
 
         return !jdbcTemplate.query(sql, this::mapRowReservation, timeId)
                 .isEmpty();
@@ -97,7 +97,7 @@ public class H2ReservationRepository implements ReservationRepository {
 
     @Override
     public boolean existsByThemeId(final Long themeId) {
-        String sql = "SELECT * FROM reservation WHERE theme_id = ? LIMIT 1";
+        final String sql = "SELECT * FROM reservation WHERE theme_id = ? LIMIT 1";
 
         return !jdbcTemplate.query(sql, this::mapRowReservation, themeId)
                 .isEmpty();
@@ -105,26 +105,26 @@ public class H2ReservationRepository implements ReservationRepository {
 
     @Override
     public Reservation save(final Reservation reservation) {
-        SqlParameterSource params = new MapSqlParameterSource()
+        final SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
                 .addValue("date", reservation.getDate().format(DateTimeFormatter.ISO_LOCAL_DATE))
                 .addValue("time_id", reservation.getTime().getId())
                 .addValue("theme_id", reservation.getTheme().getId());
 
-        Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
+        final Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
         return reservation.assignId(id);
     }
 
     @Override
     public boolean existsByDateAndTimeId(final Long timeId, final LocalDate date) {
-        String sql = "SELECT * FROM reservation WHERE time_id = ? AND date = ? LIMIT 1";
+        final String sql = "SELECT * FROM reservation WHERE time_id = ? AND date = ? LIMIT 1";
 
         return !jdbcTemplate.query(sql, this::mapRowReservation, timeId, date).isEmpty();
     }
 
     @Override
     public int deleteById(final Long id) {
-        String sql = "DELETE FROM reservation WHERE id = ?";
+        final String sql = "DELETE FROM reservation WHERE id = ?";
 
         return jdbcTemplate.update(sql, id);
     }
@@ -135,7 +135,7 @@ public class H2ReservationRepository implements ReservationRepository {
         final LocalDate localDate1 = today.minusDays(7);
         final LocalDate localDate2 = today.minusDays(1);
 
-        String sql = """
+        final String sql = """
                 SELECT r.theme_id, t.name, t.THUMBNAIL, t.DESCRIPTION, count(t.ID) as count FROM reservation AS R
                 JOIN reservation_time RT on RT.ID = R.TIME_ID
                 JOIN THEME T on T.ID = R.THEME_ID

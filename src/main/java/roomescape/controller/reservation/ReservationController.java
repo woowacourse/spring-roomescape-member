@@ -32,8 +32,8 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> addReservation(@RequestBody final ReservationRequest request) {
-        ReservationResponse reservation = reservationService.addReservation(request);
-        URI uri = UriComponentsBuilder.fromPath("/reservations/{id}")
+        final ReservationResponse reservation = reservationService.addReservation(request);
+        final URI uri = UriComponentsBuilder.fromPath("/reservations/{id}")
                 .buildAndExpand(reservation.id())
                 .toUri();
 
@@ -43,7 +43,7 @@ public class ReservationController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservationsData(@PathVariable("id") final Long id) {
-        int deletedCount = reservationService.deleteReservation(id);
+        final int deletedCount = reservationService.deleteReservation(id);
         if (deletedCount == 0) {
             return ResponseEntity.notFound()
                     .build();

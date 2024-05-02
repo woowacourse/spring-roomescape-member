@@ -32,7 +32,7 @@ public class ThemeController {
     @PostMapping
     public ResponseEntity<CreateThemeResponse> addTheme(@RequestBody final CreateThemeRequest createThemeRequest) {
         final CreateThemeResponse theme = themeService.addTheme(createThemeRequest);
-        URI uri = UriComponentsBuilder.fromPath("/themes/{id}")
+        final URI uri = UriComponentsBuilder.fromPath("/themes/{id}")
                 .buildAndExpand(theme.id())
                 .toUri();
 

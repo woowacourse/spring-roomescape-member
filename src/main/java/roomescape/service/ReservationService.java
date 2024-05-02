@@ -43,13 +43,13 @@ public class ReservationService {
 
     // TODO assignTime 과 assignTheme 합치는거 고려하기
     private Reservation assignTime(final Reservation reservation) {
-        ReservationTime time = reservationTimeRepository.findById(reservation.getTime().getId())
+        final ReservationTime time = reservationTimeRepository.findById(reservation.getTime().getId())
                 .orElse(reservation.getTime());
         return reservation.assignTime(time);
     }
 
     private Reservation assignTheme(final Reservation reservation) {
-        Theme theme = themeRepository.findById(reservation.getTheme().getId())
+        final Theme theme = themeRepository.findById(reservation.getTheme().getId())
                 .orElse(reservation.getTheme());
         return reservation.assignTheme(theme);
     }
@@ -75,7 +75,7 @@ public class ReservationService {
             throw new PreviousTimeException("지난 시간으로 예약할 수 없습니다.");
         }
 
-        Reservation savedReservation = reservationRepository.save(parsedReservation);
+        final Reservation savedReservation = reservationRepository.save(parsedReservation);
         return ReservationResponse.from(savedReservation);
     }
 
@@ -84,7 +84,7 @@ public class ReservationService {
     }
 
     public List<PopularThemeResponse> getPopularThemes(final LocalDate today) {
-        List<Theme> reservations = reservationRepository.findPopularThemes(today);
+        final List<Theme> reservations = reservationRepository.findPopularThemes(today);
         return reservations.stream()
                 .map(PopularThemeResponse::from)
                 .toList();

@@ -36,14 +36,14 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
 
     @Override
     public List<ReservationTime> findAll() {
-        String sql = "SELECT * FROM reservation_time";
+        final String sql = "SELECT * FROM reservation_time";
 
         return jdbcTemplate.query(sql, this::mapRowTime);
     }
 
     @Override
     public Optional<ReservationTime> findById(final Long id) {
-        String sql = "SELECT * FROM reservation_time WHERE id = ?";
+        final String sql = "SELECT * FROM reservation_time WHERE id = ?";
 
         return jdbcTemplate.query(sql, this::mapRowTime, id)
                 .stream()
@@ -53,15 +53,15 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
 
     @Override
     public ReservationTime save(final ReservationTime time) {
-        SqlParameterSource params = new BeanPropertySqlParameterSource(time);
-        Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
+        final SqlParameterSource params = new BeanPropertySqlParameterSource(time);
+        final Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
 
         return time.assignId(id);
     }
 
     @Override
     public int deleteById(final Long id) {
-        String sql = "DELETE FROM reservation_time WHERE id = ?";
+        final String sql = "DELETE FROM reservation_time WHERE id = ?";
 
         return jdbcTemplate.update(sql, id);
     }

@@ -48,8 +48,8 @@ public class TimeService {
     }
 
     public TimeResponse addTime(final TimeRequest timeRequest) {
-        ReservationTime parsedTime = timeRequest.toDomain();
-        ReservationTime savedTime = timeRepository.save(parsedTime);
+        final ReservationTime parsedTime = timeRequest.toDomain();
+        final ReservationTime savedTime = timeRepository.save(parsedTime);
         return TimeResponse.from(savedTime);
     }
 

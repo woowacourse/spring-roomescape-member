@@ -38,8 +38,8 @@ public class TimeController {
 
     @PostMapping
     public ResponseEntity<TimeResponse> addTime(@RequestBody final TimeRequest timeRequest) {
-        TimeResponse time = timeService.addTime(timeRequest);
-        URI uri = UriComponentsBuilder.fromPath("/reservations/{id}")
+        final TimeResponse time = timeService.addTime(timeRequest);
+        final URI uri = UriComponentsBuilder.fromPath("/reservations/{id}")
                 .buildAndExpand(time.id())
                 .toUri();
 
@@ -49,7 +49,7 @@ public class TimeController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTime(@PathVariable("id") final Long id) {
-        int deleteCount = timeService.deleteTime(id);
+        final int deleteCount = timeService.deleteTime(id);
         if (deleteCount == 0) {
             return ResponseEntity.notFound()
                     .build();

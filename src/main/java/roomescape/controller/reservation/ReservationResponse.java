@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter;
 public record ReservationResponse(Long id, String name, String date, TimeResponse time,
                                   ReservationThemeResponse theme) {
 
-    public static ReservationResponse from(Reservation reservation) {
+    public static ReservationResponse from(final Reservation reservation) {
         return new ReservationResponse(
                 reservation.getId(),
                 reservation.getName(),
