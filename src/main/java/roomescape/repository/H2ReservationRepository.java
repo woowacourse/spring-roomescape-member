@@ -131,9 +131,8 @@ public class H2ReservationRepository implements ReservationRepository {
 
     @Override
     public List<Theme> findPopularThemes(final LocalDate today) {
-        //TODO 이름 고치기
-        final LocalDate localDate1 = today.minusDays(7);
-        final LocalDate localDate2 = today.minusDays(1);
+        final LocalDate popularRangeStart = today.minusDays(7);
+        final LocalDate popularRangeEnd = today.minusDays(1);
 
         final String sql = """
                 SELECT r.theme_id, t.name, t.THUMBNAIL, t.DESCRIPTION, count(t.ID) as count FROM reservation AS R
@@ -149,6 +148,6 @@ public class H2ReservationRepository implements ReservationRepository {
                 rs.getString("theme.name"),
                 rs.getString("theme.description"),
                 rs.getString("theme.thumbnail")
-        )), localDate1, localDate2);
+        )), popularRangeStart, popularRangeEnd);
     }
 }
