@@ -23,7 +23,7 @@ VALUES (6, '프린', '2024-05-01', 1, 2);
 INSERT INTO reservation
 VALUES (7, '프린', '2024-05-01', 1, 2);
 INSERT INTO reservation
-VALUES (8, '프린', '2024-05-01', 1, 2);
+VALUES (8, '프린', '2024-05-01', 1, 3);
 INSERT INTO reservation
 VALUES (9, '프린', '2024-05-01', 1, 3);
 INSERT INTO reservation

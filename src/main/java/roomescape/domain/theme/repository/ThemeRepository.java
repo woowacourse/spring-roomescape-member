@@ -16,5 +16,5 @@ public interface ThemeRepository {
 
     Optional<Theme> findById(long id);
 
-    List<Theme> findAllByRank(LocalDate now);
+    List<Theme> findPopularThemes(LocalDate now);
 }

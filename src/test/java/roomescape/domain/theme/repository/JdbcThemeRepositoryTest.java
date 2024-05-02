@@ -70,11 +70,13 @@ class JdbcThemeRepositoryTest {
 
     @Test
     @Sql("/reservation.sql")
-    void 예약이_많은_순서대로_최대_10개_테마를_반환한다() {
-        List<Theme> allByRank = themeRepository.findAllByRank(LocalDate.now());
+    void 일주일_기준_예약이_많은_순서대로_테마를_반환한다() {
+        List<Theme> popularThemes = themeRepository.findPopularThemes(LocalDate.parse("2024-05-02"));
         assertAll(
-                () -> assertThat(allByRank).hasSize(3),
-                () -> assertThat(allByRank.get(0).getId()).isEqualTo(1)
+                () -> assertThat(popularThemes).hasSize(3),
+                () -> assertThat(popularThemes.get(0).getId()).isEqualTo(1),
+                () -> assertThat(popularThemes.get(1).getId()).isEqualTo(3),
+                () -> assertThat(popularThemes.get(2).getId()).isEqualTo(2)
         );
     }
 }

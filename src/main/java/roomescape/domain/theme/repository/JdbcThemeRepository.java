@@ -3,7 +3,7 @@ package roomescape.domain.theme.repository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -16,7 +16,7 @@ import roomescape.global.query.QueryBuilder;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
-
+    private static final int DATE_RANGE = 7;
     private static final RowMapper<Theme> ROW_MAPPER = (rs, rowNum) -> new Theme(
             rs.getLong("id"),
             rs.getString("name"),
@@ -62,12 +62,12 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public boolean existsByName(String name) {
-        String query = "SELECT id FROM theme WHERE EXISTS (SELECT 1 FROM theme WHERE name = ?)";
+        String query = "SELECT id FROM theme AS t WHERE EXISTS (SELECT 1 FROM theme WHERE t.name = ?)";
 
         try {
             jdbcTemplate.queryForObject(query, Long.class, name);
             return true;
-        } catch (DataAccessException e) {
+        } catch (EmptyResultDataAccessException e) {
             return false;
         }
     }
@@ -78,13 +78,13 @@ public class JdbcThemeRepository implements ThemeRepository {
         try {
             Theme theme = jdbcTemplate.queryForObject(query, ROW_MAPPER, id);
             return Optional.ofNullable(theme);
-        } catch (DataAccessException e) {
+        } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
 
-    public List<Theme> findAllByRank(LocalDate now) {
-        LocalDate prev = now.minusDays(7);
+    public List<Theme> findPopularThemes(LocalDate now) {
+        LocalDate prev = now.minusDays(DATE_RANGE);
         String query = """
                 SELECT * FROM theme AS t
                 JOIN (

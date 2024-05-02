@@ -55,7 +55,7 @@ public class ThemeService {
     }
 
     public List<Theme> getPopularThemes() {
-        return themeRepository.findAllByRank(LocalDate.now(clock));
+        return themeRepository.findPopularThemes(LocalDate.now(clock));
     }
 
     public List<AvailableTimeResponse> getAvailableTimes(long id, LocalDate date) {
