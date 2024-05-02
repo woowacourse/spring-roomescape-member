@@ -47,6 +47,14 @@ public class Theme {
         this(null, name, description, thumbnail);
     }
 
+    public boolean isIdOf(long id) {
+        return this.id == id;
+    }
+
+    public boolean isNameOf(String name) {
+        return this.name.equals(name);
+    }
+
     //todo : long 으로 변경
     public Long getId() {
         return id;
