@@ -162,7 +162,7 @@ function onReservationButtonClick() {
       body: JSON.stringify(reservationData)
     })
         .then(response => {
-          if (!response.ok) throw new Error('Reservation failed');
+          if (!response.ok) response.text().then(data => alert(data));
           return response.json();
         })
         .then(data => {
@@ -170,11 +170,11 @@ function onReservationButtonClick() {
           location.reload();
         })
         .catch(error => {
-          alert("An error occurred while making the reservation.");
+          // alert("An error occurred while making the reservation.");
           console.error(error);
         });
   } else {
-    alert("Please select a date, theme, and time before making a reservation.");
+    alert("날짜, 테마, 시간을 선택해주세요.");
   }
 }
 
