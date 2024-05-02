@@ -7,20 +7,25 @@ import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 public class ReservationRequestDto {
 
     private final String name;
+    private final Long themeId;
     private final String date;
     private final Long timeId;
 
-    public ReservationRequestDto(String name, String date, Long timeId) {
+    public ReservationRequestDto(String name, Long themeId, String date, Long timeId) {
         validateNameExist(name);
+        validateThemeIdExist(themeId);
+        validateIdNaturalNumber(themeId);
         validateDateExist(date);
         validateDateFormat(date);
         validateTimeIdExist(timeId);
-        validateTimeIdNaturalNumber(timeId);
+        validateIdNaturalNumber(timeId);
         this.name = name;
+        this.themeId = themeId;
         this.date = date;
         this.timeId = timeId;
     }
@@ -28,6 +33,18 @@ public class ReservationRequestDto {
     private void validateNameExist(String name) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("이름은 반드시 입력되어야 합니다.");
+        }
+    }
+
+    private void validateThemeIdExist(Long themeId) {
+        if (themeId == null) {
+            throw new IllegalArgumentException("테마 아이디는 반드시 입력되어야 합니다.");
+        }
+    }
+
+    private void validateIdNaturalNumber(Long id) {
+        if (id <= 0) {
+            throw new IllegalArgumentException("아이디는 자연수여야 합니다.");
         }
     }
 
@@ -51,14 +68,9 @@ public class ReservationRequestDto {
         }
     }
 
-    private void validateTimeIdNaturalNumber(Long timeId) {
-        if (timeId <= 0) {
-            throw new IllegalArgumentException("시간 아이디는 자연수여야 합니다.");
-        }
-    }
-
     public Reservation toReservation() {
-        return new Reservation(null, new Name(name), new ReservationDate(date), new ReservationTime(timeId,
+        return new Reservation(null, new Name(name), new Theme(themeId, (Name) null, null, null),
+                new ReservationDate(date), new ReservationTime(timeId,
                 (LocalTime) null));
     }
 
