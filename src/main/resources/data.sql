@@ -8,6 +8,7 @@ INSERT INTO reservation_time (start_at) VALUES ('12:00');
 INSERT INTO reservation_time (start_at) VALUES ('14:00');
 INSERT INTO reservation_time (start_at) VALUES ('16:00');
 INSERT INTO reservation_time (start_at) VALUES ('18:00');
+INSERT INTO reservation_time (start_at) VALUES ('20:00');
 
 INSERT INTO theme (name, description, thumbnail) VALUES ('공포', '무서워', 'https://sherlock-holmes.co.kr/attach/theme/16956118601.jpg');
 INSERT INTO theme (name, description, thumbnail) VALUES ('액션', '신나', 'https://sherlock-holmes.co.kr/attach/theme/17000394031.jpg');

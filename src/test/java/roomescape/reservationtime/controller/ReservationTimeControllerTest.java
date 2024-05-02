@@ -34,10 +34,10 @@ class ReservationTimeControllerTest  {
     @Test
     void createReservationTime() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/times")
-                        .content(objectMapper.writeValueAsString(new CreateReservationTimeRequest(LocalTime.of(16, 40))))
+                        .content(objectMapper.writeValueAsString(new CreateReservationTimeRequest(LocalTime.of(10, 00))))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
-                .andExpect(header().stringValues("Location", "/times/4"));
+                .andExpect(header().stringValues("Location", "/times/7"));
     }
 
     @Test
@@ -45,11 +45,11 @@ class ReservationTimeControllerTest  {
         mockMvc.perform(MockMvcRequestBuilders.get("/times")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$[0].startAt").value("15:40"))
+                .andExpect(jsonPath("$[0].startAt").value("10:00"))
                 .andExpect(jsonPath("$[1].id").value(2))
-                .andExpect(jsonPath("$[1].startAt").value("10:00"))
+                .andExpect(jsonPath("$[1].startAt").value("12:00"))
                 .andExpect(jsonPath("$[2].id").value(3))
-                .andExpect(jsonPath("$[2].startAt").value("13:00"))
+                .andExpect(jsonPath("$[2].startAt").value("14:00"))
                 .andExpect(status().isOk());
     }
 
@@ -58,13 +58,19 @@ class ReservationTimeControllerTest  {
         mockMvc.perform(MockMvcRequestBuilders.get("/times/1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.startAt").value("15:40"))
+                .andExpect(jsonPath("$.startAt").value("10:00"))
                 .andExpect(status().isOk());
     }
 
     @Test
     void deleteReservationTime() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/times/3"))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/times/6"))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void deleteReservationTime_isConflict() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete("/times/3"))
+                .andExpect(status().isConflict());
     }
 }
