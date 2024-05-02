@@ -105,7 +105,7 @@ public class ReservationRepository {
             ON r.time_id = rt.id
             INNER JOIN theme as t
             ON r.theme_id = t.id
-            WHERE r.date = ? AND r.themId = ?
+            WHERE r.date = ? AND r.theme_id = ?
         """;
         return jdbcTemplate.query(selectQuery, ROW_MAPPER, date, themId)
                 .stream()
