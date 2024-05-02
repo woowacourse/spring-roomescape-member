@@ -32,6 +32,22 @@ public class ThemeController {
             .body(response);
     }
 
+    @GetMapping
+    public ResponseEntity<List<ThemeResponseDto>> findAll() {
+        return ResponseEntity.ok(themeService.findAll());
+    }
+
+    @GetMapping("/popular")
+    public ResponseEntity<List<ThemeResponseDto>> findPopular() {
+        return ResponseEntity.ok(themeService.findPopular());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable("id") final long id) {
+        themeService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
     private void validateRequest(final ThemeRequestDto request) {
         final String name = request.getName();
         if (name == null || name.isBlank()) {
@@ -47,21 +63,5 @@ public class ThemeController {
         if (thumbnail == null || thumbnail.isBlank()) {
             throw new IllegalArgumentException("Thumbnail cannot be null or empty");
         }
-    }
-
-    @GetMapping
-    public ResponseEntity<List<ThemeResponseDto>> findAll() {
-        return ResponseEntity.ok(themeService.findAll());
-    }
-
-    @GetMapping("/popular")
-    public ResponseEntity<List<ThemeResponseDto>> findPopular() {
-        return ResponseEntity.ok(themeService.findPopular());
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") final long id) {
-        themeService.delete(id);
-        return ResponseEntity.noContent().build();
     }
 }
