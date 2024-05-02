@@ -11,7 +11,7 @@ import roomescape.reservation.dto.ThemeResponse;
 public class ThemeService {
     private final ThemeRepository themeRepository;
 
-    public ThemeService(final ThemeRepository themeRepository) {
+    public ThemeService(ThemeRepository themeRepository) {
         this.themeRepository = themeRepository;
     }
 
@@ -27,7 +27,7 @@ public class ThemeService {
         return ThemeResponse.from(themeRepository.save(theme));
     }
 
-    public void delete(final long themeId) {
+    public void delete(long themeId) {
         if (!themeRepository.deleteById(themeId)) {
             throw new IllegalArgumentException(String.format("잘못된 테마입니다. id=%d를 확인해주세요.", themeId));
         }

@@ -20,7 +20,7 @@ import roomescape.reservation.service.ThemeService;
 public class ThemeController {
     private final ThemeService themeService;
 
-    public ThemeController(final ThemeService themeService) {
+    public ThemeController(ThemeService themeService) {
         this.themeService = themeService;
     }
 

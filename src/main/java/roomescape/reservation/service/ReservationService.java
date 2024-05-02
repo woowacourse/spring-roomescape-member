@@ -22,9 +22,9 @@ public class ReservationService {
     private final ThemeRepository themeRepository;
     private final MemberRepository memberRepository;
 
-    public ReservationService(final ReservationRepository reservationRepository,
-                              final ReservationTimeRepository reservationTimeRepository,
-                              final ThemeRepository themeRepository, MemberRepository memberRepository) {
+    public ReservationService(ReservationRepository reservationRepository,
+                              ReservationTimeRepository reservationTimeRepository,
+                              ThemeRepository themeRepository, MemberRepository memberRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
@@ -65,7 +65,7 @@ public class ReservationService {
         }
     }
 
-    public void createMemberReservation(final MemberReservationRequest memberReservationRequest) {
+    public void createMemberReservation(MemberReservationRequest memberReservationRequest) {
         Member member = memberRepository.save(new Member(memberReservationRequest.name()));
         Reservation reservation = reservationRepository.findBy(LocalDate.parse(memberReservationRequest.date()),
                         memberReservationRequest.timeId(),

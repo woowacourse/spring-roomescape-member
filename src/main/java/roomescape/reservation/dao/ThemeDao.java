@@ -56,21 +56,21 @@ public class ThemeDao implements ThemeRepository {
     }
 
     @Override
-    public Theme save(final Theme theme) {
+    public Theme save(Theme theme) {
         SqlParameterSource params = new BeanPropertySqlParameterSource(theme);
         long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
         return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 
     @Override
-    public boolean deleteById(final long themeId) {
+    public boolean deleteById(long themeId) {
         String sql = "DELETE FROM theme WHERE id = ?";
         int updateId = jdbcTemplate.update(sql, themeId);
         return updateId != 0;
     }
 
     @Override
-    public Optional<Theme> findById(final long themeId) {
+    public Optional<Theme> findById(long themeId) {
         String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
         return jdbcTemplate.query(sql, optionalResultSetExtractor, themeId);
     }

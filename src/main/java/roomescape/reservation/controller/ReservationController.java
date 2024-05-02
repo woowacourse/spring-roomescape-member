@@ -48,7 +48,8 @@ public class ReservationController {
     }
 
     @PostMapping("/member/reservation")
-    public ResponseEntity<Void> createMemberReservation(@RequestBody MemberReservationRequest memberReservationRequest) {
+    public ResponseEntity<Void> createMemberReservation(
+            @RequestBody MemberReservationRequest memberReservationRequest) {
         reservationService.createMemberReservation(memberReservationRequest);
         return ResponseEntity.created(URI.create("/reservation")).build();
     }
