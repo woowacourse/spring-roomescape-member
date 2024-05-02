@@ -1,5 +1,10 @@
 package roomescape.repository;
 
+import java.sql.PreparedStatement;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Collections;
+import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -9,12 +14,6 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
-import java.sql.PreparedStatement;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Collections;
-import java.util.List;
-
 @Repository
 public class ReservationDao {
 
@@ -23,20 +22,10 @@ public class ReservationDao {
             resultSet.getString("name"),
             resultSet.getObject("date", LocalDate.class),
             new ReservationTime(resultSet.getLong("time_id"), resultSet.getObject("start_at", LocalTime.class)),
-            new Theme(resultSet.getLong("theme_id"), resultSet.getString("name"), resultSet.getString("description"), resultSet.getString("thumbnail"))
-    );
-
-    private final RowMapper<ReservationTime> timeRowMapper = (resultSet, rowNum) -> new ReservationTime(
-            resultSet.getLong("id"),
-            LocalTime.parse(resultSet.getString("start_at"))
+            new Theme(resultSet.getLong("theme_id"), resultSet.getString("name"), resultSet.getString("description"),
+                    resultSet.getString("thumbnail"))
     );
     private final JdbcTemplate jdbcTemplate;
-    private RowMapper<Theme> themeRowMapper = (resultSet, rowNum) -> new Theme(
-            resultSet.getLong("id"),
-            resultSet.getString("name"),
-            resultSet.getString("description"),
-            resultSet.getString("thumbnail")
-    );
 
     public ReservationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -77,7 +66,6 @@ public class ReservationDao {
         return Collections.unmodifiableList(reservations);
     }
 
-
     public void deleteById(Long id) {
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
     }
@@ -93,6 +81,7 @@ public class ReservationDao {
     }
 
     public List<Long> findTimeIdByDateThemeId(LocalDate date, Long themeId) {
-        return jdbcTemplate.queryForList("SELECT time_id FROM reservation WHERE date = ? AND theme_id = ?", Long.class, date, themeId);
+        return jdbcTemplate.queryForList("SELECT time_id FROM reservation WHERE date = ? AND theme_id = ?", Long.class,
+                date, themeId);
     }
 }
