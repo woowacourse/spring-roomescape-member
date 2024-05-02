@@ -21,7 +21,7 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(e.getMessage()));
     }
 
-    @ExceptionHandler({NoSuchElementException.class})
+    @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<ErrorResponse> handleNoSuchElementException(NoSuchElementException e) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
@@ -29,10 +29,16 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    @ResponseBody
-    public ResponseEntity<Object> handleJsonParseException(HttpMessageNotReadableException ex) {
+    public ResponseEntity<ErrorResponse> handleJsonParseException(HttpMessageNotReadableException ex) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse("옳바르지 않은 JSON 형식입니다."));
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleException(Exception ex) {
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse("예상하지 못한 예외가 발생했습니다."));
     }
 }
