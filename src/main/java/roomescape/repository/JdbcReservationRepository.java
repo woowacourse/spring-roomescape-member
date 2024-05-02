@@ -3,8 +3,6 @@ package roomescape.repository;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -53,17 +51,17 @@ public class JdbcReservationRepository implements ReservationRepository {
                         r.id,
                         r.name,
                         r.date,
-                        t.id as time_id,
-                        t.start_at as time_start_at,
-                        th.id as theme_id,
-                        th.name as theme_name,
-                        th.description as theme_description,
-                        th.thumbnail as theme_thumbnail
-                    FROM reservation as r
-                    join reservation_time as t
-                    on r.time_id = t.id
-                    join theme as th
-                    on r.theme_id = th.id
+                        t.id AS time_id,
+                        t.start_at AS time_start_at,
+                        th.id AS theme_id,
+                        th.name AS theme_name,
+                        th.description AS theme_description,
+                        th.thumbnail AS theme_thumbnail
+                    FROM reservation AS r
+                    JOIN reservation_time AS t
+                    ON r.time_id = t.id
+                    JOIN theme AS th
+                    ON r.theme_id = th.id
                 """;
 
         return jdbcTemplate.query(sql, rowMapper);
@@ -128,17 +126,17 @@ public class JdbcReservationRepository implements ReservationRepository {
                         r.id,
                         r.name,
                         r.date,
-                        t.id as time_id,
-                        t.start_at as time_start_at,
-                        th.id as theme_id,
-                        th.name as theme_name,
-                        th.description as theme_description,
-                        th.thumbnail as theme_thumbnail
-                    FROM reservation as r
-                    join reservation_time as t
-                    on r.time_id = t.id
-                    join theme as th
-                    on r.theme_id = th.id
+                        t.id AS time_id,
+                        t.start_at AS time_start_at,
+                        th.id AS theme_id,
+                        th.name AS theme_name,
+                        th.description AS theme_description,
+                        th.thumbnail AS theme_thumbnail
+                    FROM reservation AS r
+                    JOIN reservation_time AS t
+                    ON r.time_id = t.id
+                    JOIN theme AS th
+                    ON r.theme_id = th.id
                     WHERE r.date = ? AND r.theme_id = ?
                 """;
 

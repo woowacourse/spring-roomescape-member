@@ -92,8 +92,8 @@ public class JdbcThemeRepository implements ThemeRepository {
                         th.name,
                         th.description,
                         th.thumbnail
-                    FROM theme as th
-                    JOIN reservation as r
+                    FROM theme AS th
+                    JOIN reservation AS r
                     ON th.id = r.theme_id
                     WHERE r.date BETWEEN ? AND ?
                     GROUP BY th.id
