@@ -7,7 +7,10 @@ import roomescape.domain.Theme;
 
 import java.time.LocalDate;
 
-public record ReservationCreateRequest(String name, @JsonFormat(pattern = "yyyy-MM-dd") LocalDate date, Long timeId, Long themeId) {
+public record ReservationCreateRequest(String name,
+                                       @JsonFormat(pattern = "yyyy-MM-dd") LocalDate date,
+                                       Long timeId,
+                                       Long themeId) {
     public Reservation createReservation(ReservationTime time, Theme theme) {
         return new Reservation(name, date, time, theme);
     }
