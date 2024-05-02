@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.is;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
@@ -168,10 +169,20 @@ class ThemeControllerTest {
     @Test
     @DisplayName("지난 한 주 동안의 인기 테마 목록을 조회한다.")
     void findPopularThemes() {
+        Map<String, String> timeParams = new HashMap<>();
+        timeParams.put("startAt", LocalTime.now().plusHours(1).format(DateTimeFormatter.ofPattern("HH:mm")));
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(timeParams)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(201);
+
         Map<String, Object> reservationParams = new HashMap<>();
         reservationParams.put("name", "브라운");
         reservationParams.put("date", LocalDate.now().format(DateTimeFormatter.ISO_DATE));
-        reservationParams.put("timeId", 1);
+        reservationParams.put("timeId", 2);
         reservationParams.put("themeId", 1);
 
         RestAssured.given().log().all()
