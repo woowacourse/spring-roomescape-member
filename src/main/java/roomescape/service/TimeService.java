@@ -5,9 +5,9 @@ import roomescape.controller.time.TimeRequest;
 import roomescape.controller.time.TimeResponse;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.service.exception.TimeUsedException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.service.exception.TimeUsedException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -27,7 +27,7 @@ public class TimeService {
 
     public List<TimeResponse> getTimes() {
         return timeRepository.findAll().stream()
-                .map(TimeResponse::from)
+                .map(time -> TimeResponse.from(time, false))
                 .toList();
     }
 
@@ -50,7 +50,7 @@ public class TimeService {
     public TimeResponse addTime(final TimeRequest timeRequest) {
         final ReservationTime parsedTime = timeRequest.toDomain();
         final ReservationTime savedTime = timeRepository.save(parsedTime);
-        return TimeResponse.from(savedTime);
+        return TimeResponse.from(savedTime, false);
     }
 
     public int deleteTime(final Long id) {

@@ -7,13 +7,13 @@ import roomescape.controller.reservation.ReservationResponse;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 import roomescape.service.exception.DuplicateReservation;
 import roomescape.service.exception.PreviousTimeException;
 import roomescape.service.exception.ThemeNotFoundException;
 import roomescape.service.exception.TimeNotFoundException;
-import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeRepository;
-import roomescape.repository.ThemeRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -42,7 +42,6 @@ public class ReservationService {
                 .toList();
     }
 
-    // TODO assignTime 과 assignTheme 합치는거 고려하기
     private Reservation assignTime(final Reservation reservation) {
         final ReservationTime time = reservationTimeRepository.findById(reservation.getTime().getId())
                 .orElse(reservation.getTime());

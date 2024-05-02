@@ -14,7 +14,7 @@ public record ReservationResponse(Long id, String name, String date, TimeRespons
                 reservation.getId(),
                 reservation.getName(),
                 reservation.getDate().format(DateTimeFormatter.ISO_LOCAL_DATE),
-                TimeResponse.from(reservation.getTime()),
+                TimeResponse.from(reservation.getTime(), false),
                 ReservationThemeResponse.from(reservation.getTheme())
         );
     }
