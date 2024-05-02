@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 public class Reservation {
@@ -26,8 +27,12 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public boolean hasId(long id) {
-        return this.id == id;
+    public boolean hasSameTheme(Reservation reservation) {
+        return this.theme.equals(reservation.theme);
+    }
+
+    public boolean hasSameDateTime(Reservation reservation) {
+        return this.getDateTime().equals(reservation.getDateTime());
     }
 
     public long getId() {
@@ -48,5 +53,9 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public LocalDateTime getDateTime() {
+        return LocalDateTime.of(this.date, this.time.getStartAt());
     }
 }

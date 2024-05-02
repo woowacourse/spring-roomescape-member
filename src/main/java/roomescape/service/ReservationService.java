@@ -38,37 +38,37 @@ public class ReservationService {
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId())
+        ReservationTime requestedReservationTime = reservationTimeRepository.findById(reservationRequest.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("예약할 수 없는 시간입니다. timeId: " + reservationRequest.timeId()));
-        Theme theme = themeRepository.findById(reservationRequest.themeId())
+        Theme requestedTheme = themeRepository.findById(reservationRequest.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("예약할 수 없는 테마입니다. themeId: " + reservationRequest.themeId()));
+        Reservation requestedReservation = reservationRequest.toEntity(requestedReservationTime, requestedTheme);
 
-        Reservation reservation = reservationRequest.toEntity(reservationTime, theme);
+        rejectPastTimeReservation(requestedReservation);
+        rejectDuplicateDateTime(requestedReservation);
 
-        rejectPastTimeReservation(reservation);
-        rejectDuplicateDateTime(reservation);
-
-        Reservation savedReservation = reservationRepository.save(reservation);
+        Reservation savedReservation = reservationRepository.save(requestedReservation);
         return ReservationResponse.from(savedReservation);
     }
 
-    private void rejectDuplicateDateTime(Reservation reservation) {
-        LocalDateTime reservationDateTime = LocalDateTime.of(reservation.getDate(), reservation.getTime().getStartAt());
-        boolean isDuplicateReservationPresent = reservationRepository.findAll().stream()
-                .filter(reservation1 -> reservation.getTheme().equals(reservation1.getTheme()))
-                .map(savedReservation -> LocalDateTime.of(savedReservation.getDate(), savedReservation.getTime().getStartAt()))
-                .anyMatch(dateTime -> dateTime.equals(reservationDateTime));
+    private void rejectPastTimeReservation(Reservation reservation) {
+        LocalDateTime reservationDataTime = reservation.getDateTime();
+        LocalDateTime currentDateTime = LocalDateTime.now();
 
-        if (isDuplicateReservationPresent) {
-            throw new IllegalArgumentException("중복된 예약이 존재합니다.");
+        if (reservationDataTime.isBefore(currentDateTime)) {
+            throw new IllegalArgumentException("이미 지난 시간입니다. 입력한 시간: " + reservationDataTime.toLocalDate() + " "
+                                               + reservationDataTime.toLocalTime());
         }
     }
 
-    private void rejectPastTimeReservation(Reservation reservation) {
-        LocalDateTime dateTime = LocalDateTime.of(reservation.getDate(), reservation.getTime().getStartAt());
-        if (dateTime.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("이미 지난 시간입니다. 입력한 시간: " + dateTime.toLocalDate() + " "
-                    + dateTime.toLocalTime());
+    private void rejectDuplicateDateTime(Reservation reservation) {
+        List<Reservation> savedReservations = reservationRepository.findAll();
+        boolean isDuplicateReservationPresent = savedReservations.stream()
+                .filter(reservation::hasSameTheme)
+                .anyMatch(reservation::hasSameDateTime);
+
+        if (isDuplicateReservationPresent) {
+            throw new IllegalArgumentException("중복된 예약이 존재합니다.");
         }
     }
 
