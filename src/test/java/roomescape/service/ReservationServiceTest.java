@@ -1,9 +1,12 @@
 package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static roomescape.TestFixture.RESERVATION_TIME_FIXTURE;
+import static roomescape.TestFixture.ROOM_THEME_FIXTURE;
+import static roomescape.TestFixture.VALID_STRING_DATE_FIXTURE;
 
-import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,11 +34,14 @@ class ReservationServiceTest {
         InMemoryReservationDb inMemoryReservationDb = new InMemoryReservationDb();
         InMemoryReservationTimeDb inMemoryReservationTimeDb = new InMemoryReservationTimeDb();
         InMemoryRoomThemeDb inMemoryRoomThemeDb = new InMemoryRoomThemeDb();
+
         reservationTimeDao = new InMemoryReservationTimeDao(
                 inMemoryReservationDb, inMemoryReservationTimeDb);
         ReservationDao reservationDao = new InMemoryReservationDao(inMemoryReservationDb);
         roomThemeDao = new InMemoryRoomThemeDao(inMemoryRoomThemeDb);
-        reservationService = new ReservationService(reservationDao, reservationTimeDao, roomThemeDao);
+
+        reservationService = new ReservationService(reservationDao, reservationTimeDao,
+                roomThemeDao);
     }
 
     @DisplayName("모든 예약 검색")
@@ -47,14 +53,11 @@ class ReservationServiceTest {
     @DisplayName("예약 저장")
     @Test
     void save() {
-        //given
-        ReservationTime savedReservationTime = reservationTimeDao.save(new ReservationTime(LocalTime.parse("10:00")));
-        RoomTheme savedRoomTheme = roomThemeDao.save(new RoomTheme("레벨 2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
-        ReservationRequest reservationRequest = new ReservationRequest("aa", "2024-10-10", savedReservationTime.getId(), savedRoomTheme.getId());
-        //when
+        // given
+        ReservationRequest reservationRequest = createReservationRequest("9999-12-12");
+        // when
         ReservationResponse response = reservationService.save(reservationRequest);
-        //then
+        // then
         assertAll(
                 () -> assertThat(reservationService.findAll()).hasSize(1),
                 () -> assertThat(response.id()).isEqualTo(1),
@@ -65,17 +68,33 @@ class ReservationServiceTest {
         );
     }
 
+    @DisplayName("지난 예약을 저장하려 하면 예외가 발생한다.")
+    @Test
+    void saveWithException() {
+        // given
+        ReservationRequest reservationRequest = createReservationRequest("2000-11-09");
+        // when&then
+        assertThatThrownBy(() -> reservationService.save(reservationRequest))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("지나간 날짜입니다.");
+    }
+
     @DisplayName("삭제 테스트")
     @Test
     void deleteById() {
-        //given
-        ReservationTime savedReservationTime = reservationTimeDao.save(new ReservationTime(LocalTime.parse("10:00")));
-        RoomTheme savedRoomTheme = roomThemeDao.save(new RoomTheme("레벨 2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
-        ReservationRequest reservationRequest = new ReservationRequest("aa", "2024-10-10", savedReservationTime.getId(), savedRoomTheme.getId());
-        //when
+        // given
+        createReservationRequest(VALID_STRING_DATE_FIXTURE);
+        // when
         reservationService.deleteById(1);
-        //then
+        // then
         assertThat(reservationService.findAll()).isEmpty();
+    }
+
+    private ReservationRequest createReservationRequest(String date) {
+        ReservationTime savedReservationTime = reservationTimeDao.save(
+                RESERVATION_TIME_FIXTURE);
+        RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);
+        return new ReservationRequest("aa", date,
+                savedReservationTime.getId(), savedRoomTheme.getId());
     }
 }

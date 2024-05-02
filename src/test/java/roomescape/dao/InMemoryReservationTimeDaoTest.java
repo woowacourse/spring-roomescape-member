@@ -3,9 +3,11 @@ package roomescape.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static roomescape.TestFixture.DATE_FIXTURE;
+import static roomescape.TestFixture.RESERVATION_TIME_FIXTURE;
+import static roomescape.TestFixture.ROOM_THEME_FIXTURE;
+import static roomescape.TestFixture.TIME_FIXTURE;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,8 +17,6 @@ import roomescape.console.db.InMemoryReservationDb;
 import roomescape.console.db.InMemoryReservationTimeDb;
 import roomescape.domain.Name;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.RoomTheme;
 
 class InMemoryReservationTimeDaoTest {
     private InMemoryReservationDb inMemoryReservationDb;
@@ -38,19 +38,19 @@ class InMemoryReservationTimeDaoTest {
     @DisplayName("예약 시간을 저장한다.")
     @Test
     void save() {
-        //when
-        reservationTimeDao.save(new ReservationTime(LocalTime.parse("10:00")));
-        //then
+        // when
+        reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
+        // then
         assertThat(reservationTimeDao.findAll()).hasSize(1);
     }
 
     @DisplayName("해당 id의 예약 시간을 보여준다.")
     @Test
     void findById() {
-        //when
-        reservationTimeDao.save(new ReservationTime(LocalTime.parse("10:00")));
-        //then
-        assertThat(reservationTimeDao.findById(1L).getStartAt()).isEqualTo(LocalTime.parse("10:00"));
+        // when
+        reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
+        // then
+        assertThat(reservationTimeDao.findById(1L).getStartAt()).isEqualTo(TIME_FIXTURE);
     }
 
     @DisplayName("해당 id의 예약 시간이 없는 경우, 예외가 발생한다.")
@@ -63,9 +63,9 @@ class InMemoryReservationTimeDaoTest {
     @DisplayName("중복된 예약 시간이 존재하는 지 여부를 반환한다.")
     @Test
     void existsByStartAt() {
-        boolean existsFalse = reservationTimeDao.existByStartAt(LocalTime.of(10, 0));
-        reservationTimeDao.save(new ReservationTime(LocalTime.parse("10:00")));
-        boolean existsTrue = reservationTimeDao.existByStartAt(LocalTime.of(10, 0));
+        boolean existsFalse = reservationTimeDao.existByStartAt(TIME_FIXTURE);
+        reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
+        boolean existsTrue = reservationTimeDao.existByStartAt(TIME_FIXTURE);
 
         assertAll(
                 () -> assertThat(existsFalse).isFalse(),
@@ -76,22 +76,20 @@ class InMemoryReservationTimeDaoTest {
     @DisplayName("해당 id의 예약 시간을 삭제한다.")
     @Test
     void deleteById() {
-        //given
-        reservationTimeDao.save(new ReservationTime(LocalTime.parse("10:00")));
-        //when
+        // given
+        reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
+        // when
         reservationTimeDao.deleteById(1L);
-        //then
+        // then
         assertThat(reservationTimeDao.findAll()).isEmpty();
     }
 
     @DisplayName("해당 id의 예약 시간을 삭제하는 경우, 그 id를 참조하는 예약도 삭제한다.")
     @Test
     void deleteByIdDeletesReservationAlso() {
-        reservationTimeDao.save(new ReservationTime(LocalTime.parse("10:00")));
-        inMemoryReservationDb.insert(new Reservation(new Name("aa"), LocalDate.parse("2024-10-11"),
-                new ReservationTime(1L, LocalTime.of(10, 0)),
-                new RoomTheme(1L, "레벨 2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
-                        "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg")));
+        reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
+        inMemoryReservationDb.insert(new Reservation(new Name("aa"), DATE_FIXTURE,
+                RESERVATION_TIME_FIXTURE, ROOM_THEME_FIXTURE));
 
         reservationTimeDao.deleteById(1L);
 
@@ -102,7 +100,7 @@ class InMemoryReservationTimeDaoTest {
     @Test
     void returnTrueWhenDeleted() {
         //given
-        reservationTimeDao.save(new ReservationTime(LocalTime.parse("10:00")));
+        reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
         //when
         boolean deleted = reservationTimeDao.deleteById(1L);
         //then

@@ -27,5 +27,4 @@ class ConnectionTest {
             throw new RuntimeException(e);
         }
     }
-
 }

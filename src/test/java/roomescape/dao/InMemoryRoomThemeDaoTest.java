@@ -2,6 +2,7 @@ package roomescape.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static roomescape.TestFixture.ROOM_THEME_FIXTURE;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,7 +13,6 @@ import roomescape.console.db.InMemoryRoomThemeDb;
 import roomescape.domain.RoomTheme;
 
 class InMemoryRoomThemeDaoTest {
-
     private InMemoryRoomThemeDb inMemoryRoomThemeDb;
     private RoomThemeDao roomThemeDao;
 
@@ -28,8 +28,7 @@ class InMemoryRoomThemeDaoTest {
     @Test
     void save() {
         // given
-        RoomTheme roomTheme = new RoomTheme("레벨 2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        RoomTheme roomTheme = ROOM_THEME_FIXTURE;
 
         // when
         RoomTheme savedRoomTheme = roomThemeDao.save(roomTheme);
@@ -38,7 +37,8 @@ class InMemoryRoomThemeDaoTest {
         assertAll(
                 () -> assertThat(savedRoomTheme.getId()).isEqualTo(1L),
                 () -> assertThat(savedRoomTheme.getName()).isEqualTo(roomTheme.getName()),
-                () -> assertThat(savedRoomTheme.getDescription()).isEqualTo(roomTheme.getDescription()),
+                () -> assertThat(savedRoomTheme.getDescription()).isEqualTo(
+                        roomTheme.getDescription()),
                 () -> assertThat(savedRoomTheme.getThumbnail()).isEqualTo(roomTheme.getThumbnail())
         );
     }
@@ -56,8 +56,7 @@ class InMemoryRoomThemeDaoTest {
     @Test
     void deleteTheme() {
         // given
-        RoomTheme roomTheme = new RoomTheme("레벨 2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        RoomTheme roomTheme = ROOM_THEME_FIXTURE;
         RoomTheme savedRoomTheme = roomThemeDao.save(roomTheme);
         // when
         roomThemeDao.deleteById(savedRoomTheme.getId());
@@ -69,8 +68,7 @@ class InMemoryRoomThemeDaoTest {
     @Test
     void findById() {
         // given
-        RoomTheme roomTheme = new RoomTheme("레벨 2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        RoomTheme roomTheme = ROOM_THEME_FIXTURE;
         RoomTheme savedRoomTheme = roomThemeDao.save(roomTheme);
         // when
         RoomTheme findRoomTheme = roomThemeDao.findById(savedRoomTheme.getId());
@@ -79,8 +77,10 @@ class InMemoryRoomThemeDaoTest {
         assertAll(
                 () -> assertThat(findRoomTheme.getId()).isEqualTo(savedRoomTheme.getId()),
                 () -> assertThat(findRoomTheme.getName()).isEqualTo(savedRoomTheme.getName()),
-                () -> assertThat(findRoomTheme.getDescription()).isEqualTo(savedRoomTheme.getDescription()),
-                () -> assertThat(findRoomTheme.getThumbnail()).isEqualTo(savedRoomTheme.getThumbnail())
+                () -> assertThat(findRoomTheme.getDescription()).isEqualTo(
+                        savedRoomTheme.getDescription()),
+                () -> assertThat(findRoomTheme.getThumbnail()).isEqualTo(
+                        savedRoomTheme.getThumbnail())
         );
     }
 }

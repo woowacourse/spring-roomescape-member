@@ -2,6 +2,7 @@ package roomescape.domain;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static roomescape.TestFixture.RESERVATION_TIME_FIXTURE;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
@@ -15,7 +16,7 @@ class ReservationTimeTest {
     @DisplayName("정상 생성 테스트")
     @Test
     void validCreate() {
-        assertDoesNotThrow(() -> new ReservationTime(LocalTime.parse("10:00")));
+        assertDoesNotThrow(() -> RESERVATION_TIME_FIXTURE);
     }
 
     @DisplayName("빈문자열이 들어왔을 때 예외를 발생시킨다.")

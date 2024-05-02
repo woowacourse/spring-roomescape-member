@@ -3,6 +3,9 @@ package roomescape.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static roomescape.TestFixture.RESERVATION_TIME_FIXTURE;
+import static roomescape.TestFixture.ROOM_THEME_FIXTURE;
+import static roomescape.TestFixture.VALID_STRING_DATE_FIXTURE;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -58,25 +61,26 @@ class ReservationTimeServiceTest {
     @Test
     void findReservationTimesWithBookStatus() {
         // given
-        ReservationTime savedReservationTime = reservationTimeDao.save(new ReservationTime(LocalTime.parse("10:00")));
-        RoomTheme savedRoomTheme = roomThemeDao.save(new RoomTheme("레벨 2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
-        Reservation savedReservation = reservationDao.save(
-                new Reservation(new Name("brown"), LocalDate.parse("9999-12-31"), savedReservationTime,
-                        savedRoomTheme));
-
+        ReservationTime savedReservationTime = reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
+        RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);
+        reservationDao.save(new Reservation(new Name("brown"),
+                LocalDate.parse("9999-12-31"),
+                savedReservationTime,
+                savedRoomTheme));
         ReservationTimeWithBookStatusRequest timeRequest = new ReservationTimeWithBookStatusRequest(
                 "9999-12-31", savedRoomTheme.getId());
 
         // when
-        List<ReservationTimeWithBookStatusResponse> timeResponses = reservationTimeService.findReservationTimesWithBookStatus(
-                timeRequest);
+        List<ReservationTimeWithBookStatusResponse> timeResponses =
+                reservationTimeService.findReservationTimesWithBookStatus(
+                        timeRequest);
 
         // then
         ReservationTimeWithBookStatusResponse timeResponse = timeResponses.get(0);
         assertAll(
                 () -> assertThat(timeResponse.id()).isEqualTo(savedReservationTime.getId()),
-                () -> assertThat(LocalTime.parse(timeResponse.startAt())).isEqualTo(savedReservationTime.getStartAt()),
+                () -> assertThat(LocalTime.parse(timeResponse.startAt())).isEqualTo(
+                        savedReservationTime.getStartAt()),
                 () -> assertThat(timeResponse.booked()).isTrue()
         );
     }
@@ -84,23 +88,25 @@ class ReservationTimeServiceTest {
     @DisplayName("예약 시간을 저장한다.")
     @Test
     void save() {
-        //given
-        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest("10:00");
-        //when
+        // given
+        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(
+                VALID_STRING_DATE_FIXTURE);
+        // when
         ReservationTimeResponse response = reservationTimeService.save(reservationTimeRequest);
-        //then
+        // then
         assertAll(
                 () -> assertThat(reservationTimeService.findAll()).hasSize(1),
                 () -> assertThat(response.id()).isEqualTo(1),
-                () -> assertThat(response.startAt()).isEqualTo("10:00")
+                () -> assertThat(response.startAt()).isEqualTo(VALID_STRING_DATE_FIXTURE)
         );
     }
 
     @DisplayName("중복된 예약 시간을 저장하려 하면 예외가 발생한다.")
     @Test
     void duplicatedTimeSaveThrowsException() {
-        //given
-        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest("10:00");
+        // given
+        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(
+                VALID_STRING_DATE_FIXTURE);
         reservationTimeService.save(reservationTimeRequest);
         // when&then
         assertThatThrownBy(() -> reservationTimeService.save(reservationTimeRequest))
@@ -112,7 +118,7 @@ class ReservationTimeServiceTest {
     @Test
     void deleteById() {
         //given
-        reservationTimeService.save(new ReservationTimeRequest("10:00"));
+        reservationTimeService.save(new ReservationTimeRequest(VALID_STRING_DATE_FIXTURE));
         //when
         reservationTimeService.deleteById(1);
         //then

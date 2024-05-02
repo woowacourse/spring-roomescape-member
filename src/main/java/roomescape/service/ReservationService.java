@@ -48,15 +48,15 @@ public class ReservationService {
         return ReservationResponse.fromReservation(savedReservation);
     }
 
+    public boolean deleteById(long id) {
+        return reservationDao.deleteById(id);
+    }
+
     private void validateReservation(LocalDate date, LocalTime time) {
         LocalDateTime now = LocalDateTime.now(Clock.systemDefaultZone());
         if (LocalDateTime.of(date, time).isBefore(now)) {
-            throw new IllegalArgumentException("예약할 수 없는 날짜입니다.");
+            throw new IllegalArgumentException("지나간 날짜입니다.");
         }
-    }
-
-    public boolean deleteById(long id) {
-        return reservationDao.deleteById(id);
     }
 
     private void validateDateTimeExistence(LocalDate date, Long timeId) {
