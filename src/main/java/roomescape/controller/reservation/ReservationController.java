@@ -12,6 +12,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import roomescape.service.ReservationService;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -49,5 +50,10 @@ public class ReservationController {
         }
         return ResponseEntity.ok()
                 .build();
+    }
+
+    @GetMapping("/popular-themes")
+    public List<PopularThemeResponse> getPopularThemes() {
+        return reservationService.getPopularThemes(LocalDate.now());
     }
 }

@@ -13,7 +13,6 @@ import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -38,22 +37,6 @@ public class H2ReservationRepository implements ReservationRepository {
                 rs.getString("date"),
                 new ReservationTime(rs.getLong("time_id"), "00:00"),
                 new Theme(rs.getLong("theme_id"), null, null, null)
-        );
-    }
-
-    private Reservation mapRowReservationWithJoin(final ResultSet rs, final int rowNum) throws SQLException {
-        return Reservation.from(
-                rs.getLong("id"),
-                rs.getString("r.name"),
-                rs.getString("r.date"),
-                new ReservationTime(
-                        rs.getLong("rt.id"),
-                        LocalTime.parse(rs.getString("rt.start_at"))),
-                new Theme(
-                        rs.getLong("t.id"),
-                        rs.getString("t.name"),
-                        rs.getString("t.description"),
-                        rs.getString("t.thumbnail"))
         );
     }
 
@@ -144,5 +127,28 @@ public class H2ReservationRepository implements ReservationRepository {
         String sql = "DELETE FROM reservation WHERE id = ?";
 
         return jdbcTemplate.update(sql, id);
+    }
+
+    @Override
+    public List<Theme> findPopularThemes(final LocalDate today) {
+        //TODO 이름 고치기
+        final LocalDate localDate1 = today.minusDays(7);
+        final LocalDate localDate2 = today.minusDays(1);
+
+        String sql = """
+                SELECT r.theme_id, t.name, t.THUMBNAIL, t.DESCRIPTION, count(t.ID) as count FROM reservation AS R
+                JOIN reservation_time RT on RT.ID = R.TIME_ID
+                JOIN THEME T on T.ID = R.THEME_ID
+                WHERE R.DATE BETWEEN  ? AND ?
+                GROUP BY (r.theme_id)
+                ORDER BY count desc
+                """;
+
+        return jdbcTemplate.query(sql, ((rs, rowNum) -> new Theme(
+                rs.getLong("reservation.theme_id"),
+                rs.getString("theme.name"),
+                rs.getString("theme.description"),
+                rs.getString("theme.thumbnail")
+        )), localDate1, localDate2);
     }
 }

@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.controller.reservation.PopularThemeResponse;
 import roomescape.controller.reservation.ReservationRequest;
 import roomescape.controller.reservation.ReservationResponse;
 import roomescape.domain.Reservation;
@@ -13,6 +14,7 @@ import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -79,5 +81,12 @@ public class ReservationService {
 
     public int deleteReservation(final Long id) {
         return reservationRepository.deleteById(id);
+    }
+
+    public List<PopularThemeResponse> getPopularThemes(final LocalDate today) {
+        List<Theme> reservations = reservationRepository.findPopularThemes(today);
+        return reservations.stream()
+                .map(PopularThemeResponse::from)
+                .toList();
     }
 }
