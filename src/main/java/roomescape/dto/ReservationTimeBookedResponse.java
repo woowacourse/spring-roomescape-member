@@ -2,7 +2,6 @@ package roomescape.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalTime;
-import java.util.Map.Entry;
 import roomescape.model.ReservationTime;
 
 public record ReservationTimeBookedResponse(
@@ -11,11 +10,8 @@ public record ReservationTimeBookedResponse(
         LocalTime startAt,
         boolean alreadyBooked
 ) {
-        public static ReservationTimeBookedResponse from(final Entry<ReservationTime, Boolean> reservationTimeBooked) {
-                return new ReservationTimeBookedResponse(
-                        reservationTimeBooked.getKey().getId(),
-                        reservationTimeBooked.getKey().getStartAt(),
-                        reservationTimeBooked.getValue()
-                );
-        }
+
+    public static ReservationTimeBookedResponse of(final ReservationTime time, final boolean alreadyBooked) {
+            return new ReservationTimeBookedResponse(time.getId(), time.getStartAt(), alreadyBooked);
+    }
 }

@@ -7,7 +7,6 @@ import roomescape.dto.ReservationTimeBookedRequest;
 import roomescape.dto.ReservationTimeBookedResponse;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.ReservationTimeSaveRequest;
-import roomescape.model.BookedTimes;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.repository.ReservationRepository;
@@ -74,19 +73,18 @@ public class ReservationTimeService {
             throw new IllegalArgumentException("존재하지 않는 테마입니다.");
         }
 
-        final BookedTimes bookedTimes = createBookedTimes(reservationTimeBookedRequest);
-
-        return bookedTimes.getReservationsIsBooked().entrySet().stream()
-                .sorted(Comparator.comparing(entry -> entry.getKey().getStartAt()))
-                .map(ReservationTimeBookedResponse::from)
-                .toList();
-    }
-
-    private BookedTimes createBookedTimes(final ReservationTimeBookedRequest reservationTimeBookedRequest) {
         final List<Reservation> reservations = reservationRepository.findByDateAndThemeId(reservationTimeBookedRequest.date(),
                 reservationTimeBookedRequest.themeId());
         final List<ReservationTime> times = reservationTimeRepository.findAll();
 
-        return BookedTimes.of(reservations, times);
+        return times.stream()
+                .sorted(Comparator.comparing(ReservationTime::getStartAt).reversed())
+                .map(time -> ReservationTimeBookedResponse.of(time, isAlreadyBooked(reservations, time)))
+                .toList();
+    }
+
+    public boolean isAlreadyBooked(List<Reservation> reservations, ReservationTime time) {
+        return reservations.stream()
+                .anyMatch(reservation -> reservation.isTime(time));
     }
 }
