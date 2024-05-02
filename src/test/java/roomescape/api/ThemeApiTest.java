@@ -19,7 +19,6 @@ import roomescape.dto.ThemeRequest;
 
 @Sql("/theme-api-test-data.sql")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class ThemeApiTest {
 

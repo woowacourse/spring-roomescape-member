@@ -4,7 +4,6 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static roomescape.TestSetting.createReservationTimeRequest;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -28,7 +27,6 @@ import roomescape.dto.ReservationTimeRequest;
 
 @Sql("/reservation-time-api-test-data.sql")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class ReservationTimeApiTest {
 
