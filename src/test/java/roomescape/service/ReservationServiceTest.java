@@ -1,5 +1,10 @@
 package roomescape.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.time.LocalDate;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,12 +15,6 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Name;
 import roomescape.dto.request.ReservationAddRequest;
 import roomescape.dto.response.ReservationResponse;
-
-import java.time.LocalDate;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -30,7 +29,8 @@ class ReservationServiceTest {
     @Test
     @DisplayName("예약을 추가하고 id값을 붙여서 응답 DTO를 생성한다.")
     void addReservation() {
-        ReservationAddRequest reservationAddRequest = new ReservationAddRequest(new Name("네오"), LocalDate.now().plusDays(1), 1L, 1L);
+        ReservationAddRequest reservationAddRequest = new ReservationAddRequest(new Name("네오"),
+                LocalDate.now().plusDays(1), 1L, 1L);
 
         ReservationResponse reservationResponse = reservationService.addReservation(reservationAddRequest);
 
@@ -40,7 +40,8 @@ class ReservationServiceTest {
     @Test
     @DisplayName("존재하지 않는 time_id로 예약을 추가하면 예외를 발생시킨다.")
     void addReservationInvalidGetTimeGetId() {
-        ReservationAddRequest reservationAddRequest = new ReservationAddRequest(new Name("네오"), LocalDate.now().plusDays(1), -1L, 1L);
+        ReservationAddRequest reservationAddRequest = new ReservationAddRequest(new Name("네오"),
+                LocalDate.now().plusDays(1), -1L, 1L);
 
         assertThatThrownBy(() -> reservationService.addReservation(reservationAddRequest))
                 .isInstanceOf(IllegalArgumentException.class);

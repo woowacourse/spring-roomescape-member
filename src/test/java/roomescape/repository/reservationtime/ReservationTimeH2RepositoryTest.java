@@ -2,7 +2,8 @@ package roomescape.repository.reservationtime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static roomescape.InitialDataFixture.*;
+import static roomescape.InitialDataFixture.RESERVATION_TIME_1;
+import static roomescape.InitialDataFixture.RESERVATION_TIME_2;
 
 import java.time.LocalTime;
 import java.util.List;

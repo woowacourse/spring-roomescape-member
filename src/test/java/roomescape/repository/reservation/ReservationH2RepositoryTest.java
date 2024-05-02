@@ -1,7 +1,12 @@
 package roomescape.repository.reservation;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.InitialDataFixture.RESERVATION_1;
+import static roomescape.InitialDataFixture.RESERVATION_2;
+import static roomescape.InitialDataFixture.THEME_2;
+
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,14 +15,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.InitialDataFixture;
 import roomescape.domain.Name;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
-
-import static org.assertj.core.api.Assertions.*;
-import static roomescape.InitialDataFixture.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
