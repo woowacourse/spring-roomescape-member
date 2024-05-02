@@ -10,6 +10,7 @@ import roomescape.domain.ReservationTimeRepository;
 import roomescape.exception.time.DuplicatedTimeException;
 import roomescape.exception.time.NotFoundTimeException;
 import roomescape.exception.time.ReservationReferencedTimeException;
+import roomescape.web.dto.AvailableReservationTimeResponse;
 import roomescape.web.dto.ReservationTimeRequest;
 import roomescape.web.dto.ReservationTimeResponse;
 
@@ -31,12 +32,22 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    public List<ReservationTimeResponse> findAllAvailableTime(LocalDate date, Long themeId) {
+    public List<AvailableReservationTimeResponse> findAllAvailableReservationTime(LocalDate date, Long themeId) {
         List<Long> unavailableTimeIds = reservationRepository.findTimeIdByDateAndThemeId(date, themeId);
-        List<ReservationTime> reservationTimes = reservationTimeRepository.hasNotId(unavailableTimeIds); // TODO: 이름 수정
+        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
         return reservationTimes.stream()
-                .map(ReservationTimeResponse::from)
+                .map(time -> toAvailableReservationTimeResponse(time, unavailableTimeIds))
                 .toList();
+    }
+
+    private AvailableReservationTimeResponse toAvailableReservationTimeResponse(
+            ReservationTime time, List<Long> unavailableTimeIds) {
+        boolean alreadyBooked = isAlreadyBooked(time.getId(), unavailableTimeIds);
+        return AvailableReservationTimeResponse.of(time, alreadyBooked);
+    }
+
+    private boolean isAlreadyBooked(Long targetTimeId, List<Long> unavailableTimeIds) {
+        return unavailableTimeIds.contains(targetTimeId);
     }
 
     public ReservationTimeResponse saveReservationTime(ReservationTimeRequest request) {

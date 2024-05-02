@@ -34,7 +34,7 @@ class ReservationTimeIntegrationTest extends IntegrationTest {
                 .when().get("/times/available?date=2024-08-05&theme-id=1")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("size()", is(1)); // TODO: body의 필드 검증하기
     }
 
     @Test
