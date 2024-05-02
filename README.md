@@ -79,3 +79,10 @@ Content-Type: application/json
   "thumbnail": "class.jpg"
   }
 ]
+
+## 리팩토링 할 것
+- [x] API 명세 정리해보기
+- [x] 컨트롤러 메서드명 변경
+- [ ] 테스트 추가
+- [ ] mapper 방식과 기존 dto에서의 변환 방식 고민
+- [ ] 예외 처리 혼자 해보기
