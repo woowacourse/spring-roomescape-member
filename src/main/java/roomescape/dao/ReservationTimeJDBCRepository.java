@@ -62,7 +62,6 @@ public class ReservationTimeJDBCRepository implements ReservationTimeRepository 
         }
     }
 
-    //TODO: empty 발생 가능성 제거
     @Override
     public boolean existsByTime(String startAt) {
         String sql = "SELECT COUNT(*) FROM reservation_time WHERE start_at = ?";

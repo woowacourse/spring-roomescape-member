@@ -65,7 +65,6 @@ public class ReservationJDBCRepository implements ReservationRepository {
         jdbcTemplate.update(sql, id);
     }
 
-    //TODO: empty 발생 가능성 제거
     @Override
     public boolean existsByDateAndTimeAndTheme(String date, long timeId, long themeId) {
         String sql = "SELECT COUNT(*) FROM Reservation WHERE date = ? AND time_id = ? AND theme_id = ?";
