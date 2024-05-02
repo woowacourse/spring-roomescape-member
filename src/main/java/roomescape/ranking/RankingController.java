@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import roomescape.reservation.service.ReservationService;
-import roomescape.theme.domain.Theme;
 
 @RestController
 public class RankingController {
