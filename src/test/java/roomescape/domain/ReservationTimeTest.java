@@ -15,7 +15,7 @@ class ReservationTimeTest {
     void formatGetTime() {
         ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
 
-        String formatted = reservationTime.startAt(DateTimeFormatter.ofPattern("HH:mm"));
+        String formatted = reservationTime.getStartAt(DateTimeFormatter.ofPattern("HH:mm"));
 
         assertThat(formatted).isEqualTo("10:00");
     }
@@ -31,7 +31,7 @@ class ReservationTimeTest {
 
     @Test
     @DisplayName("startAt이 Null인 경우 예외가 발생한다.")
-    void startAtCannotBeNull() {
+    void getStartAtCannotBeNull() {
         LocalTime startAt = null;
 
         assertThatThrownBy(() -> new ReservationTime(1L, startAt))

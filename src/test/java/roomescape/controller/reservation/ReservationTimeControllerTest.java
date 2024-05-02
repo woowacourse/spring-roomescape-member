@@ -36,7 +36,7 @@ class ReservationTimeControllerTest {
     @ParameterizedTest
     @ValueSource(strings = {"", "abc", "1500", "15000", "15", "25:00"})
     @DisplayName("예약 가능한 시간이 잘못된 경우 bad request 상태코드를 반환한다.")
-    void wrongStartAt(String startAt) {
+    void wrongGetStartAt(String startAt) {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", startAt);
 
@@ -50,7 +50,7 @@ class ReservationTimeControllerTest {
 
     @Test
     @DisplayName("중복된 예약 가능한 시간을 추가하는 경우 bad request 상태코드를 반환한다.")
-    void wrongStartAt() {
+    void wrongGetStartAt() {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "09:00");
 

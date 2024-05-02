@@ -7,8 +7,8 @@ import roomescape.domain.ReservationTime;
 public record ReservationTimeResponse(Long id, String startAt) {
     public static ReservationTimeResponse from(ReservationTime reservationTime) {
         return new ReservationTimeResponse(
-                reservationTime.id(),
-                reservationTime.startAt(DateTimeFormatter.ofPattern("HH:mm"))
+                reservationTime.getId(),
+                reservationTime.getStartAt(DateTimeFormatter.ofPattern("HH:mm"))
         );
     }
 

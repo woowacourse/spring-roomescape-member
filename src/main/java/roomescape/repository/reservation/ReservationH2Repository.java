@@ -39,7 +39,7 @@ public class ReservationH2Repository implements ReservationRepository {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.getName().getName())
                 .addValue("date", reservation.getDate(DateTimeFormatter.ISO_DATE))
-                .addValue("time_id", reservation.getTime().id())
+                .addValue("time_id", reservation.getTime().getId())
                 .addValue("theme_id", reservation.getTheme().getId());
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
 
@@ -47,7 +47,7 @@ public class ReservationH2Repository implements ReservationRepository {
     }
 
     private void validateDateTime(Reservation reservation) {
-        LocalDateTime localDateTime = LocalDateTime.of(reservation.getDate(), reservation.getTime().startAt());
+        LocalDateTime localDateTime = LocalDateTime.of(reservation.getDate(), reservation.getTime().getStartAt());
         LocalDateTime now = LocalDateTime.now();
 
         if (localDateTime.isBefore(now)) {
@@ -60,7 +60,7 @@ public class ReservationH2Repository implements ReservationRepository {
 
     private boolean isDuplicatedReservation(Reservation reservation) {
         String sql = "SELECT * FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?";
-        return !jdbcTemplate.query(sql, (rs, rowNum) -> 0, reservation.getDate(), reservation.getTime().id(), reservation.getTheme().getId()).isEmpty();
+        return !jdbcTemplate.query(sql, (rs, rowNum) -> 0, reservation.getDate(), reservation.getTime().getId(), reservation.getTheme().getId()).isEmpty();
     }
 
     @Override

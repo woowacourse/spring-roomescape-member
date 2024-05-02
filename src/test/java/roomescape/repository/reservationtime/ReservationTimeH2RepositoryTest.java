@@ -10,13 +10,10 @@ import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.InitialDataFixture;
 import roomescape.domain.ReservationTime;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -36,7 +33,7 @@ class ReservationTimeH2RepositoryTest {
 
         ReservationTime saved = reservationTimeH2Repository.save(reservationTime);
 
-        assertThat(saved.id()).isNotNull();
+        assertThat(saved.getId()).isNotNull();
     }
 
     @Test
@@ -50,7 +47,7 @@ class ReservationTimeH2RepositoryTest {
     @Test
     @DisplayName("id에 맞는 ReservationTime을 제거한다.")
     void delete() {
-        reservationTimeH2Repository.delete(RESERVATION_TIME_2.id());
+        reservationTimeH2Repository.delete(RESERVATION_TIME_2.getId());
 
         Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reservation_time", Integer.class);
 
@@ -60,7 +57,7 @@ class ReservationTimeH2RepositoryTest {
     @Test
     @DisplayName("참조되어 있는 시간을 삭제하는 경우 예외가 발생한다.")
     void deleteReferencedGetTime() {
-        assertThatThrownBy(() -> reservationTimeH2Repository.delete(RESERVATION_TIME_1.id()))
+        assertThatThrownBy(() -> reservationTimeH2Repository.delete(RESERVATION_TIME_1.getId()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -76,9 +73,9 @@ class ReservationTimeH2RepositoryTest {
     @Test
     @DisplayName("id에 맞는 ReservationTime을 찾는다.")
     void findBy() {
-        ReservationTime found = reservationTimeH2Repository.findById(RESERVATION_TIME_1.id()).get();
+        ReservationTime found = reservationTimeH2Repository.findById(RESERVATION_TIME_1.getId()).get();
 
-        assertThat(found.startAt()).isEqualTo(RESERVATION_TIME_1.startAt());
+        assertThat(found.getStartAt()).isEqualTo(RESERVATION_TIME_1.getStartAt());
     }
 
     @Test

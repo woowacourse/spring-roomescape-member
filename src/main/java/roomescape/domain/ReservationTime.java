@@ -25,15 +25,15 @@ public class ReservationTime {
         }
     }
 
-    public Long id() {
+    public Long getId() {
         return id;
     }
 
-    public LocalTime startAt() {
+    public LocalTime getStartAt() {
         return startAt;
     }
 
-    public String startAt(DateTimeFormatter formatter) {
+    public String getStartAt(DateTimeFormatter formatter) {
         return startAt.format(formatter);
     }
 

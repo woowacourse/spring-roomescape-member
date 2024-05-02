@@ -1,6 +1,5 @@
 package roomescape.repository.theme;
 
-import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 import java.util.List;

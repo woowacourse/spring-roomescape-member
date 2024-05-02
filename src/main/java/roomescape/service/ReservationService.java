@@ -17,6 +17,8 @@ import roomescape.repository.reservation.ReservationRepository;
 @Service
 public class ReservationService {
 
+    public static final int DAY_BEFORE_CALCULATE_DATE = 8;
+
     private final ReservationRepository reservationRepository;
     private final ReservationTimeService reservationTimeService;
     private final ThemeService themeService;
@@ -57,7 +59,7 @@ public class ReservationService {
 
     public List<ReservationResponse> findPopularThemes(Long limitCount) {
         Map<Theme, Long> themeReservationCounts = reservationRepository.findAll().stream()
-                .filter(reservation -> reservation.getDate().isAfter(LocalDate.now().minusDays(8)))
+                .filter(reservation -> reservation.getDate().isAfter(LocalDate.now().minusDays(DAY_BEFORE_CALCULATE_DATE)))
                 .filter(reservation -> reservation.getDate().isBefore(LocalDate.now()))
                 .collect(Collectors.groupingBy(Reservation::getTheme, Collectors.counting()));
 
