@@ -24,7 +24,7 @@ public class ReservationTimeService {
     }
 
     public Long addReservationTime(ReservationTimeRequest reservationTimeRequest) {
-        validateTimeNotExist(reservationTimeRequest.startAt());
+        validateTimeDuplicate(reservationTimeRequest.startAt());
         ReservationTime reservationTime = reservationTimeRequest.toEntity();
         return reservationTimeRepository.save(reservationTime);
     }
@@ -42,6 +42,17 @@ public class ReservationTimeService {
         return ReservationTimeResponse.from(reservationTime);
     }
 
+    public List<ReservationTimeResponse> getAvailableTimes(LocalDate date, Long themeId) {
+        List<Reservation> reservations = reservationRepository.findByDateAndThemeId(date, themeId);
+        List<ReservationTime> allTimes = reservationTimeRepository.findAll();
+        List<ReservationTime> bookedTimes = reservations.stream().map(Reservation::getTime).toList();
+
+        return allTimes.stream()
+                .filter(time -> !bookedTimes.contains(time))
+                .map(ReservationTimeResponse::from)
+                .toList();
+    }
+
     public void deleteReservationTime(Long id) {
         validateIdExist(id);
         if (reservationRepository.existTimeId(id)) {
@@ -56,21 +67,9 @@ public class ReservationTimeService {
         }
     }
 
-    public void validateTimeNotExist(LocalTime time) {
+    public void validateTimeDuplicate(LocalTime time) {
         if (reservationTimeRepository.existTime(time)) {
             throw new IllegalArgumentException("[ERROR] 이미 등록된 시간 입니다. : " + time);
         }
-    }
-
-    public List<ReservationTimeResponse> getAvailableTimes(LocalDate date, Long themeId) {
-
-        List<Reservation> reservations = reservationRepository.findByDateAndThemeId(date, themeId);
-        List<ReservationTime> allTimes = reservationTimeRepository.findAll();
-        List<ReservationTime> bookedTimes = reservations.stream().map(Reservation::getTime).toList();
-
-        return allTimes.stream()
-                .filter(time -> !bookedTimes.contains(time))
-                .map(ReservationTimeResponse::from)
-                .toList();
     }
 }
