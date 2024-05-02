@@ -41,7 +41,7 @@ public class ReservationService {
 
         validateReservationDateTime(createReservationRequest.date(), reservationTime.getTime());
         Reservation reservation = createReservationRequest.toReservation(reservationTime, theme);
-        // TODO: 추가한 예외 처리 테스트 작성하기
+
         if (reservationRepository.existsByDateAndTime(reservation.getDate(), reservationTime.getId())) {
             throw new IllegalStateException("동일한 시간의 예약이 존재합니다.");
         }
@@ -49,7 +49,6 @@ public class ReservationService {
         return CreateReservationResponse.of(reservationRepository.save(reservation));
     }
 
-    // TODO: 추가한 예외 처리 테스트 작성하기
     private void validateReservationDateTime(final LocalDate reservationDate, final LocalTime reservationTime) {
         LocalDateTime reservationDateTime = LocalDateTime.of(reservationDate, reservationTime);
         if (reservationDateTime.isBefore(LocalDateTime.now())) {
