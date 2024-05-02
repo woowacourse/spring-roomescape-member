@@ -27,8 +27,7 @@ import roomescape.service.dto.input.ReservationTimeInput;
 import roomescape.service.dto.output.ReservationTimeOutput;
 import roomescape.service.dto.output.ThemeOutput;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-//@Import(TestConfig.class)
+@SpringBootTest
 public class ReservationTimeServiceTest {
 
     @Autowired
