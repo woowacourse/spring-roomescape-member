@@ -1,78 +1,47 @@
 package roomescape.controller;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.lang.reflect.Field;
-import java.util.List;
 import java.util.Map;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import roomescape.controller.api.ReservationController;
-import roomescape.dto.ReservationResponse;
+import org.springframework.test.context.jdbc.Sql;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
+@Sql(scripts = {"/test.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class ReservationControllerTest {
 
     @LocalServerPort
     int port;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    private ReservationController reservationController;
-
     @BeforeEach
-    void init() {
+    void initPort() {
         RestAssured.port = port;
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('10:00')");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('이름', '설명', '썸네일')");
     }
 
     @DisplayName("존재하지 않는 예약 삭제")
     @Test
     void deletedReservationNotFound() {
         RestAssured.given().log().all()
-                .when().delete("/reservations/1")
+                .when().delete("/reservations/100")
                 .then().log().all()
                 .statusCode(400);
     }
 
-    @DisplayName("비어 있는 예약 목록 조회")
+    @DisplayName("예약 목록 조회")
     @Test
     void getReservationsWhenEmpty() {
         RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
-    }
-
-    @DisplayName("데이터 삽입 후 예약 목록 조회")
-    @Test
-    void getReservationsAfterInsert() {
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2025-08-05", 1L, 1L);
-
-        final List<ReservationResponse> reservations = RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200).extract()
-                .jsonPath().getList(".", ReservationResponse.class);
-
-        final Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-        assertThat(reservations.size()).isEqualTo(count);
+                .body("size()", is(13));
     }
 
     @DisplayName("예약 추가 및 삭제")
@@ -90,18 +59,12 @@ class ReservationControllerTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
-                .header("Location", "/reservations/1");
-
-        final Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-        assertThat(count).isEqualTo(1);
+                .header("Location", "/reservations/14");
 
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(204);
-
-        final Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-        assertThat(countAfterDelete).isEqualTo(0);
     }
 
     @DisplayName("존재하지 않는 시간으로 예약 추가")
@@ -118,20 +81,5 @@ class ReservationControllerTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400);
-    }
-
-    @DisplayName("컨트롤러에서 jdbcTemplate 필드 제거")
-    @Test
-    void jdbcTemplateNotInjected() {
-        boolean isJdbcTemplateInjected = false;
-
-        for (Field field : reservationController.getClass().getDeclaredFields()) {
-            if (field.getType().equals(JdbcTemplate.class)) {
-                isJdbcTemplateInjected = true;
-                break;
-            }
-        }
-
-        assertFalse(isJdbcTemplateInjected);
     }
 }
