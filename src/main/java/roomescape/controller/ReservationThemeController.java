@@ -47,9 +47,9 @@ public class ReservationThemeController {
         return ResponseEntity.badRequest().body("예약이 존재하는 테마는 삭제할 수 없습니다.");
     }
 
-    @ResponseBody
     @GetMapping("/weeklyThemes")
-    public List<ReservationTheme> weeklyTheme() {
-        return reservationThemeService.getWeeklyBestThemes();
+    public ResponseEntity<List<ReservationTheme>> weeklyTheme() {
+        List<ReservationTheme> reservationThemes = reservationThemeService.getWeeklyBestThemes();
+        return ResponseEntity.ok().body(reservationThemes);
     }
 }
