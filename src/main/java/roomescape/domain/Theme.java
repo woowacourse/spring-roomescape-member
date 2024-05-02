@@ -1,6 +1,6 @@
 package roomescape.domain;
 
-import roomescape.exception.InvalidRequestException;
+import roomescape.domain.exception.InvalidRequestException;
 
 import java.util.Objects;
 

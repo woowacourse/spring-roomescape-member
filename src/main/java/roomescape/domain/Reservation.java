@@ -1,8 +1,8 @@
 package roomescape.domain;
 
 
-import roomescape.exception.InvalidDateException;
-import roomescape.exception.InvalidRequestException;
+import roomescape.domain.exception.InvalidDateException;
+import roomescape.domain.exception.InvalidRequestException;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;

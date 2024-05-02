@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.exception.ThemeUsedException;
+import roomescape.service.exception.ThemeUsedException;
 import roomescape.repository.H2ReservationRepository;
 import roomescape.repository.H2ThemeRepository;
 

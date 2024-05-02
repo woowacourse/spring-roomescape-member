@@ -1,4 +1,6 @@
-package roomescape.exception;
+package roomescape.domain.exception;
+
+import roomescape.exception.CustomException;
 
 public class InvalidDateException extends CustomException {
 

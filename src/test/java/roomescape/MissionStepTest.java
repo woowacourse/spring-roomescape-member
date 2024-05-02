@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 
 @Sql(scripts = {"/drop.sql", "/schema.sql"},
-        executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class MissionStepTest {
 

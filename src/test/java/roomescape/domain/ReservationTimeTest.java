@@ -4,8 +4,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import roomescape.exception.InvalidRequestException;
-import roomescape.exception.InvalidTimeException;
+import roomescape.domain.exception.InvalidRequestException;
+import roomescape.domain.exception.InvalidTimeException;
 
 import java.time.LocalTime;
 

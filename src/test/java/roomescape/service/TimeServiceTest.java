@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.controller.time.TimeRequest;
 import roomescape.controller.time.TimeResponse;
-import roomescape.exception.TimeUsedException;
+import roomescape.service.exception.TimeUsedException;
 import roomescape.repository.H2ReservationRepository;
 import roomescape.repository.H2ReservationTimeRepository;
 

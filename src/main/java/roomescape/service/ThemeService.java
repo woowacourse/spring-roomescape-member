@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import roomescape.controller.theme.CreateThemeRequest;
 import roomescape.controller.theme.CreateThemeResponse;
 import roomescape.domain.Theme;
-import roomescape.exception.ThemeUsedException;
+import roomescape.service.exception.ThemeUsedException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 

@@ -5,7 +5,7 @@ import roomescape.controller.time.TimeRequest;
 import roomescape.controller.time.TimeResponse;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.exception.TimeUsedException;
+import roomescape.service.exception.TimeUsedException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
