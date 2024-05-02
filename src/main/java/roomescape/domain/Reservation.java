@@ -29,6 +29,12 @@ public class Reservation {
         return time.hasSameId(timeId);
     }
 
+    public boolean contains(LocalDate date, Long timeId, Long roomThemeId) {
+        return this.date.equals(date)
+                && this.time.getId().equals(timeId)
+                && this.theme.getId().equals(roomThemeId);
+    }
+
     public Long getId() {
         return id;
     }

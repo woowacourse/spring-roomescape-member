@@ -11,7 +11,8 @@ public record ReservationResponse(
         RoomThemeResponse theme) {
 
     public static ReservationResponse fromReservation(Reservation reservation) {
-        return new ReservationResponse(reservation.getId(),
+        return new ReservationResponse(
+                reservation.getId(),
                 reservation.getName(),
                 reservation.getDate().format(DateTimeFormatter.ISO_DATE),
                 ReservationTimeResponse.fromReservationTime(reservation.getTime()),

@@ -51,7 +51,8 @@ public class ReservationTimeService {
     }
 
     public List<ReservationTimeWithBookStatusResponse> findReservationTimesWithBookStatus(
-            ReservationTimeWithBookStatusRequest timeRequest) {
+            ReservationTimeWithBookStatusRequest timeRequest)
+    {
         List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
         List<Reservation> reservations = reservationDao.findAll();
 
@@ -63,15 +64,15 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    private boolean isReservationTimeBooked(List<Reservation> reservations, ReservationTimeWithBookStatusRequest timeRequest, ReservationTime reservationTime) {
-        return reservations.stream().anyMatch(reservation ->
-                        matchDateAndTheme(reservation, timeRequest, reservationTime));
-    }
+    private boolean isReservationTimeBooked(
+            List<Reservation> reservations,
+            ReservationTimeWithBookStatusRequest timeRequest,
+            ReservationTime reservationTime)
+    {
+        LocalDate date = LocalDate.parse(timeRequest.date());
+        Long themeId = timeRequest.themeId();
+        Long reservationTimeId = reservationTime.getId();
 
-    //TODO 리팩토링
-    private boolean matchDateAndTheme(Reservation reservation, ReservationTimeWithBookStatusRequest timeRequest, ReservationTime reservationTime) {
-        return reservation.getTime().getId().equals(reservationTime.getId())
-                && reservation.getDate().equals(LocalDate.parse(timeRequest.date()))
-                && reservation.getTheme().getId().equals(timeRequest.themeId());
+        return reservations.stream().anyMatch(reservation -> reservation.contains(date, themeId, reservationTimeId));
     }
 }

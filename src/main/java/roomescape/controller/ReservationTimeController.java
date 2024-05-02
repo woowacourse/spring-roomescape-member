@@ -32,7 +32,9 @@ public class ReservationTimeController {
     }
 
     @GetMapping("/filter")
-    public ResponseEntity<List<ReservationTimeWithBookStatusResponse>> findReservationTimesWithBookStatus(@RequestParam("date") String date, @RequestParam("themeId") Long themeId) {
+    public ResponseEntity<List<ReservationTimeWithBookStatusResponse>> findReservationTimesWithBookStatus(
+            @RequestParam("date") String date,
+            @RequestParam("themeId") Long themeId) {
         ReservationTimeWithBookStatusRequest timeRequest = new ReservationTimeWithBookStatusRequest(date, themeId);
         return ResponseEntity.ok(reservationTimeService.findReservationTimesWithBookStatus(timeRequest));
     }
