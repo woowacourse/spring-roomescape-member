@@ -78,6 +78,10 @@ public class ReservationRequestDto {
         return name;
     }
 
+    public Long getThemeId() {
+        return themeId;
+    }
+
     public String getDate() {
         return date;
     }
