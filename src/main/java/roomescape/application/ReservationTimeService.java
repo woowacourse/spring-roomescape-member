@@ -1,6 +1,5 @@
 package roomescape.application;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
@@ -9,7 +8,6 @@ import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.time.ReservationTime;
 import roomescape.domain.time.repository.ReservationTimeRepository;
-import roomescape.dto.reservationtime.ReservationTimeResponse;
 
 @Service
 public class ReservationTimeService {
@@ -35,15 +33,8 @@ public class ReservationTimeService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
     }
 
-    public List<ReservationTimeResponse> getReservationTimes() {
-        List<ReservationTimeResponse> responses = new ArrayList<>();
-        for (ReservationTime reservationTime : reservationTimeRepository.findAll()) {
-            Optional<Reservation> optionalReservation = reservationRepository.findByTimeId(reservationTime.getId());
-            boolean alreadyBooked = optionalReservation.isPresent();
-            ReservationTimeResponse response = ReservationTimeResponse.from(reservationTime);
-            responses.add(response);
-        }
-        return responses;
+    public List<ReservationTime> getReservationTimes() {
+        return reservationTimeRepository.findAll();
     }
 
     public void delete(long id) {
