@@ -1,5 +1,7 @@
 package roomescape.repository;
 
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +21,11 @@ public class CollectionThemeRepository implements ThemeRepository {
     @Override
     public List<Theme> findAll() {
         return new ArrayList<>(themes);
+    }
+
+    @Override
+    public List<Theme> findAndOrderByPopularity(LocalDate start, LocalDate end, int count) {
+        return null;
     }
 
     @Override
