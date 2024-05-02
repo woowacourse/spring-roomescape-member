@@ -1,5 +1,7 @@
 package roomescape.controller;
 
+import static roomescape.TestFixture.ROOM_THEME_FIXTURE;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.List;
@@ -54,13 +56,10 @@ class RoomThemeControllerTest {
     @Test
     void deleteTheme() {
         // given
-        RoomTheme roomTheme = new RoomTheme("레벨 2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        RoomTheme savedRoomTheme = roomThemeDao.save(roomTheme);
-        // when
+        RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);
+        // when & then
         RestAssured.given().log().all()
                 .when().delete("/themes/" + savedRoomTheme.getId())
                 .then().log().all().assertThat().statusCode(HttpStatus.NO_CONTENT.value());
-        // then
     }
 }

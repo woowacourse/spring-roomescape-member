@@ -2,6 +2,9 @@ package roomescape.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static roomescape.TestFixture.DATE_FIXTURE;
+import static roomescape.TestFixture.RESERVATION_TIME_FIXTURE;
+import static roomescape.TestFixture.ROOM_THEME_FIXTURE;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -91,7 +94,7 @@ class ReservationTimeControllerTest {
     @Test
     void deleteReservationTImeSuccess() {
         //given
-        ReservationTime reservationTime = reservationTimeDao.save(new ReservationTime(LocalTime.parse("10:00")));
+        ReservationTime reservationTime = reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
         Long id = reservationTime.getId();
         //then
         RestAssured.given().log().all()
@@ -114,11 +117,9 @@ class ReservationTimeControllerTest {
     @Test
     void deleteReservationTimeDeletesReservationAlso() {
         //given
-        ReservationTime reservationTime = reservationTimeDao.save(new ReservationTime(LocalTime.parse("10:00")));
-        RoomTheme roomTheme = roomThemeDao.save(new RoomTheme("레벨 2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
-        reservationDao.save(new Reservation(
-                new Name("brown"), LocalDate.parse("2024-11-15"), reservationTime, roomTheme));
+        ReservationTime reservationTime = reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
+        RoomTheme roomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);
+        reservationDao.save(new Reservation(new Name("brown"), DATE_FIXTURE, reservationTime, roomTheme));
         Long timeId = reservationTime.getId();
         //when
         Response deleteResponse = RestAssured.given().log().all()
