@@ -52,7 +52,7 @@ public class CollectionReservationTimeRepository implements ReservationTimeRepos
     @Override
     public void delete(long id) {
         reservationTimes.stream()
-                .filter(reservationTime -> reservationTime.getId().equals(id))
+                .filter(reservationTime -> reservationTime.isIdOf(id))
                 .findAny()
                 .ifPresent(reservationTimes::remove);
     }
