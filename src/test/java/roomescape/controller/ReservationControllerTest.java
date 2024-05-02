@@ -1,9 +1,13 @@
 package roomescape.controller;
 
+import static roomescape.TestFixture.RESERVATION_TIME_FIXTURE;
+import static roomescape.TestFixture.ROOM_THEME_FIXTURE;
+import static roomescape.TestFixture.TIME_FIXTURE;
+import static roomescape.TestFixture.VALID_STRING_DATE_FIXTURE;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -52,7 +56,7 @@ class ReservationControllerTest {
         }
     }
 
-    @DisplayName("모든 예약 내역 조회 테스트")
+    @DisplayName("모든 예약 내역 조회")
     @Test
     void findAllReservations() {
         RestAssured.given().log().all()
@@ -63,9 +67,9 @@ class ReservationControllerTest {
     @DisplayName("예약 추가 테스트")
     @Test
     void createReservation() {
-        //given
-        ReservationRequest reservationRequest = createReservationRequest("브라운", "9999-08-05");
-        //then
+        // given
+        ReservationRequest reservationRequest = createReservationRequest("브라운", VALID_STRING_DATE_FIXTURE);
+        // then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservationRequest)
@@ -73,13 +77,13 @@ class ReservationControllerTest {
                 .then().log().all().assertThat().statusCode(HttpStatus.CREATED.value());
     }
 
-    @DisplayName("사용자 이름에 null 혹은 빈문자열 입력시 400을 응답한다.")
+    @DisplayName("사용자 이름에 빈문자열 입력시 400을 응답한다.")
     @ParameterizedTest
     @ValueSource(strings = {"", " "})
     void createReservationException(String value) {
-        //given
-        ReservationRequest reservationRequest = createReservationRequest(value, "9999-12-12");
-        //then
+        // given
+        ReservationRequest reservationRequest = createReservationRequest(value, VALID_STRING_DATE_FIXTURE);
+        // then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservationRequest)
@@ -117,14 +121,14 @@ class ReservationControllerTest {
     @DisplayName("중복된 시간 예약 시도 시 400을 응답한다.")
     @Test
     void duplicateReservation() {
-        //given
-        ReservationRequest reservationRequest = createReservationRequest("브라운", "9999-12-12");
+        // given
+        ReservationRequest reservationRequest = createReservationRequest("브라운", VALID_STRING_DATE_FIXTURE);
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservationRequest)
                 .when().post("/reservations")
                 .then().log().all();
-        //when&then
+        // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservationRequest)
@@ -137,7 +141,7 @@ class ReservationControllerTest {
     void createReservationFail() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new ReservationRequest("브라운", "2023-08-05", 1L, 1L))
+                .body(new ReservationRequest("브라운", VALID_STRING_DATE_FIXTURE, 1L, 1L))
                 .when().post("/reservations")
                 .then().log().all().assertThat().statusCode(HttpStatus.BAD_REQUEST.value());
     }
@@ -145,17 +149,14 @@ class ReservationControllerTest {
     @DisplayName("예약 취소 성공 테스트")
     @Test
     void deleteReservationSuccess() {
-        // given
-        ReservationTime reservationTime = reservationTimeDao.save(new ReservationTime(LocalTime.parse("10:00")));
-        RoomTheme roomTheme = roomThemeDao.save(new RoomTheme("레벨 2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        //given
+        ReservationTime savedReservationTime = reservationTimeDao.save(new ReservationTime(TIME_FIXTURE));
+        RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);
+        Reservation savedReservation = reservationDao.save(
+                new Reservation(new Name("brown"), LocalDate.parse("2024-11-15"), savedReservationTime, savedRoomTheme));
 
-        // when
-        Reservation reservation = reservationDao.save(
-                new Reservation(new Name("brown"), LocalDate.parse("2024-11-15"), reservationTime, roomTheme));
-        Long id = reservation.getId();
-
-        //then
+        //when&then
+        Long id = savedReservation.getId();
         RestAssured.given().log().all()
                 .when().delete("/reservations/" + id)
                 .then().log().all().assertThat().statusCode(HttpStatus.NO_CONTENT.value());
@@ -173,11 +174,8 @@ class ReservationControllerTest {
     }
 
     private ReservationRequest createReservationRequest(String name, String date) {
-        ReservationTime savedReservationTime = reservationTimeDao.save(
-                new ReservationTime(LocalTime.parse("10:00")));
-        RoomTheme savedRoomTheme = roomThemeDao.save(
-                new RoomTheme("레벨 2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
-                        "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        ReservationTime savedReservationTime = reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
+        RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);
         return new ReservationRequest(name, date, savedReservationTime.getId(), savedRoomTheme.getId());
     }
 }
