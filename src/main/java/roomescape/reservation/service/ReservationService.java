@@ -42,7 +42,7 @@ public class ReservationService {
         validateReservationDateTime(createReservationRequest.date(), reservationTime.getTime());
         Reservation reservation = createReservationRequest.toReservation(reservationTime, theme);
 
-        if (reservationRepository.existsByDateAndTime(reservation.getDate(), reservationTime.getId())) {
+        if (reservationRepository.existsByDateAndTimeAndTheme(reservation.getDate(), reservationTime.getId(), theme.getId())) {
             throw new IllegalStateException("동일한 시간의 예약이 존재합니다.");
         }
 
