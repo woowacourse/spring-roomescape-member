@@ -49,7 +49,7 @@ public class ReservationController {
     }
 
     @ExceptionHandler(value = IllegalArgumentException.class)
-    public ResponseEntity<String> handleHttpMessageNotReadableException(IllegalArgumentException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
 }
