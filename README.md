@@ -18,6 +18,7 @@
 | DELETE | `/times/{id}`                         | 예약 시간 추가              |                                        | `@RestController` |
 | POST   | `/times`                              | 예약 시간 삭제              |                                        | `@RestController` |
 | GET    | `/themes`                             | 테마 정보 조회              |                                        | `@RestController` |
+| GET    | `/themes/top?count`                   | 인기순 테마 조회             |                                        | `@RestController` |
 | POST   | `/themes`                             | 테마 추가                 |                                        | `@RestController` |
 | DELETE | `/themes/{id}`                        | 테마 삭제                 |                                        | `@RestController` |
 
@@ -217,6 +218,39 @@ Content-Type: application/json
         "id": 1,
         "name": "레벨2 탈출",
         "description": "우테코 레벨2를 탈출하는 내용입니다.",
+        "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+    }
+]
+```
+
+---
+
+### 인기순 테마 조회 API
+
+- Request
+
+```
+GET /themes/top?count=10 HTTP/1.1
+```
+
+- response
+
+```
+HTTP/1.1 200
+Content-Type: application/json
+
+[
+    {
+        "id": 1,
+        "name": "레벨2 탈출",
+        "description": "우테코 레벨2를 탈출하는 내용입니다.",
+        "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+    },
+    ...8개 생략
+    {
+        "id": 10,
+        "name": "레벨10 탈출",
+        "description": "우테코 레벨10를 탈출하는 내용입니다.",
         "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
     }
 ]
