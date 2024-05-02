@@ -78,6 +78,10 @@ public class Reservation implements Comparable<Reservation> {
         return time.getStartAt();
     }
 
+    public boolean hasSameId(long id) {
+        return this.id == id;
+    }
+
     public boolean isReservationTimeOf(long id) {
         return this.time.isIdOf(id);
     }
@@ -109,10 +113,6 @@ public class Reservation implements Comparable<Reservation> {
 
     public LocalDate getDate() {
         return date;
-    }
-
-    public LocalTime getTime() {
-        return time.getStartAt();
     }
 
     public ReservationTime getReservationTime() {
@@ -149,10 +149,10 @@ public class Reservation implements Comparable<Reservation> {
     @Override
     public String toString() {
         return "Reservation{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", date=" + date +
-                ", time=" + time +
-                '}';
+               "id=" + id +
+               ", name='" + name + '\'' +
+               ", date=" + date +
+               ", time=" + time +
+               '}';
     }
 }
