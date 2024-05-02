@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
@@ -27,6 +28,17 @@ public class ThemeService {
         return themeDao.getAll()
                 .stream()
                 .map(ThemeResponse::from)
+                .toList();
+    }
+
+    public List<ThemeResponse> getThemeRanking() {
+        List<Long> themeRankingIds = reservationDao.findRanking(
+                LocalDate.now().minusWeeks(1),
+                LocalDate.now(),
+                10
+        );
+        return themeRankingIds.stream()
+                .map(id -> ThemeResponse.from(themeDao.findById(id).get()))
                 .toList();
     }
 

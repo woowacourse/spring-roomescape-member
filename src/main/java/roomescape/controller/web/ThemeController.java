@@ -23,16 +23,21 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<ThemeResponse>> getAll() {
-        return ResponseEntity.ok(themeService.getAll());
-    }
-
     @PostMapping
     public ResponseEntity<ThemeResponse> save(@RequestBody ThemeRequest themeRequest) {
         ThemeResponse themeResponse = themeService.save(themeRequest);
         return ResponseEntity.created(URI.create("/themes/" + themeResponse.themeId()))
                 .body(themeResponse);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ThemeResponse>> getAll() {
+        return ResponseEntity.ok(themeService.getAll());
+    }
+
+    @GetMapping("/ranking")
+    public ResponseEntity<List<ThemeResponse>> getThemeRanking() {
+        return ResponseEntity.ok(themeService.getThemeRanking());
     }
 
     @DeleteMapping("/{id}")

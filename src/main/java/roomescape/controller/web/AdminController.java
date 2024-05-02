@@ -29,4 +29,9 @@ public class AdminController {
     public String getThemePage() {
         return "/admin/theme";
     }
+
+    @GetMapping("/")
+    public String getHomePage() {
+        return "/index";
+    }
 }

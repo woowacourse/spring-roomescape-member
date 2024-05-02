@@ -170,4 +170,13 @@ public class ReservationDao {
                 sql, (resultSet, rowNum) -> resultSet.getLong("time_id"), date.toString(), themeId
         );
     }
+
+    public List<Long> findRanking(final LocalDate from, final LocalDate to, final int count) {
+        String sql = "SELECT theme_id, count(*) AS count FROM reservation WHERE date BETWEEN ? AND ? GROUP BY theme_id ORDER BY count DESC LIMIT ?";
+        return jdbcTemplate.query(
+                sql,
+                (resultSet, rowNum) -> resultSet.getLong("theme_id"),
+                from, to, count
+        );
+    }
 }
