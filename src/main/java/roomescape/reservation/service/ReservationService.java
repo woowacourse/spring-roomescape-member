@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
-import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservation.dto.ReservationSaveRequest;
 import roomescape.reservation.dto.ThemeResponse;
 import roomescape.reservation.dto.TimeResponse;
 import roomescape.reservation.repository.ReservationRepository;
@@ -32,24 +32,24 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public Long save(ReservationRequest reservationRequest) {
-        Reservation reservation = getValidatedReservation(reservationRequest);
+    public Long save(ReservationSaveRequest reservationSaveRequest) {
+        Reservation reservation = getValidatedReservation(reservationSaveRequest);
 
         return reservationRepository.save(reservation);
     }
 
-    private Reservation getValidatedReservation(ReservationRequest reservationRequest) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId())
+    private Reservation getValidatedReservation(ReservationSaveRequest reservationSaveRequest) {
+        ReservationTime reservationTime = reservationTimeRepository.findById(reservationSaveRequest.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
 
-        Theme theme = themeRepository.findById(reservationRequest.themeId())
+        Theme theme = themeRepository.findById(reservationSaveRequest.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
 
-        if (LocalDate.now().isAfter(reservationRequest.date())) {
+        if (LocalDate.now().isAfter(reservationSaveRequest.date())) {
             throw new IllegalArgumentException("지난 날짜는 예약할 수 없습니다.");
         }
 
-        Reservation reservation = reservationRequest.toReservation(theme, reservationTime);
+        Reservation reservation = reservationSaveRequest.toReservation(theme, reservationTime);
 
         if (reservationRepository.existReservation(reservation)) {
             throw new IllegalArgumentException("중복된 예약이 있습니다.");

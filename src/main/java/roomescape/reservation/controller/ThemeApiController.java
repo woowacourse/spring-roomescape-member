@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.reservation.dto.PopularThemeResponse;
-import roomescape.reservation.dto.ThemeRequest;
 import roomescape.reservation.dto.ThemeResponse;
+import roomescape.reservation.dto.ThemeSaveRequest;
 import roomescape.reservation.service.ThemeService;
 
 @RestController
@@ -38,8 +38,8 @@ public class ThemeApiController {
     }
 
     @PostMapping("/themes")
-    public ResponseEntity<ThemeResponse> save(@RequestBody ThemeRequest themeRequest) {
-        Long saveId = themeService.save(themeRequest);
+    public ResponseEntity<ThemeResponse> save(@RequestBody ThemeSaveRequest themeSaveRequest) {
+        Long saveId = themeService.save(themeSaveRequest);
         ThemeResponse themeResponse = themeService.findById(saveId);
 
         return ResponseEntity.created(URI.create("/themes/" + saveId)).body(themeResponse);

@@ -4,8 +4,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.dto.PopularThemeResponse;
-import roomescape.reservation.dto.ThemeRequest;
 import roomescape.reservation.dto.ThemeResponse;
+import roomescape.reservation.dto.ThemeSaveRequest;
 import roomescape.reservation.repository.ThemeRepository;
 
 @Service
@@ -17,8 +17,8 @@ public class ThemeService {
         this.themeRepository = themeRepository;
     }
 
-    public Long save(ThemeRequest themeRequest) {
-        Theme theme = themeRequest.toTheme();
+    public Long save(ThemeSaveRequest themeSaveRequest) {
+        Theme theme = themeSaveRequest.toTheme();
         return themeRepository.save(theme);
     }
 

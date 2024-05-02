@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.domain.ReservationTime;
-import roomescape.reservation.dto.TimeRequest;
 import roomescape.reservation.dto.TimeResponse;
+import roomescape.reservation.dto.TimeSaveRequest;
 import roomescape.reservation.repository.ReservationTimeRepository;
 
 @Service
@@ -17,8 +17,8 @@ public class ReservationTimeService {
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
-    public Long save(TimeRequest timeRequest) {
-        ReservationTime reservationTime = timeRequest.toReservationTime();
+    public Long save(TimeSaveRequest timeSaveRequest) {
+        ReservationTime reservationTime = timeSaveRequest.toReservationTime();
         return reservationTimeRepository.save(reservationTime);
     }
 

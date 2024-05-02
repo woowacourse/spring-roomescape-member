@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.reservation.dto.TimeRequest;
 import roomescape.reservation.dto.TimeResponse;
+import roomescape.reservation.dto.TimeSaveRequest;
 import roomescape.reservation.service.ReservationTimeService;
 
 @RestController
@@ -30,8 +30,8 @@ public class ReservationTimeApiController {
     }
 
     @PostMapping("/times")
-    public ResponseEntity<TimeResponse> save(@RequestBody TimeRequest timeRequest) {
-        Long saveId = reservationTimeService.save(timeRequest);
+    public ResponseEntity<TimeResponse> save(@RequestBody TimeSaveRequest timeSaveRequest) {
+        Long saveId = reservationTimeService.save(timeSaveRequest);
         TimeResponse timeResponse = reservationTimeService.findById(saveId);
 
         return ResponseEntity.created(URI.create("/times/" + saveId)).body(timeResponse);
