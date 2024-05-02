@@ -78,4 +78,24 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         SqlParameterSource paramMap = new MapSqlParameterSource().addValue("savedId", savedId);
         return jdbcTemplate.query(sql, paramMap, rowMapper).get(0);
     }
+
+    @Override
+    public List<ReservationTime> findBookedTimeForThemeAtDate(String date, long themeId) {
+        String sql = """
+                SELECT 
+                t.id AS time_id, 
+                t.start_at AS time_value 
+                FROM reservation AS r 
+                INNER JOIN reservation_time AS t ON r.time_id = t.id 
+                INNER JOIN theme AS th ON r.theme_id = th.id
+                WHERE r.date = :date
+                AND r.theme_id = :themeId
+                """;
+
+        SqlParameterSource paramMap = new MapSqlParameterSource()
+                .addValue("date", date)
+                .addValue("themeId", themeId);
+
+        return jdbcTemplate.query(sql, paramMap, rowMapper);
+    }
 }

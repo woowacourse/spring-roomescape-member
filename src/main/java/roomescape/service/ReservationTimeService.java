@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
+import roomescape.service.dto.AvailabilityOfTimeRequestDto;
 import roomescape.service.dto.ReservationTimeRequestDto;
 import roomescape.service.dto.ReservationTimeResponseDto;
 
@@ -24,6 +25,18 @@ public class ReservationTimeService {
         return reservationTimeRepository.findAllReservationTimes()
                 .stream()
                 .map(ReservationTimeResponseDto::new)
+                .toList();
+    }
+
+    public List<ReservationTimeResponseDto> findReservationTimesAvailability(AvailabilityOfTimeRequestDto requestDto) {
+        List<ReservationTime> allTimes = reservationTimeRepository.findAllReservationTimes();
+        List<ReservationTime> bookedTimes = reservationTimeRepository.findBookedTimeForThemeAtDate(
+                requestDto.getDate(), requestDto.getThemeId());
+
+        return allTimes.stream()
+                .map(reservationTime -> new ReservationTimeResponseDto(
+                        reservationTime,
+                        bookedTimes.contains(reservationTime)))
                 .toList();
     }
 

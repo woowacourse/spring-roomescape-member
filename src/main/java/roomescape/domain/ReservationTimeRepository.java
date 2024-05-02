@@ -15,4 +15,6 @@ public interface ReservationTimeRepository {
     boolean isExistTimeOf(long timeId);
 
     ReservationTime findReservationTimeById(long savedId);
+
+    List<ReservationTime> findBookedTimeForThemeAtDate(String date, long themeId);
 }
