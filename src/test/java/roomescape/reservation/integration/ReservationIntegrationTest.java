@@ -59,7 +59,7 @@ class ReservationIntegrationTest {
     @Test
     @DisplayName("저장하는 경우, 존재하는 시간이 아닌 id일 경우 에러를 발생한다.")
     void notExistTime() {
-        ReservationRequest reservationRequest = new ReservationRequest(LocalDate.now(), "polla", 1L, 1L);
+        ReservationRequest reservationRequest = new ReservationRequest(LocalDate.now(), "polla", 99L, 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

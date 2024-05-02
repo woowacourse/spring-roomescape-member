@@ -44,7 +44,7 @@ public class ReservationJdbcDao implements ReservationDao {
     }
 
     @Override
-    public List<Reservation> findAllOrderByDateAndReservationTime() {
+    public List<Reservation> findAllReservationOrderByDateAndTimeStartAt() {
         String findAllReservationSql = "SELECT r.id, r.name, r.date, "
                 + "t.id AS timeId, t.start_at, "
                 + "th.id AS themeId, th.name AS themeName, th.description, th.thumbnail "
@@ -72,7 +72,7 @@ public class ReservationJdbcDao implements ReservationDao {
     }
 
     @Override
-    public int findByTimeId(long timeId) {
+    public int countByTimeId(long timeId) {
         String findByTimeIdSql = "SELECT COUNT(*) FROM reservation WHERE time_id = ?";
         return jdbcTemplate.queryForObject(findByTimeIdSql, Integer.class, timeId);
     }

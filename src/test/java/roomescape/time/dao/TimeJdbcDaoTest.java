@@ -36,7 +36,7 @@ class TimeJdbcDaoTest {
     @Test
     @DisplayName("시간 데이터들을 잘 가져오는지 확인.")
     void getTimes() {
-        List<Time> times = timeJdbcDao.findAllOrderByReservationTime();
+        List<Time> times = timeJdbcDao.findAllReservationTimesInOrder();
 
         Assertions.assertThat(times.size()).isEqualTo(3);
     }
@@ -46,7 +46,7 @@ class TimeJdbcDaoTest {
     void deleteTime() {
         timeJdbcDao.deleteById(3L);
 
-        Assertions.assertThat(timeJdbcDao.findAllOrderByReservationTime().size()).isEqualTo(2);
+        Assertions.assertThat(timeJdbcDao.findAllReservationTimesInOrder().size()).isEqualTo(2);
     }
 
     @Test

@@ -7,9 +7,9 @@ public interface ReservationDao {
 
     Reservation save(Reservation reservation);
 
-    List<Reservation> findAllOrderByDateAndReservationTime();
+    List<Reservation> findAllReservationOrderByDateAndTimeStartAt();
 
     void deleteById(long reservationId);
 
-    int findByTimeId(long timeId);
+    int countByTimeId(long timeId);
 }

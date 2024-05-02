@@ -7,9 +7,10 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import roomescape.theme.domain.Theme;
 
-@Component
+@Repository
 public class ThemeJdbcDao implements ThemeDao{
 
     private final JdbcTemplate jdbcTemplate;

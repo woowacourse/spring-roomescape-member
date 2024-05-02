@@ -14,11 +14,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.reservation.dao.ReservationJdbcDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
-import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
+import roomescape.time.dao.TimeJdbcDao;
 import roomescape.time.domain.Time;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,13 +30,18 @@ class ReservationServiceTest {
     @InjectMocks
     private ReservationService reservationService;
     @Mock
-    private ReservationRepository reservationRepository;
+    private ReservationJdbcDao reservationJdbcDao;
+    @Mock
+    private TimeJdbcDao timeJdbcDao;
 
     @Test
     @DisplayName("예약을 추가한다.")
     void addReservation() {
-        Mockito.when(reservationRepository.saveReservation(any()))
+        Mockito.when(reservationJdbcDao.save(any()))
                 .thenReturn(reservation);
+
+        Mockito.when(timeJdbcDao.findById(1L))
+                .thenReturn(reservation.getReservationTime());
 
         ReservationRequest reservationRequest = new ReservationRequest(reservation.getDate(), reservation.getName(),
                 reservation.getReservationTime().getId(), reservation.getTheme().getId());
@@ -47,20 +53,20 @@ class ReservationServiceTest {
     @Test
     @DisplayName("예약을 찾는다.")
     void findReservations() {
-        Mockito.when(reservationRepository.findAllReservation())
+        Mockito.when(reservationJdbcDao.findAllReservationOrderByDateAndTimeStartAt())
                 .thenReturn(List.of(reservation));
 
         List<ReservationResponse> reservationResponses = reservationService.findReservations();
 
-        Assertions.assertThat(reservationResponses.size()).isEqualTo(1);
+        Assertions.assertThat(reservationResponses).hasSize(1);
     }
 
     @Test
     @DisplayName("예약을 지운다.")
     void removeReservations() {
         Mockito.doNothing()
-                .when(reservationRepository)
-                .deleteReservationById(reservation.getId());
+                .when(reservationJdbcDao)
+                .deleteById(reservation.getId());
 
         assertDoesNotThrow(() -> reservationService.removeReservations(reservation.getId()));
     }
