@@ -4,28 +4,81 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.console.dao.InMemoryReservationDao;
 import roomescape.console.dao.InMemoryReservationTimeDao;
+import roomescape.console.dao.InMemoryRoomThemeDao;
 import roomescape.console.db.InMemoryReservationDb;
 import roomescape.console.db.InMemoryReservationTimeDb;
+import roomescape.console.db.InMemoryRoomThemeDb;
+import roomescape.dao.ReservationDao;
+import roomescape.dao.ReservationTimeDao;
+import roomescape.dao.RoomThemeDao;
+import roomescape.domain.Name;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.RoomTheme;
 import roomescape.dto.request.ReservationTimeRequest;
+import roomescape.dto.request.ReservationTimeWithBookStatusRequest;
 import roomescape.dto.response.ReservationTimeResponse;
+import roomescape.dto.response.ReservationTimeWithBookStatusResponse;
 
 class ReservationTimeServiceTest {
     private ReservationTimeService reservationTimeService;
+    private RoomThemeDao roomThemeDao;
+    private ReservationDao reservationDao;
+    private ReservationTimeDao reservationTimeDao;
 
     @BeforeEach
     void setUp() {
-        reservationTimeService = new ReservationTimeService(new InMemoryReservationTimeDao(
-                new InMemoryReservationDb(), new InMemoryReservationTimeDb()));
+        InMemoryReservationDb inMemoryReservationDb = new InMemoryReservationDb();
+        InMemoryReservationTimeDb inMemoryReservationTimeDb = new InMemoryReservationTimeDb();
+        InMemoryRoomThemeDb inMemoryRoomThemeDb = new InMemoryRoomThemeDb();
+
+        reservationTimeDao = new InMemoryReservationTimeDao(
+                inMemoryReservationDb, inMemoryReservationTimeDb);
+        reservationDao = new InMemoryReservationDao(inMemoryReservationDb);
+        roomThemeDao = new InMemoryRoomThemeDao(inMemoryRoomThemeDb);
+
+        reservationTimeService = new ReservationTimeService(reservationTimeDao, reservationDao);
     }
 
     @DisplayName("존재하는 모든 예약 시간을 반환한다.")
     @Test
     void findAll() {
         assertThat(reservationTimeService.findAll()).isEmpty();
+    }
+
+    @DisplayName("날짜와 테마에 따른 예약 가능한 시간을 반환한다.")
+    @Test
+    void findReservationTimesWithBookStatus() {
+        // given
+        ReservationTime savedReservationTime = reservationTimeDao.save(new ReservationTime(LocalTime.parse("10:00")));
+        RoomTheme savedRoomTheme = roomThemeDao.save(new RoomTheme("레벨 2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        Reservation savedReservation = reservationDao.save(
+                new Reservation(new Name("brown"), LocalDate.parse("9999-12-31"), savedReservationTime,
+                        savedRoomTheme));
+
+        ReservationTimeWithBookStatusRequest timeRequest = new ReservationTimeWithBookStatusRequest(
+                "9999-12-31", savedRoomTheme.getId());
+
+        // when
+        List<ReservationTimeWithBookStatusResponse> timeResponses = reservationTimeService.findReservationTimesWithBookStatus(
+                timeRequest);
+
+        // then
+        ReservationTimeWithBookStatusResponse timeResponse = timeResponses.get(0);
+        assertAll(
+                () -> assertThat(timeResponse.id()).isEqualTo(savedReservationTime.getId()),
+                () -> assertThat(LocalTime.parse(timeResponse.startAt())).isEqualTo(savedReservationTime.getStartAt()),
+                () -> assertThat(timeResponse.booked()).isTrue()
+        );
     }
 
     @DisplayName("예약 시간을 저장한다.")

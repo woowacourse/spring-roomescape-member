@@ -31,7 +31,7 @@ public class ConsoleRoomescapeApplication {
         ReservationService reservationService
                 = new ReservationService(fakeReservationDao, fakeReservationTimeDao, fakeRoomThemeDao);
         ReservationTimeService reservationTimeService
-                = new ReservationTimeService(fakeReservationTimeDao);
+                = new ReservationTimeService(fakeReservationTimeDao, fakeReservationDao);
         return new ConsoleController(reservationService, reservationTimeService);
     }
 }

@@ -9,9 +9,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.request.ReservationTimeRequest;
+import roomescape.dto.request.ReservationTimeWithBookStatusRequest;
 import roomescape.dto.response.ReservationTimeResponse;
+import roomescape.dto.response.ReservationTimeWithBookStatusResponse;
 import roomescape.service.ReservationTimeService;
 
 @RestController
@@ -26,6 +29,12 @@ public class ReservationTimeController {
     @GetMapping
     public ResponseEntity<List<ReservationTimeResponse>> findAllTimes() {
         return ResponseEntity.ok(reservationTimeService.findAll());
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<List<ReservationTimeWithBookStatusResponse>> findReservationTimesWithBookStatus(@RequestParam("date") String date, @RequestParam("themeId") Long themeId) {
+        ReservationTimeWithBookStatusRequest timeRequest = new ReservationTimeWithBookStatusRequest(date, themeId);
+        return ResponseEntity.ok(reservationTimeService.findReservationTimesWithBookStatus(timeRequest));
     }
 
     @PostMapping
