@@ -94,7 +94,7 @@ class ReservationServiceTest {
                     .containsExactly(MIA_RESERVATION_TIME, TOMMY_RESERVATION_TIME);
             assertThat(reservations).extracting(ReservationResponse::theme)
                     .extracting(ReservedThemeResponse::name)
-                    .containsExactly(THEME_NAME, THEME_NAME);
+                    .containsExactly(WOOTECO_THEME_NAME, WOOTECO_THEME_NAME);
         });
     }
 

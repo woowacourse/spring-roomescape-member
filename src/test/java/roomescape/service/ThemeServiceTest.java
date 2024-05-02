@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static roomescape.TestFixture.HORROR_THEME;
 import static roomescape.TestFixture.WOOTECO_THEME;
 
 @ExtendWith(MockitoExtension.class)
@@ -118,5 +119,24 @@ class ThemeServiceTest {
         // when & then
         assertThatThrownBy(() -> themeService.deleteById(1L))
                 .isInstanceOf(NotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("최근 일주일을 기준으로 예약이 많은 순으로 테마 10개 목록을 조회한다.")
+    void findAllPopular() {
+        // given
+        List<Theme> expectedThemes = List.of(WOOTECO_THEME(1L), HORROR_THEME(2L));
+
+        BDDMockito.given(themeRepository.findAllOrderByReservationCountInLastWeek())
+                .willReturn(expectedThemes);
+
+        // when
+        List<ThemeResponse> responses = themeService.findAllPopular();
+
+        // then
+        ThemeResponse expectedWootecoTheme = ThemeResponse.from(WOOTECO_THEME(1L));
+        ThemeResponse expectedHorrorTheme = ThemeResponse.from(HORROR_THEME(2L));
+        assertThat(responses).hasSize(2)
+                .containsExactly(expectedWootecoTheme, expectedHorrorTheme);
     }
 }

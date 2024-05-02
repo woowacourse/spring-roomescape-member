@@ -24,8 +24,8 @@ class ThemeControllerTest extends ControllerTest {
     @DisplayName("테마 생성 POST 요청 시 상태코드 201을 반환한다.")
     void createTheme() throws Exception {
         // given
-        ThemeSaveRequest request = new ThemeSaveRequest(THEME_NAME, THEME_DESCRIPTION, THEME_THUMBNAIL);
-        ThemeResponse expectedResponse = new ThemeResponse(1L, THEME_NAME, THEME_DESCRIPTION, THEME_THUMBNAIL);
+        ThemeSaveRequest request = new ThemeSaveRequest(WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL);
+        ThemeResponse expectedResponse = new ThemeResponse(1L, WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL);
 
         BDDMockito.given(themeService.create(any()))
                 .willReturn(expectedResponse);
@@ -36,8 +36,8 @@ class ThemeControllerTest extends ControllerTest {
                 .content(objectMapper.writeValueAsBytes(request)))
                 .andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name").value(THEME_NAME))
-                .andExpect(jsonPath("$.description").value(THEME_DESCRIPTION))
+                .andExpect(jsonPath("$.name").value(WOOTECO_THEME_NAME))
+                .andExpect(jsonPath("$.description").value(WOOTECO_THEME_DESCRIPTION))
                 .andExpect(jsonPath("$.thumbnail").value(THEME_THUMBNAIL))
                 .andExpect(jsonPath("$.id").value(1L));
     }
@@ -46,7 +46,7 @@ class ThemeControllerTest extends ControllerTest {
     @DisplayName("테마 목록 GET 요청 시 상태코드 200을 반환한다.")
     void findAllThemes() throws Exception {
         // given
-        ThemeResponse expectedResponse = new ThemeResponse(1L, THEME_NAME, THEME_DESCRIPTION, THEME_THUMBNAIL);
+        ThemeResponse expectedResponse = new ThemeResponse(1L, WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL);
 
         BDDMockito.given(themeService.findAll())
                 .willReturn(List.of(expectedResponse));
@@ -56,8 +56,8 @@ class ThemeControllerTest extends ControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].name").value(THEME_NAME))
-                .andExpect(jsonPath("$[0].description").value(THEME_DESCRIPTION))
+                .andExpect(jsonPath("$[0].name").value(WOOTECO_THEME_NAME))
+                .andExpect(jsonPath("$[0].description").value(WOOTECO_THEME_DESCRIPTION))
                 .andExpect(jsonPath("$[0].thumbnail").value(THEME_THUMBNAIL))
                 .andExpect(jsonPath("$[0].id").value(1L));
     }
@@ -89,5 +89,30 @@ class ThemeControllerTest extends ControllerTest {
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").exists());
+    }
+
+    @Test
+    @DisplayName("최근 일주일 인기 테마 목록 GET 요청 시 상태코드 200을 반환한다.")
+    void findAllPopular() throws Exception {
+        // given
+        ThemeResponse expectedWootecoResponse = new ThemeResponse(1L, WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL);
+        ThemeResponse expectedHorrorResponse = new ThemeResponse(2L, HORROR_THEME_NAME, HORROR_THEME_DESCRIPTION, THEME_THUMBNAIL);
+
+        BDDMockito.given(themeService.findAllPopular())
+                .willReturn(List.of(expectedWootecoResponse, expectedHorrorResponse));
+
+        // when & then
+        mockMvc.perform(get("/themes/popular")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].name").value(WOOTECO_THEME_NAME))
+                .andExpect(jsonPath("$[0].description").value(WOOTECO_THEME_DESCRIPTION))
+                .andExpect(jsonPath("$[0].thumbnail").value(THEME_THUMBNAIL))
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[1].name").value(HORROR_THEME_NAME))
+                .andExpect(jsonPath("$[1].description").value(HORROR_THEME_DESCRIPTION))
+                .andExpect(jsonPath("$[1].thumbnail").value(THEME_THUMBNAIL))
+                .andExpect(jsonPath("$[1].id").value(2L));
     }
 }

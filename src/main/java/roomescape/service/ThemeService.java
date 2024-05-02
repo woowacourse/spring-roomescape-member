@@ -43,4 +43,12 @@ public class ThemeService {
                 .orElseThrow(() -> new NotFoundException(id + "에 해당하는 테마가 없습니다."));
         themeRepository.deleteById(theme.getId());
     }
+
+    @Transactional(readOnly = true)
+    public List<ThemeResponse> findAllPopular() {
+        List<Theme> allOrderByReservationCountInLastWeek = themeRepository.findAllOrderByReservationCountInLastWeek();
+        return allOrderByReservationCountInLastWeek.stream()
+                .map(ThemeResponse::from)
+                .toList();
+    }
 }

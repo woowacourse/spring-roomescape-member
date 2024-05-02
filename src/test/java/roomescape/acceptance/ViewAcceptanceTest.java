@@ -52,4 +52,13 @@ public class ViewAcceptanceTest {
                 .then().log().all()
                 .statusCode(200);
     }
+
+    @Test
+    @DisplayName("[2 - Step3] 사용자 메인 페이지를 조회한다.")
+    void getMainPage() {
+        RestAssured.given().log().all()
+                .when().get("/")
+                .then().log().all()
+                .statusCode(200);
+    }
 }

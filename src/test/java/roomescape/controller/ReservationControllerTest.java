@@ -44,7 +44,7 @@ class ReservationControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$[0].name").value(USER_MIA))
                 .andExpect(jsonPath("$[0].time.id").value(1L))
                 .andExpect(jsonPath("$[0].time.startAt").value(MIA_RESERVATION_TIME))
-                .andExpect(jsonPath("$[0].theme.name").value(THEME_NAME))
+                .andExpect(jsonPath("$[0].theme.name").value(WOOTECO_THEME_NAME))
                 .andExpect(jsonPath("$[0].date").value(MIA_RESERVATION_DATE));
     }
 

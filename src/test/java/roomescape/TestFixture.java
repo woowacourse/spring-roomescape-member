@@ -13,9 +13,11 @@ public class TestFixture {
     public static final String TOMMY_RESERVATION_DATE = "2030-05-19";
     public static final String TOMMY_RESERVATION_TIME = "15:00";
 
-    public static final String THEME_NAME = "레벨2 탈출";
-    public static final String THEME_DESCRIPTION = "우테코 레벨2를 탈출하는 내용입니다.";
+    public static final String WOOTECO_THEME_NAME = "레벨2 탈출";
+    public static final String WOOTECO_THEME_DESCRIPTION = "우테코 레벨2를 탈출하는 내용입니다.";
     public static final String THEME_THUMBNAIL = "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg";
+    public static final String HORROR_THEME_NAME = "호러";
+    public static final String HORROR_THEME_DESCRIPTION = "매우 무섭습니다.";
 
     public static Reservation MIA_RESERVATION() {
         return MIA_RESERVATION(new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME());
@@ -33,10 +35,18 @@ public class TestFixture {
     }
 
     public static Theme WOOTECO_THEME() {
-        return new Theme(THEME_NAME, THEME_DESCRIPTION, THEME_THUMBNAIL);
+        return new Theme(WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL);
     }
 
     public static Theme WOOTECO_THEME(Long id) {
-        return new Theme(id, THEME_NAME, THEME_DESCRIPTION, THEME_THUMBNAIL);
+        return new Theme(id, WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL);
+    }
+
+    public static Theme HORROR_THEME() {
+        return new Theme(HORROR_THEME_NAME, HORROR_THEME_DESCRIPTION, THEME_THUMBNAIL);
+    }
+
+    public static Theme HORROR_THEME(Long id) {
+        return new Theme(id, HORROR_THEME_NAME, HORROR_THEME_DESCRIPTION, THEME_THUMBNAIL);
     }
 }

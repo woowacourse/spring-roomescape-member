@@ -52,6 +52,37 @@ public class ThemeDao implements ThemeRepository {
         }
     }
 
+    @Override
+    public void deleteById(Long id) {
+        String sql = "DELETE FROM theme WHERE id = ?";
+        jdbcTemplate.update(sql, id);
+    }
+
+    @Override
+    public List<Theme> findAllOrderByReservationCountInLastWeek() {
+        String sql = """
+                SELECT
+                    th.id AS id, 
+                    th.name AS name, 
+                    th.description AS description, 
+                    th.thumbnail AS thumbnail,
+                    COUNT(r.id) AS reservation_count
+                FROM
+                    theme th
+                LEFT OUTER JOIN
+                    reservation r
+                ON
+                    r.theme_id = th.id  AND  r.date >= CURRENT_DATE() - 7
+                GROUP BY
+                    th.id, th.name, th.description, th.thumbnail
+                ORDER BY
+                    reservation_count DESC
+                LIMIT
+                    10
+                """;
+        return jdbcTemplate.query(sql, this::rowMapper);
+    }
+
     private Theme rowMapper(ResultSet resultSet, int rowNumber) throws SQLException {
         return new Theme(
                 resultSet.getLong("id"),
@@ -59,11 +90,5 @@ public class ThemeDao implements ThemeRepository {
                 resultSet.getString("description"),
                 resultSet.getString("thumbnail")
         );
-    }
-
-    @Override
-    public void deleteById(Long id) {
-        String sql = "DELETE FROM theme WHERE id = ?";
-        jdbcTemplate.update(sql, id);
     }
 }

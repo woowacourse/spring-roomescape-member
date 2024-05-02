@@ -31,7 +31,7 @@ class ReservationRepositoryTest extends RepositoryTest {
         String insertTimeSql = "INSERT INTO reservation_time (start_at) VALUES (?)";
         jdbcTemplate.update(insertTimeSql, Time.valueOf(LocalTime.parse(MIA_RESERVATION_TIME)));
         String insertThemeSql = "INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)";
-        jdbcTemplate.update(insertThemeSql, THEME_NAME, THEME_DESCRIPTION, THEME_THUMBNAIL);
+        jdbcTemplate.update(insertThemeSql, WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL);
     }
 
     @Test
@@ -89,7 +89,7 @@ class ReservationRepositoryTest extends RepositoryTest {
             assertThat(reservations.size()).isEqualTo(count);
             assertThat(reservations).extracting(Reservation::getTheme)
                     .extracting(Theme::getName)
-                    .containsExactly(THEME_NAME);
+                    .containsExactly(WOOTECO_THEME_NAME);
             assertThat(reservations).extracting(Reservation::getTime)
                     .extracting(ReservationTime::getStartAt)
                     .containsExactly(LocalTime.parse(MIA_RESERVATION_TIME));

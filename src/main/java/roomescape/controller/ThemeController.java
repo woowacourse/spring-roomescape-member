@@ -35,4 +35,9 @@ public class ThemeController {
         themeService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/popular")
+    public ResponseEntity<List<ThemeResponse>> findAllPopular() {
+        return ResponseEntity.ok(themeService.findAllPopular());
+    }
 }
