@@ -93,7 +93,7 @@ public class ReservationDao implements ReservationRepository {
     }
 
     @Override
-    public List<Theme> findThemeIdWithMostPopularReservation(String startDate, String endDate) {
+    public List<Theme> findThemeWithMostPopularReservation(String startDate, String endDate) {
         String sql = """
                 SELECT theme.id, theme.name, theme.description, theme.thumbnail
                 FROM reservation
