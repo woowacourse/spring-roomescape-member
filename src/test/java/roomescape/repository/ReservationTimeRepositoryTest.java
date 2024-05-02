@@ -8,41 +8,32 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.model.ReservationTime;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
+@Sql(scripts = {"/test.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class ReservationTimeRepositoryTest {
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
 
-    @BeforeEach
-    void init() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?), (?)", "08:00", "07:00");
-    }
-
     @DisplayName("예약 시간 저장")
     @Test
     void save() {
-        final ReservationTime reservationTime = new ReservationTime( LocalTime.parse("10:00"));
-        final ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
-        assertAll(
-                () -> assertThat(savedReservationTime.getId()).isEqualTo(3L),
-                () -> assertThat(savedReservationTime.getStartAt()).isEqualTo(LocalTime.parse("10:00"))
-        );
+        final ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime( LocalTime.parse("10:30")));
+        final ReservationTime savedReservationTime = reservationTimeRepository.findById(reservationTime.getId()).get();
+        assertThat(savedReservationTime.getStartAt()).isEqualTo(LocalTime.parse("10:30"));
     }
 
     @DisplayName("존재하는 예약 시간 조회")
@@ -51,14 +42,14 @@ class ReservationTimeRepositoryTest {
         final ReservationTime reservationTime = reservationTimeRepository.findById(1L).orElseThrow();
         assertAll(
                 () -> assertThat(reservationTime.getId()).isEqualTo(1L),
-                () -> assertThat(reservationTime.getStartAt()).isEqualTo(LocalTime.parse("08:00"))
+                () -> assertThat(reservationTime.getStartAt()).isEqualTo(LocalTime.parse("09:00"))
         );
     }
 
     @DisplayName("존재하지 않는 예약 시간 조회")
     @Test
     void findEmptyById() {
-        final Optional<ReservationTime> reservationTime = reservationTimeRepository.findById(4L);
+        final Optional<ReservationTime> reservationTime = reservationTimeRepository.findById(14L);
         assertTrue(reservationTime.isEmpty());
     }
 
@@ -66,29 +57,29 @@ class ReservationTimeRepositoryTest {
     @Test
     void findAll() {
         final List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
-        assertThat(reservationTimes.size()).isEqualTo(2);
+        assertThat(reservationTimes.size()).isEqualTo(7);
     }
 
-    @DisplayName("존재하는 예약 시간 삭제")
+    @DisplayName("예약 시간 삭제")
     @Test
     void deleteExistById() {
-        assertThatCode(() -> reservationTimeRepository.deleteById(1L))
-                .doesNotThrowAnyException();
+        reservationTimeRepository.deleteById(5L);
+        assertThat(reservationTimeRepository.findById(5L)).isEmpty();
     }
 
     @DisplayName("특정 시간 존재 여부 확인")
-    @Test
-    void existByStartAtTrue() {
-        final boolean existByStartAt = reservationTimeRepository.existByStartAt(LocalTime.parse("08:00"));
+    @ParameterizedTest
+    @MethodSource("getStartAtWithExist")
+    void existByStartAtFalse(final String startAt, final boolean expectedResult) {
+        final boolean existByStartAt = reservationTimeRepository.existByStartAt(LocalTime.parse(startAt));
 
-        assertThat(existByStartAt).isTrue();
+        assertThat(existByStartAt).isEqualTo(expectedResult);
     }
 
-    @DisplayName("특정 시간 존재 여부 확인")
-    @Test
-    void existByStartAtFalse() {
-        final boolean existByStartAt = reservationTimeRepository.existByStartAt(LocalTime.parse("06:00"));
-
-        assertThat(existByStartAt).isFalse();
+    private static Stream<Arguments> getStartAtWithExist() {
+        return Stream.of(
+                Arguments.of("10:00", true),
+                Arguments.of("14:20", false)
+        );
     }
 }
