@@ -30,8 +30,8 @@ public class ReservationService {
         ReservationTime reservationTime = findReservationTime(reservationRequest);
 
         reservationDao.findAllReservations().stream()
-                .filter(reservation -> reservation.getTime().equals(reservationTime))
-                .filter(reservation -> reservation.getDate().equals(reservationRequest.date()))
+                .filter(reservation ->
+                        reservation.isSameTime(reservationTime) && reservation.isSameDate(reservationRequest.date()))
                 .findAny()
                 .ifPresent(time -> {
                     throw new CustomException(ExceptionCode.DUPLICATE_RESERVATION);
