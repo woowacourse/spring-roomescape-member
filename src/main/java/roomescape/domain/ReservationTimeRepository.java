@@ -9,9 +9,9 @@ public interface ReservationTimeRepository {
 
     ReservationTime findById(Long id);
 
+    List<ReservationTime> findByReservationDateAndThemeId(LocalDate date, Long themeId);
+
     ReservationTime save(ReservationTime reservationTime);
 
     void deleteById(Long id);
-
-    List<ReservationTime> findByReservationDateAndThemeId(LocalDate date, Long themeId);
 }

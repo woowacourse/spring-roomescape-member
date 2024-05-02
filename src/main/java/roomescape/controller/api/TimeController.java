@@ -29,19 +29,20 @@ public class TimeController {
 
     @GetMapping
     public ResponseEntity<List<ReservationTimeResponse>> getTimes() {
-        List<ReservationTimeResponse> reservationTimes = reservationTimeService.getAllReservationTimes();
+        List<ReservationTimeResponse> responses = reservationTimeService.getAllReservationTimes();
 
         return ResponseEntity.ok()
-                .body(reservationTimes);
+                .body(responses);
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTimeResponse> addTime(@RequestBody ReservationTimeRequest reservationTimeRequest) {
-        ReservationTimeResponse reservationTimeResponse = reservationTimeService.addReservationTime(
-                reservationTimeRequest);
+    public ResponseEntity<ReservationTimeResponse> addTime(@RequestBody ReservationTimeRequest request) {
+        ReservationTimeResponse response = reservationTimeService.addReservationTime(
+                request);
+        URI location = URI.create("/times/" + response.id());
 
-        return ResponseEntity.created(URI.create("/times/" + reservationTimeResponse.id()))
-                .body(reservationTimeResponse);
+        return ResponseEntity.created(location)
+                .body(response);
     }
 
     @DeleteMapping("/{id}")
@@ -53,12 +54,13 @@ public class TimeController {
     }
 
     @GetMapping("/available")
-    public ResponseEntity<List<AvailableReservationTimeResponse>> getATimes(@RequestParam LocalDate date,
-                                                                            @RequestParam Long themeId) {
-        List<AvailableReservationTimeResponse> availableReservationTimes = reservationTimeService.getAvailableReservationTime(
+    public ResponseEntity<List<AvailableReservationTimeResponse>> getReservationTimeBookedStatus(
+            @RequestParam LocalDate date,
+            @RequestParam Long themeId) {
+        List<AvailableReservationTimeResponse> responses = reservationTimeService.getReservationTimeBookedStatus(
                 date, themeId);
 
         return ResponseEntity.ok()
-                .body(availableReservationTimes);
+                .body(responses);
     }
 }

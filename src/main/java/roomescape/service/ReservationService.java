@@ -36,13 +36,13 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse addReservation(ReservationRequest reservationRequest) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId());
-        validateNotPast(reservationRequest.date(), reservationTime.getStartAt());
-        validateNotDuplicatedTime(reservationRequest.date(), reservationRequest.timeId());
-        Theme theme = themeRepository.findById(reservationRequest.themeId());
+    public ReservationResponse addReservation(ReservationRequest request) {
+        ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId());
+        validateNotPast(request.date(), reservationTime.getStartAt());
+        validateNotDuplicatedTime(request.date(), request.timeId());
+        Theme theme = themeRepository.findById(request.themeId());
 
-        Reservation reservation = new Reservation(reservationRequest.name(), reservationRequest.date(), reservationTime,
+        Reservation reservation = new Reservation(request.name(), request.date(), reservationTime,
                 theme);
         Reservation savedReservation = reservationRepository.save(reservation);
 

@@ -6,11 +6,11 @@ public interface ThemeRepository {
 
     List<Theme> findAll();
 
-    Theme save(Theme theme);
-
     Theme findById(Long id);
 
-    void deleteById(Long id);
+    List<Theme> findTopThemesWithinDays(int day, int limit);
 
-    List<Theme> findTopThemesWithinDays(int day, int limit); //todo: 이름 자연스럽게 바꾸기
+    Theme save(Theme theme);
+
+    void deleteById(Long id);
 }

@@ -17,7 +17,7 @@ function render(data) {
     data.forEach(theme => {
 
         const htmlContent = `
-            <img class="mr-3 img-thumbnail" src="${theme.thumbnail}" alt="${theme.name}">
+            <img class="mr-3 img-thumbnail" src="${theme.thumbnail}" alt="${theme.name}" width="300">
             <div class="media-body">
                 <h5 class="mt-0 mb-1">${theme.name}</h5>
                 ${theme.description}

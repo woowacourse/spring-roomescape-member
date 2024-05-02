@@ -1,7 +1,6 @@
 package roomescape.service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationRepository;
@@ -30,36 +29,31 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    public ReservationTimeResponse addReservationTime(ReservationTimeRequest reservationTimeRequest) {
-        ReservationTime reservationTime = reservationTimeRequest.toReservationTime();
+    public ReservationTimeResponse addReservationTime(ReservationTimeRequest request) {
+        ReservationTime reservationTime = request.toReservationTime();
         ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
 
         return ReservationTimeResponse.from(savedReservationTime);
     }
 
     public void deleteReservationTimeById(Long id) {
-        int count = reservationRepository.countByReservationTimeId(id);
-
-        if (count > 0) {
+        boolean exist = reservationRepository.existByReservationTimeId(id);
+        if (exist) {
             throw new IllegalArgumentException("해당 시간에 예약이 존재합니다.");
         }
 
         reservationTimeRepository.deleteById(id);
     }
 
-    //todo: 메서드 이름 정상인가? 반복문 개선
-    public List<AvailableReservationTimeResponse> getAvailableReservationTime(LocalDate date, Long themeId) {
+    public List<AvailableReservationTimeResponse> getReservationTimeBookedStatus(LocalDate date, Long themeId) {
         List<ReservationTime> bookedTimes = reservationTimeRepository.findByReservationDateAndThemeId(date, themeId);
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
 
-        List<AvailableReservationTimeResponse> availableReservationTimeResponses = new ArrayList<>();
-        for (ReservationTime reservationTime : reservationTimes) {
-            if (bookedTimes.contains(reservationTime)) {
-                availableReservationTimeResponses.add(AvailableReservationTimeResponse.from(reservationTime, true));
-                continue;
-            }
-            availableReservationTimeResponses.add(AvailableReservationTimeResponse.from(reservationTime, false));
-        }
-        return availableReservationTimeResponses;
+        return reservationTimes.stream()
+                .map(reservationTime -> AvailableReservationTimeResponse.from(
+                        reservationTime,
+                        bookedTimes.contains(reservationTime)
+                ))
+                .toList();
     }
 }

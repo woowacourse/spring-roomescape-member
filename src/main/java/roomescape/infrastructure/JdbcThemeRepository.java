@@ -47,25 +47,6 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public Theme save(Theme theme) {
-        Map<String, String> params = Map.of(
-                "name", theme.getName(),
-                "description", theme.getDescription(),
-                "thumbnail", theme.getThumbnail()
-        );
-
-        Long id = jdbcInsert.executeAndReturnKey(params).longValue();
-        return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
-    }
-
-    @Override
-    public void deleteById(Long id) {
-        String sql = "DELETE FROM theme WHERE id = ?";
-
-        jdbcTemplate.update(sql, id);
-    }
-
-    @Override
     public List<Theme> findTopThemesWithinDays(int day, int limit) {
         String sql = "SELECT "
                 + "    th.id AS theme_id, "
@@ -80,5 +61,24 @@ public class JdbcThemeRepository implements ThemeRepository {
                 + "ORDER BY total_reservations DESC "
                 + "LIMIT ?";
         return jdbcTemplate.query(sql, themeRowMapper, LocalDate.now().minusDays(day), limit);
+    }
+
+    @Override
+    public Theme save(Theme theme) {
+        Map<String, String> params = Map.of(
+                "name", theme.getName(),
+                "description", theme.getDescription(),
+                "thumbnail", theme.getThumbnail()
+        );
+        Long id = jdbcInsert.executeAndReturnKey(params).longValue();
+        
+        return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        String sql = "DELETE FROM theme WHERE id = ?";
+
+        jdbcTemplate.update(sql, id);
     }
 }

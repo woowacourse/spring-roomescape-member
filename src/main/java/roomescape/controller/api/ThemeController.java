@@ -26,18 +26,19 @@ public class ThemeController {
 
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> getAllThemes() {
-        List<ThemeResponse> themeResponses = themeService.getAllThemes();
+        List<ThemeResponse> responses = themeService.getAllThemes();
 
         return ResponseEntity.ok()
-                .body(themeResponses);
+                .body(responses);
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponse> addTheme(@RequestBody ThemeRequest themeRequest) {
-        ThemeResponse themeResponse = themeService.addTheme(themeRequest);
+    public ResponseEntity<ThemeResponse> addTheme(@RequestBody ThemeRequest request) {
+        ThemeResponse response = themeService.addTheme(request);
+        URI location = URI.create("/theme/" + response.id());
 
-        return ResponseEntity.created(URI.create("/theme/" + themeResponse.id()))
-                .body(themeResponse);
+        return ResponseEntity.created(location)
+                .body(response);
     }
 
     @DeleteMapping("/{id}")
@@ -50,10 +51,9 @@ public class ThemeController {
 
     @GetMapping("/rankings")
     public ResponseEntity<List<ThemeResponse>> getTopThemes() {
-        List<ThemeResponse> themeResponses = themeService.getTopThemes();
-        System.out.println("히히" + themeResponses.stream().findFirst());
+        List<ThemeResponse> responses = themeService.getTopThemes();
 
         return ResponseEntity.ok()
-                .body(themeResponses);
+                .body(responses);
     }
 }

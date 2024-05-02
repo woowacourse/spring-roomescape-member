@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
-import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -35,9 +34,13 @@ public class ThemeEndPointTest {
     @DisplayName("테마 삭제")
     @Test
     void deleteTheme() {
-        Theme theme = themeRepository.save(new Theme("이름", "요약", "썸네일"));
+        HttpRestTestTemplate.assertDeleteNoContent("/themes/1");
+    }
 
-        HttpRestTestTemplate.assertDeleteNoContent("/themes/" + theme.getId());
+    @DisplayName("테마 삭제 불가능 - 해당 테마에 예약 존재")
+    @Test
+    void deleteThemeFailed() {
+        HttpRestTestTemplate.assertDeleteBadRequest("/themes/2");
     }
 
     @DisplayName("테마 순위 조회")

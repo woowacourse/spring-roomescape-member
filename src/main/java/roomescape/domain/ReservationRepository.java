@@ -7,15 +7,15 @@ public interface ReservationRepository {
 
     List<Reservation> findAll();
 
-    int countByReservationTimeId(Long id);
-
     Reservation findById(Long id);
 
     Reservation save(Reservation reservation);
 
     void deleteById(Long id);
 
-    boolean existByDateAndTimeId(LocalDate date, Long id);
+    boolean existByReservationTimeId(Long id);
 
-    int countByThemeId(Long id);
+    boolean existByThemeId(Long id);
+
+    boolean existByDateAndTimeId(LocalDate date, Long id);
 }

@@ -1,15 +1,14 @@
 package roomescape.infrastructure;
 
-import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
@@ -20,6 +19,7 @@ import roomescape.domain.Theme;
 public class JdbcReservationRepository implements ReservationRepository {
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert jdbcInsert;
     private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> new Reservation(
             resultSet.getLong("reservation_id"),
             resultSet.getString("name"),
@@ -51,6 +51,9 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getDataSource())
+                .withTableName("reservation")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
@@ -61,16 +64,8 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public int countByReservationTimeId(Long id) {
-        String sql = basicSelectQuery + "where time_id = ?";
-        List<Reservation> reservations = jdbcTemplate.query(sql, reservationRowMapper, id);
-
-        return reservations.size();
-    }
-
-    @Override
     public Reservation findById(Long id) {
-        String sql = basicSelectQuery + "where reservation_id = ?";
+        String sql = basicSelectQuery + "WHERE reservation_id = ?";
         Reservation reservation = jdbcTemplate.queryForObject(sql, reservationRowMapper, id);
         if (reservation == null) {
             throw new NoSuchElementException("존재하지 않는 아아디입니다.");
@@ -81,18 +76,13 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public Reservation save(Reservation reservation) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(
-                    "insert into reservation (name, date, time_id, theme_id) values(?, ?, ?, ?)",
-                    new String[]{"id"});
-            ps.setString(1, reservation.getName());
-            ps.setString(2, reservation.getDate().toString());
-            ps.setLong(3, reservation.getTime().getId());
-            ps.setLong(4, reservation.getTheme().getId());
-            return ps;
-        }, keyHolder);
-        long id = keyHolder.getKey().longValue();
+        Map<String, Object> params = Map.of(
+                "name", reservation.getName(),
+                "date", reservation.getDate(),
+                "time_id", reservation.getTime().getId(),
+                "theme_id", reservation.getTheme().getId()
+        );
+        Long id = jdbcInsert.executeAndReturnKey(params).longValue();
 
         return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
                 reservation.getTheme());
@@ -100,8 +90,24 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public void deleteById(Long id) {
-        String sql = "delete from reservation where id = ?";
+        String sql = "DELETE FROM reservation WHERE id = ?";
         jdbcTemplate.update(sql, id);
+    }
+
+    @Override
+    public boolean existByReservationTimeId(Long id) {
+        String sql = basicSelectQuery + "WHERE time_id = ?";
+        List<Reservation> reservations = jdbcTemplate.query(sql, reservationRowMapper, id);
+
+        return !reservations.isEmpty();
+    }
+
+    @Override
+    public boolean existByThemeId(Long id) {
+        String sql = basicSelectQuery + "WHERE theme_id = ?";
+        List<Reservation> reservations = jdbcTemplate.query(sql, reservationRowMapper, id);
+
+        return !reservations.isEmpty();
     }
 
     @Override
@@ -110,13 +116,5 @@ public class JdbcReservationRepository implements ReservationRepository {
         List<Reservation> reservations = jdbcTemplate.query(sql, reservationRowMapper, date, id);
 
         return !reservations.isEmpty();
-    }
-
-    @Override
-    public int countByThemeId(Long id) {
-        String sql = basicSelectQuery + "where theme_id = ?";
-        List<Reservation> reservations = jdbcTemplate.query(sql, reservationRowMapper, id);
-
-        return reservations.size();
     }
 }

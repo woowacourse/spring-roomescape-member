@@ -1,5 +1,7 @@
 package roomescape.endpoint;
 
+import static org.hamcrest.Matchers.notNullValue;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.hamcrest.Matcher;
@@ -32,6 +34,7 @@ class HttpRestTestTemplate {
                 .when().post(path)
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value())
+                .header("Location", notNullValue())
                 .body(bodyPath, matcher);
     }
 
@@ -48,7 +51,8 @@ class HttpRestTestTemplate {
         RestAssured.given().log().all()
                 .when().delete(path)
                 .then().log().all()
-                .statusCode(HttpStatus.NO_CONTENT.value());
+                .statusCode(HttpStatus.NO_CONTENT.value())
+                .body(notNullValue());
     }
 
     public static void assertDeleteBadRequest(String path) {
