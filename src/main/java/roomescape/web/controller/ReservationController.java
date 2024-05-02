@@ -27,8 +27,7 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponseDto> create(
-        @RequestBody final ReservationRequestDto request) {
+    public ResponseEntity<ReservationResponseDto> create(@RequestBody final ReservationRequestDto request) {
         validateRequest(request);
         final ReservationResponseDto result = reservationService.create(request);
         return ResponseEntity.created(URI.create("/reservations/" + result.getId()))
@@ -42,7 +41,8 @@ public class ReservationController {
 
     @GetMapping(params = {"date", "themeId"})
     public ResponseEntity<List<BookingTimeResponseDto>> findBookable(
-        @RequestParam("date") String date, @RequestParam("themeId") Long themeId) {
+        @RequestParam("date") String date, @RequestParam("themeId") Long themeId
+    ) {
         return ResponseEntity.ok(reservationService.findBookable(date, themeId));
     }
 

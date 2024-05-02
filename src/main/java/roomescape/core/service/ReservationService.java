@@ -20,9 +20,11 @@ public class ReservationService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
 
-    public ReservationService(final ReservationRepository reservationRepository,
+    public ReservationService(
+        final ReservationRepository reservationRepository,
         final ReservationTimeRepository reservationTimeRepository,
-        final ThemeRepository themeRepository) {
+        final ThemeRepository themeRepository
+    ) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
@@ -30,11 +32,9 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponseDto create(final ReservationRequestDto request) {
-        final ReservationTime reservationTime = reservationTimeRepository.findById(
-            request.getTimeId());
+        final ReservationTime reservationTime = reservationTimeRepository.findById(request.getTimeId());
         final Theme theme = themeRepository.findById(request.getThemeId());
-        final Reservation reservation = new Reservation(request.getName(), request.getDate(),
-            reservationTime, theme);
+        final Reservation reservation = new Reservation(request.getName(), request.getDate(), reservationTime, theme);
 
         validateDateTimeIsNotPast(reservation, reservationTime);
         validateDuplicatedReservation(reservation, reservationTime);
@@ -43,8 +43,7 @@ public class ReservationService {
         return new ReservationResponseDto(id, reservation);
     }
 
-    private void validateDateTimeIsNotPast(final Reservation reservation,
-        final ReservationTime reservationTime) {
+    private void validateDateTimeIsNotPast(final Reservation reservation, final ReservationTime reservationTime) {
         if (reservation.isDatePast()) {
             throw new IllegalArgumentException("지난 날짜에는 예약할 수 없습니다.");
         }
@@ -53,8 +52,7 @@ public class ReservationService {
         }
     }
 
-    private void validateDuplicatedReservation(final Reservation reservation,
-        final ReservationTime reservationTime) {
+    private void validateDuplicatedReservation(final Reservation reservation, final ReservationTime reservationTime) {
         final Integer reservationCount = reservationRepository.countByDateAndTimeIdAndThemeId(
             reservation.getDateString(),
             reservationTime.getId(), reservation.getTheme().getId());

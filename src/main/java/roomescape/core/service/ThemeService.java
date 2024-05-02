@@ -15,16 +15,14 @@ public class ThemeService {
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
 
-    public ThemeService(final ThemeRepository themeRepository,
-        final ReservationRepository reservationRepository) {
+    public ThemeService(final ThemeRepository themeRepository, final ReservationRepository reservationRepository) {
         this.themeRepository = themeRepository;
         this.reservationRepository = reservationRepository;
     }
 
     @Transactional
     public ThemeResponseDto create(final ThemeRequestDto request) {
-        final Theme theme = new Theme(request.getName(), request.getDescription(),
-            request.getThumbnail());
+        final Theme theme = new Theme(request.getName(), request.getDescription(), request.getThumbnail());
         validateDuplicatedName(theme);
         final Long id = themeRepository.save(theme);
 

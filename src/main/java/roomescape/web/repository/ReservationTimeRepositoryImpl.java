@@ -18,8 +18,7 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
-    public ReservationTimeRepositoryImpl(final JdbcTemplate jdbcTemplate,
-        final DataSource dataSource) {
+    public ReservationTimeRepositoryImpl(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
             .withTableName("reservation_time")

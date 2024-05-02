@@ -56,7 +56,6 @@ public class ReservationRepositoryImpl implements ReservationRepository {
             inner join theme as m
             on r.theme_id = m.id
             """;
-
         return jdbcTemplate.query(query, getReservationRowMapper());
     }
 
@@ -79,8 +78,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
-    public List<BookingTimeResponseDto> findAllByDateAndThemeId(final String date,
-        final long themeId) {
+    public List<BookingTimeResponseDto> findAllByDateAndThemeId(final String date, final long themeId) {
         final String query = """
             SELECT t.id, t.start_at, r.id IS NOT NULL AS already_booked
             FROM reservation_time AS t 
@@ -123,8 +121,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
-    public Integer countByDateAndTimeIdAndThemeId(final String date, final long timeId,
-        final long themeId) {
+    public Integer countByDateAndTimeIdAndThemeId(final String date, final long timeId, final long themeId) {
         final String query = """
             SELECT count(*)
             FROM reservation as r
@@ -134,7 +131,6 @@ public class ReservationRepositoryImpl implements ReservationRepository {
             on r.theme_id = m.id
             WHERE r.date = ? and t.id = ? and m.id = ?
             """;
-
         return jdbcTemplate.queryForObject(query, Integer.class, date, timeId, themeId);
     }
 

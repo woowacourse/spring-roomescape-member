@@ -15,8 +15,10 @@ public class ReservationTimeService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;
 
-    public ReservationTimeService(final ReservationTimeRepository reservationTimeRepository,
-        final ReservationRepository reservationRepository) {
+    public ReservationTimeService(
+        final ReservationTimeRepository reservationTimeRepository,
+        final ReservationRepository reservationRepository
+    ) {
         this.reservationTimeRepository = reservationTimeRepository;
         this.reservationRepository = reservationRepository;
     }
@@ -30,8 +32,7 @@ public class ReservationTimeService {
     }
 
     private void validateDuplicatedStartAt(final ReservationTime reservationTime) {
-        final Integer reservationTimeCount = reservationTimeRepository.countByStartAt(
-            reservationTime.getStartAtString());
+        final Integer reservationTimeCount = reservationTimeRepository.countByStartAt(reservationTime.getStartAtString());
         if (reservationTimeCount > 0) {
             throw new IllegalArgumentException("해당 시간이 이미 존재합니다.");
         }
@@ -49,8 +50,7 @@ public class ReservationTimeService {
     public void delete(final long id) {
         final int reservationCount = reservationRepository.countByTimeId(id);
         if (reservationCount > 0) {
-            throw new IllegalArgumentException(
-                "Reservation time that have reservations cannot be deleted.");
+            throw new IllegalArgumentException("Reservation time that have reservations cannot be deleted.");
         }
         reservationTimeRepository.deleteById(id);
     }

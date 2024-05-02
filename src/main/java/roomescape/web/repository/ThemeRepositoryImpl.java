@@ -55,7 +55,6 @@ public class ThemeRepositoryImpl implements ThemeRepository {
             ORDER BY count(r.id) DESC
             LIMIT 10
             """;
-
         return jdbcTemplate.query(query, getThemeRowMapper(), lastWeek, today);
     }
 
@@ -87,7 +86,6 @@ public class ThemeRepositoryImpl implements ThemeRepository {
             FROM theme as t
             WHERE t.name = ?
             """;
-
         return jdbcTemplate.queryForObject(query, Integer.class, name);
     }
 
