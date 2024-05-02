@@ -30,6 +30,10 @@
 - [X] `/times/{id}` `DELETE` 요청 시 시간을 삭제하고 API 명세에 맞게 응답을 반환한다.
     - [X] 예약이 존재하는 시간을 삭제하려고 하면 예외를 발생시키고 상태코드 400을 반환한다.
     - [X] 존재하지 않는 아이디를 삭제하려고 하면 예외를 발생시키고 상태코드 400을 반환한다.
+- [X] `/times/availability?date=${date}&themeId=${themeId}` `GET` 요청 시 시간 목록을 조회하고 API 명세에 맞게 응답을 반환한다.
+    - [X] 날짜, 테마 아이디가 비어있으면 예외를 발생시키고 상태코드 400을 반환한다.
+    - [X] 예약 날짜가 형식에 맞지 않는다면 예외를 발생시키고 상태코드 400을 반환한다.
+    - [X] 테마 아이디가 자연수가 아니라면 예외를 발생시키고 상태코드 400을 반환한다.
 
 ### Theme
 
@@ -39,6 +43,7 @@
 - [x] `/themes` `DELETE` 요청 시 테마를 삭제하고 API 명세에 맞게 응답을 반환한다.
     - [x] 예약이 존재하는 테마를 삭제하려고 하면 예외를 발생시키고 상태코드 400을 반환한다.
     - [x] 존재하지 않는 아이디를 삭제하려고 하면 예외를 발생시키고 상태코드 400을 반환한다.
+- [X] `/themes/rank` `GET` 요청 시 예약 순서로 인기 테마 결과를 API 명세에 맞게 반환한다.
 
 # API 명세
 
@@ -132,6 +137,24 @@ Content-Type: application/json
 ]
 ```
 
+### GET
+
+```http
+GET /times/availability?date="2024-12-20"&themeId=1 HTTP/1.1
+```
+
+```http
+HTTP/1.1 200
+Content-Type: application/json
+[
+   {
+        "id": 1,
+        "startAt": "10:00"
+        "alreadyBooked": true
+    }
+]
+```
+
 ### Post
 
 ```http
@@ -167,6 +190,26 @@ HTTP/1.1 204
 
 ```http
 GET /themes HTTP/1.1
+```
+
+```http
+HTTP/1.1 200 
+Content-Type: application/json
+
+[
+   {
+        "id": 1,
+        "name": "레벨2 탈출",
+        "description": "우테코 레벨2를 탈출하는 내용입니다.",
+        "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+    }
+]
+```
+
+### Get
+
+```http
+GET /themes/rank HTTP/1.1
 ```
 
 ```http
