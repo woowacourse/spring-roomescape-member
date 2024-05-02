@@ -1,10 +1,12 @@
 package roomescape.service;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeRequest;
 
@@ -46,5 +48,24 @@ class ThemeServiceTest {
         final List<Theme> theme = themeService.findAll();
 
         assertThat(theme).hasSize(0);
+    }
+
+    @Test
+    @DisplayName("많이 예약한 순으로 10개를 추출한다.")
+    @Sql("/testdata.sql")
+    void rankingTest() {
+        List<Theme> topRanking = themeService.findTopRanking();
+        Assertions.assertAll(
+                () -> topRanking.get(0).getName().equals("테마 2"),
+                () -> topRanking.get(0).getName().equals("테마 1"),
+                () -> topRanking.get(0).getName().equals("테마 3"),
+                () -> topRanking.get(0).getName().equals("테마 4"),
+                () -> topRanking.get(0).getName().equals("테마 5"),
+                () -> topRanking.get(0).getName().equals("테마 6"),
+                () -> topRanking.get(0).getName().equals("테마 7"),
+                () -> topRanking.get(0).getName().equals("테마 8"),
+                () -> topRanking.get(0).getName().equals("테마 9"),
+                () -> topRanking.get(0).getName().equals("테마 10")
+        );
     }
 }
