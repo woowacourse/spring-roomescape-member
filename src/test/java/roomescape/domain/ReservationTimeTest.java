@@ -14,11 +14,11 @@ class ReservationTimeTest {
     @Test
     void initializeIndex() {
         // Given
-        ReservationTime reservationTime = new ReservationTime(LocalTime.of(1, 12));
-        Long initialIndex = 3L;
+        final ReservationTime reservationTime = new ReservationTime(LocalTime.of(1, 12));
+        final Long initialIndex = 3L;
 
         // When
-        ReservationTime initIndexReservationTime = reservationTime.initializeIndex(initialIndex);
+        final ReservationTime initIndexReservationTime = reservationTime.initializeIndex(initialIndex);
 
         // Then
         assertThat(initIndexReservationTime.getId()).isEqualTo(initialIndex);
@@ -28,9 +28,8 @@ class ReservationTimeTest {
     @Test
     void throwExceptionWhenReservationTimeBlank() {
         // When & Then
-        assertThatThrownBy(() -> new ReservationTime(1, null))
+        assertThatThrownBy(() -> new ReservationTime(1L, null))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("시간 정보는 공백을 입력할 수 없습니다.");
-
     }
 }
