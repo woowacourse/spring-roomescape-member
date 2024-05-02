@@ -7,8 +7,8 @@ import roomescape.exception.ConflictException;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.time.dao.TimeDao;
 import roomescape.time.domain.Time;
-import roomescape.time.dto.ReservationTimeRequest;
-import roomescape.time.dto.ReservationTimeResponse;
+import roomescape.time.dto.TimeRequest;
+import roomescape.time.dto.TimeResponse;
 
 @Service
 public class TimeService {
@@ -20,15 +20,15 @@ public class TimeService {
         this.reservationDao = reservationDao;
     }
 
-    public ReservationTimeResponse addReservationTime(ReservationTimeRequest reservationTimeRequest) {
-        validateDuplicateTime(reservationTimeRequest.startAt());
-        Time reservationTime = new Time(reservationTimeRequest.startAt());
+    public TimeResponse addReservationTime(TimeRequest timeRequest) {
+        validateDuplicateTime(timeRequest.startAt());
+        Time reservationTime = new Time(timeRequest.startAt());
         Time savedReservationTime = timeDao.save(reservationTime);
 
         return toResponse(savedReservationTime);
     }
 
-    public List<ReservationTimeResponse> findReservationTimes() {
+    public List<TimeResponse> findReservationTimes() {
         List<Time> reservationTimes = timeDao.findAllReservationTimesInOrder();
 
         return reservationTimes.stream()
@@ -41,8 +41,8 @@ public class TimeService {
         timeDao.deleteById(reservationTimeId);
     }
 
-    public ReservationTimeResponse toResponse(Time time) {
-        return new ReservationTimeResponse(time.getId(), time.getStartAt());
+    public TimeResponse toResponse(Time time) {
+        return new TimeResponse(time.getId(), time.getStartAt());
     }
 
     public void validateDuplicateTime(LocalTime startAt) {

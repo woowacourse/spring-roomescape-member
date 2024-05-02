@@ -20,8 +20,8 @@ import roomescape.exception.ConflictException;
 import roomescape.reservation.dao.ReservationJdbcDao;
 import roomescape.time.dao.TimeJdbcDao;
 import roomescape.time.domain.Time;
-import roomescape.time.dto.ReservationTimeRequest;
-import roomescape.time.dto.ReservationTimeResponse;
+import roomescape.time.dto.TimeRequest;
+import roomescape.time.dto.TimeResponse;
 
 @ExtendWith(MockitoExtension.class)
 class TimeServiceTest {
@@ -40,8 +40,8 @@ class TimeServiceTest {
         Mockito.when(timeJdbcDao.save(any()))
                 .thenReturn(time);
 
-        ReservationTimeRequest timeRequest = new ReservationTimeRequest(time.getStartAt());
-        ReservationTimeResponse timeResponse = timeService.addReservationTime(timeRequest);
+        TimeRequest timeRequest = new TimeRequest(time.getStartAt());
+        TimeResponse timeResponse = timeService.addReservationTime(timeRequest);
 
         Assertions.assertThat(timeResponse.id())
                 .isEqualTo(1);
@@ -53,7 +53,7 @@ class TimeServiceTest {
         Mockito.when(timeJdbcDao.findAllReservationTimesInOrder())
                 .thenReturn(List.of(time));
 
-        List<ReservationTimeResponse> timeResponses = timeService.findReservationTimes();
+        List<TimeResponse> timeResponses = timeService.findReservationTimes();
 
         Assertions.assertThat(timeResponses.size())
                 .isEqualTo(1);
@@ -68,7 +68,7 @@ class TimeServiceTest {
         assertAll(() -> {
                     Throwable duplicateStartAt = assertThrows(
                             ConflictException.class,
-                            () -> timeService.addReservationTime(new ReservationTimeRequest(LocalTime.now())));
+                            () -> timeService.addReservationTime(new TimeRequest(LocalTime.now())));
                     assertEquals("이미 존재하는 예약 시간입니다.", duplicateStartAt.getMessage());
                 }
         );

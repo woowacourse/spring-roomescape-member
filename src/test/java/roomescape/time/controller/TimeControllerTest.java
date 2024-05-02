@@ -20,8 +20,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.time.domain.Time;
-import roomescape.time.dto.ReservationTimeRequest;
-import roomescape.time.dto.ReservationTimeResponse;
+import roomescape.time.dto.TimeRequest;
+import roomescape.time.dto.TimeResponse;
 import roomescape.time.service.TimeService;
 
 @WebMvcTest(TimeController.class)
@@ -42,7 +42,7 @@ class TimeControllerTest {
 
         String content = new ObjectMapper()
                 .registerModule(new JavaTimeModule())
-                .writeValueAsString(new ReservationTimeRequest(time.getStartAt()));
+                .writeValueAsString(new TimeRequest(time.getStartAt()));
 
         mockMvc.perform(post("/times")
                         .content(content)
@@ -72,7 +72,7 @@ class TimeControllerTest {
                 .andExpect(status().isNoContent());
     }
 
-    public ReservationTimeResponse toResponse(Time time) {
-        return new ReservationTimeResponse(time.getId(), time.getStartAt());
+    public TimeResponse toResponse(Time time) {
+        return new TimeResponse(time.getId(), time.getStartAt());
     }
 }
