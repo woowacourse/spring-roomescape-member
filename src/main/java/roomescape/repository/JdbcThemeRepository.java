@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.RowMapper;
@@ -58,6 +59,25 @@ public class JdbcThemeRepository implements ThemeRepository {
                 .addValue("themeId", themeId);
         int count = jdbcTemplate.queryForObject(sql, parameterSource, Integer.class);
         return count > 0;
+    }
+
+    @Override
+    public List<Theme> findTopBookedThemes(LocalDate startDate, LocalDate endDate, int themeCount) {
+        String sql = """
+                    SELECT th.id, th.name, th.description, th.thumbnail
+                    FROM theme AS th
+                    INNER JOIN reservation AS r ON th.id = r.theme_id
+                    WHERE r.date BETWEEN :startDate AND :endDate
+                    GROUP BY th.id
+                    ORDER BY COUNT(th.id) DESC
+                    LIMIT :themeCount;
+                """;
+
+        SqlParameterSource paramMap = new MapSqlParameterSource()
+                .addValue("startDate", startDate)
+                .addValue("endDate", endDate)
+                .addValue("themeCount", themeCount);
+        return jdbcTemplate.query(sql, paramMap, rowMapper);
     }
 
     private Theme findThemeById(long savedId) {

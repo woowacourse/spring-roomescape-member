@@ -29,6 +29,11 @@ public class ThemeApiController {
         return themeService.findAllThemes();
     }
 
+    @GetMapping("/rank")
+    public List<ThemeResponseDto> findTopBookedThemes() {
+        return themeService.findTopBookedThemes();
+    }
+
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public ThemeResponseDto createTheme(@RequestBody ThemeRequestDto requestDto) {
