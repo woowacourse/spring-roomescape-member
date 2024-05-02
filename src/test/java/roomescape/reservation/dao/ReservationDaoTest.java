@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.reservation.domain.Reservation;
 import roomescape.theme.dao.ThemeDao;
 import roomescape.theme.domain.Theme;
@@ -19,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@Sql(scripts = {"/data.sql"})
 class ReservationDaoTest {
 
     @Autowired
@@ -64,5 +66,12 @@ class ReservationDaoTest {
     void deleteById() {
         save();
         assertThat(reservationDao.deleteById(1L)).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("특정 날짜, 시간, 테마에 예약이 존재하는지 알 수 있다.")
+    void checkReservationExists() {
+        save();
+        assertThat(reservationDao.checkReservationExists(reservation.getDate().toString(), reservationTime.getId(), theme.getId())).isTrue();
     }
 }

@@ -38,7 +38,7 @@ public class ReservationService {
         final ReservationTime reservationTime = reservationTimeDao.findById(requestDto.timeId());
         final Reservation reservation = requestDto.toReservation();
         validateNoReservationsForPastDates(reservation.getDate(), reservationTime);
-        boolean isExist = reservationDao.checkReservationExists(reservation.getDate().toString(), reservationTime.getStartAt().toString());
+        boolean isExist = reservationDao.checkReservationExists(reservation.getDate().toString(), requestDto.timeId(), requestDto.themeId());
         validateDuplicationReservation(isExist);
 
         final long reservationId = reservationDao.save(reservation);

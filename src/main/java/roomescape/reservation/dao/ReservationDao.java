@@ -61,14 +61,16 @@ public class ReservationDao {
         return jdbcTemplate.update(sql, id);
     }
 
-    public boolean checkReservationExists(final String date, final String time) {
+    public boolean checkReservationExists(final String date, final long timeId, final long themeId) {
         String sql = "SELECT CASE WHEN COUNT(*) > 0 THEN TRUE ELSE FALSE END " +
                 "FROM reservation AS r " +
-                "INNER JOIN reservation_time AS t " +
-                "ON r.time_id = t.id " +
-                "WHERE r.date = ? AND t.start_at = ?";
+                "INNER JOIN reservation_time AS rt " +
+                "ON r.time_id = rt.id " +
+                "INNER JOIN theme AS t " +
+                "ON r.theme_id = t.id " +
+                "WHERE r.date = ? AND rt.id = ? AND t.id = ?";
 
-        Boolean result = jdbcTemplate.queryForObject(sql, Boolean.class, date, time);
+        Boolean result = jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
         return Boolean.TRUE.equals(result);
     }
 }

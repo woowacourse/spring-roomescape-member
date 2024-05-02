@@ -13,6 +13,7 @@ import roomescape.time.dao.ReservationTimeDao;
 import roomescape.time.domain.ReservationTime;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -33,7 +34,7 @@ class ReservationServiceTest {
         Long id = 1L;
         ReservationTime reservationTime = new ReservationTime(id, "10:00");
         when(reservationTimeDao.findById(id)).thenReturn(reservationTime);
-        when(reservationDao.checkReservationExists(anyString(), anyString())).thenReturn(true);
+        when(reservationDao.checkReservationExists(anyString(), anyLong(), anyLong())).thenReturn(true);
         assertThatThrownBy(() -> reservationService.save(
                 new ReservationRequestDto("hotea", "2025-04-01", id, id)))
                 .isInstanceOf(DuplicateReservationException.class);
