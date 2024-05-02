@@ -14,6 +14,7 @@ import roomescape.service.TimeService;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/times")
@@ -25,17 +26,13 @@ public class TimeController {
         this.timeService = timeService;
     }
 
-    // TODO: getTime 메서드 합치기
-//    @GetMapping
-//    public List<TimeResponse> getTimes() {
-//        return timeService.getTimes();
-//    }
-
     @GetMapping
     public List<TimeResponse> getTimes(
-            @RequestParam("date") final String date,
-            @RequestParam("themeId") final String themeId) {
-
+            @RequestParam(value = "date", required = false) final String date,
+            @RequestParam(value = "themeId", required = false) final String themeId) {
+        if (Objects.isNull(date) || Objects.isNull(themeId)) {
+            return timeService.getTimes();
+        }
         return timeService.getTimeAvailable(date, themeId);
     }
 
