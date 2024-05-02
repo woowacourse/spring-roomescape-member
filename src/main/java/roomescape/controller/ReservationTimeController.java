@@ -29,17 +29,14 @@ public class ReservationTimeController {
     public ResponseEntity<ReservationTimeResponse> createReservationTime(
             @Valid @RequestBody ReservationTimeRequest request) {
         ReservationTime time = reservationTimeService.register(request.toReservationCreationRequest());
-        ReservationTimeResponse response = ReservationTimeResponse.from(time);
+        ReservationTimeResponse response = ReservationTimeResponse.from(time, false);
         URI location = URI.create("/times/" + response.id());
         return ResponseEntity.created(location).body(response);
     }
 
     @GetMapping
     public ResponseEntity<List<ReservationTimeResponse>> getReservationTimes() {
-        List<ReservationTime> reservationTimes = reservationTimeService.getReservationTimes();
-        List<ReservationTimeResponse> responses = reservationTimes.stream()
-                .map(ReservationTimeResponse::from)
-                .toList();
+        List<ReservationTimeResponse> responses = reservationTimeService.getReservationTimes();
         return ResponseEntity.ok(responses);
     }
 
