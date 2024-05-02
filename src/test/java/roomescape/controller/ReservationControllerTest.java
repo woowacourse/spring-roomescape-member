@@ -9,6 +9,8 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
@@ -79,6 +81,20 @@ class ReservationControllerTest {
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @DisplayName("유효하지 않은 날짜 형식 입력")
+    @ParameterizedTest
+    @ValueSource(strings = {"", "    ", "2022.22.11"})
+    void invalidTimeFormat(final String time) {
+        final Map<String, String> params = Map.of("startAt", time);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/times")
                 .then().log().all()
                 .statusCode(400);
     }
