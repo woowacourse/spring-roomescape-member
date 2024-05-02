@@ -40,7 +40,7 @@ public class CollectionReservationTimeRepository implements ReservationTimeRepos
     @Override
     public Optional<ReservationTime> findById(long id) {
         return reservationTimes.stream()
-                .filter(reservationTime -> reservationTime.isIdOf(id)) //Todo 메서드로 바꾸기
+                .filter(reservationTime -> reservationTime.isIdOf(id))
                 .findFirst();
     }
 
