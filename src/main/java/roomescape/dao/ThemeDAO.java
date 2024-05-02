@@ -24,7 +24,7 @@ public class ThemeDAO {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Theme insert(final Theme theme) {
+    public Theme insert(Theme theme) {
         String name = theme.getName();
         String description = theme.getDescription();
         String thumbnail = theme.getThumbnail();
@@ -38,7 +38,7 @@ public class ThemeDAO {
         return new Theme(id, name, description, thumbnail);
     }
 
-    public Theme findById(final Long id) {
+    public Theme findById(Long id) {
         final String sql = "SELECT * FROM theme WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, themeRowMapper(), id);
     }
@@ -48,18 +48,26 @@ public class ThemeDAO {
         return jdbcTemplate.query(sql, themeRowMapper());
     }
 
-    public void deleteById(final Long id) {
+    public void deleteById(Long id) {
         final String sql = "DELETE FROM theme WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
 
     public List<Theme> findTopRanking(LocalDate firstDayOfPeriod, LocalDate lastDayOfPeriod) {
         String sql =
-                "SELECT t.id, t.name, t.description, t.thumbnail, IFNULL(COUNT(r.id), 0) AS reservation_count " +
-                        "FROM theme AS t " +
-                        "LEFT JOIN reservation AS r ON t.id = r.theme_id AND r.date BETWEEN ? AND ? " +
-                        "GROUP BY t.id, t.name, t.description, t.thumbnail " +
-                        "ORDER BY reservation_count DESC, t.id LIMIT 10";
+                """
+                            SELECT 
+                                t.id, 
+                                t.name, 
+                                t.description, 
+                                t.thumbnail, 
+                                IFNULL(COUNT(r.id), 0) AS reservation_count  
+                            FROM theme AS t 
+                            LEFT JOIN reservation AS r ON t.id = r.theme_id AND r.date BETWEEN ? AND ?  
+                            GROUP BY t.id, t.name, t.description, t.thumbnail  
+                            ORDER BY reservation_count DESC, t.id LIMIT 10 
+                        """;
+
         return jdbcTemplate.query(sql, themeRowMapper(), firstDayOfPeriod, lastDayOfPeriod);
     }
 

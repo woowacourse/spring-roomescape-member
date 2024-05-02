@@ -26,10 +26,8 @@ class ReservationServiceTest {
 
     @Autowired
     ReservationService reservationService;
-
     @Autowired
     ReservationTimeDAO reservationTimeDAO;
-
     @Autowired
     ThemeDAO themeDAO;
 
@@ -43,7 +41,7 @@ class ReservationServiceTest {
     @Test
     @DisplayName("예약을 저장할 수 있다.")
     void save() {
-        final Reservation savedReservation = reservationService.save(new ReservationRequest("뽀로로", LocalDate.now(), 1L, 1L));
+        Reservation savedReservation = reservationService.save(new ReservationRequest("뽀로로", LocalDate.now(), 1L, 1L));
 
         assertThat(savedReservation).isNotNull();
     }
@@ -53,7 +51,7 @@ class ReservationServiceTest {
     void findAll() {
         reservationService.save(new ReservationRequest("뽀로로", LocalDate.now(), 1L, 1L));
 
-        final List<Reservation> reservations = reservationService.findAll();
+        List<Reservation> reservations = reservationService.findAll();
 
         assertThat(reservations).hasSize(1);
     }
@@ -64,7 +62,7 @@ class ReservationServiceTest {
         reservationService.save(new ReservationRequest("뽀로로", LocalDate.now(), 1L, 1L));
 
         reservationService.delete(1L);
-        final List<Reservation> reservations = reservationService.findAll();
+        List<Reservation> reservations = reservationService.findAll();
 
         assertThat(reservations).hasSize(0);
     }

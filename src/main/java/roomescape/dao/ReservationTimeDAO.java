@@ -17,14 +17,14 @@ public class ReservationTimeDAO {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
-    public ReservationTimeDAO(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
+    public ReservationTimeDAO(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation_time")
                 .usingGeneratedKeyColumns("id");
     }
 
-    public ReservationTime insert(final ReservationTime reservationTime) {
+    public ReservationTime insert(ReservationTime reservationTime) {
         final LocalTime startAt = reservationTime.getStartAt();
 
         final SqlParameterSource parameterSource = new MapSqlParameterSource()
@@ -34,7 +34,7 @@ public class ReservationTimeDAO {
         return new ReservationTime(id, startAt);
     }
 
-    public ReservationTime findById(final Long id) {
+    public ReservationTime findById(Long id) {
         final String sql = "SELECT * FROM reservation_time WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, reservationTimeRowMapper(), id);
     }
@@ -44,7 +44,7 @@ public class ReservationTimeDAO {
         return jdbcTemplate.query(sql, reservationTimeRowMapper());
     }
 
-    public void deleteById(final Long id) {
+    public void deleteById(Long id) {
         final String sql = "DELETE FROM reservation_time WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }

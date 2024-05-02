@@ -19,17 +19,17 @@ public class ReservationService {
     private final ReservationTimeDAO reservationTimeDAO;
     private final ThemeDAO themeDAO;
 
-    public ReservationService(final ReservationDAO reservationDAO, final ReservationTimeDAO reservationTimeDAO, ThemeDAO themeDAO) {
+    public ReservationService(ReservationDAO reservationDAO, ReservationTimeDAO reservationTimeDAO, ThemeDAO themeDAO) {
         this.reservationDAO = reservationDAO;
         this.reservationTimeDAO = reservationTimeDAO;
         this.themeDAO = themeDAO;
     }
 
-    public Reservation save(final ReservationRequest reservationRequest) {
+    public Reservation save(ReservationRequest reservationRequest) {
         validateReservation(reservationRequest);
-        final ReservationTime reservationTime = reservationTimeDAO.findById(reservationRequest.timeId());
-        final Theme theme = themeDAO.findById(reservationRequest.themeId());
-        final Reservation reservation = reservationRequest.toEntity(reservationTime, theme);
+        ReservationTime reservationTime = reservationTimeDAO.findById(reservationRequest.timeId());
+        Theme theme = themeDAO.findById(reservationRequest.themeId());
+        Reservation reservation = reservationRequest.toEntity(reservationTime, theme);
 
         return reservationDAO.insert(reservation);
     }
@@ -73,7 +73,7 @@ public class ReservationService {
         return reservationDAO.selectAll();
     }
 
-    public void delete(final long id) {
+    public void delete(long id) {
         reservationDAO.deleteById(id);
     }
 }

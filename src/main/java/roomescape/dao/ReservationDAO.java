@@ -19,14 +19,14 @@ public class ReservationDAO {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
-    public ReservationDAO(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
+    public ReservationDAO(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Reservation insert(final Reservation reservation) {
+    public Reservation insert(Reservation reservation) {
         final String name = reservation.getName();
         final LocalDate date = reservation.getDate();
         final ReservationTime time = reservation.getTime();
@@ -63,12 +63,12 @@ public class ReservationDAO {
         return jdbcTemplate.query(sql, reservationRowMapper());
     }
 
-    public void deleteById(final long id) {
+    public void deleteById(long id) {
         final String sql = "DELETE FROM reservation WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
 
-    public boolean hasReservationTime(final Long timeId) {
+    public boolean hasReservationTime(Long timeId) {
         final String sql =
                 "SELECT " +
                         "r.id AS reservation_id, " +

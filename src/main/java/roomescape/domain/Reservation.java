@@ -12,11 +12,11 @@ public class Reservation {
     public Reservation() {
     }
 
-    public Reservation(final String name, final LocalDate date, final ReservationTime time, final Theme theme) {
+    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
         this(null, name, date, time, theme);
     }
 
-    public Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time, final Theme theme) {
+    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         validateReservation(name, date, time);
         this.id = id;
         this.name = name;

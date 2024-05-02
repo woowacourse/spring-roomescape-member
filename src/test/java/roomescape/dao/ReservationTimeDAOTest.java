@@ -22,7 +22,7 @@ class ReservationTimeDAOTest {
     @Test
     @DisplayName("예약 시간을 추가한다.")
     void insert() {
-        final ReservationTime savedReservationTime = reservationTimeDAO.insert(new ReservationTime(LocalTime.now()));
+        ReservationTime savedReservationTime = reservationTimeDAO.insert(new ReservationTime(LocalTime.now()));
 
         assertThat(savedReservationTime).isNotNull();
     }
@@ -32,7 +32,7 @@ class ReservationTimeDAOTest {
     void selectAll() {
         reservationTimeDAO.insert(new ReservationTime(LocalTime.now()));
 
-        final List<ReservationTime> reservationTimes = reservationTimeDAO.selectAll();
+        List<ReservationTime> reservationTimes = reservationTimeDAO.selectAll();
 
         assertThat(reservationTimes).hasSize(1);
     }
@@ -42,7 +42,7 @@ class ReservationTimeDAOTest {
         reservationTimeDAO.insert(new ReservationTime(LocalTime.now()));
 
         reservationTimeDAO.deleteById(1L);
-        final List<ReservationTime> reservationTimes = reservationTimeDAO.selectAll();
+        List<ReservationTime> reservationTimes = reservationTimeDAO.selectAll();
 
         assertThat(reservationTimes).hasSize(0);
     }

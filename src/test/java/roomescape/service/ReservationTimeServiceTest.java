@@ -32,7 +32,7 @@ class ReservationTimeServiceTest {
     @Test
     @DisplayName("예약 시간을 저장할 수 있다.")
     void save() {
-        final ReservationTime reservationTime = reservationTimeService.save(new ReservationTimeRequest(LocalTime.now()));
+        ReservationTime reservationTime = reservationTimeService.save(new ReservationTimeRequest(LocalTime.now()));
 
         assertThat(reservationTime).isNotNull();
     }
@@ -42,7 +42,7 @@ class ReservationTimeServiceTest {
     void findAll() {
         reservationTimeService.save(new ReservationTimeRequest(LocalTime.now()));
 
-        final List<ReservationTime> reservationTimes = reservationTimeService.findAll();
+        List<ReservationTime> reservationTimes = reservationTimeService.findAll();
 
         assertThat(reservationTimes).hasSize(1);
     }
@@ -53,7 +53,7 @@ class ReservationTimeServiceTest {
         reservationTimeService.save(new ReservationTimeRequest(LocalTime.now()));
 
         reservationTimeService.delete(1L);
-        final List<ReservationTime> reservationTimes = reservationTimeService.findAll();
+        List<ReservationTime> reservationTimes = reservationTimeService.findAll();
 
         assertThat(reservationTimes).hasSize(0);
     }

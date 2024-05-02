@@ -16,7 +16,7 @@ public class ThemeService {
         this.themeDAO = themeDAO;
     }
 
-    public Theme save(final ThemeRequest themeRequest) {
+    public Theme save(ThemeRequest themeRequest) {
         final Theme theme = new Theme(themeRequest.name(), themeRequest.description(), themeRequest.thumbnail());
         return themeDAO.insert(theme);
     }
@@ -25,7 +25,7 @@ public class ThemeService {
         return themeDAO.selectAll();
     }
 
-    public void delete(final Long id) {
+    public void delete(Long id) {
         themeDAO.deleteById(id);
     }
 

@@ -15,12 +15,12 @@ public class ReservationTimeService {
     private final ReservationDAO reservationDAO;
     private final ReservationTimeDAO reservationTimeDAO;
 
-    public ReservationTimeService(ReservationDAO reservationDAO, final ReservationTimeDAO reservationTimeDAO) {
+    public ReservationTimeService(ReservationDAO reservationDAO, ReservationTimeDAO reservationTimeDAO) {
         this.reservationDAO = reservationDAO;
         this.reservationTimeDAO = reservationTimeDAO;
     }
 
-    public ReservationTime save(final ReservationTimeRequest reservationTimeRequest) {
+    public ReservationTime save(ReservationTimeRequest reservationTimeRequest) {
         validateTime(reservationTimeRequest);
 
         final ReservationTime reservationTime = new ReservationTime(reservationTimeRequest.startAt());
@@ -57,7 +57,7 @@ public class ReservationTimeService {
         return reservedTimeIds.contains(reservationTime.getId());
     }
 
-    public void delete(final Long id) {
+    public void delete(Long id) {
         if (reservationDAO.hasReservationTime(id)) {
             throw new IllegalArgumentException("해당 시간에 대한 예약이 존재하여 삭제할 수 없습니다.");
         }
