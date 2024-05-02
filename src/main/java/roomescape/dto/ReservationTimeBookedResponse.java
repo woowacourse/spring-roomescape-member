@@ -11,7 +11,7 @@ public record ReservationTimeBookedResponse(
         LocalTime startAt,
         boolean alreadyBooked
 ) {
-        public ReservationTimeBookedResponse(final ReservationTime reservationTime, final boolean alreadyBooked) {
-                this(reservationTime.getId(), reservationTime.getStartAt(), alreadyBooked);
-        }
+    public ReservationTimeBookedResponse(final ReservationTime reservationTime, final boolean alreadyBooked) {
+        this(reservationTime.getId(), reservationTime.getStartAt(), alreadyBooked);
+    }
 }
