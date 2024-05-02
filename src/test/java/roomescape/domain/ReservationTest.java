@@ -13,13 +13,13 @@ class ReservationTest {
 
     @Test
     public void validateDate() {
-        assertThatThrownBy(() -> new Reservation(1L, "테니", LocalDate.of(2024, 4, 29), new ReservationTime(1L, LocalTime.now())))
+        assertThatThrownBy(() -> new Reservation(1L, "테니", LocalDate.of(2024, 4, 29), new ReservationTime(1L, LocalTime.now()), new Theme(1L, "테니", "설명", "썸네일")))
                 .isInstanceOf(IllegalDateException.class);
     }
 
     @Test
     public void validateTime() {
-        assertThatThrownBy(() -> new Reservation(1L, "테니", LocalDate.of(2024, 4, 30), new ReservationTime(1L, LocalTime.of(16, 0))))
+        assertThatThrownBy(() -> new Reservation(1L, "테니", LocalDate.now(), new ReservationTime(1L, LocalTime.now().minusHours(1)), new Theme(1L, "테니", "설명", "썸네일")))
                 .isInstanceOf(IllegalTimeException.class);
 
     }

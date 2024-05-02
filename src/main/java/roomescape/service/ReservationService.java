@@ -39,8 +39,8 @@ public class ReservationService {
         Theme theme = themeService.findThemeById(request.themeId());
         Reservation reservation = reservationMapper.mapToReservation(request, time, theme);
 
-        if (reservationDao.existByDateTime(reservation.getDate(), time.getStartAt())) {
-            throw new AlreadyExistReservationException("[ERROR] 같은 날짜, 시간에 중복된 예약을 생성할 수 없습니다.");
+        if (reservationDao.existByDateTimeTheme(reservation.getDate(), time.getStartAt(), reservation.getThemeId())) {
+            throw new AlreadyExistReservationException("[ERROR] 같은 날짜, 테마, 시간에 중복된 예약을 생성할 수 없습니다.");
         }
 
         Long saveId = reservationDao.save(reservation);

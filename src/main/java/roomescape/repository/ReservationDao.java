@@ -26,6 +26,11 @@ public class ReservationDao {
             new Theme(resultSet.getLong("theme_id"), resultSet.getString("name"), resultSet.getString("description"), resultSet.getString("thumbnail"))
     );
 
+    private final RowMapper<ReservationTime> timeRowMapper = (resultSet, rowNum) -> new ReservationTime(
+            resultSet.getLong("id"),
+            LocalTime.parse(resultSet.getString("start_at"))
+    );
+
     private final JdbcTemplate jdbcTemplate;
 
     public ReservationDao(JdbcTemplate jdbcTemplate) {
@@ -72,13 +77,18 @@ public class ReservationDao {
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
     }
 
-    public boolean existByDateTime(LocalDate date, LocalTime time) {
+    public boolean existByDateTimeTheme(LocalDate date, LocalTime time, Long themeId) {
         int count = jdbcTemplate.queryForObject("""
                 SELECT count(*) 
                 FROM reservation as r 
                 INNER JOIN reservation_time as t ON r.time_id = t.id
-                WHERE r.date = ? AND t.start_at = ?
-                """, Integer.class, date, time);
+                WHERE r.date = ? AND t.start_at = ? AND r.theme_id = ?
+                """, Integer.class, date, time, themeId);
         return count > 0;
+    }
+
+    public List<Long> findTimeIdByDateThemeId(LocalDate date, Long themeId) {
+        return jdbcTemplate.queryForList("SELECT time_id FROM reservation WHERE date = ? AND theme_id = ?", Long.class, date, themeId);
+        //todo : reservation 테이블 vs time 테이블
     }
 }

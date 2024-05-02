@@ -3,12 +3,16 @@ package roomescape.service;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.TimeMemberResponse;
 import roomescape.dto.TimeResponse;
 import roomescape.dto.TimeSaveRequest;
 import roomescape.exception.IllegalTimeException;
 import roomescape.mapper.TimeMapper;
+import roomescape.repository.ReservationDao;
 import roomescape.repository.TimeDao;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,9 +21,31 @@ public class ReservationTimeService {
 
     private final TimeMapper timeMapper = new TimeMapper();
     private final TimeDao timeDao;
+    private final ReservationDao reservationDao; //TODO: 상위 개념 dao 호출 적절한지 고려
+//    private final ReservationService reservationService;
 
-    public ReservationTimeService(TimeDao timeDao) {
+    public ReservationTimeService(TimeDao timeDao, ReservationDao reservationDao) {
         this.timeDao = timeDao;
+        this.reservationDao = reservationDao;
+    }
+
+    public List<TimeMemberResponse> findAllTimes(LocalDate date, Long themeId) {
+        List<ReservationTime> allTimes = timeDao.findAll();
+        List<TimeMemberResponse> newAllTimes = new ArrayList<>();
+
+        // TODO: 인덴트 해결
+        if (date != null && themeId != null) {
+            List<Long> bookedTimeIds = reservationDao.findTimeIdByDateThemeId(date, themeId);
+            for (ReservationTime time : allTimes) {
+                if (bookedTimeIds.contains(time.getId())) {
+                    newAllTimes.add(timeMapper.mapToResponse(time, true));
+                }
+                if (!bookedTimeIds.contains(time.getId())) {
+                    newAllTimes.add(timeMapper.mapToResponse(time, false));
+                }
+            }
+        }
+        return newAllTimes;
     }
 
     public List<TimeResponse> findAllTimes() {

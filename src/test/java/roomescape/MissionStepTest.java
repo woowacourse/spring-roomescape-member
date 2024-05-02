@@ -59,6 +59,20 @@ public class MissionStepTest {
         return keyHolder.getKey().toString();
     }
 
+    public String createTheme() {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(
+                    "INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
+                    new String[]{"id"});
+            ps.setString(1, "이름");
+            ps.setString(2, "설명");
+            ps.setString(3, "썸네일");
+            return ps;
+        }, keyHolder);
+        return keyHolder.getKey().toString();
+    }
+
     @Test
     void 일단계() {
         RestAssured.given().log().all()
@@ -84,11 +98,13 @@ public class MissionStepTest {
     @Test
     void 삼단계() {
         String reservationTimeId = createReservationTime();
+        String themeId = createTheme();
 
         Map<String, String> params = Map.of(
                 "name", "브라운",
                 "date", "2024-08-05",
-                "timeId", reservationTimeId
+                "timeId", reservationTimeId,
+                "themeId", themeId
         );
 
         String location = RestAssured.given().log().all()
@@ -140,7 +156,8 @@ public class MissionStepTest {
     @Test
     void 오단계() {
         String reservationTimeId = createReservationTime();
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "브라운", "2024-08-05", reservationTimeId);
+        String themeId = createTheme();
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2024-08-05", reservationTimeId, themeId);
 
         List<Reservation> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -156,11 +173,13 @@ public class MissionStepTest {
     @Test
     void 육단계() {
         String reservationTimeId = createReservationTime();
+        String themeId = createTheme();
 
         Map<String, String> params = Map.of(
                 "name", "브라운",
                 "date", "2024-08-05",
-                "timeId", reservationTimeId
+                "timeId", reservationTimeId,
+                "themeId", themeId
         );
 
         String location = RestAssured.given().log().all()
@@ -214,11 +233,13 @@ public class MissionStepTest {
     @Test
     void 팔단계() {
         String reservationTimeId = createReservationTime();
+        String themeId = createTheme();
 
         Map<String, Object> reservation = Map.of(
                 "name", "브라운",
                 "date", "2024-08-05",
-                "timeId", reservationTimeId
+                "timeId", reservationTimeId,
+                "themeId", themeId
         );
 
         RestAssured.given().log().all()
