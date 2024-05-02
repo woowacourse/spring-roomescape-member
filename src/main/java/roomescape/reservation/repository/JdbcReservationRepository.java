@@ -38,7 +38,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                             resultSet.getLong("time_id"),
                             resultSet.getTime("start_at").toLocalTime()),
                     new Theme(resultSet.getLong("theme_id"),
-                            resultSet.getString("name"),
+                            resultSet.getString("theme_name"),
                             resultSet.getString("description"),
                             resultSet.getString("thumbnail")
                     )
@@ -68,7 +68,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = """
                 select r.id, r.name, r.date, 
                         rt.id as time_id, rt.start_at, 
-                        t.id as theme_id, t.name, t.description, t.thumbnail 
+                        t.id as theme_id, t.name as theme_name, t.description, t.thumbnail 
                 from reservation as r 
                 inner join reservation_time as rt
                 on r.time_id = rt.id
@@ -83,7 +83,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = """
                 select r.id, r.name, r.date,  
                         rt.id as time_id, rt.start_at, 
-                        t.id as theme_id, t.name, t.description, t.thumbnail
+                        t.id as theme_id, t.name as theme_name, t.description, t.thumbnail
                 from reservation as r 
                 inner join reservation_time as rt 
                 on r.time_id = rt.id
@@ -103,7 +103,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = """
                 select r.id, r.name, r.date, 
                     rt.id as time_id, rt.start_at,
-                    t.id as theme_id, t.name, t.description, t.thumbnail
+                    t.id as theme_id, t.name as theme_name, t.description, t.thumbnail
                 from reservation as r
                 inner join reservation_time as rt
                 on r.time_id = rt.id
@@ -119,7 +119,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = """
                 select r.id, r.name, r.date, 
                     rt.id as time_id, rt.start_at,
-                    t.id as theme_id, t.name, t.description, t.thumbnail
+                    t.id as theme_id, t.name as theme_name, t.description, t.thumbnail
                 from reservation as r
                 inner join reservation_time as rt
                 on r.time_id = rt.id
@@ -135,7 +135,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = """
                 select r.id, r.name, r.date, 
                     rt.id as time_id, rt.start_at,
-                    t.id as theme_id, t.name, t.description, t.thumbnail
+                    t.id as theme_id, t.name as theme_name, t.description, t.thumbnail
                 from reservation as r
                 inner join reservation_time as rt
                 on r.time_id = rt.id
