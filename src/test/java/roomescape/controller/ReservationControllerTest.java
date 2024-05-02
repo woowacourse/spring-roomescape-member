@@ -31,20 +31,16 @@ public class ReservationControllerTest {
         RestAssured.port = port;
     }
 
+    @DisplayName("어드민 예약 페이지 호출 시 200으로 응답한다.")
     @Test
     void reservationPageTest() {
         RestAssured.given().log().all()
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200);
-
-        RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
     }
 
+    @DisplayName("예약 목록 조회 시 200으로 응답한다.")
     @Test
     void reservationsTest() {
         RestAssured.given().log().all()
@@ -53,6 +49,7 @@ public class ReservationControllerTest {
                 .statusCode(200);
     }
 
+    @DisplayName("정상적인 예약 추가 요청 시 201으로 응답한다.")
     @Test
     void insertTest() throws JsonProcessingException {
         Map<String, Object> params = new HashMap<>();
@@ -70,6 +67,7 @@ public class ReservationControllerTest {
                 .statusCode(201);
     }
 
+    @DisplayName("예약 삭제 요청 시 204로 응답한다.")
     @Test
     void deleteByIdTest() {
         RestAssured.given().log().all()

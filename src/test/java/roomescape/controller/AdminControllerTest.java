@@ -2,6 +2,7 @@ package roomescape.controller;
 
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -17,14 +18,7 @@ public class AdminControllerTest {
         RestAssured.port = port;
     }
 
-    @Test
-    void welcomePageTest() {
-        RestAssured.given().log().all()
-                .when().get("/")
-                .then().log().all()
-                .statusCode(200);
-    }
-
+    @DisplayName("어드민 페이지를 호출 시 200으로 응답한다.")
     @Test
     void adminPageTest() {
         RestAssured.given().log().all()

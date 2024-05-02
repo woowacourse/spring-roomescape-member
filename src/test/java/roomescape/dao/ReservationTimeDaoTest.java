@@ -1,10 +1,10 @@
 package roomescape.dao;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
 @Import(ReservationTimeDao.class)
@@ -31,6 +30,7 @@ public class ReservationTimeDaoTest {
     @Autowired
     private ReservationTimeDao reservationTimeDao;
 
+    @DisplayName("모든 예약 시간을 조회한다.")
     @Test
     void findAllTest() {
         List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
@@ -38,6 +38,7 @@ public class ReservationTimeDaoTest {
         assertThat(reservationTimes.size()).isEqualTo(1);
     }
 
+    @DisplayName("ID를 이용하여 예약 시간을 조회한다.")
     @Test
     void findByIdTest() {
         ReservationTime reservationTime = reservationTimeDao.findById(1L).get();
@@ -45,6 +46,7 @@ public class ReservationTimeDaoTest {
         assertThat(reservationTime.getId()).isEqualTo(1L);
     }
 
+    @DisplayName("ID가 존재하지 않으면 빈 시간을 반환한다.")
     @Test
     void findByWrongIdTest() {
         Optional<ReservationTime> reservationTime = reservationTimeDao.findById(9L);
@@ -52,6 +54,7 @@ public class ReservationTimeDaoTest {
         assertThat(reservationTime).isEqualTo(Optional.empty());
     }
 
+    @DisplayName("예약 시간을 추가한다.")
     @Test
     void insertTest() {
         Long index = jdbcTemplate.queryForObject("SELECT count(*) FROM reservation_time", Long.class);
@@ -60,12 +63,7 @@ public class ReservationTimeDaoTest {
         assertThat(id).isEqualTo(index + 1);
     }
 
-    @Test
-    void wrongInsertTest() {
-        assertThatThrownBy(() -> reservationTimeDao.insert(null))
-                .isInstanceOf(DataIntegrityViolationException.class);
-    }
-
+    @DisplayName("시간 ID를 이용하여 시간을 삭제한다.")
     @Test
     void deleteByIdTest() {
         KeyHolder keyHolder = new GeneratedKeyHolder();

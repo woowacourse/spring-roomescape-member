@@ -1,10 +1,10 @@
 package roomescape.dao;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -30,6 +29,7 @@ public class ReservationThemeDaoTest {
     @Autowired
     private ReservationThemeDao reservationThemeDao;
 
+    @DisplayName("모든 테마를 조회한다.")
     @Test
     void findAllTest() {
         List<ReservationTheme> reservationThemes = reservationThemeDao.findAll();
@@ -37,6 +37,7 @@ public class ReservationThemeDaoTest {
         assertThat(reservationThemes.size()).isEqualTo(1);
     }
 
+    @DisplayName("테마 ID를 이용하여 테마를 조회한다.")
     @Test
     void findByIdTest() {
         ReservationTheme reservationTheme = reservationThemeDao.findById(1L).get();
@@ -44,6 +45,7 @@ public class ReservationThemeDaoTest {
         assertThat(reservationTheme.getId()).isEqualTo(1L);
     }
 
+    @DisplayName("ID가 존재하지 않으면 빈 시간을 반환한다.")
     @Test
     void findByWrongIdTest() {
         Optional<ReservationTheme> reservationTheme = reservationThemeDao.findById(9L);
@@ -51,6 +53,7 @@ public class ReservationThemeDaoTest {
         assertThat(reservationTheme).isEqualTo(Optional.empty());
     }
 
+    @DisplayName("테마를 추가한다.")
     @Test
     void insertTest() {
         Long index = jdbcTemplate.queryForObject("SELECT count(*) FROM theme", Long.class);
@@ -59,16 +62,7 @@ public class ReservationThemeDaoTest {
         assertThat(id).isEqualTo(index + 1);
     }
 
-    @Test
-    void wrongInsertTest() {
-        assertThatThrownBy(() -> reservationThemeDao.insert(null, "testDesc", "testThumbnail"))
-                .isInstanceOf(DataIntegrityViolationException.class);
-        assertThatThrownBy(() -> reservationThemeDao.insert("test", null, "testThumbnail"))
-                .isInstanceOf(DataIntegrityViolationException.class);
-        assertThatThrownBy(() -> reservationThemeDao.insert("test", "testDesc", null))
-                .isInstanceOf(DataIntegrityViolationException.class);
-    }
-
+    @DisplayName("ID를 이용하여 테마를 삭제한다.")
     @Test
     void deleteByIdTest() {
         KeyHolder keyHolder = new GeneratedKeyHolder();

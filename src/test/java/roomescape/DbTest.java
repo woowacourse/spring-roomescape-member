@@ -2,6 +2,7 @@ package roomescape;
 
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,6 +29,7 @@ public class DbTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @DisplayName("데이터베이스 연결을 확인한다.")
     @Test
     void dbConnectionTest() {
         try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
