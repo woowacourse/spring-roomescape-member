@@ -3,8 +3,7 @@ package roomescape.domain.time.repository;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
-
-import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -12,7 +11,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsertOperations;
 import org.springframework.stereotype.Repository;
-
 import roomescape.domain.time.ReservationTime;
 import roomescape.global.query.QueryBuilder;
 import roomescape.global.query.SelectQuery;
@@ -49,15 +47,16 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     public boolean existsByStartAt(LocalTime localTime) {
         SelectQuery subQuery = QueryBuilder.select(TABLE_NAME)
                 .addColumns("1")
-                .where(ComparisonCondition.equalTo("start_at", localTime));
+                .where(ComparisonCondition.equalTo("t.start_at", localTime));
         String query = QueryBuilder.select(TABLE_NAME)
+                .alias("t")
                 .addColumns("id")
                 .where(MultiLineCondition.exists(subQuery))
                 .build();
         try {
             jdbcTemplate.queryForObject(query, Long.class);
             return true;
-        } catch (DataAccessException e) {
+        } catch (EmptyResultDataAccessException e) {
             return false;
         }
     }
@@ -70,7 +69,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 .build();
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(query, ROW_MAPPER));
-        } catch (DataAccessException e) {
+        } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
