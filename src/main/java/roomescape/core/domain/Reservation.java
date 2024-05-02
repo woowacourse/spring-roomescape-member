@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 public class Reservation {
+
     private Long id;
     private String name;
     private LocalDate date;
@@ -14,12 +15,14 @@ public class Reservation {
     public Reservation() {
     }
 
-    public Reservation(final String name, final String date, final ReservationTime time, final Theme theme) {
+    public Reservation(final String name, final String date, final ReservationTime time,
+        final Theme theme) {
         this(null, name, date, time, theme);
     }
 
-    public Reservation(final Long id, final String name, final String date, final ReservationTime time,
-                       final Theme theme) {
+    public Reservation(final Long id, final String name, final String date,
+        final ReservationTime time,
+        final Theme theme) {
         this.id = id;
         this.name = name;
         this.date = parseDate(date);

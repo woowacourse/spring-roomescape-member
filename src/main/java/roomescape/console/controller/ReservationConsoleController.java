@@ -6,6 +6,7 @@ import roomescape.core.dto.ReservationRequestDto;
 import roomescape.core.service.ReservationService;
 
 public class ReservationConsoleController {
+
     private final ReservationService reservationService;
 
     public ReservationConsoleController(final ReservationService reservationService) {

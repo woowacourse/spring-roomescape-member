@@ -19,6 +19,7 @@ import roomescape.core.service.ReservationService;
 @RestController
 @RequestMapping("/reservations")
 public class ReservationController {
+
     private final ReservationService reservationService;
 
     public ReservationController(final ReservationService reservationService) {
@@ -26,11 +27,12 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponseDto> create(@RequestBody final ReservationRequestDto request) {
+    public ResponseEntity<ReservationResponseDto> create(
+        @RequestBody final ReservationRequestDto request) {
         validateRequest(request);
         final ReservationResponseDto result = reservationService.create(request);
         return ResponseEntity.created(URI.create("/reservations/" + result.getId()))
-                .body(result);
+            .body(result);
     }
 
     @GetMapping

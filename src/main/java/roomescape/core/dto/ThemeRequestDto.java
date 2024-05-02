@@ -1,6 +1,7 @@
 package roomescape.core.dto;
 
 public class ThemeRequestDto {
+
     private String name;
     private String description;
     private String thumbnail;

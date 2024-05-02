@@ -17,6 +17,7 @@ import roomescape.core.service.ThemeService;
 @RestController
 @RequestMapping("/themes")
 public class ThemeController {
+
     private final ThemeService themeService;
 
     public ThemeController(final ThemeService themeService) {
@@ -28,7 +29,7 @@ public class ThemeController {
         validateRequest(request);
         final ThemeResponseDto response = themeService.create(request);
         return ResponseEntity.created(URI.create("/themes/" + response.getId()))
-                .body(response);
+            .body(response);
     }
 
     private void validateRequest(final ThemeRequestDto request) {

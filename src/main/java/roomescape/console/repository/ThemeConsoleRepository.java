@@ -5,6 +5,7 @@ import roomescape.core.domain.Theme;
 import roomescape.core.repository.ThemeRepository;
 
 public class ThemeConsoleRepository implements ThemeRepository {
+
     @Override
     public Long save(final Theme theme) {
         return null;

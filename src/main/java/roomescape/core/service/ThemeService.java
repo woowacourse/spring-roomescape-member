@@ -11,17 +11,20 @@ import roomescape.core.repository.ThemeRepository;
 
 @Service
 public class ThemeService {
+
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
 
-    public ThemeService(final ThemeRepository themeRepository, final ReservationRepository reservationRepository) {
+    public ThemeService(final ThemeRepository themeRepository,
+        final ReservationRepository reservationRepository) {
         this.themeRepository = themeRepository;
         this.reservationRepository = reservationRepository;
     }
 
     @Transactional
     public ThemeResponseDto create(final ThemeRequestDto request) {
-        final Theme theme = new Theme(request.getName(), request.getDescription(), request.getThumbnail());
+        final Theme theme = new Theme(request.getName(), request.getDescription(),
+            request.getThumbnail());
         validateDuplicatedName(theme);
         final Long id = themeRepository.save(theme);
 
@@ -38,9 +41,9 @@ public class ThemeService {
     @Transactional(readOnly = true)
     public List<ThemeResponseDto> findAll() {
         return themeRepository.findAll()
-                .stream()
-                .map(ThemeResponseDto::new)
-                .toList();
+            .stream()
+            .map(ThemeResponseDto::new)
+            .toList();
     }
 
     @Transactional
@@ -54,8 +57,8 @@ public class ThemeService {
 
     public List<ThemeResponseDto> findPopular() {
         return themeRepository.findPopular()
-                .stream()
-                .map(ThemeResponseDto::new)
-                .toList();
+            .stream()
+            .map(ThemeResponseDto::new)
+            .toList();
     }
 }

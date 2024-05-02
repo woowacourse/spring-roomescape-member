@@ -6,8 +6,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class ControllerExceptionHandler {
+
     @ExceptionHandler
-    public ResponseEntity<String> handleReservationTimeException(final IllegalArgumentException exception) {
+    public ResponseEntity<String> handleReservationTimeException(
+        final IllegalArgumentException exception) {
         return ResponseEntity.badRequest().body(exception.getMessage());
     }
 }
