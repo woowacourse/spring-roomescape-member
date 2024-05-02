@@ -1,6 +1,7 @@
 package roomescape.theme.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.reservation.domain.Name;
 import roomescape.theme.domain.Theme;
 
@@ -38,6 +40,18 @@ class ThemeRepositoryTest {
         List<Theme> themes = themeRepository.findAll();
 
         assertThat(themes.size()).isEqualTo(2);
+    }
+
+    @Test
+    @Sql(scripts = "classpath:data.sql")
+    @DisplayName("예약이 많은 순으로 10개의 테마를 조회한다.")
+    void findPopularThemeLimitTen() {
+        List<Theme> themes = themeRepository.findPopularThemeLimitTen();
+
+        assertAll(
+                () -> assertThat(themes.get(0).getName()).isEqualTo("c"),
+                () -> assertThat(themes.size()).isEqualTo(10)
+        );
     }
 
     @Test

@@ -52,6 +52,19 @@ public class ThemeRepository {
         return jdbcTemplate.query(sql, createThemeRowMapper());
     }
 
+    public List<Theme> findPopularThemeLimitTen() {
+        String sql = """
+                select * from (select t.id, t.name, t.description, t.thumbnail, count(*) as cnt
+                from reservation r
+                join theme t
+                on r.theme_id = t.id
+                group by theme_id
+                order by cnt desc)
+                limit 10;
+                """;
+        return jdbcTemplate.query(sql, createThemeRowMapper());
+    }
+
     public void delete(Long id) {
         String sql = "delete from theme where id = ?";
         jdbcTemplate.update(sql, id);
