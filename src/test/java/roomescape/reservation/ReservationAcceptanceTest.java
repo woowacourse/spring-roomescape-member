@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.reservation.dto.ReservationRequestDto;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -68,16 +69,31 @@ public class ReservationAcceptanceTest {
                 .all()
                 .statusCode(201);
 
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
-        reservation.put("date", LocalDate.MAX.toString());
-        reservation.put("timeId", 1);
+        Map<String, String> theme = new HashMap<>();
+        theme.put("name", "정글모험");
+        theme.put("description", "정글모험 제목");
+        theme.put("thumbnail", "정글모험 이미지");
 
         RestAssured.given()
                 .log()
                 .all()
                 .contentType(ContentType.JSON)
-                .body(reservation)
+                .body(theme)
+                .when()
+                .post("/themes")
+                .then()
+                .log()
+                .all()
+                .statusCode(201);
+
+
+        ReservationRequestDto reservationRequestDto = new ReservationRequestDto("hi", LocalDate.MAX.toString(), 1, 1);
+
+        RestAssured.given()
+                .log()
+                .all()
+                .contentType(ContentType.JSON)
+                .body(reservationRequestDto)
                 .when()
                 .post("/reservations")
                 .then()
@@ -101,7 +117,7 @@ public class ReservationAcceptanceTest {
     void duplicateSave() {
         save();
         Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
+        reservation.put("reservation_name", "브라운");
         reservation.put("date", LocalDate.MAX.toString());
         reservation.put("timeId", 1);
 

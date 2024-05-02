@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.reservation.domain.Reservation;
+import roomescape.theme.dao.ThemeDao;
+import roomescape.theme.domain.Theme;
 import roomescape.time.dao.ReservationTimeDao;
 import roomescape.time.domain.ReservationTime;
 
@@ -24,14 +26,18 @@ class ReservationDaoTest {
 
     @Autowired
     private ReservationTimeDao reservationTimeDao;
+    @Autowired
+    private ThemeDao themeDao;
 
     private final ReservationTime reservationTime = new ReservationTime(1L, "10:00");
-    private final Reservation reservation = new Reservation(1L, "hotea", LocalDate.MAX.toString(), reservationTime);
+    private final Theme theme = new Theme(1L, "정글 모험", "열대 정글의 심연을 탐험하세요.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+    private final Reservation reservation = new Reservation(1L, "hotea", LocalDate.MAX.toString(), reservationTime, theme);
 
     @Test
     @DisplayName("특정 예약을 생성할 수 있다.")
     void save() {
         reservationTimeDao.save(reservationTime);
+        themeDao.save(theme);
         assertThat(reservationDao.save(reservation)).isEqualTo(1L);
     }
 

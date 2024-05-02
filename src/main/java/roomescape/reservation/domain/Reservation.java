@@ -2,6 +2,7 @@ package roomescape.reservation.domain;
 
 import roomescape.exception.InvalidNameException;
 import roomescape.exception.NullPointDateException;
+import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
 import java.time.LocalDate;
@@ -15,14 +16,16 @@ public class Reservation {
     private final String name;
     private final LocalDate date;
     private final ReservationTime time;
+    private final Theme theme;
 
-    public Reservation(final Long id, final String name, final String date, final ReservationTime time) {
+    public Reservation(final Long id, final String name, final String date, final ReservationTime time, final Theme theme) {
         validateNameExist(name);
         validateDateIsNotNull(date);
         this.id = id;
         this.name = name;
-        this.date = LocalDate.parse(date);
+        this.date = LocalDate.parse(date, DATE_FORMAT);
         this.time = time;
+        this.theme = theme;
     }
 
     private void validateNameExist(final String name) {
@@ -51,6 +54,10 @@ public class Reservation {
 
     public ReservationTime getTime() {
         return time;
+    }
+
+    public Theme getTheme() {
+        return theme;
     }
 
     @Override

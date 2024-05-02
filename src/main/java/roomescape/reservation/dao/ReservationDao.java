@@ -27,18 +27,23 @@ public class ReservationDao {
     }
 
     public List<Reservation> findAll() {
-        final String sql = "SELECT r.id AS reservation_id, r.name, r.date, t.id AS time_id, t.start_at AS time_value " +
-                "FROM reservation AS r " +
-                "INNER JOIN reservation_time AS t " +
-                "ON r.time_id = t.id";
+        final String sql = "SELECT r.id AS reservation_id, r.name AS reservation_name, r.date, " +
+                "rt.id AS time_id, rt.start_at AS time_value, " +
+                "t.id AS theme_id, t.name AS theme_name, t.description, t.thumbnail " +
+                "FROM reservation r " +
+                "INNER JOIN reservation_time rt ON r.time_id = rt.id " +
+                "INNER JOIN theme t ON r.theme_id = t.id";
         return jdbcTemplate.query(sql, rowMapper);
     }
 
     public Reservation findById(final long id) {
-        final String sql = "SELECT r.id AS reservation_id, r.name, r.date, t.id AS time_id, t.start_at AS time_value " +
-                "FROM reservation AS r " +
-                "INNER JOIN reservation_time AS t " +
-                "ON r.time_id = t.id AND r.id = ?";
+        final String sql = "SELECT r.id AS reservation_id, r.name AS reservation_name, r.date, " +
+                "rt.id AS time_id, rt.start_at AS time_value, " +
+                "t.id AS theme_id, t.name AS theme_name, t.description, t.thumbnail " +
+                "FROM reservation r " +
+                "INNER JOIN reservation_time rt ON r.time_id = rt.id " +
+                "INNER JOIN theme t ON r.theme_id = t.id " +
+                "WHERE r.id = ?";
         return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }
 
@@ -46,7 +51,8 @@ public class ReservationDao {
         final SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
                 .addValue("date", reservation.getDate())
-                .addValue("time_id", reservation.getTime().getId());
+                .addValue("time_id", reservation.getTime().getId())
+                .addValue("theme_id", reservation.getTheme().getId());
         return simpleJdbcInsert.executeAndReturnKey(params).longValue();
     }
 
@@ -62,7 +68,7 @@ public class ReservationDao {
                 "ON r.time_id = t.id " +
                 "WHERE r.date = ? AND t.start_at = ?";
 
-        Boolean result = jdbcTemplate.queryForObject(sql, new Object[]{date, time}, Boolean.class);
+        Boolean result = jdbcTemplate.queryForObject(sql, Boolean.class, date, time);
         return Boolean.TRUE.equals(result);
     }
 }

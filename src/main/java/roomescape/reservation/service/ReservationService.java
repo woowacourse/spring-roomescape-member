@@ -22,7 +22,7 @@ public class ReservationService {
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
 
-    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao) {
+    public ReservationService(final ReservationDao reservationDao, final ReservationTimeDao reservationTimeDao) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
     }
@@ -46,18 +46,18 @@ public class ReservationService {
         return new ReservationResponseDto(findReservation);
     }
 
-    private void validateDuplicationReservation(boolean isExist) {
-        if (isExist) {
-            throw new DuplicateReservationException("이미 해당 날짜, 시간에 예약이 존재합니다.");
-        }
-    }
-
     private void validateNoReservationsForPastDates(final LocalDate localDate, final ReservationTime time) {
         if (localDate.isBefore(LocalDate.now())) {
             throw new PastDateReservationException("날짜가 과거인 경우 모든 시간에 대한 예약이 불가능 합니다.");
         }
         if (localDate.equals(LocalDate.now()) && time.checkPastTime()) {
             throw new PastTimeReservationException("날짜가 오늘인 경우 지나간 시간에 대한 예약이 불가능 합니다.");
+        }
+    }
+
+    private void validateDuplicationReservation(final boolean isExist) {
+        if (isExist) {
+            throw new DuplicateReservationException("이미 해당 날짜, 시간에 예약이 존재합니다.");
         }
     }
 

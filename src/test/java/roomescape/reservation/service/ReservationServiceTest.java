@@ -34,7 +34,8 @@ class ReservationServiceTest {
         ReservationTime reservationTime = new ReservationTime(id, "10:00");
         when(reservationTimeDao.findById(id)).thenReturn(reservationTime);
         when(reservationDao.checkReservationExists(anyString(), anyString())).thenReturn(true);
-        assertThatThrownBy(() -> reservationService.save(new ReservationRequestDto("hotea", "2025-04-01", id)))
+        assertThatThrownBy(() -> reservationService.save(
+                new ReservationRequestDto("hotea", "2025-04-01", id, id)))
                 .isInstanceOf(DuplicateReservationException.class);
     }
 }
