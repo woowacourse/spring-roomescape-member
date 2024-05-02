@@ -4,9 +4,9 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.stream.Stream;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,9 +14,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
-import roomescape.config.TestConfig;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequest;
@@ -74,9 +72,34 @@ class ReservationControllerTest extends BaseControllerTest {
     }
 
     void getAllReservations() {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when().get("/reservations")
+                .then().log().all()
+                .extract();
 
+        List<ReservationResponse> reservationResponses = response.jsonPath()
+                .getList(".", ReservationResponse.class);
+        ReservationTimeResponse reservationTimeResponse = new ReservationTimeResponse(1L, LocalTime.of(11, 0));
+        ThemeResponse themeResponse = new ThemeResponse(1L, "테마 이름", "테마 설명", "https://example.com");
+
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+            softly.assertThat(reservationResponses).hasSize(1);
+            softly.assertThat(reservationResponses)
+                    .containsExactly(
+                            new ReservationResponse(1L, "구름", LocalDate.of(2024, 4, 9), reservationTimeResponse,
+                                    themeResponse));
+        });
     }
 
     void deleteReservationById() {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when().delete("/reservations/1")
+                .then().log().all()
+                .extract();
+
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        });
     }
 }
