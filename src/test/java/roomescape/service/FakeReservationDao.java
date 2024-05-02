@@ -70,4 +70,9 @@ public class FakeReservationDao implements ReservationDao {
     public void deleteById(Long id) {
         reservations.remove(id);
     }
+
+    @Override
+    public List<ReservationTime> findByDateAndTheme(LocalDate date, Theme theme) {
+        return null;
+    }
 }
