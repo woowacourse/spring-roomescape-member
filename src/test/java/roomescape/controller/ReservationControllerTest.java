@@ -1,7 +1,13 @@
 package roomescape.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.lang.reflect.Field;
+import java.time.LocalDate;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,13 +17,6 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.lang.reflect.Field;
-import java.time.LocalDate;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -153,5 +152,18 @@ ReservationControllerTest {
         }
 
         assertThat(isJdbcTemplateInjected).isFalse();
+    }
+
+    // TODO: 더미데이터 추가하고 테스트하도록 수정
+    @Test
+    @DisplayName("특정 날짜의 특정 테마 예약 현황을 조회한다.")
+    void readReservationByDateAndThemeId() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .port(port)
+                .when().get("/reservations/themes/1?date=" + LocalDate.MAX)
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(1));
     }
 }

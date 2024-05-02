@@ -1,19 +1,22 @@
 package roomescape.service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.Time;
+import roomescape.dto.reservation.ReservationAvailableTimeResponse;
 import roomescape.dto.reservation.ReservationRequest;
 import roomescape.dto.reservation.ReservationResponse;
 import roomescape.global.exception.model.ConflictException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.TimeRepository;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
 
 @Service
 public class ReservationService {
@@ -37,6 +40,23 @@ public class ReservationService {
                 .toList();
     }
 
+    // TODO: 테스트 작성
+    public List<ReservationAvailableTimeResponse> findReservationByDateAndThemeId(LocalDate date, Long themeId) {
+        List<Time> allTimes = timeRepository.findAll();
+        Set<Long> reservedTimes = reservationRepository.findByDateAndThemeId(date, themeId).stream()
+                .map(Reservation::getTime)
+                .map(Time::getId)
+                .collect(Collectors.toSet());
+
+        List<ReservationAvailableTimeResponse> response = new ArrayList<>();
+        for (Time time : allTimes) {
+            response.add(new ReservationAvailableTimeResponse(time.getId(), time.getStartAt(),
+                    reservedTimes.contains(time.getId())));
+        }
+
+        return response;
+    }
+
     // TODO: 메서드 분리
     public ReservationResponse createReservation(ReservationRequest reservationRequest) {
         LocalDate today = LocalDate.now();
@@ -44,7 +64,8 @@ public class ReservationService {
         Time time = timeRepository.findById(reservationRequest.timeId());
         Theme theme = themeRepository.findById(reservationRequest.themeId());
 
-        if (requestDate.isBefore(today) || (requestDate.isEqual(today) && time.getStartAt().isBefore(LocalTime.now()))) {
+        if (requestDate.isBefore(today) || (requestDate.isEqual(today) && time.getStartAt()
+                .isBefore(LocalTime.now()))) {
             throw new ConflictException("지난 날짜나 시간은 예약이 불가능합니다.");
         }
 

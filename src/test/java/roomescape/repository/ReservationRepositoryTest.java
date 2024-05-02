@@ -1,5 +1,10 @@
 package roomescape.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,12 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.Time;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -80,5 +79,20 @@ public class ReservationRepositoryTest {
         int count = JdbcTestUtils.countRowsInTable(jdbcTemplate, "reservation");
 
         assertThat(count).isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("테마ID와 날짜를 통해 예약정보를 조회한다.")
+    void readReservationsByThemeIdAndDate() {
+        Time time = timeRepository.save(new Time(LocalTime.of(17, 30)));
+        Theme theme = themeRepository.save(new Theme("테마명", "설명", "썸네일URL"));
+        Reservation reservation = new Reservation("브라운", LocalDate.of(2024, 4, 25), time, theme);
+
+        Reservation savedReservation = reservationRepository.save(reservation);
+        List<Reservation> reservations = reservationRepository.findByDateAndThemeId(LocalDate.of(2024, 4, 25),
+                theme.getId());
+
+        assertThat(reservations.size()).isEqualTo(1);
+        assertThat(reservations.get(0).getId()).isEqualTo(savedReservation.getId());
     }
 }
