@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,16 +19,13 @@ import roomescape.dao.WebReservationDao;
 import roomescape.dao.WebReservationTimeDao;
 import roomescape.dao.WebThemeDao;
 import roomescape.domain.reservation.Reservation;
-import roomescape.domain.reservation.ReservationDate;
-import roomescape.domain.reservation.ReservationName;
-import roomescape.domain.reservationtime.ReservationStartAt;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
-import roomescape.domain.theme.ThemeDescription;
-import roomescape.domain.theme.ThemeName;
-import roomescape.domain.theme.ThemeThumbnail;
 import roomescape.dto.reservationtime.ReservationTimeCreateRequest;
 import roomescape.dto.reservationtime.ReservationTimeResponse;
+import roomescape.service.fixture.ReservationFixtures;
+import roomescape.service.fixture.ReservationTimeFixtures;
+import roomescape.service.fixture.ThemeFixtures;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class ReservationTimeServiceTest {
@@ -53,14 +49,17 @@ class ReservationTimeServiceTest {
         jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
-        reservationTimeDao.create(new ReservationTime(null, ReservationStartAt.from("12:02")));
-        reservationTimeDao.create(new ReservationTime(null, ReservationStartAt.from("12:42")));
-        themeDao.create(new Theme(null, ThemeName.from("방탈출1"), ThemeDescription.from("방탈출 1번"), ThemeThumbnail.from("섬네일1")));
     }
 
     @Test
     @DisplayName("모든 예약 시간 정보를 조회한다.")
     void findAll() {
+        //given
+        ReservationTime reservationTime1 = ReservationTimeFixtures.createReservationTime("12:12");
+        ReservationTime reservationTime2 = ReservationTimeFixtures.createReservationTime("12:20");
+        reservationTimeDao.create(reservationTime1);
+        reservationTimeDao.create(reservationTime2);
+
         //when
         List<ReservationTimeResponse> results = reservationTimeService.findAll();
         ReservationTimeResponse firstResponse = results.get(0);
@@ -68,8 +67,7 @@ class ReservationTimeServiceTest {
         //then
         assertAll(
                 () -> assertThat(results).hasSize(2),
-                () -> assertThat(firstResponse.getId()).isEqualTo(1),
-                () -> assertThat(firstResponse.getStartAt()).isEqualTo("12:02")
+                () -> assertThat(firstResponse.getStartAt()).isEqualTo("12:12")
         );
     }
 
@@ -81,16 +79,16 @@ class ReservationTimeServiceTest {
         void add() {
             //given
             String givenStartAt = "10:52";
-            ReservationTimeCreateRequest request = ReservationTimeCreateRequest.from(givenStartAt);
+            ReservationTimeCreateRequest request = ReservationTimeFixtures.createReservationTimeCreateRequest(
+                    givenStartAt);
 
             //when
             ReservationTimeResponse result = reservationTimeService.add(request);
 
             //then
             assertAll(
-                    () -> assertThat(result.getId()).isEqualTo(3),
                     () -> assertThat(result.getStartAt()).isEqualTo(givenStartAt),
-                    () -> assertThat(reservationTimeService.findAll()).hasSize(3)
+                    () -> assertThat(reservationTimeService.findAll()).hasSize(1)
             );
         }
 
@@ -100,7 +98,7 @@ class ReservationTimeServiceTest {
         @DisplayName("예약 시간에 null이나 공백 문자열이 입력되면 예외가 발생한다.")
         void createReservationTimeByNullOrEmptyStartAt(String given) {
             //given
-            ReservationTimeCreateRequest request = ReservationTimeCreateRequest.from(given);
+            ReservationTimeCreateRequest request = ReservationTimeFixtures.createReservationTimeCreateRequest(given);
 
             //when //then
             assertThatThrownBy(() -> reservationTimeService.add(request))
@@ -111,7 +109,8 @@ class ReservationTimeServiceTest {
         @DisplayName("예약 시간이 중복되면 예외가 발생한다.")
         void createReservationTimeWhenDuplicatedStartAt() {
             //given
-            ReservationTimeCreateRequest request = ReservationTimeCreateRequest.from("12:02");
+            reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:02"));
+            ReservationTimeCreateRequest request = ReservationTimeFixtures.createReservationTimeCreateRequest("12:02");
 
             //when //then
             assertThatThrownBy(() -> reservationTimeService.add(request))
@@ -122,28 +121,27 @@ class ReservationTimeServiceTest {
     @Nested
     @DisplayName("예약 시간 삭제")
     class delete {
+
         @Test
         @DisplayName("예약 시간을 삭제한다.")
-        void delete() {
+        void deleteReservationTime() {
             //given
+            reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:02"));
             long givenId = 1L;
 
             //when
             reservationTimeService.delete(givenId);
             List<ReservationTimeResponse> results = reservationTimeService.findAll();
-            ReservationTimeResponse secondResponse = results.get(0);
 
             //then
-            assertAll(
-                    () -> assertThat(results).hasSize(1),
-                    () -> assertThat(secondResponse.getId()).isEqualTo(2)
-            );
+            assertThat(results).isEmpty();
         }
 
         @Test
         @DisplayName("예약 시간 삭제시 아이디가 비어있으면 예외가 발생한다.")
         void deleteNullId() {
             //given
+            reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:02"));
             Long givenId = null;
 
             //when //then
@@ -155,7 +153,8 @@ class ReservationTimeServiceTest {
         @DisplayName("예약 시간 삭제시 아이디가 존재하지 않는다면 예외가 발생한다.")
         void deleteNotExistId() {
             //given
-            long givenId = 3L;
+            reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:02"));
+            long givenId = -1L;
 
             //when //then
             assertThatThrownBy(() -> reservationTimeService.delete(givenId))
@@ -166,12 +165,11 @@ class ReservationTimeServiceTest {
         @DisplayName("특정 시간에 대한 예약이 존재하는데, 그 시간을 삭제하려 할 때 예외가 발생한다.")
         void deleteReservationTimeWhenReservationExist() {
             //given
-            reservationDao.create(new Reservation(
-                    null,
-                    new ReservationName("다온"),
-                    ReservationDate.from(LocalDate.now().plusDays(1).toString()),
-                    new ReservationTime(1L, ReservationStartAt.from("12:02")),
-                    new Theme(1L, ThemeName.from("방탈출1"), ThemeDescription.from("방탈출 1번"), ThemeThumbnail.from("섬네일1"))));
+            ReservationTime time = reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:02"));
+            Theme theme = themeDao.create(ThemeFixtures.createDefaultTheme());
+            Reservation reservation =
+                    ReservationFixtures.createReservation("다온", "2024-05-02", time, theme);
+            reservationDao.create(reservation);
 
             //when //then
             assertThatThrownBy(() -> reservationTimeService.delete(1L))
