@@ -1,7 +1,10 @@
 package roomescape.domain;
 
+import static roomescape.exception.ExceptionType.EMPTY_DESCRIPTION;
+import static roomescape.exception.ExceptionType.EMPTY_NAME;
+import static roomescape.exception.ExceptionType.EMPTY_THUMBNAIL;
+
 import java.util.Objects;
-import roomescape.exception.ExceptionType;
 import roomescape.exception.RoomescapeException;
 
 public class Theme {
@@ -27,19 +30,19 @@ public class Theme {
     private void validateName(String name) {
         if (name == null || name.isBlank()) {
             //TODO : NAME_EMPYT 재사용 고민
-            throw new RoomescapeException(ExceptionType.NAME_EMPTY);
+            throw new RoomescapeException(EMPTY_NAME);
         }
     }
 
     private void validateDescription(String description) {
         if (description == null || description.isBlank()) {
-            throw new RoomescapeException(ExceptionType.DESCRIPTION_EMPTY);
+            throw new RoomescapeException(EMPTY_DESCRIPTION);
         }
     }
 
     private void validateThumbnail(String thumbnail) {
         if (thumbnail == null || thumbnail.isBlank()) {
-            throw new RoomescapeException(ExceptionType.THUMBNAIL_EMPTY);
+            throw new RoomescapeException(EMPTY_THUMBNAIL);
         }
     }
 

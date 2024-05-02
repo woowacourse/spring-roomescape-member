@@ -1,6 +1,6 @@
 package roomescape.domain;
 
-import static roomescape.exception.ExceptionType.TIME_EMPTY;
+import static roomescape.exception.ExceptionType.EMPTY_TIME;
 
 import java.time.LocalTime;
 import java.util.Objects;
@@ -16,7 +16,7 @@ public class ReservationTime {
 
     public ReservationTime(Long id, LocalTime startAt) {
         if (startAt == null) {
-            throw new RoomescapeException(TIME_EMPTY);
+            throw new RoomescapeException(EMPTY_TIME);
         }
         this.id = id;
         this.startAt = startAt;

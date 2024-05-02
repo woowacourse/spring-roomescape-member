@@ -5,10 +5,10 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.exception.ExceptionType.DUPLICATE_RESERVATION;
-import static roomescape.exception.ExceptionType.NAME_EMPTY;
-import static roomescape.exception.ExceptionType.PAST_TIME;
-import static roomescape.exception.ExceptionType.RESERVATION_TIME_NOT_FOUND;
-import static roomescape.exception.ExceptionType.THEME_NOT_FOUND;
+import static roomescape.exception.ExceptionType.EMPTY_NAME;
+import static roomescape.exception.ExceptionType.NOT_FOUND_RESERVATION_TIME;
+import static roomescape.exception.ExceptionType.NOT_FOUND_THEME;
+import static roomescape.exception.ExceptionType.PAST_TIME_RESERVATION;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -77,7 +77,7 @@ class ReservationServiceTest {
                 defaultTheme.getId()
         )))
                 .isInstanceOf(RoomescapeException.class)
-                .hasMessage(PAST_TIME.getMessage());
+                .hasMessage(PAST_TIME_RESERVATION.getMessage());
     }
 
     @DisplayName("존재하지 않는 시간에 대해 예약을 생성하면 예외가 발생한다.")
@@ -90,7 +90,7 @@ class ReservationServiceTest {
                 defaultTheme.getId()
         )))
                 .isInstanceOf(RoomescapeException.class)
-                .hasMessage(RESERVATION_TIME_NOT_FOUND.getMessage());
+                .hasMessage(NOT_FOUND_RESERVATION_TIME.getMessage());
     }
 
     @DisplayName("존재하지 않는 테마에 대해 예약을 생성하면 예외가 발생한다.")
@@ -103,7 +103,7 @@ class ReservationServiceTest {
                 2L
         )))
                 .isInstanceOf(RoomescapeException.class)
-                .hasMessage(THEME_NOT_FOUND.getMessage());
+                .hasMessage(NOT_FOUND_THEME.getMessage());
     }
 
     @DisplayName("필수값이 입력되지 않은 예약 생성 요청에 대해 예외가 발생한다.")
@@ -117,7 +117,7 @@ class ReservationServiceTest {
                         defaultTime.getId(),
                         defaultTheme.getId()
                 ))).isInstanceOf(RoomescapeException.class)
-                        .hasMessage(NAME_EMPTY.getMessage())
+                        .hasMessage(EMPTY_NAME.getMessage())
         );
     }
 

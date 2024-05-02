@@ -1,9 +1,9 @@
 package roomescape.domain;
 
-import static roomescape.exception.ExceptionType.DATE_EMPTY;
-import static roomescape.exception.ExceptionType.NAME_EMPTY;
-import static roomescape.exception.ExceptionType.THEME_EMPTY;
-import static roomescape.exception.ExceptionType.TIME_EMPTY;
+import static roomescape.exception.ExceptionType.EMPTY_DATE;
+import static roomescape.exception.ExceptionType.EMPTY_NAME;
+import static roomescape.exception.ExceptionType.EMPTY_THEME;
+import static roomescape.exception.ExceptionType.EMPTY_TIME;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -36,25 +36,25 @@ public class Reservation implements Comparable<Reservation> {
 
     private void validateTheme(Theme theme) {
         if (theme == null) {
-            throw new RoomescapeException(THEME_EMPTY);
+            throw new RoomescapeException(EMPTY_THEME);
         }
     }
 
     private void validateTime(ReservationTime time) {
         if (time == null) {
-            throw new RoomescapeException(TIME_EMPTY);
+            throw new RoomescapeException(EMPTY_TIME);
         }
     }
 
     private void validateDate(LocalDate date) {
         if (date == null) {
-            throw new RoomescapeException(DATE_EMPTY);
+            throw new RoomescapeException(EMPTY_DATE);
         }
     }
 
     private void validateName(String name) {
         if (name == null || name.isBlank()) {
-            throw new RoomescapeException(NAME_EMPTY);
+            throw new RoomescapeException(EMPTY_NAME);
         }
     }
 

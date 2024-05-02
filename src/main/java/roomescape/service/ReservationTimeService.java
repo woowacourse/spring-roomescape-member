@@ -1,7 +1,7 @@
 package roomescape.service;
 
+import static roomescape.exception.ExceptionType.DELETE_USED_TIME;
 import static roomescape.exception.ExceptionType.DUPLICATE_RESERVATION_TIME;
-import static roomescape.exception.ExceptionType.INVALID_DELETE_TIME;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -51,7 +51,7 @@ public class ReservationTimeService {
         boolean invalidDelete = reservations.stream()
                 .anyMatch(reservation -> reservation.isReservationTimeOf(id));
         if (invalidDelete) {
-            throw new RoomescapeException(INVALID_DELETE_TIME);
+            throw new RoomescapeException(DELETE_USED_TIME);
         }
         reservationTimeRepository.delete(id);
     }

@@ -3,8 +3,8 @@ package roomescape.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.exception.ExceptionType.DELETE_USED_THEME;
 import static roomescape.exception.ExceptionType.DUPLICATE_THEME;
-import static roomescape.exception.ExceptionType.INVALID_DELETE_THEME;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -88,7 +88,7 @@ class ThemeServiceTest {
             //when & then
             assertThatThrownBy(() -> themeService.delete(1L))
                     .isInstanceOf(RoomescapeException.class)
-                    .hasMessage(INVALID_DELETE_THEME.getMessage());
+                    .hasMessage(DELETE_USED_THEME.getMessage());
         }
 
         @DisplayName("존재하지 않는 테마 id로 삭제하더라도 오류로 간주하지 않는다.")

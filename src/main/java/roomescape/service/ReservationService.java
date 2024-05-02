@@ -1,9 +1,9 @@
 package roomescape.service;
 
 import static roomescape.exception.ExceptionType.DUPLICATE_RESERVATION;
-import static roomescape.exception.ExceptionType.PAST_TIME;
-import static roomescape.exception.ExceptionType.RESERVATION_TIME_NOT_FOUND;
-import static roomescape.exception.ExceptionType.THEME_NOT_FOUND;
+import static roomescape.exception.ExceptionType.NOT_FOUND_RESERVATION_TIME;
+import static roomescape.exception.ExceptionType.NOT_FOUND_THEME;
+import static roomescape.exception.ExceptionType.PAST_TIME_RESERVATION;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -36,9 +36,9 @@ public class ReservationService {
     public ReservationResponse save(ReservationRequest reservationRequest) {
 
         ReservationTime requestedTime = reservationTimeRepository.findById(reservationRequest.timeId())
-                .orElseThrow(() -> new RoomescapeException(RESERVATION_TIME_NOT_FOUND));
+                .orElseThrow(() -> new RoomescapeException(NOT_FOUND_RESERVATION_TIME));
         Theme requestedTheme = themeRepository.findById(reservationRequest.themeId())
-                .orElseThrow(() -> new RoomescapeException(THEME_NOT_FOUND));
+                .orElseThrow(() -> new RoomescapeException(NOT_FOUND_THEME));
 
         Reservation beforeSave = new Reservation(
                 reservationRequest.name(),
@@ -54,7 +54,7 @@ public class ReservationService {
         }
 
         if (isBefore(beforeSave)) {
-            throw new RoomescapeException(PAST_TIME);
+            throw new RoomescapeException(PAST_TIME_RESERVATION);
         }
 
         Reservation saved = reservationRepository.save(beforeSave);
