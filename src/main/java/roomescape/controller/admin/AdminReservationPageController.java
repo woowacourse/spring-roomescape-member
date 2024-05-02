@@ -8,11 +8,11 @@ import roomescape.dto.response.ReservationResponse;
 import roomescape.repository.reservation.ReservationRepository;
 
 @Controller
-public class ReservationPageController {
+public class AdminReservationPageController {
 
     private final ReservationRepository reservationRepository;
 
-    public ReservationPageController(ReservationRepository reservationRepository) {
+    public AdminReservationPageController(ReservationRepository reservationRepository) {
         this.reservationRepository = reservationRepository;
     }
 

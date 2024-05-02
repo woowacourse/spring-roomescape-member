@@ -8,7 +8,7 @@ import org.springframework.test.annotation.DirtiesContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class ReservationPageControllerTest {
+class AdminReservationPageControllerTest {
 
     @Test
     @DisplayName("/admin 페이지를 응답한다.")
