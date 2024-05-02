@@ -25,8 +25,6 @@ class ReservationServiceTest {
     @Autowired
     private ReservationService reservationService;
     @Autowired
-    private ThemeService themeService;
-    @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @Test

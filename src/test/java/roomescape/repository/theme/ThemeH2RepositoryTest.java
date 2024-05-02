@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.InitialDataFixture;
 import roomescape.domain.Name;
 import roomescape.domain.Theme;
 
@@ -15,6 +16,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.InitialDataFixture.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -39,7 +41,7 @@ class ThemeH2RepositoryTest {
     @Test
     @DisplayName("중복된 테마를 저장하려고 하면 예외가 발생한다.")
     void saveDuplicatedTime() {
-        Theme theme = new Theme(null, new Name("레벨2 탈출"), "레벨2 설명", "레벨2 썸네일"); // TODO 이름만 같으면 같다고 했음
+        Theme theme = new Theme(null, THEME_1.getName(), "레벨2 설명", "레벨2 썸네일"); // TODO 이름만 같으면 같다고 했음
 
         assertThatThrownBy(() -> themeH2Repository.save(theme))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -49,7 +51,7 @@ class ThemeH2RepositoryTest {
     @Test
     @DisplayName("id에 맞는 Theme을 제거한다.")
     void delete() {
-        themeH2Repository.delete(2L);
+        themeH2Repository.delete(THEME_2.getId());
 
         Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM theme", Integer.class);
 
@@ -59,7 +61,7 @@ class ThemeH2RepositoryTest {
     @Test
     @DisplayName("참조되어 있는 테마를 삭제하는 경우 예외가 발생한다.")
     void deleteReferencedTime() {
-        assertThatThrownBy(() -> themeH2Repository.delete(1L))
+        assertThatThrownBy(() -> themeH2Repository.delete(THEME_1.getId()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -75,14 +77,9 @@ class ThemeH2RepositoryTest {
     @Test
     @DisplayName("id에 맞는 theme를 찾는다.")
     void findBy() {
-        List<Theme> all = themeH2Repository.findAll();
-        for (Theme theme : all) {
-            System.out.println("themeResponse = " + theme);
-        }
-        Theme found = themeH2Repository.findById(1L).get();
-        System.out.println("found = " + found);
+        Theme found = themeH2Repository.findById(THEME_1.getId()).get();
 
-        assertThat(found.getName()).isEqualTo(new Name("레벨2 탈출"));
+        assertThat(found.getName()).isEqualTo(THEME_1.getName());
     }
 
     @Test

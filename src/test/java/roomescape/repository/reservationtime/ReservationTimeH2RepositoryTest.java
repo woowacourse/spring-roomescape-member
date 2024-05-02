@@ -2,6 +2,7 @@ package roomescape.repository.reservationtime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.InitialDataFixture.*;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -15,6 +16,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.InitialDataFixture;
 import roomescape.domain.ReservationTime;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -40,9 +42,7 @@ class ReservationTimeH2RepositoryTest {
     @Test
     @DisplayName("중복된 시간을 저장하려고 하면 예외가 발생한다.")
     void saveDuplicatedGetTime() {
-        ReservationTime duplicatedReservationTime = new ReservationTime(LocalTime.of(9, 0));
-
-        assertThatThrownBy(() -> reservationTimeH2Repository.save(duplicatedReservationTime))
+        assertThatThrownBy(() -> reservationTimeH2Repository.save(RESERVATION_TIME_1))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -50,7 +50,7 @@ class ReservationTimeH2RepositoryTest {
     @Test
     @DisplayName("id에 맞는 ReservationTime을 제거한다.")
     void delete() {
-        reservationTimeH2Repository.delete(2L);
+        reservationTimeH2Repository.delete(RESERVATION_TIME_2.id());
 
         Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reservation_time", Integer.class);
 
@@ -60,7 +60,7 @@ class ReservationTimeH2RepositoryTest {
     @Test
     @DisplayName("참조되어 있는 시간을 삭제하는 경우 예외가 발생한다.")
     void deleteReferencedGetTime() {
-        assertThatThrownBy(() -> reservationTimeH2Repository.delete(1L))
+        assertThatThrownBy(() -> reservationTimeH2Repository.delete(RESERVATION_TIME_1.id()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -76,9 +76,9 @@ class ReservationTimeH2RepositoryTest {
     @Test
     @DisplayName("id에 맞는 ReservationTime을 찾는다.")
     void findBy() {
-        ReservationTime found = reservationTimeH2Repository.findById(1L).get();
+        ReservationTime found = reservationTimeH2Repository.findById(RESERVATION_TIME_1.id()).get();
 
-        assertThat(found.startAt()).isEqualTo(LocalTime.of(9, 0));
+        assertThat(found.startAt()).isEqualTo(RESERVATION_TIME_1.startAt());
     }
 
     @Test

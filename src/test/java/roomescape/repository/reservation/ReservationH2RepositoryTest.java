@@ -10,12 +10,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.InitialDataFixture;
 import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 import static org.assertj.core.api.Assertions.*;
+import static roomescape.InitialDataFixture.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -32,9 +34,9 @@ class ReservationH2RepositoryTest {
     void save() {
         Reservation reservation = new Reservation(
                 new Name("네오"),
-                LocalDate.now().plusDays(1),
-                new ReservationTime(2L, LocalTime.of(10, 0)),
-                new Theme(1L, new Name("레벨2 탈출"), "우테코 레벨2를 탈출하는 내용입니다.", "아무 내용 없음")
+                RESERVATION_2.getDate(),
+                RESERVATION_2.getTime(),
+                THEME_2
         );
 
         Reservation save = reservationH2Repository.save(reservation);
@@ -47,9 +49,9 @@ class ReservationH2RepositoryTest {
     void savePastGetTime() {
         Reservation reservation = new Reservation(
                 new Name("네오"),
-                LocalDate.of(2023, 4, 24),
-                new ReservationTime(2L, LocalTime.of(10, 0)),
-                new Theme(1L, new Name("레벨2 탈출"), "우테코 레벨2를 탈출하는 내용입니다.", "아무 내용 없음")
+                RESERVATION_1.getDate(),
+                RESERVATION_1.getTime(),
+                THEME_2
         );
         assertThatThrownBy(() -> reservationH2Repository.save(reservation))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -60,9 +62,9 @@ class ReservationH2RepositoryTest {
     void saveSameReservation() {
         Reservation reservation = new Reservation(
                 new Name("네오"),
-                LocalDate.of(2099, 5, 1), // TODO 더 좋은 방식이 있는지 고민
-                new ReservationTime(1L, LocalTime.of(9, 0)),
-                new Theme(1L, new Name("레벨2 탈출"), "우테코 레벨2를 탈출하는 내용입니다.", "아무 내용 없음")
+                RESERVATION_2.getDate(),
+                RESERVATION_2.getTime(),
+                RESERVATION_2.getTheme()
         );
         assertThatThrownBy(() -> reservationH2Repository.save(reservation))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -73,21 +75,21 @@ class ReservationH2RepositoryTest {
     void saveOnlySameGetDateGetTime() {
         Reservation reservation = new Reservation(
                 new Name("네오"),
-                LocalDate.of(2099, 5, 1), // TODO 더 좋은 방식이 있는지 고민
-                new ReservationTime(3L, LocalTime.of(11, 0)),
-                new Theme(2L, new Name("레벨3 탈출"), "우테코 레벨3를 탈출하는 내용입니다.", "아무 내용 없음")
+                RESERVATION_2.getDate(),
+                RESERVATION_2.getTime(),
+                THEME_2
         );
         assertThatNoException().isThrownBy(() -> reservationH2Repository.save(reservation));
     }
 
     @Test
-    @DisplayName("테마가 같고 시간과 날짜가 다른 경우 예약에 성공한다.")
+    @DisplayName("테마가 같고 날짜가 다른 경우 예약에 성공한다.")
     void saveOnlySameTheme() {
         Reservation reservation = new Reservation(
                 new Name("네오"),
-                LocalDate.of(2099, 5, 2), // TODO 더 좋은 방식이 있는지 고민
-                new ReservationTime(2L, LocalTime.of(10, 0)),
-                new Theme(1L, new Name("레벨2 탈출"), "우테코 레벨2를 탈출하는 내용입니다.", "아무 내용 없음")
+                RESERVATION_2.getDate().plusDays(1),
+                RESERVATION_2.getTime(),
+                RESERVATION_2.getTheme()
         );
         assertThatNoException().isThrownBy(() -> reservationH2Repository.save(reservation));
     }
@@ -95,7 +97,7 @@ class ReservationH2RepositoryTest {
     @Test
     @DisplayName("Reservation을 제거한다.")
     void delete() {
-        reservationH2Repository.delete(1L);
+        reservationH2Repository.delete(RESERVATION_1.getId());
 
         Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reservation", Integer.class);
 
