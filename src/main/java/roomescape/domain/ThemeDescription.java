@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 public class ThemeDescription {
+
     private static final int MAXIMUM_ENABLE_NAME_LENGTH = 80;
 
     private final String value;

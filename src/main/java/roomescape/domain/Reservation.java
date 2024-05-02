@@ -2,35 +2,64 @@ package roomescape.domain;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.Objects;
 
 public class Reservation {
-    private static final Long DEFAULT_ID_VALUE = 0L;
 
-    private final long id;
+    private final Long id;
     private final ClientName clientName;
-    private final LocalDate date;
+    private final ReservationDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(
-            final ClientName clientName,
+    public static Reservation of(
+            final String clientName,
             final LocalDate date,
             final ReservationTime time,
-            final Theme theme) {
-        this(DEFAULT_ID_VALUE, clientName, date, time, theme);
+            final Theme theme
+    ) {
+        final ReservationDate reservationDate = new ReservationDate(date);
+        validateReservationDateAndTime(reservationDate, time);
+
+        return new Reservation(
+                null,
+                new ClientName(clientName),
+                reservationDate,
+                time,
+                theme
+        );
     }
 
-    public Reservation(
-            final long id,
-            final ClientName clientName,
+    private static void validateReservationDateAndTime(final ReservationDate date, final ReservationTime time) {
+        LocalDateTime reservationLocalDateTime = LocalDateTime.of(date.getValue(), time.getStartAt());
+        if (reservationLocalDateTime.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("현재 날짜보다 이전 날짜를 예약할 수 없습니다.");
+        }
+    }
+
+    public static Reservation of(
+            final Long id,
+            final String clientName,
             final LocalDate date,
             final ReservationTime time,
-            final Theme theme) {
-        validateDate(date);
-        validateReservationDateAndTime(date, time.getStartAt());
+            final Theme theme
+    ) {
+        return new Reservation(
+                id,
+                new ClientName(clientName),
+                new ReservationDate(date),
+                time,
+                theme
+        );
+    }
 
+    private Reservation(
+            final Long id,
+            final ClientName clientName,
+            final ReservationDate date,
+            final ReservationTime time,
+            final Theme theme
+    ) {
         this.id = id;
         this.clientName = clientName;
         this.date = date;
@@ -38,24 +67,11 @@ public class Reservation {
         this.theme = theme;
     }
 
-    private void validateDate(final LocalDate date) {
-        if (date == null) {
-            throw new IllegalArgumentException("날짜 정보는 공백을 입력할 수 없습니다.");
-        }
-    }
-
-    private void validateReservationDateAndTime(final LocalDate date, final LocalTime time) {
-        LocalDateTime reservationLocalDateTime = LocalDateTime.of(date, time);
-        if (reservationLocalDateTime.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("현재 날짜보다 이전 날짜를 예약할 수 없습니다.");
-        }
-    }
-
-    public Reservation initializeIndex(final long reservationId) {
+    public Reservation initializeIndex(final Long reservationId) {
         return new Reservation(reservationId, clientName, date, time, theme);
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -63,7 +79,7 @@ public class Reservation {
         return clientName;
     }
 
-    public LocalDate getDate() {
+    public ReservationDate getDate() {
         return date;
     }
 

@@ -3,18 +3,17 @@ package roomescape.domain;
 import java.util.Objects;
 
 public class Theme {
-    private static final Long DEFAULT_ID_VALUE = 0L;
 
-    private final long id;
+    private final Long id;
     private final ThemeName name;
     private final ThemeDescription description;
     private final String thumbnail;
 
     public Theme(final ThemeName name, final ThemeDescription description, final String thumbnail) {
-        this(DEFAULT_ID_VALUE, name, description, thumbnail);
+        this(null, name, description, thumbnail);
     }
 
-    public Theme(final long id, final ThemeName name, final ThemeDescription description, final String thumbnail) {
+    public Theme(final Long id, final ThemeName name, final ThemeDescription description, final String thumbnail) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -25,11 +24,11 @@ public class Theme {
         return new Theme(new ThemeName(name), new ThemeDescription(description), thumbnail);
     }
 
-    public Theme initializeIndex(final long themeId) {
+    public Theme initializeIndex(final Long themeId) {
         return new Theme(themeId, name, description, thumbnail);
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -49,7 +48,7 @@ public class Theme {
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (!(o instanceof final Theme theme)) return false;
-        return id == theme.id;
+        return Objects.equals(id, theme.id);
     }
 
     @Override

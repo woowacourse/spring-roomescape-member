@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 public class ClientName {
+
     private static final int MAXIMUM_ENABLE_NAME_LENGTH = 5;
 
     private final String value;
