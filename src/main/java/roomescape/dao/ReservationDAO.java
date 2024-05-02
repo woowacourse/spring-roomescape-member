@@ -44,22 +44,22 @@ public class ReservationDAO {
 
     public List<Reservation> selectAll() {
         final String sql = """
-                        SELECT 
-                            r.id AS reservation_id, 
-                            r.name, 
-                            r.date, 
-                            rt.id AS time_id, 
-                            rt.start_at AS time_value, 
-                            t.id AS theme_id, 
-                            t.name AS theme_name, 
-                            t.description AS theme_description, 
-                            t.thumbnail AS theme_thumbnail 
-                        FROM reservation AS r 
-                        INNER JOIN reservation_time AS rt 
-                        ON r.time_id = rt.id 
-                        INNER JOIN theme AS t 
-                        ON r.theme_id = t.id;
-                        """;
+                SELECT 
+                    r.id AS reservation_id, 
+                    r.name, 
+                    r.date, 
+                    rt.id AS time_id, 
+                    rt.start_at AS time_value, 
+                    t.id AS theme_id, 
+                    t.name AS theme_name, 
+                    t.description AS theme_description, 
+                    t.thumbnail AS theme_thumbnail 
+                FROM reservation AS r 
+                INNER JOIN reservation_time AS rt 
+                ON r.time_id = rt.id 
+                INNER JOIN theme AS t 
+                ON r.theme_id = t.id;
+                """;
 
         return jdbcTemplate.query(sql, reservationRowMapper());
     }
@@ -71,23 +71,23 @@ public class ReservationDAO {
 
     public boolean hasReservationTime(final Long timeId) {
         final String sql = """
-                        SELECT  
-                            r.id AS reservation_id, 
-                            r.name, 
-                            r.date, 
-                            rt.id AS time_id, 
-                            rt.start_at AS time_value, 
-                            t.id AS theme_id, 
-                            t.name AS theme_name, 
-                            t.description AS theme_description, 
-                            t.thumbnail AS theme_thumbnail 
-                        FROM reservation AS r 
-                        INNER JOIN reservation_time AS rt 
-                        ON r.time_id = rt.id 
-                        INNER JOIN theme AS t 
-                        ON r.theme_id = t.id 
-                        WHERE time_id = ?;
-                        """;
+                SELECT  
+                    r.id AS reservation_id, 
+                    r.name, 
+                    r.date, 
+                    rt.id AS time_id, 
+                    rt.start_at AS time_value, 
+                    t.id AS theme_id, 
+                    t.name AS theme_name, 
+                    t.description AS theme_description, 
+                    t.thumbnail AS theme_thumbnail 
+                FROM reservation AS r 
+                INNER JOIN reservation_time AS rt 
+                ON r.time_id = rt.id 
+                INNER JOIN theme AS t 
+                ON r.theme_id = t.id 
+                WHERE time_id = ?;
+                """;
         List<Reservation> reservations = jdbcTemplate.query(sql, reservationRowMapper(), timeId);
 
         return !reservations.isEmpty();

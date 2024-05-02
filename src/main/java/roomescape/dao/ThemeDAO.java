@@ -55,17 +55,17 @@ public class ThemeDAO {
 
     public List<Theme> findTopRanking(final LocalDate firstDayOfPeriod, final LocalDate lastDayOfPeriod) {
         final String sql = """
-                        SELECT 
-                            t.id, 
-                            t.name, 
-                            t.description, 
-                            t.thumbnail, 
-                            IFNULL(COUNT(r.id), 0) AS reservation_count 
-                        FROM theme AS t 
-                        LEFT JOIN reservation AS r ON t.id = r.theme_id AND r.date BETWEEN ? AND ? 
-                        GROUP BY t.id, t.name, t.description, t.thumbnail 
-                        ORDER BY reservation_count DESC, t.id LIMIT 10;
-                        """;
+                SELECT 
+                    t.id, 
+                    t.name, 
+                    t.description, 
+                    t.thumbnail, 
+                    IFNULL(COUNT(r.id), 0) AS reservation_count 
+                FROM theme AS t 
+                LEFT JOIN reservation AS r ON t.id = r.theme_id AND r.date BETWEEN ? AND ? 
+                GROUP BY t.id, t.name, t.description, t.thumbnail 
+                ORDER BY reservation_count DESC, t.id LIMIT 10;
+                """;
         return jdbcTemplate.query(sql, themeRowMapper(), firstDayOfPeriod, lastDayOfPeriod);
     }
 
