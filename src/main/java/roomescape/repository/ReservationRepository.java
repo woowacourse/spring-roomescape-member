@@ -49,7 +49,7 @@ public class ReservationRepository {
     public ReservationRepository(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.reservationInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("reservations")
+                .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
     }
 
@@ -77,8 +77,8 @@ public class ReservationRepository {
                 t.name as theme_name,
                 t.description,
                 t.thumbnail
-            FROM reservations as r
-            INNER JOIN reservation_times as rt
+            FROM reservation as r
+            INNER JOIN reservation_time as rt
             ON r.time_id = rt.id
             INNER JOIN theme as t
             ON r.theme_id = t.id
@@ -100,8 +100,8 @@ public class ReservationRepository {
                 t.name as theme_name,
                 t.description,
                 t.thumbnail
-            FROM reservations as r
-            INNER JOIN reservation_times as rt
+            FROM reservation as r
+            INNER JOIN reservation_time as rt
             ON r.time_id = rt.id
             INNER JOIN theme as t
             ON r.theme_id = t.id
@@ -113,7 +113,7 @@ public class ReservationRepository {
     }
 
     public void deleteById(final Long id) {
-        jdbcTemplate.update("DELETE FROM reservations WHERE id = ?", id);
+        jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
     }
 
     public boolean existByTimeId(final Long timeId) {
@@ -121,7 +121,7 @@ public class ReservationRepository {
                 SELECT 
                 CASE WHEN EXISTS (
                         SELECT 1
-                        FROM reservations
+                        FROM reservation
                         WHERE time_id = ?
                     )
                     THEN TRUE
@@ -143,8 +143,8 @@ public class ReservationRepository {
                 t.name as theme_name,
                 t.description,
                 t.thumbnail
-            FROM reservations as r
-            INNER JOIN reservation_times as rt
+            FROM reservation as r
+            INNER JOIN reservation_time as rt
             ON r.time_id = rt.id
             INNER JOIN theme as t
             ON r.theme_id = t.id
@@ -164,7 +164,7 @@ public class ReservationRepository {
                 SELECT 
                 CASE WHEN EXISTS (
                         SELECT 1
-                        FROM reservations
+                        FROM reservation
                         WHERE date = ? AND time_id = ? AND theme_id = ?
                     )
                     THEN TRUE
@@ -179,7 +179,7 @@ public class ReservationRepository {
                 SELECT 
                 CASE WHEN EXISTS (
                         SELECT 1
-                        FROM reservations
+                        FROM reservation
                         WHERE theme_id = ?
                     )
                     THEN TRUE
@@ -192,7 +192,7 @@ public class ReservationRepository {
     public List<Theme> findThemesOrderedByReservationCountForWeek(final LocalDate localDate, final int count) {
         final String selectQuery = """
                 SELECT t.id, t.name, t.description, t.thumbnail, COUNT(t.id) AS count
-                FROM reservations AS r
+                FROM reservation AS r
                 LEFT JOIN theme AS t
                 ON t.id = r.theme_id
                 WHERE r.date <= ? AND r.date > ?

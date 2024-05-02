@@ -54,7 +54,7 @@ class ReservationTimeControllerTest {
     @DisplayName("데이터 삽입 후 시간 목록 조회")
     @Test
     void getReservationTimesAfterInsert() {
-        jdbcTemplate.update("INSERT INTO reservation_times (start_at) VALUES (?)", "15:40");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "15:40");
 
         final List<ReservationTimeResponse> reservationTimeResponses = RestAssured.given().log().all()
                 .when().get("/times")
@@ -62,7 +62,7 @@ class ReservationTimeControllerTest {
                 .statusCode(200).extract()
                 .jsonPath().getList(".", ReservationTimeResponse.class);
 
-        final Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation_times", Integer.class);
+        final Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation_time", Integer.class);
         assertThat(reservationTimeResponses.size()).isEqualTo(count);
     }
 
@@ -79,7 +79,7 @@ class ReservationTimeControllerTest {
                 .statusCode(201)
                 .header("Location", "/times/1");
 
-        final Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation_times", Integer.class);
+        final Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation_time", Integer.class);
         assertThat(count).isEqualTo(1);
 
         RestAssured.given().log().all()
@@ -87,7 +87,7 @@ class ReservationTimeControllerTest {
                 .then().log().all()
                 .statusCode(204);
 
-        final Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation_times", Integer.class);
+        final Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation_time", Integer.class);
         assertThat(countAfterDelete).isEqualTo(0);
     }
 

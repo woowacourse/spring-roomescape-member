@@ -32,9 +32,9 @@ class ReservationRepositoryTest {
 
     @BeforeEach
     void init() {
-        jdbcTemplate.update("INSERT INTO reservation_times (start_at) VALUES (?), (?)", "08:00", "07:00");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?), (?)", "08:00", "07:00");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", " 이름", "설명", "썸네일");
-        jdbcTemplate.update("INSERT INTO reservations (name, date, time_id, theme_id) VALUES (?, ?, ?, ?), (?, ?, ?, ?)",
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?), (?, ?, ?, ?)",
                 "감자", "2024-07-07", 1L, 1L,
                 "고구마", "2024-08-12", 2L, 1L);
     }
