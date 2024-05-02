@@ -9,11 +9,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 @JdbcTest
 class ThemeJDBCRepositoryTest {
     private ThemeRepository themeRepository;
+    private ReservationTimeRepository reservationTimeRepository;
+    private ReservationRepository reservationRepository;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -21,13 +25,15 @@ class ThemeJDBCRepositoryTest {
     @BeforeEach
     void setUp() {
         themeRepository = new ThemeJDBCRepository(jdbcTemplate);
+        reservationTimeRepository = new ReservationTimeJDBCRepository(jdbcTemplate);
+        reservationRepository = new ReservationJDBCRepository(jdbcTemplate);
     }
 
     @DisplayName("새로운 테마를 저장한다.")
     @Test
     void saveTheme() {
         //given
-        Theme theme = new Theme("name", "description", "thumbnail");
+        Theme theme = saveThemeByName("레벨2 탈출");
 
         //when
         Theme result = themeRepository.save(theme);
@@ -40,8 +46,7 @@ class ThemeJDBCRepositoryTest {
     @Test
     void findAll() {
         //given
-        themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        saveThemeByName("레벨2 탈출");
 
         //when
         List<Theme> themes = themeRepository.findAll();
@@ -54,13 +59,11 @@ class ThemeJDBCRepositoryTest {
     @Test
     void deleteTheme() {
         //given
-        Theme theme = new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        Theme target = themeRepository.save(theme);
+        Theme theme = saveThemeByName("레벨2 탈출");
         int expectedSize = 0;
 
         //when
-        themeRepository.deleteById(target.getId());
+        themeRepository.deleteById(theme.getId());
 
         //then
         assertThat(themeRepository.findAll()).hasSize(expectedSize);
@@ -71,8 +74,7 @@ class ThemeJDBCRepositoryTest {
     void existsByName() {
         //given
         String name = "레벨2 탈출";
-        Theme theme = new Theme(name, "우테코 레벨2를 탈출하는 내용입니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        Theme theme = saveThemeByName(name);
         themeRepository.save(theme);
 
         //when
@@ -87,8 +89,7 @@ class ThemeJDBCRepositoryTest {
     void notExistsByName() {
         //given
         String name = "레벨2 탈출";
-        Theme theme = new Theme(name, "우테코 레벨2를 탈출하는 내용입니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        Theme theme = saveThemeByName(name);
         themeRepository.save(theme);
 
         //when
@@ -103,13 +104,68 @@ class ThemeJDBCRepositoryTest {
     @Test
     void findById() {
         //given
-        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        Theme theme = saveThemeByName("레벨2 탈출");
 
         //when
         Theme result = themeRepository.findById(theme.getId()).get();
 
         //then
         assertThat(result.getId()).isEqualTo(theme.getId());
+    }
+
+    @DisplayName("최근 일주일 기준 예약 많은 테마 10개를 조회한다. - 예약이 많은 순으로 반환: theme1 2개, theme2 1개, theme3 0개")
+    @Test
+    void findPopularThemesByOrder() {
+        //given
+        ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime("10:00"));
+        String name1 = "레벨1 탈출";
+        String name2 = "레벨2 탈출";
+        String name3 = "레벨3 탈출";
+        Theme theme1 = saveThemeByName(name1);
+        Theme theme2 = saveThemeByName(name2);
+        Theme theme3 = saveThemeByName(name3);
+        saveReservation(reservationTime, "2222-04-01", theme1);
+        saveReservation(reservationTime, "2222-04-02", theme1);
+        saveReservation(reservationTime, "2222-04-03", theme2);
+
+        //when
+        List<Theme> themes = themeRepository.findByReservationTermAndCount("2222-04-01", "2222-04-07", 10);
+
+        //then
+        assertThat(themes.stream().map(Theme::getName).toList()).containsExactly(name1, name2);
+    }
+
+    @DisplayName("최근 일주일 기준 예약 많은 테마 10개를 조회한다. - 최근 일주일 예약 개수 기준: theme1 1개, theme2 2개, theme3 0개")
+    @Test
+    void findPopularThemesByTerm() {
+        //given
+        ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime("10:00"));
+        String name1 = "레벨1 탈출";
+        String name2 = "레벨2 탈출";
+        String name3 = "레벨3 탈출";
+        Theme theme1 = saveThemeByName(name1);
+        Theme theme2 = saveThemeByName(name2);
+        Theme theme3 = saveThemeByName(name3);
+        saveReservation(reservationTime, "2222-04-01", theme1);
+        saveReservation(reservationTime, "2222-03-01", theme1);
+        saveReservation(reservationTime, "2222-03-02", theme1);
+        saveReservation(reservationTime, "2222-04-02", theme2);
+        saveReservation(reservationTime, "2222-04-03", theme2);
+
+        //when
+        List<Theme> themes = themeRepository.findByReservationTermAndCount("2222-04-01", "2222-04-07", 10);
+
+        //then
+        assertThat(themes.stream().map(Theme::getName).toList()).containsExactly(name2, name1);
+    }
+
+    private void saveReservation(ReservationTime reservationTime, String date, Theme theme1) {
+        Reservation reservation = new Reservation("브라운", date, reservationTime, theme1);
+        reservationRepository.save(reservation);
+    }
+
+    private Theme saveThemeByName(String name) {
+        return themeRepository.save(new Theme(name, "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
     }
 }

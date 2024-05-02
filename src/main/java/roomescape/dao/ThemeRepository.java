@@ -14,4 +14,6 @@ public interface ThemeRepository {
     boolean existsByName(String name);
 
     Optional<Theme> findById(long id);
+
+    List<Theme> findByReservationTermAndCount(String startDate, String endDate, long count);
 }
