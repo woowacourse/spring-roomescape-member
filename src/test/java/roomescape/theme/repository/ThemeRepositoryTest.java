@@ -3,19 +3,30 @@ package roomescape.theme.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.jdbc.Sql;
 import roomescape.reservation.domain.Name;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
+import roomescape.time.domain.ReservationTime;
+import roomescape.time.repository.ReservationTimeRepository;
 
 @JdbcTest
-@Import(ThemeRepository.class)
+@Import({ThemeRepository.class, ReservationTimeRepository.class, ReservationRepository.class})
 class ThemeRepositoryTest {
+
+    @Autowired
+    private ReservationRepository reservationRepository;
+
+    @Autowired
+    private ReservationTimeRepository reservationTimeRepository;
 
     @Autowired
     private ThemeRepository themeRepository;
@@ -43,14 +54,29 @@ class ThemeRepositoryTest {
     }
 
     @Test
-    @Sql(scripts = "classpath:data.sql")
     @DisplayName("예약이 많은 순으로 10개의 테마를 조회한다.")
     void findPopularThemeLimitTen() {
+        Long timeId = reservationTimeRepository.save(new ReservationTime(LocalTime.now()));
+        ReservationTime reservationTime = reservationTimeRepository.findById(timeId).get();
+
+        Long theme1Id = themeRepository.save(new Theme(new Name("공포"), "a", "a"));
+        Theme theme1 = themeRepository.findById(theme1Id).get();
+
+        Long theme2Id = themeRepository.save(new Theme(new Name("액션"), "b", "b"));
+        Theme theme2 = themeRepository.findById(theme2Id).get();
+
+        reservationRepository.save(
+                new Reservation(new Name("hogi"), LocalDate.parse("2024-12-12"), theme1, reservationTime));
+        reservationRepository.save(
+                new Reservation(new Name("kaki"), LocalDate.parse("2024-05-05"), theme2, reservationTime));
+        reservationRepository.save(
+                new Reservation(new Name("neo"), LocalDate.parse("2024-05-06"), theme2, reservationTime));
+
         List<Theme> themes = themeRepository.findPopularThemeLimitTen();
 
         assertAll(
-                () -> assertThat(themes.get(0).getName()).isEqualTo("c"),
-                () -> assertThat(themes.size()).isEqualTo(10)
+                () -> assertThat(themes.get(0).getName()).isEqualTo("액션"),
+                () -> assertThat(themes.size()).isEqualTo(2)
         );
     }
 
