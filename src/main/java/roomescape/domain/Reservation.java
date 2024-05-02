@@ -46,13 +46,10 @@ public class Reservation {
         return new Reservation(id, new Name(name), parsedDate, new ReservationTime(timeId), new Theme(themeId));
     }
 
-    public static Reservation of(long id, String name, String date, long timeId, String time, long themeId,
-                                 String themeName, String description, String thumbnail) {
+    public static Reservation of(final long id, final String name, final String date, final ReservationTime reservationTime,
+                                 final Theme theme) {
         LocalDate parsedDate = LocalDate.parse(date);
-        LocalTime parsedTime = LocalTime.parse(time);
-
-        return new Reservation(id, new Name(name), parsedDate, new ReservationTime(timeId, parsedTime),
-                new Theme(themeId, themeName, description, thumbnail));
+        return new Reservation(id, new Name(name), parsedDate, reservationTime, theme);
     }
 
     public static Reservation of(final String name, final LocalDate date, final ReservationTime reservationTime,

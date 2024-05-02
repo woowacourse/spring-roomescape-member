@@ -1,20 +1,24 @@
 package roomescape.repository;
 
-import java.sql.PreparedStatement;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
 
+import java.sql.PreparedStatement;
+import java.util.List;
+import java.util.Optional;
+
 @Repository
 public class ThemeDao {
     private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<Theme> themeRowMapper;
 
-    public ThemeDao(final JdbcTemplate jdbcTemplate) {
+    public ThemeDao(final JdbcTemplate jdbcTemplate, final RowMapper<Theme> themeRowMapper) {
         this.jdbcTemplate = jdbcTemplate;
+        this.themeRowMapper = themeRowMapper;
     }
 
     public Theme save(final Theme theme) {
@@ -47,23 +51,12 @@ public class ThemeDao {
 
     public List<Theme> getAll() {
         String sql = "SELECT * FROM theme";
-        return jdbcTemplate.query(sql, (result, rowNum) ->
-                new Theme(result.getLong("id"),
-                        result.getString("name"),
-                        result.getString("description"),
-                        result.getString("thumbnail")
-                )
-        );
+        return jdbcTemplate.query(sql, themeRowMapper);
     }
 
     public Optional<Theme> findById(final long themeId) {
         String sql = "SELECT * FROM theme WHERE id = ? ";
-        return jdbcTemplate.query(sql, (result, rowNum) ->
-                        new Theme(result.getLong("id"),
-                                result.getString("name"),
-                                result.getString("description"),
-                                result.getString("thumbnail")
-                        ), themeId)
+        return jdbcTemplate.query(sql, themeRowMapper, themeId)
                 .stream()
                 .findAny();
     }

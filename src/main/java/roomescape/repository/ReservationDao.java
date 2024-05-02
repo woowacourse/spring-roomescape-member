@@ -1,9 +1,5 @@
 package roomescape.repository;
 
-import java.sql.PreparedStatement;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -11,14 +7,23 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
+
+import java.sql.PreparedStatement;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class ReservationDao {
 
     private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<Reservation> reservationRowMapper;
 
-    public ReservationDao(final JdbcTemplate jdbcTemplate) {
+    public ReservationDao(final JdbcTemplate jdbcTemplate, final RowMapper<Reservation> reservationRowMapper) {
         this.jdbcTemplate = jdbcTemplate;
+        this.reservationRowMapper = reservationRowMapper;
     }
 
     public Reservation save(final Reservation reservation) {
@@ -67,19 +72,6 @@ public class ReservationDao {
         }
     }
 
-    private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) ->
-            Reservation.of(
-                    resultSet.getLong("id"),
-                    resultSet.getString("name"),
-                    resultSet.getString("date"),
-                    resultSet.getLong("time_id"),
-                    resultSet.getString("start_at"),
-                    resultSet.getLong("theme_id"),
-                    resultSet.getString("theme_name"),
-                    resultSet.getString("description"),
-                    resultSet.getString("thumbnail")
-            );
-
     public List<Reservation> getAll() {
         String sql = "SELECT r.id as reservation_id, r.name, r.date, time.id as time_id, time.start_at as time_value, "
                 + "theme.id as theme_id, theme.name as theme_name, theme.description, theme.thumbnail "
@@ -90,17 +82,7 @@ public class ReservationDao {
                 + "ON r.theme_id = theme.id ";
         return jdbcTemplate.query(
                 sql,
-                (resultSet, rowNum) -> Reservation.of(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("date"),
-                        resultSet.getLong("time_id"),
-                        resultSet.getString("start_at"),
-                        resultSet.getLong("theme_id"),
-                        resultSet.getString("theme_name"),
-                        resultSet.getString("description"),
-                        resultSet.getString("thumbnail")
-                )
+                reservationRowMapper
         );
     }
 

@@ -10,13 +10,16 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
+import roomescape.repository.rowmapper.ReservationTimeRowMapper;
 
 @Repository
 public class ReservationTimeDao {
     private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<ReservationTime> reservationTimeRowMapper;
 
-    public ReservationTimeDao(final JdbcTemplate jdbcTemplate) {
+    public ReservationTimeDao(final JdbcTemplate jdbcTemplate, final RowMapper<ReservationTime> reservationTimeRowMapper) {
         this.jdbcTemplate = jdbcTemplate;
+        this.reservationTimeRowMapper = reservationTimeRowMapper;
     }
 
     public ReservationTime save(final ReservationTime reservationTime) {
@@ -51,19 +54,10 @@ public class ReservationTimeDao {
         }
     }
 
-    private final RowMapper<ReservationTime> reservationTimeRowMapper = (resultSet, rowNum) ->
-            ReservationTime.of(
-                    resultSet.getLong("id"),
-                    resultSet.getString("start_at")
-            );
-
     public List<ReservationTime> getAll() {
         return jdbcTemplate.query(
                 "SELECT id, start_at FROM reservation_time",
-                (resultSet, rowNum) -> ReservationTime.of(
-                        resultSet.getLong("id"),
-                        resultSet.getString("start_at")
-                )
+                reservationTimeRowMapper
         );
     }
 
