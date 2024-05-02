@@ -12,6 +12,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import roomescape.controller.request.ReservationTimeRequest;
 import roomescape.model.ReservationTime;
 
+import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -42,7 +43,7 @@ class ReservationTimeControllerTest {
     @DisplayName("예약 시간을 추가한다")
     @Test
     void should_add_reservation_times() {
-        ReservationTimeRequest request = new ReservationTimeRequest("12:00");
+        ReservationTimeRequest request = new ReservationTimeRequest(LocalTime.of(12, 0));
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

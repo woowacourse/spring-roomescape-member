@@ -38,7 +38,7 @@ class ReservationServiceTest {
     @Test
     void should_add_reservation_times() {
         reservationService.addReservation(
-                new ReservationRequest("2030-01-01", "네오", 1, 1));
+                new ReservationRequest("네오", LocalDate.of(2030, 1, 1), 1L, 1L));
         List<Reservation> allReservations = reservationService.findAllReservations();
         assertThat(allReservations).hasSize(3);
     }
@@ -69,7 +69,7 @@ class ReservationServiceTest {
     @DisplayName("현재 이전으로 예약하면 예외가 발생한다.")
     @Test
     void should_throw_exception_when_previous_date() {
-        ReservationRequest request = new ReservationRequest("2000-01-11", "에버", 1, 1);
+        ReservationRequest request = new ReservationRequest("에버", LocalDate.of(2000, 1, 11), 1L, 1L);
         assertThatThrownBy(() -> reservationService.addReservation(request))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage("[ERROR] 현재 이전 예약은 할 수 없습니다.");
@@ -79,7 +79,7 @@ class ReservationServiceTest {
     @Test
     void should_not_throw_exception_when_current_date() {
         reservationTimeRepository.add(new ReservationTime(3, LocalTime.now()));
-        ReservationRequest request = new ReservationRequest(LocalDate.now().toString(), "에버", 3, 1);
+        ReservationRequest request = new ReservationRequest("에버", LocalDate.now(), 3L, 1L);
         assertThatCode(() -> reservationService.addReservation(request))
                 .doesNotThrowAnyException();
     }
@@ -87,7 +87,7 @@ class ReservationServiceTest {
     @DisplayName("현재 이후로 예약하면 예외가 발생하지 않는다.")
     @Test
     void should_not_throw_exception_when_later_date() {
-        ReservationRequest request = new ReservationRequest("2030-01-11", "에버", 1, 1);
+        ReservationRequest request = new ReservationRequest("에버", LocalDate.of(2030, 1, 11), 1L, 1L);
         assertThatCode(() -> reservationService.addReservation(request))
                 .doesNotThrowAnyException();
     }
@@ -95,7 +95,7 @@ class ReservationServiceTest {
     @DisplayName("날짜, 시간이 일치하는 예약을 추가하려 할 때 예외가 발생한다.")
     @Test
     void should_throw_exception_when_add_exist_reservation() {
-        ReservationRequest request = new ReservationRequest("2030-08-05", "배키", 2, 2);
+        ReservationRequest request = new ReservationRequest("배키", LocalDate.of(2030, 8, 5), 2L, 2L);
         assertThatThrownBy(() -> reservationService.addReservation(request))
                 .isInstanceOf(DuplicatedException.class)
                 .hasMessage("[ERROR] 중복되는 예약은 추가할 수 없습니다.");
