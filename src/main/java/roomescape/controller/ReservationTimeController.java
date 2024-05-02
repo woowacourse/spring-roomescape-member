@@ -39,7 +39,7 @@ public class ReservationTimeController {
             @RequestParam("date") LocalDate date,
             @RequestParam("themeId") Integer themeId
     ) {
-        List<AvailableReservationTimeResponse> reservationTimeResponses = reservationTimeService.findAllByAvailability(
+        List<AvailableReservationTimeResponse> reservationTimeResponses = reservationTimeService.findAllWithAvailability(
                 date, themeId);
 
         return ResponseEntity.ok(reservationTimeResponses);

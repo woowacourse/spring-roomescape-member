@@ -47,7 +47,7 @@ public class ThemeController {
 
     @GetMapping("/tops")
     public ResponseEntity<List<ThemeResponse>> findTops() {
-        List<ThemeResponse> themeResponses = themeService.findTops();
+        List<ThemeResponse> themeResponses = themeService.findTopThemes();
 
         return ResponseEntity.ok(themeResponses);
     }

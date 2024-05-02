@@ -14,8 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.groupingBy;
-
 @Service
 public class ThemeService {
     public static final int START_DATE_DIFF = 8;
@@ -49,21 +47,26 @@ public class ThemeService {
         themeRepository.deleteById(id);
     }
 
-    public List<ThemeResponse> findTops() {
-        LocalDate today = LocalDate.now();
-        LocalDate startDate = today.minusDays(START_DATE_DIFF);
-        LocalDate endDate = today.minusDays(END_DATE_DIFF);
-        List<Reservation> reservations = reservationRepository.findByPeriod(startDate, endDate);
+    public List<ThemeResponse> findTopThemes() {
+        List<Reservation> pastReservations = findPastReservations(START_DATE_DIFF, END_DATE_DIFF);
 
-        return findTopReservations(reservations, TOP_LIMIT_COUNT).stream()
+        return findMostReservedThemes(pastReservations, TOP_LIMIT_COUNT).stream()
                 .map(ThemeResponse::from)
                 .toList();
     }
 
-    private List<Theme> findTopReservations(List<Reservation> reservations, int limitCount) {
-        return reservations.stream()
-                .collect(groupingBy(Reservation::getTheme, Collectors.counting()))
-                .entrySet().stream()
+    private List<Reservation> findPastReservations(long startDateDiff, long endDateDiff) {
+        LocalDate currentDate = LocalDate.now();
+        LocalDate startDate = currentDate.minusDays(startDateDiff);
+        LocalDate endDate = currentDate.minusDays(endDateDiff);
+        return reservationRepository.findByPeriod(startDate, endDate);
+    }
+
+    private List<Theme> findMostReservedThemes(List<Reservation> reservations, int limitCount) {
+        Map<Theme, Long> reservationsGroupedByTheme = reservations.stream()
+                .collect(Collectors.groupingBy(Reservation::getTheme, Collectors.counting()));
+
+        return reservationsGroupedByTheme.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                 .limit(limitCount)
                 .map(Map.Entry::getKey)
