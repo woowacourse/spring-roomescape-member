@@ -21,8 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Transactional
-public class
-ReservationControllerTest {
+public class ReservationControllerTest {
 
     @Autowired
     private ReservationController reservationController;

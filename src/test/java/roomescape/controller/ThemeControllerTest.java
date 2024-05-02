@@ -1,26 +1,22 @@
 package roomescape.controller;
 
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Map;
-
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@Transactional
-class ThemeControllerTest {
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import java.util.Map;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 
-    @Autowired
-    private ThemeController themeController;
+// TODO: truncate.sql AFTER_TEST_METHOD 시점에서 실행시키면, 상위 10개 테마 조회, 테마 추가 테스트 사이에서 동작하지 않는 이유 탐색
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
+class ThemeControllerTest {
 
     @LocalServerPort
     private int port;
@@ -59,7 +55,7 @@ class ThemeControllerTest {
 
     @Test
     @DisplayName("테마를 삭제한다.")
-    void deleteThems() {
+    void deleteThemes() {
         Map<String, String> params = Map.of(
                 "name", "테마명",
                 "description", "설명",
@@ -82,5 +78,25 @@ class ThemeControllerTest {
                 .when().delete("/themes/1")
                 .then().log().all()
                 .statusCode(204);
+    }
+
+    /*
+     *  reservationData DataSet ThemeID 별 reservation 개수
+     *  5,4,2,5,2,3,1,1,1,1,1
+     *  예약 수 내림차순 + ThemeId 오름차순 정렬 순서
+     *  1, 4, 2, 6, 3, 5, 7, 8, 9, 10
+     */
+    @Test
+    @DisplayName("예약 수 상위 10개 테마를 조회했을 때 내림차순으로 정렬된다. 만약 예약 수가 같다면, id 순으로 오름차순 정렬된다.")
+    @Sql(scripts = "/reservationData.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
+    void readTop10ThemesDescOrder() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .port(port)
+                .when().get("/themes/top?count=10")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(10))
+                .body("id", contains(1, 4, 2, 6, 3, 5, 7, 8, 9, 10));
     }
 }
