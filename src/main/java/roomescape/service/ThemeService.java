@@ -51,7 +51,7 @@ public class ThemeService {
     @Transactional
     public void deleteThemeById(Long id) {
         if (!themeRepository.existsById(id)) {
-            throw new NoSuchElementException("해당 ID의 테마가 존재하지 않습니다.");
+            throw new NoSuchElementException("해당 id의 테마가 존재하지 않습니다.");
         }
 
         if (reservationRepository.existsByThemeId(id)) {

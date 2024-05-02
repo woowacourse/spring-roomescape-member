@@ -4,28 +4,88 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Stream;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 
 class ReservationTimeControllerTest extends BaseControllerTest {
 
+    @Autowired
+    private ReservationTimeRepository reservationTimeRepository;
+
+    @Autowired
+    private ThemeRepository themeRepository;
+
+    @Autowired
+    private ReservationRepository reservationRepository;
+
     @TestFactory
     @DisplayName("예약 시간을 생성, 조회, 삭제한다.")
-    Stream<DynamicTest> reservationTimeControllerTests() {
+    Stream<DynamicTest> addReservationTimeAndGetAndDelete() {
         return Stream.of(
                 DynamicTest.dynamicTest("예약 시간을 생성한다.", this::addReservationTime),
                 DynamicTest.dynamicTest("예약 시간을 모두 조회한다.", this::getAllReservationTimes),
                 DynamicTest.dynamicTest("예약 시간을 삭제한다.", this::deleteReservationTimeById)
         );
     }
+
+    @TestFactory
+    @DisplayName("중복된 예약 시간을 생성하면 실패한다.")
+    Stream<DynamicTest> failWhenDuplicatedTime() {
+        return Stream.of(
+                DynamicTest.dynamicTest("예약 시간을 생성한다.", this::addReservationTime),
+                DynamicTest.dynamicTest("이미 존재하는 예약 시간을 생성한다.", this::addReservationTimeFailWhenDuplicatedTime)
+        );
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 예약 시간을 삭제하면 실패한다.")
+    void deleteReservationTimeByIdFailWhenNotFoundId() {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when().delete("/times/1")
+                .then().log().all()
+                .extract();
+
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+            softly.assertThat(response.body().asString()).contains("해당 id의 시간이 존재하지 않습니다.");
+        });
+    }
+
+    @Test
+    @DisplayName("이미 사용 중인 예약 시간을 삭제하면 실패한다.")
+    void deleteReservationTimeByIdFailWhenUsedTime() {
+        ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 30)));
+        Theme theme = themeRepository.save(new Theme("테마 이름", "테마 설명", "https://example.com"));
+        reservationRepository.save(new Reservation("구름", LocalDate.of(2024, 4, 9), reservationTime, theme));
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when().delete("/times/1")
+                .then().log().all()
+                .extract();
+
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            softly.assertThat(response.body().asString()).contains("해당 시간을 사용하는 예약이 존재합니다.");
+        });
+    }
+
 
     void addReservationTime() {
         ReservationTimeRequest request = new ReservationTimeRequest(LocalTime.of(10, 30));
@@ -43,6 +103,22 @@ class ReservationTimeControllerTest extends BaseControllerTest {
             softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
             softly.assertThat(response.header("Location")).isEqualTo("/times/1");
             softly.assertThat(reservationTimeResponse).isEqualTo(new ReservationTimeResponse(1L, LocalTime.of(10, 30)));
+        });
+    }
+
+    void addReservationTimeFailWhenDuplicatedTime() {
+        ReservationTimeRequest request = new ReservationTimeRequest(LocalTime.of(10, 30));
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().post("/times")
+                .then().log().all()
+                .extract();
+
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            softly.assertThat(response.body().asString()).contains("해당 시간은 이미 존재합니다.");
         });
     }
 

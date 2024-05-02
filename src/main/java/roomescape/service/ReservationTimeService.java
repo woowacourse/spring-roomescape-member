@@ -50,7 +50,7 @@ public class ReservationTimeService {
     @Transactional
     public void deleteReservationTimeById(Long id) {
         if (!reservationTimeRepository.existsById(id)) {
-            throw new NoSuchElementException("해당 ID의 시간이 존재하지 않습니다.");
+            throw new NoSuchElementException("해당 id의 시간이 존재하지 않습니다.");
         }
 
         if (reservationRepository.existsByTimeId(id)) {
