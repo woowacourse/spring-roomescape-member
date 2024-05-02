@@ -1,75 +1,55 @@
 package roomescape.controller;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.lang.reflect.Field;
-import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import roomescape.controller.api.ReservationTimeController;
-import roomescape.dto.ReservationTimeResponse;
+import org.springframework.test.context.jdbc.Sql;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
+@Sql(scripts = {"/test.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class ReservationTimeControllerTest {
 
     @LocalServerPort
     int port;
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    private ReservationTimeController reservationTimeController;
 
     @BeforeEach
     void initPort() {
         RestAssured.port = port;
     }
 
-    @DisplayName("비어 있는 예약 시간 목록 조회")
+    @DisplayName("예약 시간 목록 조회")
     @Test
     void getReservationTimesWhenEmpty() {
         RestAssured.given().log().all()
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("size()", is(7));
     }
 
-    @DisplayName("데이터 삽입 후 시간 목록 조회")
+    @DisplayName("시간 목록 예약 여부 조회")
     @Test
-    void getReservationTimesAfterInsert() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "15:40");
-
-        final List<ReservationTimeResponse> reservationTimeResponses = RestAssured.given().log().all()
-                .when().get("/times")
+    void getReservationTimesWithBooked() {
+        RestAssured.given().log().all()
+                .when().get("/times?date=2024-04-29&themeId=1")
                 .then().log().all()
-                .statusCode(200).extract()
-                .jsonPath().getList(".", ReservationTimeResponse.class);
-
-        final Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation_time", Integer.class);
-        assertThat(reservationTimeResponses.size()).isEqualTo(count);
+                .statusCode(200)
+                .body("size()", is(7));
     }
 
     @DisplayName("예약 시간 추가 및 삭제")
     @Test
     void saveAndDeleteReservationTime() {
-        final Map<String, String> params = Map.of("startAt", "10:00");
+        final Map<String, String> params = Map.of("startAt", "10:10");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -77,42 +57,34 @@ class ReservationTimeControllerTest {
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201)
-                .header("Location", "/times/1");
-
-        final Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation_time", Integer.class);
-        assertThat(count).isEqualTo(1);
+                .header("Location", "/times/8");
 
         RestAssured.given().log().all()
-                .when().delete("/times/1")
+                .when().delete("/times/8")
                 .then().log().all()
                 .statusCode(204);
+    }
 
-        final Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation_time", Integer.class);
-        assertThat(countAfterDelete).isEqualTo(0);
+    @DisplayName("중복된 시간 추가")
+    @Test
+    void saveDuplicatedTime() {
+        final Map<String, String> params = Map.of("startAt", "10:00");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(400);
     }
 
     @DisplayName("존재하지 않는 예약 시간 삭제")
     @Test
     void deleteReservationTimeNotFound() {
         RestAssured.given().log().all()
-                .when().delete("/times/1")
+                .when().delete("/times/100")
                 .then().log().all()
                 .statusCode(400);
-    }
-
-    @DisplayName("컨트롤러에서 jdbcTemplate 필드 제거")
-    @Test
-    void jdbcTemplateNotInjected() {
-        boolean isJdbcTemplateInjected = false;
-
-        for (Field field : reservationTimeController.getClass().getDeclaredFields()) {
-            if (field.getType().equals(JdbcTemplate.class)) {
-                isJdbcTemplateInjected = true;
-                break;
-            }
-        }
-
-        assertFalse(isJdbcTemplateInjected);
     }
 
     @DisplayName("유효하지 않은 시간 형식 입력")
