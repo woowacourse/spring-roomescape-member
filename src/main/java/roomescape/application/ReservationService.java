@@ -11,8 +11,8 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
-import roomescape.dto.ReservationRequest;
-import roomescape.dto.ReservationResponse;
+import roomescape.application.dto.ReservationRequest;
+import roomescape.application.dto.ReservationResponse;
 
 @Service
 public class ReservationService {

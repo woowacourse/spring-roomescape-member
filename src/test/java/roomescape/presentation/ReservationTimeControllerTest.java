@@ -23,8 +23,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.application.ReservationTimeService;
-import roomescape.dto.ReservationTimeRequest;
-import roomescape.dto.ReservationTimeResponse;
+import roomescape.application.dto.ReservationTimeRequest;
+import roomescape.application.dto.ReservationTimeResponse;
 
 @WebMvcTest(ReservationTimeController.class)
 class ReservationTimeControllerTest {

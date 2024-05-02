@@ -17,8 +17,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.application.ThemeService;
-import roomescape.dto.ThemeRequest;
-import roomescape.dto.ThemeResponse;
+import roomescape.application.dto.ThemeRequest;
+import roomescape.application.dto.ThemeResponse;
 
 @WebMvcTest(ThemeController.class)
 class ThemeControllerTest {

@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeName;
 import roomescape.domain.ThemeRepository;
-import roomescape.dto.ThemeRequest;
-import roomescape.dto.ThemeResponse;
+import roomescape.application.dto.ThemeRequest;
+import roomescape.application.dto.ThemeResponse;
 
 @ServiceTest
 class ThemeServiceTest {
