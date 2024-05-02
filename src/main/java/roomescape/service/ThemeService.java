@@ -1,12 +1,14 @@
 package roomescape.service;
 
+import static roomescape.exception.ExceptionType.DELETE_USED_THEME;
+import static roomescape.exception.ExceptionType.DUPLICATE_THEME;
+
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
-import roomescape.exception.ExceptionType;
 import roomescape.exception.RoomescapeException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
@@ -26,7 +28,7 @@ public class ThemeService {
         boolean hasDuplicateTheme = themeRepository.findAll().stream()
                 .anyMatch(theme -> theme.isNameOf(themeRequest.name()));
         if (hasDuplicateTheme) {
-            throw new RoomescapeException(ExceptionType.DUPLICATE_THEME);
+            throw new RoomescapeException(DUPLICATE_THEME);
         }
         Theme saved = themeRepository.save(
                 new Theme(themeRequest.name(), themeRequest.description(), themeRequest.thumbnail()));
@@ -54,7 +56,7 @@ public class ThemeService {
         boolean invalidDelete = reservationRepository.findAll().stream()
                 .anyMatch(reservation -> reservation.isThemeOf(id));
         if (invalidDelete) {
-            throw new RoomescapeException(ExceptionType.INVALID_DELETE_THEME);
+            throw new RoomescapeException(DELETE_USED_THEME);
         }
         themeRepository.delete(id);
     }

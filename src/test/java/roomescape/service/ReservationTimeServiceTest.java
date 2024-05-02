@@ -3,8 +3,8 @@ package roomescape.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.exception.ExceptionType.DELETE_USED_TIME;
 import static roomescape.exception.ExceptionType.DUPLICATE_RESERVATION_TIME;
-import static roomescape.exception.ExceptionType.INVALID_DELETE_TIME;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -87,7 +87,7 @@ class ReservationTimeServiceTest {
             //when & then
             assertThatCode(() -> reservationTimeService.delete(1L))
                     .isInstanceOf(RoomescapeException.class)
-                    .hasMessage(INVALID_DELETE_TIME.getMessage());
+                    .hasMessage(DELETE_USED_TIME.getMessage());
         }
     }
 

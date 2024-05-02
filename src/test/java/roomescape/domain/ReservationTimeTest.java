@@ -3,11 +3,11 @@ package roomescape.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static roomescape.exception.ExceptionType.EMPTY_TIME;
 
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.exception.ExceptionType;
 import roomescape.exception.RoomescapeException;
 
 class ReservationTimeTest {
@@ -17,7 +17,7 @@ class ReservationTimeTest {
     void startAtMustBeNotNull() {
         assertThatThrownBy(() -> new ReservationTime(null))
                 .isInstanceOf(RoomescapeException.class)
-                .hasMessage(ExceptionType.TIME_EMPTY.getMessage());
+                .hasMessage(EMPTY_TIME.getMessage());
     }
 
     @DisplayName("ReservationTime 은 id 값으로만 동등성을 비교한다.")

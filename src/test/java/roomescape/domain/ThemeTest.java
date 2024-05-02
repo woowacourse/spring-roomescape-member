@@ -4,9 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static roomescape.exception.ExceptionType.DESCRIPTION_EMPTY;
-import static roomescape.exception.ExceptionType.NAME_EMPTY;
-import static roomescape.exception.ExceptionType.THUMBNAIL_EMPTY;
+import static roomescape.exception.ExceptionType.EMPTY_DESCRIPTION;
+import static roomescape.exception.ExceptionType.EMPTY_NAME;
+import static roomescape.exception.ExceptionType.EMPTY_THUMBNAIL;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,15 +20,15 @@ class ThemeTest {
         assertAll(
                 () -> assertThatThrownBy(() -> new Theme(null, "description", "thumbnail"))
                         .isInstanceOf(RoomescapeException.class)
-                        .hasMessage(NAME_EMPTY.getMessage()),
+                        .hasMessage(EMPTY_NAME.getMessage()),
 
                 () -> assertThatThrownBy(() -> new Theme("name", null, "thumbnail"))
                         .isInstanceOf(RoomescapeException.class)
-                        .hasMessage(DESCRIPTION_EMPTY.getMessage()),
+                        .hasMessage(EMPTY_DESCRIPTION.getMessage()),
 
                 () -> assertThatThrownBy(() -> new Theme("name", "description", null))
                         .isInstanceOf(RoomescapeException.class)
-                        .hasMessage(THUMBNAIL_EMPTY.getMessage()),
+                        .hasMessage(EMPTY_THUMBNAIL.getMessage()),
 
                 () -> assertThatCode(() -> new Theme("name", "description", "thumbnail"))
                         .doesNotThrowAnyException(),
