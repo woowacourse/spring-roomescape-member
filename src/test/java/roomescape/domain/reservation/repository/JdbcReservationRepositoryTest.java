@@ -106,4 +106,20 @@ class JdbcReservationRepositoryTest {
         List<Reservation> reservations = reservationRepository.findAll();
         assertThat(reservations).isEmpty();
     }
+
+    @Test
+    void 특정_날짜의_특정_테마의_특정_시간이_예약되어_있는지_확인한다() {
+        Theme theme1 = themeRepository.save(theme);
+        ReservationTime time1 = reservationTimeRepository.save(time);
+        ReservationTime time2 = reservationTimeRepository.save(time);
+        Reservation reservation1 = ReservationFixture.reservation("프린", "2024-04-24", time1, theme1);
+        Reservation reservation2 = ReservationFixture.reservation("프린", "2024-04-24", time2, theme1);
+        reservationRepository.save(reservation1);
+        reservationRepository.save(reservation2);
+
+        boolean alreadyBooked = reservationRepository.existsByReservationDateTimeAndTheme(LocalDate.parse("2024-04-24"),
+                time1.getId(), theme1.getId());
+
+        assertThat(alreadyBooked).isTrue();
+    }
 }
