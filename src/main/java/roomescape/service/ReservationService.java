@@ -2,6 +2,7 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.AvailableReservationTimeResponse;
@@ -114,8 +115,8 @@ public class ReservationService {
     }
 
     public List<Theme> getPopularThemes() {
-        final LocalDate startAt = LocalDate.now().minusDays(7);
-        final LocalDate endAt = LocalDate.now().minusDays(1);
+        final ReservationDate startAt = new ReservationDate(LocalDate.now().minusDays(7));
+        final ReservationDate endAt = new ReservationDate(LocalDate.now().minusDays(1));
 
         return themeRepository.findPopularThemes(startAt, endAt);
     }

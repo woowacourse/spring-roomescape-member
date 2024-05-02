@@ -36,30 +36,30 @@ class ReservationServiceIntegrationTest {
     @Test
     void getReservationsTest() {
         // When
-        List<Reservation> reservations = reservationService.getReservations();
+        final List<Reservation> reservations = reservationService.getReservations();
 
         // Then
-        assertThat(reservations).hasSize(2);
+        assertThat(reservations).hasSize(16);
     }
 
     @DisplayName("예약 정보를 저장한다.")
     @Test
     void saveReservationTest() {
         // Given
-        LocalDate date = LocalDate.now().plusDays(3);
-        SaveReservationRequest saveReservationRequest = new SaveReservationRequest(date, "켈리", 1L, 1L);
+        final LocalDate date = LocalDate.now().plusDays(10);
+        final SaveReservationRequest saveReservationRequest = new SaveReservationRequest(date, "켈리", 1L, 1L);
 
         // When
-        Reservation reservation = reservationService.saveReservation(saveReservationRequest);
+        final Reservation reservation = reservationService.saveReservation(saveReservationRequest);
 
         // Then
-        List<Reservation> reservations = reservationService.getReservations();
+        final List<Reservation> reservations = reservationService.getReservations();
         assertAll(
-                () -> assertThat(reservations).hasSize(3),
-                () -> assertThat(reservation.getId()).isEqualTo(3L),
+                () -> assertThat(reservations).hasSize(17),
+                () -> assertThat(reservation.getId()).isEqualTo(17L),
                 () -> assertThat(reservation.getClientName().getValue()).isEqualTo("켈리"),
-                () -> assertThat(reservation.getDate()).isEqualTo(date),
-                () -> assertThat(reservation.getTime().getStartAt()).isEqualTo(LocalTime.of(10, 10))
+                () -> assertThat(reservation.getDate().getValue()).isEqualTo(date),
+                () -> assertThat(reservation.getTime().getStartAt()).isEqualTo(LocalTime.of(9, 30))
         );
     }
 
@@ -67,7 +67,7 @@ class ReservationServiceIntegrationTest {
     @Test
     void throwExceptionWhenSaveReservationWithNotExistReservationTimeTest() {
         // Given
-        SaveReservationRequest saveReservationRequest = new SaveReservationRequest(LocalDate.now(), "켈리", 3L, 1L);
+        final SaveReservationRequest saveReservationRequest = new SaveReservationRequest(LocalDate.now(), "켈리", 9L, 1L);
 
         // When & Then
         assertThatThrownBy(() -> reservationService.saveReservation(saveReservationRequest))
@@ -82,15 +82,15 @@ class ReservationServiceIntegrationTest {
         reservationService.deleteReservation(1L);
 
         // When & Then
-        List<Reservation> reservations = reservationService.getReservations();
-        assertThat(reservations).hasSize(1);
+        final List<Reservation> reservations = reservationService.getReservations();
+        assertThat(reservations).hasSize(15);
     }
 
     @DisplayName("존재하지 않는 예약 정보를 삭제하려고 하면 예외가 발생한다.")
     @Test
     void throwExceptionWhenDeleteNotExistReservationTest() {
         // When & Then
-        assertThatThrownBy(() -> reservationService.deleteReservation(3L))
+        assertThatThrownBy(() -> reservationService.deleteReservation(18L))
                 .isInstanceOf(NoSuchElementException.class)
                 .hasMessage("해당 id의 예약이 존재하지 않습니다.");
     }
@@ -99,27 +99,27 @@ class ReservationServiceIntegrationTest {
     @Test
     void getReservationTimesTest() {
         // When
-        List<ReservationTime> reservationTimes = reservationService.getReservationTimes();
+        final List<ReservationTime> reservationTimes = reservationService.getReservationTimes();
 
         // Then
-        assertThat(reservationTimes).hasSize(2);
+        assertThat(reservationTimes).hasSize(8);
     }
 
     @DisplayName("예약 시간 정보를 저장한다.")
     @Test
     void saveReservationTimeTest() {
         // Given
-        LocalTime startAt = LocalTime.now().plusHours(3);
-        SaveReservationTimeRequest saveReservationTimeRequest = new SaveReservationTimeRequest(startAt);
+        final LocalTime startAt = LocalTime.now().plusHours(3);
+        final SaveReservationTimeRequest saveReservationTimeRequest = new SaveReservationTimeRequest(startAt);
 
         // When
-        ReservationTime reservationTime = reservationService.saveReservationTime(saveReservationTimeRequest);
+        final ReservationTime reservationTime = reservationService.saveReservationTime(saveReservationTimeRequest);
 
         // Then
-        List<ReservationTime> reservationTimes = reservationService.getReservationTimes();
+        final List<ReservationTime> reservationTimes = reservationService.getReservationTimes();
         Assertions.assertAll(
-                () -> assertThat(reservationTimes).hasSize(3),
-                () -> assertThat(reservationTime.getId()).isEqualTo(3L),
+                () -> assertThat(reservationTimes).hasSize(9),
+                () -> assertThat(reservationTime.getId()).isEqualTo(9L),
                 () -> assertThat(reservationTime.getStartAt()).isEqualTo(startAt)
         );
     }
@@ -131,15 +131,15 @@ class ReservationServiceIntegrationTest {
         reservationService.deleteReservationTime(2L);
 
         // Then
-        List<ReservationTime> reservationTimes = reservationService.getReservationTimes();
-        assertThat(reservationTimes).hasSize(1);
+        final List<ReservationTime> reservationTimes = reservationService.getReservationTimes();
+        assertThat(reservationTimes).hasSize(7);
     }
 
     @DisplayName("존재하지 않는 예약 시간 정보를 삭제하려고 하면 예외가 발생한다.")
     @Test
     void throwExceptionWhenDeleteNotExistReservationTimeTest() {
         // When & Then
-        assertThatThrownBy(() -> reservationService.deleteReservationTime(3L))
+        assertThatThrownBy(() -> reservationService.deleteReservationTime(17L))
                 .isInstanceOf(NoSuchElementException.class)
                 .hasMessage("해당 id의 예약 시간이 존재하지 않습니다.");
     }
@@ -148,7 +148,7 @@ class ReservationServiceIntegrationTest {
     @Test
     void throwExceptionWhenExistReservationTimeTest() {
         // Given
-        SaveReservationTimeRequest saveReservationTimeRequest = new SaveReservationTimeRequest(LocalTime.of(10, 10));
+        final SaveReservationTimeRequest saveReservationTimeRequest = new SaveReservationTimeRequest(LocalTime.of(9, 30));
         // When & Then
         assertThatThrownBy(() -> reservationService.saveReservationTime(saveReservationTimeRequest))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -160,7 +160,7 @@ class ReservationServiceIntegrationTest {
     void throwExceptionWhenInputDuplicateReservationDate() {
         // Given
         final SaveReservationRequest saveReservationRequest = new SaveReservationRequest(
-                LocalDate.of(2024, 7, 3),
+                LocalDate.now().minusDays(3),
                 "테바",
                 1L,
                 1L
@@ -176,7 +176,7 @@ class ReservationServiceIntegrationTest {
     @Test
     void throwExceptionWhenDeleteReservationTimeHasRelation() {
         // Given
-        long reservationTimeId = 1;
+        final long reservationTimeId = 1;
         // When & Then
         assertThatThrownBy(() -> reservationService.deleteReservationTime(reservationTimeId))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -190,17 +190,17 @@ class ReservationServiceIntegrationTest {
         final List<Theme> themes = reservationService.getThemes();
 
         // Then
-        assertThat(themes).hasSize(2);
+        assertThat(themes).hasSize(15);
     }
 
     @DisplayName("테마 정보를 저장한다.")
     @Test
     void saveThemeTest() {
         // Given
-        String name = "켈리의 두근두근";
-        String description = "켈리와의 두근두근 데이트";
-        String thumbnail = "켈리 사진";
-        SaveThemeRequest saveThemeRequest = new SaveThemeRequest(name, description, thumbnail);
+        final String name = "켈리의 두근두근";
+        final String description = "켈리와의 두근두근 데이트";
+        final String thumbnail = "켈리 사진";
+        final SaveThemeRequest saveThemeRequest = new SaveThemeRequest(name, description, thumbnail);
 
         // When
         final Theme theme = reservationService.saveTheme(saveThemeRequest);
@@ -208,8 +208,8 @@ class ReservationServiceIntegrationTest {
         // Then
         final List<Theme> themes = reservationService.getThemes();
         Assertions.assertAll(
-                () -> assertThat(themes).hasSize(3),
-                () -> assertThat(theme.getId()).isEqualTo(3L),
+                () -> assertThat(themes).hasSize(16),
+                () -> assertThat(theme.getId()).isEqualTo(16L),
                 () -> assertThat(theme.getName().getValue()).isEqualTo(name),
                 () -> assertThat(theme.getDescription().getValue()).isEqualTo(description),
                 () -> assertThat(theme.getThumbnail()).isEqualTo(thumbnail)
@@ -220,10 +220,10 @@ class ReservationServiceIntegrationTest {
     @Test
     void deleteThemeTest() {
         // When
-        reservationService.deleteTheme(2L);
+        reservationService.deleteTheme(7L);
 
         // Then
         final List<Theme> themes = reservationService.getThemes();
-        assertThat(themes).hasSize(1);
+        assertThat(themes).hasSize(14);
     }
 }
