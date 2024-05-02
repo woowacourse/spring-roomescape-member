@@ -79,7 +79,7 @@ public class ReservationService {
 
     private static FindAvailableTimesResponse generateFindAvailableTimesResponse(final List<Reservation> reservations,
                                                                                  final ReservationTime reservationTime) {
-        return new FindAvailableTimesResponse(
+        return FindAvailableTimesResponse.of(
                 reservationTime.getId(),
                 reservationTime.getTime(),
                 reservations.stream()
