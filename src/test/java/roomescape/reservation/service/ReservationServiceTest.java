@@ -103,7 +103,8 @@ class ReservationServiceTest extends DummyDataFixture {
         // stub
         Mockito.when(reservationTimeRepository.findById(1L)).thenReturn(Optional.of(super.getReservationTimeById(1L)));
         Mockito.when(themeRepository.findById(1L)).thenReturn(Optional.of(super.getThemeById(1L)));
-        Mockito.when(reservationRepository.existsByDateAndTime(LocalDate.of(2024, 10, 10), 1L)).thenReturn(true);
+        Mockito.when(reservationRepository.existsByDateAndTimeAndTheme(
+                LocalDate.of(2024, 10, 10), 1L, 1L)).thenReturn(true);
 
         // when & then
         assertThatThrownBy(() -> reservationService.createReservation(createReservationRequest))
