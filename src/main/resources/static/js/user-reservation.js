@@ -155,7 +155,6 @@ function onReservationButtonClick() {
       themeId: selectedThemeId
     };
 
-    console.log(reservationData)
     fetch('/reservations', {
       method: 'POST',
       headers: {
@@ -164,6 +163,7 @@ function onReservationButtonClick() {
       body: JSON.stringify(reservationData)
     })
         .then(response => {
+          console.error(response);
           if (!response.ok) throw new Error('Reservation failed');
           return response.json();
         })
