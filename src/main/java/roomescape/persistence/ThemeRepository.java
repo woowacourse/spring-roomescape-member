@@ -39,16 +39,18 @@ public class ThemeRepository {
     }
 
     public List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, int limitCount) {
-        return jdbcTemplate.query("""
-                        SELECT t.id, t.name, t.description, t.thumbnail
-                        FROM theme as t
-                        LEFT JOIN reservation AS r
-                        ON t.id = r.theme_id
-                        AND convert(r.date, DATE) BETWEEN ? AND ?
-                        GROUP BY t.id
-                        ORDER BY count(r.id) DESC, t.id ASC
-                        LIMIT ?""",
-                getThemeRowMapper(), startDate, endDate, limitCount);
+        String sql = """
+                SELECT t.id, t.name, t.description, t.thumbnail
+                FROM theme as t
+                LEFT JOIN reservation AS r
+                ON t.id = r.theme_id
+                AND convert(r.date, DATE) BETWEEN ? AND ?
+                GROUP BY t.id
+                ORDER BY count(r.id) DESC, t.id ASC
+                LIMIT ?
+                """;
+
+        return jdbcTemplate.query(sql, getThemeRowMapper(), startDate, endDate, limitCount);
     }
 
     public List<Theme> findAll() {
@@ -56,11 +58,9 @@ public class ThemeRepository {
     }
 
     public Optional<Theme> findById(Long id) {
+        String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
         try {
-            Theme theme = jdbcTemplate.queryForObject(
-                    "SELECT id, name, description, thumbnail FROM theme WHERE id = ?",
-                    getThemeRowMapper(), id);
-            return Optional.of(theme);
+            return Optional.of(jdbcTemplate.queryForObject(sql, getThemeRowMapper(), id));
         } catch (Exception exception) {
             return Optional.empty();
         }

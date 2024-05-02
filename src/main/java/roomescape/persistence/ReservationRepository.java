@@ -44,76 +44,89 @@ public class ReservationRepository {
     }
 
     public boolean hasDuplicateReservation(Reservation reservation) {
-        return jdbcTemplate.queryForObject(
-                """
-                        SELECT count(*)
-                        FROM reservation
-                        WHERE date = ? AND time_id = ? AND theme_id = ?""",
-                Integer.class, reservation.getDate(), reservation.getTime().getId(), reservation.getTheme().getId())
-                > 0;
+        String sql = """
+                SELECT count(*)
+                FROM reservation
+                WHERE date = ? AND time_id = ? AND theme_id = ?
+                """;
+
+        int duplicatedCount = jdbcTemplate.queryForObject(
+                sql,
+                Integer.class, reservation.getDate(),
+                reservation.getTime().getId(),
+                reservation.getTheme().getId()
+        );
+
+        return duplicatedCount > 0;
     }
 
     public boolean hasByTimeId(Long id) {
-        return jdbcTemplate.queryForObject(
-                """
-                        SELECT count(*)
-                        FROM reservation
-                        WHERE time_id = ?""",
-                Integer.class, id)
-                > 0;
+        String sql = """
+                SELECT count(*)
+                FROM reservation
+                WHERE time_id = ?
+                """;
+
+        int hasCount = jdbcTemplate.queryForObject(sql, Integer.class, id);
+
+        return hasCount > 0;
     }
 
     public boolean hasByThemeId(Long id) {
-        return jdbcTemplate.queryForObject(
-                """
-                        SELECT count(*)
-                        FROM reservation
-                        WHERE theme_id = ?""",
-                Integer.class, id)
-                > 0;
+        String sql = """
+                SELECT count(*)
+                FROM reservation
+                WHERE theme_id = ?
+                """;
+
+        int hasCount = jdbcTemplate.queryForObject(sql, Integer.class, id);
+
+        return hasCount > 0;
     }
 
     public List<Reservation> findAll() {
-        return jdbcTemplate.query(
-                """
-                        SELECT 
-                            r.id AS reservation_id, 
-                            r.name, 
-                            r.date, 
-                            t.id AS time_id, 
-                            t.start_at AS time_value,
-                            th.id AS theme_id,
-                            th.name AS theme_name,
-                            th.description,
-                            th.thumbnail
-                        FROM reservation AS r 
-                        INNER JOIN reservation_time AS t
-                        ON r.time_id = t.id
-                        INNER JOIN theme AS th
-                        ON r.theme_id = th.id""",
-                reservationRowMapper());
+        String sql = """
+                SELECT 
+                    r.id AS reservation_id, 
+                    r.name, 
+                    r.date, 
+                    t.id AS time_id, 
+                    t.start_at AS time_value,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description,
+                    th.thumbnail
+                FROM reservation AS r 
+                INNER JOIN reservation_time AS t
+                ON r.time_id = t.id
+                INNER JOIN theme AS th
+                ON r.theme_id = th.id
+                """;
+
+        return jdbcTemplate.query(sql, reservationRowMapper());
     }
 
     public Reservation findById(Long id) {
-        return jdbcTemplate.queryForObject(
-                """
-                        SELECT 
-                            r.id AS reservation_id, 
-                            r.name, 
-                            r.date, 
-                            t.id AS time_id, 
-                            t.start_at AS time_value,
-                            th.id AS theme_id,
-                            th.name AS theme_name,
-                            th.description,
-                            th.thumbnail
-                        FROM reservation AS r 
-                        INNER JOIN reservation_time AS t
-                        ON r.time_id = t.id
-                        INNER JOIN theme AS th
-                        ON r.theme_id = th.id
-                        WHERE r.id = ?""",
-                reservationRowMapper(), id);
+        String sql = """
+                SELECT 
+                    r.id AS reservation_id, 
+                    r.name, 
+                    r.date, 
+                    t.id AS time_id, 
+                    t.start_at AS time_value,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description,
+                    th.thumbnail
+                FROM reservation AS r 
+                INNER JOIN reservation_time AS t
+                ON r.time_id = t.id
+                INNER JOIN theme AS th
+                ON r.theme_id = th.id
+                WHERE r.id = ?
+                """;
+
+        return jdbcTemplate.queryForObject(sql, reservationRowMapper(), id);
     }
 
     private RowMapper<Reservation> reservationRowMapper() {

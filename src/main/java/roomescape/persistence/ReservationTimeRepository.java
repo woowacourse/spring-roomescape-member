@@ -40,12 +40,15 @@ public class ReservationTimeRepository {
     }
 
     public boolean hasDuplicateTime(ReservationTime reservationTime) {
-        return jdbcTemplate.queryForObject(
-                """
-                        SELECT count(*) 
-                        FROM reservation_time 
-                        WHERE start_at = ?""",
-                Integer.class, reservationTime.getStartAt()) > 0;
+        String sql = """
+                SELECT count(*) 
+                FROM reservation_time 
+                WHERE start_at = ?
+                """;
+
+        int hasCount = jdbcTemplate.queryForObject(sql, Integer.class, reservationTime.getStartAt());
+
+        return hasCount > 0;
     }
 
     public List<ReservationTime> findAll() {
@@ -53,11 +56,9 @@ public class ReservationTimeRepository {
     }
 
     public Optional<ReservationTime> findById(Long id) {
+        String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
         try {
-            ReservationTime reservationTime = jdbcTemplate.queryForObject(
-                    "SELECT id, start_at FROM reservation_time WHERE id = ?",
-                    reservationTimeRowMapper(), id);
-            return Optional.ofNullable(reservationTime);
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, reservationTimeRowMapper(), id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -82,7 +83,6 @@ public class ReservationTimeRepository {
                 """;
 
         return jdbcTemplate.query(sql, getAvailableReservationTimeResponseRowMapper(), date, themeId);
-
     }
 
     private RowMapper<ReservationTime> reservationTimeRowMapper() {
