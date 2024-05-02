@@ -70,35 +70,6 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Optional<Reservation> findById(Long id) {
-        String sql = """
-                    SELECT
-                        r.id,
-                        r.name,
-                        r.date,
-                        t.id as time_id,
-                        t.start_at as time_start_at,
-                        th.id as theme_id,
-                        th.name as theme_name,
-                        th.description as theme_description,
-                        th.thumbnail as theme_thumbnail
-                    FROM reservation as r
-                    join reservation_time as t
-                    on r.time_id = t.id
-                    join theme as th
-                    on r.theme_id = th.id
-                    WHERE r.id = ?
-                """;
-
-        try {
-            Reservation reservation = jdbcTemplate.queryForObject(sql, rowMapper, id);
-            return Optional.of(reservation);
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
-    }
-
-    @Override
     public Reservation save(Reservation reservation) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
