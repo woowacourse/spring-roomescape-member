@@ -32,7 +32,6 @@ public class Theme {
     private void validateDescription(String description) {
         if (description == null || description.isBlank()) {
             throw new IllegalArgumentException("잘못된 테마 설명을 입력하셨습니다.");
-
         }
     }
 

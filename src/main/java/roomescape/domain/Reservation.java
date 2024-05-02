@@ -8,7 +8,6 @@ public class Reservation {
     private final String name;
     private final LocalDate date;
     private final ReservationTime time;
-
     private final Theme theme;
 
     public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {

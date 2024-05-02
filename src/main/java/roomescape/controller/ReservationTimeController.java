@@ -70,12 +70,15 @@ public class ReservationTimeController {
     public ResponseEntity<List<ReservationTimeUserWebResponse>> getReservationTimesWithAvailability(
         @RequestParam LocalDate date, @RequestParam Long id) {
 
-        List<ReservationTimeAppResponse> appResponses = reservationTimeService.findAllWithBookAvailability(
-            date, id);
+        List<ReservationTimeAppResponse> appResponses = reservationTimeService
+            .findAllWithBookAvailability(date, id);
         List<ReservationTimeUserWebResponse> webResponses = appResponses.stream()
-            .map(response ->
-                new ReservationTimeUserWebResponse(response.id(), response.startAt(), response.alreadyBooked()))
-            .toList();
+            .map(response -> new ReservationTimeUserWebResponse(
+                response.id(),
+                response.startAt(),
+                response.alreadyBooked())
+            ).toList();
+
         return ResponseEntity.ok(webResponses);
     }
 
