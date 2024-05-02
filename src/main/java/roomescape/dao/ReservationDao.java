@@ -2,6 +2,7 @@ package roomescape.dao;
 
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -24,26 +25,23 @@ public class ReservationDao {
 
     public List<Reservation> findAll() {
         String findAllSql = """
-                SELECT r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at as time_value, tm.id as theme_id, tm.name as theme_name, tm.description, tm.thumbnail \
-                FROM reservation as r inner join reservation_time as t on r.time_id = t.id inner join theme as tm on r.theme_id = tm.id
+                SELECT 
+                    r.id as reservation_id, 
+                    r.name,     
+                    r.date, 
+                    t.id as time_id, 
+                    t.start_at as time_value, 
+                    tm.id as theme_id, 
+                    tm.name as theme_name, 
+                    tm.description,     
+                    tm.thumbnail 
+                FROM reservation AS r 
+                INNER JOIN reservation_time AS t 
+                ON r.time_id = t.id 
+                INNER JOIN theme AS tm 
+                ON r.theme_id = tm.id
         """;
-        return jdbcTemplate.query(findAllSql,
-                (resultSet, numRow) -> new Reservation(
-                        resultSet.getLong("reservation_id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("date"),
-                        new ReservationTime(
-                                resultSet.getLong("time_id"),
-                                resultSet.getString("time_value")
-                        ),
-                        new ReservationTheme(
-                                resultSet.getLong("theme_id"),
-                                resultSet.getString("theme_name"),
-                                resultSet.getString("description"),
-                                resultSet.getString("thumbnail")
-                        )
-                )
-        );
+        return jdbcTemplate.query(findAllSql,getReservationRowMapper());
     }
 
     public Long insert(String name, String date, Long timeId, Long themeId) {
@@ -69,24 +67,25 @@ public class ReservationDao {
     }
 
     public Optional<Reservation> findById(Long id) {
-        String findByIdSql = "SELECT r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at as time_value, tm.id as theme_id, tm.name, tm.description, tm.thumbnail"
-                + " FROM reservation as r inner join reservation_time as t on r.time_id = t.id inner join theme as tm on r.theme_id = tm.id where t.id = ?";
-        List<Reservation> reservations = jdbcTemplate.query(findByIdSql,
-                (resultSet, numRow) -> new Reservation(
-                        resultSet.getLong("reservation_id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("date"),
-                        new ReservationTime(
-                                resultSet.getLong("time_id"),
-                                resultSet.getString("time_value")
-                        ),
-                        new ReservationTheme(
-                                resultSet.getLong("theme_id"),
-                                resultSet.getString("name"),
-                                resultSet.getString("description"),
-                                resultSet.getString("thumbnail")
-                        )
-                ), id);
+        String findByIdSql = """
+                SELECT 
+                    r.id as reservation_id, 
+                    r.name,     
+                    r.date, 
+                    t.id as time_id, 
+                    t.start_at as time_value, 
+                    tm.id as theme_id, 
+                    tm.name as theme_name, 
+                    tm.description,     
+                    tm.thumbnail 
+                FROM reservation AS r 
+                INNER JOIN reservation_time AS t 
+                ON r.time_id = t.id 
+                INNER JOIN theme AS tm 
+                ON r.theme_id = tm.id
+                WHERE t.id = ?
+        """;
+        List<Reservation> reservations = jdbcTemplate.query(findByIdSql, getReservationRowMapper(), id);
         return Optional.ofNullable(DataAccessUtils.singleResult(reservations));
     }
 
@@ -108,5 +107,23 @@ public class ReservationDao {
     public List<Long> findBestThemeIdInWeek(String from, String to) {
         String findBestThemeIdSql = "SELECT theme_id, count(*) AS total FROM reservation WHERE date BETWEEN ? AND ? GROUP BY theme_id ORDER BY total DESC";
         return jdbcTemplate.query(findBestThemeIdSql, (rs, rowNum) -> rs.getLong("theme_id"), from, to);
+    }
+
+    private RowMapper<Reservation> getReservationRowMapper() {
+        return (resultSet, numRow) -> new Reservation(
+                resultSet.getLong("reservation_id"),
+                resultSet.getString("name"),
+                resultSet.getString("date"),
+                new ReservationTime(
+                        resultSet.getLong("time_id"),
+                        resultSet.getString("time_value")
+                ),
+                new ReservationTheme(
+                        resultSet.getLong("theme_id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("description"),
+                        resultSet.getString("thumbnail")
+                )
+        );
     }
 }

@@ -2,6 +2,7 @@ package roomescape.dao;
 
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -22,25 +23,12 @@ public class ReservationThemeDao {
 
     public List<ReservationTheme> findAll() {
         String findAllSql = "SELECT * FROM theme";
-        return jdbcTemplate.query(findAllSql,
-                (resultSet, numRow) -> new ReservationTheme(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("description"),
-                        resultSet.getString("thumbnail")
-                        )
-                );
+        return jdbcTemplate.query(findAllSql, getReservationThemeRowMapper());
     }
 
     public Optional<ReservationTheme> findById(Long id) {
         String findByIdSql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
-        List<ReservationTheme> reservationThemes = jdbcTemplate.query(findByIdSql,
-                (resultSet, numRow) -> new ReservationTheme(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("description"),
-                        resultSet.getString("thumbnail")
-                ), id);
+        List<ReservationTheme> reservationThemes = jdbcTemplate.query(findByIdSql, getReservationThemeRowMapper(), id);
 
         return Optional.ofNullable(DataAccessUtils.singleResult(reservationThemes));
     }
@@ -64,5 +52,14 @@ public class ReservationThemeDao {
     public void deleteById(Long id) {
         String deleteFromIdSql = "DELETE FROM theme WHERE id = ?";
         jdbcTemplate.update(deleteFromIdSql, id);
+    }
+
+    private RowMapper<ReservationTheme> getReservationThemeRowMapper() {
+        return (resultSet, numRow) -> new ReservationTheme(
+                resultSet.getLong("id"),
+                resultSet.getString("name"),
+                resultSet.getString("description"),
+                resultSet.getString("thumbnail")
+        );
     }
 }

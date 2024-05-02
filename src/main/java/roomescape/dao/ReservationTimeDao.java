@@ -2,6 +2,7 @@ package roomescape.dao;
 
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -37,19 +38,12 @@ public class ReservationTimeDao {
     public List<ReservationTime> findAll() {
         String findAllSql = "SELECT id, start_at FROM reservation_time";
         return jdbcTemplate.query(findAllSql,
-                (resultSet, numRow) -> new ReservationTime(
-                        resultSet.getLong("id"),
-                        resultSet.getString("start_at")
-                ));
+                getReservationTimeRowMapper());
     }
 
     public Optional<ReservationTime> findById(Long id) {
         String findByIdSql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
-        List<ReservationTime> reservationTimes = jdbcTemplate.query(findByIdSql,
-                (resultSet, numRow) -> new ReservationTime(
-                        resultSet.getLong("id"),
-                        resultSet.getString("start_at")
-                ), id);
+        List<ReservationTime> reservationTimes = jdbcTemplate.query(findByIdSql, getReservationTimeRowMapper(), id);
 
         return Optional.ofNullable(DataAccessUtils.singleResult(reservationTimes));
     }
@@ -57,5 +51,12 @@ public class ReservationTimeDao {
     public void deleteById(Long id) {
         String deleteSql = "DELETE FROM reservation_time WHERE id = ?";
         jdbcTemplate.update(deleteSql, id);
+    }
+
+    private RowMapper<ReservationTime> getReservationTimeRowMapper() {
+        return (resultSet, numRow) -> new ReservationTime(
+                resultSet.getLong("id"),
+                resultSet.getString("start_at")
+        );
     }
 }
