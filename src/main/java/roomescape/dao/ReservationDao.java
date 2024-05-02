@@ -1,6 +1,5 @@
 package roomescape.dao;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -95,13 +94,16 @@ public class ReservationDao {
         return Objects.requireNonNull(id);
     }
 
-    public Reservation selectById(Long id) {
-        try {
-            String sql = "SELECT id AS reservation_id, name, date, time_id, theme_id FROM reservation WHERE id = ?";
-            return jdbcTemplate.queryForObject(sql, this::lazyRowMapper, id);
-        } catch (EmptyResultDataAccessException e) {
-            return null;
-        }
+    public Boolean existById(Long id) {
+        String sql = """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM reservation
+                    WHERE id = ?
+                ) AS is_exist;
+                """;
+        return jdbcTemplate.queryForObject(sql,
+                (resultSet, rowNumber) -> resultSet.getBoolean("is_exist"), id);
     }
 
     public void deleteById(Long id) {
@@ -114,19 +116,18 @@ public class ReservationDao {
         return jdbcTemplate.queryForObject(sql, Integer.class, timeId);
     }
 
-    public List<Reservation> selectAllByDateAndThemeId(LocalDate date, Long themeId) {
+    public List<Long> selectAllTimeIdsByDateAndThemeId(LocalDate date, Long themeId) {
         String sql = """
                 SELECT 
-                    id AS reservation_id,
-                    name,
-                    date,
-                    time_id,
-                    theme_id 
+                    time_id
                 FROM 
                     reservation 
-                WHERE date = ? AND theme_id = ?
+                WHERE 
+                    date = ? AND theme_id = ?
                 """;
-        return jdbcTemplate.query(sql, this::lazyRowMapper, Date.valueOf(date), themeId);
+        return jdbcTemplate.query(sql,
+                (resultSet, rowNumber) -> resultSet.getLong("time_id"),
+                Date.valueOf(date), themeId);
     }
 
     private Reservation rowMapper(ResultSet resultSet, int rowNumber) throws SQLException {
@@ -140,12 +141,6 @@ public class ReservationDao {
                 resultSet.getString("theme_description"),
                 resultSet.getString("theme_thumbnail")
         );
-        return reservationMapper(resultSet, reservationTime, theme);
-    }
-
-    private Reservation lazyRowMapper(ResultSet resultSet, int rowNumber) throws SQLException {
-        ReservationTime reservationTime = new ReservationTime(resultSet.getLong("time_id"));
-        Theme theme = new Theme(resultSet.getLong("theme_id"));
         return reservationMapper(resultSet, reservationTime, theme);
     }
 

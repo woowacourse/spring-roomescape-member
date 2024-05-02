@@ -26,11 +26,6 @@ public class ReservationTime {
         this.startAt = startAt;
     }
 
-    public ReservationTime(Long id) {
-        this.id = id;
-        this.startAt = null;
-    }
-
     private void validateTimeUnit(LocalTime time) {
         if (time.getMinute() % TIME_UNIT != 0) {
             throw new IllegalArgumentException("예약 시간은 10분 단위입니다.");

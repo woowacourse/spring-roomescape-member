@@ -22,14 +22,6 @@ public class Theme {
         this.thumbnail = thumbnail;
     }
 
-    // Todo: null 필드 생성자 지우기
-    public Theme(Long id) {
-        this.id = id;
-        this.name = null;
-        this.description = null;
-        this.thumbnail = null;
-    }
-
     public Long getId() {
         return id;
     }

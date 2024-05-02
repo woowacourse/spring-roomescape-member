@@ -7,7 +7,6 @@ import roomescape.domain.ReservationTime;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class ReservationJdbcRepository implements ReservationRepository {
@@ -34,8 +33,8 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public Optional<Reservation> findById(Long id) {
-        return Optional.ofNullable(reservationDao.selectById(id));
+    public boolean existById(Long id) {
+        return reservationDao.existById(id);
     }
 
     @Override
@@ -49,7 +48,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAllByDateAndThemeId(LocalDate date, Long themeId) {
-        return reservationDao.selectAllByDateAndThemeId(date, themeId);
+    public List<Long> findAllTimeIdsByDateAndThemeId(LocalDate date, Long themeId) {
+        return reservationDao.selectAllTimeIdsByDateAndThemeId(date, themeId);
     }
 }

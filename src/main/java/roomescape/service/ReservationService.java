@@ -6,6 +6,7 @@ import roomescape.domain.Reservation;
 import roomescape.dto.ReservationResponse;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
+
 import java.util.List;
 
 @Service
@@ -45,8 +46,10 @@ public class ReservationService {
 
     @Transactional
     public void delete(Long id) {
-        var reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("해당 ID의 예약이 없습니다."));
-        reservationRepository.deleteById(reservation.getId());
+        boolean isExist = reservationRepository.existById(id);
+        if (!isExist) {
+            throw new NotFoundException("해당 ID의 예약이 없습니다.");
+        }
+        reservationRepository.deleteById(id);
     }
 }

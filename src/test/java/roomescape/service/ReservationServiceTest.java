@@ -16,7 +16,6 @@ import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -94,13 +93,13 @@ class ReservationServiceTest {
     @DisplayName("예약을 삭제한다.")
     void delete() {
         // given
-        Reservation miaReservation = MIA_RESERVATION();
+        Long existingId = 1L;
 
-        BDDMockito.given(reservationRepository.findById(1L))
-                .willReturn(Optional.of(miaReservation));
+        BDDMockito.given(reservationRepository.existById(existingId))
+                .willReturn(true);
 
         // when & then
-        assertThatCode(() -> reservationService.delete(1L))
+        assertThatCode(() -> reservationService.delete(existingId))
                 .doesNotThrowAnyException();
     }
 
@@ -110,8 +109,8 @@ class ReservationServiceTest {
         // given
         Long notExistingId = 1L;
 
-        BDDMockito.given(reservationRepository.findById(notExistingId))
-                .willReturn(Optional.empty());
+        BDDMockito.given(reservationRepository.existById(notExistingId))
+                .willReturn(false);
 
         // when & then
         assertThatThrownBy(() -> reservationService.delete(notExistingId))

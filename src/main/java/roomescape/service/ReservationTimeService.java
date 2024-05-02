@@ -2,7 +2,6 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.AvailableReservationTimeResponse;
 import roomescape.dto.ReservationTimeResponse;
@@ -62,10 +61,8 @@ public class ReservationTimeService {
     }
 
     public List<AvailableReservationTimeResponse> findAvailableReservationTimes(LocalDate date, Long themeId) {
-        List<Reservation> reservations = reservationRepository.findAllByDateAndThemeId(date, themeId);
-        HashSet<Long> reservedTimeIds = reservations.stream()
-                .map(Reservation::getReservationTimeId)
-                .collect(Collectors.toCollection(HashSet::new));
+        List<Long> reservations = reservationRepository.findAllTimeIdsByDateAndThemeId(date, themeId);
+        HashSet<Long> reservedTimeIds = new HashSet<>(reservations);
         List<ReservationTime> times = reservationTimeRepository.findAll();
 
         return times.stream()

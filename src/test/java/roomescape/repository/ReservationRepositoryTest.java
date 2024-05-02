@@ -16,7 +16,6 @@ import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -97,7 +96,7 @@ class ReservationRepositoryTest extends RepositoryTest {
     }
 
     @Test
-    @DisplayName("Id로 예약을 조회한다.")
+    @DisplayName("Id로 예약이 존재하면 true를 반환한다.")
     public void findById() {
         // given
         long timeId = 1L;
@@ -115,23 +114,23 @@ class ReservationRepositoryTest extends RepositoryTest {
         Long id = keyHolder.getKey().longValue();
 
         // when
-        Optional<Reservation> reservation = reservationRepository.findById(id);
+        boolean isExist = reservationRepository.existById(id);
 
         // then
-        assertThat(reservation).isPresent();
+        assertThat(isExist).isTrue();
     }
 
     @Test
-    @DisplayName("Id에 해당하는 예약이 없다면 빈 Optional을 반환한다.")
+    @DisplayName("Id에 해당하는 예약이 없다면 false를 반환한다.")
     public void findByNotExistingId() {
         // given
         Long id = 1L;
 
         // when
-        Optional<Reservation> actualReservation = reservationRepository.findById(id);
+        boolean isExist = reservationRepository.existById(id);
 
         // then
-        assertThat(actualReservation).isEmpty();
+        assertThat(isExist).isFalse();
     }
 
     @Test
@@ -185,7 +184,7 @@ class ReservationRepositoryTest extends RepositoryTest {
         );
 
         // when
-        List<Reservation> reservationsByDateAndThemeId = reservationRepository.findAllByDateAndThemeId(LocalDate.parse(MIA_RESERVATION_DATE), themeId);
+        List<Long> reservationsByDateAndThemeId = reservationRepository.findAllTimeIdsByDateAndThemeId(LocalDate.parse(MIA_RESERVATION_DATE), themeId);
 
         // then
         assertThat(reservationsByDateAndThemeId).hasSize(2);

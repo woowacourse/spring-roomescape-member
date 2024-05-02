@@ -7,7 +7,6 @@ import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.AvailableReservationTimeResponse;
 import roomescape.dto.ReservationTimeResponse;
@@ -22,7 +21,8 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static roomescape.TestFixture.*;
+import static roomescape.TestFixture.MIA_RESERVATION_DATE;
+import static roomescape.TestFixture.MIA_RESERVATION_TIME;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationTimeServiceTest {
@@ -110,10 +110,9 @@ class ReservationTimeServiceTest {
         LocalDate date = LocalDate.parse(MIA_RESERVATION_DATE);
         Long themeId = 1L;
         ReservationTime reservedTime = new ReservationTime(1L, MIA_RESERVATION_TIME);
-        Reservation reservation = new Reservation(1L, USER_MIA, MIA_RESERVATION_DATE, reservedTime, WOOTECO_THEME());
 
-        BDDMockito.given(reservationRepository.findAllByDateAndThemeId(date, themeId))
-                .willReturn(List.of(reservation));
+        BDDMockito.given(reservationRepository.findAllTimeIdsByDateAndThemeId(date, themeId))
+                .willReturn(List.of(1L));
         BDDMockito.given(reservationTimeRepository.findAll())
                 .willReturn(List.of(reservedTime, new ReservationTime(2L, "16:00")));
 
