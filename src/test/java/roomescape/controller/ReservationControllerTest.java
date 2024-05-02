@@ -59,7 +59,6 @@ class ReservationControllerTest {
         //then
         ReservationResponse expected = new ReservationResponse(id, "폴라", date,
                 new ReservationTimeResponse(TIME_ID, TIME),
-                //Todo : [로빈] Response 가 변환 로직을 가지고 있으면 아래 코드도 간단해 질 것 같음
                 new ThemeResponse(defualtTheme.getId(), defualtTheme.getName(), defualtTheme.getDescription(),
                         defualtTheme.getThumbnail()));
 
