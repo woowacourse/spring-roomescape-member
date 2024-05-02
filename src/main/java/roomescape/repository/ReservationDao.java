@@ -26,17 +26,7 @@ public class ReservationDao {
             new Theme(resultSet.getLong("theme_id"), resultSet.getString("name"), resultSet.getString("description"), resultSet.getString("thumbnail"))
     );
 
-    private final RowMapper<ReservationTime> timeRowMapper = (resultSet, rowNum) -> new ReservationTime(
-            resultSet.getLong("id"),
-            LocalTime.parse(resultSet.getString("start_at"))
-    );
     private final JdbcTemplate jdbcTemplate;
-    private RowMapper<Theme> themeRowMapper = (resultSet, rowNum) -> new Theme(
-            resultSet.getLong("id"),
-            resultSet.getString("name"),
-            resultSet.getString("description"),
-            resultSet.getString("thumbnail")
-    );
 
     public ReservationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -76,7 +66,6 @@ public class ReservationDao {
                 """, reservationRowMapper);
         return Collections.unmodifiableList(reservations);
     }
-
 
     public void deleteById(Long id) {
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
