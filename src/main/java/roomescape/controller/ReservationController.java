@@ -41,7 +41,7 @@ public class ReservationController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/reservation/bookable-times")
+    @GetMapping("/reservations/bookable-times")
     public ResponseEntity<List<BookableTimeResponse>> getTimesWithStatus(
             @RequestBody BookableTimesRequest bookableTimesRequest) {
         return ResponseEntity.ok(reservationService.findBookableTimes(bookableTimesRequest));
