@@ -25,3 +25,21 @@ CREATE TABLE reservation
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id) -- 외래키 추가
 );
+
+CREATE TABLE member
+(
+    id   BIGINT       NOT NULL AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE reservation_list
+(
+
+    id             BIGINT NOT NULL AUTO_INCREMENT,
+    member_id      BIGINT,
+    reservation_id BIGINT,
+    FOREIGN KEY (member_id) REFERENCES member (id),
+    FOREIGN KEY (reservation_id) REFERENCES reservation (id),
+    PRIMARY KEY (id)
+);

@@ -103,4 +103,14 @@ public class ReservationDao implements ReservationRepository {
         List<Reservation> reservations = jdbcTemplate.query(sql, rowMapper, timeId, date);
         return !reservations.isEmpty();
     }
+
+    @Override
+    public Reservation findBy(final LocalDate date, final long timeId, final long themeId) {
+        return null;
+    }
+
+    @Override
+    public void saveReservationList(final long memberId, final long reservationId) {
+
+    }
 }
