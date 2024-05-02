@@ -37,8 +37,8 @@ public class ThemeController {
     }
 
     @GetMapping("/ranking")
-    public ResponseEntity<List<Theme>> ranking() {
-        List<Theme> themes = themeService.findTopRanking();
+    public ResponseEntity<List<Theme>> popularThemes() {
+        final List<Theme> themes = themeService.findTopRanking();
         return ResponseEntity.ok(themes);
     }
 }

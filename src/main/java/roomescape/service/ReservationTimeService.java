@@ -15,7 +15,7 @@ public class ReservationTimeService {
     private final ReservationDAO reservationDAO;
     private final ReservationTimeDAO reservationTimeDAO;
 
-    public ReservationTimeService(ReservationDAO reservationDAO, final ReservationTimeDAO reservationTimeDAO) {
+    public ReservationTimeService(final ReservationDAO reservationDAO, final ReservationTimeDAO reservationTimeDAO) {
         this.reservationDAO = reservationDAO;
         this.reservationTimeDAO = reservationTimeDAO;
     }
@@ -27,14 +27,14 @@ public class ReservationTimeService {
         return reservationTimeDAO.insert(reservationTime);
     }
 
-    private void validateTime(ReservationTimeRequest reservationTimeRequest) {
+    private void validateTime(final ReservationTimeRequest reservationTimeRequest) {
         if (hasDuplicatedTime(reservationTimeRequest)) {
             throw new IllegalArgumentException("중복된 시간을 예약할 수 없습니다.");
         }
     }
 
-    private boolean hasDuplicatedTime(ReservationTimeRequest reservationTimeRequest) {
-        List<ReservationTime> reservationTimes = reservationTimeDAO.selectAll();
+    private boolean hasDuplicatedTime(final ReservationTimeRequest reservationTimeRequest) {
+        final List<ReservationTime> reservationTimes = reservationTimeDAO.selectAll();
 
         return reservationTimes.stream()
                 .anyMatch(reservationTime -> reservationTime.isMatch(reservationTimeRequest.startAt()));
@@ -44,16 +44,16 @@ public class ReservationTimeService {
         return reservationTimeDAO.selectAll();
     }
 
-    public List<AvailableTimeResponse> findAvailableTimes(LocalDate date, Long themeId) {
-        List<ReservationTime> reservationTimes = reservationTimeDAO.selectAll();
-        List<Long> reservedTimeIds = reservationDAO.findReservedTimeIds(date, themeId);
+    public List<AvailableTimeResponse> findAvailableTimes(final LocalDate date, final Long themeId) {
+        final List<ReservationTime> reservationTimes = reservationTimeDAO.selectAll();
+        final List<Long> reservedTimeIds = reservationDAO.findReservedTimeIds(date, themeId);
 
         return reservationTimes.stream()
                 .map(reservationTime -> AvailableTimeResponse.from(reservationTime, isReservedTime(reservationTime, reservedTimeIds)))
                 .toList();
     }
 
-    private boolean isReservedTime(ReservationTime reservationTime, List<Long> reservedTimeIds) {
+    private boolean isReservedTime(final ReservationTime reservationTime, final List<Long> reservedTimeIds) {
         return reservedTimeIds.contains(reservationTime.getId());
     }
 

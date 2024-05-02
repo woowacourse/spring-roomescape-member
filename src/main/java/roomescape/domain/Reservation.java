@@ -25,7 +25,7 @@ public class Reservation {
         this.theme = theme;
     }
 
-    private static void validateReservation(String name, LocalDate date, ReservationTime time) {
+    private static void validateReservation(final String name, final LocalDate date, final ReservationTime time) {
         if (name == null || name.isBlank() || date == null || time == null) {
             throw new IllegalArgumentException();
         }

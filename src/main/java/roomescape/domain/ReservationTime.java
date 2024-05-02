@@ -16,13 +16,13 @@ public class ReservationTime {
         this.startAt = startAt;
     }
 
-    private static void validateExist(LocalTime startAt) {
+    private static void validateExist(final LocalTime startAt) {
         if (startAt == null) {
             throw new IllegalArgumentException();
         }
     }
 
-    public boolean isMatch(LocalTime time) {
+    public boolean isMatch(final LocalTime time) {
         return this.startAt.equals(time);
     }
 

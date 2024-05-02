@@ -25,9 +25,9 @@ public class ThemeDAO {
     }
 
     public Theme insert(final Theme theme) {
-        String name = theme.getName();
-        String description = theme.getDescription();
-        String thumbnail = theme.getThumbnail();
+        final String name = theme.getName();
+        final String description = theme.getDescription();
+        final String thumbnail = theme.getThumbnail();
 
         final SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("name", name)
@@ -53,8 +53,8 @@ public class ThemeDAO {
         jdbcTemplate.update(sql, id);
     }
 
-    public List<Theme> findTopRanking(LocalDate firstDayOfPeriod, LocalDate lastDayOfPeriod) {
-        String sql =
+    public List<Theme> findTopRanking(final LocalDate firstDayOfPeriod, final LocalDate lastDayOfPeriod) {
+        final String sql =
                 "SELECT t.id, t.name, t.description, t.thumbnail, IFNULL(COUNT(r.id), 0) AS reservation_count " +
                         "FROM theme AS t " +
                         "LEFT JOIN reservation AS r ON t.id = r.theme_id AND r.date BETWEEN ? AND ? " +

@@ -8,7 +8,7 @@ import java.time.LocalDate;
 
 public record ReservationRequest(String name, LocalDate date, Long timeId, Long themeId) {
 
-    public Reservation toEntity(final ReservationTime reservationTime, Theme theme) {
+    public Reservation toEntity(final ReservationTime reservationTime, final Theme theme) {
         return new Reservation(name, date, reservationTime, theme);
     }
 }

@@ -100,7 +100,6 @@ class ReservationControllerTest {
         params.put("timeId", "1");
         params.put("themeId", "1");
 
-
         return params;
     }
 }

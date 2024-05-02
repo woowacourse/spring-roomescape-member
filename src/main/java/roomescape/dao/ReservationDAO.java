@@ -91,7 +91,7 @@ public class ReservationDAO {
         return !reservations.isEmpty();
     }
 
-    public List<Long> findReservedTimeIds(LocalDate date, Long themeId) {
+    public List<Long> findReservedTimeIds(final LocalDate date, final Long themeId) {
         final String sql = "SELECT time_id FROM reservation WHERE date = ? AND theme_id = ?";
         return jdbcTemplate.query(sql, (resultSet, rowNum) -> resultSet.getLong("time_id"), date, themeId);
     }

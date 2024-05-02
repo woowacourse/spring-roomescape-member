@@ -12,7 +12,7 @@ import java.util.List;
 public class ThemeService {
     private final ThemeDAO themeDAO;
 
-    public ThemeService(ThemeDAO themeDAO) {
+    public ThemeService(final ThemeDAO themeDAO) {
         this.themeDAO = themeDAO;
     }
 

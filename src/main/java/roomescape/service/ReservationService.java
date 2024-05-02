@@ -34,14 +34,14 @@ public class ReservationService {
         return reservationDAO.insert(reservation);
     }
 
-    private void validateReservation(ReservationRequest reservationRequest) {
+    private void validateReservation(final ReservationRequest reservationRequest) {
         validateDuplicated(reservationRequest);
         validatePast(reservationRequest);
     }
 
-    private void validateDuplicated(ReservationRequest reservationRequest) {
-        LocalTime reservationTime = findRequestTime(reservationRequest);
-        List<Reservation> reservations = reservationDAO.selectAll();
+    private void validateDuplicated(final ReservationRequest reservationRequest) {
+        final LocalTime reservationTime = findRequestTime(reservationRequest);
+        final List<Reservation> reservations = reservationDAO.selectAll();
 
         if (reservations.stream()
                 .anyMatch(reservation -> reservation.getDate().equals(reservationRequest.date()) &&
@@ -50,11 +50,11 @@ public class ReservationService {
         }
     }
 
-    private void validatePast(ReservationRequest reservationRequest) {
-        LocalDate date = reservationRequest.date();
-        LocalTime reservationTime = findRequestTime(reservationRequest);
+    private void validatePast(final ReservationRequest reservationRequest) {
+        final LocalDate date = reservationRequest.date();
+        final LocalTime reservationTime = findRequestTime(reservationRequest);
 
-        LocalDate today = LocalDate.now();
+        final LocalDate today = LocalDate.now();
         if (date.isBefore(today)) {
             throw new IllegalArgumentException("지나간 날짜에 예약을 등록할 수 없습니다.");
         }
@@ -63,9 +63,9 @@ public class ReservationService {
         }
     }
 
-    private LocalTime findRequestTime(ReservationRequest reservationRequest) {
-        Long timeId = reservationRequest.timeId();
-        ReservationTime time = reservationTimeDAO.findById(timeId);
+    private LocalTime findRequestTime(final ReservationRequest reservationRequest) {
+        final Long timeId = reservationRequest.timeId();
+        final ReservationTime time = reservationTimeDAO.findById(timeId);
         return time.getStartAt();
     }
 

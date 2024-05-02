@@ -37,7 +37,7 @@ public class ReservationTimeController {
             @RequestParam("date") LocalDate date,
             @RequestParam("themeId") Long themeId
     ) {
-        List<AvailableTimeResponse> availableTimeResponses = reservationTimeService.findAvailableTimes(date, themeId);
+        final List<AvailableTimeResponse> availableTimeResponses = reservationTimeService.findAvailableTimes(date, themeId);
         return ResponseEntity.ok(availableTimeResponses);
     }
 
