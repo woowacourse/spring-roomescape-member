@@ -8,10 +8,9 @@ import roomescape.domain.RoomTheme;
 
 public class InMemoryRoomThemeDb {
 
-    private Map<Long, RoomTheme> roomThemes = new ConcurrentHashMap<>();
+    private final Map<Long, RoomTheme> roomThemes = new ConcurrentHashMap<>();
     private final AtomicLong id = new AtomicLong(1);
 
-    //TODO: refactor
     public long insert(RoomTheme roomTheme) {
         long thisId = id.getAndIncrement();
         roomThemes.put(thisId, roomTheme.withId(thisId));
@@ -28,7 +27,7 @@ public class InMemoryRoomThemeDb {
 
     public boolean deleteById(Long id) {
         boolean exists = roomThemes.containsKey(id);
-        if(exists) {
+        if (exists) {
             roomThemes.remove(id);
         }
         return exists;

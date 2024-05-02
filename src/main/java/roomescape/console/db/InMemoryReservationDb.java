@@ -1,14 +1,10 @@
 package roomescape.console.db;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
-import roomescape.domain.Name;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.RoomTheme;
 
 public class InMemoryReservationDb {
     private final Map<Long, Reservation> reservations = new ConcurrentHashMap<>();
@@ -20,9 +16,9 @@ public class InMemoryReservationDb {
                 .toList();
     }
 
-    public long insert(String name, String date, ReservationTime reservationTime, RoomTheme roomTheme) {
+    public long insert(Reservation reservation) {
         long thisId = id.getAndIncrement();
-        reservations.put(thisId, new Reservation(thisId, new Name(name), LocalDate.parse(date), reservationTime, roomTheme));
+        reservations.put(thisId, reservation.withId(thisId));
         return thisId;
     }
 

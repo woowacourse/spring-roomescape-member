@@ -35,7 +35,7 @@ public class InMemoryReservationTimeDao implements ReservationTimeDao {
 
     @Override
     public ReservationTime save(ReservationTime reservationTime) {
-        long id = inMemoryReservationTimeDb.insert(reservationTime.getStartAt());
+        long id = inMemoryReservationTimeDb.insert(reservationTime);
         return reservationTime.withId(id);
     }
 
