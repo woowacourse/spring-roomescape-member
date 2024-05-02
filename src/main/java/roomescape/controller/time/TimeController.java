@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 import roomescape.service.TimeService;
@@ -24,10 +25,18 @@ public class TimeController {
         this.timeService = timeService;
     }
 
+    // TODO: getTime 메서드 합치기
+//    @GetMapping
+//    public List<TimeResponse> getTimes() {
+//        return timeService.getTimes();
+//    }
+
     @GetMapping
-    public List<TimeResponse> getTimes() {
-        // TODO: [3단계] 3. 요청에 body로 날짜와 테마를 받고 서비스에게 새로운 함수로 요청
-        return timeService.getTimes();
+    public List<TimeResponse> getTimes(
+            @RequestParam("date") final String date,
+            @RequestParam("themeId") final String themeId) {
+
+        return timeService.getTimeAvailable(date, themeId);
     }
 
     @PostMapping

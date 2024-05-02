@@ -82,12 +82,12 @@ function checkDateAndTheme() {
 }
 
 function fetchAvailableTimes(date, themeId) {
-  fetch('/times', { // 예약 가능 시간 조회 API endpoint
+  fetch('/times?' + new URLSearchParams({date, themeId}), { // 예약 가능 시간 조회 API endpoint
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
     },
-    // TODO: [3단계] 2. 인자로 받은 날짜와 테마를 body : {} 를 추가하여 넣고 요청 하도록 변경
+
   }).then(response => {
     if (response.status === 200) return response.json();
     throw new Error('Read failed');
@@ -110,8 +110,7 @@ function renderAvailableTimes(times) {
   times.forEach(time => {
     const startAt = time.startAt;
     const timeId = time.id;
-    const alreadyBooked = false;
-    // TODO: [3단계] 1. API response 에 booked 필드가 boolean 으로 필요한 것 확인
+    const alreadyBooked = time.booked;
 
     const div = createSlot('time', startAt, timeId, alreadyBooked); // createSlot('time', 시작 시간, time id, 예약 여부)
     timeSlots.appendChild(div);
@@ -145,7 +144,7 @@ function onReservationButtonClick() {
   const name = document.getElementById('user-name').value;
 
   if (selectedDate && selectedThemeId && selectedTimeId) {
-  
+
     /*
     TODO: [3단계] 사용자 예약 - 예약 요청 API 호출
           [5단계] 예약 생성 기능 변경 - 사용자

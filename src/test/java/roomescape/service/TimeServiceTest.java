@@ -31,9 +31,9 @@ class TimeServiceTest {
     void getTimes() {
         // given
         List<TimeResponse> expected = List.of(
-                new TimeResponse(1L, "10:15"),
-                new TimeResponse(2L, "11:20"),
-                new TimeResponse(3L, "12:25")
+                new TimeResponse(1L, "10:15", false),
+                new TimeResponse(2L, "11:20", false),
+                new TimeResponse(3L, "12:25", false)
         );
 
         // when
@@ -48,7 +48,7 @@ class TimeServiceTest {
     void addTIme() {
         // given
         TimeRequest request = new TimeRequest("13:30");
-        TimeResponse expected = new TimeResponse(4L, "13:30");
+        TimeResponse expected = new TimeResponse(4L, "13:30", false);
 
         // when
         TimeResponse actual = timeService.addTime(request);

@@ -13,6 +13,7 @@ import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -35,16 +36,63 @@ public class H2ReservationRepository implements ReservationRepository {
                 rs.getLong("id"),
                 rs.getString("name"),
                 rs.getString("date"),
-                new ReservationTime(rs.getLong("time_id"), null),
+                new ReservationTime(rs.getLong("time_id"), "00:00"),
                 new Theme(rs.getLong("theme_id"), null, null, null)
+        );
+    }
+
+    private Reservation mapRowReservationWithJoin(final ResultSet rs, final int rowNum) throws SQLException {
+        return Reservation.from(
+                rs.getLong("id"),
+                rs.getString("r.name"),
+                rs.getString("r.date"),
+                new ReservationTime(
+                        rs.getLong("rt.id"),
+                        LocalTime.parse(rs.getString("rt.start_at"))),
+                new Theme(
+                        rs.getLong("t.id"),
+                        rs.getString("t.name"),
+                        rs.getString("t.description"),
+                        rs.getString("t.thumbnail"))
         );
     }
 
     @Override
     public List<Reservation> findAll() {
-        String sql = "SELECT * FROM reservation";
+        String sql = """
+                SELECT r.id, r.name, r.date, r.time_id, r.theme_id, rt.start_at, t.name FROM reservation AS R
+                LEFT JOIN reservation_time RT on RT.ID = R.TIME_ID
+                LEFT JOIN THEME T on T.ID = R.THEME_ID
+                """;
 
-        return jdbcTemplate.query(sql, this::mapRowReservation);
+        return jdbcTemplate.query(sql, ((rs, rowNum) -> Reservation.from(
+                rs.getLong("id"),
+                rs.getString("name"),
+                rs.getString("date"),
+                new ReservationTime(
+                        rs.getLong("time_id"),
+                        rs.getString("start_at")),
+                new Theme(rs.getLong("theme_id"), null, null, null))));
+    }
+
+    @Override
+    public List<Reservation> findAllByDateAndThemeId(final LocalDate date, final Long themeId) {
+        String sql = """
+                SELECT r.id, r.name, r.date, r.time_id, r.theme_id, rt.start_at, t.name FROM reservation AS R
+                JOIN reservation_time RT on RT.id = R.time_id
+                JOIN theme T on T.id = R.theme_id
+                where R.date = ? and T.id = ?
+                """;
+
+        return jdbcTemplate.query(sql, ((rs, rowNum) -> Reservation.from(
+                        rs.getLong("id"),
+                        rs.getString("name"),
+                        rs.getString("date"),
+                        new ReservationTime(
+                                rs.getLong("time_id"),
+                                rs.getString("start_at")),
+                        new Theme(rs.getLong("theme_id"), null, null, null))),
+                date, themeId);
     }
 
     @Override

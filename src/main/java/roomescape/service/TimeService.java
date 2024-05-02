@@ -3,12 +3,16 @@ package roomescape.service;
 import org.springframework.stereotype.Service;
 import roomescape.controller.time.TimeRequest;
 import roomescape.controller.time.TimeResponse;
+import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.TimeUsedException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class TimeService {
@@ -27,8 +31,21 @@ public class TimeService {
                 .toList();
     }
 
-    // TODO: [3단계] 4. getTimeAvailable(date, themeId) 같은 함수 만들어서 컨트롤러의 요청에 대해 응답
-    // TODO: [3단계] 6. timeRepository.findAll 과 reservationRepository.findAllByDateAndThemeId 을 이용해서 response list 반환, 끝!
+    // TODO: dto 만들지 파라미터로 LocalDate Long 받을지 고민 후 적용
+    public List<TimeResponse> getTimeAvailable(final String date, final String themeId) {
+        final List<ReservationTime> times = timeRepository.findAll()
+                .stream()
+                .toList();
+        final Set<ReservationTime> bookedTimes = reservationRepository
+                .findAllByDateAndThemeId(LocalDate.parse(date), Long.valueOf(themeId))
+                .stream()
+                .map(Reservation::getTime)
+                .collect(Collectors.toSet());
+
+        return times.stream()
+                .map(time -> TimeResponse.from(time, bookedTimes.contains(time)))
+                .toList();
+    }
 
     public TimeResponse addTime(final TimeRequest timeRequest) {
         ReservationTime parsedTime = timeRequest.toDomain();

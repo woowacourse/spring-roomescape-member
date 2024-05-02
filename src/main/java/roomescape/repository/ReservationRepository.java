@@ -10,7 +10,7 @@ public interface ReservationRepository {
 
     List<Reservation> findAll();
 
-    // TODO: [3단계] 5. findAllByDateAndThemeId 만들어서 해당 날짜와 테마에 대해 예약된 모든 정보 가져오기
+    List<Reservation> findAllByDateAndThemeId(LocalDate date, Long themeId);
 
     Optional<Reservation> findById(Long id);
 

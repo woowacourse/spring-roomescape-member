@@ -39,6 +39,7 @@ Content-Type: application/json
     }
 ]
 ```
+
 <br>
 
 ### 예약 추가 API
@@ -88,6 +89,7 @@ DELETE /reservations/1 HTTP/1.1
 ```
 
 **Response**
+
 ```
 HTTP/1.1 200
 ```
@@ -168,7 +170,6 @@ HTTP/1.1 200
 ```http request
 GET /themes HTTP/1.1
 ```
-
 
 **response**
 
