@@ -38,7 +38,7 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> findAll() {
-        var reservations = reservationRepository.findAll();
+        List<Reservation> reservations = reservationRepository.findAll();
         return reservations.stream()
                 .map(ReservationResponse::from)
                 .toList();

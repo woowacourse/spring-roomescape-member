@@ -4,6 +4,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import roomescape.domain.ReservationTime;
 import roomescape.dto.AvailableReservationTimeResponse;
 import roomescape.service.ReservationTimeService;
 import roomescape.dto.ReservationTimeResponse;
@@ -23,7 +24,7 @@ public class ReservationTimeController {
 
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> createReservationTime(@RequestBody ReservationTimeSaveRequest request) {
-        var reservationTime = request.toModel();
+        ReservationTime reservationTime = request.toModel();
         return ResponseEntity.status(HttpStatus.CREATED).body(reservationTimeService.create(reservationTime));
     }
 

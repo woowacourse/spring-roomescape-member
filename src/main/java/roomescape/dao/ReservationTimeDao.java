@@ -53,7 +53,7 @@ public class ReservationTimeDao implements ReservationTimeRepository {
     }
 
     private ReservationTime rowMapper(ResultSet resultSet, int rowNumber) throws SQLException {
-        var reservationTime = new ReservationTime(resultSet.getString("start_at"));
+        ReservationTime reservationTime = new ReservationTime(resultSet.getString("start_at"));
         return new ReservationTime(resultSet.getLong("id"), reservationTime);
     }
 
