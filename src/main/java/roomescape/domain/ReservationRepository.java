@@ -16,5 +16,5 @@ public interface ReservationRepository {
 
     long findReservationCountByTimeId(long timeId);
 
-    boolean existByDateAndTimeId(LocalDate date, long timeId);
+    boolean existBy(LocalDate date, long timeId, long themeId);
 }

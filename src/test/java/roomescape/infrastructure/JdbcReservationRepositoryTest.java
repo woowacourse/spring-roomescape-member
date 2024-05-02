@@ -111,8 +111,9 @@ class JdbcReservationRepositoryTest {
     void shouldReturnIsExistReservationWhenReservationsNameAndDateAndTimeIsSame() {
         Reservation reservation = createReservation();
         ReservationTime time = reservation.getTime();
+        Theme theme = reservation.getTheme();
 
-        boolean isExist = jdbcReservationRepository.existByDateAndTimeId(reservation.getDate(), time.getId());
+        boolean isExist = jdbcReservationRepository.existBy(reservation.getDate(), time.getId(), theme.getId());
         assertThat(isExist).isTrue();
     }
 

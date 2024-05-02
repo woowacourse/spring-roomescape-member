@@ -53,7 +53,7 @@ public class ReservationService {
     }
 
     private void validateUniqueReservation(ReservationRequest request) {
-        if (reservationRepository.existByDateAndTimeId(request.date(), request.timeId())) {
+        if (reservationRepository.existBy(request.date(), request.timeId(), request.themeId())) {
             throw new IllegalStateException("이미 존재하는 예약입니다.");
         }
     }
