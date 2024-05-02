@@ -32,6 +32,12 @@ public class ReservationDaoImpl implements ReservationDao {
             rs.getLong("id"),
             rs.getTime("start_at").toLocalTime()
     ));
+    private RowMapper<Theme> themeRowMapper = ((rs, rowNum) -> new Theme(
+            rs.getLong("theme_id"),
+            rs.getString("theme_name"),
+            rs.getString("theme_description"),
+            rs.getString("theme_thumbnail")
+    ));
 
     public ReservationDaoImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -116,6 +122,24 @@ public class ReservationDaoImpl implements ReservationDao {
                 + "   on r.time_id = t.id "
                 + "   where date = ? and theme_id = ?";
         return jdbcTemplate.query(sql, timeRowMapper, date, themeId);
+    }
+
+    @Override
+    public List<Theme> findThemeOrderByReservationCount() {
+        String sql = "select "
+                + "   th.id as theme_id,"
+                + "   th.name as theme_name"
+                + "   th.description as theme_description,"
+                + "   th.thumbnail as theme_thumbnail, "
+                + "   count(th.id) as reservation_count"
+                + "   from reservation as r "
+                + "   inner join theme as th "
+                + "   on r.theme_id = th.id "
+                + "   group by th.id "
+                + "   order by reservation_count desc "
+                + "   limit 10";
+
+        return jdbcTemplate.query(sql,themeRowMapper);
     }
 
     @Override
