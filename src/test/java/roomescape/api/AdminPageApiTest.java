@@ -54,5 +54,4 @@ class AdminPageApiTest {
                 .then().log().all()
                 .statusCode(200);
     }
-
 }
