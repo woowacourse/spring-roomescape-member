@@ -45,6 +45,11 @@ class MissionStepTest {
                 .when().delete("/times/4")
                 .then().log().all()
                 .statusCode(204);
+
+        RestAssured.given().log().all()
+                .when().delete("/times/4")
+                .then().log().all()
+                .statusCode(404);
     }
 
     @Test
@@ -69,8 +74,12 @@ class MissionStepTest {
                 .when().delete("/themes/3")
                 .then().log().all()
                 .statusCode(204);
-    }
 
+        RestAssured.given().log().all()
+                .when().delete("/themes/3")
+                .then().log().all()
+                .statusCode(404);
+    }
 
     @Test
     @DisplayName("예약 저장 및 삭제")
