@@ -34,12 +34,18 @@ public class JdbcReservationRepositoryImpl implements ReservationRepository {
             Map.entry("time_id", reservation.getTime().getId()),
             Map.entry("theme_id", reservation.getTheme().getId())
         );
+
         long id = simpleJdbcInsert
             .executeAndReturnKey(saveSource)
             .longValue();
 
-        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
-            reservation.getTheme());
+        return new Reservation(
+            id,
+            reservation.getName(),
+            reservation.getDate(),
+            reservation.getTime(),
+            reservation.getTheme()
+        );
     }
 
     @Override
@@ -61,16 +67,21 @@ public class JdbcReservationRepositoryImpl implements ReservationRepository {
             """;
 
         return jdbcTemplate.query(
-            sql,
-            ((rs, rowNum) ->
-                new Reservation(
-                    rs.getLong("reservation_id"),
-                    rs.getString("reservation_name"),
-                    LocalDate.parse(rs.getString("reservation_date")),
-                    new ReservationTime(rs.getLong("time_id"), LocalTime.parse(rs.getString("time_value"))),
-                    new Theme(rs.getString("theme_name"), rs.getString("theme_description"),
-                        rs.getString("theme_thumbnail")))
-            ));
+            sql, (rs, rowNum) -> new Reservation(
+                rs.getLong("reservation_id"),
+                rs.getString("reservation_name"),
+                LocalDate.parse(rs.getString("reservation_date")),
+                new ReservationTime(
+                    rs.getLong("time_id"),
+                    LocalTime.parse(rs.getString("time_value"))
+                ),
+                new Theme(
+                    rs.getString("theme_name"),
+                    rs.getString("theme_description"),
+                    rs.getString("theme_thumbnail")
+                )
+            )
+        );
     }
 
     @Override
@@ -117,15 +128,19 @@ public class JdbcReservationRepositoryImpl implements ReservationRepository {
             """;
 
         return jdbcTemplate.query(
-            sql,
-            ((rs, rowNum) ->
-                new Reservation(
-                    rs.getLong("reservation_id"),
-                    rs.getString("reservation_name"),
-                    LocalDate.parse(rs.getString("reservation_date")),
-                    new ReservationTime(rs.getLong("time_id"), LocalTime.parse(rs.getString("time_value"))),
-                    new Theme(rs.getString("theme_name"), rs.getString("theme_description"),
-                        rs.getString("theme_thumbnail")))
+            sql, (rs, rowNum) -> new Reservation(
+                rs.getLong("reservation_id"),
+                rs.getString("reservation_name"),
+                LocalDate.parse(rs.getString("reservation_date")),
+                new ReservationTime(
+                    rs.getLong("time_id"),
+                    LocalTime.parse(rs.getString("time_value"))
+                ),
+                new Theme(
+                    rs.getString("theme_name"),
+                    rs.getString("theme_description"),
+                    rs.getString("theme_thumbnail")
+                )
             ), date, themeId);
     }
 }

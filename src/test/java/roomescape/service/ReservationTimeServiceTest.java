@@ -29,6 +29,7 @@ class ReservationTimeServiceTest {
 
     @InjectMocks
     private ReservationTimeService reservationTimeService;
+
     @Mock
     private ReservationTimeRepository reservationTimeRepository;
     @Mock

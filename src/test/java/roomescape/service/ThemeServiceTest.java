@@ -26,7 +26,6 @@ class ThemeServiceTest {
 
     @Mock
     private ThemeRepository themeRepository;
-
     @Mock
     private ReservationRepository reservationRepository;
 

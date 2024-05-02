@@ -22,7 +22,6 @@ class ThemeControllerTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-
     @LocalServerPort
     private int port;
 

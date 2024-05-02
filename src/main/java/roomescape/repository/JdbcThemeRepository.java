@@ -17,8 +17,7 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     public JdbcThemeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.simpleJdbcInsert = new SimpleJdbcInsert(
-            Objects.requireNonNull(jdbcTemplate.getDataSource()))
+        this.simpleJdbcInsert = new SimpleJdbcInsert(Objects.requireNonNull(jdbcTemplate.getDataSource()))
             .withTableName("theme")
             .usingGeneratedKeyColumns("id");
     }
@@ -30,6 +29,7 @@ public class JdbcThemeRepository implements ThemeRepository {
             Map.entry("description", theme.getDescription()),
             Map.entry("thumbnail", theme.getThumbnail())
         );
+
         long id = simpleJdbcInsert.executeAndReturnKey(saveSource)
             .longValue();
 
@@ -46,14 +46,12 @@ public class JdbcThemeRepository implements ThemeRepository {
     public List<Theme> findAll() {
         String sql = "SELECT * FROM theme";
 
-        return jdbcTemplate.query(
-            sql,
-            (rs, rowNum) -> new Theme(
-                rs.getLong("id"),
-                rs.getString("name"),
-                rs.getString("description"),
-                rs.getString("thumbnail")
-            ));
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new Theme(
+            rs.getLong("id"),
+            rs.getString("name"),
+            rs.getString("description"),
+            rs.getString("thumbnail")
+        ));
     }
 
     @Override
@@ -88,12 +86,11 @@ public class JdbcThemeRepository implements ThemeRepository {
             ORDER BY count DESC
             LIMIT ?
             """;
-        return jdbcTemplate.query(
-            sql, (rs, rowNum) -> new Theme(
-                rs.getLong("id"),
-                rs.getString("name"),
-                rs.getString("description"),
-                rs.getString("thumbnail")
-            ), count);
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new Theme(
+            rs.getLong("id"),
+            rs.getString("name"),
+            rs.getString("description"),
+            rs.getString("thumbnail")
+        ), count);
     }
 }

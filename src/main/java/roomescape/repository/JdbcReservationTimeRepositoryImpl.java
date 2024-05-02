@@ -19,8 +19,7 @@ public class JdbcReservationTimeRepositoryImpl implements ReservationTimeReposit
 
     public JdbcReservationTimeRepositoryImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.simpleJdbcInsert = new SimpleJdbcInsert(
-            Objects.requireNonNull(jdbcTemplate.getDataSource()))
+        this.simpleJdbcInsert = new SimpleJdbcInsert(Objects.requireNonNull(jdbcTemplate.getDataSource()))
             .withTableName("reservation_time")
             .usingGeneratedKeyColumns("id");
     }
@@ -55,12 +54,10 @@ public class JdbcReservationTimeRepositoryImpl implements ReservationTimeReposit
     public List<ReservationTime> findAll() {
         String sql = "SELECT * FROM reservation_time";
 
-        return jdbcTemplate.query(
-            sql,
-            (rs, rowNum) -> new ReservationTime(
-                rs.getLong("id"),
-                LocalTime.parse(rs.getString("start_at"))
-            ));
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new ReservationTime(
+            rs.getLong("id"),
+            LocalTime.parse(rs.getString("start_at"))
+        ));
     }
 
     @Override
