@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import static roomescape.exception.ExceptionType.*;
 import static roomescape.exception.ExceptionType.DUPLICATE_RESERVATION;
 import static roomescape.exception.ExceptionType.PAST_TIME;
 import static roomescape.exception.ExceptionType.RESERVATION_TIME_NOT_FOUND;
@@ -38,7 +39,7 @@ public class ReservationService {
         ReservationTime requestedTime = reservationTimeRepository.findById(reservationRequest.timeId())
                 .orElseThrow(() -> new RoomescapeException(RESERVATION_TIME_NOT_FOUND));
         Theme requestedTheme = themeRepository.findById(reservationRequest.themeId())
-                .orElseThrow(() -> new RoomescapeException(ExceptionType.THEME_NOT_FOUND));
+                .orElseThrow(() -> new RoomescapeException(THEME_NOT_FOUND));
 
         Reservation beforeSave = new Reservation(
                 reservationRequest.name(),
