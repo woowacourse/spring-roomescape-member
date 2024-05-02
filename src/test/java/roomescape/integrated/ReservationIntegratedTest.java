@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.integrated;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -19,7 +19,7 @@ import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "/truncate.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-class ReservationControllerTest {
+class ReservationIntegratedTest {
     @LocalServerPort
     private int port;
     @Autowired

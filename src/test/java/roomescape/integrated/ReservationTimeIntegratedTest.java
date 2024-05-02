@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.integrated;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "/truncate.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-class ReservationTimeControllerTest {
+class ReservationTimeIntegratedTest {
     @LocalServerPort
     private int port;
     @Autowired
