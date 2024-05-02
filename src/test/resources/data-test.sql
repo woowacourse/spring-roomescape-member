@@ -15,6 +15,6 @@ VALUES ('polla', '폴라 방탈출', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461
        ('pobi', '포비 방탈출', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
 
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('폴라', '2023-08-05', 1, 1),
-       ('구구', '2023-06-05', 2, 2);
+VALUES ('폴라', '2024-04-30', 1, 1),
+       ('구구', '2023-05-01', 2, 1);
 
