@@ -66,14 +66,18 @@ class ReservationControllerTest extends ControllerTest {
                 .statusCode(201);
     }
 
-    @DisplayName("예약 삭제 시 200을 반환한다.")
+    @DisplayName("예약 삭제 시 204를 반환한다.")
     @Test
     void delete() {
-        //given & when &then
+        //given
+        long id = reservationService.findAllReservations().stream()
+                .findFirst().orElseThrow().id();
+
+        //when &then
         RestAssured.given().log().all()
-                .when().delete("/reservations/1")
+                .when().delete("/reservations/" + id)
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
     }
 
     @DisplayName("예약 조회 시 200을 반환한다.")

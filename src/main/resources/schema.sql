@@ -40,6 +40,6 @@ CREATE TABLE reservation_list
     member_id      BIGINT,
     reservation_id BIGINT,
     FOREIGN KEY (member_id) REFERENCES member (id),
-    FOREIGN KEY (reservation_id) REFERENCES reservation (id),
+    FOREIGN KEY (reservation_id) REFERENCES reservation (id) ON DELETE CASCADE ,
     PRIMARY KEY (id)
 );

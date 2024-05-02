@@ -31,7 +31,7 @@ class ReservationTimeServiceTest {
     @BeforeEach
     void setUp() {
         reservationRepository = new FakeReservationDao();
-        reservationTimeRepository = new FakeReservationTimeDao();
+        reservationTimeRepository = new FakeReservationTimeDao(reservationRepository);
         reservationTimeService = new ReservationTimeService(reservationRepository, reservationTimeRepository);
     }
 
