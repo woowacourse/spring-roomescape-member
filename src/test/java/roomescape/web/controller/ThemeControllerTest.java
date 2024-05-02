@@ -168,6 +168,19 @@ class ThemeControllerTest {
     @Test
     @DisplayName("지난 한 주 동안의 인기 테마 목록을 조회한다.")
     void findPopularThemes() {
+        Map<String, Object> reservationParams = new HashMap<>();
+        reservationParams.put("name", "브라운");
+        reservationParams.put("date", LocalDate.now().format(DateTimeFormatter.ISO_DATE));
+        reservationParams.put("timeId", 1);
+        reservationParams.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationParams)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
         RestAssured.given().log().all()
                 .when().get("/themes/popular")
                 .then().log().all()

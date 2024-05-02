@@ -74,41 +74,6 @@ class ReservationTimeControllerTest {
     @Test
     @DisplayName("시간 삭제 시, 해당 시간을 참조하는 예약이 있으면 예외가 발생한다.")
     void validateTimeDelete() {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
-        params.put("date", TOMORROW_DATE);
-        params.put("timeId", 1);
-        params.put("themeId", 1);
-
-        Map<String, Object> time = new HashMap<>();
-        time.put("startAt", "10:10");
-
-        Map<String, Object> theme = new HashMap<>();
-        theme.put("name", "레벨2 탈출");
-        theme.put("description", "우테코 레벨2를 탈출하는 내용입니다.");
-        theme.put("thumbnail", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(theme)
-                .when().post("/themes")
-                .then().log().all()
-                .statusCode(201);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(time)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(201);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(201);
-
         RestAssured.given().log().all()
                 .when().delete("/times/1")
                 .then().log().all()
