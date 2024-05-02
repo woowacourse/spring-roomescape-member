@@ -15,10 +15,6 @@ import roomescape.time.domain.Time;
 
 @Component
 public class ReservationJdbcDao implements ReservationDao {
-    public static final String TIME_TABLE_START_TIME_ATTRIBUTE = "start_at";
-    public static final String THEME_TABLE_NAME_ATTRIBUTE = "name";
-    public static final String THEME_TABLE_THUMBNAIL_ATTRIBUTE = "thumbnail";
-    public static final String THEME_TABLE_DESCRIPTION_ATTRIBUTE = "description";
 
     public static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (resultSet, rowNum)
             -> new Reservation(
@@ -27,12 +23,12 @@ public class ReservationJdbcDao implements ReservationDao {
                 resultSet.getDate("date")
                         .toLocalDate(),
                 new Time(resultSet.getLong("time_id"),
-                        resultSet.getTime(TIME_TABLE_START_TIME_ATTRIBUTE)
+                        resultSet.getTime("start_at")
                                 .toLocalTime()),
                 new Theme(resultSet.getLong("theme_id"),
                         resultSet.getString("themeName"),
-                        resultSet.getString(THEME_TABLE_DESCRIPTION_ATTRIBUTE),
-                        resultSet.getString(THEME_TABLE_THUMBNAIL_ATTRIBUTE)
+                        resultSet.getString("description"),
+                        resultSet.getString("thumbnail")
             )
     );
 
@@ -64,8 +60,8 @@ public class ReservationJdbcDao implements ReservationDao {
         String findAllReservationSql =
                 """
                 SELECT r.id, r.name, r.date, 
-                t.id AS timeId, t.start_at, 
-                th.id AS themeId, th.name AS themeName, th.description, th.thumbnail 
+                t.id AS time_id, t.start_at, 
+                th.id AS theme_id, th.name AS themeName, th.description, th.thumbnail 
                 FROM reservation r 
                 INNER JOIN reservation_time t ON r.time_id = t.id 
                 INNER JOIN theme th ON r.theme_id = th.id 
@@ -110,9 +106,9 @@ public class ReservationJdbcDao implements ReservationDao {
         return jdbcTemplate.query(findThemesInOrderSql, (resultSet, rowNum)
                 -> new Theme(
                         resultSet.getLong("id"),
-                        resultSet.getString(THEME_TABLE_NAME_ATTRIBUTE),
-                        resultSet.getString(THEME_TABLE_DESCRIPTION_ATTRIBUTE),
-                        resultSet.getString(THEME_TABLE_THUMBNAIL_ATTRIBUTE)
+                        resultSet.getString("name"),
+                        resultSet.getString("description"),
+                        resultSet.getString("thumbnail")
                         )
                     ,startDate.toString(), endDate.toString());
     }
