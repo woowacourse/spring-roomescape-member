@@ -9,6 +9,9 @@ import roomescape.dto.reservation.ReservationCreateRequest;
 
 public class ReservationFixtures {
 
+    private ReservationFixtures() {
+    }
+
     public static Reservation createReservation(String name, String date, ReservationTime time, Theme theme) {
         return new Reservation(null, new ReservationName(name), ReservationDate.from(date), time, theme);
     }

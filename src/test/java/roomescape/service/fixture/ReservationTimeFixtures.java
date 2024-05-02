@@ -6,6 +6,9 @@ import roomescape.dto.reservationtime.ReservationTimeCreateRequest;
 
 public class ReservationTimeFixtures {
 
+    private ReservationTimeFixtures() {
+    }
+
     public static ReservationTime createReservationTime(String startAt) {
         return new ReservationTime(null, ReservationStartAt.from(startAt));
     }

@@ -8,6 +8,9 @@ import roomescape.dto.theme.ThemeCreateRequest;
 
 public class ThemeFixtures {
 
+    private ThemeFixtures() {
+    }
+
     public static Theme createDefaultTheme() {
         return new Theme(
                 null,
