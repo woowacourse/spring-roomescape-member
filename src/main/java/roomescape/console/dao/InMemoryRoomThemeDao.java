@@ -18,6 +18,11 @@ public class InMemoryRoomThemeDao implements RoomThemeDao {
     }
 
     @Override
+    public List<RoomTheme> findAllRanking() {
+        return List.of();
+    }
+
+    @Override
     public RoomTheme findById(Long id) {
         return inMemoryRoomThemeDb.selectById(id);
     }

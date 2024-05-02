@@ -25,7 +25,8 @@ class RoomThemeServiceTest {
     @Test
     void save() {
         //given
-        RoomThemeCreateRequest roomThemeCreateRequest = new RoomThemeCreateRequest("레벨2 탈출", "우테코 레벨2",
+        RoomThemeCreateRequest roomThemeCreateRequest = new RoomThemeCreateRequest("레벨2 탈출",
+                "우테코 레벨2",
                 "https://i.pinimg.com/236x/6e");
         //when
         RoomThemeResponse roomThemeResponse = roomThemeService.save(roomThemeCreateRequest);
@@ -33,8 +34,10 @@ class RoomThemeServiceTest {
         assertAll(
                 () -> assertThat(roomThemeResponse.id()).isEqualTo(1L),
                 () -> assertThat(roomThemeResponse.name()).isEqualTo(roomThemeCreateRequest.name()),
-                () -> assertThat(roomThemeResponse.description()).isEqualTo(roomThemeCreateRequest.description()),
-                () -> assertThat(roomThemeResponse.thumbnail()).isEqualTo(roomThemeCreateRequest.thumbnail())
+                () -> assertThat(roomThemeResponse.description()).isEqualTo(
+                        roomThemeCreateRequest.description()),
+                () -> assertThat(roomThemeResponse.thumbnail()).isEqualTo(
+                        roomThemeCreateRequest.thumbnail())
         );
     }
 
@@ -51,8 +54,9 @@ class RoomThemeServiceTest {
     @Test
     void delete() {
         //given
-        RoomThemeCreateRequest roomThemeCreateRequest = new RoomThemeCreateRequest("레벨2 탈출", "우테코 레벨2",
-            "https://i.pinimg.com/236x/6e");
+        RoomThemeCreateRequest roomThemeCreateRequest = new RoomThemeCreateRequest("레벨2 탈출",
+                "우테코 레벨2",
+                "https://i.pinimg.com/236x/6e");
         RoomThemeResponse roomThemeResponse = roomThemeService.save(roomThemeCreateRequest);
         //when
         roomThemeService.deleteById(roomThemeResponse.id());

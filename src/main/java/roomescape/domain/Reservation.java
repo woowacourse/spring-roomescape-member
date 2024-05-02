@@ -1,9 +1,6 @@
 package roomescape.domain;
 
-import java.time.Clock;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 public class Reservation {
     private final Long id;
@@ -17,7 +14,6 @@ public class Reservation {
     }
 
     public Reservation(Long id, Name name, LocalDate date, ReservationTime time, RoomTheme theme) {
-        validateDateTime(date, time.getStartAt());
         this.id = id;
         this.name = name;
         this.date = date;
@@ -31,13 +27,6 @@ public class Reservation {
 
     public boolean hasSameTimeId(Long timeId) {
         return time.hasSameId(timeId);
-    }
-
-    private void validateDateTime(LocalDate date, LocalTime time) {
-        LocalDateTime now = LocalDateTime.now(Clock.systemDefaultZone());
-        if (LocalDateTime.of(date, time).isBefore(now)) {
-            throw new IllegalArgumentException("예약할 수 없는 날짜입니다.");
-        }
     }
 
     public Long getId() {

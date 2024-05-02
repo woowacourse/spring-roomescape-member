@@ -1,6 +1,9 @@
 package roomescape.service;
 
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
@@ -34,6 +37,8 @@ public class ReservationService {
 
     public ReservationResponse save(ReservationRequest reservationRequest) {
         ReservationTime reservationTime = reservationTimeDao.findById(reservationRequest.timeId());
+        validateReservation(LocalDate.parse(reservationRequest.date()),
+                reservationTime.getStartAt());
         RoomTheme roomTheme = roomThemeDao.findById(reservationRequest.themeId());
         Reservation reservation = reservationRequest.toReservation(reservationTime, roomTheme);
 
@@ -41,6 +46,13 @@ public class ReservationService {
 
         Reservation savedReservation = reservationDao.save(reservation);
         return ReservationResponse.fromReservation(savedReservation);
+    }
+
+    private void validateReservation(LocalDate date, LocalTime time) {
+        LocalDateTime now = LocalDateTime.now(Clock.systemDefaultZone());
+        if (LocalDateTime.of(date, time).isBefore(now)) {
+            throw new IllegalArgumentException("예약할 수 없는 날짜입니다.");
+        }
     }
 
     public boolean deleteById(long id) {

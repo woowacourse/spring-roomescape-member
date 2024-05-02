@@ -28,8 +28,14 @@ public class RoomThemeController {
         return ResponseEntity.ok(roomThemeService.findAll());
     }
 
+    @GetMapping("/ranking")
+    public ResponseEntity<List<RoomThemeResponse>> findAllRoomThemesRanking() {
+        return ResponseEntity.ok(roomThemeService.findByRanking());
+    }
+
     @PostMapping
-    public ResponseEntity<RoomThemeResponse> createRoomTheme(@RequestBody RoomThemeCreateRequest roomThemeCreateRequest) {
+    public ResponseEntity<RoomThemeResponse> createRoomTheme(
+            @RequestBody RoomThemeCreateRequest roomThemeCreateRequest) {
         RoomThemeResponse roomThemeResponse = roomThemeService.save(roomThemeCreateRequest);
         return ResponseEntity.created(URI.create("/themes" + roomThemeResponse.id()))
                 .body(roomThemeResponse);

@@ -6,6 +6,8 @@ import roomescape.domain.RoomTheme;
 public interface RoomThemeDao {
     List<RoomTheme> findAll();
 
+    List<RoomTheme> findAllRanking();
+
     RoomTheme findById(Long id);
 
     RoomTheme save(RoomTheme roomTheme);
