@@ -4,7 +4,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationResponse;
-import roomescape.dto.ReservationSaveRequest;
+import roomescape.dto.ReservationRequest;
 
 public class ReservationMapper {
 
@@ -16,7 +16,7 @@ public class ReservationMapper {
         return new ReservationResponse(id, reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
     }
 
-    public Reservation mapToReservation(ReservationSaveRequest request, ReservationTime reservationTime, Theme theme) {
+    public Reservation mapToReservation(ReservationRequest request, ReservationTime reservationTime, Theme theme) {
         return new Reservation(request.id(), request.name(), request.date(), reservationTime, theme);
     }
 }

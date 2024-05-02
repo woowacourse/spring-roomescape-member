@@ -4,7 +4,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeResponse;
-import roomescape.dto.ThemeSaveRequest;
+import roomescape.dto.ThemeRequest;
 import roomescape.exception.IllegalThemeException;
 import roomescape.mapper.ThemeMapper;
 import roomescape.repository.ReservationDao;
@@ -38,7 +38,7 @@ public class ThemeService {
                 .toList();
     }
 
-    public ThemeResponse save(ThemeSaveRequest request) {
+    public ThemeResponse save(ThemeRequest request) {
         Theme theme = themeMapper.mapToTheme(request);
 
         Long saveId = themeDao.save(theme);

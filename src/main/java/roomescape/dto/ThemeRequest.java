@@ -1,6 +1,6 @@
 package roomescape.dto;
 
-public record ThemeSaveRequest(
+public record ThemeRequest(
         Long id,
         String name,
         String description,

@@ -3,7 +3,7 @@ package roomescape.mapper;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.TimeMemberResponse;
 import roomescape.dto.TimeResponse;
-import roomescape.dto.TimeSaveRequest;
+import roomescape.dto.TimeRequest;
 
 public class TimeMapper {
 
@@ -19,7 +19,7 @@ public class TimeMapper {
         return new TimeResponse(id, reservationTime.getStartAt());
     }
 
-    public ReservationTime mapToTime(TimeSaveRequest request) {
+    public ReservationTime mapToTime(TimeRequest request) {
         return new ReservationTime(request.id(), request.startAt());
     }
 }

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.TimeMemberResponse;
 import roomescape.dto.TimeResponse;
-import roomescape.dto.TimeSaveRequest;
+import roomescape.dto.TimeRequest;
 import roomescape.exception.IllegalTimeException;
 import roomescape.mapper.TimeMapper;
 import roomescape.repository.ReservationDao;
@@ -45,7 +45,7 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    public TimeResponse saveTime(TimeSaveRequest request) {
+    public TimeResponse saveTime(TimeRequest request) {
         ReservationTime reservationTime = timeMapper.mapToTime(request);
 
         if (timeDao.existByTime(reservationTime.getStartAt())) {

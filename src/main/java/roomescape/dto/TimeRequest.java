@@ -2,7 +2,7 @@ package roomescape.dto;
 
 import java.time.LocalTime;
 
-public record TimeSaveRequest(
+public record TimeRequest(
         Long id,
         LocalTime startAt
 ) {

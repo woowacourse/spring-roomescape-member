@@ -6,7 +6,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationResponse;
-import roomescape.dto.ReservationSaveRequest;
+import roomescape.dto.ReservationRequest;
 import roomescape.exception.AlreadyExistReservationException;
 import roomescape.exception.IllegalThemeException;
 import roomescape.exception.IllegalTimeException;
@@ -36,7 +36,7 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse saveReservation(ReservationSaveRequest request) {
+    public ReservationResponse saveReservation(ReservationRequest request) {
         if (request.timeId() == null) {
             throw new IllegalTimeException("[ERROR] 유효하지 않은 형식의 예약 시간입니다.");
         }

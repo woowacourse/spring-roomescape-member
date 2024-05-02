@@ -2,7 +2,7 @@ package roomescape.mapper;
 
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeResponse;
-import roomescape.dto.ThemeSaveRequest;
+import roomescape.dto.ThemeRequest;
 
 public class ThemeMapper {
 
@@ -14,7 +14,7 @@ public class ThemeMapper {
         return new ThemeResponse(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 
-    public Theme mapToTheme(ThemeSaveRequest request) {
+    public Theme mapToTheme(ThemeRequest request) {
         return new Theme(request.id(), request.name(), request.description(), request.thumbnail());
     }
 }
