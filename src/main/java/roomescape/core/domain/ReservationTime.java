@@ -6,11 +6,9 @@ import java.time.format.DateTimeParseException;
 
 public class ReservationTime {
     public static final String TIME_FORMAT = "HH:mm";
-    private Long id;
-    private LocalTime startAt;
 
-    public ReservationTime() {
-    }
+    private final Long id;
+    private final LocalTime startAt;
 
     public ReservationTime(final String startAt) {
         this(null, startAt);

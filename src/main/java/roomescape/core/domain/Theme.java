@@ -1,10 +1,10 @@
 package roomescape.core.domain;
 
 public class Theme {
-    private Long id;
-    private String name;
-    private String description;
-    private String thumbnail;
+    private final Long id;
+    private final String name;
+    private final String description;
+    private final String thumbnail;
 
     public Theme(final String name, final String description, final String thumbnail) {
         this(null, name, description, thumbnail);
