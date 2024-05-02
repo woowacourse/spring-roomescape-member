@@ -6,8 +6,12 @@ import roomescape.reservation.domain.Reservation;
 public record ReservationResponse(Long id, String name, LocalDate date, ThemeResponse theme, TimeResponse time) {
 
     public static ReservationResponse toResponse(Reservation reservation) {
-        return new ReservationResponse(reservation.getId(), reservation.getName(), reservation.getDate(),
+        return new ReservationResponse(
+                reservation.getId(),
+                reservation.getName(),
+                reservation.getDate(),
                 ThemeResponse.toResponse(reservation.getTheme()),
-                TimeResponse.toResponse(reservation.getTime()));
+                TimeResponse.toResponse(reservation.getTime())
+        );
     }
 }

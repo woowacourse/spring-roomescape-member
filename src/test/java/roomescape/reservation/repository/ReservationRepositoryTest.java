@@ -28,7 +28,6 @@ public class ReservationRepositoryTest {
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
 
-
     @Test
     @DisplayName("DB 조회 테스트")
     void findAllTest() {

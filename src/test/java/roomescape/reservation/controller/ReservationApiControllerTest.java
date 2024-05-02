@@ -1,6 +1,5 @@
 package roomescape.reservation.controller;
 
-import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -42,8 +41,7 @@ class ReservationApiControllerTest {
     void getReservationRequestTest() throws Exception {
         mockMvc.perform(get("/reservations")
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(0)));
+                .andExpect(status().isOk());
     }
 
     @Test

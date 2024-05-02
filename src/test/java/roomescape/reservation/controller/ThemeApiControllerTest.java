@@ -51,7 +51,7 @@ class ThemeApiControllerTest {
     @Test
     @DisplayName("테마를 성공적으로 추가하면 201 응답과 Location 헤더에 리소스 저장 경로를 받는다.")
     void createThemeRequestTest() throws Exception {
-        ThemeRequest themeRequest = new ThemeRequest("kaaki", "남자", "https://i.pinimg.com/236x.jpg");
+        ThemeRequest themeRequest = new ThemeRequest("공포", "진짜 무서움", "https://i.pinimg.com/236x.jpg");
         ThemeResponse themeResponse = new ThemeResponse(1L, themeRequest.name(), themeRequest.description(),
                 themeRequest.thumbnail());
 

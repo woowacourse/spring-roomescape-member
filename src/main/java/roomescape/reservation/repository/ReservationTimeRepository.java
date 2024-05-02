@@ -47,6 +47,7 @@ public class ReservationTimeRepository {
 
     public List<ReservationTime> findAll() {
         String sql = "select id, start_at from reservation_time";
+
         return jdbcTemplate.query(sql, createReservationTimeRowMapper());
     }
 

@@ -15,6 +15,7 @@ import roomescape.reservation.domain.Theme;
 
 @Repository
 public class ThemeRepository {
+
     private final JdbcTemplate jdbcTemplate;
 
     public ThemeRepository(JdbcTemplate jdbcTemplate) {
@@ -49,6 +50,7 @@ public class ThemeRepository {
 
     public List<Theme> findAll() {
         String sql = "select * from theme";
+
         return jdbcTemplate.query(sql, createThemeRowMapper());
     }
 
@@ -62,6 +64,7 @@ public class ThemeRepository {
                 order by cnt desc
                 limit 10;
                 """;
+
         return jdbcTemplate.query(sql, createThemeRowMapper());
     }
 

@@ -86,6 +86,7 @@ public class ReservationRepository {
                 join theme t
                 on r.theme_id = t.id
                 """;
+
         return jdbcTemplate.query(sql, createReservationRowMapper());
     }
 

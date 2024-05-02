@@ -22,14 +22,23 @@ public class ReservationService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
+    public ReservationService(
+            ReservationRepository reservationRepository,
+            ReservationTimeRepository reservationTimeRepository,
+            ThemeRepository themeRepository
+    ) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
     }
 
     public Long save(ReservationRequest reservationRequest) {
+        Reservation reservation = getValidatedReservation(reservationRequest);
+
+        return reservationRepository.save(reservation);
+    }
+
+    private Reservation getValidatedReservation(ReservationRequest reservationRequest) {
         ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
 
@@ -46,7 +55,7 @@ public class ReservationService {
             throw new IllegalArgumentException("중복된 예약이 있습니다.");
         }
 
-        return reservationRepository.save(reservation);
+        return reservation;
     }
 
     public ReservationResponse findById(Long id) {
