@@ -12,8 +12,7 @@ import roomescape.config.TestConfig;
 
 @SpringBootTest(
         classes = TestConfig.class,
-        webEnvironment = WebEnvironment.RANDOM_PORT,
-        properties = "spring.main.allow-bean-definition-overriding=true"
+        webEnvironment = WebEnvironment.RANDOM_PORT
 )
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 abstract class BaseControllerTest {
