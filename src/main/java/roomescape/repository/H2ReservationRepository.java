@@ -30,16 +30,6 @@ public class H2ReservationRepository implements ReservationRepository {
                 .usingGeneratedKeyColumns("ID");
     }
 
-    private Reservation mapRowReservation(final ResultSet rs, final int rowNum) throws SQLException {
-        return Reservation.from(
-                rs.getLong("ID"),
-                rs.getString("NAME"),
-                rs.getString("DATE"),
-                new ReservationTime(rs.getLong("TIME_ID"), "00:00"),
-                new Theme(rs.getLong("THEME_ID"), null, null, null)
-        );
-    }
-
     @Override
     public List<Reservation> findAll() {
         final String sql = """
@@ -53,9 +43,10 @@ public class H2ReservationRepository implements ReservationRepository {
                 rs.getString("NAME"),
                 rs.getString("DATE"),
                 new ReservationTime(
-                        rs.getLong("TIME_ID"),
+                        rs.getLong("RESERVATION.TIME_ID"),
                         rs.getString("START_AT")),
-                new Theme(rs.getLong("THEME_ID"), null, null, null))));
+                new Theme(rs.getLong("RESERVATION.THEME_ID"))))
+        );
     }
 
     @Override
@@ -74,7 +65,7 @@ public class H2ReservationRepository implements ReservationRepository {
                         new ReservationTime(
                                 rs.getLong("TIME_ID"),
                                 rs.getString("START_AT")),
-                        new Theme(rs.getLong("THEME_ID"), null, null, null))),
+                        new Theme(rs.getLong("RESERVATION.THEME_ID")))),
                 date, themeId);
     }
 
@@ -101,6 +92,16 @@ public class H2ReservationRepository implements ReservationRepository {
 
         return !jdbcTemplate.query(sql, this::mapRowReservation, themeId)
                 .isEmpty();
+    }
+
+    private Reservation mapRowReservation(final ResultSet rs, final int rowNum) throws SQLException {
+        return Reservation.from(
+                rs.getLong("ID"),
+                rs.getString("NAME"),
+                rs.getString("DATE"),
+                new ReservationTime(rs.getLong("RESERVATION.TIME_ID"), "00:00"),
+                new Theme(rs.getLong("RESERVATION.THEME_ID"))
+        );
     }
 
     @Override
@@ -145,7 +146,7 @@ public class H2ReservationRepository implements ReservationRepository {
                 """;
 
         return jdbcTemplate.query(sql, ((rs, rowNum) -> new Theme(
-                rs.getLong("RESERVATION.THEME_ID"),
+                rs.getLong("THEME_ID"),
                 rs.getString("THEME.NAME"),
                 rs.getString("THEME.DESCRIPTION"),
                 rs.getString("THEME.THUMBNAIL")

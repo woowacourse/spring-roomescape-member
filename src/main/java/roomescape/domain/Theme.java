@@ -20,6 +20,10 @@ public class Theme {
         this.thumbnail = thumbnail;
     }
 
+    public Theme(final Long id) {
+        this(id, null, null, null);
+    }
+
     public static Theme from(final String name, final String description, final String thumbnail) {
         validateNull(name);
         return new Theme(null, name, description, getDefaultThumbnailIfNotExists(thumbnail));
