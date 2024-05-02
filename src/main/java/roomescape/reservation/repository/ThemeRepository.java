@@ -57,10 +57,11 @@ public class ThemeRepository {
     public List<Theme> findPopularThemeLimitTen() {
         String sql = """
                 select t.id, t.name, t.description, t.thumbnail, count(*) as cnt
-                from reservation r
-                join theme t
+                from theme t
+                join reservation r
                 on r.theme_id = t.id
-                group by theme_id
+                where r.date between timestampadd(week, -1, current_timestamp()) and current_timestamp() 
+                group by t.id
                 order by cnt desc
                 limit 10;
                 """;
