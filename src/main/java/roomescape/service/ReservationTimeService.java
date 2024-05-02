@@ -47,12 +47,14 @@ public class ReservationTimeService {
     public void delete(long id) {
         //todo SQL로 구현
         List<Reservation> reservations = reservationRepository.findAll();
-        //TODO : 지역변수 네이밍 고민
-        boolean invalidDelete = reservations.stream()
-                .anyMatch(reservation -> reservation.isReservationTimeOf(id));
-        if (invalidDelete) {
+        if (isUsedTime(id, reservations)) {
             throw new RoomescapeException(DELETE_USED_TIME);
         }
         reservationTimeRepository.delete(id);
+    }
+
+    private static boolean isUsedTime(long id, List<Reservation> reservations) {
+        return reservations.stream()
+                .anyMatch(reservation -> reservation.isReservationTimeOf(id));
     }
 }

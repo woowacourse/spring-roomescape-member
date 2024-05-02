@@ -52,12 +52,14 @@ public class ThemeService {
     }
 
     public void delete(long id) {
-        //todo : 변수명 고민
-        boolean invalidDelete = reservationRepository.findAll().stream()
-                .anyMatch(reservation -> reservation.isThemeOf(id));
-        if (invalidDelete) {
+        if (isUsedTheme(id)) {
             throw new RoomescapeException(DELETE_USED_THEME);
         }
         themeRepository.delete(id);
+    }
+
+    private boolean isUsedTheme(long id) {
+        return reservationRepository.findAll().stream()
+                .anyMatch(reservation -> reservation.isThemeOf(id));
     }
 }
