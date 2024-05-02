@@ -58,4 +58,11 @@ class ReservationRepositoryTest {
         final List<Reservation> reservations = reservationRepository.findByDateAndThemeId(LocalDate.parse("2024-04-29"), 2L);
         assertThat(reservations).hasSize(2);
     }
+
+    @DisplayName("일주일 동안 예약 많은 순으로 테마 조회")
+    @Test
+    void findThemesOrderedByReservationCountForWeek() {
+        List<Theme> themes = reservationRepository.findThemesOrderedByReservationCountForWeek(LocalDate.parse("2024-05-01"), 7);
+        assertThat(themes).hasSize(7);
+    }
 }
