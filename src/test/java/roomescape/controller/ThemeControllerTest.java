@@ -86,6 +86,8 @@ class ThemeControllerTest extends BaseControllerTest {
         });
     }
 
+
+
     void addTheme() {
         ThemeRequest request = new ThemeRequest("테마 이름", "테마 설명", "https://example.com/image.jpg");
 

@@ -63,7 +63,7 @@ public class ThemeService {
 
     public List<ThemeResponse> getPopularThemes() {
         LocalDateTime now = LocalDateTime.now(clock);
-        List<Theme> themes = themeRepository.findTop10ThemesLastWeek(now);
+        List<Theme> themes = themeRepository.findPopularThemes(now, 7, 10);
 
         return themes.stream()
                 .map(ThemeResponse::from)
