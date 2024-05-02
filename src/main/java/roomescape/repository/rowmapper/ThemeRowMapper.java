@@ -6,14 +6,15 @@ import roomescape.domain.Theme;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 @Component
 public class ThemeRowMapper implements RowMapper<Theme> {
     @Override
     public Theme mapRow(final ResultSet resultSet, final int rowNumber) {
         try {
             return new Theme(
-                    resultSet.getLong("theme_id"),
-                    resultSet.getString("theme_name"),
+                    resultSet.getLong("id"),
+                    resultSet.getString("name"),
                     resultSet.getString("description"),
                     resultSet.getString("thumbnail")
             );
