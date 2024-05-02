@@ -58,18 +58,13 @@ public class ReservationService {
     }
 
     public List<RankTheme> getRanking(){
-        return reservationDao.getRanking();
+        return themeDao.getRanking();
     }
 
-    public List<ReservationTime> available(LocalDate parse,long themeId) {
-        return reservationDao.available(parse,themeId);
-    }
-
-    private LocalDateTime validateDateTime(LocalDate date, LocalTime time) {
+    private void validateDateTime(LocalDate date, LocalTime time) {
         LocalDateTime dateTime = LocalDateTime.of(date, time);
         if (dateTime.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("Cannot create a reservation for a past date and time.");
         }
-        return dateTime;
     }
 }

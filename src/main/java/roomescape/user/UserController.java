@@ -22,9 +22,5 @@ public class UserController {
         this.reservationService = reservationService;
     }
 
-    @GetMapping("/user")
-    public ResponseEntity<List<ReservationTime>> availableTime(@RequestParam String date, @RequestParam long themeId){
-        LocalDate parse = LocalDate.parse(date);
-        return ResponseEntity.ok(reservationService.available(parse,themeId));
-    }
+
 }

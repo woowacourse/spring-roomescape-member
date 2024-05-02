@@ -37,11 +37,7 @@ public class ReservationDao {
                     resultSet.getString("theme_thumbnail")
             )
     );
-    private final RowMapper<RankTheme> themeRowMapper = (resultSet, __) -> new RankTheme(
-            resultSet.getString("name"),
-            resultSet.getString("thumbnail"),
-            resultSet.getString("description")
-    );
+
     private final RowMapper<ReservationTime> reservationTimeRowMapper = (resultSet, __) -> new ReservationTime(
             resultSet.getLong("id"),
             LocalTime.parse(resultSet.getString("start_at"))
@@ -120,24 +116,5 @@ public class ReservationDao {
 //
 //
 //    }
-    public List<RankTheme> getRanking() {
-        String query = "SELECT t.id, t.name, t.description, t.thumbnail, COUNT(r.id) AS reservation_count " +
-                "FROM theme t " +
-                "INNER JOIN reservation r ON t.id = r.theme_id " +
-                "WHERE r.date >=( TIMESTAMPADD(DAY, -7, CURRENT_DATE)) " +
-                "AND r.date <= ( TIMESTAMPADD(DAY, -1, CURRENT_DATE)) " +
-                "GROUP BY t.id, t.name, t.description, t.thumbnail " +
-                "ORDER BY reservation_count DESC " +
-                "LIMIT 10";
 
-        return jdbcTemplate.query(query, themeRowMapper);
-    }
-
-    public List<ReservationTime> available(LocalDate parse,long themeId) {
-        String query="SELECT rt.id, rt.start_at " +
-                "FROM reservation_time rt " +
-                "LEFT JOIN reservation r ON rt.id = r.time_id AND r.date = ? AND r.theme_id = ? " +
-                "WHERE r.id IS NULL";
-        return jdbcTemplate.query(query,reservationTimeRowMapper,parse,themeId);
-    }
 }

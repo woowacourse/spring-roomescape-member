@@ -1,5 +1,6 @@
 package roomescape.time.service;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -40,5 +41,9 @@ public class ReservationTimeService {
             throw new IllegalArgumentException("Cannot delete a reservation that refers to that time");
         }
         reservationTimeDao.delete(id);
+    }
+
+    public List<ReservationTime> available(LocalDate parse, long themeId) {
+        return reservationTimeDao.available(parse,themeId);
     }
 }

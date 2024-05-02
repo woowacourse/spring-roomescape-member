@@ -1,6 +1,7 @@
 package roomescape.time.controller;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import roomescape.time.domain.ReservationTime;
@@ -41,6 +43,12 @@ public class ReservationTimeController {
     public ResponseEntity<Void> delete(@PathVariable long id) {
         reservationTimeService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<List<ReservationTime>> availableTime(@RequestParam String date, @RequestParam long themeId){
+        LocalDate parse = LocalDate.parse(date);
+        return ResponseEntity.ok(reservationTimeService.available(parse,themeId));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
