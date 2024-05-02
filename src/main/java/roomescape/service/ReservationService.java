@@ -1,8 +1,5 @@
 package roomescape.service;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -13,6 +10,10 @@ import roomescape.dto.SelectableTimeResponse;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ReservationTimeDao;
 import roomescape.repository.ThemeDao;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class ReservationService {
@@ -66,17 +67,20 @@ public class ReservationService {
     }
 
     public List<SelectableTimeResponse> findSelectableTime(final LocalDate date, final long themeId) {
-        List<SelectableTimeResponse> result = new ArrayList<>();
         List<Long> usedTimeId = reservationDao.findTimeIdByDateAndThemeId(date, themeId);
         List<ReservationTime> reservationTimes = reservationTimeDao.getAll();
-        for (ReservationTime reservationTime : reservationTimes) {
-            if (usedTimeId.contains(reservationTime.getId())) {
-                result.add(new SelectableTimeResponse(reservationTime.getId(), reservationTime.getStartAt(), true));
-                continue;
-            }
-            result.add(new SelectableTimeResponse(reservationTime.getId(), reservationTime.getStartAt(), false));
-        }
-        return result;
+
+        return reservationTimes.stream()
+                .map(time -> new SelectableTimeResponse(
+                        time.getId(),
+                        time.getStartAt(),
+                        isAlreadyBooked(time, usedTimeId)
+                ))
+                .toList();
+    }
+
+    private static boolean isAlreadyBooked(ReservationTime reservationTime, List<Long> usedTimeId) {
+        return usedTimeId.contains(reservationTime.getId());
     }
 
     private boolean hasDuplicateReservation(final LocalDate date, final long timeId, final long themeId) {
