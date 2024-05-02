@@ -56,5 +56,4 @@ public class ReservationService {
     public void deleteReservation(Long id) {
         reservationDao.deleteReservation(id);
     }
-
 }

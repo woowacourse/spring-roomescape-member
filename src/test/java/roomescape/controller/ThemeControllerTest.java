@@ -9,7 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.dto.AvailableTimeResponse;
 import roomescape.dto.ThemeCreateRequest;
 import roomescape.dto.ThemeResponse;
 

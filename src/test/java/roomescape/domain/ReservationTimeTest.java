@@ -8,7 +8,6 @@ import java.time.LocalTime;
 import static org.assertj.core.api.Assertions.*;
 
 class ReservationTimeTest {
-
     @DisplayName("시간이 형식에 맞지 않을 때 예외를 던진다.")
     @Test
     void validateTimeTest_whenTimeFormatIsNotMatch() {

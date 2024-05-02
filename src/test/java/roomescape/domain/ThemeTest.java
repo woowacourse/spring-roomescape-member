@@ -33,5 +33,4 @@ class ThemeTest {
                 .isInstanceOf(NullPointerException.class)
                 .hasMessage("인자 중 null 값이 존재합니다.");
     }
-
 }

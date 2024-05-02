@@ -9,7 +9,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ReservationTest {
-
     private final String date = "2050-10-10";
     private final ReservationTime time = new ReservationTime("09:00");
     private final Theme theme = new Theme(

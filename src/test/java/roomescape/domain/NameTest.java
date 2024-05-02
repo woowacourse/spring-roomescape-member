@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class NameTest {
-
     @DisplayName("이릉이 null일 경우 예외를 던진다.")
     @Test
     void validateTest_whenValueIsNull() {
