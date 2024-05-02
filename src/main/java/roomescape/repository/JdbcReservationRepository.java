@@ -122,9 +122,9 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Boolean existDateAndTimeId(LocalDate date, Long timeId) {
-        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE date = ? AND time_id = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId);
+    public Boolean existDateTimeAndTheme(LocalDate date, Long timeId, Long themeId) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
     }
 
     @Override
@@ -132,7 +132,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = """
                 SELECT theme_id
                 FROM reservation
-                WHERE date BETWEEN CURRENT_DATE() - INTERVAL '7' DAY AND CURRENT_DATE()
+                WHERE date BETWEEN CURRENT_DATE() - INTERVAL '7' DAY AND CURRENT_DATE() - INTERVAL '1' DAY
                 GROUP BY theme_id
                 ORDER BY COUNT(*) DESC
                 LIMIT 10;
