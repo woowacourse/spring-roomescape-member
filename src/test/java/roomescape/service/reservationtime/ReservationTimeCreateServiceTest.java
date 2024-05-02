@@ -30,7 +30,7 @@ class ReservationTimeCreateServiceTest {
     @Test
     @DisplayName("존재하지 않는 예약 시간인 경우 성공한다")
     void checkDuplicateTime_Success() {
-        SaveReservationTimeRequest request = new SaveReservationTimeRequest(LocalTime.now());
+        SaveReservationTimeRequest request = new SaveReservationTimeRequest(LocalTime.of(12, 0));
 
         assertThatCode(() -> reservationTimeCreateService.createReservationTime(request))
                 .doesNotThrowAnyException();
@@ -39,8 +39,7 @@ class ReservationTimeCreateServiceTest {
     @Test
     @DisplayName("이미 존재하는 예약 시간인 경우 예외가 발생한다.")
     void checkDuplicateTime_Failure() {
-        SaveReservationTimeRequest request = new SaveReservationTimeRequest(LocalTime.now());
-        reservationTimeCreateService.createReservationTime(request);
+        SaveReservationTimeRequest request = new SaveReservationTimeRequest(LocalTime.of(11, 0));
 
         assertThatThrownBy(() -> reservationTimeCreateService.createReservationTime(request))
                 .isInstanceOf(IllegalArgumentException.class)

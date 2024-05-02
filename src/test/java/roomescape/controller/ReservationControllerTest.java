@@ -2,18 +2,15 @@ package roomescape.controller;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.domain.Reservation;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,9 +19,6 @@ import static org.hamcrest.Matchers.is;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ReservationControllerTest {
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     @Autowired
     private ReservationController reservationController;
@@ -45,40 +39,17 @@ public class ReservationControllerTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("size()", is(1));
     }
 
     @Test
     @DisplayName("예약 추가, 조회를 정상적으로 수행한다.")
     void ReservationTime_CREATE_READ_Success() {
         Map<String, Object> reservation = Map.of("name", "브라운",
-                "date", LocalDate.now().plusDays(1L).toString(),
+                "date", LocalDate.now().plusDays(2L).toString(),
                 "timeId", 1,
                 "themeId", 1
         );
-
-        Map<String, String> time = Map.of(
-                "startAt", "10:00"
-        );
-
-        Map<String, Object> theme = Map.of("name", "테마",
-                "description", "테마 설명",
-                "thumbnail", "테마 썸네일"
-        );
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(time)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(201);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(theme)
-                .when().post("/themes")
-                .then().log().all()
-                .statusCode(201);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -92,48 +63,12 @@ public class ReservationControllerTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", is(2));
     }
 
     @Test
     @DisplayName("DB에 저장된 예약을 정상적으로 삭제한다.")
     void deleteReservation_InDatabase_Success() {
-        Map<String, Object> reservation = Map.of("name", "브라운",
-                "date", LocalDate.now().plusDays(1L).toString(),
-                "timeId", 1,
-                "themeId", 1
-        );
-
-        Map<String, String> time = Map.of(
-                "startAt", "10:00"
-        );
-
-        Map<String, Object> theme = Map.of("name", "테마",
-                "description", "테마 설명",
-                "thumbnail", "테마 썸네일"
-        );
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(time)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(201);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(theme)
-                .when().post("/themes")
-                .then().log().all()
-                .statusCode(201);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservation)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(201);
-
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
                 .then().log().all()
@@ -164,19 +99,8 @@ public class ReservationControllerTest {
     @Test
     @DisplayName("이름이 빈칸인 경우 400 상태 코드를 반환한다.")
     void nameBlankStatusCode400() {
-        Map<String, String> timeParams = Map.of(
-                "startAt", "10:00"
-        );
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(timeParams)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(201);
-
         Map<String, String> reservationParams = Map.of("name", "",
-                "date", "2023-08-05",
+                "date", LocalDate.now().plusDays(2).toString(),
                 "timeId", "1"
         );
 

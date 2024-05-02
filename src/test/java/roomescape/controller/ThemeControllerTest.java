@@ -22,7 +22,7 @@ public class ThemeControllerTest {
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("size()", is(2));
     }
 
     @Test
@@ -39,33 +39,20 @@ public class ThemeControllerTest {
                 .when().post("/themes")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(1));
+                .body("id", is(3));
 
         RestAssured.given().log().all()
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", is(3));
     }
 
     @Test
     @DisplayName("테마 삭제를 정상적으로 수행한다.")
     void deleteTheme_Success() {
-        Map<String, String> params = Map.of("name", "레벨2 탈출",
-                "description", "우테코 레벨2를 탈출하는 내용입니다.",
-                "thumbnail", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
-        );
-
         RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/themes")
-                .then().log().all()
-                .statusCode(201)
-                .body("id", is(1));
-
-        RestAssured.given().log().all()
-                .when().delete("/themes/1")
+                .when().delete("/themes/2")
                 .then().log().all()
                 .statusCode(204);
 
@@ -73,6 +60,6 @@ public class ThemeControllerTest {
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("size()", is(1));
     }
 }
