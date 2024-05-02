@@ -1,7 +1,6 @@
 package roomescape.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
@@ -19,7 +18,7 @@ class MemberControllerTest {
     private int port;
 
     @BeforeEach
-    void init(){
+    void init() {
         RestAssured.port = port;
     }
 

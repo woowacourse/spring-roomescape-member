@@ -1,21 +1,24 @@
 package roomescape.dao;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 @JdbcTest
 class ReservationTimeJDBCRepositoryTest {
     private ReservationTimeRepository reservationTimeRepository;
+    private ReservationRepository reservationRepository;
+    private ThemeRepository themeRepository;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -23,6 +26,8 @@ class ReservationTimeJDBCRepositoryTest {
     @BeforeEach
     void setUp() {
         reservationTimeRepository = new ReservationTimeJDBCRepository(jdbcTemplate);
+        reservationRepository = new ReservationJDBCRepository(jdbcTemplate);
+        themeRepository = new ThemeJDBCRepository(jdbcTemplate);
     }
 
     @DisplayName("새로운 예약 시간을 저장한다.")
@@ -68,8 +73,8 @@ class ReservationTimeJDBCRepositoryTest {
 
         //then
         assertAll(
-                () -> Assertions.assertThat(result.getId()).isEqualTo(target.getId()),
-                () -> Assertions.assertThat(result.getStartAt()).isEqualTo(startAt)
+                () -> assertThat(result.getId()).isEqualTo(target.getId()),
+                () -> assertThat(result.getStartAt()).isEqualTo(startAt)
         );
     }
 
@@ -118,5 +123,36 @@ class ReservationTimeJDBCRepositoryTest {
 
         //then
         assertThat(result).isFalse();
+    }
+
+    @DisplayName("예약이 가능한 시간이 없다.")
+    @Test
+    void findNoAvailableTimesByThemeAndDate() {
+        //given
+        ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime("10:00"));
+        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        Reservation reservation = new Reservation("브라운", "2222-05-01", reservationTime, theme);
+        reservationRepository.save(reservation);
+
+        //when
+        List<ReservationTime> result = reservationTimeRepository.findByThemeAndDate(theme.getId(),
+                reservation.getDate());
+
+        //then
+        assertThat(result).hasSize(0);
+    }
+
+    @DisplayName("예약이 가능한 시간이 있다.")
+    @Test
+    void findAvailableTimesByThemeAndDate() {
+        //given
+        reservationTimeRepository.save(new ReservationTime("10:00"));
+
+        //when
+        List<ReservationTime> result = reservationTimeRepository.findByThemeAndDate(0, "2222-05-01");
+
+        //then
+        assertThat(result).hasSize(1);
     }
 }
