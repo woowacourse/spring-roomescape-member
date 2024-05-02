@@ -35,7 +35,7 @@ class ReservationTimeApiTest {
 
     @Test
     void 예약_시간_추가() {
-        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.parse("11:00"));
+        ReservationTimeRequest reservationTimeRequest = createReservationTimeRequest();
 
         RestAssured.given().log().all()
                 .port(port)
@@ -46,18 +46,14 @@ class ReservationTimeApiTest {
                 .statusCode(201)
                 .header("Location", "/times/1")
                 .body("id", equalTo(1))
-                .body("startAt", equalTo(LocalTime.parse("11:00").toString()));
+                .body("startAt", equalTo(reservationTimeRequest.startAt().toString()));
     }
 
     @Test
     void 예약_시간_단일_조회() {
-        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.parse("11:00"));
+        ReservationTimeRequest reservationTimeRequest = createReservationTimeRequest();
 
-        RestAssured.given().log().all()
-                .port(port)
-                .contentType(ContentType.JSON)
-                .body(reservationTimeRequest)
-                .when().post("/times");
+        addReservationTime(reservationTimeRequest);
 
         given().log().all()
                 .port(port)
@@ -65,19 +61,15 @@ class ReservationTimeApiTest {
                 .then().log().all()
                 .statusCode(200)
                 .body("id", equalTo(1))
-                .body("startAt", equalTo(LocalTime.parse("11:00").toString())
+                .body("startAt", equalTo(reservationTimeRequest.startAt().toString())
                 );
     }
 
     @Test
     void 예약_시간_전체_조회() {
-        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.parse("11:00"));
+        ReservationTimeRequest reservationTimeRequest = createReservationTimeRequest();
 
-        RestAssured.given().log().all()
-                .port(port)
-                .contentType(ContentType.JSON)
-                .body(reservationTimeRequest)
-                .when().post("/times");
+        addReservationTime(reservationTimeRequest);
 
         given().log().all()
                 .port(port)
@@ -99,20 +91,28 @@ class ReservationTimeApiTest {
                 .statusCode(200)
                 .body("size()", is(2));
     }
+
     @Test
     void 예약_시간_삭제() {
-        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.parse("11:00"));
+        ReservationTimeRequest reservationTimeRequest = createReservationTimeRequest();
 
-        RestAssured.given().log().all()
-                .port(port)
-                .contentType(ContentType.JSON)
-                .body(reservationTimeRequest)
-                .when().post("/times");
+        addReservationTime(reservationTimeRequest);
 
         given().log().all()
                 .port(port)
                 .when().delete("/times/1")
                 .then().log().all()
                 .statusCode(204);
+    }
+    private ReservationTimeRequest createReservationTimeRequest() {
+        return new ReservationTimeRequest(LocalTime.parse("11:00"));
+    }
+
+    private void addReservationTime(final ReservationTimeRequest reservationTimeRequest) {
+        RestAssured.given().log().all()
+                .port(port)
+                .contentType(ContentType.JSON)
+                .body(reservationTimeRequest)
+                .when().post("/times");
     }
 }

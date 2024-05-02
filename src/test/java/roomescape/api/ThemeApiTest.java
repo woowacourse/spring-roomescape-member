@@ -12,8 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.ThemeRequest;
 
@@ -27,10 +25,7 @@ class ThemeApiTest {
 
     @Test
     void 테마_추가() {
-        String name = "ted";
-        String description = "설명설명설명설명설명설명설명";
-        String thumbnail = "썸네일";
-        ThemeRequest themeRequest = new ThemeRequest(name, description, thumbnail);
+        ThemeRequest themeRequest = createThemeRequest();
         RestAssured.given().log().all()
                 .port(port)
                 .contentType(ContentType.JSON)
@@ -40,23 +35,16 @@ class ThemeApiTest {
                 .statusCode(201)
                 .header("Location", "/themes/1")
                 .body("id", equalTo(1))
-                .body("name", equalTo(name))
-                .body("description", equalTo(description))
-                .body("thumbnail", equalTo(thumbnail));
+                .body("name", equalTo(themeRequest.name()))
+                .body("description", equalTo(themeRequest.description()))
+                .body("thumbnail", equalTo(themeRequest.thumbnail()));
     }
 
     @Test
     void 테마_단일_조회() {
-        String name = "ted";
-        String description = "설명설명설명설명설명설명설명";
-        String thumbnail = "썸네일";
-        ThemeRequest themeRequest = new ThemeRequest(name, description, thumbnail);
+        ThemeRequest themeRequest = createThemeRequest();
 
-        RestAssured.given().log().all()
-                .port(port)
-                .contentType(ContentType.JSON)
-                .body(themeRequest)
-                .when().post("/themes");
+        addTheme(themeRequest);
 
         RestAssured.given().log().all()
                 .port(port)
@@ -66,23 +54,16 @@ class ThemeApiTest {
                 .then().log().all()
                 .statusCode(200)
                 .body("id", equalTo(1))
-                .body("name", equalTo(name))
-                .body("description", equalTo(description))
-                .body("thumbnail", equalTo(thumbnail));
+                .body("name", equalTo(themeRequest.name()))
+                .body("description", equalTo(themeRequest.description()))
+                .body("thumbnail", equalTo(themeRequest.thumbnail()));
     }
 
     @Test
     void 테마_전체_조회() {
-        String name = "ted";
-        String description = "설명설명설명설명설명설명설명";
-        String thumbnail = "썸네일";
-        ThemeRequest themeRequest = new ThemeRequest(name, description, thumbnail);
+        ThemeRequest themeRequest = createThemeRequest();
 
-        RestAssured.given().log().all()
-                .port(port)
-                .contentType(ContentType.JSON)
-                .body(themeRequest)
-                .when().post("/themes");
+        addTheme(themeRequest);
 
         RestAssured.given().log().all()
                 .port(port)
@@ -96,16 +77,9 @@ class ThemeApiTest {
 
     @Test
     void 테마_삭제() {
-        String name = "ted";
-        String description = "설명설명설명설명설명설명설명";
-        String thumbnail = "썸네일";
-        ThemeRequest themeRequest = new ThemeRequest(name, description, thumbnail);
+        ThemeRequest themeRequest = createThemeRequest();
 
-        RestAssured.given().log().all()
-                .port(port)
-                .contentType(ContentType.JSON)
-                .body(themeRequest)
-                .when().post("/themes");
+        addTheme(themeRequest);
 
         RestAssured.given().log().all()
                 .port(port)
@@ -125,5 +99,17 @@ class ThemeApiTest {
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(10));
+    }
+
+    private ThemeRequest createThemeRequest() {
+        return new ThemeRequest("ted", "설명설명설명설명설명설명설명", "썸네일");
+    }
+
+    private void addTheme(final ThemeRequest themeRequest) {
+        RestAssured.given().log().all()
+                .port(port)
+                .contentType(ContentType.JSON)
+                .body(themeRequest)
+                .when().post("/themes");
     }
 }

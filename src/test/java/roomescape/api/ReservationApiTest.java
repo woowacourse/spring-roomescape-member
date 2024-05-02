@@ -13,8 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.ReservationRequest;
 
@@ -27,7 +25,7 @@ class ReservationApiTest {
 
     @Test
     void 예약_추가() {
-        ReservationRequest reservationRequest = new ReservationRequest("ted", LocalDate.now().plusDays(1), 1L, 1L);
+        ReservationRequest reservationRequest = createReservationRequest();
 
         RestAssured.given().log().all()
                 .port(port)
@@ -38,22 +36,17 @@ class ReservationApiTest {
                 .statusCode(201)
                 .header("Location", "/reservations/1")
                 .body("id", equalTo(1))
-                .body("name", equalTo("ted"))
-                .body("date", equalTo(LocalDate.now().plusDays(1).toString()))
-                .body("time.id", equalTo(1))
-                .body("theme.id", equalTo(1)
-                );
+                .body("name", equalTo(reservationRequest.name()))
+                .body("date", equalTo(reservationRequest.date().toString()))
+                .body("time.id", equalTo(reservationRequest.timeId()))
+                .body("theme.id", equalTo(reservationRequest.themeId()));
     }
 
     @Test
     void 예약_단일_조회() {
-        ReservationRequest reservationRequest = new ReservationRequest("ted", LocalDate.now().plusDays(1), 1L, 1L);
+        ReservationRequest reservationRequest = createReservationRequest();
 
-        RestAssured.given().log().all()
-                .port(port)
-                .contentType(ContentType.JSON)
-                .body(reservationRequest)
-                .when().post("/reservations");
+        addReservation(reservationRequest);
 
         given().log().all()
                 .port(port)
@@ -62,20 +55,16 @@ class ReservationApiTest {
                 .statusCode(200)
                 .body("id", equalTo(1))
                 .body("name", equalTo("ted"))
-                .body("date", equalTo(LocalDate.now().plusDays(1).toString()))
-                .body("time.id", equalTo(1))
-                .body("theme.id", equalTo(1));
+                .body("date", equalTo(reservationRequest.date().toString()))
+                .body("time.id", equalTo(reservationRequest.timeId()))
+                .body("theme.id", equalTo(reservationRequest.themeId()));
     }
 
     @Test
     void 예약_전체_조회() {
-        ReservationRequest reservationRequest = new ReservationRequest("ted", LocalDate.now().plusDays(1), 1L, 1L);
+        ReservationRequest reservationRequest = createReservationRequest();
 
-        RestAssured.given().log().all()
-                .port(port)
-                .contentType(ContentType.JSON)
-                .body(reservationRequest)
-                .when().post("/reservations");
+        addReservation(reservationRequest);
 
         given().log().all()
                 .port(port)
@@ -87,18 +76,26 @@ class ReservationApiTest {
 
     @Test
     void 예약_삭제() {
-        ReservationRequest reservationRequest = new ReservationRequest("ted", LocalDate.now().plusDays(1), 1L, 1L);
+        ReservationRequest reservationRequest = createReservationRequest();
 
-        RestAssured.given().log().all()
-                .port(port)
-                .contentType(ContentType.JSON)
-                .body(reservationRequest)
-                .when().post("/reservations");
+        addReservation(reservationRequest);
 
         given().log().all()
                 .port(port)
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(204);
+    }
+
+    private ReservationRequest createReservationRequest() {
+        return new ReservationRequest("ted", LocalDate.now().plusDays(1), 1L, 1L);
+    }
+
+    private void addReservation(final ReservationRequest reservationRequest) {
+        RestAssured.given().log().all()
+                .port(port)
+                .contentType(ContentType.JSON)
+                .body(reservationRequest)
+                .when().post("/reservations");
     }
 }

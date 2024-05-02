@@ -18,6 +18,7 @@ class FrontPageApiTest {
 
     @LocalServerPort
     int port;
+
     @Test
     void 인기_테마_페이지_이동() {
         given().log().all()

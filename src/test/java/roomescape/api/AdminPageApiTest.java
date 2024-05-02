@@ -14,7 +14,7 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-public class AdminPageApiTest {
+class AdminPageApiTest {
 
     @LocalServerPort
     int port;
@@ -47,7 +47,7 @@ public class AdminPageApiTest {
     }
 
     @Test
-    void 테마_페이지_이동(){
+    void 테마_페이지_이동() {
         given().log().all()
                 .port(port)
                 .when().get("/admin/theme")
