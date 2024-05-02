@@ -73,4 +73,10 @@ public class ReservationTimeEndPointTest {
                 })
         );
     }
+
+    @DisplayName("날짜에 해당하는 테마 시간 예약 여부 조회")
+    @Test
+    void getAvailableTimes() {
+        HttpRestTestTemplate.assertGetOk("/times/available?date=2024-06-03&themeId=1");
+    }
 }

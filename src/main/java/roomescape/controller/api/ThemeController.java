@@ -51,7 +51,8 @@ public class ThemeController {
     @GetMapping("/rankings")
     public ResponseEntity<List<ThemeResponse>> getTopThemes() {
         List<ThemeResponse> themeResponses = themeService.getTopThemes();
-    
+        System.out.println("히히" + themeResponses.stream().findFirst());
+
         return ResponseEntity.ok()
                 .body(themeResponses);
     }
