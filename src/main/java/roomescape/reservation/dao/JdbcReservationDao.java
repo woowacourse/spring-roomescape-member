@@ -73,8 +73,19 @@ public class JdbcReservationDao implements ReservationDao {
     @Override
     public List<Reservation> findReservationsByDateAndThemeId(LocalDate date, Long themeId) {
         String sql = """
-                SELECT *
+                SELECT
+                    r.id as reservation_id,
+                    r.name,
+                    r.date,
+                    t.id as time_id,
+                    t.start_at as time_value,
+                    h.id as theme_id,
+                    h.name as theme_name,
+                    h.description as theme_description,
+                    h.thumbnail as theme_thumbnail 
                 FROM reservation as r
+                inner join reservation_time as t on r.time_id = t.id
+                inner join theme as h on r.theme_id = h.id
                 WHERE r.date = ? and r.theme_id = ?
                 """;
 
