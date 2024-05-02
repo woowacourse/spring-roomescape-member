@@ -54,11 +54,11 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public boolean isExistThemeOf(long themeId) {
-        String sql = "SELECT COUNT(*) FROM theme WHERE id = :themeId";
+        String sql = "SELECT 1 FROM theme WHERE id = :themeId";
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("themeId", themeId);
-        int count = jdbcTemplate.queryForObject(sql, parameterSource, Integer.class);
-        return count > 0;
+        List<Integer> result = jdbcTemplate.queryForList(sql, parameterSource, Integer.class);
+        return !result.isEmpty();
     }
 
     @Override

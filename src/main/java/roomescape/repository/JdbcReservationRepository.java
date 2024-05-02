@@ -67,40 +67,40 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public boolean hasReservationOfTimeId(long timeId) {
-        String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = :timeId";
+        String sql = "SELECT 1 FROM reservation WHERE time_id = :timeId";
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("timeId", timeId);
-        int count = jdbcTemplate.queryForObject(sql, parameterSource, Integer.class);
-        return count > 0;
+        List<Integer> result = jdbcTemplate.queryForList(sql, parameterSource, Integer.class);
+        return !result.isEmpty();
     }
 
     @Override
     public boolean hasReservationOfThemeId(long themeId) {
-        String sql = "SELECT COUNT(*) FROM reservation WHERE theme_id = :themeId";
+        String sql = "SELECT 1 FROM reservation WHERE theme_id = :themeId";
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("themeId", themeId);
-        int count = jdbcTemplate.queryForObject(sql, parameterSource, Integer.class);
-        return count > 0;
+        List<Integer> result = jdbcTemplate.queryForList(sql, parameterSource, Integer.class);
+        return !result.isEmpty();
     }
 
     @Override
     public boolean isExistReservationOf(long id) {
-        String sql = "SELECT COUNT(*) FROM reservation WHERE id = :id";
+        String sql = "SELECT 1 FROM reservation WHERE id = :id";
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("id", id);
-        int count = jdbcTemplate.queryForObject(sql, parameterSource, Integer.class);
-        return count > 0;
+        List<Integer> result = jdbcTemplate.queryForList(sql, parameterSource, Integer.class);
+        return !result.isEmpty();
     }
 
     @Override
     public boolean hasSameReservationForThemeAtDateTime(Reservation reservation) {
-        String sql = "SELECT COUNT(*) FROM reservation WHERE date = :date AND time_id = :timeId AND theme_id = :themeId";
+        String sql = "SELECT 1 FROM reservation WHERE date = :date AND time_id = :timeId AND theme_id = :themeId";
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("date", reservation.getDate())
                 .addValue("timeId", reservation.getTimeId())
                 .addValue("themeId", reservation.getThemeId());
-        int count = jdbcTemplate.queryForObject(sql, parameterSource, Integer.class);
-        return count > 0;
+        List<Integer> result = jdbcTemplate.queryForList(sql, parameterSource, Integer.class);
+        return !result.isEmpty();
     }
 
     private Reservation findReservationById(long savedId) {

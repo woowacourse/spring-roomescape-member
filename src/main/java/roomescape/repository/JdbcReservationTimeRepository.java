@@ -50,20 +50,20 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public boolean isExistTimeOf(String startAt) {
-        String sql = "SELECT COUNT(*) FROM reservation_time WHERE start_at = :startAt";
+        String sql = "SELECT 1 FROM reservation_time WHERE start_at = :startAt";
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("startAt", startAt);
-        int count = jdbcTemplate.queryForObject(sql, parameterSource, Integer.class);
-        return count > 0;
+        List<Integer> result = jdbcTemplate.queryForList(sql, parameterSource, Integer.class);
+        return !result.isEmpty();
     }
 
     @Override
     public boolean isExistTimeOf(long timeId) {
-        String sql = "SELECT COUNT(*) FROM reservation_time WHERE id = :timeId";
+        String sql = "SELECT 1 FROM reservation_time WHERE id = :timeId";
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("timeId", timeId);
-        int count = jdbcTemplate.queryForObject(sql, parameterSource, Integer.class);
-        return count > 0;
+        List<Integer> result = jdbcTemplate.queryForList(sql, parameterSource, Integer.class);
+        return !result.isEmpty();
     }
 
     @Override
