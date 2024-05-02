@@ -96,24 +96,4 @@ public class ReservationDao {
         return jdbcTemplate.queryForList("SELECT time_id FROM reservation WHERE date = ? AND theme_id = ?", Long.class, date, themeId);
         //todo : reservation 테이블 vs time 테이블
     }
-
-    // TODO: ThemeDao vs ReservationDao
-    public List<Theme> findThemesByDescOrder() {
-        String nowDate = LocalDate.now().toString();
-        String weekBeforeDate = LocalDate.now().minusDays(7).toString();
-        return jdbcTemplate.query("""
-                SELECT
-                th.id as theme_id,
-                th.name,
-                th.description,
-                th.thumbnail,
-                COUNT(r.theme_id) AS reservation_count
-                FROM reservation AS r
-                INNER JOIN theme AS th ON r.theme_id = th.id
-                WHERE r.date < ? AND r.date > ?
-                GROUP BY th.id, th.name, th.description, th.thumbnail
-                ORDER BY reservation_count DESC
-                LIMIT 10
-                """, themeRowMapper, nowDate, weekBeforeDate);
-    }
 }
