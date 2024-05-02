@@ -31,7 +31,7 @@ class ReservationTimeRepositoryTest {
 
     @BeforeEach
     void init() {
-        jdbcTemplate.update("INSERT INTO reservation_times (start_at) VALUES (?), (?)", "08:00", "07:00");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?), (?)", "08:00", "07:00");
     }
 
     @DisplayName("예약 시간 저장")

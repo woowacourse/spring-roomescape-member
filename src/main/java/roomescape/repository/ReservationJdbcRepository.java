@@ -50,7 +50,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
     public ReservationJdbcRepository(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.reservationInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("reservations")
+                .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
     }
 
@@ -80,8 +80,8 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 t.name as theme_name,
                 t.description,
                 t.thumbnail
-            FROM reservations as r
-            INNER JOIN reservation_times as rt
+            FROM reservation as r
+            INNER JOIN reservation_time as rt
             ON r.time_id = rt.id
             INNER JOIN theme as t
             ON r.theme_id = t.id
@@ -102,8 +102,8 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 t.name as theme_name,
                 t.description,
                 t.thumbnail
-            FROM reservations as r
-            INNER JOIN reservation_times as rt
+            FROM reservation as r
+            INNER JOIN reservation_time as rt
             ON r.time_id = rt.id
             INNER JOIN theme as t
             ON r.theme_id = t.id
@@ -131,8 +131,8 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 t.name as theme_name,
                 t.description,
                 t.thumbnail
-            FROM reservations as r
-            INNER JOIN reservation_times as rt
+            FROM reservation as r
+            INNER JOIN reservation_time as rt
             ON r.time_id = rt.id
             INNER JOIN theme as t
             ON r.theme_id = t.id
@@ -148,7 +148,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 SELECT 
                 CASE WHEN EXISTS (
                         SELECT 1
-                        FROM reservations
+                        FROM reservation
                         WHERE time_id = ?
                     )
                     THEN TRUE
@@ -164,7 +164,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 SELECT 
                 CASE WHEN EXISTS (
                         SELECT 1
-                        FROM reservations
+                        FROM reservation
                         WHERE theme_id = ?
                     )
                     THEN TRUE
@@ -180,7 +180,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 SELECT 
                 CASE WHEN EXISTS (
                         SELECT 1
-                        FROM reservations
+                        FROM reservation
                         WHERE date = ? AND time_id = ? AND theme_id = ?
                     )
                     THEN TRUE
@@ -192,7 +192,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
 
     @Override
     public void deleteById(final Long id) {
-        jdbcTemplate.update("DELETE FROM reservations WHERE id = ?", id);
+        jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
     }
 
     @Override
@@ -200,7 +200,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
         final String sql = """
                 SELECT t.id, t.name, t.description, t.thumbnail
                 FROM theme AS t
-                LEFT JOIN reservations AS r
+                LEFT JOIN reservation AS r
                 ON t.id = r.theme_id
                 WHERE r.date BETWEEN ? AND ?
                 GROUP BY t.id

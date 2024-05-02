@@ -32,8 +32,8 @@ public class ThemeService {
                 .toList();
     }
 
-    public List<ThemeResponse> getPopularThemes(final LocalDate localDate) {
-        return reservationRepository.findWeeklyTopThemesOrderByCount(localDate, 10)
+    public List<ThemeResponse> getPopularThemes(final LocalDate localDate, final int limit) {
+        return reservationRepository.findWeeklyTopThemesOrderByCount(localDate, limit)
                 .stream()
                 .map(ThemeResponse::new)
                 .toList();

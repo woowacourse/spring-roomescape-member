@@ -25,21 +25,21 @@ class DatabaseTest {
             assertAll(
                     () -> assertThat(connection).isNotNull(),
                     () -> assertThat(connection.getCatalog()).isEqualTo("DATABASE"),
-                    () -> assertThat(connection.getMetaData().getTables(null, null, "RESERVATIONS", null).next()).isTrue()
+                    () -> assertThat(connection.getMetaData().getTables(null, null, "RESERVATION", null).next()).isTrue()
             );
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    @DisplayName("reservation_times 테이블 생성")
+    @DisplayName("reservation_time 테이블 생성")
     @Test
     void generateReservationTimesTable() {
         try (final Connection connection = jdbcTemplate.getDataSource().getConnection()) {
             assertAll(
                     () -> assertThat(connection).isNotNull(),
                     () -> assertThat(connection.getCatalog()).isEqualTo("DATABASE"),
-                    () -> assertThat(connection.getMetaData().getTables(null, null, "RESERVATION_TIMES", null).next()).isTrue()
+                    () -> assertThat(connection.getMetaData().getTables(null, null, "RESERVATION_TIME", null).next()).isTrue()
             );
         } catch (SQLException e) {
             throw new RuntimeException(e);

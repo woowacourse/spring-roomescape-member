@@ -40,8 +40,11 @@ public class ThemeController {
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<ThemeResponse>> getPopularThemes(@RequestParam("date") final LocalDate localDate) {
-        final List<ThemeResponse> themeResponses = themeService.getPopularThemes(localDate);
+    public ResponseEntity<List<ThemeResponse>> getPopularThemes(
+            @RequestParam("date") final LocalDate localDate,
+            @RequestParam("limit") final Integer limit
+    ) {
+        final List<ThemeResponse> themeResponses = themeService.getPopularThemes(localDate, limit);
         return ResponseEntity.ok(themeResponses);
     }
 

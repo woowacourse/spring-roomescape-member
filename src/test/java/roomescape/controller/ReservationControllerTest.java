@@ -37,7 +37,7 @@ class ReservationControllerTest {
     @BeforeEach
     void init() {
         RestAssured.port = port;
-        jdbcTemplate.update("INSERT INTO reservation_times (start_at) VALUES ('10:00')");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('10:00')");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('이름', '설명', '썸네일')");
     }
 
@@ -63,7 +63,7 @@ class ReservationControllerTest {
     @DisplayName("데이터 삽입 후 예약 목록 조회")
     @Test
     void getReservationsAfterInsert() {
-        jdbcTemplate.update("INSERT INTO reservations (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2025-08-05", 1L, 1L);
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2025-08-05", 1L, 1L);
 
         final List<ReservationResponse> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -71,7 +71,7 @@ class ReservationControllerTest {
                 .statusCode(200).extract()
                 .jsonPath().getList(".", ReservationResponse.class);
 
-        final Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservations", Integer.class);
+        final Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
         assertThat(reservations.size()).isEqualTo(count);
     }
 
@@ -92,7 +92,7 @@ class ReservationControllerTest {
                 .statusCode(201)
                 .header("Location", "/reservations/1");
 
-        final Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservations", Integer.class);
+        final Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
         assertThat(count).isEqualTo(1);
 
         RestAssured.given().log().all()
@@ -100,7 +100,7 @@ class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(204);
 
-        final Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservations", Integer.class);
+        final Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
         assertThat(countAfterDelete).isEqualTo(0);
     }
 

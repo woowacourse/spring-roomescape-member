@@ -23,7 +23,7 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
     public ReservationTimeJdbcRepository(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.reservationTimeInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("reservation_times")
+                .withTableName("reservation_time")
                 .usingGeneratedKeyColumns("id");
     }
 
@@ -36,7 +36,7 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
 
     @Override
     public Optional<ReservationTime> findById(final Long id) {
-        final String selectQuery = "SELECT id, start_at FROM reservation_times WHERE id = ?";
+        final String selectQuery = "SELECT id, start_at FROM reservation_time WHERE id = ?";
         try {
             final ReservationTime time = jdbcTemplate.queryForObject(selectQuery, TIME_ROW_MAPPER, id);
             return Optional.ofNullable(time);
@@ -47,7 +47,7 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
 
     @Override
     public List<ReservationTime> findAll() {
-        final String selectQuery = "SELECT id, start_at FROM reservation_times";
+        final String selectQuery = "SELECT id, start_at FROM reservation_time";
         return jdbcTemplate.query(selectQuery, TIME_ROW_MAPPER);
     }
 
@@ -57,7 +57,7 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
                 SELECT
                 CASE WHEN EXISTS (
                         SELECT 1
-                        FROM reservation_times
+                        FROM reservation_time
                         WHERE start_at = ?
                     )
                     THEN TRUE
@@ -69,6 +69,6 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
 
     @Override
     public void deleteById(final Long id) {
-        jdbcTemplate.update("DELETE FROM reservation_times WHERE id = ?", id);
+        jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
     }
 }
