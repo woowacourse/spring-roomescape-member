@@ -1,5 +1,6 @@
 package roomescape.reservation.dao;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -67,6 +68,17 @@ public class JdbcReservationDao implements ReservationDao {
                 """;
 
         return jdbcTemplate.query(sql, RESERVATION_MAPPER);
+    }
+
+    @Override
+    public List<Reservation> findReservationsByDateAndThemeId(LocalDate date, Long themeId) {
+        String sql = """
+                SELECT *
+                FROM reservation as r
+                WHERE r.date = ? and r.theme_id = ?
+                """;
+
+        return jdbcTemplate.query(sql, RESERVATION_MAPPER, date, themeId);
     }
 
     @Override

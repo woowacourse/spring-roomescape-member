@@ -1,7 +1,6 @@
 package roomescape.reservation.service;
 
 import java.util.List;
-import java.util.Objects;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.dao.ReservationDao;
@@ -41,23 +40,30 @@ public class ReservationTimeService {
     }
 
     public List<AvailableTimeResponse> findAvailableTimes(AvailableTimeRequest availableTimeRequest) {
-        List<Reservation> reservations = reservationDao.findAllReservations();
+        List<Reservation> reservations = reservationDao.findReservationsByDateAndThemeId(
+                availableTimeRequest.date(),
+                availableTimeRequest.themeId()
+        );
+
         List<ReservationTime> reservationTimes = reservationTimeDao.findAllReservationTimes();
 
         return reservationTimes.stream()
-                .map(reservationTime -> new AvailableTimeResponse(reservationTime.getStartAt(), reservationTime.getId(),
-                        reservations.stream()
-                                .filter(reservation -> reservation.getTime().equals(reservationTime))
-                                .filter(reservation -> Objects.equals(reservation.getThemeId(), availableTimeRequest.themeId()))
-                                .noneMatch(reservation -> reservation.getDate().isEqual(availableTimeRequest.date()))
+                .map(reservationTime -> new AvailableTimeResponse(
+                        reservationTime.getStartAt(),
+                        reservationTime.getId(),
+                        isReservedTime(reservations, reservationTime)
                 ))
                 .toList();
+    }
 
+    private boolean isReservedTime(List<Reservation> reservations, ReservationTime reservationTime) {
+        return reservations.stream()
+                .noneMatch(reservation -> reservation.isSameTime(reservationTime));
     }
 
     public void deleteReservationTime(Long id) {
         try {
-          reservationTimeDao.delete(id);
+            reservationTimeDao.delete(id);
         } catch (DataIntegrityViolationException e) {
             throw new CustomException(ExceptionCode.TIME_IN_USE);
         }
