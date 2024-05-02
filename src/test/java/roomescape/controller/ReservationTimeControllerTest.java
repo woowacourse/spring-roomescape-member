@@ -48,7 +48,7 @@ class ReservationTimeControllerTest extends ControllerTest {
     void 전체_예약_시간을_조회한다() throws Exception {
         List<ReservationTimeResponse> reservationTimes = IntStream.range(0, 3)
                 .mapToObj(ReservationFixture::reservationTime)
-                .map(time -> ReservationTimeResponse.from(time, false))
+                .map(ReservationTimeResponse::from)
                 .toList();
         when(reservationTimeService.getReservationTimes()).thenReturn(reservationTimes);
 

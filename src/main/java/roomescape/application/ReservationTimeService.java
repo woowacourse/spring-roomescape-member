@@ -40,7 +40,7 @@ public class ReservationTimeService {
         for (ReservationTime reservationTime : reservationTimeRepository.findAll()) {
             Optional<Reservation> optionalReservation = reservationRepository.findByTimeId(reservationTime.getId());
             boolean alreadyBooked = optionalReservation.isPresent();
-            ReservationTimeResponse response = ReservationTimeResponse.from(reservationTime, alreadyBooked);
+            ReservationTimeResponse response = ReservationTimeResponse.from(reservationTime);
             responses.add(response);
         }
         return responses;

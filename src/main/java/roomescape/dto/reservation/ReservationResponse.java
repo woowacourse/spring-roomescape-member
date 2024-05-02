@@ -10,13 +10,13 @@ public record ReservationResponse(long id, String name, ThemeResponse theme, Loc
                                   ReservationTimeResponse time) {
     private ReservationResponse(long id, String name, ThemeResponse theme, LocalDate date, long timeId,
                                 LocalTime time) {
-        this(id, name, theme, date, new ReservationTimeResponse(timeId, time, false));
+        this(id, name, theme, date, new ReservationTimeResponse(timeId, time));
     }
 
     public static ReservationResponse from(Reservation reservation) {
         return new ReservationResponse(reservation.getId(), reservation.getName(),
                 ThemeResponse.from(reservation.getTheme()),
                 reservation.getDate(),
-                new ReservationTimeResponse(reservation.getTimeId(), reservation.getTime(), false));
+                new ReservationTimeResponse(reservation.getTimeId(), reservation.getTime()));
     }
 }

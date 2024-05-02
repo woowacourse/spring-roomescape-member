@@ -29,7 +29,7 @@ public class ReservationTimeController {
     public ResponseEntity<ReservationTimeResponse> createReservationTime(
             @Valid @RequestBody ReservationTimeRequest request) {
         ReservationTime time = reservationTimeService.register(request.toReservationCreationRequest());
-        ReservationTimeResponse response = ReservationTimeResponse.from(time, false);
+        ReservationTimeResponse response = ReservationTimeResponse.from(time);
         URI location = URI.create("/times/" + response.id());
         return ResponseEntity.created(location).body(response);
     }

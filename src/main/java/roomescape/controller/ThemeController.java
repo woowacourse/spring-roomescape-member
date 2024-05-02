@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.application.ThemeService;
 import roomescape.domain.theme.Theme;
-import roomescape.dto.reservationtime.ReservationTimeResponse;
+import roomescape.dto.theme.AvailableTimeResponse;
 import roomescape.dto.theme.ThemeRequest;
 import roomescape.dto.theme.ThemeResponse;
 
@@ -58,8 +58,8 @@ public class ThemeController {
     }
 
     @GetMapping("/{id}/{date}")
-    public ResponseEntity<List<ReservationTimeResponse>> get(@PathVariable long id, @PathVariable LocalDate date) {
-        List<ReservationTimeResponse> responses = themeService.getAvailableTimes(id, date);
+    public ResponseEntity<List<AvailableTimeResponse>> get(@PathVariable long id, @PathVariable LocalDate date) {
+        List<AvailableTimeResponse> responses = themeService.getAvailableTimes(id, date);
         return ResponseEntity.ok(responses);
     }
 
