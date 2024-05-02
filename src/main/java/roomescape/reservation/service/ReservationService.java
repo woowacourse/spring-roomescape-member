@@ -27,21 +27,28 @@ public class ReservationService {
     }
 
     public ReservationResponse createReservation(ReservationRequest reservationRequest) {
-        ReservationTime reservationTime = reservationTimeDao.findById(reservationRequest.timeId())
-                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_RESERVATION_TIME));
+        ReservationTime reservationTime = findReservationTime(reservationRequest);
 
         reservationDao.findAllReservations().stream()
                 .filter(reservation -> reservation.getTime().equals(reservationTime))
+                .filter(reservation -> reservation.getDate().equals(reservationRequest.date()))
                 .findAny()
                 .ifPresent(time -> {
                     throw new CustomException(ExceptionCode.DUPLICATE_RESERVATION);
                 });
+
         Theme theme = themeDao.findById(reservationRequest.themeId())
                 .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_THEME));
 
         Reservation reservation = reservationRequest.toEntity(reservationTime, theme);
         Reservation savedReservation = reservationDao.save(reservation);
         return ReservationResponse.from(savedReservation);
+    }
+
+    private ReservationTime findReservationTime(ReservationRequest reservationRequest) {
+        return reservationTimeDao.findById(reservationRequest.timeId())
+                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_RESERVATION_TIME));
+
     }
 
     public List<ReservationResponse> findAllReservations() {
