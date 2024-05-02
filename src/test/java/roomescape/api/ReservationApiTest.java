@@ -38,8 +38,8 @@ class ReservationApiTest {
                 .body("id", equalTo(1))
                 .body("name", equalTo(reservationRequest.name()))
                 .body("date", equalTo(reservationRequest.date().toString()))
-                .body("time.id", equalTo(reservationRequest.timeId()))
-                .body("theme.id", equalTo(reservationRequest.themeId()));
+                .body("time.id", equalTo(reservationRequest.timeId().intValue()))
+                .body("theme.id", equalTo(reservationRequest.themeId().intValue()));
     }
 
     @Test
@@ -56,8 +56,8 @@ class ReservationApiTest {
                 .body("id", equalTo(1))
                 .body("name", equalTo("ted"))
                 .body("date", equalTo(reservationRequest.date().toString()))
-                .body("time.id", equalTo(reservationRequest.timeId()))
-                .body("theme.id", equalTo(reservationRequest.themeId()));
+                .body("time.id", equalTo((reservationRequest.timeId().intValue())))
+                .body("theme.id", equalTo(reservationRequest.themeId().intValue()));
     }
 
     @Test

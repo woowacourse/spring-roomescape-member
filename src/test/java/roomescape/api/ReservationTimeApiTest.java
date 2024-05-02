@@ -1,28 +1,20 @@
 package roomescape.api;
 
 import static io.restassured.RestAssured.given;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationTimeRequest;
 
 @Sql("/reservation-time-api-test-data.sql")
@@ -104,6 +96,7 @@ class ReservationTimeApiTest {
                 .then().log().all()
                 .statusCode(204);
     }
+
     private ReservationTimeRequest createReservationTimeRequest() {
         return new ReservationTimeRequest(LocalTime.parse("11:00"));
     }
