@@ -9,7 +9,8 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.jdbc.Sql;
+import roomescape.application.dto.ReservationRequest;
+import roomescape.application.dto.ReservationResponse;
 import roomescape.domain.PlayerName;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
@@ -18,9 +19,6 @@ import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeName;
 import roomescape.domain.ThemeRepository;
-import roomescape.application.dto.ReservationRequest;
-import roomescape.application.dto.ReservationResponse;
-import roomescape.domain.dto.AvailableTimeDto;
 
 @ServiceTest
 class ReservationServiceTest {

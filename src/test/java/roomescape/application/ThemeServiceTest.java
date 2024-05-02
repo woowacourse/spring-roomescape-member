@@ -7,11 +7,11 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import roomescape.application.dto.ThemeRequest;
+import roomescape.application.dto.ThemeResponse;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeName;
 import roomescape.domain.ThemeRepository;
-import roomescape.application.dto.ThemeRequest;
-import roomescape.application.dto.ThemeResponse;
 
 @ServiceTest
 class ThemeServiceTest {
