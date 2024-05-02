@@ -22,6 +22,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static roomescape.TestFixture.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -54,39 +55,19 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("동일한 시간에 같은 사용자가 예약할 수 없다.")
+    @DisplayName("동일한 테마, 날짜, 시간에 한 팀만 예약할 수 있다.")
     void createSameReservation() {
         // given
-        Reservation miaReservation = MIA_RESERVATION();
+        ReservationTime miaReservationTime = new ReservationTime(MIA_RESERVATION_TIME);
+        Reservation miaReservation = MIA_RESERVATION(miaReservationTime, WOOTECO_THEME(1L));
 
         BDDMockito.given(reservationTimeRepository.findById(any()))
-                .willReturn(Optional.of(new ReservationTime(MIA_RESERVATION_TIME)));
-        BDDMockito.given(reservationRepository.findAllByDateAndTime(any(), any()))
+                .willReturn(Optional.of(miaReservationTime));
+        BDDMockito.given(reservationRepository.findAllByDateAndTimeAndThemeId(any(), any(), anyLong()))
                 .willReturn(List.of(miaReservation));
 
         // when & then
         assertThatThrownBy(() -> reservationService.create(miaReservation))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
-    @DisplayName("동일한 시간대에 최대 4팀이 예약할 수 있다. 초과되면 예외가 발생한다.")
-    void createLimitedReservations() {
-        // given
-        Reservation miaReservation = new Reservation(USER_MIA, MIA_RESERVATION_DATE, new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME(1L));
-        Reservation tommyReservation = new Reservation(USER_TOMMY, MIA_RESERVATION_DATE, new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME(1L));
-        Reservation wonnyReservation = new Reservation("wonny", MIA_RESERVATION_DATE, new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME(1L));
-        Reservation neoReservation = new Reservation("neo", MIA_RESERVATION_DATE, new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME(1L));
-
-        BDDMockito.given(reservationTimeRepository.findById(any()))
-                .willReturn(Optional.of(new ReservationTime(MIA_RESERVATION_TIME)));
-        BDDMockito.given(reservationRepository.findAllByDateAndTime(any(), any()))
-                .willReturn(List.of(miaReservation, tommyReservation, wonnyReservation, neoReservation));
-
-        Reservation newReservation = new Reservation("new", MIA_RESERVATION_DATE, new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME(1L));
-
-        // when & then
-        assertThatThrownBy(() -> reservationService.create(newReservation))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 

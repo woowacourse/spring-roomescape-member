@@ -11,7 +11,7 @@ public interface ReservationRepository {
 
     Reservation save(Reservation reservation);
 
-    List<Reservation> findAllByDateAndTime(LocalDate date, ReservationTime time);
+    List<Reservation> findAllByDateAndTimeAndThemeId(LocalDate date, ReservationTime time, Long themeId);
 
     List<Reservation> findAll();
 

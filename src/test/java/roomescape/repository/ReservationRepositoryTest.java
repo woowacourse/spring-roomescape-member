@@ -62,8 +62,8 @@ class ReservationRepositoryTest extends RepositoryTest {
         );
 
         // when
-        List<Reservation> reservations = reservationRepository.findAllByDateAndTime(
-                LocalDate.parse(MIA_RESERVATION_DATE), new ReservationTime(MIA_RESERVATION_TIME));
+        List<Reservation> reservations = reservationRepository.findAllByDateAndTimeAndThemeId(
+                LocalDate.parse(MIA_RESERVATION_DATE), new ReservationTime(MIA_RESERVATION_TIME), themeId);
 
         // then
         assertThat(reservations).hasSize(2)

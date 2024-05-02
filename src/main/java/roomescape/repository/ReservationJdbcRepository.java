@@ -24,8 +24,8 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAllByDateAndTime(LocalDate date, ReservationTime time) {
-        return reservationDao.selectAllByDateAndTime(date, time);
+    public List<Reservation> findAllByDateAndTimeAndThemeId(LocalDate date, ReservationTime time, Long themeId) {
+        return reservationDao.selectAllByDateAndTime(date, time, themeId);
     }
 
     @Override

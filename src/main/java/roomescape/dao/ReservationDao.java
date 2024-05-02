@@ -57,7 +57,7 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, this::rowMapper);
     }
 
-    public List<Reservation> selectAllByDateAndTime(LocalDate date, ReservationTime time) {
+    public List<Reservation> selectAllByDateAndTime(LocalDate date, ReservationTime time, Long themeId) {
         String sql = """
                 SELECT 
                     r.id AS reservation_id,
@@ -80,9 +80,9 @@ public class ReservationDao {
                 ON
                     r.theme_id = th.id
                 WHERE 
-                    `date` = ? AND t.start_at = ?
+                    `date` = ? AND t.start_at = ? AND th.id = ?
                 """;
-        return jdbcTemplate.query(sql, this::rowMapper, Date.valueOf(date), Time.valueOf(time.getStartAt()));
+        return jdbcTemplate.query(sql, this::rowMapper, Date.valueOf(date), Time.valueOf(time.getStartAt()), themeId);
     }
 
     public Long insert(Reservation reservation) {
