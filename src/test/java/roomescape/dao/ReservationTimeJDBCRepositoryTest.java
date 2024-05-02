@@ -136,8 +136,8 @@ class ReservationTimeJDBCRepositoryTest {
         reservationRepository.save(reservation);
 
         //when
-        List<ReservationTime> result = reservationTimeRepository.findByThemeAndDate(theme.getId(),
-                reservation.getDate());
+        List<ReservationTime> result = reservationTimeRepository.findByDateAndTheme(
+                reservation.getDate(), theme.getId());
 
         //then
         assertThat(result).hasSize(0);
@@ -150,7 +150,7 @@ class ReservationTimeJDBCRepositoryTest {
         reservationTimeRepository.save(new ReservationTime("10:00"));
 
         //when
-        List<ReservationTime> result = reservationTimeRepository.findByThemeAndDate(0, "2222-05-01");
+        List<ReservationTime> result = reservationTimeRepository.findByDateAndTheme("2222-05-01", 0);
 
         //then
         assertThat(result).hasSize(1);

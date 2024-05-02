@@ -125,8 +125,7 @@ class ReservationTimeServiceTest {
 
         //when
         List<ReservationTimeResponse> result = reservationTimeService.findAvailableTimes(
-                new ReservationTimeReadRequest(theme.getId(),
-                        reservation.getDate()));
+                new ReservationTimeReadRequest(reservation.getDate(), theme.getId()));
 
         //then
         assertAll(
