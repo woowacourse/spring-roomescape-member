@@ -6,6 +6,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class StaticUserPageController {
 
+    @GetMapping("/")
+    public String getHome() {
+        return "index";
+    }
+
     @GetMapping("/reservation")
     public String getReservation() {
         return "reservation";
