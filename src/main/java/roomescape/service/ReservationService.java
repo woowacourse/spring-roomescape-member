@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -12,21 +13,19 @@ import roomescape.exception.IllegalTimeException;
 import roomescape.mapper.ReservationMapper;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ThemeDao;
-
-import java.time.LocalDate;
-import java.util.List;
+import roomescape.repository.TimeDao;
 
 @Service
 public class ReservationService {
 
     private final ReservationMapper reservationMapper = new ReservationMapper();
-    private final ReservationTimeService reservationTimeService;
     private final ReservationDao reservationDao;
+    private final TimeDao timeDao;
     private final ThemeDao themeDao;
 
-    public ReservationService(ReservationTimeService reservationTimeService, ReservationDao reservationDao, ThemeDao themeDao) {
+    public ReservationService(final TimeDao timeDao, ReservationDao reservationDao, ThemeDao themeDao) {
+        this.timeDao = timeDao;
         this.reservationDao = reservationDao;
-        this.reservationTimeService = reservationTimeService;
         this.themeDao = themeDao;
     }
 
@@ -41,7 +40,7 @@ public class ReservationService {
         if (request.timeId() == null) {
             throw new IllegalTimeException("[ERROR] 유효하지 않은 형식의 예약 시간입니다.");
         }
-        ReservationTime time = reservationTimeService.findTimeById(request.timeId());
+        ReservationTime time = timeDao.findById(request.timeId());
 
         if (request.themeId() == null) {
             throw new IllegalThemeException("[ERROR] 유효하지 않은 형식의 테마입니다.");
@@ -59,9 +58,5 @@ public class ReservationService {
 
     public void deleteReservationById(Long id) {
         reservationDao.deleteById(id);
-    }
-
-    public List<Long> findTimeId(LocalDate date, Long themeId) {
-        return reservationDao.findTimeIdByDateThemeId(date, themeId);
     }
 }

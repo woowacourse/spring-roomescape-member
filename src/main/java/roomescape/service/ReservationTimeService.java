@@ -1,5 +1,8 @@
 package roomescape.service;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
@@ -10,10 +13,6 @@ import roomescape.exception.IllegalTimeException;
 import roomescape.mapper.TimeMapper;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.TimeDao;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class ReservationTimeService {
@@ -44,10 +43,6 @@ public class ReservationTimeService {
         return reservationTimes.stream()
                 .map(timeMapper::mapToResponse)
                 .toList();
-    }
-
-    public ReservationTime findTimeById(Long id) {
-        return timeDao.findById(id);
     }
 
     public TimeResponse saveTime(TimeSaveRequest request) {
