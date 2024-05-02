@@ -28,9 +28,16 @@ class JdbcTemplateReservationRepositoryTest {
     void init() {
         jdbcTemplate.update("delete from reservation");
         jdbcTemplate.update("ALTER TABLE reservation alter column id restart with 1");
+
         jdbcTemplate.update("delete from reservation_time");
         jdbcTemplate.update("ALTER TABLE reservation_time alter column id restart with 1");
         jdbcTemplate.update("insert into reservation_time(start_at) values('11:56')");
+
+        jdbcTemplate.update("delete from theme");
+        jdbcTemplate.update("ALTER TABLE theme alter column id restart with 1");
+        jdbcTemplate.update(
+                "insert into theme (name, description, thumbnail) values('name', 'description', 'thumbnail')");
+
     }
 
     @Test
