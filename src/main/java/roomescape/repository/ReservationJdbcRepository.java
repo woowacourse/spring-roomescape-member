@@ -196,18 +196,18 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Theme> findThemesTopOneWeekOrderByCount(final LocalDate localDate, final int limit) {
+    public List<Theme> findWeeklyTopThemesOrderByCount(final LocalDate localDate, final int limit) {
         final String sql = """
-                SELECT t.id, t.name, t.description, t.thumbnail, COUNT(t.id) AS count
+                SELECT t.id, t.name, t.description, t.thumbnail
                 FROM theme AS t
                 LEFT JOIN reservations AS r
                 ON t.id = r.theme_id
-                WHERE r.date <= ? AND r.date > ?
+                WHERE r.date BETWEEN ? AND ?
                 GROUP BY t.id
-                ORDER BY count DESC
+                ORDER BY COUNT(r.id) DESC
                 LIMIT ?
                 """;
 
-        return jdbcTemplate.query(sql, THEME_ROW_MAPPER, localDate, localDate.minusWeeks(1), limit);
+        return jdbcTemplate.query(sql, THEME_ROW_MAPPER, localDate.minusWeeks(1), localDate, limit);
     }
 }
