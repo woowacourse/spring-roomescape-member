@@ -44,6 +44,25 @@ public class ThemeJdbcRepository implements ThemeRepository {
         return jdbcTemplate.queryForObject(sql, themeRowMapper, themeId);
     }
 
+    public List<Theme> findWeeklyHotThemes() {
+        String sql = """
+                SELECT
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail AS theme_thumbnail,
+                    COUNT(r.id) AS reservation_count
+                FROM
+                    reservation AS r
+                INNER JOIN theme AS th ON r.theme_id = th.id
+                WHERE r.date BETWEEN DATEADD(DAY, -7, CURDATE()) AND CURDATE()
+                GROUP BY theme_id
+                ORDER BY reservation_count DESC, theme_name
+                LIMIT 10;
+                """;
+        return jdbcTemplate.query(sql, themeRowMapper);
+    }
+
     public Theme save(Theme theme) {
         try {
             SqlParameterSource parameterSource = new MapSqlParameterSource()

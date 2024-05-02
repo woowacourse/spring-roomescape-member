@@ -11,6 +11,8 @@ public interface ThemeRepository {
 
     Theme findByThemeId(Long themeId);
 
+    List<Theme> findWeeklyHotThemes();
+
     Theme save(Theme theme);
 
     int deleteById(Long id);

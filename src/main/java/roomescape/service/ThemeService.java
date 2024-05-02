@@ -23,6 +23,13 @@ public class ThemeService {
                 .toList();
     }
 
+    public List<ThemeResponse> findWeeklyHotThemes() {
+        return themeRepository.findWeeklyHotThemes()
+                .stream()
+                .map(ThemeResponse::from)
+                .toList();
+    }
+
     public ThemeResponse create(ThemeCreateRequest themeCreateRequest) {
         Theme theme = new Theme(
                 themeCreateRequest.name(),

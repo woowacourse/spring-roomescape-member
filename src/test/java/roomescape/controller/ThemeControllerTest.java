@@ -138,4 +138,13 @@ public class ThemeControllerTest {
                 .then().log().all()
                 .statusCode(400);
     }
+
+    @Test
+    @DisplayName("주간 인기 테마 목록 조회 API 작동을 확인한다")
+    void checkWeeklyHotThemes() {
+        RestAssured.given().log().all()
+                .when().get("themes/hot/weekly")
+                .then().log().all()
+                .statusCode(200);
+    }
 }

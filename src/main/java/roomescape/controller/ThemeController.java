@@ -32,6 +32,14 @@ public class ThemeController {
                 .body(themeResponses);
     }
 
+    @GetMapping("/hot/weekly")
+    public ResponseEntity<List<ThemeResponse>> findWeeklyHotThemes() {
+        List<ThemeResponse> themeResponses = themeService.findWeeklyHotThemes();
+
+        return ResponseEntity.ok()
+                .body(themeResponses);
+    }
+
     @PostMapping
     public ResponseEntity<ThemeResponse> createTheme(
             @RequestBody ThemeCreateRequest themeCreateRequest) {
