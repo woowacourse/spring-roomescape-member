@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.Fixtures;
 import roomescape.domain.Theme;
 import roomescape.repository.theme.ThemeDao;
 import roomescape.repository.theme.ThemeRepository;
@@ -31,11 +32,7 @@ class ThemeDaoTest {
     @Test
     void save() {
         // given
-        Theme theme = new Theme(
-                "공포",
-                "완전 무서운 테마",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
-        );
+        Theme theme = Fixtures.themeFixture;
 
         // when
         Theme savedTheme = themeRepository.save(theme);

@@ -1,13 +1,13 @@
-package roomescape.repository.reservationtime;
+package roomescape.repository;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.domain.ReservationTime;
+import roomescape.repository.reservationtime.ReservationTimeDao;
+import roomescape.repository.reservationtime.ReservationTimeRepository;
 
 import javax.sql.DataSource;
 import java.time.LocalTime;
@@ -21,14 +21,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ReservationTimeDaoTest {
 
     private final ReservationTimeRepository reservationTimeRepository;
-    private final SimpleJdbcInsert simpleJdbcInsert;
 
     @Autowired
     public ReservationTimeDaoTest(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.reservationTimeRepository = new ReservationTimeDao(jdbcTemplate, dataSource);
-        this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName("reservation_time")
-                .usingGeneratedKeyColumns("id");
     }
 
     @DisplayName("예약 시간 DAO는 생성 요청이 들어오면 DB에 값을 저장한다.")
@@ -49,7 +45,7 @@ class ReservationTimeDaoTest {
     @Test
     void findById() {
         // given
-        Long id = saveInitReservationTime();
+        Long id = 1L;
 
         // when
         Optional<ReservationTime> reservationTime = reservationTimeRepository.findById(id);
@@ -61,24 +57,18 @@ class ReservationTimeDaoTest {
     @DisplayName("예약 시간 DAO는 조회 요청이 들어오면 저장된 모든 값을 반환한다.")
     @Test
     void findAll() {
-        // given
-        int count = 5;
-        for (int i = 0; i < count; i++) {
-            saveInitReservationTime();
-        }
-
         // when
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
 
         // then
-        assertThat(reservationTimes.size()).isEqualTo(count);
+        assertThat(reservationTimes.size()).isEqualTo(2);
     }
 
     @DisplayName("예약 시간 DAO는 삭제 요청이 들어오면 id에 맞는 값을 삭제한다.")
     @Test
     void deleteById() {
         // given
-        Long id = saveInitReservationTime();
+        Long id = 3L;
 
         // when
         reservationTimeRepository.deleteById(id);
@@ -86,11 +76,5 @@ class ReservationTimeDaoTest {
 
         // then
         assertThat(actual.isPresent()).isFalse();
-    }
-
-    private Long saveInitReservationTime() {
-        ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 10));
-        return simpleJdbcInsert.executeAndReturnKey(new BeanPropertySqlParameterSource(reservationTime))
-                .longValue();
     }
 }

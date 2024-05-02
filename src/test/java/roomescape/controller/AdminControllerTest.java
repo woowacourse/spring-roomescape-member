@@ -12,7 +12,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 public class AdminControllerTest {
 
     @LocalServerPort
-    int port;
+    private int port;
 
     @BeforeEach
     void setUp() {

@@ -1,4 +1,4 @@
-package roomescape.repository.reservation;
+package roomescape.repository;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -6,17 +6,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.Fixtures;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.repository.reservation.ReservationDao;
+import roomescape.repository.reservation.ReservationRepository;
 
 import javax.sql.DataSource;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,15 +30,11 @@ import static roomescape.Fixtures.themeFixture;
 class ReservationDaoTest {
 
     private final ReservationRepository reservationRepository;
-    private final SimpleJdbcInsert simpleJdbcInsertWithReservation;
     private final SimpleJdbcInsert simpleJdbcInsertWithReservationTime;
 
     @Autowired
     public ReservationDaoTest(ReservationRepository reservationRepository, DataSource dataSource) {
         this.reservationRepository = reservationRepository;
-        this.simpleJdbcInsertWithReservation = new SimpleJdbcInsert(dataSource)
-                .withTableName("reservation")
-                .usingGeneratedKeyColumns("id");
         this.simpleJdbcInsertWithReservationTime = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation_time")
                 .usingGeneratedKeyColumns("id");
@@ -48,7 +44,7 @@ class ReservationDaoTest {
     @Test
     void save() {
         // given
-        ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 10));
+        ReservationTime reservationTime = Fixtures.reservationTimeFixture;
         Long reservationTimeId = simpleJdbcInsertWithReservationTime.executeAndReturnKey(new BeanPropertySqlParameterSource(reservationTime))
                 .longValue();
         ReservationTime newReservationTime = new ReservationTime(reservationTimeId, reservationTime.getStartAt());
@@ -119,7 +115,7 @@ class ReservationDaoTest {
     @Test
     void deleteById() {
         // given
-        Long id = saveInitReservation();
+        Long id = 1L;
 
         // when
         reservationRepository.deleteById(id);
@@ -127,25 +123,5 @@ class ReservationDaoTest {
 
         // then
         assertThat(actual.isPresent()).isFalse();
-    }
-
-    private Long saveInitReservation() {
-        ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 10));
-        Long reservationTimeId = simpleJdbcInsertWithReservationTime.executeAndReturnKey(new BeanPropertySqlParameterSource(reservationTime))
-                .longValue();
-        ReservationTime newReservationTime = new ReservationTime(reservationTimeId, reservationTime.getStartAt());
-
-        Reservation reservation = new Reservation(
-                "브라운",
-                LocalDate.of(2024, 11, 16),
-                newReservationTime,
-                themeFixture
-        );
-        SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
-                .addValue("name", reservation.getName())
-                .addValue("date", reservation.getDate())
-                .addValue("time_id", reservation.getTime().getId());
-
-        return simpleJdbcInsertWithReservation.executeAndReturnKey(sqlParameterSource).longValue();
     }
 }
