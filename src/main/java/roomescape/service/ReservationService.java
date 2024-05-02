@@ -57,7 +57,7 @@ public class ReservationService {
 
     private ReservationTime findTime(Long timeId) {
         if (timeId == null) {
-            throw new ReservationTimeNotFoundException();
+            throw new IllegalArgumentException("시간 id는 null이 입력될 수 없습니다.");
         }
         try {
             return reservationTimeRepository.findById(timeId);
