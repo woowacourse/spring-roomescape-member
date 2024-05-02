@@ -46,11 +46,11 @@ class ThemeControllerTest extends BaseControllerTest {
     }
 
     @TestFactory
-    @DisplayName("중복된 테마를 생성하면 실패한다.")
+    @DisplayName("중복된 이름의 테마를 생성하면 실패한다.")
     Stream<DynamicTest> failWhenDuplicatedTheme() {
         return Stream.of(
                 DynamicTest.dynamicTest("테마를 생성한다.", this::addTheme),
-                DynamicTest.dynamicTest("이미 존재하는 테마를 생성한다.", this::addThemeFailWhenDuplicatedTheme)
+                DynamicTest.dynamicTest("이미 존재하는 이름의 테마를 생성한다.", this::addThemeFailWhenDuplicatedTheme)
         );
     }
 
@@ -107,7 +107,7 @@ class ThemeControllerTest extends BaseControllerTest {
     }
 
     void addThemeFailWhenDuplicatedTheme() {
-        ThemeRequest request = new ThemeRequest("테마 이름", "테마 설명", "https://example.com/image.jpg");
+        ThemeRequest request = new ThemeRequest("테마 이름", "테마 설명-2", "https://example.com/image-2.jpg");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
