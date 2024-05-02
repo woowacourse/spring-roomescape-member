@@ -24,8 +24,12 @@ public class ReservationRowMapper implements RowMapper<Reservation> {
         String themeName = rs.getString("theme_name");
         String description = rs.getString("theme_description");
         String thumbnail = rs.getString("theme_thumbnail");
-        return new Reservation(reservationId, new Name(name), ReservationDate.from(date),
+        return new Reservation(
+                reservationId,
+                new Name(name),
+                ReservationDate.from(date),
                 ReservationTime.from(timeId, startAt),
-                Theme.of(themeId, themeName, description, thumbnail));
+                Theme.of(themeId, themeName, description, thumbnail)
+        );
     }
 }

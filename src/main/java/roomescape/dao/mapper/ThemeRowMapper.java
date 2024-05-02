@@ -5,16 +5,18 @@ import java.sql.SQLException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import roomescape.domain.Theme;
+import roomescape.domain.Thumbnail;
 
 @Component
 public class ThemeRowMapper implements RowMapper<Theme> {
 
     @Override
     public Theme mapRow(ResultSet rs, int rowNum) throws SQLException {
-        long themeId = rs.getLong("id");
-        String name = rs.getString("name");
-        String description = rs.getString("description");
-        String thumbnail = rs.getString("thumbnail");
-        return Theme.of(themeId, name, description, thumbnail);
+        return new Theme(
+                rs.getLong("id"),
+                rs.getString("name"),
+                rs.getString("description"),
+                new Thumbnail(rs.getString("thumbnail"))
+        );
     }
 }

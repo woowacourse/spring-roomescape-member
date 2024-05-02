@@ -13,9 +13,10 @@ public class AvailableReservationTimeMapper implements RowMapper<AvailableReserv
     @Override
     public AvailableReservationTimeResponse mapRow(ResultSet rs, int rowNum) throws SQLException {
 
-        boolean alreadyBooked = rs.getBoolean("booked");
-        long timeId = rs.getLong("time_id");
-        String startAt = rs.getString("start_at");
-        return new AvailableReservationTimeResponse(alreadyBooked, timeId, startAt);
+        return new AvailableReservationTimeResponse(
+                rs.getBoolean("booked"),
+                rs.getLong("time_id"),
+                rs.getString("start_at")
+        );
     }
 }
