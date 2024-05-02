@@ -79,7 +79,8 @@ public class ReservationTimeRepository {
                         LEFT JOIN reservation AS r
                         ON t.id = r.time_id
                         AND r.date = ?
-                        AND r.theme_id = ?;
+                        AND r.theme_id = ?
+                        ORDER BY convert(t.start_at, TIME) ASC;
                 """;
 
         return jdbcTemplate.query(sql, getAvailableReservationTimeResponseRowMapper(), date, themeId);
