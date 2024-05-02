@@ -28,9 +28,9 @@ public class MissionStepTest {
     @Autowired
     private ReservationApiController reservationApiController;
 
-    @DisplayName("HTML 호출 테스트")
+    @DisplayName("Admin HTML 호출 테스트")
     @Test
-    void html_test() {
+    void admin_html_test() {
         RestAssured.given().log().all()
                 .when().get("/admin")
                 .then().log().all()
@@ -43,6 +43,20 @@ public class MissionStepTest {
 
         RestAssured.given().log().all()
                 .when().get("/admin/time")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @DisplayName("Home HTML 호출 테스트")
+    @Test
+    void Home_html_test() {
+        RestAssured.given().log().all()
+                .when().get("/")
+                .then().log().all()
+                .statusCode(200);
+
+        RestAssured.given().log().all()
+                .when().get("/reservation")
                 .then().log().all()
                 .statusCode(200);
     }
@@ -76,7 +90,7 @@ public class MissionStepTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", is(3));
 
         RestAssured.given().log().all()
                 .when().delete("/times/1")
@@ -88,11 +102,13 @@ public class MissionStepTest {
     @Test
     void reservation_create_read_update_test() {
         initializeTimesData();
+        initializeThemeData();
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", "2100-08-05");
         reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -105,12 +121,26 @@ public class MissionStepTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", is(7));
 
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(204);
+    }
+
+    private void initializeThemeData() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "이름");
+        params.put("description", "설명");
+        params.put("thumbnail", "썸네일");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201);
     }
 
     private static void initializeTimesData() {
