@@ -46,7 +46,36 @@
 - [x] / 요청 시 인기 테마 페이지를 응답합니다.
     - [x] 페이지는 templates/index.html 파일을 이용하세요.
 
-### 리팩토링 할 것
-- [ ] 테스트 추가
-- [ ] mapper 제거
-- [ ] 예외 처리 혼자 해보기
+## API
+### 예약 가능 시간 조회 API
+**request**
+GET /times/memeber?date=2024-05-02&themeID=1 HTTP/1.1
+
+**response**
+HTTP/1.1 200
+Content-Type: application/json
+
+[
+{
+  "id": 1,
+  "startAt": "19:25:00",
+  "alreadyBooked": false
+  }
+]
+
+### 인기 테마 목록 조회 API
+**request**
+GET /themes/ranking HTTP/1.1
+
+**response**
+HTTP/1.1 200
+Content-Type: application/json
+
+[
+  {
+  "id": 1,
+  "name": "교실방탈출",
+  "description": "교실테마입니다.",
+  "thumbnail": "class.jpg"
+  }
+]
