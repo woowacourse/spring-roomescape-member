@@ -45,7 +45,7 @@ public class ReservationService {
         Reservation requestedReservation = reservationRequest.toEntity(requestedReservationTime, requestedTheme);
 
         rejectPastTimeReservation(requestedReservation);
-        rejectDuplicateDateTime(requestedReservation);
+        rejectDuplicateReservation(requestedReservation);
 
         Reservation savedReservation = reservationRepository.save(requestedReservation);
         return ReservationResponse.from(savedReservation);
@@ -61,7 +61,7 @@ public class ReservationService {
         }
     }
 
-    private void rejectDuplicateDateTime(Reservation reservation) {
+    private void rejectDuplicateReservation(Reservation reservation) {
         List<Reservation> savedReservations = reservationRepository.findAll();
         boolean isDuplicateReservationPresent = savedReservations.stream()
                 .filter(reservation::hasSameTheme)

@@ -52,9 +52,21 @@ public class ReservationTimeService {
     public ReservationTimeResponse save(ReservationTimeRequest reservationTimeRequest) {
         ReservationTime reservationTime = reservationTimeRequest.toEntity();
 
+        rejectDuplicateReservationTime(reservationTime);
+
         ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
 
         return ReservationTimeResponse.from(savedReservationTime);
+    }
+
+    private void rejectDuplicateReservationTime(ReservationTime reservationTime) {
+        List<ReservationTime> savedReservationTimes = reservationTimeRepository.findAll();
+        boolean isDuplicateReservationTimePresent = savedReservationTimes.stream()
+                .anyMatch(reservationTime::hasSameStartAt);
+
+        if (isDuplicateReservationTimePresent) {
+            throw new IllegalArgumentException("중복된 예약 시간이 존재합니다. 입력한 시간: " + reservationTime.getStartAt());
+        }
     }
 
     public void deleteById(Long id) {
