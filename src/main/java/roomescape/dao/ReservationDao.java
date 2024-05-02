@@ -47,7 +47,7 @@ public class ReservationDao implements ReservationRepository {
 
     public ReservationDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
-        jdbcInsert = new SimpleJdbcInsert(dataSource)
+        this.jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
     }
