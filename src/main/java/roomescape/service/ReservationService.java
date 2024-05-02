@@ -25,7 +25,9 @@ public class ReservationService {
     private final ThemeDao themeDao;
     private final DateTimeFormatter dateTimeFormatter;
 
-    public ReservationService(final ReservationDao reservationDao, final ReservationTimeDao reservationTimeDao, final ThemeDao themeDao,
+    public ReservationService(final ReservationDao reservationDao,
+                              final ReservationTimeDao reservationTimeDao,
+                              final ThemeDao themeDao,
                               final DateTimeFormatter dateTimeFormatter) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
@@ -34,21 +36,17 @@ public class ReservationService {
     }
 
     public ReservationOutput createReservation(final ReservationInput input) {
-        //TODO : Controller 가 아닌 ControllerAdvice 가 catch 해주게 변경
-        //TODO : LocalTime, LocalDate 를 외부에서 주입할지 고민, 10줄 분리
         final ReservationTime time = reservationTimeDao.find(input.timeId())
-                .orElseThrow(
-                        () -> new NotExistReservationTimeException(input.timeId()));
+                .orElseThrow(() -> new NotExistReservationTimeException(input.timeId()));
         final Theme theme = themeDao.find(input.themeId())
-                .orElseThrow(
-                        () -> new NotExistThemeException(input.themeId()));
+                .orElseThrow(() -> new NotExistThemeException(input.themeId()));
 
         final Reservation reservation = input.toReservation(time, theme);
         if (reservationDao.isExistByReservationAndTime(reservation.getDate(), time.getId())) {
             throw new ReservationAlreadyExistsException(reservation.getDateAndTimeFormat());
         }
         if (reservation.isBefore(dateTimeFormatter.getDate(), dateTimeFormatter.getTime())) {
-            throw new PastTimeReservationException(String.format("%s는 지난 시간입니다.", reservation.getDateAndTimeFormat()));
+            throw new PastTimeReservationException(reservation.getDateAndTimeFormat());
         }
         final Reservation savedReservation = reservationDao.create(reservation);
         return ReservationOutput.toOutput(savedReservation);
