@@ -1,4 +1,4 @@
-package roomescape;
+package roomescape.api;
 
 import static io.restassured.RestAssured.given;
 
@@ -14,7 +14,7 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-public class AdminPageTest {
+public class AdminPageApiTest {
 
     @LocalServerPort
     int port;
@@ -45,4 +45,14 @@ public class AdminPageTest {
                 .then().log().all()
                 .statusCode(200);
     }
+
+    @Test
+    void 테마_페이지_이동(){
+        given().log().all()
+                .port(port)
+                .when().get("/admin/theme")
+                .then().log().all()
+                .statusCode(200);
+    }
+
 }
