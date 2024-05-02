@@ -2,10 +2,8 @@ package roomescape.controller.api;
 
 import java.net.URI;
 import java.util.List;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,9 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.api.dto.request.ReservationTimeRequest;
 import roomescape.controller.api.dto.response.ReservationTimeResponse;
 import roomescape.dao.dto.AvailableReservationTimeResponse;
-import roomescape.exception.ExistReservationInReservationTimeException;
-import roomescape.exception.NotExistReservationTimeException;
-import roomescape.exception.ReservationTimeAlreadyExistsException;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.dto.input.AvailableReservationTimeInput;
 import roomescape.service.dto.output.ReservationTimeOutput;
@@ -59,27 +54,5 @@ public class ReservationTimeApiController {
     public ResponseEntity<Void> deleteReservationTime(@PathVariable long id) {
         reservationTimeService.deleteReservationTime(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @ExceptionHandler(value = IllegalArgumentException.class)
-    public ResponseEntity<String> handleArgumentException(IllegalArgumentException exception) {
-        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(value = NotExistReservationTimeException.class)
-    public ResponseEntity<String> handleNotExistReservationTimeException(NotExistReservationTimeException exception) {
-        return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(value = ExistReservationInReservationTimeException.class)
-    public ResponseEntity<String> handleExistReservationInReservationTimeException(
-            ExistReservationInReservationTimeException exception) {
-        return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
-    }
-
-    @ExceptionHandler(value = ReservationTimeAlreadyExistsException.class)
-    public ResponseEntity<String> handleReservationTimeAlreadyExistsException(
-            ReservationTimeAlreadyExistsException exception) {
-        return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
     }
 }

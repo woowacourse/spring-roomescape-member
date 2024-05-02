@@ -2,10 +2,8 @@ package roomescape.controller.api;
 
 import java.net.URI;
 import java.util.List;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,9 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.api.dto.request.ReservationRequest;
 import roomescape.controller.api.dto.response.ReservationResponse;
-import roomescape.exception.NotExistReservationException;
-import roomescape.exception.PastTimeReservationException;
-import roomescape.exception.ReservationAlreadyExistsException;
 import roomescape.service.ReservationService;
 import roomescape.service.dto.output.ReservationOutput;
 
@@ -47,24 +42,5 @@ public class ReservationApiController {
     public ResponseEntity<Void> deleteReservation(@PathVariable long id) {
         reservationService.deleteReservation(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @ExceptionHandler(value = IllegalArgumentException.class)
-    public ResponseEntity<String> handleArgumentException(IllegalArgumentException exception) {
-        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(value = NotExistReservationException.class)
-    public ResponseEntity<String> handleNotExistReservationException(NotExistReservationException exception) {
-        return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(value = ReservationAlreadyExistsException.class)
-    public ResponseEntity<String> handleReservationAlreadyExistsException(ReservationAlreadyExistsException exception) {
-        return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
-    }
-    @ExceptionHandler(value = PastTimeReservationException.class)
-    public ResponseEntity<String> handlePastTimeReservationException(PastTimeReservationException exception) {
-        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

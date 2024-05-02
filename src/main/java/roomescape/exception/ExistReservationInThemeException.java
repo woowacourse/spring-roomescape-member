@@ -1,8 +1,8 @@
 package roomescape.exception;
 
-public class ExistReservationInThemeException extends IllegalArgumentException {
+public class ExistReservationInThemeException extends ExistReservationException {
 
-    public ExistReservationInThemeException(String message) {
-        super(message);
+    public ExistReservationInThemeException(long id) {
+        super(String.format("테마 ID %d에 해당하는 예약이 존재합니다.", id));
     }
 }

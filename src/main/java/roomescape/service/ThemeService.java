@@ -39,9 +39,9 @@ public class ThemeService {
 
     public void deleteTheme(long id) {
         themeDao.find(id)
-                .orElseThrow(() -> new NotExistThemeException(String.format("%d는 없는 id 입니다.", id)));
+                .orElseThrow(() -> new NotExistThemeException(id));
         if (reservationDao.isExistByThemeId(id)) {
-            throw new ExistReservationInThemeException(String.format("%d에 해당하는 예약이 있습니다.", id));
+            throw new ExistReservationInThemeException(id);
         }
 
         themeDao.delete(id);

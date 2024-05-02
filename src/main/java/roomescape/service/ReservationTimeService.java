@@ -29,8 +29,7 @@ public class ReservationTimeService {
         ReservationTime reservationTime = input.toReservationTime();
 
         if (reservationTimeDao.isExistByStartAt(reservationTime.getStartAtAsString())) {
-            throw new ReservationTimeAlreadyExistsException(
-                    String.format("%s에 해당하는 시간이 있습니다.", reservationTime.getStartAtAsString()));
+            throw new ReservationTimeAlreadyExistsException(reservationTime.getStartAtAsString());
         }
 
         ReservationTime savedReservationTime = reservationTimeDao.create(reservationTime);
@@ -48,10 +47,10 @@ public class ReservationTimeService {
 
     public void deleteReservationTime(long id) {
         ReservationTime reservationTime = reservationTimeDao.find(id)
-                .orElseThrow(() -> new NotExistReservationTimeException(String.format("%d는 없는 id 입니다.", id)));
+                .orElseThrow(() -> new NotExistReservationTimeException(id));
 
         if (reservationDao.isExistByTimeId(id)) {
-            throw new ExistReservationInReservationTimeException(String.format("%d에 해당하는 예약이 있습니다.", id));
+            throw new ExistReservationInReservationTimeException(id);
         }
 
         reservationTimeDao.delete(reservationTime.getId());

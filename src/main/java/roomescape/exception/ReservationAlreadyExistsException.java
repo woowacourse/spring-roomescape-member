@@ -1,9 +1,9 @@
 package roomescape.exception;
 
-public class ReservationAlreadyExistsException extends IllegalArgumentException {
+public class ReservationAlreadyExistsException extends AlreadyExistsException {
 
     public ReservationAlreadyExistsException(String message) {
-        super(message);
+        super(String.format("%s 에 해당하는 예약이 있습니다.", message));
     }
 
 }

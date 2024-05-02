@@ -1,8 +1,8 @@
 package roomescape.exception;
 
-public class NotExistReservationException extends IllegalArgumentException {
+public class NotExistReservationException extends NotExistException {
 
-    public NotExistReservationException(String message) {
-        super(message);
+    public NotExistReservationException(long id) {
+        super(String.format("예약 ID %d에 해당하는 값이 없습니다", id));
     }
 }

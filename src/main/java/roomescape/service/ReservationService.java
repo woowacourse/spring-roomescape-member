@@ -38,15 +38,14 @@ public class ReservationService {
         //TODO : LocalTime, LocalDate 를 외부에서 주입할지 고민, 10줄 분리
         ReservationTime time = reservationTimeDao.find(input.timeId())
                 .orElseThrow(
-                        () -> new NotExistReservationTimeException(String.format("%d는 없는 id 입니다.", input.timeId())));
+                        () -> new NotExistReservationTimeException(input.timeId()));
         Theme theme = themeDao.find(input.themeId())
                 .orElseThrow(
-                        () -> new NotExistThemeException(String.format("%d는 없는 id 입니다.", input.themeId())));
+                        () -> new NotExistThemeException(input.themeId()));
 
         Reservation reservation = input.toReservation(time, theme);
         if (reservationDao.isExistByReservationAndTime(reservation.getDate(), time.getId())) {
-            throw new ReservationAlreadyExistsException(
-                    String.format("%s 에 해당하는 예약이 있습니다.", reservation.getDateAndTimeFormat()));
+            throw new ReservationAlreadyExistsException(reservation.getDateAndTimeFormat());
         }
         if (reservation.isBefore(dateTimeFormatter.getDate(), dateTimeFormatter.getTime())) {
             throw new PastTimeReservationException(String.format("%s는 지난 시간입니다.", reservation.getDateAndTimeFormat()));
@@ -62,7 +61,7 @@ public class ReservationService {
 
     public void deleteReservation(long id) {
         if (!reservationDao.isExistById(id)) {
-            throw new NotExistReservationException(String.format(String.format("%d는 없는 id 입니다.", id)));
+            throw new NotExistReservationException(id);
         }
         reservationDao.delete(id);
     }
