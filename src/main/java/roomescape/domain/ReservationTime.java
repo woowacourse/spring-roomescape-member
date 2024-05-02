@@ -18,7 +18,7 @@ public class ReservationTime {
 
     private static void validateExist(final LocalTime startAt) {
         if (startAt == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("비어있는 입력이 존재할 수 없습니다.");
         }
     }
 

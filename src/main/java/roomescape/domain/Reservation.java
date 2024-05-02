@@ -1,6 +1,9 @@
 package roomescape.domain;
 
+import roomescape.dto.ReservationRequest;
+
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 public class Reservation {
     private Long id;
@@ -27,8 +30,12 @@ public class Reservation {
 
     private static void validateReservation(final String name, final LocalDate date, final ReservationTime time) {
         if (name == null || name.isBlank() || date == null || time == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("비어있는 입력이 존재할 수 없습니다.");
         }
+    }
+
+    public boolean isDuplicatedReservation(final LocalTime reservationTime, final ReservationRequest reservationRequest) {
+        return date.equals(reservationRequest.date()) && time.isMatch(reservationTime);
     }
 
     public Long getId() {
