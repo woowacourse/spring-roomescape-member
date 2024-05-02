@@ -14,7 +14,8 @@ public class DummyDataFixture {
             new ReservationTime(2L, LocalTime.of(12, 00)),
             new ReservationTime(3L, LocalTime.of(14, 00)),
             new ReservationTime(4L, LocalTime.of(16, 00)),
-            new ReservationTime(5L, LocalTime.of(18, 00)));
+            new ReservationTime(5L, LocalTime.of(18, 00)),
+            new ReservationTime(6L, LocalTime.of(20, 00)));
 
     private List<Theme> preparedThemes = List.of(
             new Theme(1L, "공포", "무서워", "https://sherlock-holmes.co.kr/attach/theme/16956118601.jpg"),

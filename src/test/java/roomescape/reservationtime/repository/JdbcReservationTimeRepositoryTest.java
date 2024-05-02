@@ -22,7 +22,7 @@ class JdbcReservationTimeRepositoryTest extends DummyDataFixture {
     @DisplayName("ReservationTime 저장한 후 저장한 row의 id값을 반환한다.")
     void save() {
         ReservationTime newReservationTime = new ReservationTime(null, LocalTime.of(10, 00));
-        assertThat(jdbcReservationTimeRepository.save(newReservationTime)).isEqualTo(new ReservationTime(4L, LocalTime.of(10, 00)));
+        assertThat(jdbcReservationTimeRepository.save(newReservationTime)).isEqualTo(new ReservationTime(7L, LocalTime.of(10, 00)));
     }
 
     @Test
@@ -48,7 +48,7 @@ class JdbcReservationTimeRepositoryTest extends DummyDataFixture {
     @Test
     @DisplayName("ReservationTime 테이블에 주어진 id와 동일한 데이터를 삭제한다.")
     void deleteById() {
-        jdbcReservationTimeRepository.deleteById(3L);
-        assertThat(jdbcReservationTimeRepository.findById(3L)).isNotPresent();
+        jdbcReservationTimeRepository.deleteById(7L);
+        assertThat(jdbcReservationTimeRepository.findById(7L)).isNotPresent();
     }
 }
