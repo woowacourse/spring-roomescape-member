@@ -93,7 +93,7 @@ function fetchAvailableTimes(date, themeId) {
         요청 포맷에 맞게 설정
   */
 
-  fetch('/reservation/times?date='+date+'&themeId='+themeId, { // 예약 가능 시간 조회 API endpoint
+  fetch('/reservations/times?date='+date+'&themeId='+themeId, { // 예약 가능 시간 조회 API endpoint
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
