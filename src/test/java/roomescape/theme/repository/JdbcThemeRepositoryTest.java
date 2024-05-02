@@ -2,15 +2,11 @@ package roomescape.theme.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.LocalTime;
-import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import roomescape.reservationtime.model.ReservationTime;
-import roomescape.reservationtime.repository.JdbcReservationTimeRepository;
 import roomescape.theme.model.Theme;
 import roomescape.util.DummyDataFixture;
 

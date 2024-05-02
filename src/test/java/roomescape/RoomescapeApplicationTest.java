@@ -20,7 +20,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
-import roomescape.reservation.controller.ReservationController;
 import roomescape.reservation.model.Reservation;
 import roomescape.reservationtime.model.ReservationTime;
 import roomescape.theme.model.Theme;

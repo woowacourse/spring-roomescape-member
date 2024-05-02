@@ -1,8 +1,6 @@
 package roomescape.reservation.model;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
 import java.util.Objects;
 import roomescape.reservationtime.model.ReservationTime;
 import roomescape.theme.model.Theme;

@@ -14,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.reservationtime.dto.response.CreateReservationTimeResponse;
 import roomescape.theme.dto.request.CreateThemeRequest;
 import roomescape.theme.dto.response.CreateThemeResponse;
 import roomescape.theme.dto.response.FindPopularThemesResponse;

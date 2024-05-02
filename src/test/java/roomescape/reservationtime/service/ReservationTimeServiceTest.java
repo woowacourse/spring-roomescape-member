@@ -6,7 +6,6 @@ import static org.mockito.ArgumentMatchers.any;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
