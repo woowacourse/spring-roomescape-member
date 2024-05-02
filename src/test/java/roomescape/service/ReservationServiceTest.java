@@ -1,6 +1,5 @@
 package roomescape.service;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.controller.request.ReservationRequest;
@@ -10,7 +9,6 @@ import roomescape.exception.DuplicatedException;
 import roomescape.exception.NotFoundException;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
-import roomescape.repository.ReservationTimeRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
