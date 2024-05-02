@@ -9,7 +9,7 @@ class ReservationTimeTest {
 
     @Test
     @DisplayName("시간 입력이 올바르지 않으면 예외가 발생한다.")
-    void nullReservationTime() {
+    void invalidReservationTime() {
         assertThatThrownBy(() -> new ReservationTime(null))
                 .isInstanceOf(IllegalArgumentException.class);
     }

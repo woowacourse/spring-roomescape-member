@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EmptySource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -20,7 +21,7 @@ class ReservationTest {
     }
 
     @ParameterizedTest
-    @EmptySource
+    @NullAndEmptySource
     @DisplayName("예약자명에 대한 입력이 올바르지 않으면 예외가 발생한다.")
     void invalidNameReservation(String name) {
         assertThatThrownBy(() -> new Reservation(name, LocalDate.now(), new ReservationTime(LocalTime.now()), new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg")))

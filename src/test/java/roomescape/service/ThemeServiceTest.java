@@ -1,6 +1,5 @@
 package roomescape.service;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +12,7 @@ import roomescape.dto.ThemeRequest;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -51,21 +51,22 @@ class ThemeServiceTest {
     }
 
     @Test
-    @DisplayName("많이 예약한 순으로 10개를 추출한다.")
+    @DisplayName("많이 예약한 순으로 테마 10개를 조회한다. 만약 예약 수가 같다면 id 순서로 정렬한다.")
     @Sql("/testdata.sql")
-    void rankingTest() {
+    void findTopRanking() {
         List<Theme> topRanking = themeService.findTopRanking();
-        Assertions.assertAll(
-                () -> topRanking.get(0).getName().equals("테마 2"),
-                () -> topRanking.get(0).getName().equals("테마 1"),
-                () -> topRanking.get(0).getName().equals("테마 3"),
-                () -> topRanking.get(0).getName().equals("테마 4"),
-                () -> topRanking.get(0).getName().equals("테마 5"),
-                () -> topRanking.get(0).getName().equals("테마 6"),
-                () -> topRanking.get(0).getName().equals("테마 7"),
-                () -> topRanking.get(0).getName().equals("테마 8"),
-                () -> topRanking.get(0).getName().equals("테마 9"),
-                () -> topRanking.get(0).getName().equals("테마 10")
+
+        assertAll(
+                () -> assertThat(topRanking.get(0).getName()).isEqualTo("테마 2"),
+                () -> assertThat(topRanking.get(1).getName()).isEqualTo("테마 1"),
+                () -> assertThat(topRanking.get(2).getName()).isEqualTo("테마 3"),
+                () -> assertThat(topRanking.get(3).getName()).isEqualTo("테마 4"),
+                () -> assertThat(topRanking.get(4).getName()).isEqualTo("테마 5"),
+                () -> assertThat(topRanking.get(5).getName()).isEqualTo("테마 6"),
+                () -> assertThat(topRanking.get(6).getName()).isEqualTo("테마 7"),
+                () -> assertThat(topRanking.get(7).getName()).isEqualTo("테마 8"),
+                () -> assertThat(topRanking.get(8).getName()).isEqualTo("테마 9"),
+                () -> assertThat(topRanking.get(9).getName()).isEqualTo("테마 10")
         );
     }
 }
