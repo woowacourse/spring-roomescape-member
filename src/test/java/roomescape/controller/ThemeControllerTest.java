@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -86,7 +87,30 @@ class ThemeControllerTest extends BaseControllerTest {
         });
     }
 
+    @Test
+    @DisplayName("인기있는 테마들을 조회한다.")
+    @Sql("/reservations.sql")
+    void getPopularThemes() {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when().get("/popular-themes")
+                .then().log().all()
+                .extract();
 
+        List<ThemeResponse> themeResponses = response.jsonPath()
+                .getList(".", ThemeResponse.class);
+
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+            softly.assertThat(themeResponses).hasSize(5);
+            softly.assertThat(themeResponses).containsExactly(
+                    new ThemeResponse(5L, "테마5", "테마5 설명", "https://via.placeholder.com/150/56a8c2"),
+                    new ThemeResponse(4L, "테마4", "테마4 설명", "https://via.placeholder.com/150/30f9e7"),
+                    new ThemeResponse(3L, "테마3", "테마3 설명", "https://via.placeholder.com/150/24f355"),
+                    new ThemeResponse(2L, "테마2", "테마2 설명", "https://via.placeholder.com/150/771796"),
+                    new ThemeResponse(1L, "테마1", "테마1 설명", "https://via.placeholder.com/150/92c952")
+            );
+        });
+    }
 
     void addTheme() {
         ThemeRequest request = new ThemeRequest("테마 이름", "테마 설명", "https://example.com/image.jpg");
