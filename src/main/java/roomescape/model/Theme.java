@@ -9,15 +9,22 @@ public class Theme {
     private final String description;
     private final String thumbnail;
 
-    public Theme(final String thumbnail, final String description, final String name) {
-        this(null, thumbnail, description, name);
+    public Theme(final String name, final String description, final String thumbnail) {
+        this(null, name, description, thumbnail);
     }
 
     public Theme(final Long id, final String name, final String description, final String thumbnail) {
+        validateNameBlank(name);
         this.id = id;
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
+    }
+
+    private void validateNameBlank(final String name) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
+        }
     }
 
     public Long getId() {
