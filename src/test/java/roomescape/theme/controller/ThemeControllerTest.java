@@ -31,7 +31,7 @@ class ThemeControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    void createReservationTime() throws Exception {
+    void createTheme() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/themes")
                         .content(objectMapper.writeValueAsString(new CreateThemeRequest("마크", "도망갔다.", "https://abc.com")))
                         .contentType(MediaType.APPLICATION_JSON))
@@ -40,7 +40,7 @@ class ThemeControllerTest {
     }
 
     @Test
-    void getReservationTimes() throws Exception {
+    void getThemes() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/themes")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$[0].id").value(1))
@@ -57,7 +57,7 @@ class ThemeControllerTest {
     }
 
     @Test
-    void getReservationTime() throws Exception {
+    void getPopularThemes() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/themes/popular")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$[0].id").value(1))
@@ -73,13 +73,13 @@ class ThemeControllerTest {
     }
 
     @Test
-    void deleteReservationTime() throws Exception {
+    void deleteTheme() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/themes/10"))
                 .andExpect(status().isNoContent());
     }
 
     @Test
-    void deleteReservationTime_isConflict() throws Exception {
+    void deleteTheme_isConflict() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/themes/3"))
                 .andExpect(status().isConflict());
     }
