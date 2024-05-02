@@ -18,7 +18,7 @@
         "name": String,
         "date": String,
         "time": {
-            "id: : long,
+            "id" : long,
             "startAt" : String
         }
         "theme": {
@@ -82,7 +82,7 @@
     "name": String,
     "date": String,
     "time": {
-        "id: : long,
+        "id" : long,
         "startAt" : String
     }
     "theme": {
