@@ -4,6 +4,8 @@
 
 | Method | Endpoint                              | Description           | File Path                              | Controller Type   |
 |--------|---------------------------------------|-----------------------|----------------------------------------|-------------------|
+| GET    | `/`                                   | 인기 테마 페이지 요청          | `templates/index.html`                 | `@Controller`     |
+| GET    | `/reservation`                        | 사용자 예약 페이지 요청         | `templates/reservation.html`           | `@Controller`     |
 | GET    | `/admin`                              | 어드민 페이지 요청            | `templates/admin/index.html`           | `@Controller`     |
 | GET    | `/admin/reservation`                  | 예약 관리 페이지 요청          | `templates/admin/reservation-new.html` | `@Controller`     |
 | GET    | `/admin/time`                         | 예약 시간 관리 페이지 요청       | `templates/admin/time.html`            | `@Controller`     |
