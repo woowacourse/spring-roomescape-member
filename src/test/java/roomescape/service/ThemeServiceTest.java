@@ -29,9 +29,9 @@ class ThemeServiceTest {
     @Mock
     private ReservationRepository reservationRepository;
 
-    private String validName = "방탈출";
-    private String validDescription = "재밌는 방탈출 게임이다";
-    private String validThumbnail = "https://aaa.jpg";
+    private final String validName = "방탈출";
+    private final String validDescription = "재밌는 방탈출 게임이다";
+    private final String validThumbnail = "https://aaa.jpg";
 
     @DisplayName("이름이 null 또는 빈 값이면 예외가 발생한다.")
     @ParameterizedTest
