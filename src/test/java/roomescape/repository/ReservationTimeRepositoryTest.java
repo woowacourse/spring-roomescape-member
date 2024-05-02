@@ -73,12 +73,23 @@ class ReservationTimeRepositoryTest {
         assertThat(reservationTimes).hasSize(7);
     }
 
+    @DisplayName("특정 시간값의 예약 시간이 존재하는지 조회한다.")
+    @Test
+    void existByStartAtTest() {
+        // When
+        final LocalTime startAt = LocalTime.of(13, 30);
+        final boolean isExist = reservationTimeRepository.existByStartAt(startAt);
+
+        // Then
+        assertThat(isExist).isTrue();
+    }
+
     @DisplayName("특정 아이디의 예약 시간이 존재하는지 조회한다.")
     @Test
     void existByIdTest() {
         // When
-        final LocalTime startAt = LocalTime.of(13, 30);
-        final boolean isExist = reservationTimeRepository.existByStartAt(startAt);
+        final Long reservationTimeId = 1L;
+        final boolean isExist = reservationTimeRepository.existById(reservationTimeId);
 
         // Then
         assertThat(isExist).isTrue();

@@ -25,7 +25,7 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
 
     @Override
     public List<ReservationTime> findAll() {
-        String sql = "SELECT id, start_at FROM reservation_time";
+        final String sql = "SELECT id, start_at FROM reservation_time";
 
         return template.query(sql, itemRowMapper());
     }
@@ -39,42 +39,51 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
 
     @Override
     public Optional<ReservationTime> findById(final Long reservationTimeId) {
-        String sql = "SELECT id, start_at FROM reservation_time WHERE id = :id";
+        final String sql = "SELECT id, start_at FROM reservation_time WHERE id = :id";
         try {
-            MapSqlParameterSource param = new MapSqlParameterSource()
+            final MapSqlParameterSource param = new MapSqlParameterSource()
                     .addValue("id", reservationTimeId);
-            ReservationTime reservationTime = template.queryForObject(sql, param, itemRowMapper());
+            final ReservationTime reservationTime = template.queryForObject(sql, param, itemRowMapper());
 
             return Optional.of(reservationTime);
-        } catch (EmptyResultDataAccessException e) {
+        } catch (final EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
 
     @Override
     public ReservationTime save(final ReservationTime reservationTime) {
-        String sql = "INSERT INTO reservation_time(start_at) VALUES(:startAt)";
-        SqlParameterSource param = new BeanPropertySqlParameterSource(reservationTime);
-        KeyHolder keyHolder = new GeneratedKeyHolder();
+        final String sql = "INSERT INTO reservation_time(start_at) VALUES(:startAt)";
+        final SqlParameterSource param = new BeanPropertySqlParameterSource(reservationTime);
+        final KeyHolder keyHolder = new GeneratedKeyHolder();
         template.update(sql, param, keyHolder);
 
-        long savedReservationTimeId = keyHolder.getKey().longValue();
+        final long savedReservationTimeId = keyHolder.getKey().longValue();
 
         return reservationTime.initializeIndex(savedReservationTimeId);
     }
 
     @Override
     public void deleteById(final Long reservationTimeId) {
-        String sql = "DELETE FROM reservation_time WHERE id = :id";
-        MapSqlParameterSource param = new MapSqlParameterSource()
+        final String sql = "DELETE FROM reservation_time WHERE id = :id";
+        final MapSqlParameterSource param = new MapSqlParameterSource()
                 .addValue("id", reservationTimeId);
         template.update(sql, param);
     }
 
     @Override
+    public boolean existById(final Long reservationTimeId) {
+        final String sql = "SELECT EXISTS(SELECT 1 FROM reservation_time WHERE id = :reservationTimeId)";
+        final MapSqlParameterSource param = new MapSqlParameterSource()
+                .addValue("reservationTimeId", reservationTimeId);
+
+        return Boolean.TRUE.equals(template.queryForObject(sql, param, Boolean.class));
+    }
+
+    @Override
     public boolean existByStartAt(final LocalTime startAt) {
-        String sql = "SELECT EXISTS(SELECT 1 FROM reservation_time WHERE start_at = :startAt)";
-        MapSqlParameterSource param = new MapSqlParameterSource()
+        final String sql = "SELECT EXISTS(SELECT 1 FROM reservation_time WHERE start_at = :startAt)";
+        final MapSqlParameterSource param = new MapSqlParameterSource()
                 .addValue("startAt", startAt);
 
         return Boolean.TRUE.equals(template.queryForObject(sql, param, Boolean.class));

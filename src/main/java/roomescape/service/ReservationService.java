@@ -43,11 +43,15 @@ public class ReservationService {
         final Theme theme = themeRepository.findById(request.themeId())
                 .orElseThrow(() -> new NoSuchElementException("해당 id의 테마가 존재하지 않습니다."));
 
+        validateReservationDuplication(request);
+
+        return reservationRepository.save(request.toReservation(reservationTime, theme));
+    }
+
+    private void validateReservationDuplication(final SaveReservationRequest request) {
         if (reservationRepository.existByDateAndTimeIdAndThemeId(request.date(), request.timeId(), request.themeId())) {
             throw new IllegalArgumentException("이미 해당 날짜/시간의 테마 예약이 있습니다.");
         }
-
-        return reservationRepository.save(request.toReservation(reservationTime, theme));
     }
 
     public void deleteReservation(final Long reservationId) {
@@ -65,25 +69,33 @@ public class ReservationService {
     }
 
     public ReservationTime saveReservationTime(final SaveReservationTimeRequest request) {
-        if (reservationTimeRepository.existByStartAt(request.startAt())) {
-            throw new IllegalArgumentException("이미 존재하는 예약시간이 있습니다.");
-        }
+        validateReservationTimeDuplication(request);
 
         return reservationTimeRepository.save(request.toReservationTime());
     }
 
+    private void validateReservationTimeDuplication(final SaveReservationTimeRequest request) {
+        if (reservationTimeRepository.existByStartAt(request.startAt())) {
+            throw new IllegalArgumentException("이미 존재하는 예약시간이 있습니다.");
+        }
+    }
+
     public void deleteReservationTime(final Long reservationTimeId) {
         checkReservationTimeExist(reservationTimeId);
-        if (reservationRepository.existByTimeId(reservationTimeId)) {
-            throw new IllegalArgumentException("예약에 포함된 시간 정보는 삭제할 수 없습니다.");
-        }
+        validateReservationTimeExist(reservationTimeId);
         reservationTimeRepository.deleteById(reservationTimeId);
     }
 
-    // TODO : exist 생성
     private void checkReservationTimeExist(final Long reservationTimeId) {
-        reservationTimeRepository.findById(reservationTimeId)
-                .orElseThrow(() -> new NoSuchElementException("해당 id의 예약 시간이 존재하지 않습니다."));
+        if (!reservationTimeRepository.existById(reservationTimeId)) {
+            throw new NoSuchElementException("해당 id의 예약 시간이 존재하지 않습니다.");
+        }
+    }
+
+    private void validateReservationTimeExist(final Long reservationTimeId) {
+        if (reservationRepository.existByTimeId(reservationTimeId)) {
+            throw new IllegalArgumentException("예약에 포함된 시간 정보는 삭제할 수 없습니다.");
+        }
     }
 
     public List<Theme> getThemes() {
@@ -95,11 +107,15 @@ public class ReservationService {
     }
 
     public void deleteTheme(final Long themeId) {
+        validateThemeExist(themeId);
+
+        themeRepository.deleteById(themeId);
+    }
+
+    private void validateThemeExist(final Long themeId) {
         if (!themeRepository.existById(themeId)) {
             throw new NoSuchElementException("해당 id의 테마 정보가 존재하지 않습니다.");
         }
-
-        themeRepository.deleteById(themeId);
     }
 
     // TODO : 서비스가 컨트롤러에서 응답용으로 생성할 DTO를 만드는게 좋은걸까...? 고민이 필요
