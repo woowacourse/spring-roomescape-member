@@ -1,5 +1,7 @@
 package roomescape.service.dto;
 
+import roomescape.domain.Theme;
+
 public class ThemeRequestDto {
 
     private final String name;
@@ -13,6 +15,10 @@ public class ThemeRequestDto {
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
+    }
+
+    public Theme toTheme() {
+        return new Theme(null, name, description, thumbnail);
     }
 
     private void validateNameExist(String name) {

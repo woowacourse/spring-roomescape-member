@@ -70,7 +70,7 @@ class ReservationTimeServiceTest {
     void throw_exception_when_exist_reservation_delete() {
         long timeId = 1L;
         given(reservationTimeRepository.isExistTimeOf(timeId)).willReturn(true);
-        given(reservationRepository.hasReservationOf(timeId)).willReturn(true);
+        given(reservationRepository.hasReservationOfTimeId(timeId)).willReturn(true);
 
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(timeId))
                 .isInstanceOf(IllegalStateException.class)
@@ -93,7 +93,7 @@ class ReservationTimeServiceTest {
     void delete_reservation_time() {
         long timeId = 1L;
         given(reservationTimeRepository.isExistTimeOf(timeId)).willReturn(true);
-        given(reservationRepository.hasReservationOf(timeId)).willReturn(false);
+        given(reservationRepository.hasReservationOfTimeId(timeId)).willReturn(false);
 
         reservationTimeService.deleteReservationTime(timeId);
         verify(reservationTimeRepository, times(1)).deleteReservationTimeById(timeId);

@@ -10,7 +10,9 @@ public interface ReservationRepository {
 
     void deleteReservationById(long id);
 
-    boolean hasReservationOf(long timeId);
+    boolean hasReservationOfTimeId(long timeId);
+
+    boolean hasReservationOfThemeId(long themeId);
 
     boolean isExistReservationOf(long id);
 

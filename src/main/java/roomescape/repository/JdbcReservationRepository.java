@@ -60,10 +60,19 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean hasReservationOf(long timeId) {
+    public boolean hasReservationOfTimeId(long timeId) {
         String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = :timeId";
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("timeId", timeId);
+        int count = jdbcTemplate.queryForObject(sql, parameterSource, Integer.class);
+        return count > 0;
+    }
+
+    @Override
+    public boolean hasReservationOfThemeId(long themeId) {
+        String sql = "SELECT COUNT(*) FROM reservation WHERE theme_id = :themeId";
+        SqlParameterSource parameterSource = new MapSqlParameterSource()
+                .addValue("themeId", themeId);
         int count = jdbcTemplate.queryForObject(sql, parameterSource, Integer.class);
         return count > 0;
     }
