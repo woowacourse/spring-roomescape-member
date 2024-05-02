@@ -43,18 +43,20 @@ public class ReservationDao {
     }
 
     public boolean isExistByTimeId(long timeId) {
-        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE time_id = ?)";
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, timeId));
+        return isExistByCondition("time_id", timeId);
     }
 
     public boolean isExistByThemeId(long themeId) {
-        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE theme_id = ?)";
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, themeId));
+        return isExistByCondition("theme_id", themeId);
     }
 
     public boolean isExistById(long id) {
-        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE id = ?)";
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, id));
+        return isExistByCondition("id", id);
+    }
+
+    private boolean isExistByCondition(String conditionColumn, Object conditionValue) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE " + conditionColumn + " = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, conditionValue));
     }
 
     public List<Reservation> getAll() {
