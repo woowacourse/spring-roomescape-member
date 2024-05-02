@@ -42,9 +42,11 @@ public class ThemeController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable("id") final Long id) {
-        //TODO 예외 처리
-        themeService.deleteTheme(id);
-
+        final int deleteCount = themeService.deleteTheme(id);
+        if (deleteCount == 0) {
+            return ResponseEntity.notFound()
+                    .build();
+        }
         return ResponseEntity.noContent()
                 .build();
     }
