@@ -33,12 +33,6 @@ public class JdbcThemeRepository implements ThemeRepository {
             );
 
     @Override
-    public List<Theme> findAll() {
-        String sql = "select id, name, description, thumbnail from theme";
-        return jdbcTemplate.query(sql, themeRowMapper);
-    }
-
-    @Override
     public Theme save(final Theme theme) {
         MapSqlParameterSource source = new MapSqlParameterSource()
                 .addValue("name", theme.getName())
@@ -51,6 +45,12 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
+    public List<Theme> findAll() {
+        String sql = "select id, name, description, thumbnail from theme";
+        return jdbcTemplate.query(sql, themeRowMapper);
+    }
+
+    @Override
     public Optional<Theme> findById(final Long id) {
         String sql = " select id, name, description, thumbnail from theme where id = ? ";
         try {
@@ -58,12 +58,6 @@ public class JdbcThemeRepository implements ThemeRepository {
         } catch (EmptyResultDataAccessException emptyResultDataAccessException) {
             return Optional.empty();
         }
-    }
-
-    @Override
-    public void deleteById(final Long id) {
-        String sql = "delete from theme where id = ?";
-        jdbcTemplate.update(sql, id);
     }
 
     @Override // TODO: sql 확인
@@ -78,5 +72,11 @@ public class JdbcThemeRepository implements ThemeRepository {
                 limit 10
                 """;
         return jdbcTemplate.query(sql, themeRowMapper);
+    }
+
+    @Override
+    public void deleteById(final Long id) {
+        String sql = "delete from theme where id = ?";
+        jdbcTemplate.update(sql, id);
     }
 }

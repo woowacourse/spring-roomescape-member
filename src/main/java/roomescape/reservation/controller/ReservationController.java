@@ -29,17 +29,6 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<FindReservationResponse>> getReservations() {
-        return ResponseEntity.ok(reservationService.getReservations());
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<FindReservationResponse> getReservation(@PathVariable final Long id) {
-        return ResponseEntity.ok(reservationService.getReservation(id));
-    }
-
-    // TODO:: 메서드 순서
     @PostMapping
     public ResponseEntity<CreateReservationResponse> createReservation(
             @RequestBody CreateReservationRequest createReservationRequest) {
@@ -49,15 +38,24 @@ public class ReservationController {
                 .body(createReservationResponse);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
-        reservationService.deleteReservation(id);
-        return ResponseEntity.noContent().build();
+    @GetMapping
+    public ResponseEntity<List<FindReservationResponse>> getReservations() {
+        return ResponseEntity.ok(reservationService.getReservations());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<FindReservationResponse> getReservation(@PathVariable final Long id) {
+        return ResponseEntity.ok(reservationService.getReservation(id));
+    }
     @GetMapping("/times")
     public ResponseEntity<List<FindAvailableTimesResponse>> getAvailableTimes(@RequestParam LocalDate date,
                                                                               @RequestParam Long themeId) {
         return ResponseEntity.ok(reservationService.getAvailableTimes(date, themeId));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
+        reservationService.deleteReservation(id);
+        return ResponseEntity.noContent().build();
     }
 }

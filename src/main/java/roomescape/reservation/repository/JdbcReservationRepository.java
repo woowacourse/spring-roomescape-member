@@ -18,8 +18,8 @@ import roomescape.theme.model.Theme;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
-
     private final JdbcTemplate jdbcTemplate;
+
     private final SimpleJdbcInsert simpleJdbcInsert;
 
     public JdbcReservationRepository(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
@@ -60,7 +60,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 reservation.getDate(),
                 reservation.getReservationTime(),
                 reservation.getTheme()
-                );
+        );
     }
 
     @Override
@@ -99,12 +99,6 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public void deleteById(final Long id) {
-        String sql = "delete from reservation where id = ?";
-        jdbcTemplate.update(sql, id);
-    }
-
-    @Override
     public List<Reservation> findAllByTimeId(final Long timeId) {
         String sql = """
                 select r.id, r.name, r.date, 
@@ -121,20 +115,6 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByDateAndTime(final LocalDate date, final Long timeId) {
-        String sql = """
-                select count(*)
-                from reservation as r
-                inner join reservation_time as t
-                on r.time_id = t.id
-                where r.date = ? and r.time_id = ?
-                """; // TODO: 줄바꿈 고쳐라잉
-        return jdbcTemplate.queryForObject(sql, Integer.class, date, timeId) != 0;
-    }
-
-    // TODO: 메서드 순서
-
-    @Override
     public List<Reservation> findAllByDateAndThemeId(final LocalDate date, final Long themeId) {
         String sql = """
                 select r.id, r.name, r.date, 
@@ -148,5 +128,23 @@ public class JdbcReservationRepository implements ReservationRepository {
                 where r.date = ? and r.theme_id = ?
                 """;
         return jdbcTemplate.query(sql, reservationRowMapper, date, themeId);
+    }
+
+    @Override
+    public boolean existsByDateAndTime(final LocalDate date, final Long timeId) {
+        String sql = """
+                select count(*)
+                from reservation as r
+                inner join reservation_time as t
+                on r.time_id = t.id
+                where r.date = ? and r.time_id = ?
+                """;
+        return jdbcTemplate.queryForObject(sql, Integer.class, date, timeId) != 0;
+    }
+
+    @Override
+    public void deleteById(final Long id) {
+        String sql = "delete from reservation where id = ?";
+        jdbcTemplate.update(sql, id);
     }
 }

@@ -69,13 +69,8 @@ public class ReservationService {
         return FindReservationResponse.of(reservation);
     }
 
-    public void deleteReservation(final Long id) {
-        reservationRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("해당하는 예약이 존재하지 않습니다."));
-        reservationRepository.deleteById(id);
-    }
-
     // TODO: stream 리팩토링
+
     public List<FindAvailableTimesResponse> getAvailableTimes(final LocalDate date, final Long themeId) {
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
         List<Reservation> reservations = reservationRepository.findAllByDateAndThemeId(date, themeId);
@@ -83,8 +78,8 @@ public class ReservationService {
                 .map(reservationTime -> getFindAvailableTimesResponse(reservations, reservationTime))
                 .toList();
     }
-
     // TODO: 함수명 변경
+
     private static FindAvailableTimesResponse getFindAvailableTimesResponse(final List<Reservation> reservations,
                                                                             final ReservationTime reservationTime) {
         return new FindAvailableTimesResponse(
@@ -92,5 +87,10 @@ public class ReservationService {
                 reservationTime.getTime(),
                 reservations.stream()
                         .anyMatch(reservation -> reservation.isSameTime(reservationTime)));
+    }
+    public void deleteReservation(final Long id) {
+        reservationRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("해당하는 예약이 존재하지 않습니다."));
+        reservationRepository.deleteById(id);
     }
 }

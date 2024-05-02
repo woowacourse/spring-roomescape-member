@@ -19,6 +19,11 @@ public class ThemeService {
         this.themeRepository = themeRepository;
     }
 
+    public CreateThemeResponse createTheme(CreateThemeRequest createThemeRequest) {
+        Theme theme = themeRepository.save(createThemeRequest.toTheme());
+        return CreateThemeResponse.of(theme);
+    }
+
     public List<FindThemeResponse> getThemes() {
         List<Theme> themes = themeRepository.findAll();
         return themes.stream()
@@ -26,20 +31,15 @@ public class ThemeService {
                 .toList();
     }
 
-    public CreateThemeResponse createTheme(CreateThemeRequest createThemeRequest) {
-        Theme theme = themeRepository.save(createThemeRequest.toTheme());
-        return CreateThemeResponse.of(theme);
+    public List<FindPopularThemesResponse> getPopularThemes() {
+        return themeRepository.findOrderByReservation().stream()
+                .map(FindPopularThemesResponse::of)
+                .toList();
     }
 
     public void deleteById(final Long id) {
         themeRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("해당하는 테마가 존재하지 않습니다."));
         themeRepository.deleteById(id);
-    }
-
-    public List<FindPopularThemesResponse> getPopularThemes() {
-        return themeRepository.findOrderByReservation().stream()
-                .map(FindPopularThemesResponse::of)
-                .toList();
     }
 }
