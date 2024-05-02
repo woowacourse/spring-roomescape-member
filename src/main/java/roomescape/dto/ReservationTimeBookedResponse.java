@@ -1,6 +1,7 @@
 package roomescape.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import roomescape.model.ReservationTime;
 
 import java.time.LocalTime;
 
@@ -10,4 +11,7 @@ public record ReservationTimeBookedResponse(
         LocalTime startAt,
         boolean alreadyBooked
 ) {
+        public ReservationTimeBookedResponse(final ReservationTime reservationTime, final boolean alreadyBooked) {
+                this(reservationTime.getId(), reservationTime.getStartAt(), alreadyBooked);
+        }
 }

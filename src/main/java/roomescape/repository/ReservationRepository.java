@@ -83,6 +83,30 @@ public class ReservationRepository {
                 .toList();
     }
 
+    public List<Reservation> findByDateAndThemeId(final LocalDate date, final Long themId) {
+        final String selectQuery = """
+            SELECT
+                r.id as reservation_id,
+                r.name,
+                r.date,
+                rt.id as time_id,
+                rt.start_at,
+                t.id as theme_id,
+                t.name as theme_name,
+                t.description,
+                t.thumbnail
+            FROM reservations as r
+            INNER JOIN reservation_times as rt
+            ON r.time_id = rt.id
+            INNER JOIN theme as t
+            ON r.theme_id = t.id
+            WHERE r.date = ? AND r.themId = ?
+        """;
+        return jdbcTemplate.query(selectQuery, ROW_MAPPER, date, themId)
+                .stream()
+                .toList();
+    }
+
     public void deleteById(final Long id) {
         jdbcTemplate.update("DELETE FROM reservations WHERE id = ?", id);
     }

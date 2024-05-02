@@ -1,6 +1,5 @@
 package roomescape.repository;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -70,23 +69,5 @@ public class ReservationTimeRepository {
                 END""";
 
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, startAt));
-    }
-
-    public List<ReservationTimeBookedResponse> findTimesWithBooked(final LocalDate date, final Long themeId) {
-        final String sql = """
-                SELECT 
-                    rt.start_at, 
-                    rt.id, 
-                    r.id is not null AS already_booked        
-                FROM reservation_times AS rt
-                LEFT JOIN
-                    (SELECT id, time_id
-                    FROM reservations
-                    WHERE date = ? AND theme_id = ?) AS r
-                    ON rt.id = r.time_id
-                ORDER BY start_at
-                """;
-
-        return jdbcTemplate.query(sql, TIME_WITH_BOOKED_ROW_MAPPER, date, themeId);
     }
 }
