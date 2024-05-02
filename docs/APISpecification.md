@@ -6,6 +6,7 @@
 | GET    |                 | /admin/reservation-new | 어드민 예약 페이지 접근       | /admin/reservation.html |                                                                             |
 | GET    |                 | /admin/time            | 어드민 시간 페이지 접근       | /admin/time.html        |                                                                             |
 | GET    |                 | /admin/theme           | 어드민 테마 페이지 접근       | admin/theme.html        |                                                                             |
+| GET    |                 | /reservation           | 사용자 예약 페이지 접근       | /reservation.html       |                                                                             |
 | GET    |                 | /reservations          | 모든 예약 조회            |                         |                                                                             |
 |        | 200 OK          |                        | 모든 예약 조회            |                         | {id, name, date, time{id, startAt}, theme{id, name, description, thumbnail} |
 | POST   |                 | /reservations          | 예약 추가               |                         | name, date, timeId, themeId                                                 |
