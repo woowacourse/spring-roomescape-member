@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.reservation.dto.request.ThemeRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -78,5 +79,16 @@ class ThemeTest {
                 .when().delete("/themes/1")
                 .then().log().all()
                 .statusCode(204);
+    }
+
+    @DisplayName("주간 상위 10개 예약 테마 조회 API 테스트")
+    @Sql("/reservationData.sql")
+    @Test
+    void weeklyTop10Theme() {
+        RestAssured.given().log().all()
+                .when().get("/themes/ranking")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(10));
     }
 }

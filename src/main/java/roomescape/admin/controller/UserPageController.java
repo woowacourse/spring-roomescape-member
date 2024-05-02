@@ -10,4 +10,9 @@ public class UserPageController {
     public String reservationPage() {
         return "reservation";
     }
+
+    @GetMapping("/")
+    public String indexPage() {
+        return "index";
+    }
 }
