@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -108,5 +109,49 @@ public class ThemeServiceTest {
 
         assertThatThrownBy(() -> themeService.deleteTheme(themeOutput.id()))
                 .isInstanceOf(ExistReservationInThemeException.class);
+    }
+
+    @Test
+    @DisplayName("예약이 많은 테마 순으로 조회한다.")
+    void get_popular_themes() {
+        ThemeOutput themeOutput1 = themeService.createTheme(ThemeFixture.getInput());
+        ThemeOutput themeOutput2 = themeService.createTheme(new ThemeInput(
+                "레벨3 탈출",
+                "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+        ));
+        ReservationTimeOutput timeOutput = reservationTimeService.createReservationTime(
+                new ReservationTimeInput("10:00"));
+
+        reservationDao.create(Reservation.from(
+                null,
+                "제리",
+                "2024-06-01",
+                ReservationTime.from(timeOutput.id(), timeOutput.startAt()),
+                Theme.of(themeOutput1.id(), themeOutput1.name(), themeOutput1.description(), themeOutput1.thumbnail())
+        ));
+        reservationDao.create(Reservation.from(
+                null,
+                "조이썬",
+                "2024-06-02",
+                ReservationTime.from(timeOutput.id(), timeOutput.startAt()),
+                Theme.of(themeOutput1.id(), themeOutput1.name(), themeOutput1.description(), themeOutput1.thumbnail())
+        ));
+        reservationDao.create(Reservation.from(
+                null,
+                "제리",
+                "2024-06-03",
+                ReservationTime.from(timeOutput.id(), timeOutput.startAt()),
+                Theme.of(themeOutput2.id(), themeOutput2.name(), themeOutput2.description(), themeOutput2.thumbnail())
+        ));
+
+        List<ThemeOutput> popularThemes = themeService.getPopularThemes("2024-06-04");
+
+        assertThat(popularThemes).containsExactly(
+                new ThemeOutput(themeOutput1.id(), themeOutput1.name(), themeOutput1.description(),
+                        themeOutput1.thumbnail()),
+                new ThemeOutput(themeOutput2.id(), themeOutput2.name(), themeOutput2.description(),
+                        themeOutput2.thumbnail())
+        );
     }
 }

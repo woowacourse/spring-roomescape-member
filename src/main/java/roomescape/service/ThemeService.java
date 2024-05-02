@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
+import roomescape.domain.VisitDate;
 import roomescape.exception.ExistReservationInThemeException;
 import roomescape.exception.NotExistThemeException;
 import roomescape.service.dto.input.ThemeInput;
@@ -28,6 +29,11 @@ public class ThemeService {
 
     public List<ThemeOutput> getAllThemes() {
         List<Theme> themes = themeDao.getAll();
+        return ThemeOutput.toOutputs(themes);
+    }
+
+    public List<ThemeOutput> getPopularThemes(String date) {
+        List<Theme> themes = themeDao.getPopularTheme(VisitDate.from(date));
         return ThemeOutput.toOutputs(themes);
     }
 

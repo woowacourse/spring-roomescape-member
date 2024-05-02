@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.dao.mapper.ThemeRowMapper;
 import roomescape.domain.Theme;
+import roomescape.domain.VisitDate;
 
 @Repository
 public class ThemeDao {
@@ -44,6 +45,23 @@ public class ThemeDao {
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
         }
+    }
+
+    public List<Theme> getPopularTheme(VisitDate visitDate) {
+        String sql = """
+                SELECT
+                    t.id AS theme_id,
+                    t.name AS theme_name,
+                    t.description AS theme_description,
+                    t.thumbnail AS theme_thumbnail
+                FROM theme AS t
+                INNER JOIN reservation AS r ON r.theme_id = t.id
+                WHERE r.date BETWEEN ? AND ?
+                GROUP BY t.id
+                ORDER BY COUNT(r.id) DESC
+                LIMIT 10;
+                """;
+        return jdbcTemplate.query(sql, rowMapper, visitDate.beforeWeek().asString(), visitDate.beforeDay().asString());
     }
 
     public List<Theme> getAll() {
