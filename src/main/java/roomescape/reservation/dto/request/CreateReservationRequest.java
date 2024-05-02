@@ -7,7 +7,7 @@ import roomescape.theme.model.Theme;
 
 public record CreateReservationRequest(LocalDate date, String name, Long timeId, Long themeId) {
     public CreateReservationRequest {
-        if (date == null || name.isBlank() || timeId == null) {
+        if (date == null || name.isBlank() || timeId == null || themeId == null) {
             throw new IllegalArgumentException("올바른 예약이 아닙니다.");
         }
     }
