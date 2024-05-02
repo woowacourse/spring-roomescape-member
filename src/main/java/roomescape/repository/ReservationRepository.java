@@ -88,7 +88,7 @@ public class ReservationRepository {
     }
 
     public boolean existByTimeId(final Long timeId) {
-        String sql = """
+        final String selectQuery = """
                 SELECT 
                 CASE WHEN EXISTS (
                         SELECT 1
@@ -99,7 +99,7 @@ public class ReservationRepository {
                     ELSE FALSE
                 END""";
 
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, timeId));
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(selectQuery, Boolean.class, timeId));
     }
 
     public Optional<Reservation> findById(final Long id) {
@@ -131,7 +131,7 @@ public class ReservationRepository {
     }
 
     public boolean existByDateAndTimeIdAndThemeId(final LocalDate date, final Long timeId, final Long themeId) {
-        String sql = """
+        final String selectQuery = """
                 SELECT 
                 CASE WHEN EXISTS (
                         SELECT 1
@@ -142,11 +142,11 @@ public class ReservationRepository {
                     ELSE FALSE
                 END""";
 
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId));
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(selectQuery, Boolean.class, date, timeId, themeId));
     }
 
     public boolean existByThemeId(final Long themeId) {
-        String sql = """
+        final String selectQuery = """
                 SELECT 
                 CASE WHEN EXISTS (
                         SELECT 1
@@ -157,6 +157,6 @@ public class ReservationRepository {
                     ELSE FALSE
                 END""";
 
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, themeId));
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(selectQuery, Boolean.class, themeId));
     }
 }

@@ -14,11 +14,11 @@ import roomescape.model.Theme;
 @Repository
 public class ThemeRepository {
 
-    private static final RowMapper<Theme> THEME_ROW_MAPPER = (rs, rowNum) -> new Theme(
-                rs.getLong("id"),
-                rs.getString("name"),
-                rs.getString("description"),
-                rs.getString("thumbnail"));
+    private static final RowMapper<Theme> THEME_ROW_MAPPER = (selectedTheme, rowNum) -> new Theme(
+                selectedTheme.getLong("id"),
+                selectedTheme.getString("name"),
+                selectedTheme.getString("description"),
+                selectedTheme.getString("thumbnail"));
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert themeInsert;
@@ -37,14 +37,14 @@ public class ThemeRepository {
     }
 
     public List<Theme> findAll() {
-        final String sql = "SELECT * FROM theme";
-        return jdbcTemplate.query(sql, THEME_ROW_MAPPER);
+        final String selectQuery = "SELECT * FROM theme";
+        return jdbcTemplate.query(selectQuery, THEME_ROW_MAPPER);
     }
 
     public Optional<Theme> findById(final Long id) {
-        final String sql = "SELECT * FROM theme WHERE id = ?";
+        final String selectQuery = "SELECT * FROM theme WHERE id = ?";
         try {
-            final Theme theme = jdbcTemplate.queryForObject(sql, THEME_ROW_MAPPER, id);
+            final Theme theme = jdbcTemplate.queryForObject(selectQuery, THEME_ROW_MAPPER, id);
             return Optional.ofNullable(theme);
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
@@ -56,7 +56,7 @@ public class ThemeRepository {
     }
 
     public List<Theme> findOneWeekOrderByReservationCount(final LocalDate localDate, final int count) {
-        final String sql = """
+        final String selectQuery = """
                 SELECT t.id, t.name, t.description, t.thumbnail, COUNT(t.id) AS count
                 FROM theme AS t
                 LEFT JOIN reservations AS r
@@ -67,6 +67,6 @@ public class ThemeRepository {
                 LIMIT ?
                 """;
 
-        return jdbcTemplate.query(sql, THEME_ROW_MAPPER, localDate, localDate.minusWeeks(1), count);
+        return jdbcTemplate.query(selectQuery, THEME_ROW_MAPPER, localDate, localDate.minusWeeks(1), count);
     }
 }

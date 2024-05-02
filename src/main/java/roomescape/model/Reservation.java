@@ -2,7 +2,6 @@ package roomescape.model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 public class Reservation {
 
@@ -29,10 +28,6 @@ public class Reservation {
         if (date == null) {
             throw new IllegalArgumentException("날짜가 비어 있습니다.");
         }
-    }
-
-    public String getFormattedDate() {
-        return date.format(DateTimeFormatter.ISO_DATE);
     }
 
     public LocalDateTime getDateTime() {

@@ -41,7 +41,7 @@ public class ReservationTimeService {
     }
 
     private void validateUniqueReservationTime(final ReservationTime reservationTime) {
-        boolean isTimeExist = reservationTimeRepository.existByStartAt(reservationTime.getStartAt());
+        final boolean isTimeExist = reservationTimeRepository.existByStartAt(reservationTime.getStartAt());
 
         if (isTimeExist) {
             throw new IllegalArgumentException("중복된 시간입니다.");
