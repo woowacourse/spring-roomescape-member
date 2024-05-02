@@ -17,8 +17,8 @@ public class RankingController {
         this.reservationService = reservationService;
     }
 
-    @GetMapping("/")
-    public ResponseEntity<List<Theme>> getRanking(){
+    @GetMapping("/rank")
+    public ResponseEntity<List<RankTheme>> getRanking(){
         return ResponseEntity.ok(reservationService.getRanking());
     }
 }
