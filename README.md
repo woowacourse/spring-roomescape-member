@@ -216,17 +216,10 @@
 
 ### 예약 가능한 시간 조회
 - http method: GET
-- uri: /times/available
-- request
-  ```
-  GET /times/available HTTP/1.1
-  content-type: application/json
-  
-  {
-  "date": "2023-01-01",
-  "themeId": 1
-  }
-  ```
+- uri: /times/available?date=2023-01-01&themeId=1
+- request parameter
+  - date: 날짜: 필수
+  - themeId: 테마 식별자: 필수
 - response
    ```
   HTTP/1.1 200 

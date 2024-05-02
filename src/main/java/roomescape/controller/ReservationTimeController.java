@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.dto.ReservationTimeCreateRequest;
@@ -39,9 +40,9 @@ public class ReservationTimeController {
     }
 
     @GetMapping("/available")
-    public List<ReservationTimeResponse> findAvailableReservationTimes(
-            @RequestBody @Valid final ReservationTimeReadRequest reservationTimeReadRequest
-    ) {
+    public List<ReservationTimeResponse> findAvailableReservationTimes(@RequestParam(value = "date") String date,
+                                                                       @RequestParam(value = "themeId") long themeId) {
+        ReservationTimeReadRequest reservationTimeReadRequest = new ReservationTimeReadRequest(date, themeId);
         return reservationTimeService.findAvailableTimes(reservationTimeReadRequest);
     }
 

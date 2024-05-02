@@ -172,7 +172,7 @@ class ReservationTimeControllerTest {
         ReservationTimeReadRequest reservationTimeReadRequest = new ReservationTimeReadRequest(date, themeId);
         RestAssured.given().contentType(ContentType.JSON)
                 .body(reservationTimeReadRequest)
-                .when().get("/times/available")
+                .when().get("/times/available?date=" + date + "&themeId=" + themeId)
                 .then().log().all().statusCode(200).body("size()", is(0));
     }
 }
