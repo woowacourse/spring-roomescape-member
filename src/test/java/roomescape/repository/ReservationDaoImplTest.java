@@ -89,15 +89,15 @@ class ReservationDaoImplTest {
         assertThat(actualCount).isEqualTo(expectedCount);
     }
 
-    @DisplayName("예약날짜와 예약 시간 ID가 동일한 경우를 알 수 있습니다.")
+    @DisplayName("예약날짜와 예약 시간 ID와 테마 ID가 동일한 경우를 알 수 있습니다.")
     @Test
-    void should_return_true_when_reservation_date_and_time_id_equal() {
-        assertThat(reservationDaoImpl.existByDateAndTimeId(DATE_AFTER_TWO, 1L)).isTrue();
+    void should_return_true_when_reservation_date_and_time_id_and_theme_id_equal() {
+        assertThat(reservationDaoImpl.existByDateAndTimeIdAndThemeId(DATE_AFTER_TWO, 1L, 1L)).isTrue();
     }
 
-    @DisplayName("예약날짜와 예약 시간 ID가 동일하지 않은 경우를 알 수 있습니다.")
+    @DisplayName("예약날짜와 예약 시간 ID와 테마 ID가 동일하지 않은 경우를 알 수 있습니다.")
     @Test
-    void should_return_false_when_reservation_date_and_time_id_not_equal() {
-        assertThat(reservationDaoImpl.existByDateAndTimeId(DATE_AFTER_THREE, 1L)).isFalse();
+    void should_return_false_when_reservation_date_and_time_id_and_theme_id_not_equal() {
+        assertThat(reservationDaoImpl.existByDateAndTimeIdAndThemeId(DATE_AFTER_THREE, 1L, 1L)).isFalse();
     }
 }

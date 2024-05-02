@@ -31,8 +31,9 @@ public class ReservationService {
     }
 
     public Reservation addReservation(ReservationAddRequest reservationAddRequest) {
-        if (reservationDao.existByDateAndTimeId(reservationAddRequest.getDate(), reservationAddRequest.getTimeId())) {
-            throw new IllegalArgumentException("예약 날짜와 예약시간이 겹치는 예약은 할 수 없습니다.");
+        if (reservationDao.existByDateAndTimeIdAndThemeId(reservationAddRequest.getDate(),
+                reservationAddRequest.getTimeId(), reservationAddRequest.getThemeId())) {
+            throw new IllegalArgumentException("예약 날짜와 예약시간 그리고 테마가 겹치는 예약은 할 수 없습니다.");
         }
 
         ReservationTime reservationTime = getReservationTime(reservationAddRequest.getTimeId());
