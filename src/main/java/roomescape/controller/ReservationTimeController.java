@@ -5,6 +5,7 @@ import roomescape.dto.reservationtime.ReservationTimeCreateRequest;
 import roomescape.dto.reservationtime.ReservationTimeResponse;
 import roomescape.service.ReservationTimeService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -18,8 +19,11 @@ public class ReservationTimeController {
     }
 
     @GetMapping
-    public List<ReservationTimeResponse> readTimes() {
-        return reservationTimeService.readReservationTimes();
+    public List<ReservationTimeResponse> readTimes(
+            @RequestParam(value = "date", required = false) LocalDate date,
+            @RequestParam(value = "themeId", required = false) Long themeId
+    ) {
+        return reservationTimeService.readReservationTimes(date, themeId);
     }
 
     @GetMapping("{id}")

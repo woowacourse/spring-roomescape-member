@@ -41,6 +41,6 @@ INSERT INTO reservation (name, date, time_id, theme_id) VALUES ( '클로버', '2
 
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ( '클로버1', '2024-12-01', 1, 2);
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ( '클로버2', '2024-12-02', 1, 2);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ( '클로버3', '2024-12-02', 1, 2);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ( '클로버3', '2024-12-02', 2, 2);
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ( '클로버4', '2024-12-03', 1, 2);
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ( '클로버5', '2024-12-04', 1, 2);

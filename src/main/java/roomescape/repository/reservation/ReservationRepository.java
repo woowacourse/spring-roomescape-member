@@ -21,4 +21,6 @@ public interface ReservationRepository {
     boolean existsByThemeId(Long themeId);
 
     List<Reservation> findByDateBetween(LocalDate start, LocalDate end);
+
+    List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId);
 }

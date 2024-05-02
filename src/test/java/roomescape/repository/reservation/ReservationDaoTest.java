@@ -101,6 +101,20 @@ class ReservationDaoTest {
         assertThat(reservations).hasSize(5);
     }
 
+    @DisplayName("예약 DAO는 주어진 날짜와 테마에 맞는 예약을 반환한다.")
+    @Test
+    void findByDateAndThemeId() {
+        // given
+        LocalDate date = LocalDate.of(2024, 12, 2);
+        Long themeId = 2L;
+
+        // when
+        List<Reservation> reservations = reservationRepository.findByDateAndThemeId(date, themeId);
+
+        // then
+        assertThat(reservations).hasSize(2);
+    }
+
     @DisplayName("예약 DAO는 삭제 요청이 들어오면 id에 맞는 값을 삭제한다.")
     @Test
     void deleteById() {

@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.reservationtime.ReservationTimeCreateRequest;
 import roomescape.dto.reservationtime.ReservationTimeResponse;
@@ -9,7 +10,10 @@ import roomescape.exception.ResourceNotFoundException;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationtime.ReservationTimeRepository;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ReservationTimeService {
@@ -49,10 +53,26 @@ public class ReservationTimeService {
         return ReservationTimeResponse.from(reservationTime);
     }
 
-    public List<ReservationTimeResponse> readReservationTimes() {
+    public List<ReservationTimeResponse> readReservationTimes(LocalDate date, Long themeId) {
+        if (date == null && themeId == null) {
+            return reservationTimeRepository.findAll().stream()
+                    .map(ReservationTimeResponse::from)
+                    .toList();
+        }
+        
+        List<Reservation> reservations = reservationRepository.findByDateAndThemeId(date, themeId);
+        Set<Long> alreadyBookedTimes = reservations.stream()
+                .map(reservation -> reservation.getTime().getId())
+                .collect(Collectors.toSet());
+
         return reservationTimeRepository.findAll().stream()
-                .map(ReservationTimeResponse::from)
+                .map(time -> createTimeResponse(time, alreadyBookedTimes))
                 .toList();
+    }
+
+    private ReservationTimeResponse createTimeResponse(ReservationTime time, Set<Long> alreadyBookedTimes) {
+        boolean alreadyBooked = alreadyBookedTimes.contains(time.getId());
+        return ReservationTimeResponse.of(time, alreadyBooked);
     }
 
     public void deleteTime(Long id) {

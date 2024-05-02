@@ -97,6 +97,18 @@ class ReservationTimeControllerTest {
                 .body("size()", is(2));
     }
 
+    @DisplayName("시간 컨트롤러는 특정 날짜와 테마에 대한 시간 조회 요청이 들어오면 저장된 시간을 반환한다.")
+    @Test
+    void readTimesWithDateAndThemeId() {
+        RestAssured.given().log().all()
+                .queryParam("date", "2024-12-02")
+                .queryParam("themeId", 2)
+                .when().get("/times")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(2));
+    }
+
     @DisplayName("시간 컨트롤러는 시간 삭제 요청이 들어오면 삭제 후 200을 반환한다.")
     @Test
     void deleteTime() {

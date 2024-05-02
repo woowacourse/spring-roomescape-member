@@ -7,6 +7,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.Fixtures;
+import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.reservationtime.ReservationTimeCreateRequest;
 import roomescape.dto.reservationtime.ReservationTimeResponse;
@@ -14,6 +16,7 @@ import roomescape.exception.BadRequestException;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationtime.ReservationTimeRepository;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -95,10 +98,29 @@ class ReservationTimeServiceTest {
                 .thenReturn(List.of(reservationTimeFixture));
 
         // when
-        List<ReservationTimeResponse> reservationTimes = reservationTimeService.readReservationTimes();
+        List<ReservationTimeResponse> reservationTimes = reservationTimeService.readReservationTimes(null, null);
 
         // then
         assertThat(reservationTimes.size()).isEqualTo(1);
+    }
+
+    @DisplayName("예약 시간 서비스는 지정된 날짜와 테마별 예약 가능 여부를 포함하여 시간들을 반환한다.")
+    @Test
+    void readReservationTimesByDateAndThemeId() {
+        // given
+        LocalDate date = LocalDate.of(2024, 12, 2);
+        Long themeId = 2L;
+        Mockito.when(reservationRepository.findByDateAndThemeId(date, themeId))
+                .thenReturn(List.of(new Reservation("클로버", date, reservationTimeFixture, Fixtures.themeFixture)));
+        Mockito.when(reservationTimeRepository.findAll())
+                .thenReturn(List.of(reservationTimeFixture));
+
+        // when
+        List<ReservationTimeResponse> reservationTimes = reservationTimeService.readReservationTimes(date, themeId);
+
+        // then
+        assertThat(reservationTimes).hasSize(1);
+        assertThat(reservationTimes).contains(ReservationTimeResponse.of(reservationTimeFixture, true));
     }
 
     @DisplayName("예약 시간 서비스는 id에 맞는 시간을 삭제한다.")
@@ -106,7 +128,7 @@ class ReservationTimeServiceTest {
     void deleteTime() {
         // given
         Mockito.when(reservationRepository.existsByTimeId(id))
-                        .thenReturn(false);
+                .thenReturn(false);
         Mockito.doNothing().when(reservationTimeRepository).deleteById(id);
 
         // when & then
