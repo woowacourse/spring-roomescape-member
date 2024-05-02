@@ -12,10 +12,10 @@ INSERT INTO reservation_time(start_at)
 VALUES ('10:00');
 
 INSERT INTO reservation(name, date, time_id, theme_id)
-VALUES ('brown', TIMESTAMPADD(DAY, -7, NOW()), 1, 1);
+VALUES ('brown', TIMESTAMPADD(WEEK, -1, CURRENT_DATE), 1, 1);
 INSERT INTO reservation(name, date, time_id, theme_id)
-VALUES ('brown', TIMESTAMPADD(DAY, -7, NOW()), 1, 1);
+VALUES ('brown', TIMESTAMPADD(WEEK, -1, CURRENT_DATE), 1, 1);
 INSERT INTO reservation(name, date, time_id, theme_id)
-VALUES ('brown', TIMESTAMPADD(DAY, -7, NOW()), 1, 1);
+VALUES ('brown', TIMESTAMPADD(WEEK, -1, CURRENT_DATE), 1, 1);
 INSERT INTO reservation(name, date, time_id, theme_id)
-VALUES ('brown', TIMESTAMPADD(DAY, -7, NOW()), 1, 3);
+VALUES ('brown', TIMESTAMPADD(WEEK, -1, CURRENT_DATE), 1, 3);
