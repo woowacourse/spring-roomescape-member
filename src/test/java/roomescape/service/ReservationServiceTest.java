@@ -47,8 +47,11 @@ class ReservationServiceTest {
     @Test
     @DisplayName("동일한 날짜와 시간과 테마에 예약을 생성하면 예외가 발생한다")
     void duplicateTimeReservationAddFail() {
+        // given
         Time time = timeRepository.save(new Time(LocalTime.of(12, 30)));
         Theme theme = themeRepository.save(new Theme("테마명", "설명", "썸네일URL"));
+
+        // when & then
         reservationService.createReservation(
                 new ReservationRequest("예약", LocalDate.now().plusDays(1L), time.getId(), theme.getId()));
 
@@ -60,10 +63,12 @@ class ReservationServiceTest {
     @Test
     @DisplayName("이미 지난 날짜로 예약을 생성하면 예외가 발생한다")
     void beforeDateReservationFail() {
+        // given
         Time time = timeRepository.save(new Time(LocalTime.of(12, 30)));
         Theme theme = themeRepository.save(new Theme("테마명", "설명", "썸네일URL"));
         LocalDate beforeDate = LocalDate.now().minusDays(1L);
 
+        // when & then
         assertThatThrownBy(() -> reservationService.createReservation(
                 new ReservationRequest("예약", beforeDate, time.getId(), theme.getId())))
                 .isInstanceOf(ConflictException.class);
@@ -72,11 +77,13 @@ class ReservationServiceTest {
     @Test
     @DisplayName("현재 날짜가 예약 당일이지만, 이미 지난 시간으로 예약을 생성하면 예외가 발생한다")
     void beforeTimeReservationFail() {
+        // given
         LocalTime requestTime = LocalTime.now();
         LocalTime beforeTime = requestTime.minusHours(1L);
         Time time = timeRepository.save(new Time(beforeTime));
         Theme theme = themeRepository.save(new Theme("테마명", "설명", "썸네일URL"));
 
+        // when & then
         assertThatThrownBy(() -> reservationService.createReservation(
                 new ReservationRequest("예약", LocalDate.now(), time.getId(), theme.getId())))
                 .isInstanceOf(ConflictException.class);

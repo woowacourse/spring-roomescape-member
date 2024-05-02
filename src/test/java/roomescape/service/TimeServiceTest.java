@@ -48,21 +48,25 @@ class TimeServiceTest {
     @Test
     @DisplayName("중복된 예약 시간을 등록하는 경우 예외가 발생한다.")
     void duplicateTimeFail() {
+        // given
         timeRepository.save(new Time(LocalTime.of(12, 30)));
 
+        // when & then
         assertThatThrownBy(() -> timeService.createTime(new TimeRequest(LocalTime.of(12, 30))))
                 .isInstanceOf(ConflictException.class);
     }
 
-    // TODO: given, when, then 분리
     @Test
     @DisplayName("삭제하려는 시간에 예약이 존재하면 예외를 발생한다.")
     void usingTimeDeleteFail() {
+        // given
         Time time = timeRepository.save(new Time(LocalTime.now()));
         Theme theme = themeRepository.save(new Theme("테마명", "설명", "썸네일URL"));
 
+        // when
         reservationRepository.save(new Reservation("예약", LocalDate.now().plusDays(1L), time, theme));
 
+        // then
         assertThatThrownBy(() -> timeService.deleteTime(time.getId()))
                 .isInstanceOf(ConflictException.class);
     }

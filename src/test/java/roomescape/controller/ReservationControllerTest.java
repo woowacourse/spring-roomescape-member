@@ -152,7 +152,6 @@ public class ReservationControllerTest {
         assertThat(isJdbcTemplateInjected).isFalse();
     }
 
-    // TODO: 더미데이터 추가하고 테스트하도록 수정
     @Test
     @DisplayName("특정 날짜의 특정 테마 예약 현황을 조회한다.")
     void readReservationByDateAndThemeId() {
