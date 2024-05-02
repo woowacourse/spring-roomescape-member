@@ -1,14 +1,14 @@
 package roomescape.repository;
 
-import java.sql.PreparedStatement;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.IllegalTimeException;
@@ -17,6 +17,7 @@ import roomescape.exception.IllegalTimeException;
 public class TimeDao {
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
     private final RowMapper<ReservationTime> timeRowMapper = (resultSet, rowNum) -> new ReservationTime(
             resultSet.getLong("id"),
             LocalTime.parse(resultSet.getString("start_at"))
@@ -24,19 +25,14 @@ public class TimeDao {
 
     public TimeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation_time")
+                .usingGeneratedKeyColumns("id");
     }
 
-    public Long save(ReservationTime reservationTime) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(
-                    "INSERT INTO reservation_time (start_at) VALUES (?)",
-                    new String[]{"id"});
-            ps.setString(1, reservationTime.getStartAt().toString());
-            return ps;
-        }, keyHolder);
-
-        return keyHolder.getKey().longValue();
+    public List<ReservationTime> findAll() {
+        List<ReservationTime> reservationTimes = jdbcTemplate.query("SELECT * FROM reservation_time", timeRowMapper);
+        return Collections.unmodifiableList(reservationTimes);
     }
 
     public ReservationTime findById(long id) {
@@ -48,13 +44,10 @@ public class TimeDao {
         }
     }
 
-    public List<ReservationTime> findAll() {
-        List<ReservationTime> reservationTimes = jdbcTemplate.query("SELECT * FROM reservation_time", timeRowMapper);
-        return Collections.unmodifiableList(reservationTimes);
-    }
-
-    public void deleteById(Long id) {
-        jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
+    public ReservationTime save(ReservationTime reservationTime) {
+        SqlParameterSource parameterSource = new BeanPropertySqlParameterSource(reservationTime);
+        Number newId = simpleJdbcInsert.executeAndReturnKey(parameterSource);
+        return findById(newId.longValue());
     }
 
     public boolean existByTime(LocalTime time) {
@@ -64,5 +57,9 @@ public class TimeDao {
                 WHERE start_at = ?
                 """, Integer.class, time);
         return count > 0;
+    }
+
+    public void deleteById(Long id) {
+        jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
     }
 }

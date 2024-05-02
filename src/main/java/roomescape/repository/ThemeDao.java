@@ -1,30 +1,29 @@
 package roomescape.repository;
 
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Repository;
-import roomescape.domain.Theme;
-import roomescape.exception.IllegalThemeException;
-
-import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.stereotype.Repository;
+import roomescape.domain.Theme;
+import roomescape.exception.IllegalThemeException;
 
 @Repository
 public class ThemeDao {
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
     private final RowMapper<Theme> timeRowMapper = (resultSet, rowNum) -> new Theme(
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("description"),
             resultSet.getString("thumbnail")
     );
-
     private RowMapper<Theme> themeRowMapper = (resultSet, rowNum) -> new Theme(
             resultSet.getLong("id"),
             resultSet.getString("name"),
@@ -34,21 +33,15 @@ public class ThemeDao {
 
     public ThemeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("theme")
+                .usingGeneratedKeyColumns("id");
     }
 
-    public Long save(Theme theme) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(
-                    "INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
-                    new String[]{"id"});
-            ps.setString(1, theme.getName());
-            ps.setString(2, theme.getDescription());
-            ps.setString(3, theme.getThumbnail());
-            return ps;
-        }, keyHolder);
-
-        return keyHolder.getKey().longValue();
+    public Theme save(Theme theme) {
+        SqlParameterSource parameterSource = new BeanPropertySqlParameterSource(theme);
+        Number newId = simpleJdbcInsert.executeAndReturnKey(parameterSource);
+        return findById(newId.longValue());
     }
 
     public Theme findById(long id) {

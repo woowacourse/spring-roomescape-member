@@ -36,7 +36,7 @@ class ReservationDaoTest {
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "이름", "설명", "썸네일");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "테니", "2024-05-01", 1, 1);
-        boolean existByDateTimeTheme = reservationDao.existByDateTimeTheme(LocalDate.of(2024, 5, 1), LocalTime.of(10, 0), 1L);
+        boolean existByDateTimeTheme = reservationDao.existByDateAndTimeAndTheme(LocalDate.of(2024, 5, 1), LocalTime.of(10, 0), 1L);
         assertThat(existByDateTimeTheme).isTrue();
     }
 }
