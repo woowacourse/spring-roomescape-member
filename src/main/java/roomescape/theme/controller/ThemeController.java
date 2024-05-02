@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.theme.dto.ThemeRankResponse;
 import roomescape.theme.dto.ThemeRequest;
 import roomescape.theme.dto.ThemeResponse;
 import roomescape.theme.service.ThemeService;
@@ -29,6 +30,13 @@ public class ThemeController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(themeService.findThemes());
+    }
+
+    @GetMapping("/rank")
+    public ResponseEntity<List<ThemeRankResponse>> themeRankList() {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(themeService.findRankedThemes());
     }
 
     @PostMapping

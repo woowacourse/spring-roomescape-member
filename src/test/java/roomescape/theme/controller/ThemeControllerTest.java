@@ -18,6 +18,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.dto.ThemeRankResponse;
 import roomescape.theme.dto.ThemeRequest;
 import roomescape.theme.dto.ThemeResponse;
 import roomescape.theme.service.ThemeService;
@@ -58,6 +59,17 @@ public class ThemeControllerTest {
                 .thenReturn(List.of(ThemeResponse.fromTheme(theme)));
 
         mockMvc.perform(get("/themes"))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("인기많은 테마 정보를 정상적으로 가져오는지 확인한다.")
+    void findTopRankThemes() throws Exception {
+        Mockito.when(themeService.findRankedThemes())
+                .thenReturn(List.of(ThemeRankResponse.fromTheme(theme)));
+
+        mockMvc.perform(get("/themes/rank"))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
