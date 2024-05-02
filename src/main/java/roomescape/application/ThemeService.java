@@ -1,5 +1,6 @@
 package roomescape.application;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,16 +11,18 @@ import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.time.ReservationTime;
 import roomescape.domain.time.repository.ReservationTimeRepository;
-import roomescape.dto.reservationtime.ReservationTimeResponse;
+import roomescape.dto.theme.AvailableTimeResponse;
 
 @Service
 public class ThemeService {
+    private final Clock clock;
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
 
-    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository,
+    public ThemeService(Clock clock, ThemeRepository themeRepository, ReservationRepository reservationRepository,
                         ReservationTimeRepository reservationTimeRepository) {
+        this.clock = clock;
         this.themeRepository = themeRepository;
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
@@ -52,20 +55,15 @@ public class ThemeService {
     }
 
     public List<Theme> getPopularThemes() {
-        return themeRepository.findAllByRank(LocalDate.now()); // todo clock
+        return themeRepository.findAllByRank(LocalDate.now(clock));
     }
 
-    public List<ReservationTimeResponse> getAvailableTimes(long id, LocalDate date) {
-        List<ReservationTimeResponse> responses = new ArrayList<>();
+    public List<AvailableTimeResponse> getAvailableTimes(long id, LocalDate date) {
+        List<AvailableTimeResponse> responses = new ArrayList<>();
         for (ReservationTime reservationTime : reservationTimeRepository.findAll()) {
-//            Optional<Reservation> optionalReservation = reservationRepository.existsByReservationDateTimeAndTheme(date,
-//                    reservationTime.getId(), id);
-//            boolean alreadyBooked = optionalReservation.isPresent(); // reservation
             boolean alreadyBooked = reservationRepository.existsByReservationDateTimeAndTheme(date,
-                    reservationTime.getId(),
-                    id);
-            System.out.println(alreadyBooked);
-            ReservationTimeResponse response = ReservationTimeResponse.from(reservationTime, alreadyBooked);
+                    reservationTime.getId(), id);
+            AvailableTimeResponse response = AvailableTimeResponse.from(reservationTime, alreadyBooked);
             responses.add(response);
         }
         return responses;
