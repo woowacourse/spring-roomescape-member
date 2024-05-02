@@ -36,7 +36,7 @@ public class ReservationService {
         Theme theme = themeDao.findById(reservationRequest.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 잘못된 테마 번호를 입력하였습니다."));
 
-        if (hasDuplicateReservation(reservationRequest.date(), reservationRequest.timeId())) {
+        if (hasDuplicateReservation(reservationRequest.date(), reservationRequest.timeId(), reservationRequest.themeId())) {
             throw new IllegalArgumentException("[ERROR] 중복된 예약이 존재합니다.");
         }
 
@@ -79,7 +79,7 @@ public class ReservationService {
         return result;
     }
 
-    private boolean hasDuplicateReservation(final LocalDate date, final long timeId) {
-        return !reservationDao.findByDateAndTimeId(date, timeId).isEmpty();
+    private boolean hasDuplicateReservation(final LocalDate date, final long timeId, final long themeId) {
+        return !reservationDao.findByDateAndTimeIdAndThemeId(date, timeId, themeId).isEmpty();
     }
 }
