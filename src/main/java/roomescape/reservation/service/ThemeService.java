@@ -1,5 +1,6 @@
 package roomescape.reservation.service;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -13,8 +14,11 @@ public class ThemeService {
 
     private final ThemeDao themeDao;
 
-    public ThemeService(ThemeDao themeDao) {
+    private final Clock clock;
+
+    public ThemeService(ThemeDao themeDao, Clock clock) {
         this.themeDao = themeDao;
+        this.clock = clock;
     }
 
     public ThemeResponse createTheme(ThemeRequest themeRequest) {
@@ -34,7 +38,7 @@ public class ThemeService {
     }
 
     private List<ThemeResponse> findLimitThemes(int limit) {
-        LocalDate now = LocalDate.now();
+        LocalDate now = LocalDate.now(clock);
 
         LocalDate start = now.minusDays(8);
         LocalDate end = now.minusDays(1);

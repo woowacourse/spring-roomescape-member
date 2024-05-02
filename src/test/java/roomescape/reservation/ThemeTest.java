@@ -1,14 +1,19 @@
 package roomescape.reservation;
 
 import static org.hamcrest.Matchers.is;
+import static org.mockito.BDDMockito.given;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
@@ -22,13 +27,18 @@ class ThemeTest {
     @LocalServerPort
     int port;
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @MockBean
+    private Clock clock;
+
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+        given(clock.instant()).willReturn(Instant.parse("2024-05-02T19:19:00Z"));
+        given(clock.getZone()).willReturn(ZoneId.of("Asia/Seoul"));
     }
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     @DisplayName("테마 추가 API 테스트")
     @Test
