@@ -121,7 +121,7 @@ function renderAvailableTimes(times) {
           response 명세에 맞춰 createSlot 함수 호출 시 값 설정
     */
     const startAt = time.startAt;
-    const timeId = time.id;
+    const timeId = time.timeId;
     const alreadyBooked = time.alreadyBooked;
 
     const div = createSlot('time', startAt, timeId, alreadyBooked); // createSlot('time', 시작 시간, time id, 예약 여부)
@@ -177,11 +177,11 @@ function onReservationButtonClick() {
       body: JSON.stringify(reservationData)
     })
         .then(response => {
-          if (!response.create) throw new Error('Reservation failed');
+          if (!response.ok) throw new Error('Reservation failed');
           return response.json();
         })
         .then(data => {
-          alert("Reservation successful!");
+          alert("예약 성공!");
           location.reload();
         })
         .catch(error => {
