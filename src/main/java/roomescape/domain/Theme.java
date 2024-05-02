@@ -29,7 +29,6 @@ public class Theme {
 
     private void validateName(String name) {
         if (name == null || name.isBlank()) {
-            //TODO : NAME_EMPYT 재사용 고민
             throw new RoomescapeException(EMPTY_NAME);
         }
     }
