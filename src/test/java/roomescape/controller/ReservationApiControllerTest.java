@@ -22,7 +22,7 @@ import roomescape.service.dto.input.ReservationTimeInput;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,classes = TestConfig.class)
 @ActiveProfiles("test")
-public class ReservationControllerTest {
+public class ReservationApiControllerTest {
 
     @Autowired
     ReservationService reservationService;

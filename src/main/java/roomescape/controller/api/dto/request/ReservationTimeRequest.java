@@ -1,4 +1,4 @@
-package roomescape.controller.dto.request;
+package roomescape.controller.api.dto.request;
 
 import roomescape.service.dto.input.ReservationTimeInput;
 

@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.api;
 
 import java.net.URI;
 import java.util.List;
@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import roomescape.controller.dto.request.ThemeCreateRequest;
-import roomescape.controller.dto.response.ThemeResponse;
+import roomescape.controller.api.dto.request.ThemeCreateRequest;
+import roomescape.controller.api.dto.response.ThemeResponse;
 import roomescape.exception.ExistReservationInThemeException;
 import roomescape.exception.NotExistThemeException;
 import roomescape.service.ThemeService;
@@ -22,11 +22,11 @@ import roomescape.service.dto.output.ThemeOutput;
 
 @Controller
 @RequestMapping("/themes")
-public class ThemeController {
+public class ThemeApiController {
 
     private final ThemeService themeService;
 
-    public ThemeController(ThemeService themeService) {
+    public ThemeApiController(ThemeService themeService) {
         this.themeService = themeService;
     }
 

@@ -1,4 +1,4 @@
-package roomescape.controller.dto.response;
+package roomescape.controller.api.dto.response;
 
 import java.util.List;
 import roomescape.service.dto.output.ReservationOutput;

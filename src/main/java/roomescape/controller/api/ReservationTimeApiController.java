@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.api;
 
 import java.net.URI;
 import java.util.List;
@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.dto.request.ReservationTimeRequest;
-import roomescape.controller.dto.response.ReservationTimeResponse;
+import roomescape.controller.api.dto.request.ReservationTimeRequest;
+import roomescape.controller.api.dto.response.ReservationTimeResponse;
 import roomescape.dao.dto.AvailableReservationTimeResponse;
 import roomescape.exception.ExistReservationInReservationTimeException;
 import roomescape.exception.NotExistReservationTimeException;
@@ -25,11 +25,11 @@ import roomescape.service.dto.output.ReservationTimeOutput;
 
 @RestController
 @RequestMapping("/times")
-public class ReservationTimeController {
+public class ReservationTimeApiController {
 
     private final ReservationTimeService reservationTimeService;
 
-    public ReservationTimeController(ReservationTimeService reservationTimeService) {
+    public ReservationTimeApiController(ReservationTimeService reservationTimeService) {
         this.reservationTimeService = reservationTimeService;
     }
 

@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.api;
 
 import java.net.URI;
 import java.util.List;
@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.dto.request.ReservationRequest;
-import roomescape.controller.dto.response.ReservationResponse;
+import roomescape.controller.api.dto.request.ReservationRequest;
+import roomescape.controller.api.dto.response.ReservationResponse;
 import roomescape.exception.NotExistReservationException;
 import roomescape.exception.PastTimeReservationException;
 import roomescape.exception.ReservationAlreadyExistsException;
@@ -22,11 +22,11 @@ import roomescape.service.dto.output.ReservationOutput;
 
 @RestController
 @RequestMapping("/reservations")
-public class ReservationController {
+public class ReservationApiController {
 
     private final ReservationService reservationService;
 
-    public ReservationController(ReservationService reservationService) {
+    public ReservationApiController(ReservationService reservationService) {
         this.reservationService = reservationService;
     }
 
