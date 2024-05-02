@@ -44,9 +44,9 @@ public class ThemeApiController {
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<ThemeOutput>> getPopularThemes(@RequestParam String date) {
+    public ResponseEntity<List<ThemeResponse>> getPopularThemes(@RequestParam String date) {
         List<ThemeOutput> outputs = themeService.getPopularThemes(date);
-        return ResponseEntity.ok().body(outputs);
+        return ResponseEntity.ok().body(ThemeResponse.toResponses(outputs));
     }
 
     @DeleteMapping("/{id}")
