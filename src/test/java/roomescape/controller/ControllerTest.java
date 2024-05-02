@@ -10,7 +10,7 @@ import roomescape.service.ReservationTimeService;
 import roomescape.service.ThemeService;
 
 @WebMvcTest
-public abstract class ControllerTest {
+abstract class ControllerTest {
     @Autowired
     protected MockMvc mockMvc;
 

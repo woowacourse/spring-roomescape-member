@@ -7,7 +7,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 @Sql("/test-schema.sql")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class RepositoryTest {
+class RepositoryTest {
     @Autowired
     protected JdbcTemplate jdbcTemplate;
 }

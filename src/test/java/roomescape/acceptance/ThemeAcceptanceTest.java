@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 import static roomescape.TestFixture.*;
 
-public class ThemeAcceptanceTest extends ApiAcceptanceTest {
+class ThemeAcceptanceTest extends ApiAcceptanceTest {
     @Test
     @DisplayName("[2 - Step2] 테마를 추가한다.")
     void createTheme() {

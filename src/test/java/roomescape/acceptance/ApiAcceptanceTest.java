@@ -14,7 +14,7 @@ import static roomescape.TestFixture.*;
 
 @Sql("/test-schema.sql")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public abstract class ApiAcceptanceTest {
+abstract class ApiAcceptanceTest {
 
     protected Long saveTheme(String name, String description) {
         ThemeSaveRequest request = new ThemeSaveRequest(WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL);

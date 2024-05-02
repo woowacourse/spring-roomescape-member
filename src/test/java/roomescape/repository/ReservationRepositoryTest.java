@@ -35,7 +35,7 @@ class ReservationRepositoryTest extends RepositoryTest {
 
     @Test
     @DisplayName("예약을 저장한다.")
-    public void save() {
+    void save() {
         // given
         Long timeId = 1L;
         Reservation reservation = MIA_RESERVATION(new ReservationTime(timeId, MIA_RESERVATION_TIME), WOOTECO_THEME());
@@ -49,7 +49,7 @@ class ReservationRepositoryTest extends RepositoryTest {
 
     @Test
     @DisplayName("동일 시간대의 예약 목록을 조회한다.")
-    public void findAllByDateAndTime() {
+    void findAllByDateAndTime() {
         // given
         Long timeId = 1L;
         Long themeId = 1L;
@@ -72,7 +72,7 @@ class ReservationRepositoryTest extends RepositoryTest {
 
     @Test
     @DisplayName("모든 예약 목록을 조회한다.")
-    public void findAll() {
+    void findAll() {
         // given
         Long timeId = 1L;
         Long themeId = 1L;
@@ -97,7 +97,7 @@ class ReservationRepositoryTest extends RepositoryTest {
 
     @Test
     @DisplayName("Id로 예약이 존재하면 true를 반환한다.")
-    public void findById() {
+    void findById() {
         // given
         long timeId = 1L;
         long themeId = 1L;
@@ -122,7 +122,7 @@ class ReservationRepositoryTest extends RepositoryTest {
 
     @Test
     @DisplayName("Id에 해당하는 예약이 없다면 false를 반환한다.")
-    public void findByNotExistingId() {
+    void findByNotExistingId() {
         // given
         Long id = 1L;
 
@@ -135,7 +135,7 @@ class ReservationRepositoryTest extends RepositoryTest {
 
     @Test
     @DisplayName("Id로 예약을 삭제한다.")
-    public void deleteById() {
+    void deleteById() {
         // given
         long timeId = 1L;
         String insertSql = "INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)";

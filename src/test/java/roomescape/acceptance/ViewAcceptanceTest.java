@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class ViewAcceptanceTest {
+class ViewAcceptanceTest {
 
     @Test
     @DisplayName("[Step1] 어드민 메인 페이지를 조회한다.")

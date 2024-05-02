@@ -12,7 +12,7 @@ import java.sql.SQLException;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class LocalConnectionTest {
+class LocalConnectionTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 

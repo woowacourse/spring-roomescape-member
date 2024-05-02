@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 import static roomescape.TestFixture.*;
 
-public class ReservationAcceptanceTest extends ApiAcceptanceTest {
+class ReservationAcceptanceTest extends ApiAcceptanceTest {
     @Test
     @DisplayName("[Step2, Step5] 예약 목록을 조회한다.")
     void findReservations() {
