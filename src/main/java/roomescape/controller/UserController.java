@@ -10,4 +10,9 @@ public class UserController {
     public String getReservationPage() {
         return "/reservation";
     }
+
+    @GetMapping
+    public String getAdminPageByRedirect() {
+        return "index";
+    }
 }

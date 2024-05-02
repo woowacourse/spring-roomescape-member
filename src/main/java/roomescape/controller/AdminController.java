@@ -11,11 +11,6 @@ public class AdminController {
         return "/admin/index";
     }
 
-    @GetMapping
-    public String getAdminPageByRedirect() {
-        return "redirect:/admin";
-    }
-
     @GetMapping("/admin/reservation")
     public String getReservationPage() {
         return "/admin/reservation-new";
