@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ThemeServiceTest {
 
-    ThemeService themeService = new ThemeService(new FakeThemeRepository());
+    private final ThemeService themeService = new ThemeService(new FakeThemeRepository());
 
     @DisplayName("테마를 조회한다.")
     @Test

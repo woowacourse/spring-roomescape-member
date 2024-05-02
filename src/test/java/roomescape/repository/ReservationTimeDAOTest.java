@@ -23,15 +23,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ReservationTimeDAOTest {
 
     @Autowired
-    JdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    DataSource dataSource;
+    private DataSource dataSource;
 
     @Autowired
-    ReservationTimeDAO reservationTimeDAOImpl;
+    private ReservationTimeRepository reservationTimeRepository;
 
-    SimpleJdbcInsert insertActor;
+    private SimpleJdbcInsert insertActor;
 
     @BeforeEach
     void setUp() {
@@ -55,14 +55,14 @@ class ReservationTimeDAOTest {
     @DisplayName("모든 예약 시간을 조회한다")
     @Test
     void should_get_reservation_times() {
-        List<ReservationTime> reservationTimes = reservationTimeDAOImpl.findAllReservationTimes();
+        List<ReservationTime> reservationTimes = reservationTimeRepository.findAllReservationTimes();
         assertThat(reservationTimes).hasSize(2);
     }
 
     @DisplayName("예약 시간을 추가한다")
     @Test
     void should_add_reservation_time() {
-        reservationTimeDAOImpl.addReservationTime(new ReservationTime(LocalTime.of(12, 0)));
+        reservationTimeRepository.addReservationTime(new ReservationTime(LocalTime.of(12, 0)));
         Integer count = jdbcTemplate.queryForObject("select count(1) from reservation_time", Integer.class);
         assertThat(count).isEqualTo(3);
     }
@@ -70,7 +70,7 @@ class ReservationTimeDAOTest {
     @DisplayName("예약 시간을 삭제한다")
     @Test
     void should_delete_reservation_time() {
-        reservationTimeDAOImpl.deleteReservationTime(1);
+        reservationTimeRepository.deleteReservationTime(1);
         Integer count = jdbcTemplate.queryForObject("select count(1) from reservation_time", Integer.class);
         assertThat(count).isEqualTo(1);
     }
@@ -78,21 +78,21 @@ class ReservationTimeDAOTest {
     @DisplayName("아이디에 해당하는 예약 시간을 조회한다.")
     @Test
     void should_get_reservation_time() {
-        ReservationTime reservationTime = reservationTimeDAOImpl.findReservationById(1);
+        ReservationTime reservationTime = reservationTimeRepository.findReservationById(1);
         assertThat(reservationTime.getStartAt()).isEqualTo(LocalTime.of(10, 0));
     }
 
     @DisplayName("아이디가 존재하면 참을 반환한다.")
     @Test
     void should_return_true_when_id_exist() {
-        long count = reservationTimeDAOImpl.countReservationTimeById(1);
+        long count = reservationTimeRepository.countReservationTimeById(1);
         assertThat(count).isEqualTo(1);
     }
 
     @DisplayName("아이디가 존재하면 거짓을 반환한다.")
     @Test
     void should_return_false_when_id_not_exist() {
-        long count = reservationTimeDAOImpl.countReservationTimeById(100000000);
+        long count = reservationTimeRepository.countReservationTimeById(100000000);
         assertThat(count).isEqualTo(0);
     }
 }

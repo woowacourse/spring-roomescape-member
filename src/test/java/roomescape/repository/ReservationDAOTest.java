@@ -26,19 +26,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ReservationDAOTest {
 
     @Autowired
-    JdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    ReservationRepository reservationRepository;
+    private ReservationRepository reservationRepository;
 
     @Autowired
-    DataSource dataSource;
+    private DataSource dataSource;
 
-    SimpleJdbcInsert reservationTimeInsertActor;
-
-    SimpleJdbcInsert reservationInsertActor;
-
-    SimpleJdbcInsert themeInsertActor;
+    private SimpleJdbcInsert reservationTimeInsertActor;
+    private SimpleJdbcInsert reservationInsertActor;
+    private SimpleJdbcInsert themeInsertActor;
 
     @BeforeEach
     void setUp() {
