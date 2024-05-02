@@ -91,8 +91,8 @@ public class H2ThemeRepository implements ThemeRepository {
     public List<Theme> findPopularThemes(final ReservationDate startAt, final ReservationDate endAt, final int maximumThemeCount) {
         final String sql = "SELECT "
                 + "th.id, th.name, th.description, th.thumbnail "
-                + "FROM reservation as r "
-                + "inner join theme as th "
+                + "FROM theme as th "
+                + "INNER JOIN reservation as r "
                 + "on r.theme_id = th.id "
                 + "WHERE r.date BETWEEN :startAt AND :endAt "
                 + "GROUP BY r.theme_id "
