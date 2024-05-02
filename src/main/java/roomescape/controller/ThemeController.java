@@ -1,6 +1,7 @@
 package roomescape.controller;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
@@ -27,6 +29,13 @@ public class ThemeController {
     @GetMapping
     public List<ThemeResponse> findAll() {
         return themeService.findAll();
+    }
+
+    @GetMapping("/ranking")
+    public List<ThemeResponse> findAndOrderByPopularity(@RequestParam LocalDate start,
+                                                        @RequestParam LocalDate end,
+                                                        @RequestParam int count) {
+        return themeService.findAndOrderByPopularity(start, end, count);
     }
 
     @PostMapping

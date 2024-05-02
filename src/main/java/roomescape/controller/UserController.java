@@ -9,4 +9,9 @@ public class UserController {
     public String reservationPage() {
         return "reservation";
     }
+
+    @GetMapping("/")
+    public String bestThemePage() {
+        return "index";
+    }
 }
