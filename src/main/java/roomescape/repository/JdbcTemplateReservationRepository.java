@@ -53,7 +53,6 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
         }, keyHolder);
     }
 
-    //Todo 개선 고민
     @Override
     public List<Reservation> findAll() {
         String query = """
