@@ -12,6 +12,8 @@ import roomescape.repository.ThemeRepository;
 @Service
 public class ThemeService {
 
+    private static final int POPULAR_THEME_COUNT = 10;
+
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
 
@@ -44,7 +46,7 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> getPopularThemes(final LocalDate localDate) {
-        return themeRepository.findOneWeekOrderByReservationCount(localDate, 10)
+        return reservationRepository.findThemesOrderedByReservationCountForWeek(localDate, POPULAR_THEME_COUNT)
                 .stream()
                 .map(ThemeResponse::new)
                 .toList();

@@ -37,6 +37,11 @@ public class ReservationRepository {
                 theme
         );
     };
+    private static final RowMapper<Theme> THEME_ROW_MAPPER = (selectedTheme, rowNum) -> new Theme(
+            selectedTheme.getLong("id"),
+            selectedTheme.getString("name"),
+            selectedTheme.getString("description"),
+            selectedTheme.getString("thumbnail"));
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert reservationInsert;
@@ -182,5 +187,20 @@ public class ReservationRepository {
                 END""";
 
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(selectQuery, Boolean.class, themeId));
+    }
+
+    public List<Theme> findThemesOrderedByReservationCountForWeek(final LocalDate localDate, final int count) {
+        final String selectQuery = """
+                SELECT t.id, t.name, t.description, t.thumbnail, COUNT(t.id) AS count
+                FROM reservations AS r
+                LEFT JOIN theme AS t
+                ON t.id = r.theme_id
+                WHERE r.date <= ? AND r.date > ?
+                GROUP BY t.id
+                ORDER BY count DESC
+                LIMIT ?
+                """;
+
+        return jdbcTemplate.query(selectQuery, THEME_ROW_MAPPER, localDate, localDate.minusWeeks(1), count);
     }
 }
