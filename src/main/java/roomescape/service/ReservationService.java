@@ -1,9 +1,9 @@
 package roomescape.service;
 
-import static roomescape.exception.ExceptionType.*;
 import static roomescape.exception.ExceptionType.DUPLICATE_RESERVATION;
 import static roomescape.exception.ExceptionType.PAST_TIME;
 import static roomescape.exception.ExceptionType.RESERVATION_TIME_NOT_FOUND;
+import static roomescape.exception.ExceptionType.THEME_NOT_FOUND;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,7 +15,6 @@ import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.ThemeResponse;
-import roomescape.exception.ExceptionType;
 import roomescape.exception.RoomescapeException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;

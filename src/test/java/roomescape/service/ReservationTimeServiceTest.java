@@ -1,14 +1,14 @@
 package roomescape.service;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static roomescape.exception.ExceptionType.DUPLICATE_RESERVATION_TIME;
 import static roomescape.exception.ExceptionType.INVALID_DELETE_TIME;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -21,7 +21,6 @@ import roomescape.dto.ReservationTimeResponse;
 import roomescape.exception.RoomescapeException;
 import roomescape.repository.CollectionReservationRepository;
 import roomescape.repository.CollectionReservationTimeRepository;
-import roomescape.repository.CollectionThemeRepository;
 
 class ReservationTimeServiceTest {
 
