@@ -19,6 +19,24 @@ class ThemeIntegrationTest extends IntegrationTest {
     }
 
     @Test
+    void 최근_일주일동안_예약_건수_많은_순서대로_10개_테마를_인기_테마로_조회할_수_있다() {
+        for (int date = 1; date < 10; date++) {
+            jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                    "브라운", "2024-08-0" + date, "1", "1");
+        }
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "브라운", "2024-08-10", "1", "1");
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "브라운", "2024-08-11", "1", "1"); // TODO: 반복문으로 해결하기...
+
+        RestAssured.given().log().all()
+                .when().get("/themes/ranking")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(10)); // TODO: body 검증
+    }
+
+    @Test
     void 테마를_추가할_수_있다() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "레벨3");

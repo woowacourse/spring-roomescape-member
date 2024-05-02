@@ -29,6 +29,12 @@ public class ThemeController {
         return ResponseEntity.ok().body(response);
     }
 
+    @GetMapping("/ranking")
+    public ResponseEntity<List<ThemeResponse>> findAllPopularTheme() {
+        List<ThemeResponse> response = themeService.findAllPopularTheme();
+        return ResponseEntity.ok().body(response);
+    }
+
     @PostMapping
     public ResponseEntity<ThemeResponse> saveTheme(@RequestBody ThemeRequest request) {
         ThemeResponse response = themeService.saveTheme(request);

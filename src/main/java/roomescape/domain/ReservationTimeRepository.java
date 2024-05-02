@@ -9,7 +9,7 @@ public interface ReservationTimeRepository {
 
     Optional<ReservationTime> findById(Long id);
 
-    List<ReservationTime> hasNotId(List<Long> unavailableTimeIds);
+    List<ReservationTime> hasNotId(List<Long> unavailableTimeIds); // TODO: 지우기
 
     boolean existsByStartAt(LocalTime startAt);
 

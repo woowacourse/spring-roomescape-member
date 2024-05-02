@@ -38,6 +38,13 @@ public class ReservationDao implements ReservationRepository {
             )
     );
 
+    private final RowMapper<Theme> themeRowMapper = (resultSet, rowNum) -> new Theme(
+            resultSet.getLong("id"),
+            resultSet.getString("name"),
+            resultSet.getString("description"),
+            resultSet.getString("thumbnail")
+    ); // TODO: 클래스 분리?
+
     public ReservationDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         jdbcInsert = new SimpleJdbcInsert(dataSource)
@@ -83,6 +90,20 @@ public class ReservationDao implements ReservationRepository {
                 WHERE date = ? AND theme_id = ?
                 """;
         return jdbcTemplate.queryForList(sql, Long.class, date, themeId);
+    }
+
+    @Override
+    public List<Theme> findThemeIdWithMostPopularReservation(String startDate, String endDate) {
+        String sql = """
+                SELECT theme.id, theme.name, theme.description, theme.thumbnail
+                FROM reservation
+                LEFT JOIN theme ON theme.id=reservation.theme_id
+                WHERE reservation.date > ? AND reservation.date < ?
+                GROUP BY theme.id
+                ORDER BY COUNT(*) DESC
+                LIMIT 10;
+                """;
+        return jdbcTemplate.query(sql, themeRowMapper, startDate, endDate);
     }
 
     @Override
