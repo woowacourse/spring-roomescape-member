@@ -1,20 +1,19 @@
 package roomescape.acceptance;
 
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.DynamicTest.dynamicTest;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.DynamicTest;
-import org.junit.jupiter.api.TestFactory;
-
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.DynamicTest.dynamicTest;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.TestFactory;
 
 public class ReservationTimeAcceptanceTest extends BasicAcceptanceTest {
     @TestFactory
@@ -53,13 +52,6 @@ public class ReservationTimeAcceptanceTest extends BasicAcceptanceTest {
         );
     }
 
-    private void deleteReservation(long reservationId, int expectedHttpCode) {
-        RestAssured.given().log().all()
-                .when().delete("/times/" + reservationId)
-                .then().log().all()
-                .statusCode(expectedHttpCode);
-    }
-
     private long postReservation(String time, int expectedHttpCode) {
         Map<?, ?> requestBody = Map.of("startAt", time);
 
@@ -88,5 +80,12 @@ public class ReservationTimeAcceptanceTest extends BasicAcceptanceTest {
         List<?> reservationTimeResponses = response.as(List.class);
 
         assertThat(reservationTimeResponses).hasSize(expectedReservationsSize);
+    }
+
+    private void deleteReservation(long reservationId, int expectedHttpCode) {
+        RestAssured.given().log().all()
+                .when().delete("/times/" + reservationId)
+                .then().log().all()
+                .statusCode(expectedHttpCode);
     }
 }
