@@ -4,8 +4,10 @@ import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDAO;
 import roomescape.dao.ReservationTimeDAO;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.AvailableTimeResponse;
 import roomescape.dto.ReservationTimeRequest;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -40,6 +42,19 @@ public class ReservationTimeService {
 
     public List<ReservationTime> findAll() {
         return reservationTimeDAO.selectAll();
+    }
+
+    public List<AvailableTimeResponse> findAvailableTimes(LocalDate date, Long themeId) {
+        List<ReservationTime> reservationTimes = reservationTimeDAO.selectAll();
+        List<Long> reservedTimeIds = reservationDAO.findReservedTimeIds(date, themeId);
+
+        return reservationTimes.stream()
+                .map(reservationTime -> AvailableTimeResponse.from(reservationTime, isReservedTime(reservationTime, reservedTimeIds)))
+                .toList();
+    }
+
+    private boolean isReservedTime(ReservationTime reservationTime, List<Long> reservedTimeIds) {
+        return reservedTimeIds.contains(reservationTime.getId());
     }
 
     public void delete(final Long id) {
