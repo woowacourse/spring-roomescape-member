@@ -1,12 +1,14 @@
 package roomescape.integration;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
+import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class ThemeIntegrationTest extends IntegrationTest {
@@ -19,23 +21,21 @@ class ThemeIntegrationTest extends IntegrationTest {
                 .body("size()", is(1));
     }
 
-    @Disabled
     @Test
     void 최근_일주일동안_예약_건수_많은_순서대로_10개_테마를_인기_테마로_조회할_수_있다() {
-        for (int date = 1; date < 10; date++) {
-            jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                    "브라운", "1999-09-0" + date, "1", "1");
-        }
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "브라운", "2024-08-10", "1", "1");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "브라운", "2024-08-11", "1", "1"); // TODO: 반복문으로 해결하기...
+                "브라운", "1999-09-18", "1", "1");
 
         RestAssured.given().log().all()
                 .when().get("/themes/ranking")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(10)); // TODO: body 검증
+                .body("size()", is(1));
+
+        List<Map<String, Object>> response = RestAssured.get("/themes/ranking")
+                .as(new TypeRef<>() {
+                });
+        assertThat(response.get(0)).containsEntry("id", 1);
     }
 
     @Test

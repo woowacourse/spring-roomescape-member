@@ -4,9 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
+import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class ReservationTimeIntegrationTest extends IntegrationTest {
@@ -26,6 +29,11 @@ class ReservationTimeIntegrationTest extends IntegrationTest {
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
+
+        List<Map<String, Object>> response = RestAssured.get("/times/available?date=2024-10-05&theme-id=1")
+                .as(new TypeRef<>() {
+                });
+        Assertions.assertThat(response.get(0)).containsEntry("alreadyBooked", false);
     }
 
     @Test
@@ -34,7 +42,12 @@ class ReservationTimeIntegrationTest extends IntegrationTest {
                 .when().get("/times/available?date=2024-08-05&theme-id=1")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1)); // TODO: body의 필드 검증하기
+                .body("size()", is(1));
+
+        List<Map<String, Object>> response = RestAssured.get("/times/available?date=2024-08-05&theme-id=1")
+                .as(new TypeRef<>() {
+                });
+        Assertions.assertThat(response.get(0)).containsEntry("alreadyBooked", true);
     }
 
     @Test
