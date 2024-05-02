@@ -42,4 +42,12 @@ public class ThemeService {
 
         themeRepository.deleteById(id);
     }
+
+    public List<ThemeResponse> getTopThemes() {
+        List<Theme> themes = themeRepository.findTopThemesWithinDays(7, 10);
+
+        return themes.stream()
+                .map(ThemeResponse::from)
+                .toList();
+    }
 }

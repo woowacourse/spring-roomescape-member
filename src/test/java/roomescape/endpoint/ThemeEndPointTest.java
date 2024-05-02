@@ -39,4 +39,10 @@ public class ThemeEndPointTest {
 
         HttpRestTestTemplate.assertDeleteNoContent("/themes/" + theme.getId());
     }
+
+    @DisplayName("테마 순위 조회")
+    @Test
+    void getTopThemes() {
+        HttpRestTestTemplate.assertGetOk("/themes/rankings");
+    }
 }

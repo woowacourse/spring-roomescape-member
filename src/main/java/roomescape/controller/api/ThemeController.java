@@ -47,4 +47,12 @@ public class ThemeController {
         return ResponseEntity.noContent()
                 .build();
     }
+
+    @GetMapping("/rankings")
+    public ResponseEntity<List<ThemeResponse>> getTopThemes() {
+        List<ThemeResponse> themeResponses = themeService.getTopThemes();
+    
+        return ResponseEntity.ok()
+                .body(themeResponses);
+    }
 }

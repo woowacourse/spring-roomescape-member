@@ -11,4 +11,6 @@ public interface ThemeRepository {
     Theme findById(Long id);
 
     void deleteById(Long id);
+
+    List<Theme> findTopThemesWithinDays(int day, int limit); //todo: 이름 자연스럽게 바꾸기
 }
