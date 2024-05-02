@@ -7,20 +7,24 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.reservation.dao.FakeReservationDao;
 import roomescape.reservation.dao.FakeThemeDao;
 import roomescape.reservation.domain.Theme;
+import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.domain.repository.ThemeRepository;
 import roomescape.reservation.dto.ThemeRequest;
 import roomescape.reservation.dto.ThemeResponse;
 
 @DisplayName("테마 로직 테스트")
 class ThemeServiceTest {
+    ReservationRepository reservationRepository;
     ThemeRepository themeRepository;
     ThemeService themeService;
 
     @BeforeEach
     void setUp() {
-        themeRepository = new FakeThemeDao();
+        reservationRepository = new FakeReservationDao();
+        themeRepository = new FakeThemeDao(reservationRepository);
         themeService = new ThemeService(themeRepository);
     }
 

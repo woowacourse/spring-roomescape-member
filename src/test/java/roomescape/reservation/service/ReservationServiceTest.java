@@ -10,6 +10,8 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.member.domain.repository.MemberRepository;
+import roomescape.reservation.dao.FakeMemberDao;
 import roomescape.reservation.dao.FakeReservationDao;
 import roomescape.reservation.dao.FakeReservationTimeDao;
 import roomescape.reservation.dao.FakeThemeDao;
@@ -27,14 +29,21 @@ class ReservationServiceTest {
     ReservationRepository reservationRepository;
     ReservationTimeRepository reservationTimeRepository;
     ThemeRepository themeRepository;
+    MemberRepository memberRepository;
     ReservationService reservationService;
 
     @BeforeEach
     void setUp() {
         reservationRepository = new FakeReservationDao();
-        reservationTimeRepository = new FakeReservationTimeDao();
-        themeRepository = new FakeThemeDao();
-        reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
+        reservationTimeRepository = new FakeReservationTimeDao(reservationRepository);
+        themeRepository = new FakeThemeDao(reservationRepository);
+        memberRepository = new FakeMemberDao();
+        reservationService = new ReservationService(
+                reservationRepository,
+                reservationTimeRepository,
+                themeRepository,
+                memberRepository
+        );
     }
 
     @DisplayName("예약 생성에 성공한다.")
