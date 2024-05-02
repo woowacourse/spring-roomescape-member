@@ -60,7 +60,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         }
     }
 
-    @Override // TODO: sql 확인
+    @Override
     public List<Theme> findOrderByReservation() {
         String sql = """
                 select t.id, t.name, t.description, t.thumbnail, count(t.id) as count
