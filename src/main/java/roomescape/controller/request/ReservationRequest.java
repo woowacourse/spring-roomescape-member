@@ -3,39 +3,31 @@ package roomescape.controller.request;
 import roomescape.exception.BadRequestException;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 
 public class ReservationRequest {
 
-    private LocalDate date;
-    private String name;
-    private long timeId;
-    private long themeId;
+    private final String name;
+    private final LocalDate date;
+    private final long timeId;
+    private final long themeId;
 
-    public ReservationRequest(String date, String name, long timeId, long themeId) {
+    public ReservationRequest(String name, LocalDate date, Long timeId, Long themeId) {
         validateName(name);
-        validateDate(date);
-        try {
-            this.date = LocalDate.parse(date);
-        } catch (DateTimeParseException exception) {
-            throw new BadRequestException("[ERROR] 유효하지 않은 요청입니다.");
-        }
+        validateNull(date, timeId, themeId);
         this.name = name;
+        this.date = date;
         this.timeId = timeId;
         this.themeId = themeId;
     }
 
-    private ReservationRequest() {
-    }
-
-    private void validateDate(String date) {
-        if (date == null || date.isEmpty()) {
+    private void validateName(String name) {
+        if (name == null || name.isEmpty()) {
             throw new BadRequestException("[ERROR] 유효하지 않은 요청입니다.");
         }
     }
 
-    private void validateName(String name) {
-        if (name == null || name.isEmpty()) {
+    private void validateNull(LocalDate date, Long timeId, Long themeId) {
+        if (date == null || timeId == null || themeId == null) {
             throw new BadRequestException("[ERROR] 유효하지 않은 요청입니다.");
         }
     }

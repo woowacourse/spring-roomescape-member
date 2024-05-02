@@ -15,6 +15,7 @@ import roomescape.controller.response.MemberReservationTimeResponse;
 import roomescape.model.Reservation;
 
 import java.lang.reflect.Field;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -57,10 +58,10 @@ class ReservationControllerTest {
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "에버", "공포", "공포.jpg");
 
         ReservationRequest request = new ReservationRequest(
-                "2030-08-05",
                 "브라운",
-                1,
-                1);
+                LocalDate.of(2030, 8, 5),
+                1L,
+                1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
