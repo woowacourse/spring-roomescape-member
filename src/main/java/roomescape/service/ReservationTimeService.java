@@ -40,6 +40,12 @@ public class ReservationTimeService {
                 .toList();
     }
 
+    public ReservationTimeResponse findById(Long id) {
+        ReservationTime reservationTime = reservationTimeRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("해당 ID의 예약 시간이 없습니다."));
+        return ReservationTimeResponse.from(reservationTime);
+    }
+
     @Transactional
     public void delete(Long id) {
         var reservationTime = reservationTimeRepository.findById(id)

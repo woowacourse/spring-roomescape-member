@@ -11,6 +11,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationSaveRequest;
+import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.ThemeResponse;
 import roomescape.exception.NotFoundException;
 
@@ -55,10 +56,12 @@ class ReservationControllerTest extends ControllerTest {
         ReservationSaveRequest request = new ReservationSaveRequest(USER_MIA, MIA_RESERVATION_DATE, 1L, 1L);
         ReservationTime expectedTime = new ReservationTime(1L, MIA_RESERVATION_TIME);
         Theme expectedTheme = WOOTECO_THEME(1L);
-        ReservationResponse expectedResponse = ReservationResponse.of(MIA_RESERVATION(), expectedTime);
+        ReservationResponse expectedResponse = ReservationResponse.from(MIA_RESERVATION(expectedTime, expectedTheme));
 
         BDDMockito.given(reservationService.create(any()))
                 .willReturn(expectedResponse);
+        BDDMockito.given(reservationTimeService.findById(anyLong()))
+                .willReturn(ReservationTimeResponse.from(expectedTime));
         BDDMockito.given(themeService.findById(anyLong()))
                 .willReturn(ThemeResponse.from(expectedTheme));
 
@@ -79,10 +82,13 @@ class ReservationControllerTest extends ControllerTest {
     @DisplayName("잘못된 형식의 예약 POST 요청 시 상태코드 400을 반환한다.")
     void createReservationWithInvalidRequest(ReservationSaveRequest request) throws Exception {
         // given
+        ReservationTimeResponse timeResponse = ReservationTimeResponse.from(new ReservationTime(1L, MIA_RESERVATION_TIME));
         ThemeResponse themeResponse = ThemeResponse.from(WOOTECO_THEME(1L));
 
         BDDMockito.given(reservationService.create(any()))
                 .willThrow(IllegalArgumentException.class);
+        BDDMockito.given(reservationTimeService.findById(1L))
+                .willReturn(timeResponse);
         BDDMockito.given(themeService.findById(1L))
                 .willReturn(themeResponse);
 
@@ -115,8 +121,8 @@ class ReservationControllerTest extends ControllerTest {
                 .willReturn(themeResponse);
 
         BDDMockito.willThrow(NotFoundException.class)
-                .given(reservationService)
-                .create(any());
+                .given(reservationTimeService)
+                .findById(anyLong());
 
         // when & then
         mockMvc.perform(post("/reservations")

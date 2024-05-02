@@ -14,7 +14,6 @@ import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.ReservedThemeResponse;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,9 +29,6 @@ class ReservationServiceTest {
     @Mock
     private ReservationRepository reservationRepository;
 
-    @Mock
-    private ReservationTimeRepository reservationTimeRepository;
-
     @InjectMocks
     private ReservationService reservationService;
 
@@ -42,8 +38,6 @@ class ReservationServiceTest {
         // given
         Reservation reservation = MIA_RESERVATION();
 
-        BDDMockito.given(reservationTimeRepository.findById(any()))
-                .willReturn(Optional.of(new ReservationTime(MIA_RESERVATION_TIME)));
         BDDMockito.given(reservationRepository.save(reservation))
                 .willReturn(new Reservation(1L, reservation));
 
@@ -58,11 +52,9 @@ class ReservationServiceTest {
     @DisplayName("동일한 테마, 날짜, 시간에 한 팀만 예약할 수 있다.")
     void createSameReservation() {
         // given
-        ReservationTime miaReservationTime = new ReservationTime(MIA_RESERVATION_TIME);
+        ReservationTime miaReservationTime = new ReservationTime(1L, MIA_RESERVATION_TIME);
         Reservation miaReservation = MIA_RESERVATION(miaReservationTime, WOOTECO_THEME(1L));
 
-        BDDMockito.given(reservationTimeRepository.findById(any()))
-                .willReturn(Optional.of(miaReservationTime));
         BDDMockito.given(reservationRepository.findAllByDateAndTimeAndThemeId(any(), any(), anyLong()))
                 .willReturn(List.of(miaReservation));
 

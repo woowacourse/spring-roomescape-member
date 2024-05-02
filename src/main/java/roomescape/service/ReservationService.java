@@ -3,12 +3,9 @@ package roomescape.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationResponse;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeRepository;
-
 import java.util.List;
 
 @Service
@@ -17,26 +14,20 @@ public class ReservationService {
     private static final int MAX_RESERVATIONS_PER_TIME = 1;
 
     private final ReservationRepository reservationRepository;
-    private final ReservationTimeRepository reservationTimeRepository;
 
-    public ReservationService(
-            ReservationRepository reservationRepository,
-            ReservationTimeRepository reservationTimeRepository) {
+    public ReservationService(ReservationRepository reservationRepository) {
         this.reservationRepository = reservationRepository;
-        this.reservationTimeRepository = reservationTimeRepository;
     }
 
     @Transactional
     public ReservationResponse create(Reservation reservation) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(reservation.getReservationTimeId())
-                .orElseThrow(() -> new NotFoundException("해당 ID의 예약 시간이 없습니다."));
         List<Reservation> reservationsInSameDateTime = reservationRepository.findAllByDateAndTimeAndThemeId(
-                reservation.getDate(), reservationTime, reservation.getThemeId());
+                reservation.getDate(), reservation.getTime(), reservation.getThemeId());
 
         validateDuplicatedReservation(reservationsInSameDateTime);
 
         Reservation savedReservation = reservationRepository.save(reservation);
-        return ReservationResponse.of(savedReservation, reservationTime);
+        return ReservationResponse.from(savedReservation);
     }
 
     private void validateDuplicatedReservation(List<Reservation> reservationsInSameDateTime) {

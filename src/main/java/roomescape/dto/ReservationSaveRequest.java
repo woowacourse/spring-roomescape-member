@@ -10,8 +10,9 @@ public record ReservationSaveRequest(
         Long timeId,
         Long themeId) {
 
-    public Reservation toModel(ThemeResponse themeResponse) {
+    public Reservation toModel(ThemeResponse themeResponse, ReservationTimeResponse timeResponse) {
+        ReservationTime time = new ReservationTime(timeResponse.id(), timeResponse.startAt());
         Theme theme = new Theme(themeResponse.id(), themeResponse.name(), themeResponse.description(), themeResponse.thumbnail());
-        return new Reservation(name, date, new ReservationTime(timeId), theme);
+        return new Reservation(name, date, time, theme);
     }
 }
