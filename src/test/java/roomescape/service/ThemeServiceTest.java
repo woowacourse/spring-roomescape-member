@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,13 +35,13 @@ class ThemeServiceTest {
 
     @BeforeEach
     void setUp() {
-        themeDao.create(new Theme(null, ThemeName.from("방탈출1"), ThemeDescription.from("방탈출 1번"), ThemeThumbnail.from("섬네일1")));
-    }
-
-    @AfterEach
-    void tearDown() {
+        jdbcTemplate.update("DELETE FROM reservation");
+        jdbcTemplate.update("DELETE FROM reservation_time");
         jdbcTemplate.update("DELETE FROM theme");
+        jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
+        themeDao.create(new Theme(null, ThemeName.from("방탈출1"), ThemeDescription.from("방탈출 1번"), ThemeThumbnail.from("섬네일1")));
     }
 
     @Test
