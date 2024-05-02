@@ -58,17 +58,17 @@ class ThemeServiceTest extends DummyDataFixture {
 
         // when & then
         assertThat(themeService.getThemes()).containsExactly(
-                new FindThemeResponse(1L, "공포", "무서워", "https://sherlock-holmes.co.kr/attach/theme/16956118601.jpg"),
+                new FindThemeResponse(1L, "공포", "무서워", "https://zerolotteworld.com/storage/WAYH10LvyaCuAb9ndj1apZIpzEAdpjeAhPR7Gb7J.jpg"),
                 new FindThemeResponse(2L, "액션", "신나", "https://sherlock-holmes.co.kr/attach/theme/17000394031.jpg"),
                 new FindThemeResponse(3L, "SF", "신기해", "https://sherlock-holmes.co.kr/attach/theme/16941579841.jpg"),
-                new FindThemeResponse(4L, "로맨스", "달달해", "https://sherlock-holmes.co.kr/attach/theme/16941579841.jpg"),
+                new FindThemeResponse(4L, "로맨스", "달달해", "https://i.postimg.cc/vDFKqct1/theme.jpg"),
                 new FindThemeResponse(5L, "코미디", "웃기다", "https://sherlock-holmes.co.kr/attach/theme/16956118601.jpg"),
                 new FindThemeResponse(6L, "드라마", "반전", "https://sherlock-holmes.co.kr/attach/theme/16941579841.jpg"),
                 new FindThemeResponse(7L, "잠입", "스릴있어",
                         "https://search.pstatic.net/sunny/?src=https%3A%2F%2Ffile.miricanvas.com%2Ftemplate_thumb%2F2022%2F05%2F15%2F13%2F50%2Fk2nje40j0jwztqza%2Fthumb.jpg&type=sc960_832"),
                 new FindThemeResponse(8L, "오락", "재밌어",
                         "http://jamsil.cubeescape.co.kr/theme/basic_room2/img/rain/room15.jpg"),
-                new FindThemeResponse(9L, "판타지", "말이 안돼", "https://sherlock-holmes.co.kr/attach/theme/16956118601.jpg"),
+                new FindThemeResponse(9L, "판타지", "말이 안돼", "https://i.postimg.cc/8k2PQ4yv/theme.jpg"),
                 new FindThemeResponse(10L, "감성", "감동적", "https://sherlock-holmes.co.kr/attach/theme/16788523411.jpg"));
     }
 
@@ -81,17 +81,17 @@ class ThemeServiceTest extends DummyDataFixture {
 
         // when & then
         assertThat(themeService.getPopularThemes()).containsExactly(
-                new FindPopularThemesResponse(1L, "공포", "무서워", "https://sherlock-holmes.co.kr/attach/theme/16956118601.jpg"),
+                new FindPopularThemesResponse(1L, "공포", "무서워", "https://zerolotteworld.com/storage/WAYH10LvyaCuAb9ndj1apZIpzEAdpjeAhPR7Gb7J.jpg"),
                 new FindPopularThemesResponse(2L, "액션", "신나", "https://sherlock-holmes.co.kr/attach/theme/17000394031.jpg"),
                 new FindPopularThemesResponse(3L, "SF", "신기해", "https://sherlock-holmes.co.kr/attach/theme/16941579841.jpg"),
-                new FindPopularThemesResponse(4L, "로맨스", "달달해", "https://sherlock-holmes.co.kr/attach/theme/16941579841.jpg"),
+                new FindPopularThemesResponse(4L, "로맨스", "달달해", "https://i.postimg.cc/vDFKqct1/theme.jpg"),
                 new FindPopularThemesResponse(5L, "코미디", "웃기다", "https://sherlock-holmes.co.kr/attach/theme/16956118601.jpg"),
                 new FindPopularThemesResponse(6L, "드라마", "반전", "https://sherlock-holmes.co.kr/attach/theme/16941579841.jpg"),
                 new FindPopularThemesResponse(7L, "잠입", "스릴있어",
                         "https://search.pstatic.net/sunny/?src=https%3A%2F%2Ffile.miricanvas.com%2Ftemplate_thumb%2F2022%2F05%2F15%2F13%2F50%2Fk2nje40j0jwztqza%2Fthumb.jpg&type=sc960_832"),
                 new FindPopularThemesResponse(8L, "오락", "재밌어",
                         "http://jamsil.cubeescape.co.kr/theme/basic_room2/img/rain/room15.jpg"),
-                new FindPopularThemesResponse(9L, "판타지", "말이 안돼", "https://sherlock-holmes.co.kr/attach/theme/16956118601.jpg"),
+                new FindPopularThemesResponse(9L, "판타지", "말이 안돼", "https://i.postimg.cc/8k2PQ4yv/theme.jpg"),
                 new FindPopularThemesResponse(10L, "감성", "감동적", "https://sherlock-holmes.co.kr/attach/theme/16788523411.jpg"));
     }
 

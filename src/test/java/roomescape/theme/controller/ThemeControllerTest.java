@@ -46,7 +46,7 @@ class ThemeControllerTest {
                 .andExpect(jsonPath("$[0].id").value(1))
                 .andExpect(jsonPath("$[0].name").value("공포"))
                 .andExpect(jsonPath("$[0].description").value("무서워"))
-                .andExpect(jsonPath("$[0].thumbnail").value("https://sherlock-holmes.co.kr/attach/theme/16956118601.jpg"))
+                .andExpect(jsonPath("$[0].thumbnail").value("https://zerolotteworld.com/storage/WAYH10LvyaCuAb9ndj1apZIpzEAdpjeAhPR7Gb7J.jpg"))
 
                 .andExpect(jsonPath("$[1].id").value(2))
                 .andExpect(jsonPath("$[1].name").value("액션"))
@@ -63,7 +63,7 @@ class ThemeControllerTest {
                 .andExpect(jsonPath("$[0].id").value(1))
                 .andExpect(jsonPath("$[0].name").value("공포"))
                 .andExpect(jsonPath("$[0].description").value("무서워"))
-                .andExpect(jsonPath("$[0].thumbnail").value("https://sherlock-holmes.co.kr/attach/theme/16956118601.jpg"))
+                .andExpect(jsonPath("$[0].thumbnail").value("https://zerolotteworld.com/storage/WAYH10LvyaCuAb9ndj1apZIpzEAdpjeAhPR7Gb7J.jpg"))
 
                 .andExpect(jsonPath("$[1].id").value(2))
                 .andExpect(jsonPath("$[1].name").value("액션"))
