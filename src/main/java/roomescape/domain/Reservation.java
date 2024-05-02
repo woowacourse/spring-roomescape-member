@@ -10,7 +10,7 @@ public class Reservation {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     private final Long id;
-    private final String name;
+    private final Name name;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
@@ -26,7 +26,7 @@ public class Reservation {
     private Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         final String errorMessage = "인자 중 null 값이 존재합니다.";
         this.id = id;
-        this.name = Objects.requireNonNull(name, errorMessage);
+        this.name = new Name(name);
         this.date = Objects.requireNonNull(date, errorMessage);
         this.time = Objects.requireNonNull(time, errorMessage);
         this.theme = Objects.requireNonNull(theme, errorMessage);
@@ -65,7 +65,7 @@ public class Reservation {
     }
 
     public String getName() {
-        return name;
+        return name.value();
     }
 
     public String getDate() {
