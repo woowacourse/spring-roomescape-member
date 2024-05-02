@@ -145,3 +145,82 @@
       ```  
       HTTP/1.1 200
       ```
+### 테마 API
+- [x] 조회 <br>
+    - Request
+      ```  
+      GET /themes HTTP/1.1
+      ```
+    - Response
+      ```  
+      HTTP/1.1 200
+      Content-Type: application/json
+      
+      [
+         {
+            "id": 1,
+            "name": "레벨2 탈출",
+            "description": "우테코 레벨2를 탈출하는 내용입니다.",
+            "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+         }
+      ]
+      ```
+- [x] 추가
+    - Request
+      ``` 
+      POST /themes HTTP/1.1
+      content-type: application/json
+    
+      {
+          "name": "레벨2 탈출",
+          "description": "우테코 레벨2를 탈출하는 내용입니다.",
+          "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+      }
+      ```
+      
+    - Response
+      ```  
+      HTTP/1.1 201
+      Content-Type: application/json
+    
+      {
+         "id": 1,
+         "name": "레벨2 탈출",
+         "description": "우테코 레벨2를 탈출하는 내용입니다.",
+         "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+      }
+      ```
+- [x] 삭제
+    - Request
+      ``` 
+      DELETE /themes/1 HTTP/1.1
+      ```
+    - Response
+      ```  
+      HTTP/1.1 204
+      ```
+- [x] 인기 테마 조회
+    - Request
+      ``` 
+      GET /themes/popular HTTP/1.1
+      ```
+    - Response
+      ```  
+      HTTP/1.1 200
+      Content-Type: application/json
+      
+      [
+         {
+            "id": 1,
+            "name": "레벨2 탈출",
+            "description": "우테코 레벨2를 탈출하는 내용입니다.",
+            "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+         },
+         {
+            "id": 2,
+            "name": "호러",
+            "description": "매우 무섭습니다.",
+            "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+         }
+      ]
+      ```
