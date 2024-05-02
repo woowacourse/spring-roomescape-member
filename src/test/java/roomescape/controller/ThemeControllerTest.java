@@ -27,14 +27,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ThemeControllerTest {
 
     @Autowired
-    JdbcTemplate jdbcTemplate;
+    private DataSource dataSource;
 
     @Autowired
-    DataSource dataSource;
+    private JdbcTemplate jdbcTemplate;
 
-    SimpleJdbcInsert reservationInsertActor;
-    SimpleJdbcInsert timeInsertActor;
-    SimpleJdbcInsert themeInsertActor;
+    private SimpleJdbcInsert reservationInsertActor;
+    private SimpleJdbcInsert timeInsertActor;
+    private SimpleJdbcInsert themeInsertActor;
 
     @BeforeEach
     void setUp() {

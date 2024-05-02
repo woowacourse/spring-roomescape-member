@@ -23,7 +23,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 class ReservationControllerTest {
 
     @Autowired
-    JdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
 
     @Autowired
     private ReservationController reservationController;
@@ -103,4 +103,6 @@ class ReservationControllerTest {
 
         assertThat(isJdbcTemplateInjected).isFalse();
     }
+
+    // TODO: 예약 가능 시간 조회 컨트롤러 테스트!!!!
 }

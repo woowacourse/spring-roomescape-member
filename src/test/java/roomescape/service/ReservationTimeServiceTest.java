@@ -14,7 +14,8 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.*;
 
 class ReservationTimeServiceTest {
-    ReservationTimeService reservationTimeService = new ReservationTimeService(
+
+    private final ReservationTimeService reservationTimeService = new ReservationTimeService(
             new FakeReservationRepository(),
             new FakeReservationTimeRepository()
     );
