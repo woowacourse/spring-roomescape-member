@@ -1,5 +1,7 @@
 package roomescape.reservation;
 
+import static org.hamcrest.Matchers.is;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;
@@ -55,5 +57,18 @@ class ReservationTimeTest {
                 .when().delete("/times/1")
                 .then().log().all()
                 .statusCode(400);
+    }
+
+    @DisplayName("테마와 날짜 정보를 주면 시간별 예약가능 여부를 반환한다.")
+    @Test
+    void availableTime() {
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES(?)", LocalTime.of(10, 0));
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES(?, ?, ?)", "hi", "happy", "abcd.html");
+
+        RestAssured.given().log().all()
+                .when().get("/times/available?themeId=1&date=2999-12-12")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(1));
     }
 }
