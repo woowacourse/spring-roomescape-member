@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class AdminViewController {
 
-    @GetMapping(path = {"/", "/admin"})
-    public String wellComePage() {
+    @GetMapping( "/admin")
+    public String adminMainPage() {
         return "admin/index";
     }
 
