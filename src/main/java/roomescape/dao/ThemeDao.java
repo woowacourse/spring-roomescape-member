@@ -44,6 +44,21 @@ public class ThemeDao {
         }
     }
 
+    public List<Theme> readThemesSortedByCountOfReservation(String startDate, String endDate) {
+        String sql = """
+                SELECT theme.id, theme.name, theme.description, theme.thumbnail, COUNT(reservation.theme_id) AS reservation_count
+                FROM theme
+                JOIN reservation
+                ON reservation.theme_id = theme.id
+                WHERE reservation.date >= ? AND reservation.date <= ?
+                GROUP BY theme.id, theme.name, theme.description, theme.thumbnail
+                ORDER BY reservation_count DESC
+                LIMIT 10
+                """;
+
+        return jdbcTemplate.query(sql, rowMapper, startDate, endDate);
+    }
+
     public boolean isExistThemeByName(String name) {
         String sql = """
                 SELECT EXISTS (

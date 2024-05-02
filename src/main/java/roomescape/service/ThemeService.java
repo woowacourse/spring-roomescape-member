@@ -7,10 +7,14 @@ import roomescape.domain.Theme;
 import roomescape.dto.ThemeCreateRequest;
 import roomescape.dto.ThemeResponse;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
 public class ThemeService {
+
+private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     private final ThemeDao themeDao;
     private final ReservationDao reservationDao;
@@ -22,6 +26,16 @@ public class ThemeService {
 
     public List<ThemeResponse> readThemes() {
         return themeDao.readThemes().stream()
+                .map(ThemeResponse::from)
+                .toList();
+    }
+
+    public List<ThemeResponse> readPopularThemes() {
+        LocalDate currentDate = LocalDate.now();
+        LocalDate startDate = currentDate.minusDays(7);
+        LocalDate endDate = currentDate.minusDays(1);
+        return themeDao.readThemesSortedByCountOfReservation(startDate.format(DATE_FORMATTER), endDate.format(DATE_FORMATTER))
+                .stream()
                 .map(ThemeResponse::from)
                 .toList();
     }

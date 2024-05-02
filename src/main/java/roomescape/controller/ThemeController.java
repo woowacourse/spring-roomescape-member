@@ -26,6 +26,12 @@ public class ThemeController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/popular")
+    public ResponseEntity<List<ThemeResponse>> readPopularThemes() {
+        List<ThemeResponse> response = themeService.readPopularThemes();
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping
     public ResponseEntity<ThemeResponse> createTheme(@RequestBody ThemeCreateRequest request) {
         ThemeResponse response = themeService.createTheme(request);
