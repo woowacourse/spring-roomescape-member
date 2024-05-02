@@ -18,7 +18,7 @@ public class ReservationTime {
 
     private static void validateExist(LocalTime startAt) {
         if (startAt == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("시간 필드 값이 Null 입니다.");
         }
     }
 

@@ -27,7 +27,7 @@ public class Reservation {
 
     private static void validateReservation(String name, LocalDate date, ReservationTime time) {
         if (name == null || name.isBlank() || date == null || time == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("예약 필드값이 null 입니다.");
         }
     }
 
