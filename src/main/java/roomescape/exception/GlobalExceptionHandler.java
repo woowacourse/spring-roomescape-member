@@ -27,33 +27,12 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.NOT_FOUND)
                 .body(new ErrorResponse(e.getMessage()));
     }
-//
-//    @ExceptionHandler(HttpMessageNotReadableException.class)
-//    @ResponseBody
-//    public ResponseEntity<Object> handleJsonParseException(HttpMessageNotReadableException ex) {
-//        return ResponseEntity
-//                .status(HttpStatus.BAD_REQUEST)
-//                .body(new ErrorResponse("옳바르지 않은 JSON 형식입니다."));
-//    }
-//
-//    @ExceptionHandler(MethodArgumentNotValidException.class)
-//    public ResponseEntity<Object> handleValidationExceptions(MethodArgumentNotValidException ex) {
-//        return ResponseEntity
-//                .status(HttpStatus.BAD_REQUEST)
-//                .body(new ErrorResponse("옳바르지 않은 요청입니다."));
-//    }
-//
-//    @ExceptionHandler(MissingServletRequestParameterException.class)
-//    public ResponseEntity<Object> handleMissingParams(MissingServletRequestParameterException ex) {
-//        return ResponseEntity
-//                .status(HttpStatus.BAD_REQUEST)
-//                .body(new ErrorResponse("필수 요청 파라미터가 누락되었습니다."));
-//    }
-//
-//    @ExceptionHandler(TypeMismatchException.class)
-//    public ResponseEntity<Object> handleTypeMismatchException(TypeMismatchException ex) {
-//        return ResponseEntity
-//                .status(HttpStatus.BAD_REQUEST)
-//                .body(new ErrorResponse("잘못된 타입입니다."));
-//    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseBody
+    public ResponseEntity<Object> handleJsonParseException(HttpMessageNotReadableException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse("옳바르지 않은 JSON 형식입니다."));
+    }
 }
