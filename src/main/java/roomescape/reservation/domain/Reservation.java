@@ -25,7 +25,7 @@ public class Reservation {
     }
 
 
-    public void validateName(String name) {
+    private void validateName(String name) {
         if (name.isEmpty() || name.length() > 10) {
             throw new CustomException(ExceptionCode.INVALID_NAME_LENGTH);
         }
@@ -36,6 +36,14 @@ public class Reservation {
         if (LocalDateTime.now().isAfter(reservationDateTime)) {
             throw new CustomException(ExceptionCode.PAST_TIME_SLOT_RESERVATION);
         }
+    }
+
+    public boolean isSameDate(LocalDate localDate) {
+        return date.isEqual(localDate);
+    }
+
+    public boolean isSameTime(ReservationTime reservationTime) {
+        return time.equals(reservationTime);
     }
 
     public Long getId() {
