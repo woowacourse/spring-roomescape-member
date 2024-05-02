@@ -1,6 +1,7 @@
 package roomescape.reservation.repository;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -36,24 +37,14 @@ public class ReservationDao {
                     resultSet.getString("theme_thumbnail")
             )
     );
-    private final RowMapper<Theme> themeRowMapper = (resultSet, __) -> new Theme(
-            resultSet.getLong("name"),
     private final RowMapper<RankTheme> themeRowMapper = (resultSet, __) -> new RankTheme(
             resultSet.getString("name"),
             resultSet.getString("thumbnail"),
-            resultSet.getDate("descr").toLocalDate(),
-            new ReservationTime(
-                    resultSet.getLong("time_id"),
-                    resultSet.getTime("start_at").toLocalTime()
-            ),
-            new Theme(
-                    resultSet.getLong("theme_id"),
-                    resultSet.getString("theme_name"),
-                    resultSet.getString("theme_description"),
-                    resultSet.getString("theme_thumbnail")
-            )
             resultSet.getString("description")
     );
+    private final RowMapper<ReservationTime> reservationTimeRowMapper = (resultSet, __) -> new ReservationTime(
+            resultSet.getLong("id"),
+            LocalTime.parse(resultSet.getString("start_at"))
     );
 
     public ReservationDao(JdbcTemplate jdbcTemplate) {
@@ -112,22 +103,12 @@ public class ReservationDao {
         jdbcTemplate.update("DELETE FROM RESERVATION WHERE ID = ?", id);
     }
 
-    public boolean existsByDateTime(LocalDate date, long timeId) {
-        String query = "SELECT COUNT(*) FROM RESERVATION WHERE time_id = ? AND date = ?";
-        Integer count = jdbcTemplate.queryForObject(query, Integer.class, timeId, date);
     public boolean existsByDateTime(LocalDate date, long timeId, long themeId) {
         String query = "SELECT COUNT(*) FROM RESERVATION WHERE time_id = ? AND date = ? AND theme_id=?";
         Integer count = jdbcTemplate.queryForObject(query, Integer.class, timeId, date, themeId);
         return count != null && count > 0;
     }
 
-    public List<Theme> getRanking(){
-        String query="SELECT t.name, t.thumbnail, t.description, COUNT(*) AS count\n"
-                + "FROM RESERVATION r "
-                + "INNER JOIN THEME t ON r.theme_id = t.id "
-                + "GROUP BY r.theme_id "
-                + "ORDER BY count DESC "
-                + "LIMIT 10";
     //    public List<RankTheme> getRanking(){
 //        String query="SELECT t.name, t.thumbnail, t.description, COUNT(*) AS count "
 //                + "FROM RESERVATION r "
@@ -152,4 +133,11 @@ public class ReservationDao {
         return jdbcTemplate.query(query, themeRowMapper);
     }
 
+    public List<ReservationTime> available(LocalDate parse,long themeId) {
+        String query="SELECT rt.id, rt.start_at " +
+                "FROM reservation_time rt " +
+                "LEFT JOIN reservation r ON rt.id = r.time_id AND r.date = ? AND r.theme_id = ? " +
+                "WHERE r.id IS NULL";
+        return jdbcTemplate.query(query,reservationTimeRowMapper,parse,themeId);
+    }
 }

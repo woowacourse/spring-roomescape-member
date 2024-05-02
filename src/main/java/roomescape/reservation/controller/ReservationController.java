@@ -38,6 +38,12 @@ public class ReservationController {
         return ResponseEntity.created(URI.create("/reservations/" + createdReservation.id())).body(createdReservation);
     }
 
+    @PostMapping("/validate")
+    public ResponseEntity<Reservation> createAndValidateFuture(@RequestBody ReservationRequest request) {
+        Reservation createdReservation = reservationService.validateFutureAndSave(request);
+        return ResponseEntity.created(URI.create("/reservations/" + createdReservation.id())).body(createdReservation);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable long id) {
         reservationService.delete(id);
@@ -48,4 +54,5 @@ public class ReservationController {
     public ResponseEntity<Void> handleIllegalArgumentException(IllegalArgumentException e) {
         return ResponseEntity.badRequest().build();
     }
+
 }
