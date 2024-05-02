@@ -52,15 +52,17 @@ public class ThemeController {
 
     @GetMapping("/popular")
     public ResponseEntity<List<ThemeResponse>> getPopularThemes() {
-        List<ThemeResponse> themeResponses = themeService.getPopularThemes().stream()
-                .map(ThemeResponse::from).toList();
+        List<Theme> popularThemes = themeService.getPopularThemes();
+        List<ThemeResponse> themeResponses = popularThemes.stream()
+                .map(ThemeResponse::from)
+                .toList();
         return ResponseEntity.ok(themeResponses);
     }
 
     @GetMapping("/{id}/{date}")
-    public ResponseEntity<List<AvailableTimeResponse>> get(@PathVariable long id, @PathVariable LocalDate date) {
+    public ResponseEntity<List<AvailableTimeResponse>> getAvailableTimes(@PathVariable long id,
+                                                                         @PathVariable LocalDate date) {
         List<AvailableTimeResponse> responses = themeService.getAvailableTimes(id, date);
         return ResponseEntity.ok(responses);
     }
-
 }
