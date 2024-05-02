@@ -127,19 +127,20 @@ public class ReservationDaoImpl implements ReservationDao {
     @Override
     public List<Theme> findThemeOrderByReservationCount() {
         String sql = "select "
-                + "   th.id as theme_id,"
-                + "   th.name as theme_name"
-                + "   th.description as theme_description,"
+                + "   th.id as theme_id, "
+                + "   th.name as theme_name, "
+                + "   th.description as theme_description, "
                 + "   th.thumbnail as theme_thumbnail, "
-                + "   count(th.id) as reservation_count"
+                + "   count(th.id) as reservation_count "
                 + "   from reservation as r "
                 + "   inner join theme as th "
                 + "   on r.theme_id = th.id "
+                + "   where r.date between dateadd('day', -7, current_date()) and dateadd('day', -1, current_date()) "
                 + "   group by th.id "
                 + "   order by reservation_count desc "
                 + "   limit 10";
 
-        return jdbcTemplate.query(sql,themeRowMapper);
+        return jdbcTemplate.query(sql, themeRowMapper);
     }
 
     @Override
