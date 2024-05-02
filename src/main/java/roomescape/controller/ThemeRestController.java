@@ -27,8 +27,8 @@ public class ThemeRestController {
     }
 
     @GetMapping("/ranking")
-    public ResponseEntity<List<ThemeResponse>> getBestThemes() {
-        List<ThemeResponse> responses = themeService.findBestThemes();
+    public ResponseEntity<List<ThemeResponse>> getRankThemes() {
+        List<ThemeResponse> responses = themeService.findRankThemes();
 
         return ResponseEntity.ok(responses);
     }
@@ -47,6 +47,4 @@ public class ThemeRestController {
 
         return ResponseEntity.noContent().build();
     }
-
-
 }

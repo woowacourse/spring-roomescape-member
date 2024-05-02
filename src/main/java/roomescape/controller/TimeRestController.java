@@ -30,7 +30,7 @@ public class TimeRestController {
 
     @GetMapping("/member")
     public ResponseEntity<List<TimeMemberResponse>> getTimes(@RequestParam LocalDate date, @RequestParam Long themeId) {
-        List<TimeMemberResponse> responses = reservationTimeService.findAllTimes(date, themeId);
+        List<TimeMemberResponse> responses = reservationTimeService.findAllTimesWithBooking(date, themeId);
 
         return ResponseEntity.ok(responses);
     }
