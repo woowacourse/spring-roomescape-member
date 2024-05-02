@@ -19,28 +19,34 @@ import roomescape.service.response.ThemeResponse;
 @RestController
 @RequestMapping("/themes")
 public class ThemeController {
+
     private final ThemeService themeService;
 
     public ThemeController(ThemeService themeService) {
         this.themeService = themeService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<ThemeResponse>> readThemes(
-            @RequestParam(required = false, defaultValue = "false") boolean showRanking) {
-        return ResponseEntity.ok(themeService.findAll(showRanking));
-    }
-
     @PostMapping
-    public ResponseEntity<ThemeResponse> createTheme(@Valid @RequestBody ThemeRequest themeRequest) {
-        ThemeResponse response = themeService.create(themeRequest);
-        URI themeURI = URI.create("/themes/" + response.id());
-        return ResponseEntity.created(themeURI).body(response);
+    public ResponseEntity<ThemeResponse> createTheme(@Valid @RequestBody ThemeRequest request) {
+        ThemeResponse response = themeService.create(request);
+        URI uri = URI.create("/themes/" + response.id());
+
+        return ResponseEntity.created(uri).body(response);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservationTime(@PathVariable long id) {
         themeService.deleteTheme(id);
+
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ThemeResponse>> readThemes(
+            @RequestParam(required = false, defaultValue = "false") boolean showRanking
+    ) {
+        List<ThemeResponse> responses = themeService.findAll(showRanking);
+
+        return ResponseEntity.ok(responses);
     }
 }

@@ -10,19 +10,16 @@ import roomescape.service.response.ReservationTimeResponse;
 
 @Service
 public class ReservationTimeService {
-    private final ReservationTimeRepository reservationTimeRepository;
+
     private final ReservationRepository reservationRepository;
+    private final ReservationTimeRepository reservationTimeRepository;
 
-    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository,
-                                  ReservationRepository reservationRepository) {
-        this.reservationTimeRepository = reservationTimeRepository;
+    public ReservationTimeService(
+            ReservationRepository reservationRepository,
+            ReservationTimeRepository reservationTimeRepository
+    ) {
         this.reservationRepository = reservationRepository;
-    }
-
-    public List<ReservationTimeResponse> getAllReservationTimes() {
-        return reservationTimeRepository.findAll().stream()
-                .map(ReservationTimeResponse::from)
-                .toList();
+        this.reservationTimeRepository = reservationTimeRepository;
     }
 
     public ReservationTimeResponse createReservationTime(ReservationTimeRequest createDto) {
@@ -30,6 +27,7 @@ public class ReservationTimeService {
         if (reservationTimeRepository.hasDuplicateTime(time)) {
             throw new IllegalStateException("해당 예약 시간이 존재합니다.");
         }
+
         ReservationTime createdReservationTime = reservationTimeRepository.create(time);
         return ReservationTimeResponse.from(createdReservationTime);
     }
@@ -40,5 +38,11 @@ public class ReservationTimeService {
         }
 
         reservationTimeRepository.removeById(id);
+    }
+
+    public List<ReservationTimeResponse> getAllReservationTimes() {
+        return reservationTimeRepository.findAll().stream()
+                .map(ReservationTimeResponse::from)
+                .toList();
     }
 }

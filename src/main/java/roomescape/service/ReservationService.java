@@ -16,25 +16,19 @@ import roomescape.service.response.ReservationResponse;
 
 @Service
 public class ReservationService {
+
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
+    public ReservationService(
+            ReservationRepository reservationRepository,
+            ReservationTimeRepository reservationTimeRepository,
+            ThemeRepository themeRepository
+    ) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
-    }
-
-    public List<ReservationResponse> getAllReservations() {
-        return reservationRepository.findAll().stream()
-                .map(ReservationResponse::from)
-                .toList();
-    }
-
-    public void deleteReservation(Long id) {
-        reservationRepository.removeById(id);
     }
 
     public ReservationResponse createReservation(ReservationRequest createDto) {
@@ -66,11 +60,23 @@ public class ReservationService {
         if (reservationDate.isBefore(nowDate)) {
             throw new IllegalStateException("예약 날짜는 오늘보다 이전일 수 없습니다.");
         }
+
         if (reservationDate.isEqual(nowDate) && reservationStartAt.isBefore(nowTime)) {
             throw new IllegalStateException("예약 시간은 현재 시간보다 이전일 수 없습니다.");
         }
+
         if (reservationRepository.hasDuplicateReservation(reservation)) {
             throw new IllegalStateException("중복된 예약이 존재합니다.");
         }
+    }
+
+    public void deleteReservation(Long id) {
+        reservationRepository.removeById(id);
+    }
+
+    public List<ReservationResponse> getAllReservations() {
+        return reservationRepository.findAll().stream()
+                .map(ReservationResponse::from)
+                .toList();
     }
 }

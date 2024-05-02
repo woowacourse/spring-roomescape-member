@@ -11,6 +11,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface TimeValid {
+
     String message() default "올바른 시간 형태가 아닙니다.";
 
     String format() default "HH:mm";

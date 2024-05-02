@@ -6,6 +6,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 public class TimeValidator implements ConstraintValidator<TimeValid, String> {
+
     private DateTimeFormatter formatter;
 
     @Override

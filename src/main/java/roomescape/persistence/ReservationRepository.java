@@ -2,7 +2,6 @@ package roomescape.persistence;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -17,7 +16,6 @@ import roomescape.domain.Theme;
 
 @Repository
 public class ReservationRepository {
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -27,6 +25,52 @@ public class ReservationRepository {
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
+    }
+
+    public Reservation create(Reservation reservation) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("name", reservation.getName().value())
+                .addValue("date", reservation.getDate())
+                .addValue("time_id", reservation.getTime().getId())
+                .addValue("theme_id", reservation.getTheme().getId());
+        Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
+
+        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
+                reservation.getTheme());
+    }
+
+    public void removeById(Long id) {
+        jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
+    }
+
+    public boolean hasDuplicateReservation(Reservation reservation) {
+        return jdbcTemplate.queryForObject(
+                """
+                        SELECT count(*)
+                        FROM reservation
+                        WHERE date = ? AND time_id = ? AND theme_id = ?""",
+                Integer.class, reservation.getDate(), reservation.getTime().getId(), reservation.getTheme().getId())
+                > 0;
+    }
+
+    public boolean hasByTimeId(Long id) {
+        return jdbcTemplate.queryForObject(
+                """
+                        SELECT count(*)
+                        FROM reservation
+                        WHERE time_id = ?""",
+                Integer.class, id)
+                > 0;
+    }
+
+    public boolean hasByThemeId(Long id) {
+        return jdbcTemplate.queryForObject(
+                """
+                        SELECT count(*)
+                        FROM reservation
+                        WHERE theme_id = ?""",
+                Integer.class, id)
+                > 0;
     }
 
     public List<Reservation> findAll() {
@@ -72,57 +116,10 @@ public class ReservationRepository {
                 reservationRowMapper(), id);
     }
 
-    public Reservation create(Reservation reservation) {
-        SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", reservation.getName().value())
-                .addValue("date", reservation.getDate().format(DATE_FORMATTER))
-                .addValue("time_id", reservation.getTime().getId())
-                .addValue("theme_id", reservation.getTheme().getId());
-        Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
-
-        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
-                reservation.getTheme());
-    }
-
-    public void removeById(Long id) {
-        jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
-    }
-
-    public boolean hasDuplicateReservation(Reservation reservation) {
-
-        return jdbcTemplate.queryForObject(
-                """
-                        SELECT count(*)
-                        FROM reservation
-                        WHERE date = ? AND time_id = ? AND theme_id = ?""",
-                Integer.class, reservation.getDate(), reservation.getTime().getId(), reservation.getTheme().getId())
-                > 0;
-    }
-
-    public boolean hasByTimeId(Long id) {
-        return jdbcTemplate.queryForObject(
-                """
-                        SELECT count(*)
-                        FROM reservation
-                        WHERE time_id = ?""",
-                Integer.class, id)
-                > 0;
-    }
-
-    public boolean hasByThemeId(Long id) {
-        return jdbcTemplate.queryForObject(
-                """
-                        SELECT count(*)
-                        FROM reservation
-                        WHERE theme_id = ?""",
-                Integer.class, id)
-                > 0;
-    }
-
     private RowMapper<Reservation> reservationRowMapper() {
         return (resultSet, rowNum) -> {
             LocalTime startAt = LocalTime.parse(resultSet.getString("start_at"));
-            Reservation reservation = new Reservation(
+            return new Reservation(
                     resultSet.getLong("reservation_id"),
                     new Name(resultSet.getString("name")),
                     LocalDate.parse(resultSet.getString("date")),
@@ -134,7 +131,6 @@ public class ReservationRepository {
                             resultSet.getString("thumbnail")
                     )
             );
-            return reservation;
         };
     }
 }

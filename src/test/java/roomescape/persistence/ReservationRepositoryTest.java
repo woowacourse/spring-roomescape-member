@@ -30,6 +30,7 @@ import roomescape.domain.Theme;
 @JdbcTest
 @Sql(scripts = "/reset_test_data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_CLASS)
 class ReservationRepositoryTest {
+
     private ReservationRepository reservationRepository;
 
     @Autowired

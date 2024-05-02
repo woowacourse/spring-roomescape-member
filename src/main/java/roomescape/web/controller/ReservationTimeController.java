@@ -18,29 +18,34 @@ import roomescape.service.response.ReservationTimeResponse;
 @RestController
 @RequestMapping("/times")
 public class ReservationTimeController {
+
     private final ReservationTimeService reservationTimeService;
 
     public ReservationTimeController(ReservationTimeService reservationTimeService) {
         this.reservationTimeService = reservationTimeService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<ReservationTimeResponse>> readReservationTimes() {
-        List<ReservationTimeResponse> responseDtos = reservationTimeService.getAllReservationTimes();
-        return ResponseEntity.ok(responseDtos);
-    }
-
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> createReservationTime(
-            @Valid @RequestBody ReservationTimeRequest createDto) {
-        ReservationTimeResponse responseDto = reservationTimeService.createReservationTime(createDto);
-        URI reservationTimeURI = URI.create("/times/" + responseDto.id());
-        return ResponseEntity.created(reservationTimeURI).body(responseDto);
+            @Valid @RequestBody ReservationTimeRequest request
+    ) {
+        ReservationTimeResponse response = reservationTimeService.createReservationTime(request);
+        URI uri = URI.create("/times/" + response.id());
+
+        return ResponseEntity.created(uri).body(response);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservationTime(@PathVariable long id) {
         reservationTimeService.deleteReservationTime(id);
+
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ReservationTimeResponse>> readReservationTimes() {
+        List<ReservationTimeResponse> responses = reservationTimeService.getAllReservationTimes();
+
+        return ResponseEntity.ok(responses);
     }
 }

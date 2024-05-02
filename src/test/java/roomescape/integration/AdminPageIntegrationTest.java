@@ -10,6 +10,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class AdminPageIntegrationTest {
+
     @LocalServerPort
     private int port;
 

@@ -11,12 +11,28 @@ import roomescape.service.response.ThemeResponse;
 
 @Service
 public class ThemeService {
-    private final ThemeRepository themeRepository;
-    private final ReservationRepository reservationRepository;
 
-    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository) {
-        this.themeRepository = themeRepository;
+    private final ReservationRepository reservationRepository;
+    private final ThemeRepository themeRepository;
+
+    public ThemeService(ReservationRepository reservationRepository, ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
+        this.themeRepository = themeRepository;
+    }
+
+    public ThemeResponse create(ThemeRequest themeRequest) {
+        Theme theme = themeRequest.toDomain();
+        Theme createdTheme = themeRepository.create(theme);
+
+        return ThemeResponse.from(createdTheme);
+    }
+
+    public void deleteTheme(long id) {
+        if (reservationRepository.hasByThemeId(id)) {
+            throw new IllegalStateException("해당 테마를 사용하는 예약이 존재합니다.");
+        }
+
+        themeRepository.removeById(id);
     }
 
     public List<ThemeResponse> findAll(boolean showRanking) {
@@ -31,19 +47,5 @@ public class ThemeService {
         return themeRepository.findAll().stream()
                 .map(ThemeResponse::from)
                 .toList();
-    }
-
-    public ThemeResponse create(ThemeRequest themeRequest) {
-        Theme theme = themeRequest.toDomain();
-        Theme createdTheme = themeRepository.create(theme);
-        return ThemeResponse.from(createdTheme);
-    }
-
-    public void deleteTheme(long id) {
-        if (reservationRepository.hasByThemeId(id)) {
-            throw new IllegalStateException("해당 테마를 사용하는 예약이 존재합니다.");
-        }
-
-        themeRepository.removeById(id);
     }
 }

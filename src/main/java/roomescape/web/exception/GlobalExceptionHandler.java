@@ -17,9 +17,10 @@ import roomescape.web.exception.response.ErrorResponse;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ExceptionHandler
     public ResponseEntity<ErrorResponse> handle(MethodArgumentNotValidException exception) {
         BindingResult bindingResult = exception.getBindingResult();
         List<FieldError> fieldError = bindingResult.getFieldErrors();
@@ -28,32 +29,32 @@ public class GlobalExceptionHandler {
         return new ResponseEntity(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
+    @ExceptionHandler
     public ResponseEntity<ErrorResponse> handle(IllegalArgumentException exception) {
         return new ResponseEntity(new ErrorResponse(exception.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(IllegalStateException.class)
+    @ExceptionHandler
     public ResponseEntity<ErrorResponse> handle(IllegalStateException exception) {
         return new ResponseEntity(new ErrorResponse(exception.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(NoSuchElementException.class)
+    @ExceptionHandler
     public ResponseEntity<ErrorResponse> handle(NoSuchElementException exception) {
         return new ResponseEntity(new ErrorResponse(exception.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ExceptionHandler
     public ResponseEntity<ErrorResponse> handle(HttpMessageNotReadableException exception) {
         return new ResponseEntity<>(new ErrorResponse("읽을 수 없는 HTTP 메세지입니다."), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    @ExceptionHandler
     public ResponseEntity<ErrorResponse> handle(HttpRequestMethodNotSupportedException exception) {
         return new ResponseEntity<>(new ErrorResponse("지원하지 않는 HTTP 메서드입니다."), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler
     public ResponseEntity<ErrorResponse> handle(Exception exception) {
         logger.error(exception.getMessage());
         return new ResponseEntity<>(new ErrorResponse("서버 오류입니다."), HttpStatus.INTERNAL_SERVER_ERROR);

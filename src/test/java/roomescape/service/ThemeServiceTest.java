@@ -12,6 +12,7 @@ import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 @SpringBootTest
 @Sql(scripts = "/reset_test_data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_CLASS)
 class ThemeServiceTest {
+
     @Autowired
     private ThemeService themeService;
 

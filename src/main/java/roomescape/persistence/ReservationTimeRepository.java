@@ -1,7 +1,6 @@
 package roomescape.persistence;
 
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -15,7 +14,6 @@ import roomescape.domain.ReservationTime;
 
 @Repository
 public class ReservationTimeRepository {
-    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -25,7 +23,27 @@ public class ReservationTimeRepository {
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation_time")
                 .usingGeneratedKeyColumns("id");
+    }
 
+    public ReservationTime create(ReservationTime reservationTime) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("start_at", reservationTime.getStartAt());
+        Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
+
+        return new ReservationTime(id, reservationTime.getStartAt());
+    }
+
+    public void removeById(Long id) {
+        jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
+    }
+
+    public boolean hasDuplicateTime(ReservationTime reservationTime) {
+        return jdbcTemplate.queryForObject(
+                """
+                        SELECT count(*) 
+                        FROM reservation_time 
+                        WHERE start_at = ?""",
+                Integer.class, reservationTime.getStartAt()) > 0;
     }
 
     public List<ReservationTime> findAll() {
@@ -43,32 +61,10 @@ public class ReservationTimeRepository {
         }
     }
 
-    public ReservationTime create(ReservationTime reservationTime) {
-        SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("start_at", reservationTime.getStartAt().format(TIME_FORMATTER));
-        Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
-
-        return new ReservationTime(id, reservationTime.getStartAt());
-    }
-
     private RowMapper<ReservationTime> reservationTimeRowMapper() {
         return (resultSet, rowNum) -> {
             LocalTime startAt = LocalTime.parse(resultSet.getString("start_at"));
-            ReservationTime reservationTime = new ReservationTime(resultSet.getLong("id"), startAt);
-            return reservationTime;
+            return new ReservationTime(resultSet.getLong("id"), startAt);
         };
-    }
-
-    public void removeById(Long id) {
-        jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
-    }
-
-    public boolean hasDuplicateTime(ReservationTime reservationTime) {
-        return jdbcTemplate.queryForObject(
-                """
-                        SELECT count(*) 
-                        FROM reservation_time 
-                        WHERE start_at = ?""",
-                Integer.class, reservationTime.getStartAt()) > 0;
     }
 }

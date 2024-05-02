@@ -13,6 +13,7 @@ import roomescape.service.request.ReservationTimeRequest;
 @SpringBootTest
 @Sql(scripts = "/reset_test_data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_CLASS)
 class ReservationTimeServiceTest {
+
     @Autowired
     private ReservationTimeService reservationTimeService;
 

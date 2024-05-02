@@ -1,6 +1,5 @@
 package roomescape.service.response;
 
-import java.time.format.DateTimeFormatter;
 import roomescape.domain.Reservation;
 
 public record ReservationResponse(
@@ -8,15 +7,20 @@ public record ReservationResponse(
         String name,
         String date,
         ReservationTimeResponse time,
-        ThemeResponse theme) {
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        ThemeResponse theme
+) {
 
     public static ReservationResponse from(Reservation reservation) {
-        String date = reservation.getDate().format(DATE_FORMATTER);
+        String date = reservation.getDate().toString();
         ReservationTimeResponse timeResponse = ReservationTimeResponse.from(reservation.getTime());
         ThemeResponse themeResponse = ThemeResponse.from(reservation.getTheme());
+
         return new ReservationResponse(
-                reservation.getId(), reservation.getName().value(), date, timeResponse, themeResponse
+                reservation.getId(),
+                reservation.getName().value(),
+                date,
+                timeResponse,
+                themeResponse
         );
     }
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.validation.FieldError;
 
 public record ErrorResponse(String message, List<ErrorDetail> details) {
+
     public ErrorResponse(String message) {
         this(message, Collections.emptyList());
     }

@@ -13,6 +13,7 @@ import roomescape.domain.Theme;
 
 @Repository
 public class ThemeRepository {
+
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
@@ -21,10 +22,6 @@ public class ThemeRepository {
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("theme")
                 .usingGeneratedKeyColumns("id");
-    }
-
-    public List<Theme> findAll() {
-        return jdbcTemplate.query("SELECT id, name, description, thumbnail FROM theme", getThemeRowMapper());
     }
 
     public Theme create(Theme theme) {
@@ -41,17 +38,6 @@ public class ThemeRepository {
         jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id);
     }
 
-    public Optional<Theme> findById(Long id) {
-        try {
-            Theme theme = jdbcTemplate.queryForObject(
-                    "SELECT id, name, description, thumbnail FROM theme WHERE id = ?",
-                    getThemeRowMapper(), id);
-            return Optional.of(theme);
-        } catch (Exception exception) {
-            return Optional.empty();
-        }
-    }
-
     public List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, int limitCount) {
         return jdbcTemplate.query("""
                         SELECT t.id, t.name, t.description, t.thumbnail
@@ -63,6 +49,21 @@ public class ThemeRepository {
                         ORDER BY count(r.id) DESC, t.id ASC
                         LIMIT ?""",
                 getThemeRowMapper(), startDate, endDate, limitCount);
+    }
+
+    public List<Theme> findAll() {
+        return jdbcTemplate.query("SELECT id, name, description, thumbnail FROM theme", getThemeRowMapper());
+    }
+
+    public Optional<Theme> findById(Long id) {
+        try {
+            Theme theme = jdbcTemplate.queryForObject(
+                    "SELECT id, name, description, thumbnail FROM theme WHERE id = ?",
+                    getThemeRowMapper(), id);
+            return Optional.of(theme);
+        } catch (Exception exception) {
+            return Optional.empty();
+        }
     }
 
     private RowMapper<Theme> getThemeRowMapper() {
