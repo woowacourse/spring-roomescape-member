@@ -109,7 +109,6 @@ class ReservationServiceTest {
     @DisplayName("필수값이 입력되지 않은 예약 생성 요청에 대해 예외가 발생한다.")
     @Test
     void emptyRequiredValueTest() {
-        //todo [로빈] 이 테스트를 작성하다 보니 Response dto 에도 NotNull 검증은 필요할 것 같다는 생각이 듭니다.
         assertAll(
                 () -> assertThatThrownBy(() -> reservationService.save(new ReservationRequest(
                         LocalDate.now().minusDays(1),
@@ -119,6 +118,22 @@ class ReservationServiceTest {
                 ))).isInstanceOf(RoomescapeException.class)
                         .hasMessage(EMPTY_NAME.getMessage())
         );
+    }
+
+    @DisplayName("예약이 여러 개 존재하는 경우 모든 예약을 조회할 수 있다.")
+    @Test
+    void findAllTest() {
+        //given
+        reservationRepository.save(new Reservation("name1", LocalDate.now().plusDays(1), defaultTime, defaultTheme));
+        reservationRepository.save(new Reservation("name1", LocalDate.now().plusDays(2), defaultTime, defaultTheme));
+        reservationRepository.save(new Reservation("name1", LocalDate.now().plusDays(3), defaultTime, defaultTheme));
+        reservationRepository.save(new Reservation("name1", LocalDate.now().plusDays(4), defaultTime, defaultTheme));
+
+        //when
+        List<ReservationResponse> reservationResponses = reservationService.findAll();
+
+        //then
+        assertThat(reservationResponses).hasSize(4);
     }
 
     @DisplayName("예약이 하나 존재하는 경우")
@@ -159,21 +174,5 @@ class ReservationServiceTest {
             assertThatCode(() -> reservationService.delete(2L))
                     .doesNotThrowAnyException();
         }
-    }
-
-    @DisplayName("예약이 여러 개 존재하는 경우 모든 예약을 조회할 수 있다.")
-    @Test
-    void findAllTest() {
-        //given
-        reservationRepository.save(new Reservation("name1", LocalDate.now().plusDays(1), defaultTime, defaultTheme));
-        reservationRepository.save(new Reservation("name1", LocalDate.now().plusDays(2), defaultTime, defaultTheme));
-        reservationRepository.save(new Reservation("name1", LocalDate.now().plusDays(3), defaultTime, defaultTheme));
-        reservationRepository.save(new Reservation("name1", LocalDate.now().plusDays(4), defaultTime, defaultTheme));
-
-        //when
-        List<ReservationResponse> reservationResponses = reservationService.findAll();
-
-        //then
-        assertThat(reservationResponses).hasSize(4);
     }
 }
