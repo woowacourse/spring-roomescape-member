@@ -1,7 +1,7 @@
 package roomescape.repository;
 
 import java.util.List;
-import roomescape.domain.Theme;
+import roomescape.domain.Theme.Theme;
 
 public interface ThemeRepository {
 

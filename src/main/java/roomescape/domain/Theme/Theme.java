@@ -1,11 +1,11 @@
-package roomescape.domain;
+package roomescape.domain.Theme;
 
 public class Theme {
 
-    private Long id;
-    private ThemeName name;
-    private Description description;
-    private Thumbnail thumbnail;
+    private final Long id;
+    private final ThemeName name;
+    private final Description description;
+    private final Thumbnail thumbnail;
 
     public Theme(Long id, String name, String description, String thumbnail) {
         this.id = id;

@@ -1,4 +1,4 @@
-package roomescape.domain;
+package roomescape.domain.Theme;
 
 public class Thumbnail {
 

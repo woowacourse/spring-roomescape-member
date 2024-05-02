@@ -1,4 +1,4 @@
-package roomescape.domain;
+package roomescape.domain.Reservation;
 
 import java.util.regex.Pattern;
 

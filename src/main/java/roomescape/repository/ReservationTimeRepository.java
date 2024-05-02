@@ -2,7 +2,7 @@ package roomescape.repository;
 
 import java.time.LocalTime;
 import java.util.List;
-import roomescape.domain.ReservationTime;
+import roomescape.domain.ReservationTime.ReservationTime;
 
 public interface ReservationTimeRepository {
 

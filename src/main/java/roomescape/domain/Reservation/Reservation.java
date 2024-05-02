@@ -1,17 +1,16 @@
-package roomescape.domain;
+package roomescape.domain.Reservation;
 
 import java.time.LocalDate;
+import roomescape.domain.ReservationTime.ReservationTime;
+import roomescape.domain.Theme.Theme;
 
 public class Reservation {
 
-    private Long id;
-    private Name name;
-    private LocalDate date;
-    private ReservationTime time;
-    private Theme theme;
-
-    public Reservation() {
-    }
+    private final Long id;
+    private final Name name;
+    private final LocalDate date;
+    private final ReservationTime time;
+    private final Theme theme;
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
         this.id = id;
