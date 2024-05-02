@@ -7,6 +7,7 @@ import roomescape.dto.ThemeResponse;
 import roomescape.dto.ThemeSaveRequest;
 import roomescape.exception.IllegalThemeException;
 import roomescape.mapper.ThemeMapper;
+import roomescape.repository.ReservationDao;
 import roomescape.repository.ThemeDao;
 
 import java.util.List;
@@ -17,9 +18,11 @@ public class ThemeService {
 
     private final ThemeMapper themeMapper = new ThemeMapper();
     private final ThemeDao themeDao;
+    private final ReservationDao reservationDao;
 
-    public ThemeService(ThemeDao themeDao) {
+    public ThemeService(ThemeDao themeDao, ReservationDao reservationDao) {
         this.themeDao = themeDao;
+        this.reservationDao = reservationDao;
     }
 
     public List<ThemeResponse> findAllThemes() {
@@ -38,6 +41,13 @@ public class ThemeService {
             throw new IllegalThemeException("[ERROR] 테마를 찾을 수 없습니다");
         }
         return optionalTheme.get();
+    }
+
+    public List<ThemeResponse> findBestThemes() {
+        List<Theme> themesByDescOrder = reservationDao.findThemesByDescOrder();
+        return themesByDescOrder.stream()
+                .map(themeMapper::mapToResponse)
+                .toList();
     }
 
     public ThemeResponse save(ThemeSaveRequest request) {

@@ -26,6 +26,13 @@ public class ThemeRestController {
         return ResponseEntity.ok(responses);
     }
 
+    @GetMapping("/ranking")
+    public ResponseEntity<List<ThemeResponse>> getBestThemes() {
+        List<ThemeResponse> responses = themeService.findBestThemes();
+
+        return ResponseEntity.ok(responses);
+    }
+
     @PostMapping
     public ResponseEntity<ThemeResponse> createTheme(@RequestBody ThemeSaveRequest request) {
         ThemeResponse response = themeService.save(request);
@@ -40,4 +47,6 @@ public class ThemeRestController {
 
         return ResponseEntity.noContent().build();
     }
+
+
 }
