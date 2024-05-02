@@ -196,7 +196,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Theme> findOneWeekOrderByReservationCount(final LocalDate localDate, final int limit) {
+    public List<Theme> findThemesTopOneWeekOrderByCount(final LocalDate localDate, final int limit) {
         final String sql = """
                 SELECT t.id, t.name, t.description, t.thumbnail, COUNT(t.id) AS count
                 FROM theme AS t

@@ -24,5 +24,5 @@ public interface ReservationRepository {
 
     void deleteById(final Long id);
 
-    List<Theme> findOneWeekOrderByReservationCount(LocalDate localDate, int limit);
+    List<Theme> findThemesTopOneWeekOrderByCount(LocalDate localDate, int limit);
 }
