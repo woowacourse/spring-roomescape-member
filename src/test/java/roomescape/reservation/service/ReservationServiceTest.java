@@ -188,7 +188,8 @@ class ReservationServiceTest extends DummyDataFixture {
                         FindAvailableTimesResponse.of(2L, getReservationTimeById(2L).getTime(), true),
                         FindAvailableTimesResponse.of(3L, getReservationTimeById(3L).getTime(), false),
                         FindAvailableTimesResponse.of(4L, getReservationTimeById(4L).getTime(), false),
-                        FindAvailableTimesResponse.of(5L, getReservationTimeById(5L).getTime(), false)));
+                        FindAvailableTimesResponse.of(5L, getReservationTimeById(5L).getTime(), false),
+                        FindAvailableTimesResponse.of(6L, getReservationTimeById(6L).getTime(), false)));
     }
 
 

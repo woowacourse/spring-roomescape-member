@@ -47,6 +47,7 @@ public class ReservationController {
     public ResponseEntity<FindReservationResponse> getReservation(@PathVariable final Long id) {
         return ResponseEntity.ok(reservationService.getReservation(id));
     }
+
     @GetMapping("/times")
     public ResponseEntity<List<FindAvailableTimesResponse>> getAvailableTimes(@RequestParam LocalDate date,
                                                                               @RequestParam Long themeId) {

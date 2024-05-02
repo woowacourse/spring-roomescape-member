@@ -45,7 +45,7 @@ class JdbcThemeRepositoryTest extends DummyDataFixture {
         assertThat(themeRepository.findById(20L)).isNotPresent();
     }
 
-    @Test  // TODO: 테스트 보강
+    @Test
     @DisplayName("Theme 테이블에서 많이 예약된 테마 10개를 내림차순으로 가져온다.")
     void findOrderByReservation() {
         assertThat(themeRepository.findOrderByReservation())
