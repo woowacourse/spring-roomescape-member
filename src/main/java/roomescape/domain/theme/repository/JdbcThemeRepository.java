@@ -1,5 +1,6 @@
 package roomescape.domain.theme.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.DataAccessException;
@@ -80,5 +81,22 @@ public class JdbcThemeRepository implements ThemeRepository {
         } catch (DataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    public List<Theme> findAllByRank(LocalDate now) {
+        LocalDate prev = now.minusDays(7);
+        String query = """
+                SELECT * FROM theme AS t
+                JOIN (
+                    SELECT theme_id, count(*) AS theme_count, reservation_date FROM reservation
+                    GROUP BY theme_id) AS r
+                ON t.id = r.theme_id
+                WHERE r.reservation_date >= ? AND r.reservation_date < ?
+                ORDER BY r.theme_count DESC
+                LIMIT 10
+                """;
+
+        return jdbcTemplate.query(query, ROW_MAPPER, prev, now);
+//        return jdbcTemplate.query(query, ROW_MAPPER);
     }
 }
