@@ -46,23 +46,30 @@
 - 테마를 삭제할 수 있다.
     - 해당 테마를 예약한 내역이 존재하면 예외를 던진다.
 
+### 사용자 예약 페이지
+
+- `/reservation` 으로 접속할 수 있다.
+- 날짜, 테마를 선택하면 예약 가능한 시간을 볼 수 있다.
+- 날짜, 테마, 시간을 선택하고 이름을 입력하여 예약할 수 있다.
+
 ## API 명세서
 
-| HTTP Method | URI                  | Description    |
-|-------------|----------------------|----------------|
-| GET         | `/`                  | 주간 인기 테마 페이지   |
-| GET         | `/admin`             | 관리자 메인 페이지     | 
-| GET         | `/admin/reservation` | 예약 관리 페이지      |
-| GET         | `/admin/time`        | 시간 관리 페이지      |
-| GET         | `/admin/theme`       | 테마 관리 페이지      |
-| GET         | `/reservation`       | 사용자 예약 페이지     |
-| GET         | `/reservations`      | 예약 목록 조회       |
-| POST        | `/reservations`      | 예약 추가          | 
-| DELETE      | `/reservations/{id}` | 예약 삭제          |
-| GET         | `/times`             | 시간 목록 조회       |
-| POST        | `/times`             | 시간 추가          | 
-| DELETE      | `/times/{id}`        | 시간 삭제          |
-| GET         | `/themes`            | 테마 목록 조회       |
-| GET         | `/themes/popular`    | 주간 인기 테마 목록 조회 |
-| POST        | `/themes`            | 테마 추가          |
-| DELETE      | `/themes/{id}`       | 테마 삭제          |
+| HTTP Method | URI                                    | Description    |
+|-------------|----------------------------------------|----------------|
+| GET         | `/`                                    | 주간 인기 테마 페이지   |
+| GET         | `/admin`                               | 관리자 메인 페이지     | 
+| GET         | `/admin/reservation`                   | 예약 관리 페이지      |
+| GET         | `/admin/time`                          | 시간 관리 페이지      |
+| GET         | `/admin/theme`                         | 테마 관리 페이지      |
+| GET         | `/reservation`                         | 사용자 예약 페이지     |
+| GET         | `/reservations`                        | 예약 목록 조회       |
+| POST        | `/reservations`                        | 예약 추가          | 
+| DELETE      | `/reservations/{id}`                   | 예약 삭제          |
+| GET         | `/times`                               | 시간 목록 조회       |
+| GET         | `/times?date={date}&themeId={themeId}` | 예약 가능 시간 목록 조회 |
+| POST        | `/times`                               | 시간 추가          | 
+| DELETE      | `/times/{id}`                          | 시간 삭제          |
+| GET         | `/themes`                              | 테마 목록 조회       |
+| GET         | `/themes/popular`                      | 주간 인기 테마 목록 조회 |
+| POST        | `/themes`                              | 테마 추가          |
+| DELETE      | `/themes/{id}`                         | 테마 삭제          |
