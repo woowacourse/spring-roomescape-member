@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -13,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.dto.request.CreateReservationTimeRequest;
 import roomescape.reservationtime.dto.response.CreateReservationTimeResponse;
 import roomescape.reservationtime.dto.response.FindReservationTimeResponse;
@@ -29,6 +32,9 @@ class ReservationTimeServiceTest extends DummyDataFixture {
     @Mock
     private ReservationTimeRepository reservationTimeRepository;
 
+    @Mock
+    private ReservationRepository reservationRepository;
+
     @Test
     @DisplayName("예약 시간 생성 시 해당 데이터의 id값을 반환한다.")
     void createReservationTime() {
@@ -36,15 +42,12 @@ class ReservationTimeServiceTest extends DummyDataFixture {
         CreateReservationTimeRequest createReservationTimeRequest = new CreateReservationTimeRequest(
                 LocalTime.of(11, 11));
 
-        // stub // TODO:반환 타입 지정
-        Mockito.when(reservationTimeRepository.save(any(ReservationTime.class))).thenReturn(any(ReservationTime.class));
+        // stub
+        Mockito.when(reservationTimeRepository.save(any(ReservationTime.class))).thenReturn(getReservationTimeById(1L));
 
-        // when
-        CreateReservationTimeResponse reservationTime = reservationTimeService.createReservationTime(
-                createReservationTimeRequest);
-
-        // then
-        assertThat(reservationTime.id()).isEqualTo(10L);
+        // when & then
+        assertThat(reservationTimeService.createReservationTime(createReservationTimeRequest))
+                .isEqualTo(CreateReservationTimeResponse.of(getReservationTimeById(1L)));
     }
 
     @Test
@@ -56,9 +59,12 @@ class ReservationTimeServiceTest extends DummyDataFixture {
 
         // when & then
         assertThat(reservationTimeService.getReservationTimes()).containsExactly(
-                new FindReservationTimeResponse(1L, "15:40"),
-                new FindReservationTimeResponse(2L, "10:00"),
-                new FindReservationTimeResponse(3L, "13:00")
+                new FindReservationTimeResponse(1L, "10:00"),
+                new FindReservationTimeResponse(2L, "12:00"),
+                new FindReservationTimeResponse(3L, "14:00"),
+                new FindReservationTimeResponse(4L, "16:00"),
+                new FindReservationTimeResponse(5L, "18:00"),
+                new FindReservationTimeResponse(6L, "20:00")
         );
     }
 
@@ -74,7 +80,7 @@ class ReservationTimeServiceTest extends DummyDataFixture {
 
         // when & then
         assertThat(reservationTimeService.getReservationTime(timeId)).isEqualTo(
-                new FindReservationTimeResponse(timeId, "15:40"));
+                new FindReservationTimeResponse(timeId, "10:00"));
     }
 
     @Test
@@ -97,11 +103,12 @@ class ReservationTimeServiceTest extends DummyDataFixture {
     @DisplayName("해당하는 id와 동일한 저장된 예약 시간을 삭제한다.")
     void deleteById() {
         // given
-        long timeId = 1L;
+        long timeId = 7L;
 
         // stub
         Mockito.when(reservationTimeRepository.findById(timeId))
                 .thenReturn(Optional.of(new ReservationTime(null, any(LocalTime.class))));
+        Mockito.when(reservationRepository.findAllByTimeId(timeId)).thenReturn(new ArrayList<>());
 
         // when
         reservationTimeService.deleteById(timeId);
@@ -124,5 +131,24 @@ class ReservationTimeServiceTest extends DummyDataFixture {
         assertThatThrownBy(() -> reservationTimeService.deleteById(timeId))
                 .isInstanceOf(NoSuchElementException.class)
                 .hasMessage("해당하는 예약 시간이 존재하지 않습니다.");
+    }
+
+    @Test
+    @DisplayName("해당하는 시간을 사용 중인 예약이 존재할 경우 예외가 발생한다.")
+    void deleteById_ifAlreadyUsed_throwException() {
+        // given
+        long timeId = 2L;
+
+        // stub
+        Mockito.when(reservationTimeRepository.findById(timeId))
+                .thenReturn(Optional.of(getReservationTimeById(timeId)));
+
+        Mockito.when(reservationRepository.findAllByTimeId(timeId))
+                .thenReturn(getPreparedReservations());
+
+        // when & then
+        assertThatThrownBy(() -> reservationTimeService.deleteById(timeId))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("시간을 사용 중인 예약이 존재합니다.");
     }
 }

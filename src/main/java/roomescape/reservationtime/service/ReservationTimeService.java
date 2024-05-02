@@ -46,7 +46,6 @@ public class ReservationTimeService {
                 .orElseThrow(() -> new NoSuchElementException("해당하는 예약 시간이 존재하지 않습니다."));
         List<Reservation> reservations = reservationRepository.findAllByTimeId(id);
         if (!reservations.isEmpty()) {
-            // TODO: 적절한 예외 던지기
             throw new IllegalStateException("시간을 사용 중인 예약이 존재합니다.");
         }
 
