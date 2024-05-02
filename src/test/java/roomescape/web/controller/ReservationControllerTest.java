@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,6 +22,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
+import roomescape.core.dto.BookingTimeResponseDto;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -256,6 +258,39 @@ class ReservationControllerTest {
     }
 
     @Test
+    @DisplayName("날짜와 테마 정보가 주어지면 예약 가능한 시간 목록을 조회한다.")
+    void findBookable() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", TOMORROW_DATE);
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+
+        RestAssured.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(params)
+            .when().post("/reservations")
+            .then().log().all()
+            .statusCode(201);
+
+        List<BookingTimeResponseDto> times = RestAssured.given().log().all()
+            .when().get("/reservations?date=" + TOMORROW_DATE + "&themeId=1")
+            .then().log().all()
+            .statusCode(200).extract()
+            .jsonPath().getList(".", BookingTimeResponseDto.class);
+
+        assertThat(times).hasSize(countReservationTime())
+            .allMatch(response -> validateBookingTime(response, 1));
+    }
+
+    private boolean validateBookingTime(final BookingTimeResponseDto bookingTime, final int timeId) {
+        if (bookingTime.getId() == timeId) {
+            return bookingTime.isAlreadyBooked();
+        }
+        return !bookingTime.isAlreadyBooked();
+    }
+
+    @Test
     @DisplayName("예약 내역을 삭제할 수 있다")
     void deleteReservation() {
         Map<String, Object> params = new HashMap<>();
@@ -298,5 +333,9 @@ class ReservationControllerTest {
 
     private int countReservation() {
         return jdbcTemplate.queryForObject("SELECT count(*) FROM reservation", Integer.class);
+    }
+
+    private int countReservationTime() {
+        return jdbcTemplate.queryForObject("SELECT count(*) FROM reservation_time", Integer.class);
     }
 }

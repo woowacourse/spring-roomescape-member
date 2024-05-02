@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.core.domain.Reservation;
 import roomescape.core.domain.ReservationTime;
 import roomescape.core.domain.Theme;
+import roomescape.core.dto.BookingTimeResponseDto;
 import roomescape.core.dto.ReservationRequestDto;
 import roomescape.core.dto.ReservationResponseDto;
 import roomescape.core.repository.ReservationRepository;
@@ -63,6 +64,11 @@ public class ReservationService {
                 .stream()
                 .map(ReservationResponseDto::new)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<BookingTimeResponseDto> findBookable(final String date, final long themeId) {
+        return reservationRepository.findAllByDateAndThemeId(date, themeId);
     }
 
     @Transactional

@@ -1,6 +1,5 @@
 package roomescape.web.controller;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
@@ -8,7 +7,6 @@ import io.restassured.http.ContentType;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,7 +19,6 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
-import roomescape.core.dto.BookingTimeResponseDto;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -101,28 +98,6 @@ class ReservationTimeControllerTest {
     }
 
     @Test
-    @DisplayName("날짜와 테마 정보가 주어지면 예약 가능한 시간 목록을 조회한다.")
-    void findBookable() {
-        insertReservation("브라운", TOMORROW_DATE, 1, 1);
-
-        List<BookingTimeResponseDto> times = RestAssured.given().log().all()
-            .when().get("/times?date=" + TOMORROW_DATE + "&themeId=1")
-            .then().log().all()
-            .statusCode(200).extract()
-            .jsonPath().getList(".", BookingTimeResponseDto.class);
-
-        assertThat(times).hasSize(countReservationTime())
-            .allMatch(response -> validateBookingTime(response, 1));
-    }
-
-    private boolean validateBookingTime(final BookingTimeResponseDto bookingTime, final int timeId) {
-        if (bookingTime.getId() == timeId) {
-            return bookingTime.isAlreadyBooked();
-        }
-        return !bookingTime.isAlreadyBooked();
-    }
-
-    @Test
     @DisplayName("시간 삭제 시, 해당 시간을 참조하는 예약이 있으면 예외가 발생한다.")
     void validateTimeDelete() {
         RestAssured.given().log().all()
@@ -148,11 +123,6 @@ class ReservationTimeControllerTest {
             .when().delete("/times/1")
             .then().log().all()
             .statusCode(400);
-    }
-
-    private void insertReservation(String name, String date, int timeId, int themeId) {
-        String sql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
-        jdbcTemplate.update(sql, name, date, timeId, themeId);
     }
 
     private int countReservationTime() {
