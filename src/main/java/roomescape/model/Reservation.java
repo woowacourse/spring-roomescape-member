@@ -7,7 +7,7 @@ import java.util.Objects;
 public class Reservation {
 
     private final Long id;
-    private final Name name;
+    private final UserName userName;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
@@ -19,7 +19,7 @@ public class Reservation {
     public Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time, final Theme theme) {
         validateDate(date);
         this.id = id;
-        this.name = new Name(name);
+        this.userName = new UserName(name);
         this.date = date;
         this.time = time;
         this.theme = theme;
@@ -52,7 +52,7 @@ public class Reservation {
     }
 
     public String getName() {
-        return name.getValue();
+        return userName.getValue();
     }
 
     public LocalDate getDate() {

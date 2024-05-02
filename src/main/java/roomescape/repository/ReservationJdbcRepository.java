@@ -17,7 +17,7 @@ import roomescape.model.Theme;
 @Repository
 public class ReservationJdbcRepository implements ReservationRepository {
 
-    private static final RowMapper<Reservation> ROW_MAPPER = (selectedReservation, rowNum) -> {
+    private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (selectedReservation, rowNum) -> {
         final ReservationTime time = new ReservationTime(
                 selectedReservation.getLong("time_id"),
                 LocalTime.parse(selectedReservation.getString("start_at"))
@@ -86,7 +86,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
             INNER JOIN theme as t
             ON r.theme_id = t.id
         """;
-        return jdbcTemplate.query(selectQuery, ROW_MAPPER);
+        return jdbcTemplate.query(selectQuery, RESERVATION_ROW_MAPPER);
     }
 
     @Override
@@ -111,7 +111,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
         """;
 
         try {
-            final Reservation reservation = jdbcTemplate.queryForObject(selectQuery, ROW_MAPPER, id);
+            final Reservation reservation = jdbcTemplate.queryForObject(selectQuery, RESERVATION_ROW_MAPPER, id);
             return Optional.ofNullable(reservation);
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
@@ -139,7 +139,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
             WHERE r.date = ? AND r.theme_id = ?
         """;
 
-        return jdbcTemplate.query(selectQuery, ROW_MAPPER, date, themeId);
+        return jdbcTemplate.query(selectQuery, RESERVATION_ROW_MAPPER, date, themeId);
     }
 
     @Override

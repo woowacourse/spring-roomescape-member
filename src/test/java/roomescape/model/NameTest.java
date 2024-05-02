@@ -13,7 +13,7 @@ class NameTest {
     @ParameterizedTest
     @ValueSource(strings = {"     ", " ", ""})
     void blankName(final String value) {
-        assertThatThrownBy(() -> new Name(value))
+        assertThatThrownBy(() -> new UserName(value))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -21,7 +21,7 @@ class NameTest {
     @ParameterizedTest
     @ValueSource(strings = {"123", "456"})
     void numericName(final String value) {
-        assertThatThrownBy(() -> new Name(value))
+        assertThatThrownBy(() -> new UserName(value))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -29,7 +29,7 @@ class NameTest {
     @ParameterizedTest
     @ValueSource(strings = {"abc123", "감자", "Joo Woo"})
     void validName(final String value) {
-        assertThatCode(() -> new Name(value))
+        assertThatCode(() -> new UserName(value))
                 .doesNotThrowAnyException();
     }
 }

@@ -2,13 +2,13 @@ package roomescape.model;
 
 import java.util.regex.Pattern;
 
-public class Name {
+public class UserName {
 
     private static final Pattern ONLY_NUMBER_PATTERN = Pattern.compile("^\\d+$");
 
     private final String value;
 
-    public Name(final String value) {
+    public UserName(final String value) {
         validateName(value);
         this.value = value;
     }
