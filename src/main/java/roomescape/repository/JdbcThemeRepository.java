@@ -83,8 +83,7 @@ public class JdbcThemeRepository implements ThemeRepository {
                 th.thumbnail AS thumbnail, 
                 COUNT(r.theme_id) AS count
             FROM theme AS th
-            LEFT JOIN reservation AS r ON th.id = r.theme_id
-            WHERE r.date BETWEEN TIMESTAMPADD(DAY, -8, NOW()) AND TIMESTAMPADD(DAY, -1, NOW()) OR r.id IS NULL
+            LEFT JOIN reservation AS r ON th.id = r.theme_id AND r.date BETWEEN TIMESTAMPADD(DAY, -8, NOW()) AND TIMESTAMPADD(DAY, -1, NOW())
             GROUP BY th.id
             ORDER BY count DESC
             LIMIT ?
