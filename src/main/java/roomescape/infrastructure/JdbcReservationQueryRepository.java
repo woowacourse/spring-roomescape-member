@@ -21,12 +21,13 @@ public class JdbcReservationQueryRepository implements ReservationQueryRepositor
     @Override
     public List<AvailableTimeDto> findAvailableReservationTimes(LocalDate date, long themeId) {
         String sql = """
-                select rt.id, rt.start_at,
-                case
-                when rt.id = r.time_id then true
-                else false
-                end as is_booked
-                from reservation_time as rt left join reservation r on r.date = ? and r.theme_id = ?;
+                select id, start_at, start_at in (
+                    select start_at
+                    from reservation as r
+                    left join reservation_time as rt on r.time_id = rt.id
+                    where date = ? and r.theme_id = ?
+                ) as is_booked
+                from reservation_time;
                 """;
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> new AvailableTimeDto(
