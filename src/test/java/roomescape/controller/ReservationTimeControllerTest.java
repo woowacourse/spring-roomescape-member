@@ -21,9 +21,9 @@ import roomescape.domain.Theme;
 import roomescape.dto.AvailableReservationTimeResponse;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
-import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeRepository;
-import roomescape.repository.ThemeRepository;
+import roomescape.domain.ReservationRepository;
+import roomescape.domain.ReservationTimeRepository;
+import roomescape.domain.ThemeRepository;
 
 class ReservationTimeControllerTest extends BaseControllerTest {
 
