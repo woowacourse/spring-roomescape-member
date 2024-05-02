@@ -48,10 +48,12 @@
 - [x] /reservation 요청 시 사용자 예약 페이지 응답
 - [x] / 요청 시 인기 테마 페이지 응답
 
-- 사용자 방탈출 예약
-  - [ ] 날짜와 테마가 주어지면, 해당 날짜에 예약 가능한 시간을 조회할 수 있다.
-    - [ ] 가능한 시간인 경우, alreadyBooked을 true
-    - [ ] 불가능한 시간인 경우, alreadyBooked을 false
+- 사용자 방탈출 예약 [/times?date=2024-08-05&themeId=1]
+- 타임을 다 꺼내와 / 예약에 해당 날짜이고 해당 테마이고 해당 시간인 거는 alreadyBooked true
+- join -> time left oupter join reservation  
+  - [x] 날짜와 테마가 주어지면, 해당 날짜에 예약 가능한 시간을 조회할 수 있다. (startAt, timeId, alreadyBooked)
+    - [x] 가능한 시간인 경우, alreadyBooked을 true
+    - [x] 불가능한 시간인 경우, alreadyBooked을 false
   - [ ] 사용자는 원하는 날짜, 테마, 시간, 예약자명으로 예약할 수 있다.
 
 - 인기 테마 조회

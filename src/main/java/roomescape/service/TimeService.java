@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.TimeDao;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.AvailableTimeResponse;
 import roomescape.dto.TimeCreateRequest;
 import roomescape.dto.TimeResponse;
 
@@ -22,6 +23,15 @@ public class TimeService {
     public List<TimeResponse> readTimes() {
         return timeDao.readTimes().stream()
                 .map(TimeResponse::from)
+                .toList();
+    }
+
+    public List<AvailableTimeResponse> readAvailableTimes(String date, Long themeId) {
+        List<ReservationTime> allTime = timeDao.readTimes();
+        List<ReservationTime> availableTime = timeDao.readTimesExistsReservationDateAndThemeId(date, themeId);
+
+        return allTime.stream()
+                .map(time -> AvailableTimeResponse.of(time, availableTime.contains(time)))
                 .toList();
     }
 

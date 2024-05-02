@@ -2,6 +2,7 @@ package roomescape.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import roomescape.dto.AvailableTimeResponse;
 import roomescape.dto.ErrorResponse;
 import roomescape.dto.TimeCreateRequest;
 import roomescape.dto.TimeResponse;
@@ -22,6 +23,12 @@ public class TimeController {
     @GetMapping
     public ResponseEntity<List<TimeResponse>> readTimes() {
         List<TimeResponse> response = service.readTimes();
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/available")
+    public ResponseEntity<List<AvailableTimeResponse>> readAvailableTimes(@RequestParam String date, @RequestParam Long themeId) {
+        List<AvailableTimeResponse> response = service.readAvailableTimes(date, themeId);
         return ResponseEntity.ok(response);
     }
 

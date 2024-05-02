@@ -30,6 +30,19 @@ public class TimeDao {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
+    public List<ReservationTime> readTimesExistsReservationDateAndThemeId(String date, Long themeId) {
+        String sql = """
+                SELECT id, start_at 
+                FROM reservation_time
+                WHERE id IN (
+                    SELECT time_id
+                    FROM reservation
+                    WHERE date = ? AND theme_id = ?
+                )
+                """;
+        return jdbcTemplate.query(sql, rowMapper, date, themeId);
+    }
+
     public Optional<ReservationTime> readTimeById(Long id) {
         String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
         try {

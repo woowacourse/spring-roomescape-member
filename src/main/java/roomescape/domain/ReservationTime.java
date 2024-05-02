@@ -48,4 +48,17 @@ public class ReservationTime {
     public String getStartAt() {
         return TIME_FORMATTER.format(startAt);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ReservationTime time = (ReservationTime) o;
+        return Objects.equals(id, time.id) && Objects.equals(startAt, time.startAt);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, startAt);
+    }
 }
