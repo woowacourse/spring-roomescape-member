@@ -1,13 +1,12 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
+import roomescape.exception.BadRequestException;
+import roomescape.repository.reservation.ReservationRepository;
+import roomescape.repository.theme.ThemeRepository;
 import roomescape.service.dto.theme.ThemeCreateRequest;
 import roomescape.service.dto.theme.ThemeResponse;
-import roomescape.exception.BadRequestException;
-import roomescape.repository.theme.ThemeRepository;
-import roomescape.repository.reservation.ReservationRepository;
 
 import java.time.LocalDate;
 import java.util.Comparator;
@@ -18,6 +17,8 @@ import java.util.stream.Collectors;
 @Service
 public class ThemeService {
 
+    public static final long POPULAR_THEME_PERIOD = 7L;
+    public static final long POPULAR_THEME_COUNT = 10L;
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
 
@@ -41,12 +42,6 @@ public class ThemeService {
         }
     }
 
-    public ThemeResponse readTheme(Long id) {
-        Theme theme = themeRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException("존재하지 않는 테마입니다."));
-        return ThemeResponse.from(theme);
-    }
-
     public List<ThemeResponse> readThemes() {
         return themeRepository.findAll().stream()
                 .map(ThemeResponse::from)
@@ -55,22 +50,32 @@ public class ThemeService {
 
     public List<ThemeResponse> readPopularThemes() {
         LocalDate end = LocalDate.now().minusDays(1L);
-        LocalDate start = end.minusDays(7L);
+        LocalDate start = end.minusDays(POPULAR_THEME_PERIOD);
 
-        Map<Long, List<Reservation>> reservationMap = reservationRepository.findByDateBetween(start, end).stream()
-                .collect(Collectors.groupingBy(reservation -> reservation.getTheme().getId()));
+        Map<Long, Long> reservationCountByTheme = collectReservationByTheme(start, end);
 
-        return reservationMap.keySet().stream()
-                .sorted(Comparator.comparing(k -> reservationMap.get(k).size()).reversed())
-                .limit(10L)
-                .map(this::readTheme)
+        return reservationCountByTheme.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .limit(POPULAR_THEME_COUNT)
+                .map(e -> readTheme(e.getKey()))
                 .toList();
+    }
+
+    private Map<Long, Long> collectReservationByTheme(LocalDate start, LocalDate end) {
+        return reservationRepository.findByDateBetween(start, end).stream()
+                .collect(Collectors.groupingBy(reservation -> reservation.getTheme().getId(), Collectors.counting()));
+    }
+
+    public ThemeResponse readTheme(Long id) {
+        Theme theme = themeRepository.findById(id)
+                .orElseThrow(() -> new BadRequestException("존재하지 않는 테마입니다."));
+        return ThemeResponse.from(theme);
     }
 
     public void deleteTheme(Long id) {
         if (reservationRepository.existsByThemeId(id)) {
             throw new BadRequestException("해당 테마에 예약이 존재합니다.");
         }
-        themeRepository.delete(id);
+        themeRepository.deleteById(id);
     }
 }
