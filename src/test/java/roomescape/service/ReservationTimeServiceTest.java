@@ -105,4 +105,31 @@ class ReservationTimeServiceTest {
                 .isInstanceOf(InvalidReservationException.class)
                 .hasMessage("해당 시간에 예약이 존재해서 삭제할 수 없습니다.");
     }
+
+    @DisplayName("해당 테마와 날짜에 예약이 가능한 시간 목록을 조회한다.")
+    @Test
+    void findAvailableTimes() {
+        //given
+        ReservationTimeResponse notAvailableTimeResponse = reservationTimeService.create(
+                new ReservationTimeRequest("10:00"));
+        ReservationTime reservationTime = new ReservationTime(notAvailableTimeResponse.id(),
+                notAvailableTimeResponse.startAt());
+        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        Reservation reservation = reservationRepository.save(
+                new Reservation("lilly", "2222-10-04", reservationTime, theme));
+
+        ReservationTimeResponse availableTimeResponse = reservationTimeService.create(
+                new ReservationTimeRequest("11:00"));
+
+        //when
+        List<ReservationTimeResponse> result = reservationTimeService.findAvailableTimes(theme.getId(),
+                reservation.getDate());
+
+        //then
+        assertAll(
+                () -> assertThat(result).hasSize(1),
+                () -> assertThat(result).contains(availableTimeResponse)
+        );
+    }
 }

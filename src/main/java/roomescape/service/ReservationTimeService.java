@@ -51,4 +51,10 @@ public class ReservationTimeService {
             throw new InvalidReservationException("해당 시간에 예약이 존재해서 삭제할 수 없습니다.");
         }
     }
+
+    public List<ReservationTimeResponse> findAvailableTimes(long themeId, String date) {
+        return reservationTimeRepository.findByThemeAndDate(themeId, date).stream()
+                .map(ReservationTimeResponse::new)
+                .toList();
+    }
 }
