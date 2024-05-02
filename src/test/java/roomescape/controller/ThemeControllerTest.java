@@ -2,6 +2,7 @@ package roomescape.controller;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,11 @@ public class ThemeControllerTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @BeforeEach
+    void setUp() {
+        RestAssured.port = port;
+    }
+
     @DisplayName("테마 목록을 읽을 수 있다.")
     @Test
     void readReservations() {
@@ -31,7 +37,6 @@ public class ThemeControllerTest {
                 "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg");
 
         int size = RestAssured.given().log().all()
-                .port(port)
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200).extract()
@@ -63,7 +68,6 @@ public class ThemeControllerTest {
         );
 
         List<ThemeResponse> response = RestAssured.given().log().all()
-                .port(port)
                 .when().get("/themes/popular")
                 .then().log().all()
                 .statusCode(200).extract()
@@ -81,7 +85,6 @@ public class ThemeControllerTest {
                 "https://image.jpg");
 
         RestAssured.given().log().all()
-                .port(port)
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/themes")
@@ -100,7 +103,6 @@ public class ThemeControllerTest {
                 "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg");
 
         RestAssured.given().log().all()
-                .port(port)
                 .when().delete("/themes/1")
                 .then().log().all()
                 .statusCode(204);

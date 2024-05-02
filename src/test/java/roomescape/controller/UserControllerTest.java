@@ -1,6 +1,7 @@
 package roomescape.controller;
 
 import io.restassured.RestAssured;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,11 +12,15 @@ class UserControllerTest {
     @LocalServerPort
     private int port;
 
+    @BeforeEach
+    void setUp() {
+        RestAssured.port = port;
+    }
+
     @DisplayName("인기 테마 페이지를 열 수 있다.")
     @Test
     void loadPopularThemePage() {
         RestAssured.given().log().all()
-                .port(port)
                 .when().get("/")
                 .then().log().all()
                 .statusCode(200);
@@ -25,7 +30,6 @@ class UserControllerTest {
     @Test
     void loadUserReservationPage() {
         RestAssured.given().log().all()
-                .port(port)
                 .when().get("/reservation")
                 .then().log().all()
                 .statusCode(200);

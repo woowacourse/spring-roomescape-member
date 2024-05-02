@@ -2,6 +2,7 @@ package roomescape.controller;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,13 +27,17 @@ class ReservationTimeControllerTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @BeforeEach
+    void setUp() {
+        RestAssured.port = port;
+    }
+
     @DisplayName("시간 목록을 읽을 수 있다.")
     @Test
     void readTimes() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", LocalTime.of(10, 0));
 
         int size = RestAssured.given().log().all()
-                .port(port)
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200).extract()
@@ -58,7 +63,6 @@ class ReservationTimeControllerTest {
                 new AvailableTimeResponse(new TimeResponse(2L, LocalTime.of(11, 0)), false)
         );
         List<AvailableTimeResponse> response = RestAssured.given().log().all()
-                .port(port)
                 .when().get("/times/available?date=2023-08-05&themeId=1")
                 .then().log().all()
                 .statusCode(200).extract()
@@ -73,7 +77,6 @@ class ReservationTimeControllerTest {
         TimeCreateRequest params = new TimeCreateRequest(LocalTime.of(10, 0));
 
         RestAssured.given().log().all()
-                .port(port)
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/times")
@@ -91,7 +94,6 @@ class ReservationTimeControllerTest {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
 
         RestAssured.given().log().all()
-                .port(port)
                 .when().delete("/times/1")
                 .then().log().all()
                 .statusCode(204);
