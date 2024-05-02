@@ -20,7 +20,7 @@ public class ThemeController {
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponse> addTime(
+    public ResponseEntity<ThemeResponse> addTheme(
             @RequestBody ThemeAddRequest themeAddRequest) {
         ThemeResponse themeResponse = themeService.addTheme(themeAddRequest);
         return ResponseEntity.created(URI.create("/times/" + themeResponse.id()))
@@ -28,12 +28,12 @@ public class ThemeController {
     }
 
     @GetMapping
-    public List<ThemeResponse> findTimes() {
+    public List<ThemeResponse> findThemes() {
         return themeService.findThemes();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTime(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
         themeService.deleteTheme(id);
         return ResponseEntity.noContent().build();
     }
