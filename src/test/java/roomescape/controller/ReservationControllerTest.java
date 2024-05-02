@@ -3,7 +3,6 @@ package roomescape.controller;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -101,8 +100,8 @@ class ReservationControllerTest {
         //given
         ReservationCreateRequest givenRequest
                 = ReservationCreateRequest.of("InvalidName", "InvalidDate", -1L, 1L);
-        when(reservationService.add(givenRequest))
-                .thenThrow(IllegalArgumentException.class);
+        given(reservationService.add(givenRequest))
+                .willThrow(IllegalArgumentException.class);
         String requestBody = objectMapper.writeValueAsString(givenRequest);
 
         //when //then
