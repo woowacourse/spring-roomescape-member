@@ -71,10 +71,9 @@ public class ReservationTimeService {
             ReservationTimeWithBookStatusRequest timeRequest,
             ReservationTime reservationTime) {
         LocalDate date = LocalDate.parse(timeRequest.date());
-        Long reservationTimeId = reservationTime.getId();
         Long themeId = timeRequest.themeId();
 
         return reservations.stream()
-                .anyMatch(reservation -> reservation.contains(date, reservationTimeId, themeId));
+                .anyMatch(reservation -> reservation.contains(date, reservationTime, themeId));
     }
 }

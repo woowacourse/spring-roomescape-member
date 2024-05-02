@@ -1,7 +1,6 @@
 package roomescape.domain;
 
 import java.time.LocalTime;
-import java.util.Objects;
 
 public class ReservationTime {
     private final Long id;
@@ -18,10 +17,6 @@ public class ReservationTime {
 
     public ReservationTime withId(Long id) {
         return new ReservationTime(id, startAt);
-    }
-
-    public boolean hasSameId(Long id) {
-        return Objects.equals(this.id, id);
     }
 
     public Long getId() {
