@@ -138,4 +138,13 @@ class ReservationDAOTest {
         long count = reservationRepository.countReservationById(100000000);
         assertThat(count).isEqualTo(0);
     }
+
+    @DisplayName("특정 날짜와 테마에 해당하는 시간을 조회한다.")
+    @Test
+    void should_get_reservation_times_when_date_and_theme_given() {
+        LocalDate date = LocalDate.of(2023, 8, 5);
+        List<ReservationTime> times = reservationRepository.findReservationTimeByDateAndTheme(date, 1);
+        assertThat(times).hasSize(1);
+        assertThat(times).containsExactly(new ReservationTime(1, LocalTime.of(10, 0)));
+    }
 }

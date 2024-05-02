@@ -65,8 +65,8 @@ public class ReservationService {
         List<ReservationTime> allTimes = reservationTimeRepository.findAllReservationTimes();
         List<ReservationTime> bookedTimes = reservationRepository.findReservationTimeByDateAndTheme(date, themeId);
         List<ReservationTime> notBookedTimes = filterNotBookedTimes(allTimes, bookedTimes);
-        List<MemberReservationTimeResponse> notBookedResponse = mapToResponse(bookedTimes, true);
-        List<MemberReservationTimeResponse> bookedResponse = mapToResponse(notBookedTimes, false);
+        List<MemberReservationTimeResponse> bookedResponse = mapToResponse(bookedTimes, true);
+        List<MemberReservationTimeResponse> notBookedResponse = mapToResponse(notBookedTimes, false);
         return concat(notBookedResponse, bookedResponse);
     }
 
