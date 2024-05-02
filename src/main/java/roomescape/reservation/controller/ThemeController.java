@@ -42,6 +42,12 @@ public class ThemeController {
         return ResponseEntity.ok(themes);
     }
 
+    @GetMapping("/ranking")
+    public ResponseEntity<List<ThemeResponse>> getWeeklyTopThemes() {
+        List<ThemeResponse> weeklyTopThemes = themeService.findWeeklyTop10Themes();
+        return ResponseEntity.ok(weeklyTopThemes);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
         themeService.deleteTheme(id);
