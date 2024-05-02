@@ -62,7 +62,7 @@ public class ReservationService {
         LocalDateTime reservationDateTime = LocalDateTime.of(date, startAt);
 
         if (reservationDateTime.isBefore(now)) {
-            throw new IllegalArgumentException("현재 시간 이후의 시간만 예약 가능합니다.");
+            throw new IllegalArgumentException("지나간 날짜/시간에 대한 예약은 불가능합니다.");
         }
     }
 
@@ -78,7 +78,7 @@ public class ReservationService {
     @Transactional
     public void deleteReservationById(Long id) {
         if (!reservationRepository.existsById(id)) {
-            throw new NoSuchElementException("해당 예약이 존재하지 않습니다.");
+            throw new NoSuchElementException("해당 id의 예약이 존재하지 않습니다.");
         }
 
         reservationRepository.deleteById(id);

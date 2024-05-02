@@ -12,6 +12,7 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -47,6 +48,48 @@ class ReservationControllerTest extends BaseControllerTest {
                 DynamicTest.dynamicTest("예약을 삭제한다.", this::deleteReservationById)
         );
     }
+
+    @TestFactory
+    @DisplayName("중복된 예약을 생성하면 실패한다.")
+    Stream<DynamicTest> failWhenDuplicatedReservation() {
+        return Stream.of(
+                DynamicTest.dynamicTest("예약을 생성한다.", this::addReservation),
+                DynamicTest.dynamicTest("이미 존재하는 예약을 생성한다.", this::addReservationFailWhenDuplicatedReservation)
+        );
+    }
+
+    @Test
+    @DisplayName("지나간 날짜/시간에 대한 예약은 실패한다.")
+    void failWhenDateTimePassed() {
+        ReservationRequest request = new ReservationRequest("구름", LocalDate.of(2024, 4, 7), 1L, 1L);
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().post("/reservations")
+                .then().log().all()
+                .extract();
+
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            softly.assertThat(response.body().asString()).contains("지나간 날짜/시간에 대한 예약은 불가능합니다.");
+        });
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 예약을 삭제하면 실패한다.")
+    void failWhenNotFoundReservation() {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when().delete("/reservations/1")
+                .then().log().all()
+                .extract();
+
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+            softly.assertThat(response.body().asString()).contains("해당 id의 예약이 존재하지 않습니다.");
+        });
+    }
+
 
     void addReservation() {
         ReservationRequest request = new ReservationRequest("구름", LocalDate.of(2024, 4, 9), 1L, 1L);
@@ -100,6 +143,22 @@ class ReservationControllerTest extends BaseControllerTest {
 
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        });
+    }
+
+    void addReservationFailWhenDuplicatedReservation() {
+        ReservationRequest request = new ReservationRequest("구름", LocalDate.of(2024, 4, 9), 1L, 1L);
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().post("/reservations")
+                .then().log().all()
+                .extract();
+
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            softly.assertThat(response.body().asString()).contains("해당 날짜/시간에 이미 예약이 존재합니다.");
         });
     }
 }

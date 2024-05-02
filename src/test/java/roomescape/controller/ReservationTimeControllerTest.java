@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.dto.AvailableReservationTimeResponse;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.repository.ReservationRepository;
@@ -86,6 +87,39 @@ class ReservationTimeControllerTest extends BaseControllerTest {
         });
     }
 
+    @Test
+    @DisplayName("이용가능한 시간들을 조회한다.")
+    void getAvailableReservationTimes() {
+        ReservationTime notBookedTime = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
+        ReservationTime alreadyBookedTime = reservationTimeRepository.save(new ReservationTime(LocalTime.of(11, 0)));
+        Theme theme = themeRepository.save(new Theme("테마 이름", "테마 설명", "https://example.com"));
+        reservationRepository.save(new Reservation("구름", LocalDate.of(2024, 4, 9), alreadyBookedTime, theme));
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .param("date", "2024-04-09")
+                .param("themeId", 1L)
+                .when().get("/available-times")
+                .then().log().all()
+                .extract();
+
+        List<AvailableReservationTimeResponse> availableReservationTimeResponses = response.jsonPath()
+                .getList(".", AvailableReservationTimeResponse.class);
+
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+            softly.assertThat(availableReservationTimeResponses).hasSize(2);
+            softly.assertThat(availableReservationTimeResponses).containsExactlyInAnyOrder(
+                    new AvailableReservationTimeResponse(
+                            notBookedTime.getId(),
+                            notBookedTime.getStartAt(),
+                            false),
+                    new AvailableReservationTimeResponse(
+                            alreadyBookedTime.getId(),
+                            alreadyBookedTime.getStartAt(),
+                            true)
+            );
+        });
+    }
 
     void addReservationTime() {
         ReservationTimeRequest request = new ReservationTimeRequest(LocalTime.of(10, 30));
