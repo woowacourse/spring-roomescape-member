@@ -13,7 +13,6 @@ import roomescape.global.exception.model.ConflictException;
 public class ExceptionController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    // TODO: DateTimeParseException은 Exception보다 구체 타입인데 Exception이 먼저 잡히는 이유 찾기
     @ExceptionHandler(value = HttpMessageNotReadableException.class)
     public ResponseEntity<String> handleDateTimeParseException(HttpMessageNotReadableException e) {
         logger.error(e.getMessage());

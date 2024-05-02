@@ -13,7 +13,6 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 
-// TODO: truncate.sql AFTER_TEST_METHOD 시점에서 실행시키면, 상위 10개 테마 조회, 테마 추가 테스트 사이에서 동작하지 않는 이유 탐색
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 class ThemeControllerTest {
