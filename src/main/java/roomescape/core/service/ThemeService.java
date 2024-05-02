@@ -43,6 +43,14 @@ public class ThemeService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<ThemeResponseDto> findPopularTheme() {
+        return reservationRepository.findPopularTheme()
+                .stream()
+                .map(ThemeResponseDto::new)
+                .toList();
+    }
+
     @Transactional
     public void delete(final long id) {
         final int reservationCount = reservationRepository.countByThemeId(id);
@@ -50,12 +58,5 @@ public class ThemeService {
             throw new IllegalArgumentException("Theme that have reservations cannot be deleted.");
         }
         themeRepository.deleteById(id);
-    }
-
-    public List<ThemeResponseDto> findPopular() {
-        return themeRepository.findPopular()
-                .stream()
-                .map(ThemeResponseDto::new)
-                .toList();
     }
 }

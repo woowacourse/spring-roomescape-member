@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.core.domain.Reservation;
+import roomescape.core.domain.Theme;
 import roomescape.core.repository.ReservationRepository;
 
 public class ReservationConsoleRepository implements ReservationRepository {
@@ -31,6 +32,16 @@ public class ReservationConsoleRepository implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {
         return Collections.unmodifiableList(reservations);
+    }
+
+    @Override
+    public List<Theme> findPopularTheme() {
+        return null;
+    }
+
+    @Override
+    public List<Reservation> findAllByDateAndThemeId(final String date, final long themeId) {
+        return null;
     }
 
     @Override

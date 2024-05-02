@@ -55,7 +55,7 @@ public class ThemeController {
 
     @GetMapping("/popular")
     public ResponseEntity<List<ThemeResponseDto>> findPopular() {
-        return ResponseEntity.ok(themeService.findPopular());
+        return ResponseEntity.ok(themeService.findPopularTheme());
     }
 
     @DeleteMapping("/{id}")

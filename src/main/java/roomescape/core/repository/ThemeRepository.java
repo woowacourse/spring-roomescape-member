@@ -8,8 +8,6 @@ public interface ThemeRepository {
 
     List<Theme> findAll();
 
-    List<Theme> findPopular();
-
     Theme findById(long id);
 
     Integer countByName(String name);

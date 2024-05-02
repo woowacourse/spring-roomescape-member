@@ -1,5 +1,6 @@
 package roomescape.web.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -73,6 +74,58 @@ public class ReservationRepositoryImpl implements ReservationRepository {
             final Theme theme = new Theme(mId, themeName, themeDescription, themeThumbnail);
 
             return new Reservation(id, name, date, time, theme);
+        };
+    }
+
+    @Override
+    public List<Reservation> findAllByDateAndThemeId(final String date, final long themeId) {
+        final String query = """
+                SELECT
+                    r.id as reservation_id,
+                    r.name,
+                    r.date,
+                    t.id as time_id,
+                    t.start_at as time_value,
+                    m.id as theme_id,
+                    m.name as theme_name,
+                    m.description as theme_description,
+                    m.thumbnail as theme_thumbnail
+                FROM reservation as r
+                inner join reservation_time as t
+                on r.time_id = t.id
+                inner join theme as m
+                on r.theme_id = m.id
+                WHERE r.date = ? AND r.theme_id = ?
+                """;
+        return jdbcTemplate.query(query, getReservationRowMapper(), date, themeId);
+    }
+
+    @Override
+    public List<Theme> findPopularTheme() {
+        final LocalDate today = LocalDate.now();
+        final LocalDate lastWeek = today.minusWeeks(1);
+
+        final String query = """
+                SELECT t.id, t.name, t.description, t.thumbnail
+                FROM theme as t
+                JOIN reservation as r ON t.id = r.theme_id
+                WHERE r.date BETWEEN ? AND ?
+                GROUP BY t.id
+                ORDER BY count(r.id) DESC
+                LIMIT 10
+                """;
+
+        return jdbcTemplate.query(query, getThemeRowMapper(), lastWeek, today);
+    }
+
+    private RowMapper<Theme> getThemeRowMapper() {
+        return (resultSet, rowNum) -> {
+            final Long timeId = resultSet.getLong("id");
+            final String name = resultSet.getString("name");
+            final String description = resultSet.getString("description");
+            final String thumbnail = resultSet.getString("thumbnail");
+
+            return new Theme(timeId, name, description, thumbnail);
         };
     }
 
