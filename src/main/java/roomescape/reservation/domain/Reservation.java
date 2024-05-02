@@ -2,8 +2,6 @@ package roomescape.reservation.domain;
 
 import roomescape.exception.InvalidNameException;
 import roomescape.exception.NullPointDateException;
-import roomescape.exception.PastDateReservationException;
-import roomescape.exception.PastTimeReservationException;
 import roomescape.time.domain.ReservationTime;
 
 import java.time.LocalDate;
@@ -23,7 +21,7 @@ public class Reservation {
         validateDateIsNotNull(date);
         this.id = id;
         this.name = name;
-        this.date = parseDate(date, time);
+        this.date = LocalDate.parse(date);
         this.time = time;
     }
 
@@ -36,21 +34,6 @@ public class Reservation {
     private void validateDateIsNotNull(final String date) {
         if (Objects.isNull(date)) {
             throw new NullPointDateException("날짜가 null인 경우 저장을 할 수 없습니다.");
-        }
-    }
-
-    private LocalDate parseDate(final String date, final ReservationTime time) {
-        LocalDate localDate = LocalDate.parse(date, DATE_FORMAT);
-        validateNoReservationsForPastDates(localDate, time);
-        return localDate;
-    }
-
-    private void validateNoReservationsForPastDates(final LocalDate localDate, final ReservationTime time) {
-        if (localDate.isBefore(LocalDate.now())) {
-            throw new PastDateReservationException("날짜가 과거인 경우 모든 시간에 대한 예약이 불가능 합니다.");
-        }
-        if (localDate.equals(LocalDate.now()) && time.checkPastTime()) {
-            throw new PastTimeReservationException("날짜가 오늘인 경우 지나간 시간에 대한 예약이 불가능 합니다.");
         }
     }
 
