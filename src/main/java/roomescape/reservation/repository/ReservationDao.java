@@ -115,6 +115,9 @@ public class ReservationDao {
     public boolean existsByDateTime(LocalDate date, long timeId) {
         String query = "SELECT COUNT(*) FROM RESERVATION WHERE time_id = ? AND date = ?";
         Integer count = jdbcTemplate.queryForObject(query, Integer.class, timeId, date);
+    public boolean existsByDateTime(LocalDate date, long timeId, long themeId) {
+        String query = "SELECT COUNT(*) FROM RESERVATION WHERE time_id = ? AND date = ? AND theme_id=?";
+        Integer count = jdbcTemplate.queryForObject(query, Integer.class, timeId, date, themeId);
         return count != null && count > 0;
     }
 
