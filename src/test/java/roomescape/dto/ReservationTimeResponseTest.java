@@ -10,17 +10,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 class ReservationTimeResponseTest {
+
     @DisplayName("ReservationTime을 입력받으면 ReservationTimeResponse로 변환한다.")
     @Test
     void convertDtoTest() {
         // Given
-        ReservationTime reservationTime = new ReservationTime(
-                1L,
-                LocalTime.of(1, 12)
-        );
+        final LocalTime startAt = LocalTime.of(1, 12);
+        final ReservationTime reservationTime = new ReservationTime(1L, startAt);
 
         // When
-        ReservationTimeResponse reservationTimeResponse = ReservationTimeResponse.from(reservationTime);
+        final ReservationTimeResponse reservationTimeResponse = ReservationTimeResponse.from(reservationTime);
 
         // Then
         assertAll(

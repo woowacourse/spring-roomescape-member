@@ -14,10 +14,11 @@ class SaveReservationTimeRequestTest {
     @Test
     void toReservationTimeTest() {
         // Given
-        SaveReservationTimeRequest request = new SaveReservationTimeRequest(LocalTime.of(1, 12));
+        final LocalTime startAt = LocalTime.of(1, 12);
+        final SaveReservationTimeRequest request = new SaveReservationTimeRequest(startAt);
 
         // When
-        ReservationTime reservationTime = request.toReservationTime();
+        final ReservationTime reservationTime = request.toReservationTime();
 
         // Then
         assertThat(reservationTime).isNotNull();
