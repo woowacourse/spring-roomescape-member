@@ -23,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservation.dto.ReservationTimeAvailabilityResponse;
 import roomescape.reservation.service.ReservationService;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.Time;
@@ -65,6 +66,17 @@ class ReservationControllerTest {
                 .thenReturn(List.of(ReservationResponse.fromReservation(reservation)));
 
         mockMvc.perform(get("/reservations"))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("예약 가능한 시간을 잘 불러오는지 확인한다.")
+    void findAvailableTimeList() throws Exception {
+        Mockito.when(reservationService.findTimeAvailability(1, LocalDate.now()))
+                .thenReturn(List.of(ReservationTimeAvailabilityResponse.fromTime(reservation.getReservationTime(), true)));
+
+        mockMvc.perform(get("/reservations/1?date=" + LocalDate.now()))
                 .andDo(print())
                 .andExpect(status().isOk());
     }

@@ -27,7 +27,7 @@ class ReservationIntegrationTest {
     }
 
     @Test
-    @DisplayName("예약을 잘 등록하고 확인하며, 삭제도 가능하다.")
+    @DisplayName("정상적인 요청에 대하여 예약을 정상적으로 등록, 조회, 삭제한다.")
     void adminReservationPageWork() {
         ReservationRequest reservationRequest = new ReservationRequest(LocalDate.now(), "polla", 1L, 1L);
 
@@ -57,7 +57,7 @@ class ReservationIntegrationTest {
     }
 
     @Test
-    @DisplayName("저장하는 경우, 존재하는 시간이 아닌 id일 경우 에러를 발생한다.")
+    @DisplayName("예약을 요청시 존재하지 않은 예약 시간의 id일 경우 예외가 발생한다.")
     void notExistTime() {
         ReservationRequest reservationRequest = new ReservationRequest(LocalDate.now(), "polla", 99L, 1L);
 
@@ -67,5 +67,15 @@ class ReservationIntegrationTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(500);
+    }
+
+    @Test
+    @DisplayName("모든 예약 시간 정보를 조회한다.")
+    void findReservationTimeList() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().get("/reservations/1?date=" + LocalDate.now())
+                .then().log().all()
+                .statusCode(200);
     }
 }
