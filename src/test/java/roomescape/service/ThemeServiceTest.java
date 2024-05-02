@@ -3,6 +3,8 @@ package roomescape.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +15,12 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import roomescape.dto.ThemeResponse;
 import roomescape.dto.ThemeSaveRequest;
+import roomescape.model.Reservation;
+import roomescape.model.ReservationTime;
+import roomescape.model.Theme;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
@@ -20,6 +28,15 @@ class ThemeServiceTest {
 
     @Autowired
     private ThemeService themeService;
+
+    @Autowired
+    private ReservationRepository reservationRepository;
+
+    @Autowired
+    private ReservationTimeRepository reservationTimeRepository;
+
+    @Autowired
+    private ThemeRepository themeRepository;
 
     @DisplayName("테마 저장")
     @Test
@@ -66,6 +83,19 @@ class ThemeServiceTest {
     @Test
     void deleteNonExistTheme() {
         assertThatThrownBy(() -> themeService.deleteTheme(1L))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("예약이 있는 테마 삭제")
+    @Test
+    void deleteExistReservation() {
+        // given
+        final ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("10:00")));
+        final Theme theme = themeRepository.save(new Theme("이름", "설명", "썸네일"));
+        reservationRepository.save(new Reservation("감자", LocalDate.parse("2025-05-13"), time, theme));
+
+        // when & then
+        assertThatThrownBy(() -> themeService.deleteTheme(theme.getId()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 

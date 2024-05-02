@@ -14,6 +14,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import roomescape.dto.ReservationTimeBookedRequest;
+import roomescape.dto.ReservationTimeBookedResponse;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.ReservationTimeSaveRequest;
 import roomescape.model.Reservation;
@@ -88,6 +90,22 @@ class ReservationTimeServiceTest {
     void saveDuplicatedTime() {
         assertThatThrownBy(() -> reservationTimeService.saveTime(new ReservationTimeSaveRequest(LocalTime.parse("11:00"))))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("시간의 예약 여부 조회")
+    @Test
+    void findBookedTImes() {
+        // given
+        var reservationTimeBookedRequest = new ReservationTimeBookedRequest(LocalDate.parse("2024-12-12"), 1L);
+
+        // when
+        final List<ReservationTimeBookedResponse> timesWithBooked = reservationTimeService.getTimesWithBooked(
+                reservationTimeBookedRequest);
+
+        // then
+        assertThat(timesWithBooked).hasSize(2)
+                .containsExactly(new ReservationTimeBookedResponse(1L, LocalTime.parse("11:00"), false),
+                        new ReservationTimeBookedResponse(2L, LocalTime.parse("12:00"), true));
     }
 }
 
