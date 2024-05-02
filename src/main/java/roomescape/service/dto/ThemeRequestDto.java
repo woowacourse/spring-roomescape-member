@@ -38,4 +38,16 @@ public class ThemeRequestDto {
             throw new IllegalArgumentException("썸네일은 반드시 입력되어야 합니다.");
         }
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getThumbnail() {
+        return thumbnail;
+    }
 }
