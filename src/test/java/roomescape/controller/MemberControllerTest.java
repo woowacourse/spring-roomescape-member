@@ -23,9 +23,19 @@ class MemberControllerTest {
         RestAssured.port = port;
     }
 
+    @DisplayName("사용자 기본 Page 접근 성공 테스트")
+    @Test
+    void responseMemberMainPage() {
+        Response response = RestAssured.given().log().all()
+                .when().get("/")
+                .then().log().all().extract().response();
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
     @DisplayName("사용자 예약 Page 접근 성공 테스트")
     @Test
-    void responseReservationPage() {
+    void responseMemberReservationPage() {
         Response response = RestAssured.given().log().all()
                 .when().get("/reservation")
                 .then().log().all().extract().response();
