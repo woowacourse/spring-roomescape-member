@@ -5,10 +5,9 @@ import org.junit.jupiter.api.Test;
 import roomescape.controller.request.ThemeRequest;
 import roomescape.model.Theme;
 
-import java.time.LocalDate;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class ThemeServiceTest {
 

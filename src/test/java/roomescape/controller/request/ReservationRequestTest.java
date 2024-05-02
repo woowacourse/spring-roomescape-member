@@ -7,8 +7,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import roomescape.exception.BadRequestException;
 
-import java.time.LocalDate;
-
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ReservationRequestTest {
