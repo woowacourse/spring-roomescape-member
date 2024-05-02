@@ -16,7 +16,6 @@ import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
 import roomescape.service.ThemeService;
 
-//Todo 테스트코드 작성
 @RestController
 @RequestMapping("/themes")
 public class ThemeController {
