@@ -95,8 +95,9 @@ class ThemeRepositoryTest {
         // When
         final ReservationDate startAt = new ReservationDate(LocalDate.now().minusDays(7));
         final ReservationDate endAt = new ReservationDate(LocalDate.now().minusDays(1));
+        final int maximumThemeCount = 10;
 
-        final List<Theme> popularThemes = themeRepository.findPopularThemes(startAt, endAt);
+        final List<Theme> popularThemes = themeRepository.findPopularThemes(startAt, endAt, maximumThemeCount);
 
         // Then
         assertAll(

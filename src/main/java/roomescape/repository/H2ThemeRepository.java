@@ -26,15 +26,15 @@ public class H2ThemeRepository implements ThemeRepository {
 
     @Override
     public Optional<Theme> findById(final Long themeId) {
-        String sql = "SELECT * FROM theme WHERE id = :id";
+        final String sql = "SELECT * FROM theme WHERE id = :id";
 
         try {
-            MapSqlParameterSource param = new MapSqlParameterSource()
+            final MapSqlParameterSource param = new MapSqlParameterSource()
                     .addValue("id", themeId);
-            Theme theme = template.queryForObject(sql, param, itemRowMapper());
+            final Theme theme = template.queryForObject(sql, param, itemRowMapper());
 
             return Optional.of(theme);
-        } catch (EmptyResultDataAccessException e) {
+        } catch (final EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
@@ -50,49 +50,48 @@ public class H2ThemeRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findAll() {
-        String sql = "SELECT * FROM theme";
+        final String sql = "SELECT * FROM theme";
 
         return template.query(sql, itemRowMapper());
     }
 
     @Override
     public Theme save(final Theme theme) {
-        String sql = "INSERT INTO theme(name, description, thumbnail) VALUES(:name, :description, :thumbnail)";
+        final String sql = "INSERT INTO theme(name, description, thumbnail) VALUES(:name, :description, :thumbnail)";
 
-        MapSqlParameterSource param = new MapSqlParameterSource()
+        final MapSqlParameterSource param = new MapSqlParameterSource()
                 .addValue("name", theme.getName().getValue())
                 .addValue("description", theme.getDescription().getValue())
                 .addValue("thumbnail", theme.getThumbnail());
-        KeyHolder keyHolder = new GeneratedKeyHolder();
+        final KeyHolder keyHolder = new GeneratedKeyHolder();
         template.update(sql, param, keyHolder);
 
-        long savedThemeId = keyHolder.getKey().longValue();
+        final long savedThemeId = keyHolder.getKey().longValue();
 
         return theme.initializeIndex(savedThemeId);
     }
 
     @Override
     public void deleteById(final Long themeId) {
-        String sql = "DELETE FROM theme WHERE id = :id";
-        MapSqlParameterSource param = new MapSqlParameterSource()
+        final String sql = "DELETE FROM theme WHERE id = :id";
+        final MapSqlParameterSource param = new MapSqlParameterSource()
                 .addValue("id", themeId);
         template.update(sql, param);
     }
 
     @Override
     public boolean existById(final Long themeId) {
-        String sql = "SELECT EXISTS(SELECT 1 FROM theme WHERE id = :themeId)";
+        final String sql = "SELECT EXISTS(SELECT 1 FROM theme WHERE id = :themeId)";
 
-        MapSqlParameterSource param = new MapSqlParameterSource()
+        final MapSqlParameterSource param = new MapSqlParameterSource()
                 .addValue("themeId", themeId);
 
         return Boolean.TRUE.equals(template.queryForObject(sql, param, Boolean.class));
     }
 
-    // TODO : 조회 개수, 인기 기준을 외부에서 주입하도록 개선하면 좋을거 같다.
     @Override
-    public List<Theme> findPopularThemes(final ReservationDate startAt, final ReservationDate endAt) {
-        String sql = "SELECT "
+    public List<Theme> findPopularThemes(final ReservationDate startAt, final ReservationDate endAt, final int maximumThemeCount) {
+        final String sql = "SELECT "
                 + "th.id, th.name, th.description, th.thumbnail "
                 + "FROM reservation as r "
                 + "inner join theme as th "
@@ -100,11 +99,12 @@ public class H2ThemeRepository implements ThemeRepository {
                 + "WHERE r.date BETWEEN :startAt AND :endAt "
                 + "GROUP BY r.theme_id "
                 + "ORDER BY COUNT(r.theme_id) DESC "
-                + "LIMIT 10 ";
+                + "LIMIT :maximumThemeCount ";
 
-        MapSqlParameterSource param = new MapSqlParameterSource()
+        final MapSqlParameterSource param = new MapSqlParameterSource()
                 .addValue("startAt", startAt.getValue())
-                .addValue("endAt", endAt.getValue());
+                .addValue("endAt", endAt.getValue())
+                .addValue("maximumThemeCount", maximumThemeCount);
 
         return template.query(sql, param, itemRowMapper());
     }

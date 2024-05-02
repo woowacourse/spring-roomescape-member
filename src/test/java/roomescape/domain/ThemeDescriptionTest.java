@@ -27,7 +27,7 @@ class ThemeDescriptionTest {
     @DisplayName("유효하지 않은 길이의 테마 설명이 입력되면 예외를 발생시킨다.")
     @ParameterizedTest
     @NullAndEmptySource
-    @ValueSource(strings = {    // TODO : 더 깔끔한 방법 찾아보기
+    @ValueSource(strings = {
             "테바와 코딩을 하고 있으니 제가 LA에 있을 시절이 떠오르는............................................................................."
     })
     void themeDescriptionLengthTest(String invalidDescription) {

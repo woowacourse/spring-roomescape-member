@@ -18,5 +18,5 @@ public interface ThemeRepository {
 
     boolean existById(Long themeId);
 
-    List<Theme> findPopularThemes(ReservationDate startAt, ReservationDate endAt);
+    List<Theme> findPopularThemes(ReservationDate startAt, ReservationDate endAt, int maximumThemeCount);
 }
