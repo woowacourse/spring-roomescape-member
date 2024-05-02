@@ -18,7 +18,6 @@ import roomescape.domain.ReservationTimeRepository;
 @JdbcTest
 @Import(JdbcReservationTimeRepository.class)
 class JdbcReservationTimeRepositoryTest {
-
     private static final String INSERT_SQL = "insert into reservation_time (id, start_at) values (?, ?)";
 
     @Autowired

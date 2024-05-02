@@ -22,7 +22,6 @@ import roomescape.application.dto.ThemeResponse;
 
 @WebMvcTest(ThemeController.class)
 class ThemeControllerTest {
-
     @Autowired
     private MockMvc mvc;
 

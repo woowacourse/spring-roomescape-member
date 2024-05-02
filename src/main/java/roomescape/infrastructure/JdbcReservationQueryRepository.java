@@ -11,7 +11,6 @@ import roomescape.infrastructure.rowmapper.ThemeRowMapper;
 
 @Repository
 public class JdbcReservationQueryRepository implements ReservationQueryRepository {
-
     private final JdbcTemplate jdbcTemplate;
 
     public JdbcReservationQueryRepository(JdbcTemplate jdbcTemplate) {

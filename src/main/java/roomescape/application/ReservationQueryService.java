@@ -10,7 +10,6 @@ import roomescape.domain.ReservationQueryRepository;
 
 @Service
 public class ReservationQueryService {
-
     private final ReservationQueryRepository reservationQueryRepository;
     private final Clock clock;
 

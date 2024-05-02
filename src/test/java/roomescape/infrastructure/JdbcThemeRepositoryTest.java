@@ -17,7 +17,6 @@ import roomescape.domain.ThemeRepository;
 @JdbcTest
 @Import(JdbcThemeRepository.class)
 class JdbcThemeRepositoryTest {
-
     @Autowired
     private JdbcTemplate jdbcTemplate;
 

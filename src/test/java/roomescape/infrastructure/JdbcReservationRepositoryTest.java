@@ -26,9 +26,6 @@ import roomescape.domain.ThemeRepository;
 @JdbcTest
 @Import(value = {JdbcReservationRepository.class, JdbcReservationTimeRepository.class, JdbcThemeRepository.class})
 class JdbcReservationRepositoryTest {
-    private static final String INSERT_SQL =
-            "insert into reservation (id, name, date, time_id, theme_id) values (?, ?, ?, ?, ?)";
-
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
     private final JdbcReservationRepository jdbcReservationRepository;

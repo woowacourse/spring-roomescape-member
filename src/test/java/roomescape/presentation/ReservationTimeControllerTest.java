@@ -28,7 +28,6 @@ import roomescape.application.dto.ReservationTimeResponse;
 
 @WebMvcTest(ReservationTimeController.class)
 class ReservationTimeControllerTest {
-
     @Autowired
     private MockMvc mvc;
 

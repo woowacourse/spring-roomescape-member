@@ -22,7 +22,6 @@ import roomescape.domain.ThemeRepository;
 
 @ServiceTest
 class ReservationTimeServiceTest {
-
     @Autowired
     private ReservationTimeService reservationTimeService;
 

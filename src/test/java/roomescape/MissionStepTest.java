@@ -32,7 +32,6 @@ import roomescape.presentation.ReservationController;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class MissionStepTest {
-
     @Autowired
     private JdbcTemplate jdbcTemplate;
 

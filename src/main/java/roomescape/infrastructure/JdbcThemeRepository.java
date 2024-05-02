@@ -13,7 +13,6 @@ import roomescape.infrastructure.rowmapper.ThemeRowMapper;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
-
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 

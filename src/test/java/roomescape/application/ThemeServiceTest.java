@@ -15,7 +15,6 @@ import roomescape.domain.ThemeRepository;
 
 @ServiceTest
 class ThemeServiceTest {
-
     @Autowired
     private ThemeService themeService;
 

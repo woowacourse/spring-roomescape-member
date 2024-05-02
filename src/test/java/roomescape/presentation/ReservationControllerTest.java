@@ -31,7 +31,6 @@ import roomescape.application.dto.ThemeResponse;
 
 @WebMvcTest(ReservationController.class)
 class ReservationControllerTest {
-
     @Autowired
     private MockMvc mvc;
 
