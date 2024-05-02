@@ -1,5 +1,7 @@
 package roomescape.service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationRepository;
@@ -11,6 +13,8 @@ import roomescape.service.dto.ThemeResponse;
 
 @Service
 public class ThemeService {
+    private static final long MAXIMUM_COUNT = 10;
+
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
 
@@ -47,5 +51,13 @@ public class ThemeService {
         if (reservationRepository.existsByThemeId(id)) {
             throw new InvalidReservationException("해당 테마로 예약이 존재해서 삭제할 수 없습니다.");
         }
+    }
+
+    public List<ThemeResponse> findPopularThemes() {
+        String startDate = LocalDate.now().minusDays(1).format(DateTimeFormatter.ISO_DATE);
+        String endDate = LocalDate.now().minusDays(7).format(DateTimeFormatter.ISO_DATE);
+        List<Theme> themes = themeRepository.findByReservationTermAndCount(startDate, endDate,
+                MAXIMUM_COUNT);
+        return themes.stream().map(ThemeResponse::new).toList();
     }
 }
