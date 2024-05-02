@@ -56,16 +56,16 @@ class ThemeServiceTest {
     void rankingTest() {
         List<Theme> topRanking = themeService.findTopRanking();
         Assertions.assertAll(
-                () -> topRanking.get(0).getName().equals("테마 2"),
-                () -> topRanking.get(0).getName().equals("테마 1"),
-                () -> topRanking.get(0).getName().equals("테마 3"),
-                () -> topRanking.get(0).getName().equals("테마 4"),
-                () -> topRanking.get(0).getName().equals("테마 5"),
-                () -> topRanking.get(0).getName().equals("테마 6"),
-                () -> topRanking.get(0).getName().equals("테마 7"),
-                () -> topRanking.get(0).getName().equals("테마 8"),
-                () -> topRanking.get(0).getName().equals("테마 9"),
-                () -> topRanking.get(0).getName().equals("테마 10")
+                () -> assertThat(topRanking.get(0).getName()).isEqualTo("테마 2"),
+                () -> assertThat(topRanking.get(1).getName()).isEqualTo("테마 1"),
+                () -> assertThat(topRanking.get(2).getName()).isEqualTo("테마 3"),
+                () -> assertThat(topRanking.get(3).getName()).isEqualTo("테마 4"),
+                () -> assertThat(topRanking.get(4).getName()).isEqualTo("테마 5"),
+                () -> assertThat(topRanking.get(5).getName()).isEqualTo("테마 6"),
+                () -> assertThat(topRanking.get(6).getName()).isEqualTo("테마 7"),
+                () -> assertThat(topRanking.get(7).getName()).isEqualTo("테마 8"),
+                () -> assertThat(topRanking.get(8).getName()).isEqualTo("테마 9"),
+                () -> assertThat(topRanking.get(9).getName()).isEqualTo("테마 10")
         );
     }
 }
