@@ -1,6 +1,5 @@
 package roomescape.domain;
 
-
 import roomescape.domain.exception.InvalidDateException;
 import roomescape.domain.exception.InvalidRequestException;
 
