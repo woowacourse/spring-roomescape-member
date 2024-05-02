@@ -24,13 +24,13 @@ class RoomThemeServiceTest {
     @DisplayName("테마 저장")
     @Test
     void save() {
-        //given
+        // given
         RoomThemeCreateRequest roomThemeCreateRequest = new RoomThemeCreateRequest("레벨2 탈출",
                 "우테코 레벨2",
                 "https://i.pinimg.com/236x/6e");
-        //when
+        // when
         RoomThemeResponse roomThemeResponse = roomThemeService.save(roomThemeCreateRequest);
-        //then
+        // then
         assertAll(
                 () -> assertThat(roomThemeResponse.id()).isEqualTo(1L),
                 () -> assertThat(roomThemeResponse.name()).isEqualTo(roomThemeCreateRequest.name()),
@@ -44,23 +44,23 @@ class RoomThemeServiceTest {
     @DisplayName("모든 테마 조회")
     @Test
     void findAll() {
-        //given&when
+        // given & when
         List<RoomThemeResponse> roomThemeResponses = roomThemeService.findAll();
-        //then
+        // then
         assertThat(roomThemeResponses).isEmpty();
     }
 
     @DisplayName("테마 삭제")
     @Test
     void delete() {
-        //given
+        // given
         RoomThemeCreateRequest roomThemeCreateRequest = new RoomThemeCreateRequest("레벨2 탈출",
                 "우테코 레벨2",
                 "https://i.pinimg.com/236x/6e");
         RoomThemeResponse roomThemeResponse = roomThemeService.save(roomThemeCreateRequest);
-        //when
+        // when
         roomThemeService.deleteById(roomThemeResponse.id());
-        //then
+        // then
         assertThat(roomThemeService.findAll()).isEmpty();
     }
 }

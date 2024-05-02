@@ -108,7 +108,7 @@ class ReservationTimeServiceTest {
         ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(
                 VALID_STRING_TIME_FIXTURE);
         reservationTimeService.save(reservationTimeRequest);
-        // when&then
+        // when & then
         assertThatThrownBy(() -> reservationTimeService.save(reservationTimeRequest))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 존재하는 예약 시간입니다.");
@@ -117,11 +117,11 @@ class ReservationTimeServiceTest {
     @DisplayName("예약 시간을 삭제한다.")
     @Test
     void deleteById() {
-        //given
+        // given
         reservationTimeService.save(new ReservationTimeRequest(VALID_STRING_TIME_FIXTURE));
-        //when
+        // when
         reservationTimeService.deleteById(1);
-        //then
+        // then
         assertThat(reservationTimeService.findAll()).isEmpty();
     }
 }

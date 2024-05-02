@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import static roomescape.TestFixture.DATE_FIXTURE;
 import static roomescape.TestFixture.RESERVATION_TIME_FIXTURE;
 import static roomescape.TestFixture.ROOM_THEME_FIXTURE;
 import static roomescape.TestFixture.TIME_FIXTURE;
@@ -7,7 +8,6 @@ import static roomescape.TestFixture.VALID_STRING_DATE_FIXTURE;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -68,7 +68,8 @@ class ReservationControllerTest {
     @Test
     void createReservation() {
         // given
-        ReservationRequest reservationRequest = createReservationRequest("브라운", VALID_STRING_DATE_FIXTURE);
+        ReservationRequest reservationRequest = createReservationRequest("브라운",
+                VALID_STRING_DATE_FIXTURE);
         // then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -80,10 +81,11 @@ class ReservationControllerTest {
     @DisplayName("사용자 이름에 빈문자열 입력시 400을 응답한다.")
     @ParameterizedTest
     @ValueSource(strings = {"", " "})
-    void createReservationException(String value) {
+    void invalidNameReservation(String value) {
         // given
-        ReservationRequest reservationRequest = createReservationRequest(value, VALID_STRING_DATE_FIXTURE);
-        // then
+        ReservationRequest reservationRequest = createReservationRequest(value,
+                VALID_STRING_DATE_FIXTURE);
+        // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservationRequest)
@@ -94,10 +96,10 @@ class ReservationControllerTest {
     @DisplayName("날짜 양식을 잘못 입력할 시 400을 응답한다.")
     @ParameterizedTest
     @ValueSource(strings = {"20223-10-11", "2024-13-1", "2024-11-31"})
-    void createReservationExceptionByDate(String value) {
-        //given
+    void invalidDateReservation(String value) {
+        // given
         ReservationRequest reservationRequest = createReservationRequest("브라운", value);
-        //then
+        // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservationRequest)
@@ -108,9 +110,9 @@ class ReservationControllerTest {
     @DisplayName("지나간 시간 예약 시도 시 400을 응답한다.")
     @Test
     void outdatedReservation() {
-        //given
+        // given
         ReservationRequest reservationRequest = createReservationRequest("브라운", "2023-12-12");
-        //when
+        // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservationRequest)
@@ -122,7 +124,8 @@ class ReservationControllerTest {
     @Test
     void duplicateReservation() {
         // given
-        ReservationRequest reservationRequest = createReservationRequest("브라운", VALID_STRING_DATE_FIXTURE);
+        ReservationRequest reservationRequest = createReservationRequest("브라운",
+                VALID_STRING_DATE_FIXTURE);
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservationRequest)
@@ -138,7 +141,7 @@ class ReservationControllerTest {
 
     @DisplayName("참조키가 존재하지 않음으로 인한 예약 추가 실패 테스트")
     @Test
-    void createReservationFail() {
+    void noPrimaryKeyReservation() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(new ReservationRequest("브라운", VALID_STRING_DATE_FIXTURE, 1L, 1L))
@@ -149,13 +152,14 @@ class ReservationControllerTest {
     @DisplayName("예약 취소 성공 테스트")
     @Test
     void deleteReservationSuccess() {
-        //given
-        ReservationTime savedReservationTime = reservationTimeDao.save(new ReservationTime(TIME_FIXTURE));
+        // given
+        ReservationTime savedReservationTime = reservationTimeDao.save(
+                new ReservationTime(TIME_FIXTURE));
         RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);
         Reservation savedReservation = reservationDao.save(
-                new Reservation(new Name("brown"), LocalDate.parse("2024-11-15"), savedReservationTime, savedRoomTheme));
-
-        //when&then
+                new Reservation(new Name("brown"), DATE_FIXTURE, savedReservationTime,
+                        savedRoomTheme));
+        // when & then
         Long id = savedReservation.getId();
         RestAssured.given().log().all()
                 .when().delete("/reservations/" + id)
@@ -165,9 +169,9 @@ class ReservationControllerTest {
     @DisplayName("예약 취소 실패 테스트")
     @Test
     void deleteReservationFail() {
-        //given
+        // given
         long invalidId = 0;
-        //then
+        // when & then
         RestAssured.given().log().all()
                 .when().delete("/reservations/" + invalidId)
                 .then().log().all().assertThat().statusCode(HttpStatus.NOT_FOUND.value());
@@ -176,6 +180,7 @@ class ReservationControllerTest {
     private ReservationRequest createReservationRequest(String name, String date) {
         ReservationTime savedReservationTime = reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
         RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);
-        return new ReservationRequest(name, date, savedReservationTime.getId(), savedRoomTheme.getId());
+        return new ReservationRequest(name, date, savedReservationTime.getId(),
+                savedRoomTheme.getId());
     }
 }

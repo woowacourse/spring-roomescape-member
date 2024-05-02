@@ -38,7 +38,7 @@ class InMemoryReservationTimeDaoTest {
     @DisplayName("예약 시간을 저장한다.")
     @Test
     void save() {
-        // when
+        // given & when
         reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
         // then
         assertThat(reservationTimeDao.findAll()).hasSize(1);
@@ -47,7 +47,7 @@ class InMemoryReservationTimeDaoTest {
     @DisplayName("해당 id의 예약 시간을 보여준다.")
     @Test
     void findById() {
-        // when
+        // given & when
         reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
         // then
         assertThat(reservationTimeDao.findById(1L).getStartAt()).isEqualTo(TIME_FIXTURE);
@@ -63,10 +63,12 @@ class InMemoryReservationTimeDaoTest {
     @DisplayName("중복된 예약 시간이 존재하는 지 여부를 반환한다.")
     @Test
     void existsByStartAt() {
+        // given
         boolean existsFalse = reservationTimeDao.existByStartAt(TIME_FIXTURE);
         reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
+        // when
         boolean existsTrue = reservationTimeDao.existByStartAt(TIME_FIXTURE);
-
+        // then
         assertAll(
                 () -> assertThat(existsFalse).isFalse(),
                 () -> assertThat(existsTrue).isTrue()
@@ -87,32 +89,33 @@ class InMemoryReservationTimeDaoTest {
     @DisplayName("해당 id의 예약 시간을 삭제하는 경우, 그 id를 참조하는 예약도 삭제한다.")
     @Test
     void deleteByIdDeletesReservationAlso() {
+        // given
         reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
         inMemoryReservationDb.insert(new Reservation(new Name("aa"), DATE_FIXTURE,
                 RESERVATION_TIME_FIXTURE, ROOM_THEME_FIXTURE));
-
+        // when
         reservationTimeDao.deleteById(1L);
-
+        // then
         assertThat(inMemoryReservationDb.selectAll()).isEmpty();
     }
 
     @DisplayName("삭제 대상이 존재하면 true를 반환한다.")
     @Test
     void returnTrueWhenDeleted() {
-        //given
+        // given
         reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
-        //when
+        // when
         boolean deleted = reservationTimeDao.deleteById(1L);
-        //then
+        // then
         assertThat(deleted).isTrue();
     }
 
     @DisplayName("삭제 대상이 존재하지 않으면 false를 반환한다.")
     @Test
     void returnFalseWhenNotDeleted() {
-        //when
+        // given & when
         boolean deleted = reservationTimeDao.deleteById(1L);
-        //then
+        // then
         assertThat(deleted).isFalse();
     }
 }

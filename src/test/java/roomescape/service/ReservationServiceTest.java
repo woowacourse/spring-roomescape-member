@@ -71,10 +71,10 @@ class ReservationServiceTest {
 
     @DisplayName("지난 예약을 저장하려 하면 예외가 발생한다.")
     @Test
-    void saveWithException() {
+    void pastReservationSaveThrowsException() {
         // given
         ReservationRequest reservationRequest = createReservationRequest("2000-11-09");
-        // when&then
+        // when & then
         assertThatThrownBy(() -> reservationService.save(reservationRequest))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("지나간 날짜입니다.");

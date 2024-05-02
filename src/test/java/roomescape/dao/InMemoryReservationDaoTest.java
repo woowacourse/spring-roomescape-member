@@ -40,11 +40,13 @@ class InMemoryReservationDaoTest {
     @DisplayName("날짜와 시간이 같은 예약이 존재하는지 여부를 반환한다.")
     @Test
     void duplicatedReservationTest() {
+        // given
         boolean existsFalse = reservationDao.existsByDateTime(DATE_FIXTURE, 1L);
         reservationDao.save(new Reservation(new Name("asd"),
                 DATE_FIXTURE, RESERVATION_TIME_FIXTURE, ROOM_THEME_FIXTURE));
+        // when
         boolean existsTrue = reservationDao.existsByDateTime(DATE_FIXTURE, 1L);
-
+        // then
         assertAll(
                 () -> assertThat(existsFalse).isFalse(),
                 () -> assertThat(existsTrue).isTrue()
@@ -54,56 +56,56 @@ class InMemoryReservationDaoTest {
     @DisplayName("예약을 저장한다.")
     @Test
     void save() {
-        //given
+        // given
         long timeId = inMemoryReservationTimeDb.insert(RESERVATION_TIME_FIXTURE);
         ReservationTime reservationTime = inMemoryReservationTimeDb.selectById(timeId);
         long roomThemeId = inMemoryRoomThemeDb.insert(ROOM_THEME_FIXTURE);
         RoomTheme roomTheme = inMemoryRoomThemeDb.selectById(roomThemeId);
-        //when
+        // when
         reservationDao.save(new Reservation(
                 new Name("aa"), DATE_FIXTURE, reservationTime, roomTheme));
-        //then
+        // then
         assertThat(reservationDao.findAll()).hasSize(1);
     }
 
     @DisplayName("해당 id의 예약을 삭제한다.")
     @Test
     void deleteById() {
-        //given
+        // given
         long timeId = inMemoryReservationTimeDb.insert(RESERVATION_TIME_FIXTURE);
         ReservationTime reservationTime = inMemoryReservationTimeDb.selectById(timeId);
         long roomThemeId = inMemoryRoomThemeDb.insert(ROOM_THEME_FIXTURE);
         RoomTheme roomTheme = inMemoryRoomThemeDb.selectById(roomThemeId);
         Reservation savedReservation = reservationDao.save(
                 new Reservation(new Name("aa"), DATE_FIXTURE, reservationTime, roomTheme));
-        //when
+        // when
         reservationDao.deleteById(savedReservation.getId());
-        //then
+        // then
         assertThat(reservationDao.findAll()).isEmpty();
     }
 
     @DisplayName("삭제 대상이 존재하면 true를 반환한다.")
     @Test
     void returnTrueWhenDeleted() {
-        //given
+        // given
         long timeId = inMemoryReservationTimeDb.insert(RESERVATION_TIME_FIXTURE);
         ReservationTime reservationTime = inMemoryReservationTimeDb.selectById(timeId);
         long roomThemeId = inMemoryRoomThemeDb.insert(ROOM_THEME_FIXTURE);
         RoomTheme roomTheme = inMemoryRoomThemeDb.selectById(roomThemeId);
         Reservation savedReservation = reservationDao.save(
                 new Reservation(new Name("aa"), DATE_FIXTURE, reservationTime, roomTheme));
-        //when
+        // when
         boolean deleted = reservationDao.deleteById(savedReservation.getId());
-        //then
+        // then
         assertThat(deleted).isTrue();
     }
 
     @DisplayName("삭제 대상이 존재하지 않으면 false를 반환한다.")
     @Test
     void returnFalseWhenNotDeleted() {
-        //when
+        // given & when
         boolean deleted = reservationDao.deleteById(1L);
-        //then
+        // then
         assertThat(deleted).isFalse();
     }
 }

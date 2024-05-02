@@ -5,12 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.TestFixture.DATE_FIXTURE;
 import static roomescape.TestFixture.RESERVATION_TIME_FIXTURE;
 import static roomescape.TestFixture.ROOM_THEME_FIXTURE;
+import static roomescape.TestFixture.VALID_STRING_TIME_FIXTURE;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -72,20 +71,31 @@ class ReservationTimeControllerTest {
     void createReservationTime() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new ReservationTimeRequest("10:00"))
+                .body(new ReservationTimeRequest(VALID_STRING_TIME_FIXTURE))
                 .when().post("/times")
                 .then().log().all().assertThat().statusCode(HttpStatus.CREATED.value());
+    }
+
+    @DisplayName("시간 생성에서 잘못된 값 입력시 400을 응답한다.")
+    @ParameterizedTest
+    @ValueSource(strings = {"", " ", "24:01", "12:60"})
+    void invalidTypeReservationTime(String startAt) {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(new ReservationTimeRequest(startAt))
+                .when().post("/times")
+                .then().log().all().assertThat().statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("중복된 시간 추가 시도 시, 추가되지 않고 400을 응답한다.")
     @Test
     void duplicateReservationTime() {
-        //given
+        // given
         createReservationTime();
-        //when&then
+        // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new ReservationTimeRequest("10:00"))
+                .body(new ReservationTimeRequest(VALID_STRING_TIME_FIXTURE))
                 .when().post("/times")
                 .then().log().all().assertThat().statusCode(HttpStatus.BAD_REQUEST.value());
     }
@@ -93,10 +103,10 @@ class ReservationTimeControllerTest {
     @DisplayName("예약 시간 삭제 성공 테스트")
     @Test
     void deleteReservationTImeSuccess() {
-        //given
+        // given
         ReservationTime reservationTime = reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
         Long id = reservationTime.getId();
-        //then
+        // when & then
         RestAssured.given().log().all()
                 .when().delete("/times/" + id)
                 .then().log().all().assertThat().statusCode(HttpStatus.NO_CONTENT.value());
@@ -105,9 +115,9 @@ class ReservationTimeControllerTest {
     @DisplayName("예약 시간 삭제 실패 테스트")
     @Test
     void deleteReservationTimeFail() {
-        //given
+        // given
         long invalidId = 0;
-        //then
+        // when & then
         RestAssured.given().log().all()
                 .when().delete("/reservations/" + invalidId)
                 .then().log().all().assertThat().statusCode(HttpStatus.NOT_FOUND.value());
@@ -116,33 +126,24 @@ class ReservationTimeControllerTest {
     @DisplayName("예약 시간 삭제 시, 해당 id를 참조하는 예약도 삭제된다.")
     @Test
     void deleteReservationTimeDeletesReservationAlso() {
-        //given
+        // given
         ReservationTime reservationTime = reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
         RoomTheme roomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);
-        reservationDao.save(new Reservation(new Name("brown"), DATE_FIXTURE, reservationTime, roomTheme));
+        reservationDao.save(
+                new Reservation(new Name("brown"), DATE_FIXTURE, reservationTime, roomTheme));
         Long timeId = reservationTime.getId();
-        //when
+        // when
         Response deleteResponse = RestAssured.given().log().all()
                 .when().delete("/times/" + timeId)
                 .then().log().all().extract().response();
-        //then
+        // then
         Response reservationResponse = RestAssured.given().log().all()
                 .when().get("reservations")
                 .then().log().all().extract().response();
         assertAll(
-                () -> assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+                () -> assertThat(deleteResponse.statusCode()).isEqualTo(
+                        HttpStatus.NO_CONTENT.value()),
                 () -> assertThat(reservationResponse.jsonPath().getList(".")).isEmpty()
         );
-    }
-
-    @DisplayName("시간 생성에서 잘못된 값 입력시 400을 응답한다.")
-    @ParameterizedTest
-    @ValueSource(strings = {"", " ", "24:01", "12:60"})
-    void createException(String startAt) {
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(new ReservationTimeRequest(startAt))
-                .when().post("/times")
-                .then().log().all().assertThat().statusCode(HttpStatus.BAD_REQUEST.value());
     }
 }

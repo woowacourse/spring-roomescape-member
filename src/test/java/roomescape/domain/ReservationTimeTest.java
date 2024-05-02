@@ -22,7 +22,7 @@ class ReservationTimeTest {
     @DisplayName("빈문자열이 들어왔을 때 예외를 발생시킨다.")
     @ParameterizedTest
     @ValueSource(strings = {"", " "})
-    void EmptyValueThrowsException(String value) {
+    void emptyValueThrowsException(String value) {
         assertThatThrownBy(() -> new ReservationTime(LocalTime.parse(value)))
                 .isInstanceOf(DateTimeParseException.class);
     }

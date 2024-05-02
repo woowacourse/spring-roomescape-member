@@ -6,9 +6,8 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
 
 public class TestFixture {
-
     public static String VALID_STRING_DATE_FIXTURE = "9999-12-31";
-    public static LocalDate DATE_FIXTURE = LocalDate.of(9999, 12, 31);
+    public static LocalDate DATE_FIXTURE = LocalDate.parse(VALID_STRING_DATE_FIXTURE);
     public static String VALID_STRING_TIME_FIXTURE = "10:00";
     public static LocalTime TIME_FIXTURE = LocalTime.parse(VALID_STRING_TIME_FIXTURE);
     public static ReservationTime RESERVATION_TIME_FIXTURE = new ReservationTime(1L, TIME_FIXTURE);

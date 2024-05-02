@@ -13,15 +13,11 @@ import roomescape.console.db.InMemoryRoomThemeDb;
 import roomescape.domain.RoomTheme;
 
 class InMemoryRoomThemeDaoTest {
-    private InMemoryRoomThemeDb inMemoryRoomThemeDb;
     private RoomThemeDao roomThemeDao;
 
     @BeforeEach
     void setUp() {
-        inMemoryRoomThemeDb = new InMemoryRoomThemeDb();
-        roomThemeDao = new InMemoryRoomThemeDao(
-                inMemoryRoomThemeDb
-        );
+        roomThemeDao = new InMemoryRoomThemeDao(new InMemoryRoomThemeDb());
     }
 
     @DisplayName("테마를 저장한다.")
@@ -29,10 +25,8 @@ class InMemoryRoomThemeDaoTest {
     void save() {
         // given
         RoomTheme roomTheme = ROOM_THEME_FIXTURE;
-
         // when
         RoomTheme savedRoomTheme = roomThemeDao.save(roomTheme);
-
         // then
         assertAll(
                 () -> assertThat(savedRoomTheme.getId()).isEqualTo(1L),
@@ -46,7 +40,7 @@ class InMemoryRoomThemeDaoTest {
     @DisplayName("저장된 모든 테마를 보여준다.")
     @Test
     void findAll() {
-        // given&when
+        // given & when
         List<RoomTheme> roomThemes = roomThemeDao.findAll();
         // then
         assertThat(roomThemes).isEmpty();
@@ -72,7 +66,6 @@ class InMemoryRoomThemeDaoTest {
         RoomTheme savedRoomTheme = roomThemeDao.save(roomTheme);
         // when
         RoomTheme findRoomTheme = roomThemeDao.findById(savedRoomTheme.getId());
-
         // then
         assertAll(
                 () -> assertThat(findRoomTheme.getId()).isEqualTo(savedRoomTheme.getId()),

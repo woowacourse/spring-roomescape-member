@@ -20,9 +20,17 @@ class UserControllerTest {
 
     @DisplayName("Reservation Page 접근 성공 테스트")
     @Test
-    void responseAdminPage() {
+    void responseReservationPage() {
         RestAssured.given().log().all()
                 .when().get("/reservation")
+                .then().log().all().assertThat().statusCode(HttpStatus.OK.value());
+    }
+
+    @DisplayName("메인 페이지 접근 성공 테스트")
+    @Test
+    void responseMainPage() {
+        RestAssured.given().log().all()
+                .when().get("")
                 .then().log().all().assertThat().statusCode(HttpStatus.OK.value());
     }
 }
