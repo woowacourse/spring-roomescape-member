@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.TestFixture.RESERVATION_TIME_FIXTURE;
 import static roomescape.TestFixture.ROOM_THEME_FIXTURE;
-import static roomescape.TestFixture.VALID_STRING_DATE_FIXTURE;
+import static roomescape.TestFixture.VALID_STRING_TIME_FIXTURE;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -90,14 +90,14 @@ class ReservationTimeServiceTest {
     void save() {
         // given
         ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(
-                VALID_STRING_DATE_FIXTURE);
+                VALID_STRING_TIME_FIXTURE);
         // when
         ReservationTimeResponse response = reservationTimeService.save(reservationTimeRequest);
         // then
         assertAll(
                 () -> assertThat(reservationTimeService.findAll()).hasSize(1),
                 () -> assertThat(response.id()).isEqualTo(1),
-                () -> assertThat(response.startAt()).isEqualTo(VALID_STRING_DATE_FIXTURE)
+                () -> assertThat(response.startAt()).isEqualTo(VALID_STRING_TIME_FIXTURE)
         );
     }
 
@@ -106,7 +106,7 @@ class ReservationTimeServiceTest {
     void duplicatedTimeSaveThrowsException() {
         // given
         ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(
-                VALID_STRING_DATE_FIXTURE);
+                VALID_STRING_TIME_FIXTURE);
         reservationTimeService.save(reservationTimeRequest);
         // when&then
         assertThatThrownBy(() -> reservationTimeService.save(reservationTimeRequest))
@@ -118,7 +118,7 @@ class ReservationTimeServiceTest {
     @Test
     void deleteById() {
         //given
-        reservationTimeService.save(new ReservationTimeRequest(VALID_STRING_DATE_FIXTURE));
+        reservationTimeService.save(new ReservationTimeRequest(VALID_STRING_TIME_FIXTURE));
         //when
         reservationTimeService.deleteById(1);
         //then

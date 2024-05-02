@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.TestFixture.RESERVATION_TIME_FIXTURE;
 import static roomescape.TestFixture.ROOM_THEME_FIXTURE;
 import static roomescape.TestFixture.VALID_STRING_DATE_FIXTURE;
+import static roomescape.TestFixture.VALID_STRING_TIME_FIXTURE;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -54,7 +55,7 @@ class ReservationServiceTest {
     @Test
     void save() {
         // given
-        ReservationRequest reservationRequest = createReservationRequest("9999-12-12");
+        ReservationRequest reservationRequest = createReservationRequest(VALID_STRING_DATE_FIXTURE);
         // when
         ReservationResponse response = reservationService.save(reservationRequest);
         // then
@@ -62,9 +63,9 @@ class ReservationServiceTest {
                 () -> assertThat(reservationService.findAll()).hasSize(1),
                 () -> assertThat(response.id()).isEqualTo(1),
                 () -> assertThat(response.name()).isEqualTo("aa"),
-                () -> assertThat(response.date()).isEqualTo("2024-10-10"),
+                () -> assertThat(response.date()).isEqualTo(VALID_STRING_DATE_FIXTURE),
                 () -> assertThat(response.time().id()).isEqualTo(1),
-                () -> assertThat(response.time().startAt()).isEqualTo("10:00")
+                () -> assertThat(response.time().startAt()).isEqualTo(VALID_STRING_TIME_FIXTURE)
         );
     }
 
