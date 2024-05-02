@@ -42,13 +42,13 @@ class ReservationControllerIntegrationTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(2));
+                .body("size()", is(16));
     }
 
     @DisplayName("예약 정보를 저장한다.")
     @Test
     void saveReservationTest() {
-        Map<String, String> params = new HashMap<>();
+        final Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", LocalDate.now().plusDays(1).toString());
         params.put("timeId", "1");
@@ -60,7 +60,7 @@ class ReservationControllerIntegrationTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(3));
+                .body("id", is(17));
     }
 
     @DisplayName("예약 정보를 삭제한다.")
@@ -71,20 +71,20 @@ class ReservationControllerIntegrationTest {
                 .then().log().all()
                 .statusCode(204);
 
-        List<ReservationResponse> reservations = RestAssured.given().log().all()
+        final List<ReservationResponse> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200).extract()
                 .jsonPath().getList(".", ReservationResponse.class);
 
-        assertThat(reservations.size()).isEqualTo(1);
+        assertThat(reservations.size()).isEqualTo(15);
     }
 
     @DisplayName("존재하지 않는 예약 정보를 삭제하려고 하면 400코드가 응답된다.")
     @Test
     void deleteNoExistReservationTest() {
         RestAssured.given().log().all()
-                .when().delete("/reservations/5")
+                .when().delete("/reservations/20")
                 .then().log().all()
                 .statusCode(400)
                 .body("message", is("해당 id의 예약이 존재하지 않습니다."));
@@ -97,13 +97,13 @@ class ReservationControllerIntegrationTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(2));
+                .body("size()", is(8));
     }
 
     @DisplayName("예약 시간 정보를 저장한다.")
     @Test
     void saveReservationTimeTest() {
-        Map<String, String> params = new HashMap<>();
+        final Map<String, String> params = new HashMap<>();
         params.put("startAt", "12:00");
 
         RestAssured.given().log().all()
@@ -112,16 +112,16 @@ class ReservationControllerIntegrationTest {
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(3));
+                .body("id", is(9));
     }
 
     @DisplayName("존재하지 않는 예약 시간을 포함한 예약 저장 요청을 하면 400코드가 응답된다.")
     @Test
     void saveReservationWithNoExistReservationTime() {
-        Map<String, String> params = new HashMap<>();
+        final Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", "2023-08-05");
-        params.put("timeId", "4");
+        params.put("timeId", "20");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -135,7 +135,7 @@ class ReservationControllerIntegrationTest {
     @DisplayName("현재 날짜보다 이전 날짜의 예약을 저장하려고 요청하면 400코드가 응답된다.")
     @Test
     void saveReservationWithReservationDateAndTimeBeforeNow() {
-        Map<String, String> params = new HashMap<>();
+        final Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", LocalDate.now().minusDays(1).toString());
         params.put("timeId", "1");
@@ -160,20 +160,20 @@ class ReservationControllerIntegrationTest {
                 .statusCode(204);
 
         // 예약 시간 정보 조회
-        List<ReservationTimeResponse> reservationTimes = RestAssured.given().log().all()
+        final List<ReservationTimeResponse> reservationTimes = RestAssured.given().log().all()
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200).extract()
                 .jsonPath().getList(".", ReservationTimeResponse.class);
 
-        assertThat(reservationTimes.size()).isEqualTo(1);
+        assertThat(reservationTimes.size()).isEqualTo(7);
     }
 
     @DisplayName("존재하지 않는 예약 시간 정보를 삭제하려고 하면 400코드가 응답된다.")
     @Test
     void deleteNoExistReservationTimeTest() {
         RestAssured.given().log().all()
-                .when().delete("/times/5")
+                .when().delete("/times/20")
                 .then().log().all()
                 .statusCode(400)
                 .body("message", is("해당 id의 예약 시간이 존재하지 않습니다."));
@@ -182,9 +182,9 @@ class ReservationControllerIntegrationTest {
     @DisplayName("유효하지 않은 사용자 이름을 포함한 예약 저장 요청을 하면 400코드가 응답된다.")
     @Test
     void saveReservationWithInvalidName() {
-        Map<String, String> params = new HashMap<>();
+        final Map<String, String> params = new HashMap<>();
         params.put("name", "브라운운운운운운운운우눙누우웅ㅇ");
-        params.put("date", "2023-08-05");
+        params.put("date", LocalDate.now().plusDays(9).toString());
         params.put("timeId", "1");
         params.put("themeId", "1");
 
@@ -204,13 +204,13 @@ class ReservationControllerIntegrationTest {
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(2));
+                .body("size()", is(15));
     }
 
     @DisplayName("테마 정보를 저장한다.")
     @Test
     void saveThemeTest() {
-        Map<String, String> params = new HashMap<>();
+        final Map<String, String> params = new HashMap<>();
         params.put("name", "켈리의 두근두근");
         params.put("description", "켈리와 함께하는 두근두근 데이트");
         params.put("thumbnail", "켈리 사진");
@@ -221,7 +221,7 @@ class ReservationControllerIntegrationTest {
                 .when().post("/themes")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(3));
+                .body("themeId", is(16));
     }
 
     @DisplayName("테마 정보를 삭제한다.")
@@ -229,17 +229,17 @@ class ReservationControllerIntegrationTest {
     void deleteThemeTest() {
         // 예약 시간 정보 삭제
         RestAssured.given().log().all()
-                .when().delete("/themes/2")
+                .when().delete("/themes/7")
                 .then().log().all()
                 .statusCode(204);
 
         // 예약 시간 정보 조회
-        List<ThemeResponse> themes = RestAssured.given().log().all()
+        final List<ThemeResponse> themes = RestAssured.given().log().all()
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200).extract()
                 .jsonPath().getList(".", ThemeResponse.class);
 
-        assertThat(themes.size()).isEqualTo(1);
+        assertThat(themes.size()).isEqualTo(14);
     }
 }
