@@ -9,6 +9,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.DuplicateReservation;
 import roomescape.exception.PreviousTimeException;
+import roomescape.exception.ThemeNotFoundException;
 import roomescape.exception.TimeNotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -58,10 +59,9 @@ public class ReservationService {
         final ReservationTime time = reservationTimeRepository
                 .findById(reservationRequest.timeId())
                 .orElseThrow(() -> new TimeNotFoundException("존재하지 않은 시간입니다."));
-        // TODO: 커스텀 예외로 변경
         final Theme theme = themeRepository
                 .findById(reservationRequest.themeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
+                .orElseThrow(() -> new ThemeNotFoundException("존재하지 않는 테마입니다."));
 
         final Reservation parsedReservation = reservationRequest.toDomain(time, theme);
         final boolean isExistsReservation = reservationRepository.existsByDateAndTimeId(time.getId(), parsedReservation.getDate());
