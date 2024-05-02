@@ -1,15 +1,15 @@
 package roomescape.core.dto;
 
-public class ReservationRequestDto {
+public class ReservationRequest {
     private String date;
     private String name;
     private Long timeId;
     private Long themeId;
 
-    public ReservationRequestDto() {
+    public ReservationRequest() {
     }
 
-    public ReservationRequestDto(final String date, final String name, final Long timeId, final Long themeId) {
+    public ReservationRequest(final String date, final String name, final Long timeId, final Long themeId) {
         this.date = date;
         this.name = name;
         this.timeId = timeId;

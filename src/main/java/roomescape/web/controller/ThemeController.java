@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.core.dto.ThemeRequestDto;
-import roomescape.core.dto.ThemeResponseDto;
+import roomescape.core.dto.ThemeRequest;
+import roomescape.core.dto.ThemeResponse;
 import roomescape.core.service.ThemeService;
 
 @RestController
@@ -24,14 +24,14 @@ public class ThemeController {
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponseDto> create(@RequestBody final ThemeRequestDto request) {
+    public ResponseEntity<ThemeResponse> create(@RequestBody final ThemeRequest request) {
         validateRequest(request);
-        final ThemeResponseDto response = themeService.create(request);
+        final ThemeResponse response = themeService.create(request);
         return ResponseEntity.created(URI.create("/themes/" + response.getId()))
                 .body(response);
     }
 
-    private void validateRequest(final ThemeRequestDto request) {
+    private void validateRequest(final ThemeRequest request) {
         final String name = request.getName();
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Name cannot be null or empty");
@@ -49,12 +49,12 @@ public class ThemeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ThemeResponseDto>> findAll() {
+    public ResponseEntity<List<ThemeResponse>> findAll() {
         return ResponseEntity.ok(themeService.findAll());
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<ThemeResponseDto>> findPopular() {
+    public ResponseEntity<List<ThemeResponse>> findPopular() {
         return ResponseEntity.ok(themeService.findPopularTheme());
     }
 

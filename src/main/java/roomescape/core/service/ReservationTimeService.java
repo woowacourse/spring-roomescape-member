@@ -6,9 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.core.domain.Reservation;
 import roomescape.core.domain.ReservationTime;
-import roomescape.core.dto.BookingTimeResponseDto;
-import roomescape.core.dto.ReservationTimeRequestDto;
-import roomescape.core.dto.ReservationTimeResponseDto;
+import roomescape.core.dto.BookedTimeResponse;
+import roomescape.core.dto.ReservationTimeRequest;
+import roomescape.core.dto.ReservationTimeResponse;
 import roomescape.core.repository.ReservationRepository;
 import roomescape.core.repository.ReservationTimeRepository;
 
@@ -24,11 +24,11 @@ public class ReservationTimeService {
     }
 
     @Transactional
-    public ReservationTimeResponseDto create(final ReservationTimeRequestDto request) {
+    public ReservationTimeResponse create(final ReservationTimeRequest request) {
         final ReservationTime reservationTime = new ReservationTime(request.getStartAt());
         validateDuplicatedStartAt(reservationTime);
         final Long id = reservationTimeRepository.save(reservationTime);
-        return new ReservationTimeResponseDto(id, reservationTime);
+        return new ReservationTimeResponse(id, reservationTime);
     }
 
     private void validateDuplicatedStartAt(final ReservationTime reservationTime) {
@@ -40,25 +40,29 @@ public class ReservationTimeService {
     }
 
     @Transactional(readOnly = true)
-    public List<ReservationTimeResponseDto> findAll() {
+    public List<ReservationTimeResponse> findAll() {
         return reservationTimeRepository.findAll()
                 .stream()
-                .map(ReservationTimeResponseDto::new)
+                .map(ReservationTimeResponse::new)
                 .toList();
     }
 
     @Transactional(readOnly = true)
-    public List<BookingTimeResponseDto> findBookable(final String date, final long themeId) {
+    public List<BookedTimeResponse> findBookable(final String date, final long themeId) {
         final List<Reservation> reservations = reservationRepository.findAllByDateAndThemeId(date, themeId);
         final List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
+
         return reservationTimes.stream()
-                .map(reservationTime -> new BookingTimeResponseDto(reservationTime.getId(),
-                        reservationTime.getStartAtString(),
-                        findBookedTime(reservationTime, reservations)))
+                .map(reservationTime -> checkBookable(reservationTime, reservations))
                 .toList();
     }
 
-    private static boolean findBookedTime(final ReservationTime reservationTime, final List<Reservation> reservations) {
+    private BookedTimeResponse checkBookable(final ReservationTime reservationTime,
+                                             final List<Reservation> reservations) {
+        return new BookedTimeResponse(reservationTime, isAlreadyBooked(reservationTime, reservations));
+    }
+
+    private boolean isAlreadyBooked(final ReservationTime reservationTime, final List<Reservation> reservations) {
         return reservations.stream()
                 .anyMatch(reservation -> Objects.equals(reservation.getTimeId(), reservationTime.getId()));
     }

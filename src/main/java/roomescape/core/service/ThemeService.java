@@ -4,8 +4,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.core.domain.Theme;
-import roomescape.core.dto.ThemeRequestDto;
-import roomescape.core.dto.ThemeResponseDto;
+import roomescape.core.dto.ThemeRequest;
+import roomescape.core.dto.ThemeResponse;
 import roomescape.core.repository.ReservationRepository;
 import roomescape.core.repository.ThemeRepository;
 
@@ -20,12 +20,12 @@ public class ThemeService {
     }
 
     @Transactional
-    public ThemeResponseDto create(final ThemeRequestDto request) {
+    public ThemeResponse create(final ThemeRequest request) {
         final Theme theme = new Theme(request.getName(), request.getDescription(), request.getThumbnail());
         validateDuplicatedName(theme);
         final Long id = themeRepository.save(theme);
 
-        return new ThemeResponseDto(id, theme);
+        return new ThemeResponse(id, theme);
     }
 
     private void validateDuplicatedName(final Theme theme) {
@@ -36,18 +36,18 @@ public class ThemeService {
     }
 
     @Transactional(readOnly = true)
-    public List<ThemeResponseDto> findAll() {
+    public List<ThemeResponse> findAll() {
         return themeRepository.findAll()
                 .stream()
-                .map(ThemeResponseDto::new)
+                .map(ThemeResponse::new)
                 .toList();
     }
 
     @Transactional(readOnly = true)
-    public List<ThemeResponseDto> findPopularTheme() {
+    public List<ThemeResponse> findPopularTheme() {
         return reservationRepository.findPopularTheme()
                 .stream()
-                .map(ThemeResponseDto::new)
+                .map(ThemeResponse::new)
                 .toList();
     }
 

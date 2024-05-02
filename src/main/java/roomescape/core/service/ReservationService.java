@@ -6,8 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.core.domain.Reservation;
 import roomescape.core.domain.ReservationTime;
 import roomescape.core.domain.Theme;
-import roomescape.core.dto.ReservationRequestDto;
-import roomescape.core.dto.ReservationResponseDto;
+import roomescape.core.dto.ReservationRequest;
+import roomescape.core.dto.ReservationResponse;
 import roomescape.core.repository.ReservationRepository;
 import roomescape.core.repository.ReservationTimeRepository;
 import roomescape.core.repository.ThemeRepository;
@@ -27,7 +27,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponseDto create(final ReservationRequestDto request) {
+    public ReservationResponse create(final ReservationRequest request) {
         final ReservationTime reservationTime = reservationTimeRepository.findById(request.getTimeId());
         final Theme theme = themeRepository.findById(request.getThemeId());
         final Reservation reservation = new Reservation(request.getName(), request.getDate(), reservationTime, theme);
@@ -36,7 +36,7 @@ public class ReservationService {
         validateDuplicatedReservation(reservation, reservationTime);
         final Long id = reservationRepository.save(reservation);
 
-        return new ReservationResponseDto(id, reservation);
+        return new ReservationResponse(id, reservation);
     }
 
     private void validateDateTimeIsNotPast(final Reservation reservation, final ReservationTime reservationTime) {
@@ -58,10 +58,10 @@ public class ReservationService {
     }
 
     @Transactional(readOnly = true)
-    public List<ReservationResponseDto> findAll() {
+    public List<ReservationResponse> findAll() {
         return reservationRepository.findAll()
                 .stream()
-                .map(ReservationResponseDto::new)
+                .map(ReservationResponse::new)
                 .toList();
     }
 

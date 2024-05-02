@@ -1,12 +1,12 @@
 package roomescape.core.dto;
 
-public class ReservationTimeRequestDto {
+public class ReservationTimeRequest {
     private String startAt;
 
-    public ReservationTimeRequestDto() {
+    public ReservationTimeRequest() {
     }
 
-    public ReservationTimeRequestDto(final String startAt) {
+    public ReservationTimeRequest(final String startAt) {
         this.startAt = startAt;
     }
 

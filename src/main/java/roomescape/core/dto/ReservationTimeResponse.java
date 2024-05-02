@@ -3,20 +3,20 @@ package roomescape.core.dto;
 import java.time.format.DateTimeFormatter;
 import roomescape.core.domain.ReservationTime;
 
-public class ReservationTimeResponseDto {
+public class ReservationTimeResponse {
     public static final String TIME_PATTERN = "HH:mm";
 
     private Long id;
     private String startAt;
 
-    public ReservationTimeResponseDto() {
+    public ReservationTimeResponse() {
     }
 
-    public ReservationTimeResponseDto(final ReservationTime reservationTime) {
+    public ReservationTimeResponse(final ReservationTime reservationTime) {
         this(reservationTime.getId(), reservationTime);
     }
 
-    public ReservationTimeResponseDto(final Long id, final ReservationTime time) {
+    public ReservationTimeResponse(final Long id, final ReservationTime time) {
         this.id = id;
         this.startAt = time.getStartAt().format(DateTimeFormatter.ofPattern(TIME_PATTERN));
     }

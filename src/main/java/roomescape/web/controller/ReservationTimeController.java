@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.core.dto.BookingTimeResponseDto;
-import roomescape.core.dto.ReservationTimeRequestDto;
-import roomescape.core.dto.ReservationTimeResponseDto;
+import roomescape.core.dto.BookedTimeResponse;
+import roomescape.core.dto.ReservationTimeRequest;
+import roomescape.core.dto.ReservationTimeResponse;
 import roomescape.core.service.ReservationTimeService;
 
 @RestController
@@ -26,22 +26,22 @@ public class ReservationTimeController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTimeResponseDto> create(
-        @RequestBody final ReservationTimeRequestDto request) {
+    public ResponseEntity<ReservationTimeResponse> create(
+            @RequestBody final ReservationTimeRequest request) {
         validateRequest(request);
-        final ReservationTimeResponseDto response = reservationTimeService.create(request);
+        final ReservationTimeResponse response = reservationTimeService.create(request);
         return ResponseEntity.created(URI.create("/times/" + response.getId()))
-            .body(response);
+                .body(response);
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationTimeResponseDto>> findAll() {
+    public ResponseEntity<List<ReservationTimeResponse>> findAll() {
         return ResponseEntity.ok(reservationTimeService.findAll());
     }
 
     @GetMapping(params = {"date", "themeId"})
-    public ResponseEntity<List<BookingTimeResponseDto>> findBookable(
-        @RequestParam("date") String date, @RequestParam("themeId") Long themeId) {
+    public ResponseEntity<List<BookedTimeResponse>> findBookable(
+            @RequestParam("date") String date, @RequestParam("themeId") Long themeId) {
         return ResponseEntity.ok(reservationTimeService.findBookable(date, themeId));
     }
 
@@ -51,7 +51,7 @@ public class ReservationTimeController {
         return ResponseEntity.noContent().build();
     }
 
-    public void validateRequest(final ReservationTimeRequestDto request) {
+    private void validateRequest(final ReservationTimeRequest request) {
         final String startAt = request.getStartAt();
         if (startAt == null || startAt.isBlank()) {
             throw new IllegalArgumentException("StartAt cannot be null or empty");

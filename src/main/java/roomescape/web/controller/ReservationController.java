@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.core.dto.ReservationRequestDto;
-import roomescape.core.dto.ReservationResponseDto;
+import roomescape.core.dto.ReservationRequest;
+import roomescape.core.dto.ReservationResponse;
 import roomescape.core.service.ReservationService;
 
 @RestController
@@ -24,15 +24,15 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponseDto> create(@RequestBody final ReservationRequestDto request) {
+    public ResponseEntity<ReservationResponse> create(@RequestBody final ReservationRequest request) {
         validateRequest(request);
-        final ReservationResponseDto result = reservationService.create(request);
+        final ReservationResponse result = reservationService.create(request);
         return ResponseEntity.created(URI.create("/reservations/" + result.getId()))
                 .body(result);
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponseDto>> findAll() {
+    public ResponseEntity<List<ReservationResponse>> findAll() {
         return ResponseEntity.ok(reservationService.findAll());
     }
 
@@ -42,7 +42,7 @@ public class ReservationController {
         return ResponseEntity.noContent().build();
     }
 
-    public void validateRequest(final ReservationRequestDto request) {
+    private void validateRequest(final ReservationRequest request) {
         final String date = request.getDate();
         if (date == null || date.isBlank()) {
             throw new IllegalArgumentException("Date cannot be null or empty");

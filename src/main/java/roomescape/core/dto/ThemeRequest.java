@@ -1,14 +1,14 @@
 package roomescape.core.dto;
 
-public class ThemeRequestDto {
+public class ThemeRequest {
     private String name;
     private String description;
     private String thumbnail;
 
-    public ThemeRequestDto() {
+    public ThemeRequest() {
     }
 
-    public ThemeRequestDto(final String name, final String description, final String thumbnail) {
+    public ThemeRequest(final String name, final String description, final String thumbnail) {
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
