@@ -231,3 +231,61 @@
 - 204 No Content
 
 ---
+
+## 인기 테마
+
+### Request
+
+- GET /popular-themes
+
+### Response
+
+- 200 OK
+- content-type: application/json
+
+```json
+[
+  {
+    "id": 2,
+    "name": "테마2",
+    "description": "설명2",
+    "thumbnail": "url2"
+  },
+  {
+  "id": 1,
+  "name": "테마1",
+  "description": "설명1",
+  "thumbnail": "url1"
+  }
+]
+```
+
+---
+
+## 예약 가능 시간
+
+### Request
+
+- GET /available-times?date={date}&themeId={id}
+- date: yyyy-MM-dd
+- themeId: 테마 id
+
+### Response
+
+- 200 OK
+- content-type: application/json
+
+```json
+[
+  {
+    "id": 1,
+    "startAt": "10:00",
+    "isBooked": true
+  },
+  {
+    "id": 2,
+    "startAt": "11:00",
+    "isBooked": false
+  }
+]
+```
