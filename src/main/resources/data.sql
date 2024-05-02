@@ -1,9 +1,9 @@
 INSERT INTO theme(name, description, thumbnail)
-VALUES ('테마1', '설명1', '썸네일1');
+VALUES ('테마1', '설명1', 'https://www.urbanbrush.net/web/wp-content/uploads/edd/2022/08/urbanbrush-20220801083851022216.jpg');
 INSERT INTO theme(name, description, thumbnail)
-VALUES ('테마2', '설명2', '썸네일2');
+VALUES ('테마2', '설명2', 'https://www.urbanbrush.net/web/wp-content/uploads/edd/2022/12/urbanbrush-20221209202526239031.jpg');
 INSERT INTO theme(name, description, thumbnail)
-VALUES ('테마3', '설명3', '썸네일3');
+VALUES ('테마3', '설명3', 'https://previews.123rf.com/images/yusakp/yusakp1405/yusakp140500013/28097632-%EA%B7%80%EC%97%AC%EC%9A%B4-%EA%BF%80%EB%B2%8C%EC%9D%98-%EB%B2%A1%ED%84%B0-%EC%9D%BC%EB%9F%AC%EC%8A%A4%ED%8A%B8-%EB%A0%88%EC%9D%B4-%EC%85%98.jpg');
 
 INSERT INTO reservation_time(start_at)
 VALUES ('11:59');
@@ -13,9 +13,9 @@ INSERT INTO reservation_time(start_at)
 VALUES ('11:11');
 
 INSERT INTO reservation(name, date, time_id, theme_id)
-VALUES ('예약1', '2025-01-25', 1, 1);
+VALUES ('예약1', '2024-05-1', 1, 1);
 INSERT INTO reservation(name, date, time_id, theme_id)
-VALUES ('예약2', '2025-01-26', 2, 2);
+VALUES ('예약2', '2025-04-26', 2, 2);
 INSERT INTO reservation(name, date, time_id, theme_id)
 VALUES ('예약3', '2024-05-09', 3, 2);
 
@@ -24,4 +24,7 @@ VALUES ('choco');
 
 INSERT INTO reservation_list(member_id, reservation_id)
 VALUES (1, 1);
-
+INSERT INTO reservation_list(member_id, reservation_id)
+VALUES (1, 3);
+INSERT INTO reservation_list(member_id, reservation_id)
+VALUES (1, 2);

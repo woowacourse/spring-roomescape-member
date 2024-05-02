@@ -32,4 +32,11 @@ public class ThemeService {
             throw new IllegalArgumentException(String.format("잘못된 테마입니다. id=%d를 확인해주세요.", themeId));
         }
     }
+
+    public List<ThemeResponse> findPopularThemes() {
+        return themeRepository.findPopularThemes().stream()
+                .map(ThemeResponse::from)
+                .toList();
+
+    }
 }

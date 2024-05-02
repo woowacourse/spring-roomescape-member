@@ -74,4 +74,17 @@ public class ThemeDao implements ThemeRepository {
         String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
         return jdbcTemplate.query(sql, optionalResultSetExtractor, themeId);
     }
+
+    @Override
+    public List<Theme> findPopularThemes() {
+        String sql = "SELECT theme.id, theme.name, theme.description, theme. thumbnail, COUNT(*) AS reservation_count " +
+        "FROM theme " +
+        "INNER JOIN reservation AS re ON re.theme_id = theme.id " +
+        "INNER JOIN reservation_list AS rl ON rl.reservation_id = re.id " +
+        "WHERE re.date BETWEEN DATEADD('DAY', -7, CURRENT_DATE()) AND CURRENT_DATE() " +
+        "GROUP BY theme.id, theme.name " +
+        "ORDER BY reservation_count DESC " +
+        "LIMIT 10; ";
+        return jdbcTemplate.query(sql, rowMapper);
+    }
 }
