@@ -16,14 +16,16 @@ import java.util.List;
 public class ReservationTimeDao {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
-    private final RowMapper<ReservationTime> rowMapper;
+    private final RowMapper<ReservationTime> timeRowMapper;
+    private final RowMapper<ReservationUserTime> userTimeRowMapper;
 
-    public ReservationTimeDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource, final RowMapper<ReservationTime> rowMapper) {
+    public ReservationTimeDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource, final RowMapper<ReservationTime> timeRowMapper, final RowMapper<ReservationUserTime> userTimeRowMapper) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("RESERVATION_TIME")
                 .usingGeneratedKeyColumns("id");
-        this.rowMapper = rowMapper;
+        this.timeRowMapper = timeRowMapper;
+        this.userTimeRowMapper = userTimeRowMapper;
     }
 
     public long save(final ReservationTime reservationTime) {
@@ -34,12 +36,12 @@ public class ReservationTimeDao {
 
     public ReservationTime findById(final long id) {
         final String sql = "select * from reservation_time where id = ?";
-        return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        return jdbcTemplate.queryForObject(sql, timeRowMapper, id);
     }
 
     public List<ReservationTime> findAll() {
         final String sql = "select * from reservation_time";
-        return jdbcTemplate.query(sql, rowMapper);
+        return jdbcTemplate.query(sql, timeRowMapper);
     }
 
     public int deleteById(final long id) {
@@ -52,13 +54,6 @@ public class ReservationTimeDao {
                 "EXISTS (SELECT 1 FROM reservation r WHERE r.time_id = t.id AND r.date = ? AND r.theme_id = ?) " +
                 "AS already_booked " +
                 "FROM reservation_time t";
-        return jdbcTemplate.query(sql, timeRowMapper, date, themeId);
+        return jdbcTemplate.query(sql, userTimeRowMapper, date, themeId);
     }
-
-    private final RowMapper<ReservationUserTime> timeRowMapper = (resultSet, rowNum) -> {
-        return new ReservationUserTime(
-                resultSet.getLong("id"),
-                resultSet.getString("start_at"),
-                resultSet.getBoolean("already_booked"));
-    };
 }
