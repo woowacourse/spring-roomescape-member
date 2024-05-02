@@ -35,4 +35,10 @@ public class ThemeController {
         themeService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/ranking")
+    public ResponseEntity<List<Theme>> ranking() {
+        List<Theme> themes = themeService.findTopRanking();
+        return ResponseEntity.ok(themes);
+    }
 }

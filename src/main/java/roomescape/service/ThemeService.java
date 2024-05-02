@@ -5,6 +5,7 @@ import roomescape.dao.ThemeDAO;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeRequest;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -26,5 +27,12 @@ public class ThemeService {
 
     public void delete(final Long id) {
         themeDAO.deleteById(id);
+    }
+
+    public List<Theme> findTopRanking() {
+        LocalDate currentDate = LocalDate.now();
+        LocalDate firstDayOfPeriod = currentDate.minusDays(7);
+        LocalDate lastDayOfPeriod = currentDate.minusDays(1);
+        return themeDAO.findTopRanking(firstDayOfPeriod, lastDayOfPeriod);
     }
 }
