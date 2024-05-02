@@ -61,6 +61,10 @@
 
 ## API 명세
 
+<details>
+<summary>STEP1에서의 API 명세</summary>
+<div markdown="1">
+
 ### 예약 목록 조회 API
 
 - Request
@@ -194,3 +198,103 @@ DELETE /times/1 HTTP/1.1
 ```
 HTTP/1.1 200
 ```
+
+
+</div>
+</details>
+
+
+### 테마 조회 API
+- Request
+  ```
+  GET /themes HTTP/1.1
+  ```
+- Response
+  ```
+  HTTP/1.1 200 
+  Content-Type: application/json
+  
+  [
+     {
+          "id": 1,
+          "name": "레벨2 탈출",
+          "description": "우테코 레벨2를 탈출하는 내용입니다.",
+          "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+      }
+  ]
+
+  ```
+
+### 테마 추가 API
+- Request
+  ```
+  POST /themes HTTP/1.1
+  content-type: application/json
+  
+  {
+      "name": "레벨2 탈출",
+      "description": "우테코 레벨2를 탈출하는 내용입니다.",
+      "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+  }
+  ```
+- Response
+  ```
+  HTTP/1.1 201
+  Location: /themes/1
+  Content-Type: application/json
+  
+  {
+      "id": 1,
+      "name": "레벨2 탈출",
+      "description": "우테코 레벨2를 탈출하는 내용입니다.",
+      "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+  }
+  ```
+
+### 테마 삭제 API
+- Request
+  ```
+  DELETE /themes/1 HTTP/1.1
+  ```
+- Response
+  ```
+  HTTP/1.1 204
+  ```
+
+### 사용자 예약 가능 시간 API
+- Request
+  ```
+  GET /times/available/date="2024-05-30"&themeId=1 HTTP/1.1
+  ```
+- Response
+  ```
+  HTTP/1.1 200
+  Content-Type: application/json
+  [
+    {
+        "id": 1,
+        "startAt": "10:00"
+    }
+  ]
+  ```
+
+### 인기 테마 API
+- Request
+  ```
+  GET /themes/popular HTTP/1.1
+  ```
+- Response
+  ```
+  HTTP/1.1 200
+  Content-Type: application/json
+  [
+    {
+      "id":1,
+      "name":"테마1",
+      "description":"설명1",
+      "thumbnail":"https://www.urbanbrush.net/web/wp-content/uploads/edd/2022/08/urbanbrush-20220801083851022216.jpg"
+    }
+  ]
+  ```
+
+
