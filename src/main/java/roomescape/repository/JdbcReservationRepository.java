@@ -3,8 +3,6 @@ package roomescape.repository;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -60,10 +58,10 @@ public class JdbcReservationRepository implements ReservationRepository {
                         th.description as theme_description,
                         th.thumbnail as theme_thumbnail
                     FROM reservation as r
-                    join reservation_time as t
-                    on r.time_id = t.id
-                    join theme as th
-                    on r.theme_id = th.id
+                    JOIN reservation_time as t
+                    ON r.time_id = t.id
+                    JOIN theme as th
+                    ON r.theme_id = th.id
                 """;
 
         return jdbcTemplate.query(sql, rowMapper);
@@ -135,10 +133,10 @@ public class JdbcReservationRepository implements ReservationRepository {
                         th.description as theme_description,
                         th.thumbnail as theme_thumbnail
                     FROM reservation as r
-                    join reservation_time as t
-                    on r.time_id = t.id
-                    join theme as th
-                    on r.theme_id = th.id
+                    JOIN reservation_time as t
+                    ON r.time_id = t.id
+                    JOIN theme as th
+                    ON r.theme_id = th.id
                     WHERE r.date = ? AND r.theme_id = ?
                 """;
 
