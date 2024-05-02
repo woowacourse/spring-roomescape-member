@@ -57,7 +57,7 @@ public class ReservationService {
         Theme theme = themeDao.readById(request.getThemeId());
         Reservation reservation = request.toDomain(reservationTime, theme);
         validateDate(reservation.getDate());
-        validateDuplicateDateAndTime(reservation.getDate(), reservation.getReservationTime(), reservation.getTheme());
+        validateDuplicate(reservation.getDate(), reservation.getReservationTime(), reservation.getTheme());
         Reservation result = reservationDao.create(reservation);
         validatePastTimeWhenToday(reservation, reservationTime);
         return ReservationResponse.from(result);
@@ -69,8 +69,7 @@ public class ReservationService {
         reservationDao.delete(id);
     }
 
-    // TODO: 이름 변경
-    private void validateDuplicateDateAndTime(
+    private void validateDuplicate(
             ReservationDate reservationDate,
             ReservationTime reservationTime,
             Theme theme) {
