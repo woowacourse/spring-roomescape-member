@@ -8,14 +8,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.domain.ClientName;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.domain.ThemeDescription;
-import roomescape.domain.ThemeName;
 import roomescape.dto.SaveReservationRequest;
 import roomescape.dto.SaveReservationTimeRequest;
+import roomescape.dto.SaveThemeRequest;
 import roomescape.service.ReservationService;
 
 import java.time.LocalDate;
@@ -49,12 +47,12 @@ class ReservationApiControllerTest {
     @Test
     void getReservationsTest() throws Exception {
         // Given
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now().plusHours(3));
-        Theme theme = new Theme(1L, new ThemeName("테바의 비밀친구"), new ThemeDescription("테바의 은밀한 비밀친구"), "대충 테바 사진 링크");
-        List<Reservation> reservations = List.of(
-                new Reservation(1L, new ClientName("켈리"), LocalDate.now().plusDays(5), reservationTime, theme),
-                new Reservation(2L, new ClientName("브라운"), LocalDate.now().plusDays(5), reservationTime, theme),
-                new Reservation(3L, new ClientName("안나"), LocalDate.now().plusDays(5), reservationTime, theme)
+        final ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now().plusHours(3));
+        final Theme theme = Theme.of(1L, "테바의 비밀친구", "테바의 은밀한 비밀친구", "대충 테바 사진 링크");
+        final List<Reservation> reservations = List.of(
+                Reservation.of(1L, "켈리", LocalDate.now().plusDays(5), reservationTime, theme),
+                Reservation.of(2L, "브라운", LocalDate.now().plusDays(5), reservationTime, theme),
+                Reservation.of(3L, "안나", LocalDate.now().plusDays(5), reservationTime, theme)
         );
         given(reservationService.getReservations()).willReturn(reservations);
 
@@ -69,10 +67,10 @@ class ReservationApiControllerTest {
     @Test
     void saveReservationTest() throws Exception {
         // Given
-        SaveReservationRequest saveReservationRequest = new SaveReservationRequest(LocalDate.now().plusDays(5), "브라운", 1L, 1L);
-        ReservationTime savedReservationTime = new ReservationTime(1L, LocalTime.now().plusHours(3));
-        Theme theme = new Theme(1L, new ThemeName("테바의 비밀친구"), new ThemeDescription("테바의 은밀한 비밀친구"), "대충 테바 사진 링크");
-        Reservation savedReservation = new Reservation(1L, new ClientName("브라운"), LocalDate.now().plusDays(5), savedReservationTime, theme);
+        final SaveReservationRequest saveReservationRequest = new SaveReservationRequest(LocalDate.now().plusDays(5), "브라운", 1L, 1L);
+        final ReservationTime savedReservationTime = new ReservationTime(1L, LocalTime.now().plusHours(3));
+        final Theme theme = Theme.of(1L, "테바의 비밀친구", "테바의 은밀한 비밀친구", "대충 테바 사진 링크");
+        final Reservation savedReservation = Reservation.of(1L, "브라운", LocalDate.now().plusDays(5), savedReservationTime, theme);
         given(reservationService.saveReservation(saveReservationRequest)).willReturn(savedReservation);
 
         // When & Then
@@ -116,7 +114,7 @@ class ReservationApiControllerTest {
     @Test
     void getReservationTimesTest() throws Exception {
         // Given
-        List<ReservationTime> reservationTimes = List.of(
+        final List<ReservationTime> reservationTimes = List.of(
                 new ReservationTime(1L, LocalTime.now().plusHours(3)),
                 new ReservationTime(2L, LocalTime.now().plusHours(4)),
                 new ReservationTime(3L, LocalTime.now().plusHours(5))
@@ -133,8 +131,8 @@ class ReservationApiControllerTest {
     @DisplayName("예약 시간 정보를 저장한다.")
     @Test
     void saveReservationTimeTest() throws Exception {
-        SaveReservationTimeRequest saveReservationTimeRequest = new SaveReservationTimeRequest(LocalTime.now().plusHours(3));
-        ReservationTime savedReservationTime = new ReservationTime(1L, LocalTime.now().plusHours(3));
+        final SaveReservationTimeRequest saveReservationTimeRequest = new SaveReservationTimeRequest(LocalTime.now().plusHours(3));
+        final ReservationTime savedReservationTime = new ReservationTime(1L, LocalTime.now().plusHours(3));
         given(reservationService.saveReservationTime(saveReservationTimeRequest)).willReturn(savedReservationTime);
 
         // When & Then
@@ -151,7 +149,7 @@ class ReservationApiControllerTest {
     @Test
     void saveReservationWithNoExistReservationTime() throws Exception {
         // Given
-        SaveReservationRequest saveReservationRequest = new SaveReservationRequest(LocalDate.now(), "브라운", 1L, 1L);
+        final SaveReservationRequest saveReservationRequest = new SaveReservationRequest(LocalDate.now(), "브라운", 1L, 1L);
         doThrow(new NoSuchElementException("해당 id의 예약 시간이 존재하지 않습니다."))
                 .when(reservationService)
                 .saveReservation(saveReservationRequest);
@@ -169,7 +167,7 @@ class ReservationApiControllerTest {
     @Test
     void saveReservationWithReservationDateAndTimeBeforeNow() throws Exception {
         // Given
-        SaveReservationRequest saveReservationRequest = new SaveReservationRequest(LocalDate.now().minusDays(1), "브라운", 1L, 1L);
+        final SaveReservationRequest saveReservationRequest = new SaveReservationRequest(LocalDate.now().minusDays(1), "브라운", 1L, 1L);
         doThrow(new IllegalArgumentException("현재 날짜보다 이전 날짜를 예약할 수 없습니다."))
                 .when(reservationService)
                 .saveReservation(saveReservationRequest);
@@ -215,7 +213,7 @@ class ReservationApiControllerTest {
     @Test
     void saveReservationWithInvalidName() throws Exception {
         // Given
-        SaveReservationRequest saveReservationRequest = new SaveReservationRequest(LocalDate.now(), "브라운운운운운운운운운", 1L, 1L);
+        final SaveReservationRequest saveReservationRequest = new SaveReservationRequest(LocalDate.now(), "브라운운운운운운운운운", 1L, 1L);
         doThrow(new IllegalArgumentException("예약자 이름은 1글자 이상 5글자 이하여야 합니다."))
                 .when(reservationService)
                 .saveReservation(saveReservationRequest);
@@ -227,5 +225,61 @@ class ReservationApiControllerTest {
                 )
                 .andDo(print())
                 .andExpect(status().isBadRequest());
+    }
+
+    @DisplayName("전체 테마 정보를 조회한다.")
+    @Test
+    void getThemesTest() throws Exception {
+        // Given
+        final List<Theme> themes = List.of(
+                Theme.of(1L, "켈리 탈출", "켈리와 탈출", "켈리 사진"),
+                Theme.of(2L, "테바 탈출", "테봐와 탈출", "테바 사진"),
+                Theme.of(3L, "커비 탈출", "커비와 탈출", "커비 사진")
+        );
+
+        given(reservationService.getThemes()).willReturn(themes);
+
+        // When & Then
+        mockMvc.perform(get("/themes"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(3)));
+    }
+
+    @DisplayName("테마 정보를 저장한다.")
+    @Test
+    void saveThemeTest() throws Exception {
+        final String themeName = "켈리의 탈출";
+        final String themeDescription = "켈리와 탈출!";
+        final String themeThumbnail = "켈리 사진";
+        final SaveThemeRequest saveThemeRequest = new SaveThemeRequest(themeName, themeDescription, themeThumbnail);
+        final Theme savedTheme = Theme.of(1L, themeName, themeDescription, themeThumbnail);
+
+        given(reservationService.saveTheme(saveThemeRequest)).willReturn(savedTheme);
+
+        // When & Then
+        mockMvc.perform(post("/themes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(saveThemeRequest))
+                )
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.themeId").value(1))
+                .andExpect(jsonPath("$.name").value(themeName))
+                .andExpect(jsonPath("$.description").value(themeDescription))
+                .andExpect(jsonPath("$.thumbnail").value(themeThumbnail));
+    }
+
+    @DisplayName("예약 시간 정보를 삭제한다.")
+    @Test
+    void deleteThemeTest() throws Exception {
+        // Given
+        final Long themeId = 1L;
+        willDoNothing().given(reservationService).deleteTheme(themeId);
+
+        // When & Then
+        mockMvc.perform(delete("/themes/" + themeId))
+                .andDo(print())
+                .andExpect(status().isNoContent());
     }
 }

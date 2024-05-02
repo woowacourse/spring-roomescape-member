@@ -6,14 +6,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.domain.ClientName;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.domain.ThemeDescription;
-import roomescape.domain.ThemeName;
 import roomescape.dto.SaveReservationRequest;
 import roomescape.dto.SaveReservationTimeRequest;
+import roomescape.dto.SaveThemeRequest;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -46,18 +44,18 @@ class ReservationServiceTest {
     @Test
     void getReservationsTest() {
         // Given
-        ReservationTime savedReservationTime1 = new ReservationTime(1L, LocalTime.now().plusHours(3));
-        ReservationTime savedReservationTime2 = new ReservationTime(2L, LocalTime.now().plusHours(4));
-        Theme theme = new Theme(1L, new ThemeName("테바의 비밀친구"), new ThemeDescription("테바의 은밀한 비밀친구"), "대충 테바 사진 링크");
-        List<Reservation> savedReservations = List.of(
-                new Reservation(1L, new ClientName("켈리"), LocalDate.now().plusDays(5), savedReservationTime1, theme),
-                new Reservation(2L, new ClientName("켈리"), LocalDate.now().plusDays(6), savedReservationTime2, theme)
+        final ReservationTime savedReservationTime1 = new ReservationTime(1L, LocalTime.now().plusHours(3));
+        final ReservationTime savedReservationTime2 = new ReservationTime(2L, LocalTime.now().plusHours(4));
+        final Theme theme = Theme.of(1L, "테바의 비밀친구", "테바의 은밀한 비밀친구", "대충 테바 사진 링크");
+        final List<Reservation> savedReservations = List.of(
+                Reservation.of(1L, "켈리", LocalDate.now().plusDays(5), savedReservationTime1, theme),
+                Reservation.of(2L, "켈리", LocalDate.now().plusDays(6), savedReservationTime2, theme)
         );
 
         given(reservationRepository.findAll()).willReturn(savedReservations);
 
         // When
-        List<Reservation> reservations = reservationService.getReservations();
+        final List<Reservation> reservations = reservationService.getReservations();
 
         // Then
         assertThat(reservations).hasSize(savedReservations.size());
@@ -67,17 +65,17 @@ class ReservationServiceTest {
     @Test
     void saveReservationTest() {
         // Given
-        ReservationTime savedReservationTime = new ReservationTime(1L, LocalTime.now().plusHours(3));
-        Theme savedTheme = new Theme(1L, new ThemeName("테바의 비밀친구"), new ThemeDescription("테바의 은밀한 비밀친구"), "대충 테바 사진 링크");
-        Reservation savedReservation = new Reservation(1L, new ClientName("켈리"), LocalDate.now().plusDays(5), savedReservationTime, savedTheme);
-        SaveReservationRequest saveReservationRequest = new SaveReservationRequest(LocalDate.now().plusDays(5), "켈리", 1L, 1L);
+        final ReservationTime savedReservationTime = new ReservationTime(1L, LocalTime.now().plusHours(3));
+        final Theme savedTheme = Theme.of(1L, "테바의 비밀친구", "테바의 은밀한 비밀친구", "대충 테바 사진 링크");
+        final Reservation savedReservation = Reservation.of(1L, "켈리", LocalDate.now().plusDays(5), savedReservationTime, savedTheme);
+        final SaveReservationRequest saveReservationRequest = new SaveReservationRequest(LocalDate.now().plusDays(5), "켈리", 1L, 1L);
 
         given(reservationTimeRepository.findById(1L)).willReturn(Optional.of(savedReservationTime));
         given(themeRepository.findById(1L)).willReturn(Optional.of(savedTheme));
         given(reservationRepository.save(saveReservationRequest.toReservation(savedReservationTime, savedTheme))).willReturn(savedReservation);
 
         // When
-        Reservation reservation = reservationService.saveReservation(saveReservationRequest);
+        final Reservation reservation = reservationService.saveReservation(saveReservationRequest);
 
         // Then
         assertThat(reservation).isEqualTo(savedReservation);
@@ -87,7 +85,7 @@ class ReservationServiceTest {
     @Test
     void throwExceptionWhenSaveReservationWithNotExistReservationTimeTest() {
         // Given
-        SaveReservationRequest saveReservationRequest = new SaveReservationRequest(LocalDate.now(), "켈리", 1L, 1L);
+        final SaveReservationRequest saveReservationRequest = new SaveReservationRequest(LocalDate.now(), "켈리", 1L, 1L);
 
         given(reservationTimeRepository.findById(1L)).willReturn(Optional.empty());
 
@@ -101,9 +99,9 @@ class ReservationServiceTest {
     @Test
     void deleteReservationTest() {
         // Given
-        ReservationTime savedReservationTime = new ReservationTime(1L, LocalTime.now().plusHours(3));
-        Theme savedTheme = new Theme(1L, new ThemeName("테바의 비밀친구"), new ThemeDescription("테바의 은밀한 비밀친구"), "대충 테바 사진 링크");
-        Reservation savedReservation = new Reservation(1L, new ClientName("켈리"), LocalDate.now().plusDays(5), savedReservationTime, savedTheme);
+        final ReservationTime savedReservationTime = new ReservationTime(1L, LocalTime.now().plusHours(3));
+        final Theme savedTheme = Theme.of(1L, "테바의 비밀친구", "테바의 은밀한 비밀친구", "대충 테바 사진 링크");
+        final Reservation savedReservation = Reservation.of(1L, "켈리", LocalDate.now().plusDays(5), savedReservationTime, savedTheme);
 
         given(reservationRepository.findById(1L)).willReturn(Optional.of(savedReservation));
         willDoNothing().given(reservationRepository).deleteById(1L);
@@ -129,7 +127,7 @@ class ReservationServiceTest {
     @Test
     void getReservationTimesTest() {
         // Given
-        List<ReservationTime> savedReservationTimes = List.of(
+        final List<ReservationTime> savedReservationTimes = List.of(
                 new ReservationTime(1L, LocalTime.now().plusHours(3)),
                 new ReservationTime(2L, LocalTime.now().plusHours(4))
         );
@@ -137,7 +135,7 @@ class ReservationServiceTest {
         given(reservationTimeRepository.findAll()).willReturn(savedReservationTimes);
 
         // When
-        List<ReservationTime> reservationTimes = reservationService.getReservationTimes();
+        final List<ReservationTime> reservationTimes = reservationService.getReservationTimes();
 
         // Then
         assertThat(reservationTimes).hasSize(savedReservationTimes.size());
@@ -147,13 +145,13 @@ class ReservationServiceTest {
     @Test
     void saveReservationTimeTest() {
         // Given
-        ReservationTime savedReservationTime = new ReservationTime(1L, LocalTime.now().plusHours(3));
-        SaveReservationTimeRequest saveReservationTimeRequest = new SaveReservationTimeRequest(LocalTime.now().plusHours(3));
+        final ReservationTime savedReservationTime = new ReservationTime(1L, LocalTime.now().plusHours(3));
+        final SaveReservationTimeRequest saveReservationTimeRequest = new SaveReservationTimeRequest(LocalTime.now().plusHours(3));
 
         given(reservationTimeRepository.save(saveReservationTimeRequest.toReservationTime())).willReturn(savedReservationTime);
 
         // When
-        ReservationTime reservationTime = reservationService.saveReservationTime(saveReservationTimeRequest);
+        final ReservationTime reservationTime = reservationService.saveReservationTime(saveReservationTimeRequest);
 
         // Then
         assertThat(reservationTime).isEqualTo(savedReservationTime);
@@ -163,9 +161,9 @@ class ReservationServiceTest {
     @Test
     void deleteReservationTimeTest() {
         // Given
-        ReservationTime savedReservationTime = new ReservationTime(1L, LocalTime.now().plusHours(3));
+        final ReservationTime savedReservationTime = new ReservationTime(1L, LocalTime.now().plusHours(3));
 
-        given(reservationTimeRepository.findById(1L)).willReturn(Optional.of(savedReservationTime));
+        given(reservationTimeRepository.existById(1L)).willReturn(true);
         willDoNothing().given(reservationTimeRepository).deleteById(1L);
 
         // When & Then
@@ -177,11 +175,119 @@ class ReservationServiceTest {
     @Test
     void throwExceptionWhenDeleteNotExistReservationTimeTest() {
         // Given
-        given(reservationTimeRepository.findById(1L)).willReturn(Optional.empty());
+        given(reservationTimeRepository.existById(1L)).willReturn(false);
 
         // When & Then
         assertThatThrownBy(() -> reservationService.deleteReservationTime(1L))
                 .isInstanceOf(NoSuchElementException.class)
                 .hasMessage("해당 id의 예약 시간이 존재하지 않습니다.");
+    }
+
+    @DisplayName("이미 존재하는 예약시간이 입력되면 예외를 발생한다.")
+    @Test
+    void throwExceptionWhenExistReservationTimeTest() {
+        // Given
+        final LocalTime startAt = LocalTime.now().plusHours(3);
+        final SaveReservationTimeRequest saveReservationTimeRequest = new SaveReservationTimeRequest(startAt);
+
+        given(reservationTimeRepository.existByStartAt(startAt)).willReturn(true);
+
+        // When & Then
+        assertThatThrownBy(() -> reservationService.saveReservationTime(saveReservationTimeRequest))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이미 존재하는 예약시간이 있습니다.");
+    }
+
+    @DisplayName("이미 존재하는 예약 날짜/시간/테마가 입력되면 예외가 발생한다.")
+    @Test
+    void throwExceptionWhenInputDuplicateReservationDate() {
+        // Given
+        final long timeId = 4L;
+        final ReservationTime savedReservationTime = new ReservationTime(4L, LocalTime.now().plusHours(3));
+        final long themeId = 9L;
+        final Theme savedTheme = Theme.of(9L, "테바의 비밀친구", "테바의 은밀한 비밀친구", "대충 테바 사진 링크");
+        final LocalDate date = LocalDate.now().plusDays(2);
+        final String name = "테바";
+        final SaveReservationRequest saveReservationRequest = new SaveReservationRequest(
+                date,
+                name,
+                timeId,
+                themeId
+        );
+
+        given(reservationTimeRepository.findById(timeId)).willReturn(Optional.of(savedReservationTime));
+        given(themeRepository.findById(themeId)).willReturn(Optional.of(savedTheme));
+        given(reservationRepository.existByDateAndTimeIdAndThemeId(date, timeId, themeId)).willReturn(true);
+
+        // When & Then
+        assertThatThrownBy(() -> reservationService.saveReservation(saveReservationRequest))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이미 해당 날짜/시간의 테마 예약이 있습니다.");
+    }
+
+    @DisplayName("해당 시간을 참조하고 있는 예약이 하나라도 있으면 삭제시 예외가 발생한다.")
+    @Test
+    void throwExceptionWhenDeleteReservationTimeHasRelation() {
+        // Given
+        final Long reservationTimeId = 1L;
+
+        given(reservationTimeRepository.existById(reservationTimeId)).willReturn(true);
+        given(reservationRepository.existByTimeId(reservationTimeId)).willReturn(true);
+
+        // When & Then
+        assertThatThrownBy(() -> reservationService.deleteReservationTime(reservationTimeId))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("예약에 포함된 시간 정보는 삭제할 수 없습니다.");
+    }
+
+    @DisplayName("전체 테마 정보를 조회한다.")
+    @Test
+    void getThemesTest() {
+        // Given
+        final List<Theme> themes = List.of(
+                Theme.of(1L, "켈리의 하루", "켈켈켈", "켈리 사진"),
+                Theme.of(2L, "테바의 하루", "테테테", "테바 사진")
+        );
+
+        given(themeRepository.findAll()).willReturn(themes);
+
+        // When
+        final List<Theme> findThemes = reservationService.getThemes();
+
+        // Then
+        assertThat(findThemes).hasSize(2);
+    }
+
+    @DisplayName("예약 시간 정보를 저장한다.")
+    @Test
+    void saveThemeTest() {
+        // Given
+        final String name = "켈리의 하루";
+        final String description = "켈켈켈";
+        final String thumbnail = "켈리 사진";
+        final SaveThemeRequest saveThemeRequest = new SaveThemeRequest(name, description, thumbnail);
+        final Theme savedTheme = Theme.of(1L, name, description, thumbnail);
+
+        given(themeRepository.save(saveThemeRequest.toTheme())).willReturn(savedTheme);
+
+        // When
+        final Theme theme = reservationService.saveTheme(saveThemeRequest);
+
+        // Then
+        assertThat(theme.getId()).isEqualTo(1L);
+    }
+
+    @DisplayName("테마 정보를 삭제한다.")
+    @Test
+    void deleteThemeTest() {
+        // Given
+        final Long themeId = 1L;
+
+        given(themeRepository.existById(themeId)).willReturn(true);
+        willDoNothing().given(themeRepository).deleteById(themeId);
+
+        // When & Then
+        assertThatCode(() -> reservationService.deleteTheme(themeId))
+                .doesNotThrowAnyException();
     }
 }
