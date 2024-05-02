@@ -9,8 +9,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.Theme;
-import roomescape.domain.ThemeDescription;
-import roomescape.domain.ThemeName;
 
 import java.util.List;
 import java.util.Optional;
@@ -40,10 +38,10 @@ public class H2ThemeRepository implements ThemeRepository {
     }
 
     private RowMapper<Theme> itemRowMapper() {
-        return ((rs, rowNum) -> new Theme(
+        return ((rs, rowNum) -> Theme.of(
                 rs.getLong("id"),
-                new ThemeName(rs.getString("name")),
-                new ThemeDescription(rs.getString("description")),
+                rs.getString("name"),
+                rs.getString("description"),
                 rs.getString("thumbnail")
         ));
     }

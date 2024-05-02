@@ -10,19 +10,14 @@ public class Theme {
     private final String thumbnail;
 
     public static Theme of(final String name, final String description, final String thumbnail) {
-        return new Theme(new ThemeName(name), new ThemeDescription(description), thumbnail);
+        return new Theme(null, new ThemeName(name), new ThemeDescription(description), thumbnail);
     }
 
     public static Theme of(final Long id, final String name, final String description, final String thumbnail) {
         return new Theme(id, new ThemeName(name), new ThemeDescription(description), thumbnail);
     }
 
-    public Theme(final ThemeName name, final ThemeDescription description, final String thumbnail) {
-        this(null, name, description, thumbnail);
-    }
-
-    // TODO: 펙토리 분리하기
-    public Theme(final Long id, final ThemeName name, final ThemeDescription description, final String thumbnail) {
+    private Theme(final Long id, final ThemeName name, final ThemeDescription description, final String thumbnail) {
         this.id = id;
         this.name = name;
         this.description = description;

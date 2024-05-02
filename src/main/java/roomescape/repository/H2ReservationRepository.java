@@ -10,8 +10,6 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.domain.ThemeDescription;
-import roomescape.domain.ThemeName;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -46,10 +44,10 @@ public class H2ReservationRepository implements ReservationRepository {
                 rs.getString("reservation_name"),
                 rs.getDate("reservation_date").toLocalDate(),
                 new ReservationTime(rs.getLong("time_id"), rs.getTime("reservation_time").toLocalTime()),
-                new Theme(
+                Theme.of(
                         rs.getLong("theme_id"),
-                        new ThemeName(rs.getString("theme_name")),
-                        new ThemeDescription(rs.getString("theme_description")),
+                        rs.getString("theme_name"),
+                        rs.getString("theme_description"),
                         rs.getString("theme_thumbnail"))
         ));
     }
