@@ -1,7 +1,7 @@
 package roomescape.dto;
 
 import java.util.Objects;
-import roomescape.domain.Theme;
+import roomescape.domain.theme.Theme;
 
 public record ThemeRequest(
         String name,
