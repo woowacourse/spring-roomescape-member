@@ -32,7 +32,9 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> findAllReservations() {
-        return reservationRepository.findAll().stream().map(ReservationResponse::from).toList();
+        return reservationRepository.findAll().stream()
+                .map(ReservationResponse::from)
+                .toList();
     }
 
     public ReservationResponse create(ReservationRequest reservationRequest) {
@@ -46,8 +48,12 @@ public class ReservationService {
 
         LocalDate date = LocalDate.parse(reservationRequest.date());
 
-        Optional<Reservation> reservationOptional = reservationRepository.findBy(date, reservationRequest.timeId(),
-                reservationRequest.themeId());
+        Optional<Reservation> reservationOptional = reservationRepository.findBy(
+                date,
+                reservationRequest.timeId(),
+                reservationRequest.themeId()
+        );
+
         if (reservationOptional.isPresent()) {
             throw new IllegalArgumentException("예약 시간이 중복되었습니다.");
         }
