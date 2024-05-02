@@ -44,6 +44,9 @@
   - [x] 예약 가능한 시간 조회(date, themeId)(GET)(/reservations?date={date}&themeID={themeId})
   - [x] 예약 기능(POST)(/reservations)
   - [x] 클라이언트 코드 수정
-- [ ] 인기 테마(GET)(/themes/populars)
-  - [ ] 일주일을 기준으로 예약이 많은 테마 10개 확인
+  - [ ] 오늘 날짜가 요청된 경우 현재 시각 이후의 시간만 보내준다.
+- [x] 인기 테마(GET)(/themes/populars)
+  - [x] `일주일을 기준으로` 예약이 많은 테마 10개 확인
     - 4월 8일인 경우, 게임 날짜가 4월 1일부터 4월 7일까지인 예약 건수가 많은 순서대로 10개의 테마를 조회
+  - [ ] 테스트 만들기
+- [ ] alert창 추가하기

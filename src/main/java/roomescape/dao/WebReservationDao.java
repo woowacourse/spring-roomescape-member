@@ -1,9 +1,11 @@
 package roomescape.dao;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -21,7 +23,7 @@ import roomescape.domain.theme.ThemeName;
 import roomescape.domain.theme.ThemeThumbnail;
 
 @Repository
-public class  WebReservationDao implements ReservationDao {
+public class WebReservationDao implements ReservationDao {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -68,6 +70,22 @@ public class  WebReservationDao implements ReservationDao {
                 (resultSet, rowNum) -> resultSet.getLong("time_id"),
                 reservationDate.toStringDate(),
                 themeId);
+    }
+
+    @Override
+    public List<Long> readPopularThemeIds(LocalDate startDate, LocalDate endDate) {
+        String sql = """
+                SELECT
+                theme_id
+                FROM reservation
+                WHERE date BETWEEN ? AND ?
+                GROUP BY theme_id
+                ORDER BY COUNT(*) DESC, theme_id
+                LIMIT 10;
+                """;
+        return jdbcTemplate.query(sql,
+                (resultSet, rowNum) -> resultSet.getLong("theme_id"), startDate, endDate
+        );
     }
 
     @Override
@@ -162,7 +180,8 @@ public class  WebReservationDao implements ReservationDao {
         return jdbcTemplate.queryForObject(sql, Boolean.class, themeId);
     }
 
-    private Reservation getReservation(ResultSet resultSet, ReservationTime reservationTime, Theme theme) throws SQLException {
+    private Reservation getReservation(ResultSet resultSet, ReservationTime reservationTime, Theme theme)
+            throws SQLException {
         return new Reservation(
                 resultSet.getLong("id"),
                 new ReservationName(resultSet.getString("name")),
@@ -193,7 +212,7 @@ public class  WebReservationDao implements ReservationDao {
                                                    String sql) throws SQLException {
         PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
         preparedStatement.setString(1, reservation.getName().getValue());
-        preparedStatement.setString(2, reservation.getDate().toStringDate());
+        preparedStatement.setDate(2, Date.valueOf(reservation.getDate().getValue()));
         preparedStatement.setLong(3, reservation.getReservationTime().getId());
         preparedStatement.setLong(4, reservation.getTheme().getId());
         return preparedStatement;

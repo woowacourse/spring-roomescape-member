@@ -1,5 +1,6 @@
 package roomescape.dao;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -12,7 +13,8 @@ import roomescape.domain.theme.Theme;
 
 public class ConsoleReservationDao implements ReservationDao {
 
-    public static final int INITIAL_ID_VALUE = 1;
+    private static final int INITIAL_ID_VALUE = 1;
+
     private final AtomicLong reservationId = new AtomicLong(INITIAL_ID_VALUE);
     private final Map<Long, Reservation> store = new ConcurrentHashMap<>();
 
@@ -23,6 +25,11 @@ public class ConsoleReservationDao implements ReservationDao {
 
     @Override
     public List<Long> readTimeIdsByDateAndThemeId(ReservationDate reservationDate, Long themeId) {
+        return List.of();
+    }
+
+    @Override
+    public List<Long> readPopularThemeIds(LocalDate startDate, LocalDate endDate) {
         return List.of();
     }
 

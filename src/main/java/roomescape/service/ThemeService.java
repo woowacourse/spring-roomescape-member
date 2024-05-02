@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
@@ -11,6 +12,8 @@ import roomescape.dto.theme.ThemeResponse;
 @Service
 public class ThemeService {
 
+    private static final LocalDate TODAY = LocalDate.now();
+
     private final ThemeDao themeDao;
     private final ReservationDao reservationDao;
 
@@ -21,6 +24,16 @@ public class ThemeService {
 
     public List<ThemeResponse> findAll() {
         return themeDao.readAll().stream()
+                .map(ThemeResponse::from)
+                .toList();
+    }
+
+    public List<ThemeResponse> findPopulars() {
+        LocalDate startDate = TODAY.minusWeeks(1);
+        LocalDate endDate = TODAY.minusDays(1);
+        List<Long> themeIds = reservationDao.readPopularThemeIds(startDate, endDate);
+        return themeIds.stream()
+                .map(themeDao::readById)
                 .map(ThemeResponse::from)
                 .toList();
     }

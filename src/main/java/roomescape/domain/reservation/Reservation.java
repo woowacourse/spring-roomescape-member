@@ -1,5 +1,6 @@
 package roomescape.domain.reservation;
 
+import java.time.LocalDate;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
 
@@ -22,8 +23,8 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public boolean isToday() {
-        return reservationDate.isToday();
+    public boolean isSameDate(LocalDate date) {
+        return reservationDate.isSameDate(date);
     }
 
     public Long getId() {

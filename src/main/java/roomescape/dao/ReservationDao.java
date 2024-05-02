@@ -1,5 +1,6 @@
 package roomescape.dao;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.reservation.Reservation;
@@ -14,6 +15,8 @@ public interface ReservationDao {
 
     List<Long> readTimeIdsByDateAndThemeId(ReservationDate reservationDate, Long themeId);
 
+    List<Long> readPopularThemeIds(LocalDate startDate, LocalDate endDate);
+
     Reservation create(Reservation reservation);
 
     Boolean exist(long id);
@@ -25,4 +28,5 @@ public interface ReservationDao {
     boolean existByTimeId(Long timeId);
 
     boolean existByThemeId(Long id);
+
 }

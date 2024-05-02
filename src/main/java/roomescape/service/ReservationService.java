@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
@@ -15,6 +16,8 @@ import roomescape.dto.reservation.ReservationResponse;
 
 @Service
 public class ReservationService {
+
+    private static final LocalDate TODAY = LocalDate.now();
 
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
@@ -39,11 +42,11 @@ public class ReservationService {
         List<Long> ids = reservationDao.readTimeIdsByDateAndThemeId(reservationDate, themeId);
         return reservationTimes.stream()
                 .map(time ->
-                    AvailableReservationResponse.of(
-                            time.getStartAt().toStringTime(),
-                            time.getId(),
-                            ids.contains(time.getId())
-                    ))
+                        AvailableReservationResponse.of(
+                                time.getStartAt().toStringTime(),
+                                time.getId(),
+                                ids.contains(time.getId())
+                        ))
                 .toList();
     }
 
@@ -52,6 +55,7 @@ public class ReservationService {
         ReservationTime reservationTime = reservationTimeDao.readById(request.getTimeId());
         Theme theme = themeDao.readById(request.getThemeId());
         Reservation reservation = request.toDomain(reservationTime, theme);
+        validateDate(reservation.getDate());
         validateDuplicateDateAndTime(reservation.getDate(), reservation.getReservationTime(), reservation.getTheme());
         Reservation result = reservationDao.create(reservation);
         validatePastTimeWhenToday(reservation, reservationTime);
@@ -64,14 +68,24 @@ public class ReservationService {
         reservationDao.delete(id);
     }
 
-    private void validateDuplicateDateAndTime(ReservationDate reservationDate, ReservationTime reservationTime, Theme theme) {
+    // TODO: 이름 변경
+    private void validateDuplicateDateAndTime(
+            ReservationDate reservationDate,
+            ReservationTime reservationTime,
+            Theme theme) {
         if (reservationDao.exist(reservationDate, reservationTime, theme)) {
             throw new IllegalArgumentException("중복된 예약을 생성할 수 없습니다.");
         }
     }
 
+    private static void validateDate(ReservationDate reservationDate) {
+        if (reservationDate.isBeforeDate(TODAY)) {
+            throw new IllegalArgumentException("예약일은 오늘보다 과거일 수 없습니다.");
+        }
+    }
+
     private void validatePastTimeWhenToday(Reservation reservation, ReservationTime reservationTime) {
-        if (reservation.isToday() && reservationTime.isBeforeNow()) {
+        if (reservation.isSameDate(TODAY) && reservationTime.isBeforeNow()) {
             throw new IllegalArgumentException("현재보다 이전 시간을 예약할 수 없습니다.");
         }
     }
