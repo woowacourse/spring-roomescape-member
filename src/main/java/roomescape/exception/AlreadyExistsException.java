@@ -2,7 +2,7 @@ package roomescape.exception;
 
 public class AlreadyExistsException extends IllegalArgumentException {
 
-    AlreadyExistsException(String message) {
+    AlreadyExistsException(final String message) {
         super(message);
     }
 }

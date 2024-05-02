@@ -14,16 +14,16 @@ import roomescape.domain.Theme;
 public class ReservationRowMapper implements RowMapper<Reservation> {
 
     @Override
-    public Reservation mapRow(ResultSet rs, int rowNum) throws SQLException {
-        long reservationId = rs.getLong("reservation_id");
-        String name = rs.getString("name");
-        String date = rs.getString("date");
-        long timeId = rs.getLong("time_id");
-        String startAt = rs.getString("time_value");
-        long themeId = rs.getLong("theme_id");
-        String themeName = rs.getString("theme_name");
-        String description = rs.getString("theme_description");
-        String thumbnail = rs.getString("theme_thumbnail");
+    public Reservation mapRow(final ResultSet rs, final int rowNum) throws SQLException {
+        final long reservationId = rs.getLong("reservation_id");
+        final String name = rs.getString("name");
+        final String date = rs.getString("date");
+        final long timeId = rs.getLong("time_id");
+        final String startAt = rs.getString("time_value");
+        final long themeId = rs.getLong("theme_id");
+        final String themeName = rs.getString("theme_name");
+        final String description = rs.getString("theme_description");
+        final String thumbnail = rs.getString("theme_thumbnail");
         return new Reservation(
                 reservationId,
                 new Name(name),

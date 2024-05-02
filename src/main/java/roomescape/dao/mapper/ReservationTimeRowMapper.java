@@ -11,7 +11,7 @@ import roomescape.domain.ReservationTime;
 public class ReservationTimeRowMapper implements RowMapper<ReservationTime> {
 
     @Override
-    public ReservationTime mapRow(ResultSet rs, int rowNum) throws SQLException {
+    public ReservationTime mapRow(final ResultSet rs, final int rowNum) throws SQLException {
         return new ReservationTime(
                 rs.getLong("id"),
                 LocalTime.parse(rs.getString("start_at"))

@@ -2,7 +2,7 @@ package roomescape.exception;
 
 public class PastTimeReservationException extends IllegalArgumentException {
 
-    public PastTimeReservationException(String message) {
+    public PastTimeReservationException(final String message) {
         super(message);
     }
 }

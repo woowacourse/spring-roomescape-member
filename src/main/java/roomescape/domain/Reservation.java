@@ -12,7 +12,7 @@ public class Reservation {
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(Long id, Name name, ReservationDate date, ReservationTime time, Theme theme) {
+    public Reservation(final Long id, final Name name, final ReservationDate date, final ReservationTime time, final Theme theme) {
         this.id = id;
         this.name = name;
         this.date = date;
@@ -20,7 +20,7 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public static Reservation from(Long id, String name, String date, ReservationTime time, Theme theme) {
+    public static Reservation from(final Long id, final String name, final String date, final ReservationTime time, final Theme theme) {
         return new Reservation(id, new Name(name), ReservationDate.from(date), time, theme);
     }
 
@@ -52,7 +52,7 @@ public class Reservation {
         return this.date.asString() + " " + this.time.getStartAtAsString();
     }
 
-    public boolean isBefore(LocalDate localDate, LocalTime localTime) {
+    public boolean isBefore(final LocalDate localDate, final LocalTime localTime) {
         if (this.date.isBefore(localDate)) {
             return true;
         }
@@ -63,14 +63,14 @@ public class Reservation {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Reservation that = (Reservation) o;
+        final Reservation that = (Reservation) o;
         return Objects.equals(id, that.id);
     }
 

@@ -20,7 +20,7 @@ public class ThemeDao {
     private final SimpleJdbcInsert jdbcInsert;
     private final ThemeRowMapper rowMapper;
 
-    public ThemeDao(JdbcTemplate jdbcTemplate, DataSource dataSource, ThemeRowMapper rowMapper) {
+    public ThemeDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource, final ThemeRowMapper rowMapper) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("theme")
@@ -28,27 +28,27 @@ public class ThemeDao {
         this.rowMapper = rowMapper;
     }
 
-    public Theme create(Theme theme) {
-        SqlParameterSource params = new MapSqlParameterSource()
+    public Theme create(final Theme theme) {
+        final SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", theme.getName())
                 .addValue("description", theme.getDescription())
                 .addValue("thumbnail", theme.getThumbnailAsString());
 
-        long id = jdbcInsert.executeAndReturnKey(params).longValue();
+        final long id = jdbcInsert.executeAndReturnKey(params).longValue();
         return Theme.of(id, theme.getName(), theme.getDescription(), theme.getThumbnailAsString());
     }
 
-    public Optional<Theme> find(long id) {
-        String sql = "SELECT * FROM theme WHERE id = ?";
+    public Optional<Theme> find(final long id) {
+        final String sql = "SELECT * FROM theme WHERE id = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
-        } catch (EmptyResultDataAccessException exception) {
+        } catch (final EmptyResultDataAccessException exception) {
             return Optional.empty();
         }
     }
 
-    public List<Theme> getPopularTheme(VisitDate visitDate) {
-        String sql = """
+    public List<Theme> getPopularTheme(final VisitDate visitDate) {
+        final String sql = """
                 SELECT
                     t.id AS theme_id,
                     t.name AS theme_name,
@@ -65,12 +65,12 @@ public class ThemeDao {
     }
 
     public List<Theme> getAll() {
-        String sql = "SELECT id, name,description, thumbnail FROM theme";
+        final String sql = "SELECT id, name,description, thumbnail FROM theme";
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public void delete(long id) {
-        String sql = "DELETE FROM theme WHERE id = ?";
+    public void delete(final long id) {
+        final String sql = "DELETE FROM theme WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
 }

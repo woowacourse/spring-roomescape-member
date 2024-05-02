@@ -11,7 +11,7 @@ import roomescape.dao.dto.AvailableReservationTimeResponse;
 public class AvailableReservationTimeMapper implements RowMapper<AvailableReservationTimeResponse> {
 
     @Override
-    public AvailableReservationTimeResponse mapRow(ResultSet rs, int rowNum) throws SQLException {
+    public AvailableReservationTimeResponse mapRow(final ResultSet rs, final int rowNum) throws SQLException {
 
         return new AvailableReservationTimeResponse(
                 rs.getBoolean("booked"),

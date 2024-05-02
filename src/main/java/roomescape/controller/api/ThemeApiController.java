@@ -22,31 +22,31 @@ public class ThemeApiController {
 
     private final ThemeService themeService;
 
-    public ThemeApiController(ThemeService themeService) {
+    public ThemeApiController(final ThemeService themeService) {
         this.themeService = themeService;
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponse> createTheme(@RequestBody ThemeCreateRequest request) {
-        ThemeOutput output = themeService.createTheme(request.toInput());
+    public ResponseEntity<ThemeResponse> createTheme(@RequestBody final ThemeCreateRequest request) {
+        final ThemeOutput output = themeService.createTheme(request.toInput());
         return ResponseEntity.created(URI.create("/times/" + output.id()))
                 .body(ThemeResponse.toResponse(output));
     }
 
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> getAllThemes() {
-        List<ThemeOutput> outputs = themeService.getAllThemes();
+        final List<ThemeOutput> outputs = themeService.getAllThemes();
         return ResponseEntity.ok(ThemeResponse.toResponses(outputs));
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<ThemeResponse>> getPopularThemes(@RequestParam String date) {
-        List<ThemeOutput> outputs = themeService.getPopularThemes(date);
+    public ResponseEntity<List<ThemeResponse>> getPopularThemes(@RequestParam final String date) {
+        final List<ThemeOutput> outputs = themeService.getPopularThemes(date);
         return ResponseEntity.ok().body(ThemeResponse.toResponses(outputs));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTheme(@PathVariable long id) {
+    public ResponseEntity<Void> deleteTheme(@PathVariable final long id) {
         themeService.deleteTheme(id);
         return ResponseEntity.noContent().build();
     }

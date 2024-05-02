@@ -21,25 +21,25 @@ public class ReservationApiController {
 
     private final ReservationService reservationService;
 
-    public ReservationApiController(ReservationService reservationService) {
+    public ReservationApiController(final ReservationService reservationService) {
         this.reservationService = reservationService;
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> createReservation(@RequestBody ReservationRequest request) {
-        ReservationOutput output = reservationService.createReservation(request.toInput());
+    public ResponseEntity<ReservationResponse> createReservation(@RequestBody final ReservationRequest request) {
+        final ReservationOutput output = reservationService.createReservation(request.toInput());
         return ResponseEntity.created(URI.create("/reservations/" + output.id()))
                 .body(ReservationResponse.toResponse(output));
     }
 
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> getAllReservations() {
-        List<ReservationOutput> outputs = reservationService.getAllReservations();
+        final List<ReservationOutput> outputs = reservationService.getAllReservations();
         return ResponseEntity.ok(ReservationResponse.toResponses(outputs));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable long id) {
+    public ResponseEntity<Void> deleteReservation(@PathVariable final long id) {
         reservationService.deleteReservation(id);
         return ResponseEntity.noContent().build();
     }

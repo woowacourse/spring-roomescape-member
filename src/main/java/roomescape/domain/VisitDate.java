@@ -5,10 +5,10 @@ import java.time.LocalDate;
 
 public record VisitDate(LocalDate date) {
 
-    public static VisitDate from(String date) {
+    public static VisitDate from(final String date) {
         try {
             return new VisitDate(LocalDate.parse(date));
-        } catch (DateTimeException exception) {
+        } catch (final DateTimeException exception) {
             throw new IllegalArgumentException(String.format("%s 는 유효하지 않은 값입니다.(EX: 10:00)", date));
         }
     }

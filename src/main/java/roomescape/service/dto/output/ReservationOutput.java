@@ -5,7 +5,7 @@ import roomescape.domain.Reservation;
 
 public record ReservationOutput(long id, String name, ThemeOutput theme, String date, ReservationTimeOutput time) {
 
-    public static ReservationOutput toOutput(Reservation reservation) {
+    public static ReservationOutput toOutput(final Reservation reservation) {
         return new ReservationOutput(
                 reservation.getId(),
                 reservation.getNameAsString(),
@@ -15,7 +15,7 @@ public record ReservationOutput(long id, String name, ThemeOutput theme, String 
         );
     }
 
-    public static List<ReservationOutput> toOutputs(List<Reservation> reservations) {
+    public static List<ReservationOutput> toOutputs(final List<Reservation> reservations) {
         return reservations.stream()
                 .map(ReservationOutput::toOutput)
                 .toList();

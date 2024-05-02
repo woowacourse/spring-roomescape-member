@@ -13,29 +13,29 @@ import roomescape.exception.PastTimeReservationException;
 public class ExceptionAdvice {
 
     @ExceptionHandler(value = IllegalArgumentException.class)
-    public ResponseEntity<String> handleArgumentException(IllegalArgumentException exception) {
+    public ResponseEntity<String> handleArgumentException(final IllegalArgumentException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(value = PastTimeReservationException.class)
-    public ResponseEntity<String> handlePastTimeReservationException(PastTimeReservationException exception) {
+    public ResponseEntity<String> handlePastTimeReservationException(final PastTimeReservationException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
 
     @ExceptionHandler(value = ExistReservationException.class)
     public ResponseEntity<String> handleExistReservationException(
-            ExistReservationException exception) {
+            final ExistReservationException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(value = AlreadyExistsException.class)
-    public ResponseEntity<String> handleAlreadyExistsException(AlreadyExistsException exception) {
+    public ResponseEntity<String> handleAlreadyExistsException(final AlreadyExistsException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(value = NotExistException.class)
-    public ResponseEntity<String> handleNotExistException(NotExistException exception) {
+    public ResponseEntity<String> handleNotExistException(final NotExistException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
     }
 }

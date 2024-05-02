@@ -9,7 +9,7 @@ public class Theme {
     private final String description;
     private final Thumbnail thumbnail;
 
-    public Theme(Long id, String name, String description, Thumbnail thumbnail) {
+    public Theme(final Long id, final String name, final String description, final Thumbnail thumbnail) {
         validate(name, description);
         this.id = id;
         this.name = name;
@@ -17,15 +17,15 @@ public class Theme {
         this.thumbnail = thumbnail;
     }
 
-    public static Theme of(Long id, String name, String description, String thumbnail) {
+    public static Theme of(final Long id, final String name, final String description, final String thumbnail) {
         return new Theme(id, name, description, new Thumbnail(thumbnail));
     }
 
-    private void validate(String name, String description) {
+    private void validate(final String name, final String description) {
         validateNull(name, description);
     }
 
-    private void validateNull(String name, String description) {
+    private void validateNull(final String name, final String description) {
         if (name.isBlank() || description.isBlank()) {
             throw new IllegalArgumentException("이름과 설명은 공백일 수 없습니다");
         }
@@ -49,14 +49,14 @@ public class Theme {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Theme theme = (Theme) o;
+        final Theme theme = (Theme) o;
         return Objects.equals(id, theme.id);
     }
 

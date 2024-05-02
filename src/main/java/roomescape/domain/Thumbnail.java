@@ -15,18 +15,18 @@ public record Thumbnail(String value) {
         validate(value);
     }
 
-    private void validate(String url) {
+    private void validate(final String url) {
         validateNull(url);
         validateExt(url);
     }
 
-    private void validateNull(String url) {
+    private void validateNull(final String url) {
         if (url.isBlank()) {
             throw new IllegalArgumentException("");
         }
     }
 
-    private void validateExt(String url) {
+    private void validateExt(final String url) {
         if (!PATTERN.matcher(url).matches()) {
             throw new IllegalArgumentException(String.format("%s 확장자만 가능합니다.", ALLOW_EXTENSIONS_PATTERN));
         }

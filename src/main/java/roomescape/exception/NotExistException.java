@@ -2,7 +2,7 @@ package roomescape.exception;
 
 public class NotExistException extends IllegalArgumentException {
 
-    public NotExistException(String message) {
+    public NotExistException(final String message) {
         super(message);
     }
 }
