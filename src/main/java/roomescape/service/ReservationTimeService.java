@@ -78,12 +78,12 @@ public class ReservationTimeService {
         final List<ReservationTime> times = reservationTimeRepository.findAll();
 
         return times.stream()
-                .sorted(Comparator.comparing(ReservationTime::getStartAt).reversed())
+                .sorted(Comparator.comparing(ReservationTime::getStartAt))
                 .map(time -> ReservationTimeBookedResponse.of(time, isAlreadyBooked(reservations, time)))
                 .toList();
     }
 
-    public boolean isAlreadyBooked(List<Reservation> reservations, ReservationTime time) {
+    public boolean isAlreadyBooked(final List<Reservation> reservations, final ReservationTime time) {
         return reservations.stream()
                 .anyMatch(reservation -> reservation.isTime(time));
     }
