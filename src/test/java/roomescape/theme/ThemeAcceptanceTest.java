@@ -53,9 +53,9 @@ public class ThemeAcceptanceTest {
     @Test
     void save() {
         Map<String, String> params = new HashMap<>();
-        params.put("name", "hotea");
-        params.put("description", "nice");
-        params.put("thumbnail", "very nice");
+        params.put("name", "정글 모험");
+        params.put("description", "열대 정글의 심연을 탐험하세요.");
+        params.put("thumbnail", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
 
         RestAssured.given()
                 .log()
