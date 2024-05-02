@@ -10,4 +10,9 @@ public class ThemePageController {
     public String adminThemePage() {
         return "admin/theme";
     }
+
+    @GetMapping("/")
+    public String popularPage() {
+        return "index";
+    }
 }

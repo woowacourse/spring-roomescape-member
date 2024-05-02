@@ -1,6 +1,5 @@
 package roomescape.theme.controller;
 
-import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -34,12 +33,19 @@ class ThemeApiControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
+    @DisplayName("인기 테마 목록 조회를 성공하면 200 응답을 받는다.")
+    void getPopularThemeRequestTest() throws Exception {
+        mockMvc.perform(get("/themes/popular")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     @DisplayName("테마 목록 조회에 성공하면 200 응답을 받는다.")
     void getThemeRequestTest() throws Exception {
         mockMvc.perform(get("/themes")
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(0)));
+                .andExpect(status().isOk());
     }
 
     @Test

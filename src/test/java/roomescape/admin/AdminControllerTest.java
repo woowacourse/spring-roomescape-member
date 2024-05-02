@@ -17,14 +17,6 @@ public class AdminControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    @DisplayName("root url 을 요청하면 welcome page 를 반환한다.")
-    void requestRootUrl() throws Exception {
-        mockMvc.perform(get("/"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/admin"));
-    }
-
-    @Test
     @DisplayName("/admin 을 요청하면 index.html 를 반환한다.")
     void requestAdmin() throws Exception {
         mockMvc.perform(get("/admin"))
