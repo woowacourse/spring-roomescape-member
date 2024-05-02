@@ -67,6 +67,27 @@ public class ReservationJdbcRepository implements ReservationRepository {
         return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
+    public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
+        String sql = """
+                SELECT
+                    r.id AS reservation_id,
+                    r.name,
+                    r.date,
+                    t.id AS time_id,
+                    t.start_at AS time_value,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail AS theme_thumbnail
+                FROM
+                    reservation AS r
+                INNER JOIN reservation_time AS t ON r.time_id = t.id
+                INNER JOIN theme AS th ON r.theme_id = th.id
+                WHERE date = ? AND theme_id = ?;
+                """;
+        return jdbcTemplate.query(sql, reservationRowMapper, date, themeId);
+    }
+
     public Reservation save(Reservation reservation) {
         try {
             SqlParameterSource parameterSource = new MapSqlParameterSource()

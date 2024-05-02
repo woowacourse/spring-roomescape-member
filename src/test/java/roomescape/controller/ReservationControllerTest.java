@@ -394,4 +394,63 @@ class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(400);
     }
+
+    @TestFactory
+    @DisplayName("예약 가능한 시간을 조회한다")
+    Stream<DynamicTest> checkAvailableReservationTime() {
+        Map<String, String> reservationParams = Map.of(
+                "name", "브라운",
+                "date", "2025-08-05",
+                "timeId", "1",
+                "themeId", "1"
+        );
+
+        Map<String, String> reservationTimeParams = Map.of(
+                "id", "1",
+                "startAt", "10:00"
+        );
+
+        Map<String, String> themeParams = Map.of(
+                "id", "1",
+                "name", "테마명",
+                "description", "테마 설명",
+                "thumbnail", "테마 이미지"
+        );
+
+        return Stream.of(
+                dynamicTest("예약 시간을 추가한다", () -> {
+                    RestAssured.given().log().all()
+                            .contentType(ContentType.JSON)
+                            .body(reservationTimeParams)
+                            .when().post("/times")
+                            .then().log().all()
+                            .statusCode(201);
+                }),
+
+                dynamicTest("테마를 추가한다.", () -> {
+                    RestAssured.given().log().all()
+                            .contentType(ContentType.JSON)
+                            .body(themeParams)
+                            .when().post("/themes")
+                            .then().log().all()
+                            .statusCode(201);
+                }),
+
+                dynamicTest("예약을 추가한다", () -> {
+                    RestAssured.given().log().all()
+                            .contentType(ContentType.JSON).body(reservationParams)
+                            .when().post("/reservations")
+                            .then().log().all()
+                            .statusCode(201)
+                            .header("Location", "/reservations/1");
+                }),
+
+                dynamicTest("예약 가능 시간을 조회한다.", () -> {
+                    RestAssured.given().log().all()
+                            .when().get("/reservations/available?date=2025-08-05&themeId=1")
+                            .then().log().all()
+                            .statusCode(200).body("size()", is(1));
+                })
+        );
+    }
 }

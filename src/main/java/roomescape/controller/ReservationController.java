@@ -1,6 +1,7 @@
 package roomescape.controller;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -12,7 +13,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.dto.AvailableTimeResponse;
 import roomescape.dto.ReservationCreateRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.service.ReservationService;
@@ -33,6 +36,14 @@ public class ReservationController {
 
         return ResponseEntity.ok()
                 .body(reservationResponses);
+    }
+
+    @GetMapping("/available")
+    public ResponseEntity<List<AvailableTimeResponse>> findAllAvailableTimes(
+            @RequestParam LocalDate date, @RequestParam String themeId) {
+        List<AvailableTimeResponse> availableTimeResponses = reservationService.findByDateAndThemeId(date, Long.valueOf(themeId));
+        return ResponseEntity.ok()
+                .body(availableTimeResponses);
     }
 
     @PostMapping
