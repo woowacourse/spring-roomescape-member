@@ -63,13 +63,6 @@ public class JdbcReservationRepository implements ReservationRepository {
                 On r.theme_id = th.id
                 WHERE r.id = ?
                 """;
-//        String query = QueryBuilder.select(TABLE_NAME)
-//                .alias("r")
-//                .addAllColumns()
-//                .join(JoinType.INNER, "reservation_time", JoinCondition.on("r.time_id", "t.id"), "t")
-//                .join(JoinType.INNER, "theme", JoinCondition.on("r.theme_id", "th.id"), "th")
-//                .where(ComparisonCondition.equalTo("r.id", id))
-//                .build();
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(query, ROW_MAPPER, id));
         } catch (DataAccessException e) {
@@ -87,12 +80,6 @@ public class JdbcReservationRepository implements ReservationRepository {
                 On r.theme_id = th.id
                 WHERE r.time_id = ?
                 """;
-//        String query = QueryBuilder.select(TABLE_NAME)
-//                .alias("r")
-//                .addAllColumns()
-//                .join(JoinType.INNER, "reservation_time", JoinCondition.on("r.time_id", "t.id"), "t")
-//                .where(ComparisonCondition.equalTo("r.time_id", timeId))
-//                .build();
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(query, ROW_MAPPER, timeId));
         } catch (DataAccessException e) {
@@ -102,13 +89,6 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public boolean existsByReservationDateTimeAndTheme(LocalDate date, long timeId, long themeId) {
-//        String query = """
-//                SELECT id FROM reservation
-//                WHERE EXISTS(
-//                    SELECT 1 FROM reservation
-//                    WHERE time_id = ? AND theme_id = ? AND reservation_date = ?
-//                )
-//                """;
         SelectQuery subQuery = QueryBuilder.select(TABLE_NAME)
                 .addColumns("1")
                 .where(ComparisonCondition.equalTo("r.reservation_date", date))
@@ -120,7 +100,6 @@ public class JdbcReservationRepository implements ReservationRepository {
                 .where(MultiLineCondition.exists(subQuery))
                 .build();
         try {
-//            jdbcTemplate.queryForObject(query, Long.class, timeId, themeId, date);
             jdbcTemplate.queryForObject(query, Long.class);
             return true;
         } catch (EmptyResultDataAccessException e) {
@@ -137,11 +116,6 @@ public class JdbcReservationRepository implements ReservationRepository {
                 JOIN theme AS th
                 On r.theme_id = th.id
                 """;
-//        String query = QueryBuilder.select(TABLE_NAME)
-//                .alias("r")
-//                .addAllColumns()
-//                .join(JoinType.INNER, "reservation_time", JoinCondition.on("r.time_id", "t.id"), "t")
-//                .build();
         return jdbcTemplate.query(query, ROW_MAPPER);
     }
 

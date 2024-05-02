@@ -97,6 +97,5 @@ public class JdbcThemeRepository implements ThemeRepository {
                 """;
 
         return jdbcTemplate.query(query, ROW_MAPPER, prev, now);
-//        return jdbcTemplate.query(query, ROW_MAPPER);
     }
 }

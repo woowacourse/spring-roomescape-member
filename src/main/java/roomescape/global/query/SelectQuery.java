@@ -3,7 +3,6 @@ package roomescape.global.query;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import roomescape.global.query.condition.Condition;
 import roomescape.global.query.condition.LogicalCondition;
 import roomescape.global.query.join.JoinCondition;
