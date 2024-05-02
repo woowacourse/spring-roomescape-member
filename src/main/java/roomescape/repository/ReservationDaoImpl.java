@@ -105,13 +105,13 @@ public class ReservationDaoImpl implements ReservationDao {
     }
 
     @Override
-    public boolean existByDateAndTimeId(LocalDate date, Long timeId) {
+    public boolean existByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
         String sql = "select exists ( "
                 + "    select 1 "
                 + "    from reservation "
-                + "    where date = ? and time_id = ? "
+                + "    where date = ? and time_id = ? and theme_id = ?"
                 + ")";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId);
+        return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
     }
 
     @Override

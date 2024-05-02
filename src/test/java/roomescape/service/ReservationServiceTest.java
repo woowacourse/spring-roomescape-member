@@ -46,23 +46,22 @@ class ReservationServiceTest {
                 .hasMessage("존재 하지 않는 예약시각으로 예약할 수 없습니다.");
     }
 
-    @DisplayName("예약 날짜와 예약시각이 같은 경우 예외를 발생합니다.")
+    @DisplayName("예약 날짜와 예약시각 그리고 테마 아이디가 같은 경우 예외를 발생합니다.")
     @Test
     void should_throw_IllegalArgumentException_when_reserve_date_and_time_duplicated() {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(12, 0));
         Theme theme = new Theme(1L, "dummy", "description", "url");
 
-        Reservation reservation = new Reservation(1L, "lib", LocalDate.now().plusDays(1), reservationTime, theme);
-        fakeReservationDao.insert(reservation);
+        Reservation reservation = new Reservation(null, "lib", LocalDate.now().plusDays(1), reservationTime, theme);
+        ReservationTime savedTime = fakeReservationTimeDao.insert(reservationTime);
+        Theme savedTheme = fakeThemeDao.insert(theme);
+        Reservation savedReservation = fakeReservationDao.insert(reservation);
 
-        Reservation conflictReservation = new Reservation(2L, "lib", LocalDate.now().plusDays(1), reservationTime,
-                theme);
+        ReservationAddRequest conflictRequest = new ReservationAddRequest(LocalDate.now().plusDays(1), "dodo",
+                savedTime.getId(), savedTheme.getId());
 
-        ReservationAddRequest reservationAddRequest = new ReservationAddRequest(LocalDate.now().plusDays(1), "dodo",
-                1L, 1L);
-
-        assertThatThrownBy(() -> reservationService.addReservation(reservationAddRequest))
+        assertThatThrownBy(() -> reservationService.addReservation(conflictRequest))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("예약 날짜와 예약시간이 겹치는 예약은 할 수 없습니다.");
+                .hasMessage("예약 날짜와 예약시간 그리고 테마가 겹치는 예약은 할 수 없습니다.");
     }
 }
