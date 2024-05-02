@@ -26,23 +26,24 @@ public class ReservationTimeService {
         this.reservationDao = reservationDao;
     }
 
-    public List<TimeMemberResponse> findAllTimes(LocalDate date, Long themeId) {
-        List<ReservationTime> allTimes = timeDao.findAll();
-        List<TimeMemberResponse> newAllTimes = new ArrayList<>();
-
-        List<Long> bookedTimeIds = reservationDao.findTimeIdByDateThemeId(date, themeId);
-        for (ReservationTime time : allTimes) {
-            boolean alreadyBooked = bookedTimeIds.contains(time.getId());
-            newAllTimes.add(timeMapper.mapToResponse(time, alreadyBooked));
-        }
-        return newAllTimes;
-    }
-
     public List<TimeResponse> findAllTimes() {
         List<ReservationTime> reservationTimes = timeDao.findAll();
         return reservationTimes.stream()
                 .map(timeMapper::mapToResponse)
                 .toList();
+    }
+
+    public List<TimeMemberResponse> findAllTimesWithBooking(LocalDate date, Long themeId) {
+        List<ReservationTime> allTimes = timeDao.findAll();
+        List<TimeMemberResponse> allTimeResponsesWithBooking = new ArrayList<>();
+        List<Long> bookedTimeIds = reservationDao.findTimeIdsByDateAndThemeId(date, themeId);
+
+        for (ReservationTime time : allTimes) {
+            boolean alreadyBooked = bookedTimeIds.contains(time.getId());
+            allTimeResponsesWithBooking.add(timeMapper.mapToResponse(time, alreadyBooked));
+        }
+
+        return allTimeResponsesWithBooking;
     }
 
     public TimeResponse saveTime(TimeRequest request) {
@@ -52,8 +53,8 @@ public class ReservationTimeService {
             throw new IllegalTimeException("[ERROR] 중복된 시간을 생성할 수 없습니다.");
         }
 
-        Long saveId = timeDao.save(reservationTime);
-        return timeMapper.mapToResponse(saveId, reservationTime);
+        ReservationTime newReservationTime = timeDao.save(reservationTime);
+        return timeMapper.mapToResponse(newReservationTime);
     }
 
     public void deleteTimeById(Long id) {

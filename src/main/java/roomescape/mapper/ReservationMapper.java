@@ -12,10 +12,6 @@ public class ReservationMapper {
         return new ReservationResponse(reservation.getId(), reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
     }
 
-    public ReservationResponse mapToResponse(Long id, Reservation reservation) {
-        return new ReservationResponse(id, reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
-    }
-
     public Reservation mapToReservation(ReservationRequest request, ReservationTime reservationTime, Theme theme) {
         return new Reservation(request.id(), request.name(), request.date(), reservationTime, theme);
     }

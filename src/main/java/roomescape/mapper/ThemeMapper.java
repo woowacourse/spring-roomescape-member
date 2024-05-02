@@ -10,10 +10,6 @@ public class ThemeMapper {
         return new ThemeResponse(theme.getId(), theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 
-    public ThemeResponse mapToResponse(Long id, Theme theme) {
-        return new ThemeResponse(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
-    }
-
     public Theme mapToTheme(ThemeRequest request) {
         return new Theme(request.id(), request.name(), request.description(), request.thumbnail());
     }

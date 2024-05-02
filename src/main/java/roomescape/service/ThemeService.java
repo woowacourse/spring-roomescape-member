@@ -1,38 +1,36 @@
 package roomescape.service;
 
+import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
-import roomescape.dto.ThemeResponse;
 import roomescape.dto.ThemeRequest;
+import roomescape.dto.ThemeResponse;
 import roomescape.exception.IllegalThemeException;
 import roomescape.mapper.ThemeMapper;
-import roomescape.repository.ReservationDao;
 import roomescape.repository.ThemeDao;
-
-import java.util.List;
 
 @Service
 public class ThemeService {
 
     private final ThemeMapper themeMapper = new ThemeMapper();
     private final ThemeDao themeDao;
-    private final ReservationDao reservationDao;
 
-    public ThemeService(ThemeDao themeDao, ReservationDao reservationDao) {
+    public ThemeService(ThemeDao themeDao) {
         this.themeDao = themeDao;
-        this.reservationDao = reservationDao;
     }
 
     public List<ThemeResponse> findAllThemes() {
         List<Theme> themes = themeDao.findAll();
+
         return themes.stream()
                 .map(themeMapper::mapToResponse)
                 .toList();
     }
 
-    public List<ThemeResponse> findBestThemes() {
+    public List<ThemeResponse> findRankThemes() {
         List<Theme> themesByDescOrder = themeDao.findThemesByDescOrder();
+
         return themesByDescOrder.stream()
                 .map(themeMapper::mapToResponse)
                 .toList();
@@ -41,8 +39,8 @@ public class ThemeService {
     public ThemeResponse save(ThemeRequest request) {
         Theme theme = themeMapper.mapToTheme(request);
 
-        Long saveId = themeDao.save(theme);
-        return themeMapper.mapToResponse(saveId, theme);
+        Theme newTheme = themeDao.save(theme);
+        return themeMapper.mapToResponse(newTheme);
     }
 
     public void deleteThemeById(Long id) {
