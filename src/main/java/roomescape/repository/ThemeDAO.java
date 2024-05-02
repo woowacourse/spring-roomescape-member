@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.model.Theme;
 
 import javax.sql.DataSource;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,5 +62,25 @@ public class ThemeDAO implements ThemeRepository {
                         resultSet.getString("description"),
                         resultSet.getString("thumbnail")
                 ), id);
+    }
+
+    @Override
+    public List<Theme> findThemeRankingByDate(LocalDate before, LocalDate after, int limit) {
+        String sql = """
+                select th.id, th.name, th.description, th.thumbnail 
+                from reservation as r 
+                inner join theme as th on r.theme_id = th.id 
+                where r.date between ? and ? 
+                group by r.theme_id 
+                order by count(r.theme_id) desc
+                limit ? 
+                """;
+        return jdbcTemplate.query(sql, (resultSet, ignored) ->
+                new Theme(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("description"),
+                        resultSet.getString("thumbnail")
+                ), before, after, limit);
     }
 }

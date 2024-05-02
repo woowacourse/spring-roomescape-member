@@ -36,4 +36,9 @@ public class ThemeController {
         themeService.deleteTheme(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/themes/rank")
+    public ResponseEntity<List<Theme>> getPopularThemes() {
+        return ResponseEntity.ok(themeService.findPopularThemes());
+    }
 }
