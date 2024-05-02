@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Reservation;
+import roomescape.dto.BookableTimeResponse;
+import roomescape.dto.BookableTimesRequest;
 import roomescape.dto.ReservationAddRequest;
 import roomescape.service.ReservationService;
 
@@ -37,5 +39,11 @@ public class ReservationController {
     public ResponseEntity<Void> removeReservation(@PathVariable("id") Long id) {
         reservationService.removeReservation(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/reservation/bookable-times")
+    public ResponseEntity<List<BookableTimeResponse>> getTimesWithStatus(
+            @RequestBody BookableTimesRequest bookableTimesRequest) {
+        return ResponseEntity.ok(reservationService.findBookableTimes(bookableTimesRequest));
     }
 }
