@@ -1,5 +1,6 @@
 package roomescape.dao;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -32,6 +33,7 @@ public class ReservationDaoTest {
     private ReservationDao reservationDao;
 
 
+    @DisplayName("모든 예약을 조회한다.")
     @Test
     void findAllTest() {
         List<Reservation> reservations = reservationDao.findAll();
@@ -39,6 +41,7 @@ public class ReservationDaoTest {
         assertThat(reservations.size()).isEqualTo(1);
     }
 
+    @DisplayName("예약 ID를 이용하여 예약을 조회한다.")
     @Test
     void findByIdTest() {
         Reservation reservation = reservationDao.findById(1L).get();
@@ -46,6 +49,7 @@ public class ReservationDaoTest {
         assertThat(reservation.getId()).isEqualTo(1L);
     }
 
+    @DisplayName("ID가 존재하지 않으면 빈 예약을 반환한다.")
     @Test
     void findByWrongIdTest() {
         Optional<Reservation> reservation = reservationDao.findById(9L);
@@ -53,6 +57,7 @@ public class ReservationDaoTest {
         assertThat(reservation).isEqualTo(Optional.empty());
     }
 
+    @DisplayName("예약을 추가한다.")
     @Test
     void insertTest() {
         Long index = jdbcTemplate.queryForObject("SELECT count(*) FROM reservation", Long.class);
@@ -61,6 +66,7 @@ public class ReservationDaoTest {
         assertThat(id).isEqualTo(index + 1);
     }
 
+    @DisplayName("요청 파라미터의 값이 올바르지 않으면 예외를 발생한다.")
     @Test
     void wrongInsertTest() {
         assertThatThrownBy(() -> reservationDao.insert("토미".repeat(130), "2024-01-01", 1L, 1L))
@@ -73,6 +79,7 @@ public class ReservationDaoTest {
                 .isInstanceOf(DataIntegrityViolationException.class);
     }
 
+    @DisplayName("ID를 이용하여 예약을 삭제한다.")
     @Test
     void deleteByIdTest() {
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -92,6 +99,7 @@ public class ReservationDaoTest {
         assertThat(reservationDao.findById(key)).isEqualTo(Optional.empty());
     }
 
+    @DisplayName("특정 시간에 대한 모든 예약의 개수를 조회한다.")
     @Test
     void countByTimeIdTest() {
         int count = reservationDao.countByTimeId(1L);
@@ -99,13 +107,7 @@ public class ReservationDaoTest {
         assertThat(count).isEqualTo(1);
     }
 
-    @Test
-    void countByNullTimeIdTest() {
-        int count = reservationDao.countByTimeId(null);
-
-        assertThat(count).isEqualTo(0);
-    }
-
+    @DisplayName("특정 테마에 대한 모든 예약의 개수를 조회한다.")
     @Test
     void countByThemeIdTest() {
         int count = reservationDao.countByThemeId(1L);
@@ -113,10 +115,19 @@ public class ReservationDaoTest {
         assertThat(count).isEqualTo(1);
     }
 
+    @DisplayName("특정 날짜, 시간, 테마에 대한 모든 예약의 개수를 조회한다.")
     @Test
-    void countByNullThemeIdTest() {
-        int count = reservationDao.countByThemeId(null);
+    void countTest() {
+        int count = reservationDao.count("2024-01-01", 1L, 1L);
 
-        assertThat(count).isEqualTo(0);
+        assertThat(count).isEqualTo(1);
+    }
+
+    @DisplayName("최근 일주일간 가장 많이 예약된 테마를 조회한다.")
+    @Test
+    void findBestThemeIdInWeekTest() {
+        List<Long> bestTheme = reservationDao.findBestThemeIdInWeek("2023-12-28", "2024-01-02");
+
+        assertThat(bestTheme.size()).isEqualTo(1);
     }
 }

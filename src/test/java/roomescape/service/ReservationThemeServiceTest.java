@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,6 +21,7 @@ public class ReservationThemeServiceTest {
     @Autowired
     private ReservationThemeService reservationThemeService;
 
+    @DisplayName("모든 테마를 조회한다.")
     @Test
     void getAllThemesTest() {
         List<ReservationTheme> reservationThemes = reservationThemeService.getAllThemes();
@@ -27,6 +29,7 @@ public class ReservationThemeServiceTest {
         assertThat(reservationThemes.size()).isEqualTo(1);
     }
 
+    @DisplayName("테마를 추가한다.")
     @Test
     void insertThemeTest() {
         ReservationThemeRequestDto reservationThemeRequestDto = new ReservationThemeRequestDto(
@@ -39,6 +42,7 @@ public class ReservationThemeServiceTest {
         assertThat(reservationTheme.getThumbnail()).isEqualTo("https://hi.com");
     }
 
+    @DisplayName("테마 ID를 이용하여 테마를 삭제한다.")
     @Test
     void deleteThemeTest() {
         ReservationThemeRequestDto reservationThemeRequestDto = new ReservationThemeRequestDto(
@@ -51,9 +55,18 @@ public class ReservationThemeServiceTest {
         assertThat(reservationThemeService.getAllThemes().size()).isEqualTo(sizeBeforeDelete - 1);
     }
 
+    @DisplayName("이미 예약이 존재하는 테마는 삭제할 수 없다.")
     @Test
     void deleteInvalidThemeIdTest() {
         assertThatThrownBy(() -> reservationThemeService.deleteTheme(1L))
                 .isInstanceOf(IllegalStateException.class);
+    }
+
+    @DisplayName("지난 일주일간 가장 많이 예약된 테마를 조회한다.")
+    @Test
+    void getWeeklyBestThemesTest() {
+        List<ReservationTheme> reservationThemes = reservationThemeService.getWeeklyBestThemes();
+
+        assertThat(reservationThemes.size()).isEqualTo(0);
     }
 }

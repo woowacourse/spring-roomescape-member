@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,6 +27,7 @@ public class ReservationServiceTest {
         this.reservationService = reservationService;
     }
 
+    @DisplayName("모든 예약을 조회한다.")
     @Test
     void getAllReservationsTest() {
         List<Reservation> reservations = reservationService.getAllReservations();
@@ -33,6 +35,7 @@ public class ReservationServiceTest {
         assertThat(reservations.size()).isEqualTo(1);
     }
 
+    @DisplayName("예약을 추가한다.")
     @Test
     void insertReservationTest() {
         ReservationRequestDto reservationRequestDto = new ReservationRequestDto("test", LocalDate.now().plusDays(1), 1L, 1L);
@@ -43,6 +46,7 @@ public class ReservationServiceTest {
         assertThat(reservation.getDate()).isEqualTo(reservationRequestDto.date().toString());
     }
 
+    @DisplayName("예약을 삭제한다.")
     @Test
     void deleteReservationTest() {
         int sizeBeforeDelete = reservationService.getAllReservations().size();
@@ -50,6 +54,7 @@ public class ReservationServiceTest {
         assertThat(reservationService.getAllReservations().size()).isEqualTo(sizeBeforeDelete - 1);
     }
 
+    @DisplayName("현재 시간 이전의 시간으로 예약할 수 없다.")
     @Test
     void invalidDateTimeTest() {
         LocalDate localDate = LocalDate.now().minusDays(2);
@@ -57,6 +62,19 @@ public class ReservationServiceTest {
         ReservationRequestDto reservationRequestDto = new ReservationRequestDto("test", localDate, 1L, 1L);
 
         assertThatThrownBy(() -> reservationService.insertReservation(reservationRequestDto))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("지나간 날짜와 시간에 대한 예약 생성은 불가능합니다.");
+    }
+
+    @DisplayName("같은 날짜, 시간, 테마에 대한 중복 예약은 불가능하다.")
+    @Test
+    void duplicatedReservationTest() {
+        ReservationRequestDto reservationRequestDto = new ReservationRequestDto("test", LocalDate.now().plusDays(2), 1L, 1L);
+
+        reservationService.insertReservation(reservationRequestDto);
+
+        assertThatThrownBy(() -> reservationService.insertReservation(reservationRequestDto))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이미 해당 시간에 예약이 존재합니다.");
     }
 }

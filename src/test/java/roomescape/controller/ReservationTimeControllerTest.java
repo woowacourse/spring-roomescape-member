@@ -28,6 +28,7 @@ public class ReservationTimeControllerTest {
         RestAssured.port = port;
     }
 
+    @DisplayName("어드민 시간 페이지 요청 시 200으로 응답한다.")
     @Test
     void timeTest() {
         RestAssured.given().log().all()
@@ -36,6 +37,7 @@ public class ReservationTimeControllerTest {
                 .statusCode(200);
     }
 
+    @DisplayName("정상적인 시간 추가 요청 시 201으로 응답한다.")
     @Test
     void insertTest() {
         Map<String, String> params = new HashMap<>();
@@ -48,6 +50,7 @@ public class ReservationTimeControllerTest {
                 .then().log().all().statusCode(201);
     }
 
+    @DisplayName("시간 조회 요청 시 200으로 응답한다.")
     @Test
     void findAllTest() {
         RestAssured.given().log().all()
@@ -57,6 +60,7 @@ public class ReservationTimeControllerTest {
                 .statusCode(200);
     }
 
+    @DisplayName("시간 삭제 요청 시 204로 응답한다.")
     @Test
     void deleteTest() {
         Map<String, String> params = new HashMap<>();
@@ -102,5 +106,28 @@ public class ReservationTimeControllerTest {
                 .then().log().all()
                 .statusCode(400)
                 .body(is("예약이 존재하는 시간은 삭제할 수 없습니다."));
+    }
+
+    @DisplayName("예약이 존재하지 않는 시간은 예약이 가능하다.")
+    @Test
+    void getAvailableForReservationTimes() {
+        RestAssured.given().log().all()
+                .when().get("/times/2024-05-01/1")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(1))
+                .body("[0].startAt", is("01:00"))
+                .body("[0].booked", is(false));
+    }
+
+    @DisplayName("예약이 존재하는 시간은 예약할 수 없다.")
+    @Test
+    void getUnavailableForReservationTimes() {
+        RestAssured.given().log().all()
+                .when().get("/times/2024-01-01/1")
+                .then().log().all()
+                .statusCode(200)
+                .body("[0].startAt", is("01:00"))
+                .body("[0].booked", is(true));
     }
 }

@@ -30,13 +30,18 @@ public class ReservationThemeControllerTest {
         RestAssured.port = port;
     }
 
+    @DisplayName("어드민 테마 페이지 요청 시 200으로 응답한다.")
     @Test
     void themePageTest() {
         RestAssured.given().log().all()
                 .when().get("/admin/theme")
                 .then().log().all()
                 .statusCode(200);
+    }
 
+    @DisplayName("테마 조회 요청 시 200으로 응답한다.")
+    @Test
+    void themesTest() {
         RestAssured.given().log().all()
                 .when().get("/themes")
                 .then().log().all()
@@ -44,14 +49,7 @@ public class ReservationThemeControllerTest {
                 .body("size()", is(1));
     }
 
-    @Test
-    void themesTest() {
-        RestAssured.given().log().all()
-                .when().get("/themes")
-                .then().log().all()
-                .statusCode(200);
-    }
-
+    @DisplayName("정상적인 테마 추가 요청 시 201으로 응답한다.")
     @Test
     void insertTest() throws JsonProcessingException {
         Map<String, Object> params = new HashMap<>();
@@ -68,15 +66,7 @@ public class ReservationThemeControllerTest {
                 .statusCode(201);
     }
 
-    @Test
-    void findAllTest() {
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .when().get("/times")
-                .then().log().all()
-                .statusCode(200);
-    }
-
+    @DisplayName("테마 삭제 요청 시 204로 응답한다.")
     @Test
     void deleteTest() {
         Map<String, Object> params = new HashMap<>();
@@ -99,7 +89,7 @@ public class ReservationThemeControllerTest {
                 .body("size()", is(2));
 
         RestAssured.given().log().all()
-                .when().delete("/times/2")
+                .when().delete("/themes/2")
                 .then().log().all()
                 .statusCode(204);
     }
@@ -112,5 +102,15 @@ public class ReservationThemeControllerTest {
                 .then().log().all()
                 .statusCode(400)
                 .body(is("예약이 존재하는 테마는 삭제할 수 없습니다."));
+    }
+
+    @DisplayName("최근 일주일간 가장 예약이 많은 테마를 조회한다.")
+    @Test
+    void weeklyBestThemesTest() {
+        RestAssured.given().log().all()
+                .when().get("/weeklyThemes")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(0));
     }
 }

@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,6 +27,7 @@ public class ReservationTimeServiceTest {
         this.reservationTimeService = reservationTimeService;
     }
 
+    @DisplayName("모든 예약 시간을 조회한다.")
     @Test
     void getAllReservationTimesTest() {
         List<ReservationTime> reservationTimes = reservationTimeService.getAllReservationTimes();
@@ -33,6 +35,7 @@ public class ReservationTimeServiceTest {
         assertThat(reservationTimes.size()).isEqualTo(1);
     }
 
+    @DisplayName("예약 시간을 추가한다.")
     @Test
     void insertReservationTimeTest() {
         ReservationTimeRequestDto reservationTimeRequestDto = new ReservationTimeRequestDto(LocalTime.parse("01:01"));
@@ -41,6 +44,7 @@ public class ReservationTimeServiceTest {
         assertThat(reservationTime.getStartAt()).isEqualTo("01:01");
     }
 
+    @DisplayName("예약 시간 ID를 이용하여 시간을 삭제한다.")
     @Test
     void deleteReservationTimeTest() {
         ReservationTimeRequestDto reservationTimeRequestDto = new ReservationTimeRequestDto(LocalTime.parse("01:01"));
@@ -50,9 +54,18 @@ public class ReservationTimeServiceTest {
         assertThat(reservationTimeService.getAllReservationTimes().size()).isEqualTo(sizeBeforeDelete - 1);
     }
 
+    @DisplayName("예약이 존재하는 시간은 삭제할 수 없다.")
     @Test
     void deleteInvalidTimeIdTest() {
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1L))
                 .isInstanceOf(IllegalStateException.class);
+    }
+
+    @DisplayName("예약이 가능한 시간인지 확인한다.")
+    @Test
+    void isBookedTest() {
+        boolean actualIsBooked = reservationTimeService.isBooked("2024-01-01", 1L, 1L);
+
+        assertThat(actualIsBooked).isEqualTo(true);
     }
 }
