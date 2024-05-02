@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -115,7 +116,7 @@ public class WebReservationTimeDao implements ReservationTimeDao {
                                                    Connection connection,
                                                    String sql) throws SQLException {
         PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
-        preparedStatement.setString(1, reservationTime.getStartAt().toStringTime());
+        preparedStatement.setTime(1, Time.valueOf(reservationTime.getStartAt().getValue()));
         return preparedStatement;
     }
 }

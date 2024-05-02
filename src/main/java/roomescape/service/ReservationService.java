@@ -40,7 +40,8 @@ public class ReservationService {
         ReservationDate reservationDate = ReservationDate.from(date);
         List<ReservationTime> reservationTimes = reservationTimeDao.readAll();
         List<Long> ids = reservationDao.readTimeIdsByDateAndThemeId(reservationDate, themeId);
-        return reservationTimes.stream()
+        List<ReservationTime> filteredTimes = filterByDate(reservationDate, reservationTimes);
+        return filteredTimes.stream()
                 .map(time ->
                         AvailableReservationResponse.of(
                                 time.getStartAt().toStringTime(),
@@ -78,7 +79,16 @@ public class ReservationService {
         }
     }
 
-    private static void validateDate(ReservationDate reservationDate) {
+    private List<ReservationTime> filterByDate(ReservationDate reservationDate, List<ReservationTime> reservationTimes) {
+        if (reservationDate.isSameDate(TODAY)) {
+            return reservationTimes.stream()
+                    .filter(time -> !time.isBeforeNow())
+                    .toList();
+        }
+        return reservationTimes;
+    }
+
+    private void validateDate(ReservationDate reservationDate) {
         if (reservationDate.isBeforeDate(TODAY)) {
             throw new IllegalArgumentException("예약일은 오늘보다 과거일 수 없습니다.");
         }

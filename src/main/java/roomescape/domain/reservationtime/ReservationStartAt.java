@@ -40,4 +40,8 @@ public class ReservationStartAt {
     public String toStringTime() {
         return value.format(TIME_FORMATTER);
     }
+
+    public LocalTime getValue() {
+        return value;
+    }
 }
