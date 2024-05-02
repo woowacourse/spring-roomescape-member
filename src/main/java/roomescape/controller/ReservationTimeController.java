@@ -19,9 +19,14 @@ public class ReservationTimeController {
     }
 
     @GetMapping
+    public List<ReservationTimeResponse> readTimes() {
+        return reservationTimeService.readReservationTimes();
+    }
+
+    @GetMapping(params = {"date", "themeId"})
     public List<ReservationTimeResponse> readTimes(
-            @RequestParam(value = "date", required = false) LocalDate date,
-            @RequestParam(value = "themeId", required = false) Long themeId
+            @RequestParam(value = "date") LocalDate date,
+            @RequestParam(value = "themeId") Long themeId
     ) {
         return reservationTimeService.readReservationTimes(date, themeId);
     }

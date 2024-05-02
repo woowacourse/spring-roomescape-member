@@ -53,13 +53,13 @@ public class ReservationTimeService {
         return ReservationTimeResponse.from(reservationTime);
     }
 
+    public List<ReservationTimeResponse> readReservationTimes() {
+        return reservationTimeRepository.findAll().stream()
+                .map(ReservationTimeResponse::from)
+                .toList();
+    }
+
     public List<ReservationTimeResponse> readReservationTimes(LocalDate date, Long themeId) {
-        if (date == null && themeId == null) {
-            return reservationTimeRepository.findAll().stream()
-                    .map(ReservationTimeResponse::from)
-                    .toList();
-        }
-        
         List<Reservation> reservations = reservationRepository.findByDateAndThemeId(date, themeId);
         Set<Long> alreadyBookedTimes = reservations.stream()
                 .map(reservation -> reservation.getTime().getId())
