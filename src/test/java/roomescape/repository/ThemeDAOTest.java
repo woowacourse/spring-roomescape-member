@@ -118,7 +118,7 @@ class ThemeDAOTest {
                 new Theme(6, "name6", "description6", "thumbnail6"),
                 new Theme(7, "name7", "description7", "thumbnail7"),
                 new Theme(8, "name8", "description8", "thumbnail8")
-                );
+        );
     }
 
     private void insertReservationTime(LocalTime startAt) {

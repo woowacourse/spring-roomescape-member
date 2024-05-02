@@ -1,6 +1,5 @@
 package roomescape.service;
 
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 import roomescape.controller.request.ThemeRequest;
 import roomescape.model.Theme;

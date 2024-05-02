@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static org.apache.groovy.util.Maps.of;
-
 public class FakeThemeRepository implements ThemeRepository {
 
     private List<Theme> themes = new ArrayList<>(List.of(
