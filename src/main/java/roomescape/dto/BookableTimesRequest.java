@@ -12,6 +12,9 @@ public class BookableTimesRequest {
         this.themeId = themeId;
     }
 
+    public BookableTimesRequest() {
+    }
+
     public LocalDate getDate() {
         return date;
     }
