@@ -72,7 +72,7 @@ public class FakeReservationDao implements ReservationDao {
     }
 
     @Override
-    public List<ReservationTime> findByDateAndTheme(LocalDate date, Theme theme) {
+    public List<ReservationTime> findByDateAndTheme(LocalDate date, Long themeId) {
         return null;
     }
 }

@@ -109,13 +109,13 @@ public class ReservationDaoImpl implements ReservationDao {
     }
 
     @Override
-    public List<ReservationTime> findByDateAndTheme(LocalDate date, Theme theme) {
+    public List<ReservationTime> findByDateAndTheme(LocalDate date, Long themeId) {
         String sql = "select t.id, t.start_at "
                 + "   from reservation as r "
                 + "   inner join reservation_time as t "
                 + "   on r.time_id = t.id "
                 + "   where date = ? and theme_id = ?";
-        return jdbcTemplate.query(sql, timeRowMapper, date, theme.getId());
+        return jdbcTemplate.query(sql, timeRowMapper, date, themeId);
     }
 
     @Override

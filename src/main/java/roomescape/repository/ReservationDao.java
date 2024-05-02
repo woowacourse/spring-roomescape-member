@@ -19,6 +19,6 @@ public interface ReservationDao {
 
     void deleteById(Long id);
 
-    List<ReservationTime> findByDateAndTheme(LocalDate date, Theme theme);
+    List<ReservationTime> findByDateAndTheme(LocalDate date, Long themeId);
 
 }
