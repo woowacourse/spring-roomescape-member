@@ -18,6 +18,4 @@ public class AdminThemePageControllerTest {
                 .then().log().all()
                 .statusCode(200);
     }
-
-
 }

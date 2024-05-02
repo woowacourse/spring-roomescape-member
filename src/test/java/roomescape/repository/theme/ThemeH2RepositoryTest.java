@@ -47,7 +47,6 @@ class ThemeH2RepositoryTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
-
     @Test
     @DisplayName("id에 맞는 Theme을 제거한다.")
     void delete() {
@@ -64,7 +63,6 @@ class ThemeH2RepositoryTest {
         assertThatThrownBy(() -> themeH2Repository.delete(THEME_1.getId()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
-
 
     @Test
     @DisplayName("모든 theme를 찾는다.")

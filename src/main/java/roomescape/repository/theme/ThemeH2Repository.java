@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class ThemeH2Repository implements ThemeRepository{
+public class ThemeH2Repository implements ThemeRepository {
 
     private static final String TABLE_NAME = "THEME";
 

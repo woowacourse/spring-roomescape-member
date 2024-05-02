@@ -18,4 +18,3 @@ VALUES ('브라운', '2024-04-25', 1, 1);
 
 INSERT INTO reservation (name, date, time_id, theme_id)
 VALUES ('솔라', '2099-05-01', 1, 1);
-

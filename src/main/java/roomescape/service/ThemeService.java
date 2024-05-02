@@ -28,13 +28,6 @@ public class ThemeService {
                 .toList();
     }
 
-    public List<ThemeResponse> findThemes(Long limit) {
-        return themeRepository.findAll()
-                .stream()
-                .map(ThemeResponse::from)
-                .toList();
-    }
-
     public ThemeResponse getTheme(Long id) {
         return ThemeResponse.from(getValidTheme(id));
     }

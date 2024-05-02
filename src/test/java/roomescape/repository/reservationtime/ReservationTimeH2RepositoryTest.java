@@ -43,7 +43,6 @@ class ReservationTimeH2RepositoryTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
-
     @Test
     @DisplayName("id에 맞는 ReservationTime을 제거한다.")
     void delete() {
@@ -60,7 +59,6 @@ class ReservationTimeH2RepositoryTest {
         assertThatThrownBy(() -> reservationTimeH2Repository.delete(RESERVATION_TIME_1.getId()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
-
 
     @Test
     @DisplayName("모든 ReservationTime을 찾는다.")
