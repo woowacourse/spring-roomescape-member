@@ -69,7 +69,7 @@ class JdbcThemeRepositoryTest {
     }
 
     @Test
-    @Sql("/data1.sql")
+    @Sql("/reservation.sql")
     void 예약이_많은_순서대로_최대_10개_테마를_반환한다() {
         List<Theme> allByRank = themeRepository.findAllByRank(LocalDate.now());
         assertAll(
