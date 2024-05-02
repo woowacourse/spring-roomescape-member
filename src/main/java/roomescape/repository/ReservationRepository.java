@@ -69,11 +69,6 @@ public class ReservationRepository {
         );
     }
 
-    public void delete(Long id) {
-        String sql = "DELETE FROM reservation WHERE id = ?";
-        jdbcTemplate.update(sql, id);
-    }
-
     public List<Reservation> findByTimeId(Long timeId) {
         String sql = """
                 SELECT * FROM reservation r 
@@ -102,5 +97,10 @@ public class ReservationRepository {
                 WHERE r.date = ? AND r.theme_id = ?
                 """;
         return jdbcTemplate.query(sql, ROW_MAPPER, date, themeId);
+    }
+
+    public int delete(Long id) {
+        String sql = "DELETE FROM reservation WHERE id = ?";
+        return jdbcTemplate.update(sql, id);
     }
 }

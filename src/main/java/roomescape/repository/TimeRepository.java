@@ -41,6 +41,12 @@ public class TimeRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
+    public List<Time> findByStartAt(LocalTime startAt) {
+        String sql = "SELECT * FROM reservation_time WHERE start_at = ?";
+
+        return jdbcTemplate.query(sql, ROW_MAPPER, startAt);
+    }
+
     public Time save(Time requestTime) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("start_at", requestTime.getStartAt());
@@ -49,14 +55,8 @@ public class TimeRepository {
         return new Time(id, requestTime.getStartAt());
     }
 
-    public void delete(Long id) {
+    public int delete(Long id) {
         String sql = "DELETE FROM reservation_time WHERE id = ?";
-        jdbcTemplate.update(sql, id);
-    }
-
-    public List<Time> findByStartAt(LocalTime startAt) {
-        String sql = "SELECT * FROM reservation_time WHERE start_at = ?";
-
-        return jdbcTemplate.query(sql, ROW_MAPPER, startAt);
+        return jdbcTemplate.update(sql, id);
     }
 }
