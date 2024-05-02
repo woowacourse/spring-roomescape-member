@@ -12,6 +12,10 @@ public interface ReservationRepository {
 
     Reservation findById(Long id);
 
+    List<Long> findThemeReservationCountsForLastWeek();
+
+    List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId);
+
     void delete(Long id);
 
     Boolean existId(Long id);
@@ -21,9 +25,5 @@ public interface ReservationRepository {
     Boolean existThemeId(Long id);
 
     Boolean existDateTimeAndTheme(LocalDate date, Long timeId, Long ThemeId);
-
-    List<Long> findThemeReservationCountsForLastWeek();
-
-    List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId);
 
 }

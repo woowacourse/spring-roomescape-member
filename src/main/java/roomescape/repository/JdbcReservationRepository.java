@@ -96,37 +96,6 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public void delete(Long id) {
-        String sql = "DELETE FROM reservation WHERE id = ?";
-        jdbcTemplate.update(sql, id);
-    }
-
-    @Override
-    public Boolean existId(Long id) {
-        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE id = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
-    }
-
-
-    @Override
-    public Boolean existTimeId(Long id) {
-        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE time_id = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
-    }
-
-    @Override
-    public Boolean existThemeId(final Long id) {
-        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE theme_id = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
-    }
-
-    @Override
-    public Boolean existDateTimeAndTheme(LocalDate date, Long timeId, Long themeId) {
-        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
-    }
-
-    @Override
     public List<Long> findThemeReservationCountsForLastWeek() {
         String sql = """
                 SELECT theme_id
@@ -158,5 +127,35 @@ public class JdbcReservationRepository implements ReservationRepository {
                WHERE r.date = ? AND th.id = ?
                 """;
         return jdbcTemplate.query(sql, ROW_MAPPER, date, themeId);
+    }
+
+    @Override
+    public void delete(Long id) {
+        String sql = "DELETE FROM reservation WHERE id = ?";
+        jdbcTemplate.update(sql, id);
+    }
+
+    @Override
+    public Boolean existId(Long id) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
+    }
+
+    @Override
+    public Boolean existTimeId(Long id) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE time_id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
+    }
+
+    @Override
+    public Boolean existThemeId(final Long id) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE theme_id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
+    }
+
+    @Override
+    public Boolean existDateTimeAndTheme(LocalDate date, Long timeId, Long themeId) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
     }
 }
