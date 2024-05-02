@@ -73,7 +73,7 @@ class ReservationTimeServiceTest {
         given(reservationRepository.hasReservationOfTimeId(timeId)).willReturn(true);
 
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(timeId))
-                .isInstanceOf(IllegalStateException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 시간에 예약이 있어 삭제할 수 없습니다.");
     }
 
