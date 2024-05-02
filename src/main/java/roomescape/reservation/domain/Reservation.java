@@ -14,7 +14,7 @@ public class Reservation {
     private final String name;
     private final LocalDate date;
     private Time time;
-    private Theme theme;
+    private final Theme theme;
 
     public Reservation(String name, LocalDate date, long timeId, long themeId) {
         this(0, name, date, new Time(timeId), new Theme(themeId));
@@ -49,8 +49,16 @@ public class Reservation {
         return time;
     }
 
+    public long getReservationTimeId() {
+        return time.getId();
+    }
+
     public Theme getTheme() {
         return theme;
+    }
+
+    public long getThemeId() {
+        return theme.getId();
     }
 
     public void setId(long id) {
