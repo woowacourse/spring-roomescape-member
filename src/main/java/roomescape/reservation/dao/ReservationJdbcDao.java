@@ -15,11 +15,6 @@ import roomescape.time.domain.Time;
 
 @Component
 public class ReservationJdbcDao implements ReservationDao {
-    public static final String TABLE_NAME = "reservation";
-    public static final String TABLE_KEY = "id";
-    public static final String RESERVATION_NAME_ATTRIBUTE = "name";
-    public static final String RESERVATION_DATE_ATTRIBUTE = "date";
-    public static final String TIME_TABLE_KEY = "timeId";
     public static final String TIME_TABLE_START_TIME_ATTRIBUTE = "start_at";
     public static final String THEME_TABLE_NAME_ATTRIBUTE = "name";
     public static final String THEME_TABLE_THUMBNAIL_ATTRIBUTE = "thumbnail";
@@ -47,8 +42,8 @@ public class ReservationJdbcDao implements ReservationDao {
     public ReservationJdbcDao(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName(TABLE_NAME)
-                .usingGeneratedKeyColumns(TABLE_KEY);
+                .withTableName("reservation")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
@@ -78,6 +73,48 @@ public class ReservationJdbcDao implements ReservationDao {
                 """;
 
         return jdbcTemplate.query(findAllReservationSql, RESERVATION_ROW_MAPPER);
+    }
+
+    @Override
+    public List<Reservation> findAllByThemeIdAndDate(long themeId, LocalDate date) {
+        String findAllByThemeIdAndDateSql =
+                """
+                SELECT r.id, r.name, r.date, 
+                t.id AS timeId, t.start_at, 
+                th.id AS themeId, th.name AS themeName, th.description, th.thumbnail 
+                FROM reservation r 
+                INNER JOIN reservation_time t ON r.time_id = t.id 
+                INNER JOIN theme th ON r.theme_id = th.id 
+                WHERE r.date = ? AND r.theme_id = ?
+                ORDER BY r.date ASC, t.start_at ASC
+                """;
+
+        return jdbcTemplate.query(findAllByThemeIdAndDateSql, RESERVATION_ROW_MAPPER, date, themeId);
+    }
+
+    @Override
+    public List<Theme> findThemeByDateOrderByThemeIdCount(LocalDate startDate, LocalDate endDate) {
+        String findThemesInOrderSql =
+                """
+                SELECT th.id, th.name, th.thumbnail, th.description
+                FROM theme th
+                INNER JOIN (
+                    SELECT theme_id
+                    FROM reservation
+                    WHERE date BETWEEN ? AND ?
+                    GROUP BY theme_id
+                    ORDER BY COUNT(theme_id) DESC
+                ) r ON th.id = r.theme_id;
+                """;
+
+        return jdbcTemplate.query(findThemesInOrderSql, (resultSet, rowNum)
+                -> new Theme(
+                        resultSet.getLong("id"),
+                        resultSet.getString(THEME_TABLE_NAME_ATTRIBUTE),
+                        resultSet.getString(THEME_TABLE_DESCRIPTION_ATTRIBUTE),
+                        resultSet.getString(THEME_TABLE_THUMBNAIL_ATTRIBUTE)
+                        )
+                    ,startDate.toString(), endDate.toString());
     }
 
     @Override
