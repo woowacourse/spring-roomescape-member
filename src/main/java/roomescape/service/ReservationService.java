@@ -53,7 +53,7 @@ public class ReservationService {
             throw new RoomescapeException(DUPLICATE_RESERVATION);
         }
 
-        if (isBefore(beforeSave)) {
+        if (beforeSave.isBefore(LocalDateTime.now())) {
             throw new RoomescapeException(PAST_TIME_RESERVATION);
         }
 
@@ -64,12 +64,6 @@ public class ReservationService {
     private boolean validateDuplicateReservation(Reservation beforeSave, Reservation reservation) {
         return reservation.isSameDateTime(beforeSave)
                 && beforeSave.isSameTheme(reservation);
-    }
-
-    //TODO : 도메인에게 넘길 수 있을 것 같은데
-    private static boolean isBefore(Reservation beforeSave) {
-        return LocalDateTime.of(beforeSave.getDate(), beforeSave.getTime())
-                .isBefore(LocalDateTime.now());
     }
 
     private ReservationResponse toResponse(Reservation reservation) {

@@ -70,8 +70,12 @@ public class Reservation implements Comparable<Reservation> {
         return dateTime.compareTo(otherDateTime);
     }
 
-    public boolean hasSameId(long id) {
-        return this.id == id;
+    public boolean isBefore(LocalDateTime base) {
+        return LocalDateTime.of(date, getTime()).isBefore(base);
+    }
+
+    public LocalTime getTime() {
+        return time.getStartAt();
     }
 
     public boolean isReservationTimeOf(long id) {
