@@ -1,8 +1,5 @@
 package roomescape.service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.controller.request.ReservationRequest;
 import roomescape.controller.response.MemberReservationTimeResponse;
@@ -15,6 +12,11 @@ import roomescape.model.Theme;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 public class ReservationService {
@@ -61,22 +63,27 @@ public class ReservationService {
 
     public List<MemberReservationTimeResponse> getMemberReservationTimes(LocalDate date, long themeId) {
         List<ReservationTime> allTimes = reservationTimeRepository.findAllReservationTimes();
+        List<ReservationTime> bookedTimes = reservationRepository.findReservationTimeByDateAndTheme(date, themeId);
+        List<ReservationTime> notBookedTimes = filterNotBookedTimes(allTimes, bookedTimes);
+        List<MemberReservationTimeResponse> notBookedResponse = mapToResponse(bookedTimes, true);
+        List<MemberReservationTimeResponse> bookedResponse = mapToResponse(notBookedTimes, false);
+        return concat(notBookedResponse, bookedResponse);
+    }
 
-        List<ReservationTime> alreadyBookedTimes = reservationRepository.findReservationTimeByDateAndTheme(date, themeId);
-
-        List<MemberReservationTimeResponse> responses = allTimes.stream()
-                .map(time -> new MemberReservationTimeResponse(time.getId(), time.getStartAt(), false))
+    private List<ReservationTime> filterNotBookedTimes(List<ReservationTime> allTimes, List<ReservationTime> bookedTimes) {
+        return allTimes.stream()
+                .filter(time -> !bookedTimes.contains(time))
                 .toList();
+    }
 
-        for (MemberReservationTimeResponse response : responses) {
-            for (ReservationTime alreadyBookedTime : alreadyBookedTimes) {
-                if (response.getTimeId() == alreadyBookedTime.getId()) {
-                    response.setAlreadyBooked(true);
-                }
-            }
-        }
-        // TODO: 리팩토링
+    private List<MemberReservationTimeResponse> mapToResponse(List<ReservationTime> times, boolean isBooked) {
+        return times.stream()
+                .map(time -> new MemberReservationTimeResponse(time.getId(), time.getStartAt(), isBooked))
+                .toList();
+    }
 
-        return responses;
+    private List<MemberReservationTimeResponse> concat(List<MemberReservationTimeResponse> notBookedTimes,
+                                                       List<MemberReservationTimeResponse> bookedTimes) {
+        return Stream.concat(notBookedTimes.stream(), bookedTimes.stream()).toList();
     }
 }
