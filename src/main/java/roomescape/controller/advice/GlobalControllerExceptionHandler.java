@@ -23,4 +23,10 @@ public class GlobalControllerExceptionHandler {
         logger.error(e.getMessage(), e);
         return ResponseEntity.badRequest().body("잘못된 입력 형식입니다.");
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleException(final Exception e) {
+        logger.error(e.getMessage(), e);
+        return ResponseEntity.internalServerError().body("서버 오류입니다.");
+    }
 }
