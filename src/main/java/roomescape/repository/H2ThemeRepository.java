@@ -22,29 +22,29 @@ public class H2ThemeRepository implements ThemeRepository {
     public H2ThemeRepository(final DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName("theme")
-                .usingGeneratedKeyColumns("id");
+                .withTableName("THEME")
+                .usingGeneratedKeyColumns("ID");
     }
 
     private Theme mapRowTheme(ResultSet rs, int rowNum) throws SQLException {
         return new Theme(
-                rs.getLong("id"),
-                rs.getString("name"),
-                rs.getString("description"),
-                rs.getString("thumbnail")
+                rs.getLong("ID"),
+                rs.getString("NAME"),
+                rs.getString("DESCRIPTION"),
+                rs.getString("THUMBNAIL")
         );
     }
 
     @Override
     public List<Theme> findAll() {
-        final String sql = "SELECT * FROM theme";
+        final String sql = "SELECT * FROM THEME";
 
         return jdbcTemplate.query(sql, this::mapRowTheme);
     }
 
     @Override
     public Optional<Theme> findById(final Long id) {
-        final String sql = "SELECT * FROM theme WHERE id = ?";
+        final String sql = "SELECT * FROM THEME WHERE ID = ?";
 
         return jdbcTemplate.query(sql, this::mapRowTheme, id)
                 .stream()
@@ -61,7 +61,7 @@ public class H2ThemeRepository implements ThemeRepository {
 
     @Override
     public int delete(final Long id) {
-        final String sql = "DELETE FROM theme WHERE id = ?";
+        final String sql = "DELETE FROM THEME WHERE ID = ?";
 
         return jdbcTemplate.update(sql, id);
     }

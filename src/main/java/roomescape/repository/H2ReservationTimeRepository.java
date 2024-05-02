@@ -23,27 +23,27 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
     public H2ReservationTimeRepository(final DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName("reservation_time")
-                .usingGeneratedKeyColumns("id");
+                .withTableName("RESERVATION_TIME")
+                .usingGeneratedKeyColumns("ID");
     }
 
     private ReservationTime mapRowTime(final ResultSet rs, final int rowNum) throws SQLException {
         return new ReservationTime(
-                rs.getLong("id"),
-                LocalTime.parse(rs.getString("start_at"))
+                rs.getLong("ID"),
+                LocalTime.parse(rs.getString("START_AT"))
         );
     }
 
     @Override
     public List<ReservationTime> findAll() {
-        final String sql = "SELECT * FROM reservation_time";
+        final String sql = "SELECT * FROM RESERVATION_TIME";
 
         return jdbcTemplate.query(sql, this::mapRowTime);
     }
 
     @Override
     public Optional<ReservationTime> findById(final Long id) {
-        final String sql = "SELECT * FROM reservation_time WHERE id = ?";
+        final String sql = "SELECT * FROM RESERVATION_TIME WHERE ID = ?";
 
         return jdbcTemplate.query(sql, this::mapRowTime, id)
                 .stream()
@@ -61,7 +61,7 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
 
     @Override
     public int deleteById(final Long id) {
-        final String sql = "DELETE FROM reservation_time WHERE id = ?";
+        final String sql = "DELETE FROM RESERVATION_TIME WHERE ID = ?";
 
         return jdbcTemplate.update(sql, id);
     }
