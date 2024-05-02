@@ -9,10 +9,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.Fixtures;
-import roomescape.dto.ThemeCreateRequest;
-import roomescape.dto.ThemeResponse;
+import roomescape.service.dto.theme.ThemeCreateRequest;
+import roomescape.service.dto.theme.ThemeResponse;
 import roomescape.exception.BadRequestException;
-import roomescape.repository.ThemeRepository;
+import roomescape.repository.theme.ThemeRepository;
 import roomescape.repository.reservation.ReservationRepository;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package roomescape.repository;
+package roomescape.repository.theme;
 
 import roomescape.domain.Theme;
 

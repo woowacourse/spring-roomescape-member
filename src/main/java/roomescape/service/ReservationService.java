@@ -4,11 +4,11 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.reservation.ReservationCreateRequest;
-import roomescape.dto.reservation.ReservationResponse;
+import roomescape.service.dto.reservation.ReservationCreateRequest;
+import roomescape.service.dto.reservation.ReservationResponse;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ResourceNotFoundException;
-import roomescape.repository.ThemeRepository;
+import roomescape.repository.theme.ThemeRepository;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationtime.ReservationTimeRepository;
 

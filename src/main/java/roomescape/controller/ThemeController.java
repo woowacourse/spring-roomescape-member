@@ -2,8 +2,8 @@ package roomescape.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.dto.ThemeCreateRequest;
-import roomescape.dto.ThemeResponse;
+import roomescape.service.dto.theme.ThemeCreateRequest;
+import roomescape.service.dto.theme.ThemeResponse;
 import roomescape.service.ThemeService;
 
 import java.net.URI;
