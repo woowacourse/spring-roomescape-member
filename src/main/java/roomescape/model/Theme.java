@@ -1,5 +1,7 @@
 package roomescape.model;
 
+import java.util.Objects;
+
 public class Theme {
 
     private long themeId;
@@ -37,5 +39,28 @@ public class Theme {
 
     public String getThumbnail() {
         return thumbnail;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Theme theme = (Theme) o;
+        return themeId == theme.themeId && Objects.equals(name, theme.name) && Objects.equals(description, theme.description) && Objects.equals(thumbnail, theme.thumbnail);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(themeId, name, description, thumbnail);
+    }
+
+    @Override
+    public String toString() {
+        return "Theme{" +
+                "themeId=" + themeId +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", thumbnail='" + thumbnail + '\'' +
+                '}';
     }
 }

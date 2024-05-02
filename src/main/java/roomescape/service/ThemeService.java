@@ -1,10 +1,12 @@
 package roomescape.service;
 
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 import roomescape.controller.request.ThemeRequest;
 import roomescape.model.Theme;
 import roomescape.repository.ThemeRepository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -27,5 +29,11 @@ public class ThemeService {
 
     public void deleteTheme(long id) {
         themeRepository.deleteTheme(id);
+    }
+
+    public List<Theme> findPopularThemes() {
+        LocalDate before = LocalDate.now().minusDays(8);
+        LocalDate after = LocalDate.now().minusDays(1);
+        return themeRepository.findThemeRankingByDate(before, after, 10);
     }
 }

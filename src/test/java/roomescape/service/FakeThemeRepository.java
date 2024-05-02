@@ -3,10 +3,13 @@ package roomescape.service;
 import roomescape.model.Theme;
 import roomescape.repository.ThemeRepository;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicLong;
+
+import static org.apache.groovy.util.Maps.of;
 
 public class FakeThemeRepository implements ThemeRepository {
 
@@ -45,5 +48,21 @@ public class FakeThemeRepository implements ThemeRepository {
                 .filter(theme -> theme.getThemeId() == id)
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 테마입니다."));
+    }
+
+    @Override
+    public List<Theme> findThemeRankingByDate(LocalDate before, LocalDate after, int limit) {
+        return List.of(
+                new Theme(10, "name10", "description10", "thumbnail10"),
+                new Theme(9, "name9", "description9", "thumbnail9"),
+                new Theme(1, "name1", "description1", "thumbnail1"),
+                new Theme(2, "name2", "description2", "thumbnail2"),
+                new Theme(3, "name3", "description3", "thumbnail3"),
+                new Theme(4, "name4", "description4", "thumbnail4"),
+                new Theme(5, "name5", "description5", "thumbnail5"),
+                new Theme(6, "name6", "description6", "thumbnail6"),
+                new Theme(7, "name7", "description7", "thumbnail7"),
+                new Theme(8, "name8", "description8", "thumbnail8")
+        );
     }
 }
