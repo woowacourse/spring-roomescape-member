@@ -15,7 +15,6 @@ public class Reservation {
     private final ReservationTime time;
     private final Theme theme;
 
-    // TODO: 생성자 private으로 변경
     public Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time, final Theme theme) {
         this.id = id;
         this.name = name;

@@ -31,7 +31,6 @@ public class TimeService {
                 .toList();
     }
 
-    // TODO: dto 만들지 파라미터로 LocalDate Long 받을지 고민 후 적용
     public List<TimeResponse> getTimeAvailable(final String date, final String themeId) {
         final List<ReservationTime> times = timeRepository.findAll()
                 .stream()

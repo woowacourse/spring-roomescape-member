@@ -25,7 +25,6 @@ public class Theme {
         return new Theme(null, name, description, getDefaultThumbnailIfNotExists(thumbnail));
     }
 
-    // TODO: 조금 더 개선
     private static String getDefaultThumbnailIfNotExists(final String thumbnail) {
         if (thumbnail == null || thumbnail.isBlank()) {
             return DEFAULT_THUMBNAIL;
