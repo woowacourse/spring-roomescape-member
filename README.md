@@ -19,7 +19,7 @@ HTTP/1.1 200
 Content-Type: application/json
 {
     "id": 1,
-    "name": "레벨2 탈출",
+    "name": "레벨2 탈출",
     "description": "우테코 레벨2를 탈출하는 내용입니다.",
     "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
 }
@@ -62,7 +62,7 @@ Content-Type: application/json
 
 <br>
 
-##### 🔧 인기 테마 조회
+##### 🔧 최근 1주일 기준 인기 테마 조회
 
 ```
 - 요청
