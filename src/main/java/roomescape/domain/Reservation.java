@@ -2,11 +2,11 @@ package roomescape.domain;
 
 public class Reservation {
 
-    private Long id;
-    private String name;
-    private String date;
-    private ReservationTime time;
-    private ReservationTheme theme;
+    private final Long id;
+    private final String name;
+    private final String date;
+    private final ReservationTime time;
+    private final ReservationTheme theme;
 
     public Reservation(Long id, String name, String date, ReservationTime time, ReservationTheme theme) {
         this.id = id;
