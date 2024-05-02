@@ -42,7 +42,7 @@ public class ReservationApiController {
 
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> saveReservation(@RequestBody final SaveReservationRequest request) {
-        Reservation savedReservation = reservationService.saveReservation(request);
+        final Reservation savedReservation = reservationService.saveReservation(request);
 
         return ResponseEntity.created(URI.create("/reservations/" + savedReservation.getId()))
                 .body(ReservationResponse.from(savedReservation));
@@ -64,7 +64,7 @@ public class ReservationApiController {
 
     @PostMapping("/times")
     public ResponseEntity<ReservationTimeResponse> saveReservationTime(@RequestBody final SaveReservationTimeRequest request) {
-        ReservationTime savedReservationTime = reservationService.saveReservationTime(request);
+        final ReservationTime savedReservationTime = reservationService.saveReservationTime(request);
 
         return ResponseEntity.created(URI.create("/times/" + savedReservationTime.getId()))
                 .body(ReservationTimeResponse.from(savedReservationTime));
@@ -99,8 +99,13 @@ public class ReservationApiController {
     }
 
     @GetMapping("/available-reservation-times")
-    public List<AvailableReservationTimeResponse> getAvailableReservationTimes(@RequestParam("date") LocalDate date, @RequestParam("theme-id") Long themeId) {
-        return reservationService.getAvailableReservationTimes(date, themeId);
+    public List<AvailableReservationTimeResponse> getAvailableReservationTimes(@RequestParam("date") final LocalDate date, @RequestParam("theme-id") final Long themeId) {
+        return reservationService.getAvailableReservationTimes(date, themeId)
+                .getValues()
+                .entrySet()
+                .stream()
+                .map(entry -> AvailableReservationTimeResponse.of(entry.getKey(), entry.getValue()))
+                .toList();
     }
 
     @GetMapping("/popular-themes")
