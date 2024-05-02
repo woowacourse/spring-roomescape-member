@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +15,7 @@ import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.time.ReservationTime;
 import roomescape.domain.time.repository.ReservationTimeRepository;
+import roomescape.fixture.ReservationFixture;
 import roomescape.fixture.ThemeFixture;
 import roomescape.support.annotation.FixedClock;
 import roomescape.support.extension.MockClockExtension;
@@ -25,7 +25,7 @@ import roomescape.support.extension.TableTruncateExtension;
 @ExtendWith({TableTruncateExtension.class, MockClockExtension.class})
 @FixedClock(date = "2024-04-20")
 public class ReservationServiceTest {
-    private final ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
+    private final ReservationTime time = ReservationFixture.reservationTime();
     private final Theme theme = ThemeFixture.theme();
 
     @Autowired
@@ -44,7 +44,7 @@ public class ReservationServiceTest {
     @Test
     void 예약을_성공한다() {
         LocalDate date = LocalDate.of(2024, 4, 21);
-        ReservationCreationRequest request = new ReservationCreationRequest("prin", date, 1L, 1L);
+        ReservationCreationRequest request = new ReservationCreationRequest("prin", date, time.getId(), theme.getId());
 
         Reservation reservation = reservationService.reserve(request);
 
@@ -56,7 +56,8 @@ public class ReservationServiceTest {
     @Test
     void 최소_1일_전에_예약하지_않으면_예약을_실패한다() {
         LocalDate invalidDate = LocalDate.of(2024, 4, 20);
-        ReservationCreationRequest request = new ReservationCreationRequest("liv", invalidDate, 1L, 1L);
+        ReservationCreationRequest request = new ReservationCreationRequest("liv", invalidDate, time.getId(),
+                theme.getId());
 
         assertThatThrownBy(() -> reservationService.reserve(request))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
@@ -66,7 +67,7 @@ public class ReservationServiceTest {
     @Test
     void 중복된_예약이_있으면_예약을_실패한다() {
         LocalDate date = LocalDate.of(2024, 4, 21);
-        ReservationCreationRequest request = new ReservationCreationRequest("sudal", date, 1L, 1L);
+        ReservationCreationRequest request = new ReservationCreationRequest("sudal", date, time.getId(), theme.getId());
         reservationService.reserve(request);
 
         assertThatThrownBy(() -> reservationService.reserve(request))
@@ -77,7 +78,7 @@ public class ReservationServiceTest {
     @Test
     void 예약을_취소한다() {
         LocalDate date = LocalDate.of(2024, 4, 21);
-        ReservationCreationRequest request = new ReservationCreationRequest("prin", date, 1L, 1L);
+        ReservationCreationRequest request = new ReservationCreationRequest("prin", date, time.getId(), theme.getId());
         Reservation reservation = reservationService.reserve(request);
 
         reservationService.cancel(reservation.getId());

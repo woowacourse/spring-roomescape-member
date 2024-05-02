@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import roomescape.application.ThemeService;
 import roomescape.domain.theme.Theme;
 import roomescape.dto.theme.ThemeRequest;
+import roomescape.fixture.ThemeFixture;
 import roomescape.support.ControllerTest;
 import roomescape.support.SimpleMockMvc;
 
@@ -23,7 +24,7 @@ class ThemeControllerTest extends ControllerTest {
 
     @Test
     void 테마를_생성한다() throws Exception {
-        Theme theme = new Theme(1L, "레모네와 함께 탐험", "설명", "https://lemone.com");
+        Theme theme = ThemeFixture.theme(1L, "레모네와 함께 탐험", "설명", "https://lemone.com");
         when(themeService.save(any())).thenReturn(theme);
         ThemeRequest request = new ThemeRequest(theme.getName(), theme.getDescription(), theme.getThumbnail());
         String content = objectMapper.writeValueAsString(request);
@@ -41,8 +42,7 @@ class ThemeControllerTest extends ControllerTest {
 
     @Test
     void 전체_테마를_조회한다() throws Exception {
-        List<Theme> themes = List.of(new Theme(1L, "테마1", "설명1", "링크1"),
-                new Theme(2L, "테마2", "설명2", "링크2"));
+        List<Theme> themes = List.of(ThemeFixture.theme(), ThemeFixture.theme());
         when(themeService.getThemes()).thenReturn(themes);
 
         ResultActions result = SimpleMockMvc.get(mockMvc, "/themes");

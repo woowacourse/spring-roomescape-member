@@ -115,7 +115,7 @@ class JdbcReservationRepositoryTest {
         ReservationTime time1 = reservationTimeRepository.save(time);
         ReservationTime time2 = reservationTimeRepository.save(time);
         Reservation reservation1 = ReservationFixture.reservation("프린", "2024-04-24", time1, theme1);
-        Reservation reservation2 = ReservationFixture.reservation("프린", "2024-04-24", time2, theme1);
+        Reservation reservation2 = ReservationFixture.reservation("레모네", "2024-04-24", time2, theme1);
         reservationRepository.save(reservation1);
         reservationRepository.save(reservation2);
 
