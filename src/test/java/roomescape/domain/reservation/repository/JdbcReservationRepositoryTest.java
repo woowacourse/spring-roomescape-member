@@ -81,7 +81,8 @@ class JdbcReservationRepositoryTest {
         Reservation reservation = ReservationFixture.reservation("prin", date, time, theme);
         reservationRepository.save(reservation);
 
-        boolean exists = reservationRepository.existsByReservationDateTime(LocalDate.parse(date), time.getId());
+        boolean exists = reservationRepository.existsByReservationDateTimeAndTheme(LocalDate.parse(date), time.getId(),
+                theme.getId());
 
         assertThat(exists).isTrue();
     }
@@ -91,7 +92,8 @@ class JdbcReservationRepositoryTest {
         Reservation reservation = ReservationFixture.reservation("prin", "2024-04-18", time, theme);
         reservationRepository.save(reservation);
 
-        boolean exists = reservationRepository.existsByReservationDateTime(LocalDate.parse("2024-04-20"), time.getId());
+        boolean exists = reservationRepository.existsByReservationDateTimeAndTheme(LocalDate.parse("2024-04-20"),
+                time.getId(), theme.getId());
 
         assertThat(exists).isFalse();
     }

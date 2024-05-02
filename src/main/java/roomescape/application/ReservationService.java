@@ -34,7 +34,8 @@ public class ReservationService {
     public Reservation reserve(ReservationCreationRequest request) {
         ReservationTime time = reservationTimeService.getReservationTime(request.timeId());
         validateReservationInAdvance(request.date(), time.getStartAt());
-        if (reservationRepository.existsByReservationDateTime(request.date(), time.getId())) {
+        if (reservationRepository.existsByReservationDateTimeAndTheme(request.date(), time.getId(),
+                request.themeId())) {
             throw new IllegalArgumentException("이미 예약된 날짜, 시간입니다.");
         }
         Reservation reservation = new Reservation(request.name(), request.date(), time, getTheme(request.themeId()));

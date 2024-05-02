@@ -54,25 +54,6 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByReservationDateTime(LocalDate date, long timeId) {
-        SelectQuery subQuery = QueryBuilder.select(TABLE_NAME)
-                .addColumns("1")
-                .where(ComparisonCondition.equalTo("r.reservation_date", date))
-                .where(ComparisonCondition.equalTo("r.time_id", timeId));
-        String query = QueryBuilder.select(TABLE_NAME)
-                .alias("r")
-                .addColumns("id")
-                .where(MultiLineCondition.exists(subQuery))
-                .build();
-        try {
-            jdbcTemplate.queryForObject(query, Long.class);
-            return true;
-        } catch (EmptyResultDataAccessException e) {
-            return false;
-        }
-    }
-
-    @Override
     public Optional<Reservation> findById(long id) {
         String query = """
                 SELECT * FROM reservation AS r
@@ -118,23 +99,6 @@ public class JdbcReservationRepository implements ReservationRepository {
             return Optional.empty();
         }
     }
-
-//    @Override
-//    public Optional<Reservation> existsByReservationDateTimeAndTheme(LocalDate date, long timeId, long themeId) {
-//        String query = """
-//                SELECT * FROM reservation AS r
-//                JOIN reservation_time AS t
-//                ON r.time_id = t.id
-//                JOIN theme AS th
-//                On r.theme_id = th.id
-//                WHERE r.time_id = ? AND r.theme_id = ? AND r.reservation_date = ?
-//                """;
-//        try {
-//            return Optional.ofNullable(jdbcTemplate.queryForObject(query, ROW_MAPPER, timeId, themeId, date));
-//        } catch (DataAccessException e) {
-//            return Optional.empty();
-//        }
-//    }
 
     @Override
     public boolean existsByReservationDateTimeAndTheme(LocalDate date, long timeId, long themeId) {
