@@ -28,6 +28,11 @@ public class ReservationDaoImpl implements ReservationDao {
                     resultSet.getString("theme_description"), resultSet.getString("theme_thumbnail"))
     );
 
+    private RowMapper<ReservationTime> timeRowMapper = ((rs, rowNum) -> new ReservationTime(
+            rs.getLong("id"),
+            rs.getTime("start_at").toLocalTime()
+    ));
+
     public ReservationDaoImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
@@ -101,6 +106,16 @@ public class ReservationDaoImpl implements ReservationDao {
                 + "    where date = ? and time_id = ? "
                 + ")";
         return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId);
+    }
+
+    @Override
+    public List<ReservationTime> findByDateAndTheme(LocalDate date, Theme theme) {
+        String sql = "select t.id, t.start_at "
+                + "   from reservation as r "
+                + "   inner join reservation_time as t "
+                + "   on r.time_id = t.id "
+                + "   where date = ? and theme_id = ?";
+        return jdbcTemplate.query(sql, timeRowMapper, date, theme.getId());
     }
 
     @Override
