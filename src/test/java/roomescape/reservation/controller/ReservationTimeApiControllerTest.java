@@ -1,4 +1,4 @@
-package roomescape.time.controller;
+package roomescape.reservation.controller;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
@@ -20,9 +20,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.time.dto.TimeRequest;
-import roomescape.time.dto.TimeResponse;
-import roomescape.time.service.ReservationTimeService;
+import roomescape.reservation.dto.TimeRequest;
+import roomescape.reservation.dto.TimeResponse;
+import roomescape.reservation.service.ReservationTimeService;
 
 @WebMvcTest(ReservationTimeApiController.class)
 class ReservationTimeApiControllerTest {

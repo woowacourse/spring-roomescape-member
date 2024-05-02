@@ -1,4 +1,4 @@
-package roomescape.theme.controller;
+package roomescape.reservation.controller;
 
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -16,9 +16,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.theme.dto.ThemeRequest;
-import roomescape.theme.dto.ThemeResponse;
-import roomescape.theme.service.ThemeService;
+import roomescape.reservation.dto.ThemeRequest;
+import roomescape.reservation.dto.ThemeResponse;
+import roomescape.reservation.service.ThemeService;
 
 @WebMvcTest(ThemeApiController.class)
 class ThemeApiControllerTest {

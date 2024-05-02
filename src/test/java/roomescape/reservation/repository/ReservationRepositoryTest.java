@@ -12,10 +12,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import roomescape.reservation.domain.Name;
 import roomescape.reservation.domain.Reservation;
-import roomescape.theme.domain.Theme;
-import roomescape.theme.repository.ThemeRepository;
-import roomescape.time.domain.ReservationTime;
-import roomescape.time.repository.ReservationTimeRepository;
+import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.domain.Theme;
 
 @JdbcTest
 @Import({ReservationRepository.class, ThemeRepository.class, ReservationTimeRepository.class})

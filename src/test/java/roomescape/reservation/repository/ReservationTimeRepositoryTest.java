@@ -1,4 +1,4 @@
-package roomescape.time.repository;
+package roomescape.reservation.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -12,10 +12,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import roomescape.reservation.domain.Name;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.repository.ReservationRepository;
-import roomescape.theme.domain.Theme;
-import roomescape.theme.repository.ThemeRepository;
-import roomescape.time.domain.ReservationTime;
+import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.domain.Theme;
 
 @JdbcTest
 @Import({ReservationTimeRepository.class, ThemeRepository.class, ReservationRepository.class})

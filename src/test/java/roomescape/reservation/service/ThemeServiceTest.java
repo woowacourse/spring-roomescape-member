@@ -1,4 +1,4 @@
-package roomescape.theme.service;
+package roomescape.reservation.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.doReturn;
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.theme.repository.ThemeRepository;
+import roomescape.reservation.repository.ThemeRepository;
 
 @ExtendWith(MockitoExtension.class)
 class ThemeServiceTest {

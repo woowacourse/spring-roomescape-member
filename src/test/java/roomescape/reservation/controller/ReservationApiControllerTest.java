@@ -21,9 +21,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservation.dto.ThemeResponse;
+import roomescape.reservation.dto.TimeResponse;
 import roomescape.reservation.service.ReservationService;
-import roomescape.theme.dto.ThemeResponse;
-import roomescape.time.dto.TimeResponse;
 
 @WebMvcTest(ReservationApiController.class)
 class ReservationApiControllerTest {

@@ -1,7 +1,7 @@
-package roomescape.theme.dto;
+package roomescape.reservation.dto;
 
 import roomescape.reservation.domain.Name;
-import roomescape.theme.domain.Theme;
+import roomescape.reservation.domain.Theme;
 
 public record ThemeRequest(String name, String description, String thumbnail) {
 

@@ -1,6 +1,6 @@
-package roomescape.theme.dto;
+package roomescape.reservation.dto;
 
-import roomescape.theme.domain.Theme;
+import roomescape.reservation.domain.Theme;
 
 public record PopularThemeResponse(String name, String description, String thumbnail) {
 

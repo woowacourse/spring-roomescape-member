@@ -5,15 +5,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.domain.Theme;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservation.dto.ThemeResponse;
+import roomescape.reservation.dto.TimeResponse;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.theme.domain.Theme;
-import roomescape.theme.dto.ThemeResponse;
-import roomescape.theme.repository.ThemeRepository;
-import roomescape.time.domain.ReservationTime;
-import roomescape.time.dto.TimeResponse;
-import roomescape.time.repository.ReservationTimeRepository;
+import roomescape.reservation.repository.ReservationTimeRepository;
+import roomescape.reservation.repository.ThemeRepository;
 
 @Service
 public class ReservationService {

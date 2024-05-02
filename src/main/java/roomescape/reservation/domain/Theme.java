@@ -1,6 +1,4 @@
-package roomescape.theme.domain;
-
-import roomescape.reservation.domain.Name;
+package roomescape.reservation.domain;
 
 public class Theme {
     private Long id;

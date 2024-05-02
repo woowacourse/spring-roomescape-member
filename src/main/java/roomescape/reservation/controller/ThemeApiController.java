@@ -1,4 +1,4 @@
-package roomescape.theme.controller;
+package roomescape.reservation.controller;
 
 import java.net.URI;
 import java.util.List;
@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.theme.dto.PopularThemeResponse;
-import roomescape.theme.dto.ThemeRequest;
-import roomescape.theme.dto.ThemeResponse;
-import roomescape.theme.service.ThemeService;
+import roomescape.reservation.dto.PopularThemeResponse;
+import roomescape.reservation.dto.ThemeRequest;
+import roomescape.reservation.dto.ThemeResponse;
+import roomescape.reservation.service.ThemeService;
 
 @RestController
 public class ThemeApiController {
