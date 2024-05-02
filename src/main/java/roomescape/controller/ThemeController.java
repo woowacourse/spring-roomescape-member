@@ -35,4 +35,9 @@ public class ThemeController {
         themeService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @ExceptionHandler(value = IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
+    }
 }

@@ -9,28 +9,12 @@ public class Reservation {
     private final TimeSlot time;
     private final Theme theme;
 
-    public Reservation(Long id, String name, LocalDate date, TimeSlot time, Theme theme) {
+    public Reservation(final Long id, final String name, final LocalDate date, final TimeSlot time, final Theme theme) {
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
-
-        isValid();
-    }
-
-    private void isValid() {
-        if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("[ERROR] 이름은 비워둘 수 없습니다.");
-        }
-
-        if (date == null || date.isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException("[ERROR] 올바르지 않은 예약 날짜입니다.");
-        }
-
-        if (time == null || (time.isTimeBeforeNow() && !date.isAfter(LocalDate.now()))) {
-            throw new IllegalArgumentException("[ERROR] 올바르지 않은 예약 시간입니다.");
-        }
     }
 
     public Long getId() {

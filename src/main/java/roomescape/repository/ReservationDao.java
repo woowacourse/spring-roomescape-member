@@ -27,8 +27,7 @@ public class ReservationDao {
                     new Theme(resultSet.getLong("theme_id"), resultSet.getString("theme_name"), resultSet.getString("theme_description"), resultSet.getString("theme_thumbnail"))
             );
 
-
-    public ReservationDao(JdbcTemplate jdbcTemplate) {
+    public ReservationDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
@@ -55,7 +54,7 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public Long create(ReservationRequest reservationRequest) {
+    public Long create(final ReservationRequest reservationRequest) {
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("name", reservationRequest.name())
                 .addValue("date", reservationRequest.date())
@@ -64,24 +63,29 @@ public class ReservationDao {
         return jdbcInsert.executeAndReturnKey(parameterSource).longValue();
     }
 
-    public void delete(Long id) {
+    public void delete(final Long id) {
         String sql = "delete from reservation where id = ?";
         jdbcTemplate.update(sql, id);
     }
 
-    public boolean isExists(LocalDate date, Long timeId) {
+    public boolean isExists(final LocalDate date, final Long timeId, final Long themeId) {
         String sql = """
                 SELECT
                 count(*)
                 FROM reservation
-                WHERE date = ? AND time_id = ?
+                WHERE date = ? AND time_id = ? AND theme_id = ?
                 """;
-        return jdbcTemplate.queryForObject(sql, Integer.class, date, timeId) != 0;
+        return jdbcTemplate.queryForObject(sql, Integer.class, date, timeId, themeId) != 0;
     }
 
-    public boolean isExistsTimeId(Long timeId) {
+    public boolean isExistsTimeId(final Long timeId) {
         String sql = "select count(*) from reservation where time_id = ?";
         return jdbcTemplate.queryForObject(sql, Integer.class, timeId) != 0;
+    }
+
+    public boolean isExistsThemeId(final Long themeId) {
+        String sql = "select count(*) from reservation where theme_id = ?";
+        return jdbcTemplate.queryForObject(sql, Integer.class, themeId) != 0;
     }
 
     //TODO: 엔티티 만들기~~

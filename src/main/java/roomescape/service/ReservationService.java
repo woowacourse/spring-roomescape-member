@@ -34,16 +34,16 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse create(ReservationRequest reservationRequest) {
+    public ReservationResponse create(final ReservationRequest reservationRequest) {
         TimeSlot timeSlot = getTimeSlot(reservationRequest);
-        Theme theme = themeDao.findById(reservationRequest.themeId());
-        validate(reservationRequest.date(), timeSlot);
+        Theme theme = getTheme(reservationRequest);
+        validate(reservationRequest.date(), timeSlot, theme);
         Long reservationId = reservationDao.create(reservationRequest);
         Reservation reservation = reservationRequest.toEntity(reservationId, timeSlot, theme);
         return ReservationResponse.from(reservation);
     }
 
-    private TimeSlot getTimeSlot(ReservationRequest reservationRequest) {
+    private TimeSlot getTimeSlot(final ReservationRequest reservationRequest) {
         TimeSlot timeSlot;
         try {
             timeSlot = timeDao.findById(reservationRequest.timeId());
@@ -53,22 +53,32 @@ public class ReservationService {
         return timeSlot;
     }
 
-    private void validate(LocalDate date, TimeSlot timeSlot) {
-        validateReservation(date, timeSlot);
-        validateDuplicatedReservation(date, timeSlot.getId());
+    private Theme getTheme(final ReservationRequest reservationRequest) {
+        Theme theme;
+        try {
+            theme = themeDao.findById(reservationRequest.themeId());
+        } catch (EmptyResultDataAccessException e) {
+            throw new IllegalArgumentException("[ERROR] 존재하지 않는 테마 입니다");
+        }
+        return theme;
     }
 
-    private void validateDuplicatedReservation(LocalDate date, Long timeId) {
-        if (reservationDao.isExists(date, timeId)) {
+    private void validate(final LocalDate date, final TimeSlot timeSlot, final Theme theme) {
+        validateReservation(date, timeSlot);
+        validateDuplicatedReservation(date, timeSlot.getId(), theme.getId());
+    }
+
+    private void validateDuplicatedReservation(final LocalDate date, final Long timeId, final Long themeId) {
+        if (reservationDao.isExists(date, timeId, themeId)) {
             throw new IllegalArgumentException("[ERROR] 예약이 찼어요 ㅜㅜ 죄송해요~~");
         }
     }
 
-    public void delete(Long id) {
+    public void delete(final Long id) {
         reservationDao.delete(id);
     }
 
-    private void validateReservation(LocalDate date, TimeSlot time) {
+    private void validateReservation(final LocalDate date, final TimeSlot time) {
         if (time == null || (time.isTimeBeforeNow() && !date.isAfter(LocalDate.now()))) {
             throw new IllegalArgumentException("[ERROR] 지나간 날짜와 시간으로 예약할 수 없습니다");
         }
