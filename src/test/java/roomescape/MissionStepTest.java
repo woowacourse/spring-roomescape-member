@@ -138,18 +138,14 @@ class MissionStepTest {
 
     @Test
     void 오단계() {
-        String sql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
-        jdbcTemplate.update(sql, "브라운", TOMORROW_DATE, 1, 1);
-
         List<ReservationResponseDto> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200).extract()
                 .jsonPath().getList(".", ReservationResponseDto.class);
 
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-
-        assertThat(reservations).hasSize(count);
+        int actual = countReservation();
+        assertThat(reservations).hasSize(actual);
     }
 
     @Test
@@ -160,22 +156,24 @@ class MissionStepTest {
         params.put("timeId", 1);
         params.put("themeId", 1);
 
+        int reservationSize = countReservation();
+
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
-                .header("Location", "/reservations/2");
+                .header("Location", "/reservations/" + findLastIdOfReservation());
 
-        assertThat(countReservation()).isEqualTo(2);
+        assertThat(countReservation()).isEqualTo(reservationSize + 1);
 
         RestAssured.given().log().all()
-                .when().delete("/reservations/1")
+                .when().delete("/reservations/" + findLastIdOfReservation())
                 .then().log().all()
                 .statusCode(204);
 
-        assertThat(countReservation()).isEqualTo(1);
+        assertThat(countReservation()).isEqualTo(reservationSize);
     }
 
     @Test
@@ -184,7 +182,7 @@ class MissionStepTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(findLastIdOfReservationTime()));
+                .body("size()", is(countReservationTime()));
 
         RestAssured.given().log().all()
                 .when().delete("/times/" + findLastIdOfReservationTime())
@@ -211,7 +209,7 @@ class MissionStepTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(2));
+                .body("size()", is(countReservation()));
     }
 
     @Autowired
@@ -235,11 +233,15 @@ class MissionStepTest {
         return jdbcTemplate.queryForObject("SELECT max(id) FROM reservation", Integer.class);
     }
 
+    private int findLastIdOfReservationTime() {
+        return jdbcTemplate.queryForObject("SELECT max(id) FROM reservation_time", Integer.class);
+    }
+
     private int countReservation() {
         return jdbcTemplate.queryForObject("SELECT count(1) FROM reservation", Integer.class);
     }
 
-    private int findLastIdOfReservationTime() {
-        return jdbcTemplate.queryForObject("SELECT max(id) FROM reservation_time", Integer.class);
+    private int countReservationTime() {
+        return jdbcTemplate.queryForObject("SELECT count(1) FROM reservation_time", Integer.class);
     }
 }
