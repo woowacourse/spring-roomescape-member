@@ -28,10 +28,10 @@ public class TimeService {
 
     public List<AvailableTimeResponse> readAvailableTimes(String date, Long themeId) {
         List<ReservationTime> allTime = timeDao.readTimes();
-        List<ReservationTime> availableTime = timeDao.readTimesExistsReservationDateAndThemeId(date, themeId);
+        List<ReservationTime> alreadyBookedTime = timeDao.readTimesExistsReservationDateAndThemeId(date, themeId);
 
         return allTime.stream()
-                .map(time -> AvailableTimeResponse.of(time, availableTime.contains(time)))
+                .map(time -> AvailableTimeResponse.of(time, alreadyBookedTime.contains(time)))
                 .toList();
     }
 
