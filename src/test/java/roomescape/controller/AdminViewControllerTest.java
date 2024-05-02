@@ -8,7 +8,7 @@ import org.springframework.test.annotation.DirtiesContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class ViewControllerTest {
+public class AdminViewControllerTest {
 
     @DisplayName("/admin get 요청 시 응답할 수 있다")
     @Test
