@@ -57,8 +57,7 @@ public class Theme {
         return this.name.equals(name);
     }
 
-    //todo : long 으로 변경
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
