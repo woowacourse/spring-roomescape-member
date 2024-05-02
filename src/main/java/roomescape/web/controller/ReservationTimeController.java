@@ -26,8 +26,7 @@ public class ReservationTimeController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTimeResponse> create(
-            @RequestBody final ReservationTimeRequest request) {
+    public ResponseEntity<ReservationTimeResponse> create(@RequestBody final ReservationTimeRequest request) {
         validateRequest(request);
         final ReservationTimeResponse response = reservationTimeService.create(request);
         return ResponseEntity.created(URI.create("/times/" + response.getId()))
@@ -40,8 +39,8 @@ public class ReservationTimeController {
     }
 
     @GetMapping(params = {"date", "themeId"})
-    public ResponseEntity<List<BookedTimeResponse>> findBookable(
-            @RequestParam("date") String date, @RequestParam("themeId") Long themeId) {
+    public ResponseEntity<List<BookedTimeResponse>> findBookable(@RequestParam("date") String date,
+                                                                 @RequestParam("themeId") Long themeId) {
         return ResponseEntity.ok(reservationTimeService.findBookable(date, themeId));
     }
 
