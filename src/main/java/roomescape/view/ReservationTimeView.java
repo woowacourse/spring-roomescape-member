@@ -1,12 +1,13 @@
 package roomescape.view;
 
+import org.springframework.stereotype.Component;
+import roomescape.dto.response.ReservationTimeResponse;
+
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Pattern;
-import org.springframework.stereotype.Component;
-import roomescape.dto.ReservationTimeResponse;
 
 @Component
 public class ReservationTimeView {
