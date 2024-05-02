@@ -52,7 +52,7 @@ class ReservationTimeServiceTest extends DummyDataFixture {
     void getReservationTimes() {
         // stub
         Mockito.when(reservationTimeRepository.findAll())
-                .thenReturn(super.getPreParedReservationTimes());
+                .thenReturn(super.getPreparedReservationTimes());
 
         // when & then
         assertThat(reservationTimeService.getReservationTimes()).containsExactly(

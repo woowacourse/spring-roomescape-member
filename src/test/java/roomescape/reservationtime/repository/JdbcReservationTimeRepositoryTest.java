@@ -28,7 +28,7 @@ class JdbcReservationTimeRepositoryTest extends DummyDataFixture {
     @Test
     @DisplayName("ReservationTime 테이블의 있는 모든 데이터를 조회한다.")
     void findAll() {
-        List<ReservationTime> preparedReservationTimes = super.getPreParedReservationTimes();
+        List<ReservationTime> preparedReservationTimes = super.getPreparedReservationTimes();
         assertThat(jdbcReservationTimeRepository.findAll()).isEqualTo(preparedReservationTimes);
     }
 
