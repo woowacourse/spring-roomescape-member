@@ -91,7 +91,7 @@ DELETE /reservations/1 HTTP/1.1
 **Response**
 
 ```
-HTTP/1.1 200
+HTTP/1.1 204
 ```
 
 <br>
@@ -158,7 +158,7 @@ DELETE /times/1 HTTP/1.1
 **Response**
 
 ```
-HTTP/1.1 200
+HTTP/1.1 204
 ```
 
 <br>

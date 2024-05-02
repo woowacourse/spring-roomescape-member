@@ -54,8 +54,7 @@ public class TimeController {
             return ResponseEntity.notFound()
                     .build();
         }
-        //TODO 삭제 후 안지워짐
-        return ResponseEntity.ok()
+        return ResponseEntity.noContent()
                 .build();
     }
 }

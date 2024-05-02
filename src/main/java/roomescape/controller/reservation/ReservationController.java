@@ -48,7 +48,7 @@ public class ReservationController {
             return ResponseEntity.notFound()
                     .build();
         }
-        return ResponseEntity.ok()
+        return ResponseEntity.noContent()
                 .build();
     }
 
