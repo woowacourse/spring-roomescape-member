@@ -41,11 +41,12 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponseDto createReservationTime(ReservationTimeRequestDto requestDto) {
-        if (reservationTimeRepository.isExistTimeOf(requestDto.getStartAt())) {
+        ReservationTime reservationTime = requestDto.toReservationTime();
+        if (reservationTimeRepository.isExistTimeOf(reservationTime.getStartAt().toString())) {
             throw new IllegalArgumentException("중복된 시간을 입력할 수 없습니다.");
         }
-        ReservationTime time = reservationTimeRepository.insertReservationTime(requestDto.toReservationTime());
-        return new ReservationTimeResponseDto(time);
+        ReservationTime savedTime = reservationTimeRepository.insertReservationTime(reservationTime);
+        return new ReservationTimeResponseDto(savedTime);
     }
 
     public void deleteReservationTime(long id) {
