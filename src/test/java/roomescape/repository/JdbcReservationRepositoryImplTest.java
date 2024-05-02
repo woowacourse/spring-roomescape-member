@@ -12,7 +12,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
@@ -24,7 +23,6 @@ import roomescape.domain.ThemeRepository;
 
 @SpringBootTest
 @Transactional
-@AutoConfigureTestDatabase
 class JdbcReservationRepositoryImplTest {
 
     @Autowired
