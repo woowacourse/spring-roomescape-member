@@ -14,6 +14,10 @@ public class ReservationRowMapper implements RowMapper<Reservation> {
         return new Reservation(
                 resultSet.getLong("reservation_id"),
                 resultSet.getString("name"),
+                resultSet.getLong("theme_id"),
+                resultSet.getString("theme_name"),
+                resultSet.getString("theme_description"),
+                resultSet.getString("theme_thumbnail"),
                 resultSet.getString("date"),
                 resultSet.getLong("time_id"),
                 resultSet.getString("time_value")

@@ -32,11 +32,16 @@ public class JdbcReservationRepository implements ReservationRepository {
                 SELECT 
                 r.id AS reservation_id, 
                 r.name, 
+                th.id AS theme_id,
+                th.name AS theme_name,
+                th.description AS theme_description,
+                th.thumbnail AS theme_thumbnail,
                 r.date, 
                 t.id AS time_id, 
                 t.start_at AS time_value 
                 FROM reservation AS r 
-                INNER JOIN reservation_time AS t ON r.time_id = t.id;
+                INNER JOIN reservation_time AS t ON r.time_id = t.id
+                INNER JOIN theme AS th ON r.theme_id = th.id;
                 """;
         return jdbcTemplate.query(sql, rowMapper);
     }
@@ -45,6 +50,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     public Reservation insertReservation(Reservation reservation) {
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
+                .addValue("theme_id", reservation.getThemeId())
                 .addValue("date", reservation.getDate())
                 .addValue("time_id", reservation.getTimeId());
         long savedId = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
@@ -101,11 +107,16 @@ public class JdbcReservationRepository implements ReservationRepository {
                 SELECT 
                 r.id AS reservation_id, 
                 r.name, 
+                th.id AS theme_id,
+                th.name AS theme_name,
+                th.description AS theme_description,
+                th.thumbnail AS theme_thumbnail,
                 r.date, 
                 t.id AS time_id, 
                 t.start_at AS time_value 
                 FROM reservation AS r 
                 INNER JOIN reservation_time AS t ON r.time_id = t.id 
+                INNER JOIN theme AS th ON r.theme_id = th.id
                 WHERE r.id = :savedId;
                 """;
         SqlParameterSource paramMap = new MapSqlParameterSource().addValue("savedId", savedId);
