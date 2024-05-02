@@ -1,17 +1,17 @@
 package roomescape.controller.web;
 
-import java.net.URI;
-import java.time.LocalDate;
-import java.util.List;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.SelectableTimeResponse;
 import roomescape.service.ReservationService;
 
-@Controller
+import java.net.URI;
+import java.time.LocalDate;
+import java.util.List;
+
+@RestController
 @RequestMapping("/reservations")
 public class ReservationController {
     private final ReservationService reservationService;
@@ -32,16 +32,17 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.findAll());
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable("id") long id) {
-        reservationService.deleteById(id);
-        return ResponseEntity.noContent().build();
+    @GetMapping("/times")
+    public ResponseEntity<List<SelectableTimeResponse>> findSelectableTimes(
+            @RequestParam(name = "date") LocalDate date,
+            @RequestParam(name = "themeId") long themeId
+    ) {
+        return ResponseEntity.ok(reservationService.findSelectableTime(date, themeId));
     }
 
-    @GetMapping("/times")
-    public ResponseEntity<List<SelectableTimeResponse>> findSelectableTimes(@RequestParam(name="date") LocalDate date,
-                                                                            @RequestParam(name="themeId") long themeId) {
-        List<SelectableTimeResponse> selectableTimeResponses = reservationService.findSelectableTime(date, themeId);
-        return ResponseEntity.ok(selectableTimeResponses);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteReservation(@PathVariable("id") long id) {
+        reservationService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

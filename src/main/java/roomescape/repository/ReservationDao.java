@@ -7,8 +7,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
 
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
@@ -86,10 +84,6 @@ public class ReservationDao {
         );
     }
 
-    public void delete(final long id) {
-        jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", Long.valueOf(id));
-    }
-
     public List<Reservation> findByTimeId(final long timeId) {
         String sql = "SELECT * FROM reservation WHERE time_id = ?";
         return jdbcTemplate.query(
@@ -118,14 +112,6 @@ public class ReservationDao {
                 themeId);
     }
 
-    public List<Long> findRanking(final LocalDate from, final LocalDate to, final int count) {
-        String sql = "SELECT theme_id, count(*) AS count FROM reservation WHERE date BETWEEN ? AND ? GROUP BY theme_id ORDER BY count DESC LIMIT ?";
-        return jdbcTemplate.query(
-                sql,
-                (resultSet, rowNum) -> resultSet.getLong("theme_id"),
-                from, to, count
-        );
-    }
 
     public List<Long> findByDateAndTimeIdAndThemeId(LocalDate date, long timeId, long themeId) {
         String sql = "SELECT time_id FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?";
@@ -141,5 +127,18 @@ public class ReservationDao {
                 sql, (resultSet, rowNum) -> resultSet.getLong("time_id"),
                 date.toString(), themeId
         );
+    }
+
+    public List<Long> findRanking(final LocalDate from, final LocalDate to, final int count) {
+        String sql = "SELECT theme_id, count(*) AS count FROM reservation WHERE date BETWEEN ? AND ? GROUP BY theme_id ORDER BY count DESC LIMIT ?";
+        return jdbcTemplate.query(
+                sql,
+                (resultSet, rowNum) -> resultSet.getLong("theme_id"),
+                from, to, count
+        );
+    }
+
+    public void delete(final long id) {
+        jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", Long.valueOf(id));
     }
 }

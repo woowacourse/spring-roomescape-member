@@ -1,8 +1,5 @@
 package roomescape.repository;
 
-import java.sql.PreparedStatement;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -10,14 +7,20 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
-import roomescape.repository.rowmapper.ReservationTimeRowMapper;
+
+import java.sql.PreparedStatement;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class ReservationTimeDao {
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<ReservationTime> reservationTimeRowMapper;
 
-    public ReservationTimeDao(final JdbcTemplate jdbcTemplate, final RowMapper<ReservationTime> reservationTimeRowMapper) {
+    public ReservationTimeDao(
+            final JdbcTemplate jdbcTemplate,
+            final RowMapper<ReservationTime> reservationTimeRowMapper
+    ) {
         this.jdbcTemplate = jdbcTemplate;
         this.reservationTimeRowMapper = reservationTimeRowMapper;
     }
@@ -45,6 +48,13 @@ public class ReservationTimeDao {
         }
     }
 
+    public List<ReservationTime> getAll() {
+        return jdbcTemplate.query(
+                "SELECT id, start_at FROM reservation_time",
+                reservationTimeRowMapper
+        );
+    }
+
     public Optional<ReservationTime> findById(final long id) {
         try {
             String sql = "SELECT * FROM reservation_time WHERE id = ?";
@@ -52,13 +62,6 @@ public class ReservationTimeDao {
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
         }
-    }
-
-    public List<ReservationTime> getAll() {
-        return jdbcTemplate.query(
-                "SELECT id, start_at FROM reservation_time",
-                reservationTimeRowMapper
-        );
     }
 
     public void delete(final long id) {

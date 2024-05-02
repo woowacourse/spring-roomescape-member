@@ -10,8 +10,13 @@ public class Reservation {
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(final Long id, final Name name, final LocalDate date, final ReservationTime time,
-                       final Theme theme) {
+    public Reservation(
+            final Long id,
+            final Name name,
+            final LocalDate date,
+            final ReservationTime time,
+            final Theme theme
+    ) {
         validateDate(date);
         validateTime(date, time);
         this.id = id;
@@ -25,7 +30,6 @@ public class Reservation {
         if (date == null) {
             throw new IllegalArgumentException("[ERROR] 잘못된 예약 날짜 입력입니다.");
         }
-
         LocalDate now = LocalDate.now();
         if (now.isAfter(date)) {
             throw new IllegalArgumentException("[ERROR] 현재 날짜보다 이전의 예약 날짜를 선택할 수 없습니다.");
@@ -34,15 +38,14 @@ public class Reservation {
 
     private void validateTime(final LocalDate date, final ReservationTime time) {
         LocalDate now = LocalDate.now();
-        boolean isSameDate = now.isEqual(date);
-        if (isSameDate && time.isBefore(LocalTime.now())) {
+        boolean isEqualDate = now.isEqual(date);
+        if (isEqualDate && time.isBefore(LocalTime.now())) {
             throw new IllegalArgumentException("[ERROR] 현재 시간보다 이전의 시간을 선택할 수 없습니다.");
         }
     }
 
     public static Reservation of(long id, String name, String date, long timeId, long themeId) {
         LocalDate parsedDate = LocalDate.parse(date);
-
         return new Reservation(id, new Name(name), parsedDate, new ReservationTime(timeId), new Theme(themeId));
     }
 

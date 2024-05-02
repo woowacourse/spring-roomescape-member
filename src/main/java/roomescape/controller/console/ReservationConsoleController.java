@@ -1,6 +1,5 @@
 package roomescape.controller.console;
 
-import java.util.List;
 import org.springframework.stereotype.Controller;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
@@ -9,6 +8,8 @@ import roomescape.service.ReservationService;
 import roomescape.service.ReservationTimeService;
 import roomescape.view.ReservationTimeView;
 import roomescape.view.ReservationView;
+
+import java.util.List;
 
 @Controller
 public class ReservationConsoleController {
@@ -49,7 +50,7 @@ public class ReservationConsoleController {
     public void delete() {
         try {
             List<ReservationResponse> reservationResponses = reservationService.findAll();
-            reservationService.deleteById(
+            reservationService.delete(
                     reservationView.readIndexToDelete(reservationResponses)
             );
             reservationView.printSuccessfullyDeleted();

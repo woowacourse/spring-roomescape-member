@@ -5,14 +5,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class AdminController {
+
+    @GetMapping("/")
+    public String getHomePage() {
+        return "/index";
+    }
+
     @GetMapping("/admin")
     public String getAdminPage() {
         return "/admin/index";
-    }
-
-    @GetMapping("/reservation")
-    public String getReservationPage() {
-        return "/reservation";
     }
 
     @GetMapping("/admin/reservation")
@@ -30,8 +31,8 @@ public class AdminController {
         return "/admin/theme";
     }
 
-    @GetMapping("/")
-    public String getHomePage() {
-        return "/index";
+    @GetMapping("/reservation")
+    public String getReservationPage() {
+        return "/reservation";
     }
 }
