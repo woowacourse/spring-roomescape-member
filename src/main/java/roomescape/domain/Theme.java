@@ -5,19 +5,15 @@ import java.util.Objects;
 public class Theme {
 
     private final Long id;
-    private final Name name;
+    private final String name;
     private final String description;
     private final String thumbnail;
 
-    public Theme(Long id, Name name, String description, String thumbnail) {
+    public Theme(Long id, String name, String description, String thumbnail) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
-    }
-
-    public Theme(Long id, String name, String description, String thumbnail) {
-        this(id, new Name(name), description, thumbnail);
     }
 
     public Long getId() {
@@ -25,7 +21,7 @@ public class Theme {
     }
 
     public String getName() {
-        return name.getValue();
+        return name;
     }
 
     public String getDescription() {

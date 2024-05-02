@@ -40,8 +40,8 @@ public class ReservationService {
             throw new IllegalArgumentException("지나간 날짜와 시간에 대한 예약은 불가능합니다.");
         }
 
-        if (reservationRepository.isExistReservationAtDateTime(reservation)) {
-            throw new IllegalArgumentException("같은 시간에 이미 예약이 존재합니다.");
+        if (reservationRepository.hasSameReservationForThemeAtDateTime(reservation)) {
+            throw new IllegalArgumentException("해당 테마는 같은 시간에 이미 예약이 존재합니다.");
         }
 
         Reservation savedReservation = reservationRepository.insertReservation(reservation);

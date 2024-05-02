@@ -3,6 +3,7 @@ package roomescape.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.time.LocalTime;
 import java.util.List;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,12 +13,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import roomescape.domain.Name;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
+import roomescape.domain.Theme;
+import roomescape.domain.ThemeRepository;
 import roomescape.repository.rowmapper.ReservationRowMapper;
 import roomescape.repository.rowmapper.ReservationTimeRowMapper;
+import roomescape.repository.rowmapper.ThemeRowMapper;
 
 @TestExecutionListeners(value = {
         DatabaseCleanupListener.class,
@@ -30,23 +36,37 @@ class JdbcReservationRepositoryTest {
     private DataSource dataSource;
     private ReservationRepository reservationRepository;
     private ReservationTimeRepository reservationTimeRepository;
+    private ThemeRepository themeRepository;
 
-    private final ReservationTime time1 = new ReservationTime(1L, "00:00");
-    private final ReservationTime time2 = new ReservationTime(2L, "12:00");
+    private final ReservationTime time1 = new ReservationTime(1L, "15:30");
+    private final ReservationTime time2 = new ReservationTime(2L, "17:30");
+    private final Theme theme1 = new Theme(1L, "테마이름", "테마내용", "테마썸네일");
+    private final Theme theme2 = new Theme(2L, "다른테마", "재밌음", "테마.png");
 
-    private final Reservation reservation1 = new Reservation(null, "안돌", "2024-09-08", 1L, "00:00");
-    private final Reservation reservation2 = new Reservation(null, "재즈", "2024-11-30", 2L, "12:00");
+    private final Reservation reservation1 = new Reservation(
+            null, new Name("안돌"),
+            new Theme(1L, null, null, null),
+            new ReservationDate("2023-09-08"),
+            new ReservationTime(1L, (LocalTime) null));
+    private final Reservation reservation2 = new Reservation(
+            null, new Name("재즈"),
+            new Theme(2L, null, null, null),
+            new ReservationDate("2024-04-22"),
+            new ReservationTime(2L, (LocalTime) null));
 
     @BeforeEach
     void setUp() {
         reservationRepository = new JdbcReservationRepository(dataSource, new ReservationRowMapper());
         reservationTimeRepository = new JdbcReservationTimeRepository(dataSource, new ReservationTimeRowMapper());
-        initializeTimesData();
+        themeRepository = new JdbcThemeRepository(dataSource, new ThemeRowMapper());
+        initializeTimesAndThemeData();
     }
 
-    private void initializeTimesData() {
+    private void initializeTimesAndThemeData() {
         reservationTimeRepository.insertReservationTime(time1);
         reservationTimeRepository.insertReservationTime(time2);
+        themeRepository.insertTheme(theme1);
+        themeRepository.insertTheme(theme2);
     }
 
     @Test
@@ -67,9 +87,13 @@ class JdbcReservationRepositoryTest {
 
         assertAll(
                 () -> assertThat(reservation.getName()).isEqualTo("재즈"),
-                () -> assertThat(reservation.getDate()).isEqualTo("2024-11-30"),
+                () -> assertThat(reservation.getTheme().getId()).isEqualTo(2),
+                () -> assertThat(reservation.getTheme().getName()).isEqualTo("다른테마"),
+                () -> assertThat(reservation.getTheme().getDescription()).isEqualTo("재밌음"),
+                () -> assertThat(reservation.getTheme().getThumbnail()).isEqualTo("테마.png"),
+                () -> assertThat(reservation.getDate()).isEqualTo("2024-04-22"),
                 () -> assertThat(reservation.getTimeId()).isEqualTo(2),
-                () -> assertThat(reservation.getTimeStartAt()).isEqualTo("12:00")
+                () -> assertThat(reservation.getTimeStartAt()).isEqualTo("17:30")
         );
     }
 
@@ -103,22 +127,15 @@ class JdbcReservationRepositoryTest {
     }
 
     @Test
-    @DisplayName("테이블에 특정 시간 및 날짜의 예약 존재 여부를 판단한다.")
-    void is_exist_reservation_at_date_time() {
-        Reservation sameDateReservation = new Reservation(null, "atto", "2024-09-08", 2L, "12:00");
-        Reservation sameTimeReservation = new Reservation(null, "atto", "2024-09-07", 1L, "00:00");
+    @DisplayName("예약 테이블에 테마, 시간, 날짜가 동일한 예약이 존재하는지 판단한다.")
+    void is_exist_reservation_for_theme_at_date_time() {
+        Reservation allSameReservation = new Reservation(
+                3L, new Name("atto"), theme1, new ReservationDate("2023-09-08"), time1);
+
         reservationRepository.insertReservation(reservation1);
 
-        boolean allSame = reservationRepository.isExistReservationAtDateTime(reservation1);
-        boolean onlySameDate = reservationRepository.isExistReservationAtDateTime(sameDateReservation);
-        boolean onlySameTime = reservationRepository.isExistReservationAtDateTime(sameTimeReservation);
-        boolean allDifference = reservationRepository.isExistReservationAtDateTime(reservation2);
+        boolean allSame = reservationRepository.hasSameReservationForThemeAtDateTime(allSameReservation);
 
-        assertAll(
-                () -> assertThat(allSame).isTrue(),
-                () -> assertThat(onlySameDate).isFalse(),
-                () -> assertThat(onlySameTime).isFalse(),
-                () -> assertThat(allDifference).isFalse()
-        );
+        assertThat(allSame).isTrue();
     }
 }

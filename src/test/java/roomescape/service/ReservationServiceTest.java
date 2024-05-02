@@ -34,13 +34,21 @@ class ReservationServiceTest {
 
     private final ReservationTime time = new ReservationTime(1L, "15:30");
     private final LocalDate validDate = LocalDate.now().plusDays(10);
-    private final ReservationRequestDto requestDto = new ReservationRequestDto("재즈", validDate.toString(), 1L);
+    private final ReservationRequestDto requestDto = new ReservationRequestDto("재즈", 1L, validDate.toString(), 1L);
 
     @DisplayName("모든 예약 정보 조회 및 의존 객체 상호작용 테스트")
     @Test
     void find_all_reservations_test() {
-        Reservation reservation1 = new Reservation(1L, "안돌", "2024-09-08", 1L, "00:00");
-        Reservation reservation2 = new Reservation(2L, "재즈", "2024-11-30", 1L, "00:00");
+        Reservation reservation1 = new Reservation(
+                1L, "안돌",
+                1L, "테마이름", "테마내용", "테마썸네일",
+                "2023-09-08",
+                1L, "15:30");
+        Reservation reservation2 = new Reservation(
+                1L, "재즈",
+                1L, "테마이름", "테마내용", "테마썸네일",
+                "2024-04-22",
+                2L, "17:30");
         List<Reservation> reservations = List.of(reservation1, reservation2);
         given(reservationRepository.findAllReservations()).willReturn(reservations);
 
@@ -52,10 +60,14 @@ class ReservationServiceTest {
     @Test
     void create_reservation_test() {
         given(reservationTimeRepository.isExistTimeOf(requestDto.getTimeId())).willReturn(true);
-        given(reservationRepository.isExistReservationAtDateTime(requestDto.toReservation())).willReturn(false);
+        given(reservationRepository.hasSameReservationForThemeAtDateTime(requestDto.toReservation())).willReturn(false);
         given(reservationTimeRepository.findReservationTimeById(requestDto.getTimeId())).willReturn(time);
 
-        Reservation reservation = new Reservation(1L, "재즈", "2024-04-21", 1L, "15:30");
+        Reservation reservation = new Reservation(
+                1L, "안돌",
+                1L, "테마이름", "테마내용", "테마썸네일",
+                "2023-09-08",
+                1L, "15:30");
         given(reservationRepository.insertReservation(requestDto.toReservation())).willReturn(reservation);
 
         reservationService.createReservation(requestDto);
@@ -78,7 +90,7 @@ class ReservationServiceTest {
     @Test
     void throw_exception_when_past_datetime_create() {
         LocalDate pastDate = LocalDate.now().minusDays(10);
-        ReservationRequestDto invalidDateRequest = new ReservationRequestDto("재즈", pastDate.toString(), 1L);
+        ReservationRequestDto invalidDateRequest = new ReservationRequestDto("재즈", 1L, pastDate.toString(), 1L);
         given(reservationTimeRepository.isExistTimeOf(invalidDateRequest.getTimeId())).willReturn(true);
         given(reservationTimeRepository.findReservationTimeById(requestDto.getTimeId())).willReturn(time);
 
@@ -94,11 +106,11 @@ class ReservationServiceTest {
     void throw_exception_when_duplicate_datetime_create() {
         given(reservationTimeRepository.isExistTimeOf(requestDto.getTimeId())).willReturn(true);
         given(reservationTimeRepository.findReservationTimeById(requestDto.getTimeId())).willReturn(time);
-        given(reservationRepository.isExistReservationAtDateTime(requestDto.toReservation())).willReturn(true);
+        given(reservationRepository.hasSameReservationForThemeAtDateTime(requestDto.toReservation())).willReturn(true);
 
         assertThatThrownBy(() -> reservationService.createReservation(requestDto))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("같은 시간에 이미 예약이 존재합니다.");
+                .hasMessage("해당 테마는 같은 시간에 이미 예약이 존재합니다.");
 
         verify(reservationRepository, never()).insertReservation(requestDto.toReservation());
     }

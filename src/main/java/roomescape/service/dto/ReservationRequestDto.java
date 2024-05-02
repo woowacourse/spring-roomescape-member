@@ -69,7 +69,7 @@ public class ReservationRequestDto {
     }
 
     public Reservation toReservation() {
-        return new Reservation(null, new Name(name), new Theme(themeId, (Name) null, null, null),
+        return new Reservation(null, new Name(name), new Theme(themeId, null, null, null),
                 new ReservationDate(date), new ReservationTime(timeId,
                 (LocalTime) null));
     }

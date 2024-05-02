@@ -16,5 +16,5 @@ public interface ReservationRepository {
 
     boolean isExistReservationOf(long id);
 
-    boolean isExistReservationAtDateTime(Reservation reservation);
+    boolean hasSameReservationForThemeAtDateTime(Reservation reservation);
 }

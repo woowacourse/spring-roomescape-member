@@ -93,11 +93,12 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean isExistReservationAtDateTime(Reservation reservation) {
-        String sql = "SELECT COUNT(*) FROM reservation WHERE date = :date AND time_id = :timeId";
+    public boolean hasSameReservationForThemeAtDateTime(Reservation reservation) {
+        String sql = "SELECT COUNT(*) FROM reservation WHERE date = :date AND time_id = :timeId AND theme_id = :themeId";
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("date", reservation.getDate())
-                .addValue("timeId", reservation.getTimeId());
+                .addValue("timeId", reservation.getTimeId())
+                .addValue("themeId", reservation.getThemeId());
         int count = jdbcTemplate.queryForObject(sql, parameterSource, Integer.class);
         return count > 0;
     }
