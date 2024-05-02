@@ -141,6 +141,7 @@ public class H2ReservationRepository implements ReservationRepository {
                 WHERE R.DATE BETWEEN  ? AND ?
                 GROUP BY (R.THEME_ID)
                 ORDER BY COUNT DESC
+                LIMIT 10
                 """;
 
         return jdbcTemplate.query(sql, ((rs, rowNum) -> new Theme(
