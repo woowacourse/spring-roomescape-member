@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.repository.ReservationRepository;
 
 import javax.sql.DataSource;
 import java.sql.Date;
@@ -19,7 +20,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Repository
-public class ReservationDao {
+public class ReservationDao implements ReservationRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
@@ -30,7 +31,8 @@ public class ReservationDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public List<Reservation> selectAll() {
+    @Override
+    public List<Reservation> findAll() {
         String sql = """
                 SELECT
                     r.id AS reservation_id,
@@ -56,7 +58,8 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, this::rowMapper);
     }
 
-    public List<Reservation> selectAllByDateAndTime(LocalDate date, ReservationTime time, Long themeId) {
+    @Override
+    public List<Reservation> findAllByDateAndTimeAndThemeId(LocalDate date, ReservationTime time, Long themeId) {
         String sql = """
                 SELECT 
                     r.id AS reservation_id,
@@ -84,17 +87,19 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, this::rowMapper, Date.valueOf(date), Time.valueOf(time.getStartAt()), themeId);
     }
 
-    public Long insert(Reservation reservation) {
+    @Override
+    public Reservation save(Reservation reservation) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
                 .addValue("date", reservation.getDate())
                 .addValue("time_id", reservation.getReservationTimeId())
                 .addValue("theme_id", reservation.getThemeId());
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
-        return Objects.requireNonNull(id);
+        return new Reservation(Objects.requireNonNull(id), reservation);
     }
 
-    public Boolean existById(Long id) {
+    @Override
+    public boolean existById(Long id) {
         String sql = """
                 SELECT EXISTS (
                     SELECT 1
@@ -106,17 +111,20 @@ public class ReservationDao {
                 (resultSet, rowNumber) -> resultSet.getBoolean("is_exist"), id);
     }
 
+    @Override
     public void deleteById(Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
 
+    @Override
     public int countByTimeId(Long timeId) {
         String sql = "SELECT count(*) FROM reservation WHERE time_id = ?";
         return jdbcTemplate.queryForObject(sql, Integer.class, timeId);
     }
 
-    public List<Long> selectAllTimeIdsByDateAndThemeId(LocalDate date, Long themeId) {
+    @Override
+    public List<Long> findAllTimeIdsByDateAndThemeId(LocalDate date, Long themeId) {
         String sql = """
                 SELECT 
                     time_id

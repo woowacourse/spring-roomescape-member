@@ -7,15 +7,17 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
+import roomescape.repository.ReservationTimeRepository;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Repository
-public class ReservationTimeDao {
+public class ReservationTimeDao implements ReservationTimeRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
@@ -26,23 +28,27 @@ public class ReservationTimeDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Long insert(ReservationTime reservationTime) {
+    @Override
+    public ReservationTime save(ReservationTime reservationTime) {
         SqlParameterSource params = new BeanPropertySqlParameterSource(reservationTime);
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
-        return Objects.requireNonNull(id);
+        return new ReservationTime(Objects.requireNonNull(id), reservationTime);
     }
 
-    public List<ReservationTime> selectAll() {
+    @Override
+    public List<ReservationTime> findAll() {
         String sql = "SELECT id, start_at FROM reservation_time";
         return jdbcTemplate.query(sql, this::rowMapper);
     }
 
-    public ReservationTime selectById(Long id) {
+    @Override
+    public Optional<ReservationTime> findById(Long id) {
         try {
             String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
-            return jdbcTemplate.queryForObject(sql, this::rowMapper, id);
+            ReservationTime reservationTime = jdbcTemplate.queryForObject(sql, this::rowMapper, id);
+            return Optional.ofNullable(reservationTime);
         } catch (EmptyResultDataAccessException e) {
-            return null;
+            return Optional.empty();
         }
     }
 
@@ -51,6 +57,7 @@ public class ReservationTimeDao {
         return new ReservationTime(resultSet.getLong("id"), reservationTime);
     }
 
+    @Override
     public void deleteById(Long id) {
         String sql = "DELETE FROM reservation_time WHERE id = ?";
         jdbcTemplate.update(sql, id);
