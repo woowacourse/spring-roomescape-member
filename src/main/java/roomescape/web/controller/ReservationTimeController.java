@@ -53,7 +53,6 @@ public class ReservationTimeController {
         return ResponseEntity.ok(responses);
     }
 
-    // /times/available?date=2023-01-23&themeId=1
     @GetMapping("/available")
     public ResponseEntity<List<AvailableReservationTimeResponse>> readReservationTimesWithBooked(
             @Valid @DateValid @RequestParam String date,
