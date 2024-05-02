@@ -14,14 +14,13 @@ import roomescape.domain.Theme;
 @Repository
 public class JdbcTemplateThemeRepository implements ThemeRepository {
     private final JdbcTemplate jdbcTemplate;
-    private RowMapper<Theme> themeRowMapper = (rs, rowNum) -> {
+    private final RowMapper<Theme> themeRowMapper = (rs, rowNum) -> {
         long id = rs.getLong("id");
         String name = rs.getString("name");
         String description = rs.getString("description");
         String thumbnail = rs.getString("thumbnail");
         return new Theme(id, name, description, thumbnail);
     };
-    ;
 
     public JdbcTemplateThemeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;

@@ -35,6 +35,23 @@ class ReservationTimeServiceTest {
         reservationTimeService = new ReservationTimeService(reservationRepository, reservationTimeRepository);
     }
 
+    @DisplayName("저장된 시간을 모두 조회할 수 있다.")
+    @Test
+    void findAllTest() {
+        //given
+        reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
+        reservationTimeRepository.save(new ReservationTime(LocalTime.of(11, 0)));
+        reservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 0)));
+        reservationTimeRepository.save(new ReservationTime(LocalTime.of(13, 0)));
+
+        //when
+        List<ReservationTimeResponse> reservationTimeResponses = reservationTimeService.findAll();
+
+        //then
+        assertThat(reservationTimeResponses)
+                .hasSize(4);
+    }
+
     @DisplayName("예약 시간이 하나 존재할 때")
     @Nested
     class OneReservationTimeExists {
@@ -89,22 +106,5 @@ class ReservationTimeServiceTest {
                     .isInstanceOf(RoomescapeException.class)
                     .hasMessage(DELETE_USED_TIME.getMessage());
         }
-    }
-
-    @DisplayName("저장된 시간을 모두 조회할 수 있다.")
-    @Test
-    void findAllTest() {
-        //given
-        reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
-        reservationTimeRepository.save(new ReservationTime(LocalTime.of(11, 0)));
-        reservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 0)));
-        reservationTimeRepository.save(new ReservationTime(LocalTime.of(13, 0)));
-
-        //when
-        List<ReservationTimeResponse> reservationTimeResponses = reservationTimeService.findAll();
-
-        //then
-        assertThat(reservationTimeResponses)
-                .hasSize(4);
     }
 }

@@ -40,6 +40,22 @@ class ThemeServiceTest {
         themeService = new ThemeService(themeRepository, reservationRepository);
     }
 
+    @DisplayName("테마가 여러개 있으면 테마를 모두 조회할 수 있다.")
+    @Test
+    void findAllTest() {
+        //given
+        themeRepository.save(new Theme("name1", "description1", "thumbnail1"));
+        themeRepository.save(new Theme("name2", "description2", "thumbnail2"));
+        themeRepository.save(new Theme("name3", "description3", "thumbnail3"));
+        themeRepository.save(new Theme("name4", "description4", "thumbnail4"));
+
+        //when
+        List<ThemeResponse> themeResponses = themeService.findAll();
+
+        //then
+        assertThat(themeResponses).hasSize(4);
+    }
+
     @DisplayName("테마, 시간이 하나 존재할 때")
     @Nested
     class OneThemeTest {
@@ -97,21 +113,5 @@ class ThemeServiceTest {
             assertThatCode(() -> themeService.delete(2L))
                     .doesNotThrowAnyException();
         }
-    }
-
-    @DisplayName("테마가 여러개 있으면 테마를 모두 조회할 수 있다.")
-    @Test
-    void findAllTest() {
-        //given
-        themeRepository.save(new Theme("name1", "description1", "thumbnail1"));
-        themeRepository.save(new Theme("name2", "description2", "thumbnail2"));
-        themeRepository.save(new Theme("name3", "description3", "thumbnail3"));
-        themeRepository.save(new Theme("name4", "description4", "thumbnail4"));
-
-        //when
-        List<ThemeResponse> themeResponses = themeService.findAll();
-
-        //then
-        assertThat(themeResponses).hasSize(4);
     }
 }

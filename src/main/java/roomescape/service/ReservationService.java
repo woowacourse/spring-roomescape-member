@@ -63,7 +63,7 @@ public class ReservationService {
 
     private boolean validateDuplicateReservation(Reservation beforeSave, Reservation reservation) {
         return reservation.isSameDateTime(beforeSave)
-                && beforeSave.isSameTheme(reservation);
+               && beforeSave.isSameTheme(reservation);
     }
 
     private ReservationResponse toResponse(Reservation reservation) {
