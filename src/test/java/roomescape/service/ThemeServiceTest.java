@@ -62,8 +62,8 @@ class ThemeServiceTest {
     @DisplayName("이름이 동일한 방탈출 테마를 저장하면 예외가 발생한다.")
     @Test
     void save_DuplicatedName() {
-        when(themeRepository.countByName(validName))
-            .thenReturn(1L);
+        when(themeRepository.isNameExists(validName))
+            .thenReturn(true);
 
         assertThatThrownBy(() -> themeService.save(new ThemeAppRequest(validName, validDescription, validThumbnail)))
             .isInstanceOf(DuplicatedThemeException.class);
@@ -73,8 +73,8 @@ class ThemeServiceTest {
     @Test
     void delete_ReservationExists() {
         Long themeId = 1L;
-        when(reservationRepository.countByThemeId(themeId))
-            .thenReturn(1L);
+        when(reservationRepository.isThemeIdExists(themeId))
+            .thenReturn(true);
 
         assertThatThrownBy(() -> themeService.delete(themeId))
             .isInstanceOf(ReservationExistsException.class);

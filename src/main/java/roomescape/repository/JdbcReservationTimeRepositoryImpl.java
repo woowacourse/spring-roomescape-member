@@ -66,8 +66,8 @@ public class JdbcReservationTimeRepositoryImpl implements ReservationTimeReposit
     }
 
     @Override
-    public Long countByStartTime(LocalTime localTime) {
-        String sql = "SELECT COUNT(id) FROM reservation_time WHERE start_at = ?";
-        return jdbcTemplate.queryForObject(sql, Long.class, localTime);
+    public boolean isStartTimeExists(LocalTime localTime) {
+        String sql = "SELECT EXISTS(SELECT id FROM reservation_time WHERE start_at = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, localTime);
     }
 }

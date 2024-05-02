@@ -125,7 +125,5 @@ class ThemeControllerTest {
             .then().log().all()
             .statusCode(200)
             .body("size()", is(5));
-
-        // TODO: 순서 검증 되면 굿 !
     }
 }

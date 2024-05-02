@@ -98,26 +98,26 @@ class JdbcReservationRepositoryImplTest {
         assertTrue(reservationRepository.findAll().isEmpty());
     }
 
-    @DisplayName("time_id값을 통해 예약 수를 가져온다.")
+    @DisplayName("time_id값을 통해 예약이 존재하는지를 구한다.")
     @Test
-    void countByTimeId() {
+    void isTimeIdExists() {
         Reservation reservation1 = new Reservation("brown1", LocalDate.parse("2040-01-01"), reservationTime, theme);
         Reservation reservation2 = new Reservation("brown2", LocalDate.parse("2050-02-02"), reservationTime, theme);
         reservationRepository.save(reservation1);
         reservationRepository.save(reservation2);
 
-        long actual = reservationRepository.countByTimeId(reservationTime.getId());
+        boolean actual = reservationRepository.isTimeIdExists(reservationTime.getId());
 
-        assertThat(actual).isEqualTo(2L);
+        assertThat(actual).isTrue();
     }
 
-    @DisplayName("date, time_id, theme_id로 중복 예약 수를 가져온다.")
+    @DisplayName("date, time_id, theme_id로 중복 예약이 존재하는지를 구한다.")
     @Test
-    void countDuplication() {
+    void isDuplication() {
         LocalDate date = LocalDate.parse("2040-01-01");
         Reservation reservation = new Reservation("brown1", date, reservationTime, theme);
         reservationRepository.save(reservation);
-        long count = reservationRepository.countDuplication(date, reservationTime.getId(), theme.getId());
-        assertThat(count).isEqualTo(1L);
+        boolean actual = reservationRepository.isDuplicated(date, reservationTime.getId(), theme.getId());
+        assertThat(actual).isTrue();
     }
 }

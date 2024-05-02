@@ -87,8 +87,7 @@ public class ReservationService {
     }
 
     private void validateDuplication(LocalDate date, Long timeId, Long themeId) {
-        long dataCount = reservationRepository.countDuplication(date, timeId, themeId);
-        if (dataCount > 0) {
+        if (reservationRepository.isDuplicated(date, timeId, themeId)) {
             throw new DuplicatedReservationException();
         }
     }

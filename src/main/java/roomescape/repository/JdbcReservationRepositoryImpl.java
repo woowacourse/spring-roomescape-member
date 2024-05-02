@@ -82,21 +82,21 @@ public class JdbcReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
-    public Long countByTimeId(Long id) {
-        String sql = "SELECT COUNT(id) FROM reservation WHERE time_id = ?";
-        return jdbcTemplate.queryForObject(sql, Long.class, id);
+    public boolean isTimeIdExists(Long id) {
+        String sql = "SELECT EXISTS (SELECT id FROM reservation WHERE time_id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
     }
 
     @Override
-    public Long countByThemeId(Long id) {
-        String sql = "SELECT COUNT(id) FROM reservation WHERE theme_id = ?";
-        return jdbcTemplate.queryForObject(sql, Long.class, id);
+    public boolean isThemeIdExists(Long id) {
+        String sql = "SELECT EXISTS(SELECT id FROM reservation WHERE theme_id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
     }
 
     @Override
-    public Long countDuplication(LocalDate date, Long timeId, Long themeId) {
-        String sql = "SELECT COUNT(id) FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?";
-        return jdbcTemplate.queryForObject(sql, Long.class, date, timeId, themeId);
+    public boolean isDuplicated(LocalDate date, Long timeId, Long themeId) {
+        String sql = "SELECT EXISTS(SELECT id FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
     }
 
     @Override

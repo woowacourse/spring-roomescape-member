@@ -66,8 +66,8 @@ class ReservationTimeServiceTest {
     void save_TimeAlreadyExists() {
         String rawTime = "10:00";
 
-        when(reservationTimeRepository.countByStartTime(LocalTime.parse(rawTime)))
-            .thenReturn(1L);
+        when(reservationTimeRepository.isStartTimeExists(LocalTime.parse(rawTime)))
+            .thenReturn(true);
 
         assertThatThrownBy(() -> reservationTimeService.save(new ReservationTimeAppRequest(rawTime)))
             .isInstanceOf(DuplicatedReservationTimeException.class);
@@ -77,8 +77,8 @@ class ReservationTimeServiceTest {
     @Test
     void delete_ReservationExists() {
         long timeId = 1L;
-        when(reservationRepository.countByTimeId(timeId))
-            .thenReturn(1L);
+        when(reservationRepository.isTimeIdExists(timeId))
+            .thenReturn(true);
 
         assertThatThrownBy(() -> reservationTimeService.delete(timeId))
             .isInstanceOf(ReservationExistsException.class);

@@ -13,5 +13,5 @@ public interface ReservationTimeRepository {
 
     List<ReservationTime> findAll();
 
-    Long countByStartTime(LocalTime startTime);
+    boolean isStartTimeExists(LocalTime startTime);
 }

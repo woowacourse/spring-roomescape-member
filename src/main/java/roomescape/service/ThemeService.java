@@ -29,13 +29,13 @@ public class ThemeService {
     }
 
     private void validateDuplication(ThemeAppRequest request) {
-        if (themeRepository.countByName(request.name()) > 0) {
+        if (themeRepository.isNameExists(request.name())) {
             throw new DuplicatedThemeException();
         }
     }
 
     public int delete(Long id) {
-        if (reservationRepository.countByThemeId(id) > 0) {
+        if (reservationRepository.isThemeIdExists(id)) {
             throw new ReservationExistsException();
         }
         return themeRepository.deleteById(id);

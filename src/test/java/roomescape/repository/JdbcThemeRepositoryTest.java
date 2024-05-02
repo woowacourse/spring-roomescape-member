@@ -66,11 +66,11 @@ class JdbcThemeRepositoryTest {
 
     @DisplayName("테마 이름을 받아서 개수를 센다.")
     @Test
-    void countByName() {
+    void isNameExists() {
         String name = "방탈출1";
         Theme theme = new Theme(name, "방탈출1을 한다.", "https://url1");
         themeRepository.save(theme);
-        assertThat(themeRepository.countByName(name)).isEqualTo(1L);
+        assertThat(themeRepository.isNameExists(name)).isTrue();
     }
 
     @DisplayName("최근 일주일 내의 인기 테마를 찾는다.")

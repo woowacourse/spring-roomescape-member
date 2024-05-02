@@ -45,14 +45,13 @@ public class ReservationTimeService {
     }
 
     private void validateDuplication(LocalTime parsedTime) {
-        if (reservationTimeRepository.countByStartTime(parsedTime) > 0) {
+        if (reservationTimeRepository.isStartTimeExists(parsedTime)) {
             throw new DuplicatedReservationTimeException();
         }
     }
 
     public int delete(Long id) {
-        long count = reservationRepository.countByTimeId(id);
-        if (count > 0) {
+        if (reservationRepository.isTimeIdExists(id)) {
             throw new ReservationExistsException();
         }
         return reservationTimeRepository.deleteById(id);

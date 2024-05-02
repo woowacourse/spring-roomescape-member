@@ -68,9 +68,9 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public Long countByName(String name) {
-        String sql = "SELECT COUNT(id) FROM theme WHERE name = ?";
-        return jdbcTemplate.queryForObject(sql, Long.class, name);
+    public boolean isNameExists(String name) {
+        String sql = "SELECT EXISTS(SELECT id FROM theme WHERE name = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, name);
     }
 
     @Override
