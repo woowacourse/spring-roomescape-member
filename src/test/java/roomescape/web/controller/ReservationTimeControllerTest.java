@@ -62,6 +62,16 @@ class ReservationTimeControllerTest {
     }
 
     @Test
+    @DisplayName("전체 시간 목록을 조회한다.")
+    void findAll() {
+        RestAssured.given().log().all()
+                .when().get("/times")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(1));
+    }
+
+    @Test
     @DisplayName("날짜와 테마 정보가 주어지면 예약 가능한 시간 목록을 조회한다.")
     void findBookable() {
         RestAssured.given().log().all()
