@@ -168,7 +168,7 @@ function onReservationButtonClick() {
       name: name
     };
 
-    fetch('/member/reservation', {
+    fetch('/reservations', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -177,6 +177,7 @@ function onReservationButtonClick() {
     })
         .then(response => {
           if (!response.ok) throw new Error('Reservation failed');
+          return response.json();
         })
         .then(data => {
           alert("Reservation successful!");
