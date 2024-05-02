@@ -10,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.dto.AvailableReservationTimeResponse;
@@ -26,14 +27,14 @@ import roomescape.service.dto.input.ReservationTimeInput;
 import roomescape.service.dto.output.ReservationTimeOutput;
 import roomescape.service.dto.output.ThemeOutput;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+//@Import(TestConfig.class)
 public class ReservationTimeServiceTest {
 
     @Autowired
-    ReservationDao reservationDao;
-
-    @Autowired
     ReservationTimeService reservationTimeService;
+    @Autowired
+    ReservationDao reservationDao;
 
     @Autowired
     ReservationService reservationService;

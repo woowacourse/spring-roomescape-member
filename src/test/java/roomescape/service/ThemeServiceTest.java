@@ -10,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.dao.ReservationDao;
 import roomescape.domain.Reservation;
@@ -23,8 +24,9 @@ import roomescape.service.dto.input.ThemeInput;
 import roomescape.service.dto.output.ReservationTimeOutput;
 import roomescape.service.dto.output.ThemeOutput;
 
-@SpringBootTest
-public class ThemeServiceTest {
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+//@Import(TestConfig.class)
+class ThemeServiceTest {
 
     @Autowired
     ThemeService themeService;
@@ -115,12 +117,12 @@ public class ThemeServiceTest {
     @DisplayName("예약이 많은 테마 순으로 조회한다.")
     void get_popular_themes() {
         ThemeOutput themeOutput1 = themeService.createTheme(ThemeFixture.getInput());
-        ThemeOutput themeOutput2 = themeService.createTheme(new ThemeInput(
+        final ThemeOutput themeOutput2 = themeService.createTheme(new ThemeInput(
                 "레벨3 탈출",
                 "우테코 레벨2를 탈출하는 내용입니다.",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
         ));
-        ReservationTimeOutput timeOutput = reservationTimeService.createReservationTime(
+        final ReservationTimeOutput timeOutput = reservationTimeService.createReservationTime(
                 new ReservationTimeInput("10:00"));
 
         reservationDao.create(Reservation.from(
@@ -145,7 +147,7 @@ public class ThemeServiceTest {
                 Theme.of(themeOutput2.id(), themeOutput2.name(), themeOutput2.description(), themeOutput2.thumbnail())
         ));
 
-        List<ThemeOutput> popularThemes = themeService.getPopularThemes("2024-06-04");
+        final List<ThemeOutput> popularThemes = themeService.getPopularThemes("2024-06-04");
 
         assertThat(popularThemes).containsExactly(
                 new ThemeOutput(themeOutput1.id(), themeOutput1.name(), themeOutput1.description(),

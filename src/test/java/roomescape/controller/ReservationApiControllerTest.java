@@ -11,8 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.test.context.ActiveProfiles;
-import roomescape.TestConfig;
+import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.fixture.ThemeFixture;
 import roomescape.service.ReservationService;
 import roomescape.service.ReservationTimeService;
@@ -20,8 +19,7 @@ import roomescape.service.ThemeService;
 import roomescape.service.dto.input.ReservationInput;
 import roomescape.service.dto.input.ReservationTimeInput;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,classes = TestConfig.class)
-@ActiveProfiles("test")
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class ReservationApiControllerTest {
 
     @Autowired
@@ -30,6 +28,8 @@ public class ReservationApiControllerTest {
     ThemeService themeService;
     @Autowired
     ReservationTimeService reservationTimeService;
+    @Autowired
+    JdbcTemplate jdbcTemplate;
 
     @LocalServerPort
     int port;
@@ -37,6 +37,10 @@ public class ReservationApiControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+        jdbcTemplate.update("TRUNCATE TABLE reservation");
+        jdbcTemplate.update("SET REFERENTIAL_INTEGRITY FALSE");
+        jdbcTemplate.update("TRUNCATE TABLE reservation_time");
+        jdbcTemplate.update("SET REFERENTIAL_INTEGRITY TRUE");
     }
 
     @Test
@@ -112,7 +116,7 @@ public class ReservationApiControllerTest {
     @Test
     @DisplayName("지나간 날짜와 시간으로 예약 생성 시 400를 반환한다.")
     void return_400_when_create_past_time_reservation() {
-        long timeId = reservationTimeService.createReservationTime(new ReservationTimeInput("10:00")).id();
+        long timeId = reservationTimeService.createReservationTime(new ReservationTimeInput("03:00")).id();
         long themeId = themeService.createTheme(ThemeFixture.getInput()).id();
 
         Map<String, Object> reservation = new HashMap<>();

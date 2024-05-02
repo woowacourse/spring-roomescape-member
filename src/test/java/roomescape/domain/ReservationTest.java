@@ -44,8 +44,10 @@ public class ReservationTest {
 
     private static Stream<Arguments> maskingDateAndTime() {
         return Stream.of(
-                Arguments.arguments(Reservation.from(null, "jerry", "2024-04-01", ReservationTime.from(null, "10:00"), ThemeFixture.getDomain())),
-                Arguments.arguments(Reservation.from(null, "jerry", "2024-04-02", ReservationTime.from(null, "09:59"), ThemeFixture.getDomain()))
+                Arguments.arguments(Reservation.from(null, "jerry", "2024-04-01", ReservationTime.from(null, "10:00"),
+                        ThemeFixture.getDomain())),
+                Arguments.arguments(Reservation.from(null, "jerry", "2024-04-02", ReservationTime.from(null, "09:59"),
+                        ThemeFixture.getDomain()))
         );
     }
 
@@ -53,7 +55,9 @@ public class ReservationTest {
     @MethodSource("maskingDateAndTime")
     @DisplayName("날짜가 이전이거나 날짜가 같을 때 시간이 이전이면 참을 반환한다.")
     void return_true_when_date_is_before_or_date_is_equal_and_time_is_before(Reservation reservation) {
-        boolean result = reservation.isBefore(LocalDate.parse("2024-04-02"), LocalTime.parse( "10:00"));
+        boolean result = reservation.isBefore(LocalDate.parse("2024-04-02"), LocalTime.parse("10:00"));
         assertThat(result).isTrue();
     }
+
+    //TODO: 거짓 반환 케이스
 }
