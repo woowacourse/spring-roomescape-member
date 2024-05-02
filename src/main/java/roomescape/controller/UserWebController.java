@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class UserWebController {
 
     @GetMapping
-    public String getPopularPage() {
+    public String getPopularThemePage() {
         return "/index";
     }
 
