@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
 
 import java.sql.PreparedStatement;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,7 +22,7 @@ public class TimeDao {
         this.jdbcTemplate = jdbcTemplate;
         this.rowMapper = (resultSet, rowNum) -> new ReservationTime(
                 resultSet.getLong("id"),
-                resultSet.getString("start_at")
+                resultSet.getObject("start_at", LocalTime.class)
         );
     }
 
@@ -69,7 +70,7 @@ public class TimeDao {
 
         jdbcTemplate.update((connection) -> {
             PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
-            preparedStatement.setString(1, time.getStartAt());
+            preparedStatement.setObject(1, time.getStartAt());
             return preparedStatement;
         }, keyHolder);
 

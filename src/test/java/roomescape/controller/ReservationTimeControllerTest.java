@@ -13,6 +13,7 @@ import roomescape.dto.AvailableTimeResponse;
 import roomescape.dto.TimeCreateRequest;
 import roomescape.dto.TimeResponse;
 
+import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,7 +29,7 @@ class ReservationTimeControllerTest {
     @DisplayName("시간 목록을 읽을 수 있다.")
     @Test
     void readTimes() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", LocalTime.of(10, 0));
 
         int size = RestAssured.given().log().all()
                 .port(port)
@@ -53,8 +54,8 @@ class ReservationTimeControllerTest {
                 , "브라운", "2023-08-05", 1, 1);
 
         List<AvailableTimeResponse> expected = List.of(
-                new AvailableTimeResponse(new TimeResponse(1L, "10:00"), true),
-                new AvailableTimeResponse(new TimeResponse(2L, "11:00"), false)
+                new AvailableTimeResponse(new TimeResponse(1L, LocalTime.of(10, 0)), true),
+                new AvailableTimeResponse(new TimeResponse(2L, LocalTime.of(11, 0)), false)
         );
         List<AvailableTimeResponse> response = RestAssured.given().log().all()
                 .port(port)
@@ -69,7 +70,7 @@ class ReservationTimeControllerTest {
     @DisplayName("시간을 DB에 추가할 수 있다.")
     @Test
     void createTime() {
-        TimeCreateRequest params = new TimeCreateRequest("10:00");
+        TimeCreateRequest params = new TimeCreateRequest(LocalTime.of(10, 0));
 
         RestAssured.given().log().all()
                 .port(port)

@@ -11,6 +11,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 import java.sql.PreparedStatement;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,7 +28,7 @@ public class ReservationDao {
                 resultSet.getString("date"),
                 new ReservationTime(
                         resultSet.getLong("time_id"),
-                        resultSet.getString("start_at")),
+                        resultSet.getObject("start_at", LocalTime.class)),
                 new Theme(
                         resultSet.getLong("theme_id"),
                         resultSet.getString("theme_name"),

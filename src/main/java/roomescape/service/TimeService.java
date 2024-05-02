@@ -8,6 +8,7 @@ import roomescape.dto.AvailableTimeResponse;
 import roomescape.dto.TimeCreateRequest;
 import roomescape.dto.TimeResponse;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -36,7 +37,7 @@ public class TimeService {
     }
 
     public TimeResponse createTime(TimeCreateRequest dto) {
-        if (timeDao.isExistTimeByStartAt(dto.startAt())) {
+        if (timeDao.isExistTimeByStartAt(DateTimeFormatter.ofPattern("HH:mm").format(dto.startAt()))) {
             throw new IllegalArgumentException("해당 시간은 이미 존재합니다.");
         }
         ReservationTime createdTime = timeDao.createTime(dto.createReservationTime());
