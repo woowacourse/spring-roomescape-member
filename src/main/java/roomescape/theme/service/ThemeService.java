@@ -3,6 +3,7 @@ package roomescape.theme.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.dto.PopularThemeResponse;
 import roomescape.theme.dto.ThemeRequest;
 import roomescape.theme.dto.ThemeResponse;
 import roomescape.theme.repository.ThemeRepository;
@@ -32,6 +33,13 @@ public class ThemeService {
         List<Theme> themes = themeRepository.findAll();
         return themes.stream()
                 .map(ThemeResponse::toResponse)
+                .toList();
+    }
+
+    public List<PopularThemeResponse> findPopularThemeLimitTen() {
+        List<Theme> popularTheme = themeRepository.findPopularThemeLimitTen();
+        return popularTheme.stream()
+                .map(PopularThemeResponse::toResponse)
                 .toList();
     }
 
