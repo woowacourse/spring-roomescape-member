@@ -18,7 +18,8 @@ public class ReservationTimeService {
     private final ReservationTimeDao reservationTimeDao;
     private final ReservationDao reservationDao;
 
-    public ReservationTimeService(ReservationTimeDao reservationTimeDao, ReservationDao reservationDao) {
+    public ReservationTimeService(ReservationTimeDao reservationTimeDao,
+                                  ReservationDao reservationDao) {
         this.reservationTimeDao = reservationTimeDao;
         this.reservationDao = reservationDao;
     }
@@ -45,21 +46,22 @@ public class ReservationTimeService {
 
     private void validateTimeExistence(LocalTime startAt) {
         boolean exists = reservationTimeDao.existByStartAt(startAt);
-        if(exists) {
+        if (exists) {
             throw new IllegalArgumentException("이미 존재하는 예약 시간입니다.");
         }
     }
 
     public List<ReservationTimeWithBookStatusResponse> findReservationTimesWithBookStatus(
-            ReservationTimeWithBookStatusRequest timeRequest)
-    {
+            ReservationTimeWithBookStatusRequest timeRequest) {
         List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
         List<Reservation> reservations = reservationDao.findAll();
 
         return reservationTimes.stream()
                 .map(reservationTime -> {
-                    boolean isBooked = isReservationTimeBooked(reservations, timeRequest, reservationTime);
-                    return ReservationTimeWithBookStatusResponse.fromReservationTime(reservationTime, isBooked);
+                    boolean isBooked = isReservationTimeBooked(reservations, timeRequest,
+                            reservationTime);
+                    return ReservationTimeWithBookStatusResponse.fromReservationTime(
+                            reservationTime, isBooked);
                 })
                 .toList();
     }
@@ -67,12 +69,12 @@ public class ReservationTimeService {
     private boolean isReservationTimeBooked(
             List<Reservation> reservations,
             ReservationTimeWithBookStatusRequest timeRequest,
-            ReservationTime reservationTime)
-    {
+            ReservationTime reservationTime) {
         LocalDate date = LocalDate.parse(timeRequest.date());
-        Long themeId = timeRequest.themeId();
         Long reservationTimeId = reservationTime.getId();
+        Long themeId = timeRequest.themeId();
 
-        return reservations.stream().anyMatch(reservation -> reservation.contains(date, themeId, reservationTimeId));
+        return reservations.stream()
+                .anyMatch(reservation -> reservation.contains(date, reservationTimeId, themeId));
     }
 }

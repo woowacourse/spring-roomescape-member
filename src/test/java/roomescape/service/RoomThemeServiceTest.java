@@ -3,22 +3,36 @@ package roomescape.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import io.restassured.RestAssured;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.console.dao.InMemoryRoomThemeDao;
-import roomescape.console.db.InMemoryRoomThemeDb;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import roomescape.dao.RoomThemeDao;
+import roomescape.domain.RoomTheme;
 import roomescape.dto.request.RoomThemeCreateRequest;
 import roomescape.dto.response.RoomThemeResponse;
 
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class RoomThemeServiceTest {
+    @LocalServerPort
+    private int port;
+
+    @Autowired
     private RoomThemeService roomThemeService;
+    @Autowired
+    private RoomThemeDao roomThemeDao;
 
     @BeforeEach
     void setUp() {
-        roomThemeService = new RoomThemeService(new InMemoryRoomThemeDao(
-                new InMemoryRoomThemeDb()));
+        RestAssured.port = port;
+        List<RoomTheme> roomThemes = roomThemeDao.findAll();
+        for (RoomTheme roomTheme : roomThemes) {
+            roomThemeDao.deleteById(roomTheme.getId());
+        }
     }
 
     @DisplayName("테마 저장")
@@ -32,7 +46,6 @@ class RoomThemeServiceTest {
         RoomThemeResponse roomThemeResponse = roomThemeService.save(roomThemeCreateRequest);
         // then
         assertAll(
-                () -> assertThat(roomThemeResponse.id()).isEqualTo(1L),
                 () -> assertThat(roomThemeResponse.name()).isEqualTo(roomThemeCreateRequest.name()),
                 () -> assertThat(roomThemeResponse.description()).isEqualTo(
                         roomThemeCreateRequest.description()),

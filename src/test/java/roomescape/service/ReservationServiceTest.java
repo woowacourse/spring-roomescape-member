@@ -8,41 +8,52 @@ import static roomescape.TestFixture.ROOM_THEME_FIXTURE;
 import static roomescape.TestFixture.VALID_STRING_DATE_FIXTURE;
 import static roomescape.TestFixture.VALID_STRING_TIME_FIXTURE;
 
+import io.restassured.RestAssured;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.console.dao.InMemoryReservationDao;
-import roomescape.console.dao.InMemoryReservationTimeDao;
-import roomescape.console.dao.InMemoryRoomThemeDao;
-import roomescape.console.db.InMemoryReservationDb;
-import roomescape.console.db.InMemoryReservationTimeDb;
-import roomescape.console.db.InMemoryRoomThemeDb;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.RoomThemeDao;
+import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReservationServiceTest {
+    @LocalServerPort
+    private int port;
+
+    @Autowired
     private ReservationService reservationService;
+    @Autowired
+    private ReservationDao reservationDao;
+    @Autowired
     private ReservationTimeDao reservationTimeDao;
+    @Autowired
     private RoomThemeDao roomThemeDao;
 
     @BeforeEach
     void setUp() {
-        InMemoryReservationDb inMemoryReservationDb = new InMemoryReservationDb();
-        InMemoryReservationTimeDb inMemoryReservationTimeDb = new InMemoryReservationTimeDb();
-        InMemoryRoomThemeDb inMemoryRoomThemeDb = new InMemoryRoomThemeDb();
-
-        reservationTimeDao = new InMemoryReservationTimeDao(
-                inMemoryReservationDb, inMemoryReservationTimeDb);
-        ReservationDao reservationDao = new InMemoryReservationDao(inMemoryReservationDb);
-        roomThemeDao = new InMemoryRoomThemeDao(inMemoryRoomThemeDb);
-
-        reservationService = new ReservationService(reservationDao, reservationTimeDao,
-                roomThemeDao);
+        RestAssured.port = port;
+        List<Reservation> reservations = reservationDao.findAll();
+        for (Reservation reservation : reservations) {
+            reservationDao.deleteById(reservation.getId());
+        }
+        List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
+        for (ReservationTime reservationTime : reservationTimes) {
+            reservationTimeDao.deleteById(reservationTime.getId());
+        }
+        List<RoomTheme> roomThemes = roomThemeDao.findAll();
+        for (RoomTheme roomTheme : roomThemes) {
+            roomThemeDao.deleteById(roomTheme.getId());
+        }
     }
 
     @DisplayName("모든 예약 검색")
@@ -61,10 +72,8 @@ class ReservationServiceTest {
         // then
         assertAll(
                 () -> assertThat(reservationService.findAll()).hasSize(1),
-                () -> assertThat(response.id()).isEqualTo(1),
                 () -> assertThat(response.name()).isEqualTo("aa"),
                 () -> assertThat(response.date()).isEqualTo(VALID_STRING_DATE_FIXTURE),
-                () -> assertThat(response.time().id()).isEqualTo(1),
                 () -> assertThat(response.time().startAt()).isEqualTo(VALID_STRING_TIME_FIXTURE)
         );
     }

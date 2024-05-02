@@ -3,22 +3,20 @@ package roomescape.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static roomescape.TestFixture.DATE_FIXTURE;
 import static roomescape.TestFixture.RESERVATION_TIME_FIXTURE;
 import static roomescape.TestFixture.ROOM_THEME_FIXTURE;
 import static roomescape.TestFixture.VALID_STRING_TIME_FIXTURE;
 
-import java.time.LocalDate;
+import io.restassured.RestAssured;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.console.dao.InMemoryReservationDao;
-import roomescape.console.dao.InMemoryReservationTimeDao;
-import roomescape.console.dao.InMemoryRoomThemeDao;
-import roomescape.console.db.InMemoryReservationDb;
-import roomescape.console.db.InMemoryReservationTimeDb;
-import roomescape.console.db.InMemoryRoomThemeDb;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.RoomThemeDao;
@@ -31,24 +29,35 @@ import roomescape.dto.request.ReservationTimeWithBookStatusRequest;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.dto.response.ReservationTimeWithBookStatusResponse;
 
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReservationTimeServiceTest {
+    @LocalServerPort
+    private int port;
+
+    @Autowired
     private ReservationTimeService reservationTimeService;
-    private RoomThemeDao roomThemeDao;
+    @Autowired
     private ReservationDao reservationDao;
+    @Autowired
     private ReservationTimeDao reservationTimeDao;
+    @Autowired
+    private RoomThemeDao roomThemeDao;
 
     @BeforeEach
     void setUp() {
-        InMemoryReservationDb inMemoryReservationDb = new InMemoryReservationDb();
-        InMemoryReservationTimeDb inMemoryReservationTimeDb = new InMemoryReservationTimeDb();
-        InMemoryRoomThemeDb inMemoryRoomThemeDb = new InMemoryRoomThemeDb();
-
-        reservationTimeDao = new InMemoryReservationTimeDao(
-                inMemoryReservationDb, inMemoryReservationTimeDb);
-        reservationDao = new InMemoryReservationDao(inMemoryReservationDb);
-        roomThemeDao = new InMemoryRoomThemeDao(inMemoryRoomThemeDb);
-
-        reservationTimeService = new ReservationTimeService(reservationTimeDao, reservationDao);
+        RestAssured.port = port;
+        List<Reservation> reservations = reservationDao.findAll();
+        for (Reservation reservation : reservations) {
+            reservationDao.deleteById(reservation.getId());
+        }
+        List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
+        for (ReservationTime reservationTime : reservationTimes) {
+            reservationTimeDao.deleteById(reservationTime.getId());
+        }
+        List<RoomTheme> roomThemes = roomThemeDao.findAll();
+        for (RoomTheme roomTheme : roomThemes) {
+            roomThemeDao.deleteById(roomTheme.getId());
+        }
     }
 
     @DisplayName("존재하는 모든 예약 시간을 반환한다.")
@@ -63,18 +72,13 @@ class ReservationTimeServiceTest {
         // given
         ReservationTime savedReservationTime = reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
         RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);
-        reservationDao.save(new Reservation(new Name("brown"),
-                LocalDate.parse("9999-12-31"),
-                savedReservationTime,
-                savedRoomTheme));
+        reservationDao.save(new Reservation(new Name("brown"), DATE_FIXTURE,
+                savedReservationTime, savedRoomTheme));
         ReservationTimeWithBookStatusRequest timeRequest = new ReservationTimeWithBookStatusRequest(
-                "9999-12-31", savedRoomTheme.getId());
-
+                DATE_FIXTURE.toString(), savedRoomTheme.getId());
         // when
         List<ReservationTimeWithBookStatusResponse> timeResponses =
-                reservationTimeService.findReservationTimesWithBookStatus(
-                        timeRequest);
-
+                reservationTimeService.findReservationTimesWithBookStatus(timeRequest);
         // then
         ReservationTimeWithBookStatusResponse timeResponse = timeResponses.get(0);
         assertAll(
@@ -96,7 +100,6 @@ class ReservationTimeServiceTest {
         // then
         assertAll(
                 () -> assertThat(reservationTimeService.findAll()).hasSize(1),
-                () -> assertThat(response.id()).isEqualTo(1),
                 () -> assertThat(response.startAt()).isEqualTo(VALID_STRING_TIME_FIXTURE)
         );
     }
@@ -118,9 +121,10 @@ class ReservationTimeServiceTest {
     @Test
     void deleteById() {
         // given
-        reservationTimeService.save(new ReservationTimeRequest(VALID_STRING_TIME_FIXTURE));
+        ReservationTimeResponse response = reservationTimeService
+                .save(new ReservationTimeRequest(VALID_STRING_TIME_FIXTURE));
         // when
-        reservationTimeService.deleteById(1);
+        reservationTimeService.deleteById(response.id());
         // then
         assertThat(reservationTimeService.findAll()).isEmpty();
     }

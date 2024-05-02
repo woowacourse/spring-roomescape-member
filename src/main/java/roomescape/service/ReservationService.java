@@ -37,7 +37,8 @@ public class ReservationService {
 
     public ReservationResponse save(ReservationRequest reservationRequest) {
         ReservationTime reservationTime = reservationTimeDao.findById(reservationRequest.timeId());
-        validateOutdatedDateTime(LocalDate.parse(reservationRequest.date()), reservationTime.getStartAt());
+        validateOutdatedDateTime(LocalDate.parse(reservationRequest.date()),
+                reservationTime.getStartAt());
 
         RoomTheme roomTheme = roomThemeDao.findById(reservationRequest.themeId());
         Reservation reservation = reservationRequest.toReservation(reservationTime, roomTheme);

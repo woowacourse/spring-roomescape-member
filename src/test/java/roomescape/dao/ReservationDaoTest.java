@@ -6,29 +6,46 @@ import static roomescape.TestFixture.DATE_FIXTURE;
 import static roomescape.TestFixture.RESERVATION_TIME_FIXTURE;
 import static roomescape.TestFixture.ROOM_THEME_FIXTURE;
 
+import io.restassured.RestAssured;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.console.dao.InMemoryReservationDao;
-import roomescape.console.db.InMemoryReservationDb;
-import roomescape.console.db.InMemoryReservationTimeDb;
-import roomescape.console.db.InMemoryRoomThemeDb;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
 
-class InMemoryReservationDaoTest {
-    private InMemoryReservationTimeDb inMemoryReservationTimeDb;
-    private InMemoryRoomThemeDb inMemoryRoomThemeDb;
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+class ReservationDaoTest {
+    @LocalServerPort
+    private int port;
+
+    @Autowired
     private ReservationDao reservationDao;
+    @Autowired
+    private ReservationTimeDao reservationTimeDao;
+    @Autowired
+    private RoomThemeDao roomThemeDao;
 
     @BeforeEach
     void setUp() {
-        inMemoryReservationTimeDb = new InMemoryReservationTimeDb();
-        inMemoryRoomThemeDb = new InMemoryRoomThemeDb();
-        reservationDao = new InMemoryReservationDao(
-                new InMemoryReservationDb());
+        RestAssured.port = port;
+        List<Reservation> reservations = reservationDao.findAll();
+        for (Reservation reservation : reservations) {
+            reservationDao.deleteById(reservation.getId());
+        }
+        List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
+        for (ReservationTime reservationTime : reservationTimes) {
+            reservationTimeDao.deleteById(reservationTime.getId());
+        }
+        List<RoomTheme> roomThemes = roomThemeDao.findAll();
+        for (RoomTheme roomTheme : roomThemes) {
+            roomThemeDao.deleteById(roomTheme.getId());
+        }
     }
 
     @DisplayName("존재하는 모든 예약을 보여준다.")
@@ -41,11 +58,15 @@ class InMemoryReservationDaoTest {
     @Test
     void duplicatedReservationTest() {
         // given
-        boolean existsFalse = reservationDao.existsByDateTime(DATE_FIXTURE, 1L);
-        reservationDao.save(new Reservation(new Name("asd"),
-                DATE_FIXTURE, RESERVATION_TIME_FIXTURE, ROOM_THEME_FIXTURE));
+        ReservationTime savedReservationTime = reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
+        RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);
+        boolean existsFalse
+                = reservationDao.existsByDateTime(DATE_FIXTURE, savedReservationTime.getId());
+        reservationDao.save(new Reservation(new Name("asd"), DATE_FIXTURE,
+                savedReservationTime, savedRoomTheme));
         // when
-        boolean existsTrue = reservationDao.existsByDateTime(DATE_FIXTURE, 1L);
+        boolean existsTrue
+                = reservationDao.existsByDateTime(DATE_FIXTURE, savedReservationTime.getId());
         // then
         assertAll(
                 () -> assertThat(existsFalse).isFalse(),
@@ -57,10 +78,8 @@ class InMemoryReservationDaoTest {
     @Test
     void save() {
         // given
-        long timeId = inMemoryReservationTimeDb.insert(RESERVATION_TIME_FIXTURE);
-        ReservationTime reservationTime = inMemoryReservationTimeDb.selectById(timeId);
-        long roomThemeId = inMemoryRoomThemeDb.insert(ROOM_THEME_FIXTURE);
-        RoomTheme roomTheme = inMemoryRoomThemeDb.selectById(roomThemeId);
+        ReservationTime reservationTime = reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
+        RoomTheme roomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);
         // when
         reservationDao.save(new Reservation(
                 new Name("aa"), DATE_FIXTURE, reservationTime, roomTheme));
@@ -72,10 +91,8 @@ class InMemoryReservationDaoTest {
     @Test
     void deleteById() {
         // given
-        long timeId = inMemoryReservationTimeDb.insert(RESERVATION_TIME_FIXTURE);
-        ReservationTime reservationTime = inMemoryReservationTimeDb.selectById(timeId);
-        long roomThemeId = inMemoryRoomThemeDb.insert(ROOM_THEME_FIXTURE);
-        RoomTheme roomTheme = inMemoryRoomThemeDb.selectById(roomThemeId);
+        ReservationTime reservationTime = reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
+        RoomTheme roomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);
         Reservation savedReservation = reservationDao.save(
                 new Reservation(new Name("aa"), DATE_FIXTURE, reservationTime, roomTheme));
         // when
@@ -88,10 +105,8 @@ class InMemoryReservationDaoTest {
     @Test
     void returnTrueWhenDeleted() {
         // given
-        long timeId = inMemoryReservationTimeDb.insert(RESERVATION_TIME_FIXTURE);
-        ReservationTime reservationTime = inMemoryReservationTimeDb.selectById(timeId);
-        long roomThemeId = inMemoryRoomThemeDb.insert(ROOM_THEME_FIXTURE);
-        RoomTheme roomTheme = inMemoryRoomThemeDb.selectById(roomThemeId);
+        ReservationTime reservationTime = reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
+        RoomTheme roomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);
         Reservation savedReservation = reservationDao.save(
                 new Reservation(new Name("aa"), DATE_FIXTURE, reservationTime, roomTheme));
         // when

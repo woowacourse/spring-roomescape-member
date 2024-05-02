@@ -4,20 +4,31 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.TestFixture.ROOM_THEME_FIXTURE;
 
+import io.restassured.RestAssured;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.console.dao.InMemoryRoomThemeDao;
-import roomescape.console.db.InMemoryRoomThemeDb;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import roomescape.domain.RoomTheme;
 
-class InMemoryRoomThemeDaoTest {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+class RoomThemeDaoTest {
+    @LocalServerPort
+    private int port;
+
+    @Autowired
     private RoomThemeDao roomThemeDao;
 
     @BeforeEach
     void setUp() {
-        roomThemeDao = new InMemoryRoomThemeDao(new InMemoryRoomThemeDb());
+        RestAssured.port = port;
+        List<RoomTheme> roomThemes = roomThemeDao.findAll();
+        for (RoomTheme roomTheme : roomThemes) {
+            roomThemeDao.deleteById(roomTheme.getId());
+        }
     }
 
     @DisplayName("테마를 저장한다.")
@@ -29,7 +40,6 @@ class InMemoryRoomThemeDaoTest {
         RoomTheme savedRoomTheme = roomThemeDao.save(roomTheme);
         // then
         assertAll(
-                () -> assertThat(savedRoomTheme.getId()).isEqualTo(1L),
                 () -> assertThat(savedRoomTheme.getName()).isEqualTo(roomTheme.getName()),
                 () -> assertThat(savedRoomTheme.getDescription()).isEqualTo(
                         roomTheme.getDescription()),
