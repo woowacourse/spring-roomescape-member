@@ -3,7 +3,6 @@ package roomescape.service;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.Theme;
@@ -49,11 +48,10 @@ public class ThemeService {
 
     public void deleteTheme(Long id) {
         Theme theme = findThemeById(id);
-        try {
-            themeRepository.delete(theme);
-        } catch (DataIntegrityViolationException e) {
+        if (reservationRepository.existsByThemeId(theme.getId())) {
             throw new ReservationReferencedThemeException();
         }
+        themeRepository.delete(theme);
     }
 
     private Theme findThemeById(Long id) {

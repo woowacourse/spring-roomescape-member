@@ -113,6 +113,18 @@ public class ReservationDao implements ReservationRepository {
     }
 
     @Override
+    public boolean existsByTimeId(Long timeId) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE time_id = ?)";
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, Boolean.class, timeId));
+    }
+
+    @Override
+    public boolean existsByThemeId(Long themeId) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE theme_id = ?)";
+        return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, Boolean.class, themeId));
+    }
+
+    @Override
     public Reservation save(Reservation reservation) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("name", reservation.getName());

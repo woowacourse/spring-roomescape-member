@@ -12,4 +12,4 @@ Content-Type: application/json
 }
 
 ### 테마 삭제 요청
-DELETE localhost:8080/themes/13
+DELETE localhost:8080/themes/1
