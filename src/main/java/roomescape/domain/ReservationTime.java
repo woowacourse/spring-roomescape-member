@@ -19,7 +19,6 @@ public class ReservationTime {
         }
     }
 
-    // todo 메서드 네임 변경 (역직렬화 시 프로퍼티 이름 인식 문제)
     public boolean inPast() {
         return startAt.isBefore(LocalTime.now());
     }

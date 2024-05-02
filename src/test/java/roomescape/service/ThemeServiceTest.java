@@ -39,6 +39,4 @@ class ThemeServiceTest {
         List<ThemeResponse> allThemes = themeService.findAllThemes();
         assertThat(allThemes).doesNotContain(new ThemeResponse(1L, "곰세마리", "공포", "푸우"));
     }
-
-    // todo: save 테스트 고려
 }
