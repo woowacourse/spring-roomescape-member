@@ -24,8 +24,6 @@ import org.springframework.test.context.TestPropertySource;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @TestPropertySource(properties = {"spring.config.location = classpath:application-test.yml"})
 class ThemeControllerTest {
-    private static final String TOMORROW_DATE = LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_DATE);
-
     @LocalServerPort
     private int port;
 
