@@ -12,6 +12,8 @@ import roomescape.exception.ReservationExistsException;
 @Service
 public class ThemeService {
 
+    private static final int MAX_POPULAR_THEME_COUNT = 10;
+
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
 
@@ -41,5 +43,9 @@ public class ThemeService {
 
     public List<Theme> findAll() {
         return themeRepository.findAll();
+    }
+
+    public List<Theme> findPopular() {
+        return themeRepository.findPopular(MAX_POPULAR_THEME_COUNT);
     }
 }

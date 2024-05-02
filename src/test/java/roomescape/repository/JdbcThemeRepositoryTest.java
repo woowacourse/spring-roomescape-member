@@ -2,11 +2,13 @@ package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
@@ -69,5 +71,20 @@ class JdbcThemeRepositoryTest {
         Theme theme = new Theme(name, "방탈출1을 한다.", "https://url1");
         themeRepository.save(theme);
         assertThat(themeRepository.countByName(name)).isEqualTo(1L);
+    }
+
+    @DisplayName("최근 일주일 내의 인기 테마를 찾는다.")
+    @Test
+    @Sql("/popularTestData.sql")
+    void findPopular() {
+        List<Theme> popular = themeRepository.findPopular(10);
+
+        List<Theme> expected = List.of(
+            new Theme(1L, "theme1", "desc1", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"),
+            new Theme(3L, "theme3", "desc3", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"),
+            new Theme(2L, "theme2", "desc2", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg")
+        );
+
+        assertThat(popular).containsExactlyElementsOf(expected);
     }
 }

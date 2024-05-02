@@ -72,4 +72,29 @@ public class JdbcThemeRepository implements ThemeRepository {
         String sql = "SELECT COUNT(id) FROM theme WHERE name = ?";
         return jdbcTemplate.queryForObject(sql, Long.class, name);
     }
+
+    @Override
+    public List<Theme> findPopular(int count) {
+        String sql = """
+            SELECT
+                th.id AS id, 
+                th.name AS name, 
+                th.description AS description,
+                th.thumbnail AS thumbnail, 
+                COUNT(r.theme_id) AS count
+            FROM theme AS th
+            LEFT JOIN reservation AS r ON th.id = r.theme_id
+            WHERE r.date BETWEEN TIMESTAMPADD(DAY, -8, NOW()) AND TIMESTAMPADD(DAY, -1, NOW()) OR r.id IS NULL
+            GROUP BY th.id
+            ORDER BY count DESC
+            LIMIT ?
+            """;
+        return jdbcTemplate.query(
+            sql, (rs, rowNum) -> new Theme(
+                rs.getLong("id"),
+                rs.getString("name"),
+                rs.getString("description"),
+                rs.getString("thumbnail")
+            ), count);
+    }
 }

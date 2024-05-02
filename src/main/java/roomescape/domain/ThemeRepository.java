@@ -13,4 +13,6 @@ public interface ThemeRepository {
     Theme findById(Long id);
 
     Long countByName(String name);
+
+    List<Theme> findPopular(int count);
 }

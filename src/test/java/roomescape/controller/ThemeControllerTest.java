@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.web.ThemeWebRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -113,5 +114,18 @@ class ThemeControllerTest {
             .when().delete("/themes/1")
             .then().log().all()
             .statusCode(400);
+    }
+
+    @DisplayName("상위 10개 인기 테마를 조회 한다. -> 200")
+    @Test
+    @Sql("/popularTestData.sql")
+    void findPopularTheme() {
+        RestAssured.given().log().all()
+            .when().get("/themes/popular")
+            .then().log().all()
+            .statusCode(200)
+            .body("size()", is(5));
+
+        // TODO: 순서 검증 되면 굿 !
     }
 }

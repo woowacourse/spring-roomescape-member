@@ -59,6 +59,21 @@ public class ThemeController {
             .body(response);
     }
 
+    @GetMapping("/popular")
+    public ResponseEntity<List<ThemeWebResponse>> findPopular() {
+        List<ThemeWebResponse> response = themeService.findPopular()
+            .stream()
+            .map(theme -> new ThemeWebResponse(
+                theme.getId(),
+                theme.getName(),
+                theme.getDescription(),
+                theme.getThumbnail())
+            ).toList();
+
+        return ResponseEntity.ok()
+            .body(response);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         themeService.delete(id);
