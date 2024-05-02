@@ -1,6 +1,5 @@
 package roomescape.dao;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,13 +35,6 @@ public class ThemeDao implements ThemeRepository {
     public List<Theme> findAll() {
         String sql = "SELECT * FROM theme";
         return jdbcTemplate.query(sql, themeRowMapper);
-    }
-
-    @Override
-    public List<Theme> findAllByIdIn(List<Long> themeIds) {
-        String placeholders = String.join(",", Collections.nCopies(themeIds.size(), "?"));
-        String sql = "SELECT * FROM theme WHERE id IN (" + placeholders + ")";
-        return jdbcTemplate.query(sql, themeRowMapper, themeIds.toArray());
     }
 
     @Override
