@@ -75,4 +75,9 @@ public class FakeReservationDao implements ReservationDao {
     public List<ReservationTime> findByDateAndTheme(LocalDate date, Long themeId) {
         return null;
     }
+
+    @Override
+    public List<Theme> findThemeOrderByReservationCount() {
+        return null;
+    }
 }

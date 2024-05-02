@@ -21,4 +21,6 @@ public interface ReservationDao {
 
     List<ReservationTime> findByDateAndTheme(LocalDate date, Long themeId);
 
+    List<Theme> findThemeOrderByReservationCount();
+
 }
