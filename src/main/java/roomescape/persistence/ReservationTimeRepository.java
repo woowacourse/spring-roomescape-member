@@ -1,5 +1,6 @@
 package roomescape.persistence;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -11,6 +12,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
+import roomescape.service.response.AvailableReservationTimeResponse;
 
 @Repository
 public class ReservationTimeRepository {
@@ -61,10 +63,41 @@ public class ReservationTimeRepository {
         }
     }
 
+    public List<AvailableReservationTimeResponse> findAvailableReservationTimes(LocalDate date, long themeId) {
+        String sql = """
+                        SELECT
+                            t.id,
+                            t.start_at,
+                            (
+                             CASE r.id
+                               WHEN is null THEN false
+                               ELSE true
+                             END
+                             ) AS already_booked
+                        FROM reservation_time AS t
+                        LEFT JOIN reservation AS r
+                        ON t.id = r.time_id
+                        AND r.date = ?
+                        AND r.theme_id = ?;
+                """;
+
+        return jdbcTemplate.query(sql, getAvailableReservationTimeResponseRowMapper(), date, themeId);
+
+    }
+
     private RowMapper<ReservationTime> reservationTimeRowMapper() {
         return (resultSet, rowNum) -> {
             LocalTime startAt = LocalTime.parse(resultSet.getString("start_at"));
             return new ReservationTime(resultSet.getLong("id"), startAt);
         };
+    }
+
+    private RowMapper<AvailableReservationTimeResponse> getAvailableReservationTimeResponseRowMapper() {
+        return (resultSet, rowNum) ->
+                new AvailableReservationTimeResponse(
+                        resultSet.getLong("id"),
+                        resultSet.getString("start_at"),
+                        resultSet.getBoolean("already_booked")
+                );
     }
 }
