@@ -1,12 +1,12 @@
 package roomescape.repository;
 
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.IllegalTimeException;
 
 import java.sql.PreparedStatement;
 import java.time.LocalTime;
@@ -40,13 +40,13 @@ public class TimeDao {
         return keyHolder.getKey().longValue();
     }
 
-    public Optional<ReservationTime> findById(long id) {
+    public ReservationTime findById(long id) {
         String sql = "SELECT * FROM reservation_time WHERE id = ?";
-        try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, timeRowMapper, id));
-        } catch (DataAccessException e) {
-            return Optional.empty();
+        Optional<ReservationTime> optionalReservationTime = Optional.ofNullable(jdbcTemplate.queryForObject(sql, timeRowMapper, id));
+        if (optionalReservationTime.isEmpty()) {
+            throw new IllegalTimeException("[ERROR] 예약 시간을 찾을 수 없습니다");
         }
+        return optionalReservationTime.get();
     }
 
     public List<ReservationTime> findAll() {

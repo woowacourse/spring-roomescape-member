@@ -11,7 +11,6 @@ import roomescape.repository.ReservationDao;
 import roomescape.repository.ThemeDao;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ThemeService {
@@ -30,17 +29,6 @@ public class ThemeService {
         return themes.stream()
                 .map(themeMapper::mapToResponse)
                 .toList();
-    }
-
-    public Theme findThemeById(Long id) {
-        if (id == null) {
-            throw new IllegalThemeException("[ERROR] 유효하지 않은 형식의 테마입니다.");
-        }
-        Optional<Theme> optionalTheme = themeDao.findById(id);
-        if (optionalTheme.isEmpty()) {
-            throw new IllegalThemeException("[ERROR] 테마를 찾을 수 없습니다");
-        }
-        return optionalTheme.get();
     }
 
     public List<ThemeResponse> findBestThemes() {

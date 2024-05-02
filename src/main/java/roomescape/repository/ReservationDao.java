@@ -94,6 +94,5 @@ public class ReservationDao {
 
     public List<Long> findTimeIdByDateThemeId(LocalDate date, Long themeId) {
         return jdbcTemplate.queryForList("SELECT time_id FROM reservation WHERE date = ? AND theme_id = ?", Long.class, date, themeId);
-        //todo : reservation 테이블 vs time 테이블
     }
 }

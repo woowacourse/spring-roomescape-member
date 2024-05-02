@@ -1,12 +1,12 @@
 package roomescape.repository;
 
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
+import roomescape.exception.IllegalThemeException;
 
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
@@ -51,13 +51,13 @@ public class ThemeDao {
         return keyHolder.getKey().longValue();
     }
 
-    public Optional<Theme> findById(long id) {
+    public Theme findById(long id) {
         String sql = "SELECT * FROM theme WHERE id = ?";
-        try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, timeRowMapper, id));
-        } catch (DataAccessException e) {
-            return Optional.empty();
+        Optional<Theme> optionalTheme = Optional.ofNullable(jdbcTemplate.queryForObject(sql, timeRowMapper, id));
+        if (optionalTheme.isEmpty()) {
+            throw new IllegalThemeException("[ERROR] 테마를 찾을 수 없습니다");
         }
+        return optionalTheme.get();
     }
 
     public List<Theme> findAll() {

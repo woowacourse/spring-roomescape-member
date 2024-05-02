@@ -14,15 +14,13 @@ import roomescape.repository.TimeDao;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ReservationTimeService {
 
     private final TimeMapper timeMapper = new TimeMapper();
     private final TimeDao timeDao;
-    private final ReservationDao reservationDao; //TODO: 상위 개념 dao 호출 적절한지 고려
-//    private final ReservationService reservationService;
+    private final ReservationDao reservationDao;
 
     public ReservationTimeService(TimeDao timeDao, ReservationDao reservationDao) {
         this.timeDao = timeDao;
@@ -33,17 +31,10 @@ public class ReservationTimeService {
         List<ReservationTime> allTimes = timeDao.findAll();
         List<TimeMemberResponse> newAllTimes = new ArrayList<>();
 
-        // TODO: 인덴트 해결
-        if (date != null && themeId != null) {
-            List<Long> bookedTimeIds = reservationDao.findTimeIdByDateThemeId(date, themeId);
-            for (ReservationTime time : allTimes) {
-                if (bookedTimeIds.contains(time.getId())) {
-                    newAllTimes.add(timeMapper.mapToResponse(time, true));
-                }
-                if (!bookedTimeIds.contains(time.getId())) {
-                    newAllTimes.add(timeMapper.mapToResponse(time, false));
-                }
-            }
+        List<Long> bookedTimeIds = reservationDao.findTimeIdByDateThemeId(date, themeId);
+        for (ReservationTime time : allTimes) {
+            boolean alreadyBooked = bookedTimeIds.contains(time.getId());
+            newAllTimes.add(timeMapper.mapToResponse(time, alreadyBooked));
         }
         return newAllTimes;
     }
@@ -56,14 +47,7 @@ public class ReservationTimeService {
     }
 
     public ReservationTime findTimeById(Long id) {
-        if (id == null) {
-            throw new IllegalTimeException("[ERROR] 유효하지 않은 형식의 예약 시간입니다.");
-        }
-        Optional<ReservationTime> optionalReservationTime = timeDao.findById(id);
-        if (optionalReservationTime.isEmpty()) {
-            throw new IllegalTimeException("[ERROR] 예약 시간을 찾을 수 없습니다");
-        }
-        return optionalReservationTime.get();
+        return timeDao.findById(id);
     }
 
     public TimeResponse saveTime(TimeSaveRequest request) {
