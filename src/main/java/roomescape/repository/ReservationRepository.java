@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import roomescape.model.Reservation;
+import roomescape.model.Theme;
 
 public interface ReservationRepository {
 
@@ -22,4 +23,6 @@ public interface ReservationRepository {
     boolean existByThemeId(final Long themeId);
 
     void deleteById(final Long id);
+
+    List<Theme> findOneWeekOrderByReservationCount(LocalDate localDate, int limit);
 }

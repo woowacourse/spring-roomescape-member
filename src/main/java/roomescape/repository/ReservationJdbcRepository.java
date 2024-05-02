@@ -38,6 +38,12 @@ public class ReservationJdbcRepository implements ReservationRepository {
         );
     };
 
+    private static final RowMapper<Theme> THEME_ROW_MAPPER = (rs, rowNum) -> new Theme(
+            rs.getLong("id"),
+            rs.getString("name"),
+            rs.getString("description"),
+            rs.getString("thumbnail"));
+
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert reservationInsert;
 
@@ -187,5 +193,21 @@ public class ReservationJdbcRepository implements ReservationRepository {
     @Override
     public void deleteById(final Long id) {
         jdbcTemplate.update("DELETE FROM reservations WHERE id = ?", id);
+    }
+
+    @Override
+    public List<Theme> findOneWeekOrderByReservationCount(final LocalDate localDate, final int limit) {
+        final String sql = """
+                SELECT t.id, t.name, t.description, t.thumbnail, COUNT(t.id) AS count
+                FROM theme AS t
+                LEFT JOIN reservations AS r
+                ON t.id = r.theme_id
+                WHERE r.date <= ? AND r.date > ?
+                GROUP BY t.id
+                ORDER BY count DESC
+                LIMIT ?
+                """;
+
+        return jdbcTemplate.query(sql, THEME_ROW_MAPPER, localDate, localDate.minusWeeks(1), limit);
     }
 }
