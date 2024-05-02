@@ -4,7 +4,6 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 import org.springframework.http.HttpStatus;
 
-//Todo 상태코드 고민해보기 -> 4~6 단계 인증 인가가 들어갈 때를 대비
 public enum ExceptionType {
     EMPTY_NAME(BAD_REQUEST, "이름은 필수 값입니다."),
     EMPTY_TIME(BAD_REQUEST, "시작 시간은 필수 값입니다."),
