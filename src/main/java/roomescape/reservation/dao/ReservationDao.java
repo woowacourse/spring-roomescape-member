@@ -1,8 +1,10 @@
 package roomescape.reservation.dao;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -105,12 +107,19 @@ public class ReservationDao implements ReservationRepository {
     }
 
     @Override
-    public Reservation findBy(final LocalDate date, final long timeId, final long themeId) {
-        return null;
+    public Optional<Reservation> findBy(final LocalDate date, final long timeId, final long themeId) {
+        String sql = "SELECT r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at as time_value, th.id as theme_id, th.name as theme_name, th.description, th.thumbnail "
+                +
+                "FROM reservation as r " +
+                "INNER JOIN reservation_time as t on r.time_id = t.id "
+                + "INNER JOIN theme as th on r.theme_id = th.id "
+                + "WHERE date = ? AND time_id = ? AND theme_id = ? ";
+        return jdbcTemplate.query(sql, rowMapper, date, timeId, themeId).stream().findFirst();
     }
 
     @Override
     public void saveReservationList(final long memberId, final long reservationId) {
-
+        String sql = "INSERT INTO reservation_list(member_id, reservation_id) VALUES (?, ?)";
+        jdbcTemplate.update(sql, memberId, reservationId);
     }
 }

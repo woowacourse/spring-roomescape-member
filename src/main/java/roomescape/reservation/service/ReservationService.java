@@ -3,12 +3,15 @@ package roomescape.reservation.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.repository.MemberRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.domain.repository.ReservationTimeRepository;
 import roomescape.reservation.domain.repository.ThemeRepository;
+import roomescape.reservation.dto.MemberReservationRequest;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 
@@ -17,13 +20,15 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final MemberRepository memberRepository;
 
     public ReservationService(final ReservationRepository reservationRepository,
                               final ReservationTimeRepository reservationTimeRepository,
-                              final ThemeRepository themeRepository) {
+                              final ThemeRepository themeRepository, MemberRepository memberRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.memberRepository = memberRepository;
     }
 
     public List<ReservationResponse> findAllReservations() {
@@ -58,5 +63,14 @@ public class ReservationService {
         if (!reservationRepository.deleteById(reservationId)) {
             throw new IllegalArgumentException(String.format("잘못된 예약입니다. id=%d를 확인해주세요.", reservationId));
         }
+    }
+
+    public void createMemberReservation(final MemberReservationRequest memberReservationRequest) {
+        Member member = memberRepository.save(new Member(memberReservationRequest.name()));
+        Reservation reservation = reservationRepository.findBy(LocalDate.parse(memberReservationRequest.date()),
+                        memberReservationRequest.timeId(),
+                        memberReservationRequest.themeId())
+                .orElseThrow(IllegalArgumentException::new);
+        reservationRepository.saveReservationList(member.getId(), reservation.getId());
     }
 }

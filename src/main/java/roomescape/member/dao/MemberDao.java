@@ -14,7 +14,9 @@ import roomescape.member.domain.repository.MemberRepository;
 public class MemberDao implements MemberRepository {
     private final SimpleJdbcInsert simpleJdbcInsert;
     public MemberDao(DataSource dataSource) {
-        this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource);
+        this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName("member")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
@@ -22,6 +24,7 @@ public class MemberDao implements MemberRepository {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", member.getName());
         Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
+
         return new Member(id, member.getName());
     }
 }

@@ -121,9 +121,8 @@ function renderAvailableTimes(times) {
           response 명세에 맞춰 createSlot 함수 호출 시 값 설정
     */
     const startAt = time.startAt;
-    const timeId = time.id;
+    const timeId = time.timeId;
     const alreadyBooked = time.alreadyBooked;
-
     const div = createSlot('time', startAt, timeId, alreadyBooked); // createSlot('time', 시작 시간, time id, 예약 여부)
     timeSlots.appendChild(div);
   });
@@ -169,7 +168,7 @@ function onReservationButtonClick() {
       name: name
     };
 
-    fetch('/reservations', {
+    fetch('/member/reservation', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -178,7 +177,6 @@ function onReservationButtonClick() {
     })
         .then(response => {
           if (!response.ok) throw new Error('Reservation failed');
-          return response.json();
         })
         .then(data => {
           alert("Reservation successful!");
@@ -186,7 +184,6 @@ function onReservationButtonClick() {
         })
         .catch(error => {
           alert("An error occurred while making the reservation.");
-          console.error(error);
         });
   } else {
     alert("Please select a date, theme, and time before making a reservation.");
