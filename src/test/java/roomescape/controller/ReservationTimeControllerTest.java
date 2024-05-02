@@ -9,8 +9,6 @@ import static roomescape.TestFixture.ROOM_THEME_FIXTURE;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

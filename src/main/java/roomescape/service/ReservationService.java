@@ -37,12 +37,12 @@ public class ReservationService {
 
     public ReservationResponse save(ReservationRequest reservationRequest) {
         ReservationTime reservationTime = reservationTimeDao.findById(reservationRequest.timeId());
-        validateReservation(LocalDate.parse(reservationRequest.date()),
-                reservationTime.getStartAt());
+        validateOutdatedDateTime(LocalDate.parse(reservationRequest.date()), reservationTime.getStartAt());
+
         RoomTheme roomTheme = roomThemeDao.findById(reservationRequest.themeId());
         Reservation reservation = reservationRequest.toReservation(reservationTime, roomTheme);
 
-        validateDateTimeExistence(reservation.getDate(), reservationTime.getId());
+        validateDuplicatedDateTime(reservation.getDate(), reservationTime.getId());
 
         Reservation savedReservation = reservationDao.save(reservation);
         return ReservationResponse.fromReservation(savedReservation);
@@ -52,14 +52,14 @@ public class ReservationService {
         return reservationDao.deleteById(id);
     }
 
-    private void validateReservation(LocalDate date, LocalTime time) {
+    private void validateOutdatedDateTime(LocalDate date, LocalTime time) {
         LocalDateTime now = LocalDateTime.now(Clock.systemDefaultZone());
         if (LocalDateTime.of(date, time).isBefore(now)) {
             throw new IllegalArgumentException("지나간 날짜입니다.");
         }
     }
 
-    private void validateDateTimeExistence(LocalDate date, Long timeId) {
+    private void validateDuplicatedDateTime(LocalDate date, Long timeId) {
         boolean exists = reservationDao.existsByDateTime(date, timeId);
         if (exists) {
             throw new IllegalArgumentException("중복된 예약 시간입니다.");
