@@ -4,19 +4,38 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-
-import java.time.format.DateTimeParseException;
+import roomescape.exception.*;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(value = IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgument(IllegalArgumentException ex) {
+    @ExceptionHandler(value = DuplicateReservationException.class)
+    public ResponseEntity<String> handleDuplicateReservation(DuplicateReservationException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(value = InvalidNameException.class)
+    public ResponseEntity<String> handleInvalidName(InvalidNameException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(value = DateTimeParseException.class)
-    public ResponseEntity<String> handleDateTimeParse(DateTimeParseException ex) {
+    @ExceptionHandler(value = NullPointDateException.class)
+    public ResponseEntity<String> handleNullPointDate(NullPointDateException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = NullPointTimeException.class)
+    public ResponseEntity<String> handleNullPointTime(NullPointTimeException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = PastDateReservationException.class)
+    public ResponseEntity<String> handlePastDateReservation(PastDateReservationException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = PastTimeReservationException.class)
+    public ResponseEntity<String> handlePastTimeReservation(PastTimeReservationException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
