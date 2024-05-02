@@ -7,7 +7,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.ClientName;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -42,9 +41,9 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     private RowMapper<Reservation> itemRowMapper() {
-        return ((rs, rowNum) -> new Reservation(
+        return ((rs, rowNum) -> Reservation.of(
                 rs.getLong("reservation_id"),
-                new ClientName(rs.getString("reservation_name")),
+                rs.getString("reservation_name"),
                 rs.getDate("reservation_date").toLocalDate(),
                 new ReservationTime(rs.getLong("time_id"), rs.getTime("reservation_time").toLocalTime()),
                 new Theme(
@@ -84,7 +83,7 @@ public class H2ReservationRepository implements ReservationRepository {
         String sql = "INSERT INTO reservation(name, date, time_id, theme_id) VALUES (:name, :date, :timeId, :themeId)";
         MapSqlParameterSource param = new MapSqlParameterSource()
                 .addValue("name", reservation.getClientName().getValue())
-                .addValue("date", reservation.getDate())
+                .addValue("date", reservation.getDate().getValue())
                 .addValue("timeId", reservation.getTime().getId())
                 .addValue("themeId", reservation.getTheme().getId());
         KeyHolder keyHolder = new GeneratedKeyHolder();

@@ -5,10 +5,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.domain.Reservation;
+import roomescape.domain.ReservationDate;
 import roomescape.domain.Theme;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -21,6 +23,17 @@ class ThemeRepositoryTest {
     @Autowired
     private ThemeRepository themeRepository;
 
+    @DisplayName("특정 아이디의 테마 정보를 조회한다.")
+    @Test
+    void findByIdTest() {
+        // When
+        final Long themeId = 1L;
+        final Optional<Theme> theme = themeRepository.findById(themeId);
+
+        // Then
+        assertThat(theme.isPresent()).isTrue();
+    }
+
     @DisplayName("모든 테마 정보를 조회한다.")
     @Test
     void find() {
@@ -28,7 +41,7 @@ class ThemeRepositoryTest {
         final List<Theme> themes = themeRepository.findAll();
 
         // Then
-        assertThat(themes).hasSize(2);
+        assertThat(themes).hasSize(15);
     }
 
     @DisplayName("테마 정보를 저장한다.")
@@ -46,8 +59,8 @@ class ThemeRepositoryTest {
         // Then
         final List<Theme> themes = themeRepository.findAll();
         assertAll(
-                () -> assertThat(themes).hasSize(3),
-                () -> assertThat(savedTheme.getId()).isEqualTo(3L),
+                () -> assertThat(themes).hasSize(16),
+                () -> assertThat(savedTheme.getId()).isEqualTo(16L),
                 () -> assertThat(savedTheme.getName().getValue()).isEqualTo(theme.getName().getValue()),
                 () -> assertThat(savedTheme.getDescription().getValue()).isEqualTo(theme.getDescription().getValue()),
                 () -> assertThat(savedTheme.getThumbnail()).isEqualTo(theme.getThumbnail())
@@ -58,10 +71,39 @@ class ThemeRepositoryTest {
     @Test
     void deleteByIdTest() {
         // When
-        themeRepository.deleteById(2L);
+        themeRepository.deleteById(3L);
 
         // Then
         final List<Theme> themes = themeRepository.findAll();
-        assertThat(themes).hasSize(1);
+        assertThat(themes).hasSize(14);
+    }
+
+    @DisplayName("특정 아이디의 테마가 존재하는지 조회한다.")
+    @Test
+    void existByIdTest() {
+        // When
+        final Long themeId = 1L;
+        final boolean isExist = themeRepository.existById(themeId);
+
+        // Then
+        assertThat(isExist).isTrue();
+    }
+
+    @DisplayName("특정 기간 중 가장 예약 개수가 많은 상위 10개의 테마 정보를 인기순으로 조회한다.")
+    @Test
+    void findPopularThemes() {
+        // When
+        final ReservationDate startAt = new ReservationDate(LocalDate.now().minusDays(7));
+        final ReservationDate endAt = new ReservationDate(LocalDate.now().minusDays(1));
+
+        final List<Theme> popularThemes = themeRepository.findPopularThemes(startAt, endAt);
+
+        // Then
+        assertAll(
+                () -> assertThat(popularThemes.size()).isLessThanOrEqualTo(10),
+                () -> assertThat(popularThemes.get(0).getId()).isEqualTo(1),
+                () -> assertThat(popularThemes.get(1).getId()).isEqualTo(2),
+                () -> assertThat(popularThemes.get(2).getId()).isEqualTo(10)
+        );
     }
 }

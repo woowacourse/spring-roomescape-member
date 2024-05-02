@@ -7,16 +7,17 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.ReservationDate;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeDescription;
 import roomescape.domain.ThemeName;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public class H2ThemeRepository implements ThemeRepository {
+
     private final NamedParameterJdbcTemplate template;
 
     public H2ThemeRepository(final NamedParameterJdbcTemplate template) {
@@ -88,8 +89,9 @@ public class H2ThemeRepository implements ThemeRepository {
         return Boolean.TRUE.equals(template.queryForObject(sql, param, Boolean.class));
     }
 
+    // TODO : 조회 개수, 인기 기준을 외부에서 주입하도록 개선하면 좋을거 같다.
     @Override
-    public List<Theme> findPopularThemes(final LocalDate startAt, final LocalDate endAt) {
+    public List<Theme> findPopularThemes(final ReservationDate startAt, final ReservationDate endAt) {
         String sql = "SELECT "
                 + "th.id, th.name, th.description, th.thumbnail "
                 + "FROM reservation as r "
@@ -101,8 +103,8 @@ public class H2ThemeRepository implements ThemeRepository {
                 + "LIMIT 10 ";
 
         MapSqlParameterSource param = new MapSqlParameterSource()
-                .addValue("startAt", startAt)
-                .addValue("endAt", endAt);
+                .addValue("startAt", startAt.getValue())
+                .addValue("endAt", endAt.getValue());
 
         return template.query(sql, param, itemRowMapper());
     }
