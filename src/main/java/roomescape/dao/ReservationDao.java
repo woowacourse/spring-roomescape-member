@@ -11,6 +11,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +26,7 @@ public class ReservationDao {
         this.rowMapper = (resultSet, rowNum) -> new Reservation(
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
-                resultSet.getString("date"),
+                resultSet.getObject("date", LocalDate.class),
                 new ReservationTime(
                         resultSet.getLong("time_id"),
                         resultSet.getObject("start_at", LocalTime.class)),
@@ -88,7 +89,7 @@ public class ReservationDao {
         return jdbcTemplate.queryForObject(sql, Boolean.class, themeId);
     }
 
-    public boolean isExistReservationByDateAndTimeIdAndThemeId(String date, Long timeId, Long themeId) {
+    public boolean isExistReservationByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
         String sql = """
                 SELECT EXISTS (
                     SELECT 1
@@ -106,7 +107,7 @@ public class ReservationDao {
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
             preparedStatement.setString(1, reservation.getName());
-            preparedStatement.setString(2, reservation.getDate());
+            preparedStatement.setObject(2, reservation.getDate());
             preparedStatement.setLong(3, reservation.getTime().getId());
             preparedStatement.setLong(4, reservation.getTheme().getId());
             return preparedStatement;

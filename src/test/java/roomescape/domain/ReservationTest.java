@@ -3,6 +3,7 @@ package roomescape.domain;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
@@ -10,22 +11,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ReservationTest {
-    private final String date = "2050-10-10";
+    private final LocalDate date = LocalDate.of(2050, 10, 10);
     private final ReservationTime time = new ReservationTime(LocalTime.of(9, 0));
     private final Theme theme = new Theme(
             "오리와 호랑이",
             "오리들과 호랑이들 사이에서 살아남기",
             "https://image.jpg");
-
-    @DisplayName("날짜가 형식에 맞지 않을 때 예외를 던진다.")
-    @Test
-    void validateDateTest_whenDateFormatIsNotMatch() {
-        String date = "20-20-20";
-
-        assertThatThrownBy(() -> new Reservation("커찬", date, time, theme))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("날짜(%s)가 yyyy-MM-dd에 맞지 않습니다.".formatted(date));
-    }
 
     @DisplayName("예약자명 비어있을 때 예외를 던진다.")
     @Test
@@ -67,7 +58,7 @@ class ReservationTest {
     @Test
     void isAfterTest_whenDateIsBefore() {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(9, 0));
-        Reservation reservation = new Reservation(1L, "커찬", "2024-04-30", time, theme);
+        Reservation reservation = new Reservation(1L, "커찬", LocalDate.of(2024, 4, 30), time, theme);
         LocalDateTime currentDateTime = LocalDateTime.of(2024, 5, 1, 10, 0);
 
         assertThat(reservation.isBefore(currentDateTime)).isTrue();
@@ -77,7 +68,7 @@ class ReservationTest {
     @Test
     void isAfterTest_whenDateIsAfter() {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(9, 0));
-        Reservation reservation = new Reservation(1L, "커찬", "2024-04-30", time, theme);
+        Reservation reservation = new Reservation(1L, "커찬", LocalDate.of(2024, 4, 30), time, theme);
         LocalDateTime currentDateTime = LocalDateTime.of(2024, 4, 29, 10, 0);
 
         assertThat(reservation.isBefore(currentDateTime)).isFalse();
@@ -87,7 +78,7 @@ class ReservationTest {
     @Test
     void isAfterTest_whenDateIsEqualTimeIsBefore() {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(9, 0));
-        Reservation reservation = new Reservation(1L, "커찬", "2024-04-30", time, theme);
+        Reservation reservation = new Reservation(1L, "커찬", LocalDate.of(2024, 4, 30), time, theme);
         LocalDateTime currentDateTime = LocalDateTime.of(2024, 4, 30, 10, 0);
 
         assertThat(reservation.isBefore(currentDateTime)).isTrue();

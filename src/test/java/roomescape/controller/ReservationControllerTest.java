@@ -11,6 +11,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.dto.ReservationCreateRequest;
 
+import java.time.LocalDate;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 
@@ -50,7 +52,7 @@ class ReservationControllerTest {
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                 "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg");
         ReservationCreateRequest params = new ReservationCreateRequest
-                ("브라운", "2040-08-05", 1L, 1L);
+                ("브라운", LocalDate.of(2040, 8, 5), 1L, 1L);
 
         RestAssured.given().log().all()
                 .port(port)
@@ -72,7 +74,7 @@ class ReservationControllerTest {
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                 "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg");
         ReservationCreateRequest params = new ReservationCreateRequest
-                (null, "2040-08-05", 1L, 1L);
+                (null, LocalDate.of(2040, 8, 5), 1L, 1L);
 
         RestAssured.given().log().all()
                 .port(port)
