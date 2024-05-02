@@ -2,6 +2,7 @@ package roomescape.domain;
 
 import java.time.DateTimeException;
 import java.time.LocalTime;
+import java.util.Objects;
 
 public class ReservationTime {
 
@@ -31,5 +32,22 @@ public class ReservationTime {
 
     public String getStartAtAsString() {
         return startAt.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ReservationTime that = (ReservationTime) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

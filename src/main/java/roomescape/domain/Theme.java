@@ -31,22 +31,6 @@ public class Theme {
         }
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Theme theme = (Theme) o;
-        return Objects.equals(id, theme.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
 
     public Long getId() {
         return id;
@@ -62,5 +46,22 @@ public class Theme {
 
     public String getThumbnailAsString() {
         return thumbnail.asString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Theme theme = (Theme) o;
+        return Objects.equals(id, theme.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
