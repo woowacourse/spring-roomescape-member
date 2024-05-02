@@ -13,13 +13,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.controller.ReservationController;
+import roomescape.controller.AdminReservationController;
 import roomescape.controller.TimeController;
+import roomescape.domain.dto.ThemeResponse;
+import roomescape.domain.dto.TimeSlotResponse;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,7 +39,7 @@ public class MissionStepTest {
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    private ReservationController reservationController;
+    private AdminReservationController adminReservationController;
 
     @Autowired
     private TimeController timeController;
@@ -44,6 +47,14 @@ public class MissionStepTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+    }
+
+    private int getTotalTimeSlotsCount() {
+        List<TimeSlotResponse> timeSlots = RestAssured.given().port(port)
+                .when().get("/times")
+                .then().extract().body()
+                .jsonPath().getList("", TimeSlotResponse.class);
+        return timeSlots.size();
     }
 
     //TODO : 테스트 메서드 컨밴션 변경
@@ -68,7 +79,7 @@ public class MissionStepTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1)); // 아직 생성 요청이 없으니 Controller에서 임의로 넣어준 Reservation 갯수 만큼 검증하거나 0개임을 확인하세요.
+                .body("size()", is(7)); // 아직 생성 요청이 없으니 Controller에서 임의로 넣어준 Reservation 갯수 만큼 검증하거나 0개임을 확인하세요.
     }
 
     @DisplayName("h2 데이터베이스가 연결되었는지 확인한다.")
@@ -99,10 +110,10 @@ public class MissionStepTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(2));
+                .body("size()", is(5));
 
         RestAssured.given().log().all()
-                .when().delete("/times/2")
+                .when().delete("/times/4")
                 .then().log().all()
                 .statusCode(204);
     }
@@ -127,7 +138,7 @@ public class MissionStepTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(2));
+                .body("size()", is(8));
 
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
@@ -319,7 +330,7 @@ public class MissionStepTest {
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", is(3));
     }
 
     @DisplayName("theme 등록 및 삭제 요청이 올바르게 동작한다.")
@@ -341,11 +352,32 @@ public class MissionStepTest {
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(2));
+                .body("size()", is(4));
 
         RestAssured.given().log().all()
-                .when().delete("/themes/2")
+                .when().delete("/themes/4")
                 .then().log().all()
                 .statusCode(204);
+    }
+
+    @DisplayName("날짜와 테마를 선택하면 예약 가능한 시간을 확인할 수 있다.")
+    @Test
+    void given_dateThemeId_when_books_then_statusCodeIsOk() {
+        RestAssured.given().log().all()
+                .when().get("/books/2099-04-30/1")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(getTotalTimeSlotsCount()));
+    }
+
+    @DisplayName("랭크를 조회하면 현재 날짜 기준 일주일 동안의 인기 테마를 확인할 수 있다.")
+    @Test
+    void given_when_ranks_then_statusCodeIsOk() {
+        final List<ThemeResponse> themeResponses = RestAssured.given().log().all()
+                .when().get("/ranks")
+                .then().extract().body()
+                .jsonPath().getList("", ThemeResponse.class);
+        ThemeResponse actual = themeResponses.get(0);
+        assertThat(actual.id()).isEqualTo(2L);
     }
 }

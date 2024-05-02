@@ -83,4 +83,24 @@ public class ReservationDao {
         String sql = "select count(*) from reservation where time_id = ?";
         return jdbcTemplate.queryForObject(sql, Integer.class, timeId) != 0;
     }
+
+    //TODO: 엔티티 만들기~~
+    public List<Reservation> findByDateAndThemeId(final LocalDate date, final Long themeId) {
+        String sql = """
+                    SELECT
+                    r.id as reservation_id,
+                    r.name,
+                    r.date,
+                    t.id as time_id,
+                    t.start_at as time_value,
+                    th.id as theme_id,
+                    th.name as theme_name,
+                    th.description as theme_description,
+                    th.thumbnail as theme_thumbnail
+                    FROM reservation as r
+                    INNER JOIN reservation_time as t ON r.time_id = t.id
+                    INNER JOIN theme as th ON r.theme_id = th.id where date = ? and theme_id = ?
+                """;
+        return jdbcTemplate.query(sql, rowMapper, date, themeId);
+    }
 }
