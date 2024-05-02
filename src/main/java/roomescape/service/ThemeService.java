@@ -30,9 +30,10 @@ public class ThemeService {
     }
 
     public List<Theme> findTopRanking() {
-        LocalDate currentDate = LocalDate.now();
-        LocalDate firstDayOfPeriod = currentDate.minusDays(7);
-        LocalDate lastDayOfPeriod = currentDate.minusDays(1);
+        final LocalDate currentDate = LocalDate.now();
+        final LocalDate firstDayOfPeriod = currentDate.minusDays(7);
+        final LocalDate lastDayOfPeriod = currentDate.minusDays(1);
+
         return themeDAO.findTopRanking(firstDayOfPeriod, lastDayOfPeriod);
     }
 }

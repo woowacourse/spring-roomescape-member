@@ -35,19 +35,22 @@ public class ReservationService {
     }
 
     private void validateReservation(final ReservationRequest reservationRequest) {
-        validateDuplicated(reservationRequest);
+        validateDuplicatedReservation(reservationRequest);
         validatePast(reservationRequest);
     }
 
-    private void validateDuplicated(final ReservationRequest reservationRequest) {
+    private void validateDuplicatedReservation(final ReservationRequest reservationRequest) {
         final LocalTime reservationTime = findRequestTime(reservationRequest);
         final List<Reservation> reservations = reservationDAO.selectAll();
 
-        if (reservations.stream()
-                .anyMatch(reservation -> reservation.getDate().equals(reservationRequest.date()) &&
-                        reservation.getTime().isMatch(reservationTime))) {
+        if (hasDuplicatedReservation(reservations, reservationTime, reservationRequest)) {
             throw new IllegalArgumentException("예약 날짜와 예약 시간이 중복될 수 없습니다.");
         }
+    }
+
+    private boolean hasDuplicatedReservation(final List<Reservation> reservations, final LocalTime reservationTime, final ReservationRequest reservationRequest) {
+        return reservations.stream()
+                .anyMatch(reservation -> reservation.isDuplicatedReservation(reservationTime, reservationRequest));
     }
 
     private void validatePast(final ReservationRequest reservationRequest) {

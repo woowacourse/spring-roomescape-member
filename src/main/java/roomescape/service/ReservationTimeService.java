@@ -21,13 +21,13 @@ public class ReservationTimeService {
     }
 
     public ReservationTime save(final ReservationTimeRequest reservationTimeRequest) {
-        validateTime(reservationTimeRequest);
+        validateDuplicatedTime(reservationTimeRequest);
 
         final ReservationTime reservationTime = new ReservationTime(reservationTimeRequest.startAt());
         return reservationTimeDAO.insert(reservationTime);
     }
 
-    private void validateTime(final ReservationTimeRequest reservationTimeRequest) {
+    private void validateDuplicatedTime(final ReservationTimeRequest reservationTimeRequest) {
         if (hasDuplicatedTime(reservationTimeRequest)) {
             throw new IllegalArgumentException("중복된 시간을 예약할 수 없습니다.");
         }
