@@ -63,7 +63,7 @@ public class ReservationTimeService {
         ReservationTime reservationTime = findReservationTimeById(id);
         try {
             reservationTimeRepository.delete(reservationTime);
-        } catch (DataIntegrityViolationException e) { // TODO: 조회 쿼리로 대체하는 것도 좋을듯?
+        } catch (DataIntegrityViolationException e) {
             throw new ReservationReferencedTimeException();
         }
     }

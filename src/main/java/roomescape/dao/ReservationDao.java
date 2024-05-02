@@ -43,7 +43,7 @@ public class ReservationDao implements ReservationRepository {
             resultSet.getString("name"),
             resultSet.getString("description"),
             resultSet.getString("thumbnail")
-    ); // TODO: 클래스 분리?
+    );
 
     public ReservationDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
