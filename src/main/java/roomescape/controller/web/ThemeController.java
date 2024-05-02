@@ -1,6 +1,7 @@
 package roomescape.controller.web;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,7 +32,10 @@ public class ThemeController {
 
     @GetMapping("/populars")
     public ResponseEntity<List<ThemeResponse>> readPopularThemes() {
-        return ResponseEntity.ok(themeService.findPopulars());
+        LocalDate today = LocalDate.now();
+        LocalDate startDate = today.minusWeeks(1);
+        LocalDate endDate = today.minusDays(1);
+        return ResponseEntity.ok(themeService.findPopulars(startDate, endDate));
     }
 
     @PostMapping

@@ -28,9 +28,7 @@ public class ThemeService {
                 .toList();
     }
 
-    public List<ThemeResponse> findPopulars() {
-        LocalDate startDate = TODAY.minusWeeks(1);
-        LocalDate endDate = TODAY.minusDays(1);
+    public List<ThemeResponse> findPopulars(LocalDate startDate, LocalDate endDate) {
         List<Long> themeIds = reservationDao.readPopularThemeIds(startDate, endDate);
         return themeIds.stream()
                 .map(themeDao::readById)
