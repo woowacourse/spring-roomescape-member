@@ -15,6 +15,10 @@ class FakeReservationTimeRepository implements ReservationTimeRepository {
             new ReservationTime(2, LocalTime.of(11, 0))
     ));
 
+    public void add(ReservationTime reservationTime) {
+        reservationTimes.add(reservationTime);
+    }
+
     @Override
     public List<ReservationTime> findAllReservationTimes() {
         return reservationTimes;

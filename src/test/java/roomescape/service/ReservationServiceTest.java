@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.controller.request.ReservationRequest;
@@ -8,6 +9,8 @@ import roomescape.exception.BadRequestException;
 import roomescape.exception.DuplicatedException;
 import roomescape.exception.NotFoundException;
 import roomescape.model.Reservation;
+import roomescape.model.ReservationTime;
+import roomescape.repository.ReservationTimeRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -17,9 +20,11 @@ import static org.assertj.core.api.Assertions.*;
 
 class ReservationServiceTest {
 
+    private final FakeReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
+
     private final ReservationService reservationService = new ReservationService(
             new FakeReservationRepository(),
-            new FakeReservationTimeRepository(),
+            reservationTimeRepository,
             new FakeThemeRepository());
 
     @DisplayName("모든 예약 시간을 반환한다")
@@ -61,7 +66,6 @@ class ReservationServiceTest {
                 .doesNotThrowAnyException();
     }
 
-    //todo 현재 시간에 따라 테스트 깨짐 + 경계값 테스트
     @DisplayName("현재 이전으로 예약하면 예외가 발생한다.")
     @Test
     void should_throw_exception_when_previous_date() {
@@ -69,6 +73,15 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.addReservation(request))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage("[ERROR] 현재 이전 예약은 할 수 없습니다.");
+    }
+
+    @DisplayName("현재로 예약하면 예외가 발생하지 않는다.")
+    @Test
+    void should_not_throw_exception_when_current_date() {
+        reservationTimeRepository.add(new ReservationTime(3, LocalTime.now()));
+        ReservationRequest request = new ReservationRequest(LocalDate.now().toString(), "에버", 3, 1);
+        assertThatCode(() -> reservationService.addReservation(request))
+                .doesNotThrowAnyException();
     }
 
     @DisplayName("현재 이후로 예약하면 예외가 발생하지 않는다.")

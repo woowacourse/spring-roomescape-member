@@ -15,6 +15,8 @@ import roomescape.repository.ThemeRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -42,7 +44,10 @@ public class ReservationService {
         Theme theme = themeRepository.findThemeById(request.getThemeId());
 
         LocalDateTime reservationDateTime = LocalDateTime.of(request.getDate(), reservationTime.getStartAt());
-        if (reservationDateTime.isBefore(LocalDateTime.now())) {
+
+        LocalDateTime requestDateTime = reservationDateTime.truncatedTo(ChronoUnit.SECONDS);
+        LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+        if (requestDateTime.isBefore(now)) {
             throw new BadRequestException("[ERROR] 현재 이전 예약은 할 수 없습니다.");
         }
         Long countReservation = reservationRepository.countReservationByDateAndTimeId(request.getDate(), request.getTimeId());
