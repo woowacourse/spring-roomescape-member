@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import roomescape.service.dto.ReservationRequest;
-import roomescape.service.dto.ReservationTimeRequest;
+import roomescape.service.dto.ReservationTimeCreateRequest;
 import roomescape.service.dto.ThemeRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -32,7 +32,7 @@ public class ReservationControllerTest {
         String startAt = "17:46";
         timeId = (int) RestAssured.given()
                 .contentType(ContentType.JSON)
-                .body(new ReservationTimeRequest(startAt))
+                .body(new ReservationTimeCreateRequest(startAt))
                 .when().post("/times")
                 .then().extract().response().jsonPath().get("id");
         ThemeRequest themeRequest = new ThemeRequest("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",

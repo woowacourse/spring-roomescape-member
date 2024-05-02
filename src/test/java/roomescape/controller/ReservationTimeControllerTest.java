@@ -12,7 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import roomescape.service.dto.ReservationRequest;
-import roomescape.service.dto.ReservationTimeRequest;
+import roomescape.service.dto.ReservationTimeCreateRequest;
+import roomescape.service.dto.ReservationTimeReadRequest;
 import roomescape.service.dto.ThemeRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -34,6 +35,10 @@ class ReservationTimeControllerTest {
         RestAssured.get("/times")
                 .then().extract().body().jsonPath().getList("id")
                 .forEach(id -> RestAssured.delete("/times/" + id));
+
+        RestAssured.get("/themes")
+                .then().extract().body().jsonPath().getList("id")
+                .forEach(id -> RestAssured.delete("/themes/" + id));
     }
 
     @DisplayName("시간 정보를 추가한다.")
@@ -41,7 +46,7 @@ class ReservationTimeControllerTest {
     void createReservationTime() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new ReservationTimeRequest("10:00"))
+                .body(new ReservationTimeCreateRequest("10:00"))
                 .when().post("/times")
                 .then().log().all().statusCode(201).body("id", is(greaterThan(0)));
     }
@@ -52,13 +57,13 @@ class ReservationTimeControllerTest {
         //given
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new ReservationTimeRequest("10:00"))
+                .body(new ReservationTimeCreateRequest("10:00"))
                 .when().post("/times");
 
         //when&then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new ReservationTimeRequest("10:00"))
+                .body(new ReservationTimeCreateRequest("10:00"))
                 .when().post("/times")
                 .then().log().all().statusCode(400).body("message", is("이미 같은 시간이 존재합니다."));
     }
@@ -72,7 +77,7 @@ class ReservationTimeControllerTest {
         //when&then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new ReservationTimeRequest(invalidTime))
+                .body(new ReservationTimeCreateRequest(invalidTime))
                 .when().post("/times")
                 .then().log().all()
                 .assertThat().statusCode(400).body("message", is("올바르지 않은 시간입니다."));
@@ -82,7 +87,7 @@ class ReservationTimeControllerTest {
     @Test
     void findAllReservationTime() {
         //given
-        RestAssured.given().contentType(ContentType.JSON).body(new ReservationTimeRequest("10:00"))
+        RestAssured.given().contentType(ContentType.JSON).body(new ReservationTimeCreateRequest("10:00"))
                 .when().post("/times");
 
         //when&then
@@ -95,7 +100,7 @@ class ReservationTimeControllerTest {
     @Test
     void deleteReservationTimeById() {
         //given
-        var id = RestAssured.given().contentType(ContentType.JSON).body(new ReservationTimeRequest("10:00"))
+        var id = RestAssured.given().contentType(ContentType.JSON).body(new ReservationTimeCreateRequest("10:00"))
                 .when().post("/times")
                 .then().extract().response().jsonPath().get("id");
 
@@ -115,7 +120,8 @@ class ReservationTimeControllerTest {
     @Test
     void cannotDeleteReservationTime() {
         //given
-        long timeId = (int) RestAssured.given().contentType(ContentType.JSON).body(new ReservationTimeRequest("10:00"))
+        long timeId = (int) RestAssured.given().contentType(ContentType.JSON)
+                .body(new ReservationTimeCreateRequest("10:00"))
                 .when().post("/times")
                 .then().extract().response().jsonPath().get("id");
 
@@ -139,5 +145,34 @@ class ReservationTimeControllerTest {
                 .when().get("/times")
                 .then().log().all()
                 .assertThat().body("size()", is(1));
+    }
+
+    @DisplayName("예약 가능한 시간 조회 테스트")
+    @Test
+    void findAvailableTime() {
+        //given
+        long timeId = (int) RestAssured.given().contentType(ContentType.JSON)
+                .body(new ReservationTimeCreateRequest("10:00"))
+                .when().post("/times")
+                .then().extract().response().jsonPath().get("id");
+
+        ThemeRequest themeRequest = new ThemeRequest("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        long themeId = (int) RestAssured.given().contentType(ContentType.JSON).body(themeRequest)
+                .when().post("/themes")
+                .then().extract().response().jsonPath().get("id");
+
+        String date = "2222-04-30";
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(new ReservationRequest("브라운", date, timeId, themeId))
+                .when().post("/reservations");
+
+        //when&then
+        ReservationTimeReadRequest reservationTimeReadRequest = new ReservationTimeReadRequest(themeId, date);
+        RestAssured.given().contentType(ContentType.JSON)
+                .body(reservationTimeReadRequest)
+                .when().get("/times/available")
+                .then().log().all().statusCode(200).body("size()", is(0));
     }
 }

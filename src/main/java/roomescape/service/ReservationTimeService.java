@@ -7,7 +7,8 @@ import roomescape.dao.ReservationRepository;
 import roomescape.dao.ReservationTimeRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.InvalidReservationException;
-import roomescape.service.dto.ReservationTimeRequest;
+import roomescape.service.dto.ReservationTimeCreateRequest;
+import roomescape.service.dto.ReservationTimeReadRequest;
 import roomescape.service.dto.ReservationTimeResponse;
 
 @Service
@@ -22,15 +23,15 @@ public class ReservationTimeService {
         this.reservationRepository = reservationRepository;
     }
 
-    public ReservationTimeResponse create(final ReservationTimeRequest reservationTimeRequest) {
-        validateDuplicated(reservationTimeRequest);
+    public ReservationTimeResponse create(final ReservationTimeCreateRequest reservationTimeCreateRequest) {
+        validateDuplicated(reservationTimeCreateRequest);
         ReservationTime reservationTime = reservationTimeRepository.save(
-                new ReservationTime(reservationTimeRequest.startAt()));
+                new ReservationTime(reservationTimeCreateRequest.startAt()));
         return new ReservationTimeResponse(reservationTime);
     }
 
-    private void validateDuplicated(ReservationTimeRequest reservationTimeRequest) {
-        if (reservationTimeRepository.existsByTime(reservationTimeRequest.startAt())) {
+    private void validateDuplicated(ReservationTimeCreateRequest reservationTimeCreateRequest) {
+        if (reservationTimeRepository.existsByTime(reservationTimeCreateRequest.startAt())) {
             throw new InvalidReservationException("이미 같은 시간이 존재합니다.");
         }
     }
@@ -52,8 +53,9 @@ public class ReservationTimeService {
         }
     }
 
-    public List<ReservationTimeResponse> findAvailableTimes(long themeId, String date) {
-        return reservationTimeRepository.findByThemeAndDate(themeId, date).stream()
+    public List<ReservationTimeResponse> findAvailableTimes(ReservationTimeReadRequest reservationTimeReadRequest) {
+        return reservationTimeRepository.findByThemeAndDate(reservationTimeReadRequest.themeId(),
+                        reservationTimeReadRequest.date()).stream()
                 .map(ReservationTimeResponse::new)
                 .toList();
     }

@@ -17,7 +17,8 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.InvalidReservationException;
-import roomescape.service.dto.ReservationTimeRequest;
+import roomescape.service.dto.ReservationTimeCreateRequest;
+import roomescape.service.dto.ReservationTimeReadRequest;
 import roomescape.service.dto.ReservationTimeResponse;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
@@ -47,10 +48,10 @@ class ReservationTimeServiceTest {
     void create() {
         //given
         String startAt = "10:00";
-        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(startAt);
+        ReservationTimeCreateRequest reservationTimeCreateRequest = new ReservationTimeCreateRequest(startAt);
 
         //when
-        ReservationTimeResponse result = reservationTimeService.create(reservationTimeRequest);
+        ReservationTimeResponse result = reservationTimeService.create(reservationTimeCreateRequest);
 
         //then
         assertAll(
@@ -64,8 +65,8 @@ class ReservationTimeServiceTest {
     void findAll() {
         //given
         String startAt = "10:00";
-        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(startAt);
-        reservationTimeService.create(reservationTimeRequest);
+        ReservationTimeCreateRequest reservationTimeCreateRequest = new ReservationTimeCreateRequest(startAt);
+        reservationTimeService.create(reservationTimeCreateRequest);
 
         //when
         List<ReservationTimeResponse> reservationTimes = reservationTimeService.findAll();
@@ -79,11 +80,11 @@ class ReservationTimeServiceTest {
     void duplicatedTime() {
         //given
         String startAt = "10:00";
-        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(startAt);
-        reservationTimeService.create(reservationTimeRequest);
+        ReservationTimeCreateRequest reservationTimeCreateRequest = new ReservationTimeCreateRequest(startAt);
+        reservationTimeService.create(reservationTimeCreateRequest);
 
         //when&then
-        assertThatThrownBy(() -> reservationTimeService.create(reservationTimeRequest))
+        assertThatThrownBy(() -> reservationTimeService.create(reservationTimeCreateRequest))
                 .isInstanceOf(InvalidReservationException.class)
                 .hasMessage("이미 같은 시간이 존재합니다.");
     }
@@ -93,7 +94,7 @@ class ReservationTimeServiceTest {
     void cannotDeleteTime() {
         //given
         ReservationTimeResponse reservationTimeResponse = reservationTimeService.create(
-                new ReservationTimeRequest("10:00"));
+                new ReservationTimeCreateRequest("10:00"));
         ReservationTime reservationTime = new ReservationTime(reservationTimeResponse.id(),
                 reservationTimeResponse.startAt());
         Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
@@ -111,7 +112,7 @@ class ReservationTimeServiceTest {
     void findAvailableTimes() {
         //given
         ReservationTimeResponse notAvailableTimeResponse = reservationTimeService.create(
-                new ReservationTimeRequest("10:00"));
+                new ReservationTimeCreateRequest("10:00"));
         ReservationTime reservationTime = new ReservationTime(notAvailableTimeResponse.id(),
                 notAvailableTimeResponse.startAt());
         Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
@@ -120,11 +121,12 @@ class ReservationTimeServiceTest {
                 new Reservation("lilly", "2222-10-04", reservationTime, theme));
 
         ReservationTimeResponse availableTimeResponse = reservationTimeService.create(
-                new ReservationTimeRequest("11:00"));
+                new ReservationTimeCreateRequest("11:00"));
 
         //when
-        List<ReservationTimeResponse> result = reservationTimeService.findAvailableTimes(theme.getId(),
-                reservation.getDate());
+        List<ReservationTimeResponse> result = reservationTimeService.findAvailableTimes(
+                new ReservationTimeReadRequest(theme.getId(),
+                        reservation.getDate()));
 
         //then
         assertAll(

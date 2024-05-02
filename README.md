@@ -219,7 +219,7 @@
 - uri: /times/available
 - request
   ```
-  GET /available-times HTTP/1.1
+  GET /times/available HTTP/1.1
   content-type: application/json
   
   {
