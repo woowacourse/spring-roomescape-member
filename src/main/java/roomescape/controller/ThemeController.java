@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import roomescape.controller.dto.request.ThemeCreateRequest;
 import roomescape.controller.dto.response.ThemeResponse;
 import roomescape.exception.ExistReservationInThemeException;
@@ -42,6 +43,12 @@ public class ThemeController {
         return ResponseEntity.ok(ThemeResponse.toResponses(outputs));
     }
 
+    @GetMapping("/popular")
+    public ResponseEntity<List<ThemeOutput>> getPopularThemes(@RequestParam String date) {
+        List<ThemeOutput> outputs = themeService.getPopularThemes(date);
+        return ResponseEntity.ok().body(outputs);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable long id) {
         themeService.deleteTheme(id);
@@ -57,6 +64,7 @@ public class ThemeController {
     public ResponseEntity<String> handleNotExistThemeException(NotExistThemeException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
     }
+
     @ExceptionHandler(value = ExistReservationInThemeException.class)
     public ResponseEntity<String> handleExistReservationInThemeException(ExistReservationInThemeException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
