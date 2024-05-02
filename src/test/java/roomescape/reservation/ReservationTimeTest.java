@@ -29,6 +29,14 @@ class ReservationTimeTest {
         RestAssured.port = port;
     }
 
+    @BeforeEach
+    void insert() {
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES(?)", LocalTime.of(10, 0));
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES(?, ?, ?)", "hi", "happy", "abcd.html");
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES(?, ?, ?, ?)",
+                "rush", LocalDate.of(2030, 12, 12), 1, 1);
+    }
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -49,10 +57,6 @@ class ReservationTimeTest {
     @DisplayName("올바르지 않은 시간 형식으로 입력시 예외처리")
     @Test
     void deleteTimeInUse() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES(?)", LocalTime.of(10, 0));
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES(?, ?, ?)",
-                "rush", LocalDate.of(2030, 12, 12), 1);
-
         RestAssured.given().log().all()
                 .when().delete("/times/1")
                 .then().log().all()
@@ -62,9 +66,6 @@ class ReservationTimeTest {
     @DisplayName("테마와 날짜 정보를 주면 시간별 예약가능 여부를 반환한다.")
     @Test
     void availableTime() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES(?)", LocalTime.of(10, 0));
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES(?, ?, ?)", "hi", "happy", "abcd.html");
-
         RestAssured.given().log().all()
                 .when().get("/times/available?themeId=1&date=2999-12-12")
                 .then().log().all()
