@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.domain.ReservationQueryRepository;
+import roomescape.domain.Theme;
 import roomescape.domain.dto.AvailableTimeDto;
 
 @JdbcTest
@@ -17,7 +19,7 @@ import roomescape.domain.dto.AvailableTimeDto;
 class JdbcReservationQueryRepositoryTest {
 
     @Autowired
-    private JdbcReservationQueryRepository reservationQueryRepository;
+    private ReservationQueryRepository reservationQueryRepository;
 
     @DisplayName("날짜와 테마 id가 주어지면, 예약 가능한 시간을 반환한다.")
     @Test
@@ -28,6 +30,21 @@ class JdbcReservationQueryRepositoryTest {
                 .stream()
                 .filter(time -> !time.isBooked())
                 .toList();
-        assertThat(times).hasSize(3);
+        assertThat(times).hasSize(4);
+    }
+
+    @DisplayName("주어진 날짜 사이에 예약된 갯수를 기준으로 테마를 반환한다.")
+    @Test
+    @Sql("/insert-reservations.sql")
+    void shouldReturnPopularThemes() {
+        LocalDate from = LocalDate.of(2024, 12, 24);
+        LocalDate to = LocalDate.of(2024, 12, 28);
+        int limit = 3;
+
+        List<Long> themeIds = reservationQueryRepository.findPopularThemesDateBetween(from, to, limit)
+                .stream()
+                .map(Theme::getId)
+                .toList();
+        assertThat(themeIds).containsExactly(4L, 3L, 2L);
     }
 }

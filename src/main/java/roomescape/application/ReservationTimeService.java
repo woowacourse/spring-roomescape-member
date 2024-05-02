@@ -1,14 +1,11 @@
 package roomescape.application;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.application.dto.AvailableTimeResponse;
 import roomescape.application.dto.ReservationTimeRequest;
 import roomescape.application.dto.ReservationTimeResponse;
-import roomescape.domain.ReservationQueryRepository;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
@@ -16,14 +13,11 @@ import roomescape.domain.ReservationTimeRepository;
 @Service
 public class ReservationTimeService {
     private final ReservationTimeRepository reservationTimesRepository;
-    private final ReservationQueryRepository reservationQueryRepository;
     private final ReservationRepository reservationRepository;
 
     public ReservationTimeService(ReservationTimeRepository reservationTimesRepository,
-                                  ReservationQueryRepository reservationQueryRepository,
                                   ReservationRepository reservationRepository) {
         this.reservationTimesRepository = reservationTimesRepository;
-        this.reservationQueryRepository = reservationQueryRepository;
         this.reservationRepository = reservationRepository;
     }
 
@@ -57,12 +51,5 @@ public class ReservationTimeService {
                     findReservationTime.getStartAt()));
         }
         reservationTimesRepository.deleteById(id);
-    }
-
-    public List<AvailableTimeResponse> findAvailableTimes(LocalDate date, long themeId) {
-        return reservationQueryRepository.findAvailableReservationTimes(date, themeId)
-                .stream()
-                .map(AvailableTimeResponse::from)
-                .toList();
     }
 }

@@ -5,7 +5,9 @@ import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationQueryRepository;
+import roomescape.domain.Theme;
 import roomescape.domain.dto.AvailableTimeDto;
+import roomescape.infrastructure.rowmapper.ThemeRowMapper;
 
 @Repository
 public class JdbcReservationQueryRepository implements ReservationQueryRepository {
@@ -32,5 +34,19 @@ public class JdbcReservationQueryRepository implements ReservationQueryRepositor
                 rs.getTime("start_at").toLocalTime(),
                 rs.getBoolean("is_booked")
         ), date, themeId);
+    }
+
+    @Override
+    public List<Theme> findPopularThemesDateBetween(LocalDate startDate, LocalDate endDate, int limit) {
+        String sql = """
+                select t.id, t.name, t.description, t.thumbnail, count(r.id) as reservation_count
+                from theme as t left join reservation as r on t.id = r.theme_id
+                where r.date between ? and ?
+                group by t.id
+                order by reservation_count desc
+                limit ?
+                """;
+
+        return jdbcTemplate.query(sql, ThemeRowMapper::mapRow, startDate, endDate, limit);
     }
 }
