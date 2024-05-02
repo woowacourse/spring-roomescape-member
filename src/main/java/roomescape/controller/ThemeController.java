@@ -2,6 +2,7 @@ package roomescape.controller;
 
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.application.ThemeService;
 import roomescape.domain.theme.Theme;
+import roomescape.dto.reservationtime.ReservationTimeResponse;
 import roomescape.dto.theme.ThemeRequest;
 import roomescape.dto.theme.ThemeResponse;
 
@@ -46,6 +48,19 @@ public class ThemeController {
     public ResponseEntity<Void> deleteTheme(@PathVariable long id) {
         themeService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/popular")
+    public ResponseEntity<List<ThemeResponse>> getPopularThemes() {
+        List<ThemeResponse> themeResponses = themeService.getPopularThemes().stream()
+                .map(ThemeResponse::from).toList();
+        return ResponseEntity.ok(themeResponses);
+    }
+
+    @GetMapping("/{id}/{date}")
+    public ResponseEntity<List<ReservationTimeResponse>> get(@PathVariable long id, @PathVariable LocalDate date) {
+        List<ReservationTimeResponse> responses = themeService.getAvailableTimes(id, date);
+        return ResponseEntity.ok(responses);
     }
 
 }
