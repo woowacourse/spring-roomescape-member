@@ -1,13 +1,15 @@
 package roomescape.dao;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.TestConstructor;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Reservation;
 
 import java.sql.PreparedStatement;
@@ -19,16 +21,16 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
+@Import(ReservationDao.class)
+@Sql(scripts = {"/test_schema.sql", "/test_data.sql"})
 public class ReservationDaoTest {
 
-    private final JdbcTemplate jdbcTemplate;
-    private final ReservationDao reservationDao;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
-    public ReservationDaoTest(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.reservationDao = new ReservationDao(jdbcTemplate);
-    }
+    @Autowired
+    private ReservationDao reservationDao;
+
 
     @Test
     void findAllTest() {
@@ -75,11 +77,12 @@ public class ReservationDaoTest {
     void deleteByIdTest() {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement("INSERT INTO reservation(name, date, time_Id) VALUES (?, ?, ?)",
+            PreparedStatement ps = connection.prepareStatement("INSERT INTO reservation(name, date, time_Id, theme_id) VALUES (?, ?, ?, ?)",
                     new String[]{"id"});
             ps.setString(1, "네오");
             ps.setString(2, "2024-01-03");
             ps.setLong(3, 1L);
+            ps.setLong(4, 1L);
             return ps;
         }, keyHolder);
 

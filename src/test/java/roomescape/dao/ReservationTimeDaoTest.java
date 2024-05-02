@@ -1,13 +1,15 @@
 package roomescape.dao;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.TestConstructor;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.ReservationTime;
 
 import java.sql.PreparedStatement;
@@ -18,17 +20,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
+@Import(ReservationTimeDao.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
+@Sql(scripts = {"/test_schema.sql", "/test_data.sql"})
 public class ReservationTimeDaoTest {
 
-    private final JdbcTemplate jdbcTemplate;
-    private final ReservationTimeDao reservationTimeDao;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
-    public ReservationTimeDaoTest(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.reservationTimeDao = new ReservationTimeDao(jdbcTemplate);
-    }
+    @Autowired
+    private ReservationTimeDao reservationTimeDao;
 
     @Test
     void findAllTest() {

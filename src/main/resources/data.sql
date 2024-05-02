@@ -1,3 +1,5 @@
+-- TODO: 주석으로 구분하기
+
 INSERT INTO reservation_time(start_at) VALUES '01:00';
 INSERT INTO reservation_time(start_at) VALUES '03:00';
 INSERT INTO reservation_time(start_at) VALUES '05:00';
