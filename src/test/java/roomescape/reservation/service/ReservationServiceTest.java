@@ -6,8 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Date;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -18,12 +17,10 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.reservation.dto.request.CreateReservationRequest;
 import roomescape.reservation.dto.response.CreateReservationResponse;
+import roomescape.reservation.dto.response.FindAvailableTimesResponse;
 import roomescape.reservation.dto.response.FindReservationResponse;
-import roomescape.reservation.dto.response.FindThemeOfReservationResponse;
-import roomescape.reservation.dto.response.FindTimeOfReservationsResponse;
 import roomescape.reservation.model.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.reservationtime.model.ReservationTime;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.util.DummyDataFixture;
@@ -56,7 +53,8 @@ class ReservationServiceTest extends DummyDataFixture {
         Mockito.when(reservationRepository.save(any(Reservation.class))).thenReturn(super.getReservationById(10L));
 
         // when
-        CreateReservationResponse createReservationResponse = reservationService.createReservation(createReservationRequest);
+        CreateReservationResponse createReservationResponse = reservationService.createReservation(
+                createReservationRequest);
 
         // then
         assertThat(createReservationResponse.id()).isEqualTo(10L);
@@ -135,34 +133,28 @@ class ReservationServiceTest extends DummyDataFixture {
     void getReservations() {
         // stub
         Mockito.when(reservationRepository.findAll())
-                .thenReturn(super.getPreparedReservations());
+                .thenReturn(List.of(super.getReservationById(1L), super.getReservationById(2L)));
 
         // when & then
-        assertThat(reservationService.getReservations()).containsExactly(
-                new FindReservationResponse(1L, "아서", "2024-04-24",
-                        new FindTimeOfReservationsResponse(1L, "15:40"),
-                        new FindThemeOfReservationResponse(1L, "공포", "아아", "ㅠㅠ")),
-                new FindReservationResponse(2L, "몰리", "2024-04-23",
-                        new FindTimeOfReservationsResponse(2L, "10:00"),
-                        new FindThemeOfReservationResponse(1L, "공포", "아아", "ㅠㅠ"))
-        );
+        assertThat(reservationService.getReservations())
+                .containsExactly(
+                        FindReservationResponse.of(super.getReservationById(1L)),
+                        FindReservationResponse.of(super.getReservationById(2L)));
     }
 
     @Test
     @DisplayName("해당하는 id와 동일한 저장된 예약 대한 정보를 반환한다.")
     void getReservation() {
         // given
-        long timeId = 1L;
+        long id = 1L;
 
         // stub
-        Mockito.when(reservationRepository.findById(timeId))
-                .thenReturn(Optional.ofNullable(super.getReservationById(timeId)));
+        Mockito.when(reservationRepository.findById(id))
+                .thenReturn(Optional.ofNullable(super.getReservationById(id)));
 
-        // when & then // TODO: fixture 사용해 변경
-        assertThat(reservationService.getReservation(timeId)).isEqualTo(
-                new FindReservationResponse(1L, "아서", "2024-04-24",
-                        new FindTimeOfReservationsResponse(1L, "15:40"),
-                        new FindThemeOfReservationResponse(1L, "공포", "아아", "ㅠㅠ")));
+        // when & then
+        assertThat(reservationService.getReservation(id))
+                .isEqualTo(FindReservationResponse.of(super.getReservationById(1L)));
     }
 
     @Test
@@ -177,6 +169,28 @@ class ReservationServiceTest extends DummyDataFixture {
                 .isInstanceOf(NoSuchElementException.class)
                 .hasMessage("해당하는 예약이 존재하지 않습니다.");
     }
+
+
+    @Test
+    @DisplayName("해당하는 날짜와 테마를 통해 가능한 예약 시간 정보를 반환한다.")
+    void getAvailableTimes() {
+        LocalDate date = LocalDate.of(2024, 10, 23);
+
+        // stub
+        Mockito.when(reservationTimeRepository.findAll()).thenReturn(getPreparedReservationTimes());
+        Mockito.when(reservationRepository.findAllByDateAndThemeId(date, 1L))
+                .thenReturn(List.of(getReservationById(1L), getReservationById(2L)));
+
+        // when & then
+        assertThat(reservationService.getAvailableTimes(date, 1L))
+                .isEqualTo(List.of(
+                        FindAvailableTimesResponse.of(1L, getReservationTimeById(1L).getTime(), true),
+                        FindAvailableTimesResponse.of(2L, getReservationTimeById(2L).getTime(), true),
+                        FindAvailableTimesResponse.of(3L, getReservationTimeById(3L).getTime(), false),
+                        FindAvailableTimesResponse.of(4L, getReservationTimeById(4L).getTime(), false),
+                        FindAvailableTimesResponse.of(5L, getReservationTimeById(5L).getTime(), false)));
+    }
+
 
     @Test
     @DisplayName("해당하는 id와 동일한 저장된 예약을 삭제한다.")
