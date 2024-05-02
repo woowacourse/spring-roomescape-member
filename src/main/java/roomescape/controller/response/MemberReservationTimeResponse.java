@@ -1,6 +1,7 @@
 package roomescape.controller.response;
 
 import java.time.LocalTime;
+import java.util.Objects;
 
 public class MemberReservationTimeResponse {
 
@@ -28,5 +29,18 @@ public class MemberReservationTimeResponse {
 
     public boolean getAlreadyBooked() {
         return alreadyBooked;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MemberReservationTimeResponse that = (MemberReservationTimeResponse) o;
+        return timeId == that.timeId && alreadyBooked == that.alreadyBooked && Objects.equals(startAt, that.startAt);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(timeId, startAt, alreadyBooked);
     }
 }
