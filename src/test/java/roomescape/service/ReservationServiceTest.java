@@ -41,7 +41,7 @@ class ReservationServiceTest {
 
     @Test
     @DisplayName("존재하지 않는 time_id로 예약을 추가하면 예외를 발생시킨다.")
-    void addReservationInvalidTimeId() {
+    void addReservationInvalidGetTimeGetId() {
         ReservationAddRequest reservationAddRequest = new ReservationAddRequest(new Name("네오"), LocalDate.now().plusDays(1), -1L, 1L);
 
         assertThatThrownBy(() -> reservationService.addReservation(reservationAddRequest))

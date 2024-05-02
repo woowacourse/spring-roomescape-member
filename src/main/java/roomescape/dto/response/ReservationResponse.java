@@ -9,10 +9,10 @@ public record ReservationResponse(Long id, String name, String date, Reservation
 
     public static ReservationResponse from(Reservation reservation) {
         return new ReservationResponse(
-                reservation.id(),
-                reservation.name().getName(),
-                reservation.date(DateTimeFormatter.ISO_DATE),
-                ReservationTimeResponse.from(reservation.time()),
+                reservation.getId(),
+                reservation.getName().getName(),
+                reservation.getDate(DateTimeFormatter.ISO_DATE),
+                ReservationTimeResponse.from(reservation.getTime()),
                 ThemeResponse.from(reservation.getTheme()
                 ));
     }

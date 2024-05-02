@@ -12,7 +12,7 @@ class ReservationTimeTest {
 
     @Test
     @DisplayName("입력받은 formatter에 맞게 시간을 String으로 변환한다.")
-    void formatTime() {
+    void formatGetTime() {
         ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
 
         String formatted = reservationTime.startAt(DateTimeFormatter.ofPattern("HH:mm"));

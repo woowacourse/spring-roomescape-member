@@ -11,7 +11,7 @@ class ReservationTimeAddRequestTest {
 
     @Test
     @DisplayName("예약 시간 추가 요청시 전달받은 데이터를 바탕으로 ReservationTime 객체를 생성한다.")
-    void toReservationTime() {
+    void toReservationGetTime() {
         LocalTime time = LocalTime.parse("10:00");
         ReservationTimeAddRequest reservationTimeAddRequest = new ReservationTimeAddRequest(time);
         ReservationTime expected = new ReservationTime(time);

@@ -39,7 +39,7 @@ class ReservationTimeH2RepositoryTest {
 
     @Test
     @DisplayName("중복된 시간을 저장하려고 하면 예외가 발생한다.")
-    void saveDuplicatedTime() {
+    void saveDuplicatedGetTime() {
         ReservationTime duplicatedReservationTime = new ReservationTime(LocalTime.of(9, 0));
 
         assertThatThrownBy(() -> reservationTimeH2Repository.save(duplicatedReservationTime))
@@ -59,7 +59,7 @@ class ReservationTimeH2RepositoryTest {
 
     @Test
     @DisplayName("참조되어 있는 시간을 삭제하는 경우 예외가 발생한다.")
-    void deleteReferencedTime() {
+    void deleteReferencedGetTime() {
         assertThatThrownBy(() -> reservationTimeH2Repository.delete(1L))
                 .isInstanceOf(IllegalArgumentException.class);
     }

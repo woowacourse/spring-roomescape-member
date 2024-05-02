@@ -25,23 +25,23 @@ public class Reservation {
         this(null, name, date, time, theme);
     }
 
-    public Long id() {
+    public Long getId() {
         return id;
-    } // TODO 네이밍 변경 고려
+    }
 
-    public Name name() {
+    public Name getName() {
         return name;
     }
 
-    public LocalDate date() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public String date(DateTimeFormatter formatter) {
+    public String getDate(DateTimeFormatter formatter) {
         return date.format(formatter);
     }
 
-    public ReservationTime time() {
+    public ReservationTime getTime() {
         return time;
     }
 

@@ -11,7 +11,7 @@ class ReservationTest {
 
     @Test
     @DisplayName("입력받은 formatter에 맞게 날짜를 String으로 변환한다.")
-    void formatDate() {
+    void formatGetDate() {
         Reservation reservation = new Reservation(
                 1L,
                 new Name("브라운"),
@@ -20,7 +20,7 @@ class ReservationTest {
                 new Theme(1L, new Name("레벨2 탈출"), "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg")
         );
 
-        String formatted = reservation.date(DateTimeFormatter.ISO_DATE);
+        String formatted = reservation.getDate(DateTimeFormatter.ISO_DATE);
 
         assertThat(formatted).isEqualTo("2024-04-24");
     }

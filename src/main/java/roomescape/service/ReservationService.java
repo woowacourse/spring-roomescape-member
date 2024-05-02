@@ -57,8 +57,8 @@ public class ReservationService {
 
     public List<ReservationResponse> findPopularThemes(Long limitCount) { // TODO 반환 타입과 메서드 명의 불일치??
         Map<Theme, Long> themeReservationCounts = reservationRepository.findAll().stream()
-                .filter(reservation -> reservation.date().isAfter(LocalDate.now().minusDays(8)))
-                .filter(reservation -> reservation.date().isBefore(LocalDate.now()))
+                .filter(reservation -> reservation.getDate().isAfter(LocalDate.now().minusDays(8)))
+                .filter(reservation -> reservation.getDate().isBefore(LocalDate.now()))
                 .collect(Collectors.groupingBy(Reservation::getTheme, Collectors.counting()));
 
         return themeReservationCounts.entrySet().stream() // TODO 로직 간소화

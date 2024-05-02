@@ -6,9 +6,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
@@ -41,12 +39,12 @@ class ReservationH2RepositoryTest {
 
         Reservation save = reservationH2Repository.save(reservation);
 
-        assertThat(save.id()).isNotNull();
+        assertThat(save.getId()).isNotNull();
     }
 
     @Test
     @DisplayName("과거 시간을 예약하려는 경우 예외를 발생시킨다.")
-    void savePastTime() {
+    void savePastGetTime() {
         Reservation reservation = new Reservation(
                 new Name("네오"),
                 LocalDate.of(2023, 4, 24),
@@ -72,7 +70,7 @@ class ReservationH2RepositoryTest {
 
     @Test
     @DisplayName("시간과 날짜만 같고 테마가 다른 경우 예약에 성공한다.")
-    void saveOnlySameDateTime() {
+    void saveOnlySameGetDateGetTime() {
         Reservation reservation = new Reservation(
                 new Name("네오"),
                 LocalDate.of(2099, 5, 1), // TODO 더 좋은 방식이 있는지 고민

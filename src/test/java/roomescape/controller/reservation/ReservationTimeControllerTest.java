@@ -21,7 +21,7 @@ class ReservationTimeControllerTest {
 
     @Test
     @DisplayName("예약 가능한 시간을 추가한다.")
-    void addReservationTime() {
+    void addReservationGetTime() {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "15:00");
 

@@ -37,17 +37,17 @@ public class ReservationH2Repository implements ReservationRepository {
     public Reservation save(Reservation reservation) {
         validateDateTime(reservation);
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", reservation.name().getName())
-                .addValue("date", reservation.date(DateTimeFormatter.ISO_DATE))
-                .addValue("time_id", reservation.time().id())
+                .addValue("name", reservation.getName().getName())
+                .addValue("date", reservation.getDate(DateTimeFormatter.ISO_DATE))
+                .addValue("time_id", reservation.getTime().id())
                 .addValue("theme_id", reservation.getTheme().getId());
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
 
-        return new Reservation(id, reservation.name(), reservation.date(), reservation.time(), reservation.getTheme());
+        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
     }
 
     private void validateDateTime(Reservation reservation) {
-        LocalDateTime localDateTime = LocalDateTime.of(reservation.date(), reservation.time().startAt());
+        LocalDateTime localDateTime = LocalDateTime.of(reservation.getDate(), reservation.getTime().startAt());
         LocalDateTime now = LocalDateTime.now();
 
         if (localDateTime.isBefore(now)) {
@@ -60,7 +60,7 @@ public class ReservationH2Repository implements ReservationRepository {
 
     private boolean isDuplicatedReservation(Reservation reservation) {
         String sql = "SELECT * FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?";
-        return !jdbcTemplate.query(sql, (rs, rowNum) -> 0, reservation.date(), reservation.time().id(), reservation.getTheme().getId()).isEmpty();
+        return !jdbcTemplate.query(sql, (rs, rowNum) -> 0, reservation.getDate(), reservation.getTime().id(), reservation.getTheme().getId()).isEmpty();
     }
 
     @Override

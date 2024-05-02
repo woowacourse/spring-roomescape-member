@@ -11,7 +11,7 @@ class ReservationTimeResponseTest {
 
     @Test
     @DisplayName("ReservationTime 객체로 ReservationTimeResponse를 만든다.")
-    void createReservationTimeResponse() {
+    void createReservationGetTimeResponse() {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
         ReservationTimeResponse expected = new ReservationTimeResponse(1L, "10:00");
 
@@ -22,7 +22,7 @@ class ReservationTimeResponseTest {
 
     @Test
     @DisplayName("ReservationTimeResponse 객체로 ReservationTime을 만든다.")
-    void createReservationTime() {
+    void createReservationGetTime() {
         ReservationTimeResponse reservationTimeResponse = new ReservationTimeResponse(1L, "10:00");
         ReservationTime expected = new ReservationTime(1L, LocalTime.of(10, 0));
 

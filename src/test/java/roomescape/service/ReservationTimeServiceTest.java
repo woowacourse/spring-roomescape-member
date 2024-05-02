@@ -26,7 +26,7 @@ class ReservationTimeServiceTest {
 
     @Test
     @DisplayName("예약 가능 시간을 추가하고 id값을 붙여서 응답 DTO를 생성한다.")
-    void addTime() {
+    void addGetTime() {
         ReservationTimeAddRequest reservationTimeAddRequest = new ReservationTimeAddRequest(LocalTime.of(15, 0));
 
         ReservationTimeResponse reservationTimeResponse = reservationTimeService.addTime(reservationTimeAddRequest);
@@ -44,7 +44,7 @@ class ReservationTimeServiceTest {
 
     @Test
     @DisplayName("id에 맞는 예약 가능 시간을 조회한다.")
-    void getTime() {
+    void getGetTime() {
         ReservationTimeResponse timeResponse = reservationTimeService.getTime(1L);
 
         assertThat(timeResponse.startAt()).isEqualTo("09:00");
@@ -52,7 +52,7 @@ class ReservationTimeServiceTest {
 
     @Test
     @DisplayName("id에 맞는 예약 가능 시간을 삭제한다.")
-    void deleteTime() {
+    void deleteGetTime() {
         reservationTimeService.deleteTime(2L);
 
         Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reservation_time", Integer.class);
