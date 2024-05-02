@@ -10,25 +10,25 @@ public class UserName {
     private final String name;
 
     public UserName(String name) {
-        validateIsNull(name);
-        validateIsName(name);
-        validateIsInRange(name);
+        validateBlank(name);
+        validatePattern(name);
+        validateLength(name);
         this.name = name;
     }
 
-    private void validateIsNull(String name) {
+    private void validateBlank(String name) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("이름이 비어있습니다.");
         }
     }
 
-    private void validateIsName(String name) {
+    private void validatePattern(String name) {
         if (!NAME_FORMAT.matcher(name).matches()) {
             throw new IllegalArgumentException("이름이 영어이거나 한글이 아닙니다.");
         }
     }
 
-    private void validateIsInRange(String name) {
+    private void validateLength(String name) {
         if (name.length() < MIN_LENGTH || name.length() > MAX_LENGTH) {
             throw new IllegalArgumentException("이름 길이는 2글자 이상, 10글자 이하여야 합니다.");
         }
