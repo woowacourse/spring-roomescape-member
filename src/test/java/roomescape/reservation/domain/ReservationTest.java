@@ -43,20 +43,4 @@ class ReservationTest {
                         .isInstanceOf(DateTimeParseException.class)
         );
     }
-
-//    @DisplayName("지나간 날짜에 대한 예약 생성의 경우 예외가 발생한다")
-//    @Test
-//    void validateNoReservationsForPastDates() {
-//        ReservationTime reservationTime = new ReservationTime(1L, "15:46");
-//        assertThatThrownBy(() -> new Reservation(1L, "hotea", "2022-02-12", reservationTime, theme))
-//                .isInstanceOf(PastDateReservationException.class);
-//    }
-//
-//    @DisplayName("날짜가 오늘인 경우 지나간 시간에 대한 예약이 불가능하다")
-//    @Test
-//    void validateNoReservationsForPastTimesToday() {
-//        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.MIN.toString());
-//        assertThatThrownBy(() -> new Reservation(1L, "hotea", LocalDate.now().toString(), reservationTime, theme))
-//                .isInstanceOf(PastTimeReservationException.class);
-//    }
 }

@@ -7,12 +7,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.exception.DuplicateReservationException;
+import roomescape.exception.PastDateReservationException;
+import roomescape.exception.PastTimeReservationException;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.dto.ReservationRequestDto;
 import roomescape.time.dao.ReservationTimeDao;
 import roomescape.time.domain.ReservationTime;
 
+import java.time.LocalDate;
+
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -28,15 +33,23 @@ class ReservationServiceTest {
     @InjectMocks
     private ReservationService reservationService;
 
-    @DisplayName("같은 날짜와 시간에 대한 예약 요청 시 예외가 발생한다.")
+    @DisplayName("부적합한 날짜와 시간에 대한 예약 요청 시 예외가 발생한다.")
     @Test
     void save() {
         Long id = 1L;
-        ReservationTime reservationTime = new ReservationTime(id, "10:00");
+        ReservationTime reservationTime = new ReservationTime(id, "00:00");
         when(reservationTimeDao.findById(id)).thenReturn(reservationTime);
         when(reservationDao.checkReservationExists(anyString(), anyLong(), anyLong())).thenReturn(true);
-        assertThatThrownBy(() -> reservationService.save(
-                new ReservationRequestDto("hotea", "2025-04-01", id, id)))
-                .isInstanceOf(DuplicateReservationException.class);
+        assertAll(
+                () -> assertThatThrownBy(() -> reservationService.save(
+                        new ReservationRequestDto("hotea", LocalDate.MAX.toString(), id, id)))
+                        .isInstanceOf(DuplicateReservationException.class),
+                () -> assertThatThrownBy(() -> reservationService.save(
+                        new ReservationRequestDto("hotea", LocalDate.now().minusDays(1).toString(), id, id)))
+                        .isInstanceOf(PastDateReservationException.class),
+                () -> assertThatThrownBy(() -> reservationService.save(
+                        new ReservationRequestDto("hotea", LocalDate.now().toString(), id, id)))
+                        .isInstanceOf(PastTimeReservationException.class)
+        );
     }
 }
