@@ -17,7 +17,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import roomescape.application.ReservationTimeService;
 import roomescape.domain.time.ReservationTime;
 import roomescape.dto.reservationtime.ReservationTimeRequest;
-import roomescape.dto.reservationtime.ReservationTimeResponse;
 import roomescape.fixture.ReservationFixture;
 import roomescape.support.ControllerTest;
 import roomescape.support.SimpleMockMvc;
@@ -46,9 +45,8 @@ class ReservationTimeControllerTest extends ControllerTest {
 
     @Test
     void 전체_예약_시간을_조회한다() throws Exception {
-        List<ReservationTimeResponse> reservationTimes = IntStream.range(0, 3)
+        List<ReservationTime> reservationTimes = IntStream.range(0, 3)
                 .mapToObj(ReservationFixture::reservationTime)
-                .map(ReservationTimeResponse::from)
                 .toList();
         when(reservationTimeService.getReservationTimes()).thenReturn(reservationTimes);
 
@@ -56,9 +54,9 @@ class ReservationTimeControllerTest extends ControllerTest {
 
         result.andExpectAll(
                         status().isOk(),
-                        jsonPath("$[0].id").value(reservationTimes.get(0).id()),
-                        jsonPath("$[1].id").value(reservationTimes.get(1).id()),
-                        jsonPath("$[2].id").value(reservationTimes.get(2).id())
+                        jsonPath("$[0].id").value(reservationTimes.get(0).getId()),
+                        jsonPath("$[1].id").value(reservationTimes.get(1).getId()),
+                        jsonPath("$[2].id").value(reservationTimes.get(2).getId())
                 )
                 .andDo(print());
     }
@@ -96,7 +94,7 @@ class ReservationTimeControllerTest extends ControllerTest {
         ResultActions result = SimpleMockMvc.post(mockMvc, "/times", content);
 
         result.andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$").value("잘못된 날짜 혹은 시간입니다."))
+                .andExpect(jsonPath("$.message").value("잘못된 데이터 형식입니다"))
                 .andDo(print());
     }
 
@@ -107,7 +105,7 @@ class ReservationTimeControllerTest extends ControllerTest {
         ResultActions result = SimpleMockMvc.post(mockMvc, "/times", content);
 
         result.andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$").value("잘못된 날짜 혹은 시간입니다."))
+                .andExpect(jsonPath("$.message").value("잘못된 데이터 형식입니다"))
                 .andDo(print());
     }
 }
