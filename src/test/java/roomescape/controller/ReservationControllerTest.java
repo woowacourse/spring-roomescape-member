@@ -3,6 +3,7 @@ package roomescape.controller;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,11 +11,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.controller.request.ReservationRequest;
+import roomescape.controller.response.MemberReservationTimeResponse;
 import roomescape.model.Reservation;
 
 import java.lang.reflect.Field;
+import java.time.LocalTime;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 
@@ -43,7 +47,7 @@ class ReservationControllerTest {
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
 
-        Assertions.assertThat(reservations).hasSize(count);
+        assertThat(reservations).hasSize(count);
     }
 
     @DisplayName("예약을 추가할 수 있다.")
@@ -67,7 +71,7 @@ class ReservationControllerTest {
                 .header("Location", "/reservations/1");
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-        assertThat(count).isEqualTo(1);
+        AssertionsForClassTypes.assertThat(count).isEqualTo(1);
     }
 
     @DisplayName("존재하는 예약이라면 예약을 삭제할 수 있다.")
@@ -86,7 +90,7 @@ class ReservationControllerTest {
                 .statusCode(204);
 
         Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-        assertThat(countAfterDelete).isZero();
+        AssertionsForClassTypes.assertThat(countAfterDelete).isZero();
     }
 
     @DisplayName("컨트롤러에 JdbcTemplate 필드가 존재하지 않는다.")
@@ -101,8 +105,24 @@ class ReservationControllerTest {
             }
         }
 
-        assertThat(isJdbcTemplateInjected).isFalse();
+        AssertionsForClassTypes.assertThat(isJdbcTemplateInjected).isFalse();
     }
 
-    // TODO: 예약 가능 시간 조회 컨트롤러 테스트!!!!
+    @DisplayName("특정 날짜와 테마에 따른 모든 시간의 예약 가능 여부를 확인한다.")
+    @Test
+    void should_get_reservations_with_book_state_by_date_and_theme() {
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2030-08-05", "1", "1");
+
+        List<MemberReservationTimeResponse> responses = RestAssured.given().log().all()
+                .when().get("/reservations/times?date=2030-08-05&themeId=1")
+                .then().log().all()
+                .statusCode(200).extract()
+                .jsonPath().getList(".", MemberReservationTimeResponse.class);
+
+        assertThat(responses).hasSize(2);
+        assertThat(responses).containsOnly(
+                new MemberReservationTimeResponse(1, LocalTime.of(10, 0), true),
+                new MemberReservationTimeResponse(2, LocalTime.of(11, 0), false)
+        );
+    }
 }
