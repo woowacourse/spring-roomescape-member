@@ -12,8 +12,6 @@ import roomescape.dto.theme.ThemeResponse;
 @Service
 public class ThemeService {
 
-    private static final LocalDate TODAY = LocalDate.now();
-
     private final ThemeDao themeDao;
     private final ReservationDao reservationDao;
 
