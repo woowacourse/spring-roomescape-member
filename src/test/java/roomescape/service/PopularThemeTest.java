@@ -15,7 +15,7 @@ import roomescape.dto.theme.ThemeResponse;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Sql(value = "classpath:test_data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public class PopularThemeTest {
+class PopularThemeTest {
 
     @Autowired
     private ThemeService themeService;
