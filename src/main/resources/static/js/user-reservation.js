@@ -1,4 +1,5 @@
 const THEME_API_ENDPOINT = '/themes';
+const TIME_API_ENDPOINT = '/times';
 
 document.addEventListener('DOMContentLoaded', () => {
     requestRead(THEME_API_ENDPOINT)
@@ -37,7 +38,7 @@ function renderTheme(themes) {
     themeSlots.innerHTML = '';
     themes.forEach(theme => {
         const name = theme.name;
-        const themeId = theme.themeId;
+        const themeId = theme.id;
         /*
         TODO: [3단계] 사용자 예약 - 테마 목록 조회 API 호출 후 렌더링
               response 명세에 맞춰 createSlot 함수 호출 시 값 설정
@@ -91,7 +92,8 @@ function fetchAvailableTimes(date, themeId) {
     TODO: [3단계] 사용자 예약 - 예약 가능 시간 조회 API 호출
           요청 포맷에 맞게 설정
     */
-    fetch('/', { // 예약 가능 시간 조회 API endpoint
+    const url = `${TIME_API_ENDPOINT}/available?date=${encodeURIComponent(date)}&themeId=${encodeURIComponent(themeId)}`;
+    fetch(url, { // 예약 가능 시간 조회 API endpoint
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -120,9 +122,9 @@ function renderAvailableTimes(times) {
         TODO: [3단계] 사용자 예약 - 예약 가능 시간 조회 API 호출 후 렌더링
               response 명세에 맞춰 createSlot 함수 호출 시 값 설정
         */
-        const startAt = '';
-        const timeId = '';
-        const alreadyBooked = false;
+        const startAt = time.startAt;
+        const timeId = time.timeId;
+        const alreadyBooked = time.alreadyBooked;
 
         const div = createSlot('time', startAt, timeId, alreadyBooked); // createSlot('time', 시작 시간, time id, 예약 여부)
         timeSlots.appendChild(div);

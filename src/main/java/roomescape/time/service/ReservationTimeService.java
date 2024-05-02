@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import roomescape.response.ResponseCode;
 import roomescape.time.dao.ReservationTimeDao;
 import roomescape.time.domain.ReservationTime;
+import roomescape.time.domain.ReservationUserTime;
 import roomescape.time.dto.ReservationTimeRequestDto;
 import roomescape.time.dto.ReservationTimeResponseDto;
 
@@ -41,5 +42,9 @@ public class ReservationTimeService {
         } catch (final DataAccessException dataAccessException) {
             return ResponseCode.FAILED_DELETE;
         }
+    }
+
+    public List<ReservationUserTime> findAvailableTime(final String date, final long themeId) {
+        return reservationTimeDao.findAvailableTime(date, themeId);
     }
 }
