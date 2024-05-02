@@ -53,7 +53,7 @@ public class ReservationTimeH2Repository implements ReservationTimeRepository {
         try {
             jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
         } catch (DataIntegrityViolationException e) {
-            throw new IllegalArgumentException("참조되고 있는 시간을 삭제할 수 없습니다. id = " + id);  // TODO 올바른 예외 타입인가??
+            throw new IllegalArgumentException("참조되고 있는 시간을 삭제할 수 없습니다. id = " + id);
         }
     }
 

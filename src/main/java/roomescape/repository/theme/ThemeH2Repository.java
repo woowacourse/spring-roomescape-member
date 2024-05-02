@@ -48,7 +48,7 @@ public class ThemeH2Repository implements ThemeRepository{
     }
 
     private boolean isDuplicatedTheme(Theme theme) {
-        String sql = "SELECT * FROM theme WHERE name = ?"; // TODO 이름만 같으면 같은 테마??
+        String sql = "SELECT * FROM theme WHERE name = ?";
         return !jdbcTemplate.query(sql, (rs, rowNum) -> 0, theme.getName().getName()).isEmpty();
     }
 
@@ -57,7 +57,7 @@ public class ThemeH2Repository implements ThemeRepository{
         try {
             jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id);
         } catch (DataIntegrityViolationException e) {
-            throw new IllegalArgumentException("참조되고 있는 테마를 삭제할 수 없습니다. id = " + id);  // TODO 올바른 예외 타입인가??
+            throw new IllegalArgumentException("참조되고 있는 테마를 삭제할 수 없습니다. id = " + id);
         }
     }
 

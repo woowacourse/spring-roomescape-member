@@ -41,7 +41,7 @@ class ThemeH2RepositoryTest {
     @Test
     @DisplayName("중복된 테마를 저장하려고 하면 예외가 발생한다.")
     void saveDuplicatedTime() {
-        Theme theme = new Theme(null, THEME_1.getName(), "레벨2 설명", "레벨2 썸네일"); // TODO 이름만 같으면 같다고 했음
+        Theme theme = new Theme(null, THEME_1.getName(), "레벨2 설명", "레벨2 썸네일");
 
         assertThatThrownBy(() -> themeH2Repository.save(theme))
                 .isInstanceOf(IllegalArgumentException.class);
