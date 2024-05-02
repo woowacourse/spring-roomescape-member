@@ -27,7 +27,7 @@ public class H2ReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findAll() {
-        String sql = "SELECT "
+        final String sql = "SELECT "
                 + "r.id as reservation_id, r.name as reservation_name, r.date as reservation_date, "
                 + "rt.id as time_id, rt.start_at as reservation_time, "
                 + "th.id as theme_id, th.name as theme_name, th.description as theme_description, th.thumbnail as theme_thumbnail "
@@ -56,7 +56,7 @@ public class H2ReservationRepository implements ReservationRepository {
 
     @Override
     public Optional<Reservation> findById(final Long reservationId) {
-        String sql = "SELECT "
+        final String sql = "SELECT "
                 + "r.id as reservation_id, r.name as reservation_name, r.date as reservation_date, "
                 + "rt.id as time_id, rt.start_at as reservation_time, "
                 + "th.id as theme_id, th.name as theme_name, th.description as theme_description, th.thumbnail as theme_thumbnail "
@@ -68,54 +68,55 @@ public class H2ReservationRepository implements ReservationRepository {
                 + "WHERE r.id = :reservationId";
 
         try {
-            MapSqlParameterSource param = new MapSqlParameterSource()
+            final MapSqlParameterSource param = new MapSqlParameterSource()
                     .addValue("reservationId", reservationId);
-            Reservation reservation = template.queryForObject(sql, param, itemRowMapper());
+            final Reservation reservation = template.queryForObject(sql, param, itemRowMapper());
 
             return Optional.of(reservation);
-        } catch (EmptyResultDataAccessException e) {
+        } catch (final EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
 
     @Override
     public Reservation save(final Reservation reservation) {
-        String sql = "INSERT INTO reservation(name, date, time_id, theme_id) VALUES (:name, :date, :timeId, :themeId)";
-        MapSqlParameterSource param = new MapSqlParameterSource()
+        final String sql = "INSERT INTO reservation(name, date, time_id, theme_id) VALUES (:name, :date, :timeId, :themeId)";
+        final MapSqlParameterSource param = new MapSqlParameterSource()
                 .addValue("name", reservation.getClientName().getValue())
                 .addValue("date", reservation.getDate().getValue())
                 .addValue("timeId", reservation.getTime().getId())
                 .addValue("themeId", reservation.getTheme().getId());
-        KeyHolder keyHolder = new GeneratedKeyHolder();
+        final KeyHolder keyHolder = new GeneratedKeyHolder();
         template.update(sql, param, keyHolder);
 
-        long savedReservationId = keyHolder.getKey().longValue();
+        final long savedReservationId = keyHolder.getKey().longValue();
 
         return reservation.initializeIndex(savedReservationId);
     }
 
     @Override
     public void deleteById(final Long reservationId) {
-        String sql = "DELETE FROM reservation WHERE id = :id";
-        MapSqlParameterSource param = new MapSqlParameterSource()
+        final String sql = "DELETE FROM reservation WHERE id = :id";
+        final MapSqlParameterSource param = new MapSqlParameterSource()
                 .addValue("id", reservationId);
         template.update(sql, param);
     }
 
     @Override
-    public boolean existByDateAndTimeId(final LocalDate date, final Long timeId) {
-        String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE date = :date AND time_id = :timeId)";
-        MapSqlParameterSource param = new MapSqlParameterSource()
+    public boolean existByDateAndTimeIdAndThemeId(final LocalDate date, final Long timeId, final Long themeId) {
+        final String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE date = :date AND time_id = :timeId AND :themeId)";
+        final MapSqlParameterSource param = new MapSqlParameterSource()
                 .addValue("date", date)
-                .addValue("timeId", timeId);
+                .addValue("timeId", timeId)
+                .addValue("themeId", themeId);
 
         return Boolean.TRUE.equals(template.queryForObject(sql, param, Boolean.class));
     }
 
     @Override
     public boolean existByTimeId(final Long reservationTimeId) {
-        String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE time_id = :timeId)";
-        MapSqlParameterSource param = new MapSqlParameterSource()
+        final String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE time_id = :timeId)";
+        final MapSqlParameterSource param = new MapSqlParameterSource()
                 .addValue("timeId", reservationTimeId);
 
         return Boolean.TRUE.equals(template.queryForObject(sql, param, Boolean.class));
@@ -123,7 +124,7 @@ public class H2ReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findAllByDateAndThemeId(final LocalDate date, final Long themeId) {
-        String sql = "SELECT "
+        final String sql = "SELECT "
                 + "r.id as reservation_id, r.name as reservation_name, r.date as reservation_date, "
                 + "rt.id as time_id, rt.start_at as reservation_time, "
                 + "th.id as theme_id, th.name as theme_name, th.description as theme_description, th.thumbnail as theme_thumbnail "
@@ -134,7 +135,7 @@ public class H2ReservationRepository implements ReservationRepository {
                 + "on r.theme_id = th.id "
                 + "WHERE date = :date and theme_id = :themeId";
 
-        MapSqlParameterSource param = new MapSqlParameterSource()
+        final MapSqlParameterSource param = new MapSqlParameterSource()
                 .addValue("date", date)
                 .addValue("themeId", themeId);
 

@@ -89,11 +89,12 @@ class ReservationRepositoryTest {
     @Test
     void existByDateAndTimeIdTest() {
         // Given
-        final LocalDate reservationDate = LocalDate.now().minusDays(4);
-        final Long timeId = 1L;
+        final LocalDate reservationDate = LocalDate.now().plusDays(2);
+        final Long timeId = 4L;
+        final Long themeId = 9L;
 
         // When
-        final boolean isExist = reservationRepository.existByDateAndTimeId(reservationDate, timeId);
+        final boolean isExist = reservationRepository.existByDateAndTimeIdAndThemeId(reservationDate, timeId, themeId);
 
         // Then
         assertThat(isExist).isTrue();

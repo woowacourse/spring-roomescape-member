@@ -38,14 +38,13 @@ public class ReservationService {
     }
 
     public Reservation saveReservation(final SaveReservationRequest request) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
+        final ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
                 .orElseThrow(() -> new NoSuchElementException("해당 id의 예약 시간이 존재하지 않습니다."));
         final Theme theme = themeRepository.findById(request.themeId())
                 .orElseThrow(() -> new NoSuchElementException("해당 id의 테마가 존재하지 않습니다."));
 
-        // TODO : 테마도 함께 중복 검증하도록 개선
-        if (reservationRepository.existByDateAndTimeId(request.date(), request.timeId())) {
-            throw new IllegalArgumentException("이미 해당 날짜/시간의 예약이 있습니다.");
+        if (reservationRepository.existByDateAndTimeIdAndThemeId(request.date(), request.timeId(), request.themeId())) {
+            throw new IllegalArgumentException("이미 해당 날짜/시간의 테마 예약이 있습니다.");
         }
 
         return reservationRepository.save(request.toReservation(reservationTime, theme));

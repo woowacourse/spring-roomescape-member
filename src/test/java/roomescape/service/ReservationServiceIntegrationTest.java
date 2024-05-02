@@ -155,21 +155,21 @@ class ReservationServiceIntegrationTest {
                 .hasMessage("이미 존재하는 예약시간이 있습니다.");
     }
 
-    @DisplayName("이미 존재하는 예약 날짜가 입력되면 예외가 발생한다.")
+    @DisplayName("이미 존재하는 예약 날짜/시간/테마가 입력되면 예외가 발생한다.")
     @Test
     void throwExceptionWhenInputDuplicateReservationDate() {
         // Given
         final SaveReservationRequest saveReservationRequest = new SaveReservationRequest(
-                LocalDate.now().minusDays(3),
+                LocalDate.now().plusDays(2),
                 "테바",
-                1L,
-                1L
+                4L,
+                9L
         );
 
         // When & Then
         assertThatThrownBy(() -> reservationService.saveReservation(saveReservationRequest))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미 해당 날짜/시간의 예약이 있습니다.");
+                .hasMessage("이미 해당 날짜/시간의 테마 예약이 있습니다.");
     }
 
     @DisplayName("해당 시간을 참조하고 있는 예약이 하나라도 있으면 삭제시 예외가 발생한다.")
