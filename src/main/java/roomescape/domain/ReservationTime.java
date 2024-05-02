@@ -16,7 +16,7 @@ public class ReservationTime {
         this(null, startAt);
     }
 
-    public boolean isSame(ReservationTime other) {
+    public boolean isDuplicated(ReservationTime other) {
         return startAt.equals(other.startAt);
     }
 

@@ -62,7 +62,7 @@ class ThemeDaoTest {
         Long id = 3L;
 
         // when
-        themeRepository.delete(id);
+        themeRepository.deleteById(id);
         Optional<Theme> actual = themeRepository.findById(id);
 
         // then

@@ -18,8 +18,6 @@ import java.util.stream.Collectors;
 @Service
 public class ReservationTimeService {
 
-    private static final String RESERVATION_TIME_NOT_FOUND = "존재하지 않는 예약 시간입니다.";
-
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;
 
@@ -34,23 +32,17 @@ public class ReservationTimeService {
 
         validateDuplicated(reservationTime);
 
-        ReservationTime newReservationTime = reservationTimeRepository.save(reservationTime);
-        return ReservationTimeResponse.from(newReservationTime);
+        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
+        return ReservationTimeResponse.from(savedReservationTime);
     }
 
     private void validateDuplicated(ReservationTime reservationTime) {
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
         boolean isDuplicated = reservationTimes.stream()
-                .anyMatch(reservationTime::isSame);
+                .anyMatch(reservationTime::isDuplicated);
         if (isDuplicated) {
             throw new BadRequestException("중복된 예약 시간입니다.");
         }
-    }
-
-    public ReservationTimeResponse readReservationTime(Long id) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(RESERVATION_TIME_NOT_FOUND));
-        return ReservationTimeResponse.from(reservationTime);
     }
 
     public List<ReservationTimeResponse> readReservationTimes() {
@@ -73,6 +65,12 @@ public class ReservationTimeService {
     private ReservationTimeResponse createTimeResponse(ReservationTime time, Set<Long> alreadyBookedTimes) {
         boolean alreadyBooked = alreadyBookedTimes.contains(time.getId());
         return ReservationTimeResponse.of(time, alreadyBooked);
+    }
+
+    public ReservationTimeResponse readReservationTime(Long id) {
+        ReservationTime reservationTime = reservationTimeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 예약 시간입니다."));
+        return ReservationTimeResponse.from(reservationTime);
     }
 
     public void deleteTime(Long id) {

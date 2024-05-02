@@ -121,7 +121,7 @@ class ThemeServiceTest {
         Long id = 1L;
         Mockito.when(reservationRepository.existsByThemeId(id))
                 .thenReturn(false);
-        Mockito.doNothing().when(themeRepository).delete(id);
+        Mockito.doNothing().when(themeRepository).deleteById(id);
 
         // when & then
         assertThatCode(() -> themeService.deleteTheme(id))

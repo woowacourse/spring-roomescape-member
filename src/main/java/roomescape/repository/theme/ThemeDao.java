@@ -25,7 +25,7 @@ public class ThemeDao implements ThemeRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
-    private RowMapper<Theme> getThemeRowMapper() {
+    private static RowMapper<Theme> getThemeRowMapper() {
         return (rs, rowNum) -> new Theme(
                 rs.getLong("id"),
                 rs.getString("name"),
@@ -42,6 +42,12 @@ public class ThemeDao implements ThemeRepository {
     }
 
     @Override
+    public List<Theme> findAll() {
+        String sql = "SELECT * FROM theme";
+        return jdbcTemplate.query(sql, getThemeRowMapper());
+    }
+
+    @Override
     public Optional<Theme> findById(Long id) {
         String sql = "SELECT * FROM theme WHERE id = ?";
 
@@ -54,13 +60,7 @@ public class ThemeDao implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findAll() {
-        String sql = "SELECT * FROM theme";
-        return jdbcTemplate.query(sql, getThemeRowMapper());
-    }
-
-    @Override
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         String sql = "DELETE FROM theme WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }

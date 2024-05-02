@@ -26,12 +26,25 @@ public class ReservationTimeDao implements ReservationTimeRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
+    private static RowMapper<ReservationTime> getReservationTimeRowMapper() {
+        return (resultSet, rowNum) -> new ReservationTime(
+                resultSet.getLong("id"),
+                resultSet.getTime("start_at").toLocalTime()
+        );
+    }
+
     @Override
     public ReservationTime save(ReservationTime reservationTime) {
         SqlParameterSource sqlParameterSource = new BeanPropertySqlParameterSource(reservationTime);
         Long id = simpleJdbcInsert.executeAndReturnKey(sqlParameterSource).longValue();
 
         return new ReservationTime(id, reservationTime.getStartAt());
+    }
+
+    @Override
+    public List<ReservationTime> findAll() {
+        String sql = "SELECT * FROM reservation_time";
+        return jdbcTemplate.query(sql, getReservationTimeRowMapper());
     }
 
     @Override
@@ -43,19 +56,6 @@ public class ReservationTimeDao implements ReservationTimeRepository {
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
         }
-    }
-
-    @Override
-    public List<ReservationTime> findAll() {
-        String sql = "SELECT * FROM reservation_time";
-        return jdbcTemplate.query(sql, getReservationTimeRowMapper());
-    }
-
-    private RowMapper<ReservationTime> getReservationTimeRowMapper() {
-        return (resultSet, rowNum) -> new ReservationTime(
-                resultSet.getLong("id"),
-                resultSet.getTime("start_at").toLocalTime()
-        );
     }
 
     @Override

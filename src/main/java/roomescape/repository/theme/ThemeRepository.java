@@ -9,9 +9,9 @@ public interface ThemeRepository {
 
     Theme save(Theme theme);
 
-    Optional<Theme> findById(Long id);
-
     List<Theme> findAll();
 
-    void delete(Long id);
+    Optional<Theme> findById(Long id);
+
+    void deleteById(Long id);
 }
