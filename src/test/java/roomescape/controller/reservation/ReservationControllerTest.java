@@ -59,8 +59,8 @@ class ReservationControllerTest {
         Map<String, String> reservationParams = new HashMap<>();
         reservationParams.put("name", "브리");
         reservationParams.put("date", localDate.toString());
-        reservationParams.put("timeId", "10");
-        reservationParams.put("themeId", "10");
+        reservationParams.put("timeId", "1");
+        reservationParams.put("themeId", "1");
 
         //when & then
         RestAssured.given().log().all()
@@ -69,8 +69,8 @@ class ReservationControllerTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(1))
-                .header("Location", "/reservations/1");
+                .body("id", is(3))
+                .header("Location", "/reservations/3");
     }
 
     @Test
@@ -78,7 +78,7 @@ class ReservationControllerTest {
     void deleteReservation() {
         //when
         RestAssured.given().log().all()
-                .when().delete("/reservations/10")
+                .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(204);
 

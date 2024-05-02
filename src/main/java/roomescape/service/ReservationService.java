@@ -1,8 +1,13 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
+import roomescape.domain.Theme;
 import roomescape.dto.request.ReservationAddRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.dto.response.ReservationTimeResponse;
@@ -48,5 +53,19 @@ public class ReservationService {
                 .stream()
                 .map(ReservationResponse::from)
                 .toList();
+    }
+
+    public List<ReservationResponse> findPopularThemes(Long limitCount) { // TODO 반환 타입과 메서드 명의 불일치??
+        Map<Theme, Long> themeReservationCounts = reservationRepository.findAll().stream()
+                .filter(reservation -> reservation.date().isAfter(LocalDate.now().minusDays(8)))
+                .filter(reservation -> reservation.date().isBefore(LocalDate.now()))
+                .collect(Collectors.groupingBy(Reservation::getTheme, Collectors.counting()));
+
+        return themeReservationCounts.entrySet().stream() // TODO 로직 간소화
+                .sorted(Map.Entry.<Theme, Long>comparingByValue().reversed())
+                .limit(limitCount)
+                .map(Map.Entry::getKey)
+                .map(ReservationResponse::from)
+                .collect(Collectors.toList());
     }
 }

@@ -45,7 +45,7 @@ class ReservationTimeServiceTest {
     @Test
     @DisplayName("id에 맞는 예약 가능 시간을 조회한다.")
     void getTime() {
-        ReservationTimeResponse timeResponse = reservationTimeService.getTime(10L);
+        ReservationTimeResponse timeResponse = reservationTimeService.getTime(1L);
 
         assertThat(timeResponse.startAt()).isEqualTo("09:00");
     }
@@ -53,7 +53,7 @@ class ReservationTimeServiceTest {
     @Test
     @DisplayName("id에 맞는 예약 가능 시간을 삭제한다.")
     void deleteTime() {
-        reservationTimeService.deleteTime(11L);
+        reservationTimeService.deleteTime(2L);
 
         Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reservation_time", Integer.class);
 

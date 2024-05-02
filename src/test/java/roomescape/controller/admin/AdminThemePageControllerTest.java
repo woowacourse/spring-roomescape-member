@@ -11,7 +11,7 @@ import org.springframework.test.annotation.DirtiesContext;
 public class AdminThemePageControllerTest {
 
     @Test
-    @DisplayName("/admin/theme 페이지를 응답한다.")
+    @DisplayName("/admin/themeResponse 페이지를 응답한다.")
     void responseThemePage() {
         RestAssured.given().log().all()
                 .when().get("/admin/theme")

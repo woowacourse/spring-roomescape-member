@@ -1,10 +1,5 @@
 package roomescape.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import java.time.LocalDate;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +8,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Name;
-import roomescape.domain.Theme;
 import roomescape.dto.request.ReservationAddRequest;
 import roomescape.dto.response.ReservationResponse;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -25,12 +25,14 @@ class ReservationServiceTest {
     @Autowired
     private ReservationService reservationService;
     @Autowired
+    private ThemeService themeService;
+    @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @Test
     @DisplayName("예약을 추가하고 id값을 붙여서 응답 DTO를 생성한다.")
     void addReservation() {
-        ReservationAddRequest reservationAddRequest = new ReservationAddRequest(new Name("네오"), LocalDate.now().plusDays(1), 10L, 10L);
+        ReservationAddRequest reservationAddRequest = new ReservationAddRequest(new Name("네오"), LocalDate.now().plusDays(1), 1L, 1L);
 
         ReservationResponse reservationResponse = reservationService.addReservation(reservationAddRequest);
 
@@ -40,7 +42,7 @@ class ReservationServiceTest {
     @Test
     @DisplayName("존재하지 않는 time_id로 예약을 추가하면 예외를 발생시킨다.")
     void addReservationInvalidTimeId() {
-        ReservationAddRequest reservationAddRequest = new ReservationAddRequest(new Name("네오"), LocalDate.now().plusDays(1), -1L, 10L);
+        ReservationAddRequest reservationAddRequest = new ReservationAddRequest(new Name("네오"), LocalDate.now().plusDays(1), -1L, 1L);
 
         assertThatThrownBy(() -> reservationService.addReservation(reservationAddRequest))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -49,7 +51,7 @@ class ReservationServiceTest {
     @Test
     @DisplayName("id에 맞는 예약을 삭제한다.")
     void deleteReservation() {
-        reservationService.deleteReservation(10L);
+        reservationService.deleteReservation(1L);
 
         Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reservation", Integer.class);
         assertThat(count).isOne();

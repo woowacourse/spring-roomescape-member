@@ -10,13 +10,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.ReservationTime;
 
-@JdbcTest
-@Import(ReservationTimeH2Repository.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @Sql("/initial_test_data.sql")
 class ReservationTimeH2RepositoryTest {
 
@@ -48,7 +50,7 @@ class ReservationTimeH2RepositoryTest {
     @Test
     @DisplayName("id에 맞는 ReservationTime을 제거한다.")
     void delete() {
-        reservationTimeH2Repository.delete(11L);
+        reservationTimeH2Repository.delete(2L);
 
         Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reservation_time", Integer.class);
 
@@ -58,7 +60,7 @@ class ReservationTimeH2RepositoryTest {
     @Test
     @DisplayName("참조되어 있는 시간을 삭제하는 경우 예외가 발생한다.")
     void deleteReferencedTime() {
-        assertThatThrownBy(() -> reservationTimeH2Repository.delete(10L))
+        assertThatThrownBy(() -> reservationTimeH2Repository.delete(1L))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -74,7 +76,7 @@ class ReservationTimeH2RepositoryTest {
     @Test
     @DisplayName("id에 맞는 ReservationTime을 찾는다.")
     void findBy() {
-        ReservationTime found = reservationTimeH2Repository.findById(10L).get();
+        ReservationTime found = reservationTimeH2Repository.findById(1L).get();
 
         assertThat(found.startAt()).isEqualTo(LocalTime.of(9, 0));
     }

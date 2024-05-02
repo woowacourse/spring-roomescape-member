@@ -3,23 +3,21 @@ package roomescape.repository.theme;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Name;
-import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@JdbcTest
-@Import(ThemeH2Repository.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @Sql("/initial_test_data.sql")
 class ThemeH2RepositoryTest {
 
@@ -51,7 +49,7 @@ class ThemeH2RepositoryTest {
     @Test
     @DisplayName("id에 맞는 Theme을 제거한다.")
     void delete() {
-        themeH2Repository.delete(11L);
+        themeH2Repository.delete(2L);
 
         Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM theme", Integer.class);
 
@@ -61,7 +59,7 @@ class ThemeH2RepositoryTest {
     @Test
     @DisplayName("참조되어 있는 테마를 삭제하는 경우 예외가 발생한다.")
     void deleteReferencedTime() {
-        assertThatThrownBy(() -> themeH2Repository.delete(10L))
+        assertThatThrownBy(() -> themeH2Repository.delete(1L))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -77,7 +75,12 @@ class ThemeH2RepositoryTest {
     @Test
     @DisplayName("id에 맞는 theme를 찾는다.")
     void findBy() {
-        Theme found = themeH2Repository.findById(10L).get();
+        List<Theme> all = themeH2Repository.findAll();
+        for (Theme theme : all) {
+            System.out.println("themeResponse = " + theme);
+        }
+        Theme found = themeH2Repository.findById(1L).get();
+        System.out.println("found = " + found);
 
         assertThat(found.getName()).isEqualTo(new Name("레벨2 탈출"));
     }
