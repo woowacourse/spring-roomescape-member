@@ -40,7 +40,6 @@ public class ReservationService {
                 .toList();
     }
 
-    // TODO: 테스트 작성
     public List<ReservationAvailableTimeResponse> findReservationByDateAndThemeId(LocalDate date, Long themeId) {
         List<Time> allTimes = timeRepository.findAll();
         Set<Long> reservedTimes = reservationRepository.findByDateAndThemeId(date, themeId).stream()
@@ -57,27 +56,34 @@ public class ReservationService {
         return response;
     }
 
-    // TODO: 메서드 분리
     public ReservationResponse createReservation(ReservationRequest reservationRequest) {
         LocalDate today = LocalDate.now();
         LocalDate requestDate = reservationRequest.date();
         Time time = timeRepository.findById(reservationRequest.timeId());
         Theme theme = themeRepository.findById(reservationRequest.themeId());
 
-        if (requestDate.isBefore(today) || (requestDate.isEqual(today) && time.getStartAt()
-                .isBefore(LocalTime.now()))) {
-            throw new ConflictException("지난 날짜나 시간은 예약이 불가능합니다.");
-        }
-
-        List<Reservation> duplicateTimeReservation = reservationRepository.findByTimeIdAndDateThemeId(
-                reservationRequest.timeId(), reservationRequest.date(), theme.getId());
-        if (duplicateTimeReservation.size() > 0) {
-            throw new ConflictException("이미 해당 날짜/시간/테마에 예약이 존재합니다.");
-        }
+        validateDateAndTime(requestDate, today, time);
+        validateReservationDuplicate(reservationRequest, theme);
 
         Reservation savedReservation = reservationRepository.save(reservationRequest.toReservation(time, theme));
 
         return ReservationResponse.from(savedReservation);
+    }
+
+    private void validateDateAndTime(LocalDate requestDate, LocalDate today, Time time) {
+        if (requestDate.isBefore(today) || (requestDate.isEqual(today) && time.getStartAt()
+                .isBefore(LocalTime.now()))) {
+            throw new ConflictException("지난 날짜나 시간은 예약이 불가능합니다.");
+        }
+    }
+
+    private void validateReservationDuplicate(ReservationRequest reservationRequest, Theme theme) {
+        List<Reservation> duplicateTimeReservation = reservationRepository.findByTimeIdAndDateThemeId(
+                reservationRequest.timeId(), reservationRequest.date(), theme.getId());
+
+        if (duplicateTimeReservation.size() > 0) {
+            throw new ConflictException("이미 해당 날짜/시간/테마에 예약이 존재합니다.");
+        }
     }
 
     public void deleteReservation(Long id) {
