@@ -76,7 +76,7 @@ public class ThemeJDBCRepository implements ThemeRepository {
     public List<Theme> findByReservationTermAndCount(String startDate, String endDate, long count) {
         String sql = "SELECT id, name, description, thumbnail FROM theme "
                 + "LEFT JOIN "
-                + "(SELECT theme_id, count(theme_id) as count FROM reservation "
+                + "(SELECT theme_id, COUNT(theme_id) as count FROM reservation "
                 + "WHERE date BETWEEN ? AND ? "
                 + "GROUP BY theme_id) "
                 + "WHERE theme_id = id "

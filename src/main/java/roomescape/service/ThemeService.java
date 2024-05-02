@@ -14,6 +14,8 @@ import roomescape.service.dto.ThemeResponse;
 @Service
 public class ThemeService {
     private static final long MAXIMUM_COUNT = 10;
+    private static final String START_DATE = LocalDate.now().minusDays(7).format(DateTimeFormatter.ISO_DATE);
+    private static final String END_DATE = LocalDate.now().minusDays(1).format(DateTimeFormatter.ISO_DATE);
 
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
@@ -54,10 +56,7 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> findPopularThemes() {
-        String startDate = LocalDate.now().minusDays(1).format(DateTimeFormatter.ISO_DATE);
-        String endDate = LocalDate.now().minusDays(7).format(DateTimeFormatter.ISO_DATE);
-        List<Theme> themes = themeRepository.findByReservationTermAndCount(startDate, endDate,
-                MAXIMUM_COUNT);
+        List<Theme> themes = themeRepository.findByReservationTermAndCount(START_DATE, END_DATE, MAXIMUM_COUNT);
         return themes.stream().map(ThemeResponse::new).toList();
     }
 }
