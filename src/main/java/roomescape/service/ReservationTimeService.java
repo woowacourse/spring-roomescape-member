@@ -43,7 +43,6 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    //TODO : 테스트 생성
     public void delete(long id) {
         //todo SQL로 구현
         List<Reservation> reservations = reservationRepository.findAll();
