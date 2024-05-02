@@ -61,4 +61,4 @@
     - ex. 오늘이 4/8 -> 4/1 ~ 4/7
 
 - [ ] `ranking.js` render 함수에서 사용할 data에는 (name, thumbnail, description)이 있어야 함
-- [ ] `user-reservation.js` renderTheme 함수, fetchAvailableTimes 함수 등 수정
+- [x] `user-reservation.js` renderTheme 함수, fetchAvailableTimes 함수 등 수정
