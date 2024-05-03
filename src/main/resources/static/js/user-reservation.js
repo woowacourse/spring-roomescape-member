@@ -164,7 +164,11 @@ function onReservationButtonClick() {
             body: JSON.stringify(reservationData)
         })
             .then(response => {
-                if (!response.ok) throw new Error('Reservation failed');
+                if (!response.ok) {
+                    return response.json().then(errData => {
+                        throw new Error(errData.message);
+                    });
+                }
                 return response.json();
             })
             .then(data => {
@@ -172,7 +176,7 @@ function onReservationButtonClick() {
                 location.reload();
             })
             .catch(error => {
-                alert("An error occurred while making the reservation.");
+                alert(error.message);
                 console.error(error);
             });
     } else {
