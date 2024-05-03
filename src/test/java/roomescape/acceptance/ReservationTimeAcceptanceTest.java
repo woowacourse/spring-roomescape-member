@@ -45,7 +45,7 @@ public class ReservationTimeAcceptanceTest extends BasicAcceptanceTest {
 
         return Stream.of(
                 dynamicTest("예약 시간을 추가한다 (10:00)", () -> {
-                    long id = postReservation("10:00", 201);
+                    Long id = postReservation("10:00", 201);
                     reservationId.set(id);
                 }),
                 dynamicTest("예약 시간을 삭제한다 (10:00)", () -> deleteReservation(reservationId.longValue(), 204)),
@@ -63,7 +63,7 @@ public class ReservationTimeAcceptanceTest extends BasicAcceptanceTest {
         );
     }
 
-    private long postReservation(String time, int expectedHttpCode) {
+    private Long postReservation(String time, int expectedHttpCode) {
         Map<?, ?> requestBody = Map.of("startAt", time);
 
         Response response = RestAssured.given().log().all()
@@ -93,7 +93,7 @@ public class ReservationTimeAcceptanceTest extends BasicAcceptanceTest {
         assertThat(reservationTimeResponses).hasSize(expectedReservationsSize);
     }
 
-    private void deleteReservation(long reservationId, int expectedHttpCode) {
+    private void deleteReservation(Long reservationId, int expectedHttpCode) {
         RestAssured.given().log().all()
                 .when().delete("/times/" + reservationId)
                 .then().log().all()

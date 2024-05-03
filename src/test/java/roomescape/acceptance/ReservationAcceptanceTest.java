@@ -49,7 +49,7 @@ public class ReservationAcceptanceTest extends BasicAcceptanceTest {
         );
     }
 
-    private long postReservation(String date, Long timeId, Long themeId, int expectedHttpCode) {
+    private Long postReservation(String date, Long timeId, Long themeId, int expectedHttpCode) {
         Map<?, ?> requestBody = Map.of("name", "포비", "date", date, "timeId", timeId, "themeId", themeId);
 
         Response response = RestAssured.given().log().all()

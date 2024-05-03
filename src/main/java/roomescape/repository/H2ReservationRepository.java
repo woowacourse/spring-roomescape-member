@@ -35,7 +35,7 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     public Reservation save(Reservation reservation) {
-        long reservationId = jdbcInsert.executeAndReturnKey(Map.of(
+        Long reservationId = jdbcInsert.executeAndReturnKey(Map.of(
                         "name", reservation.getName().value(),
                         "date", reservation.getDate(),
                         "time_id", reservation.getTimeId(),
@@ -50,12 +50,12 @@ public class H2ReservationRepository implements ReservationRepository {
                 reservation.getTheme());
     }
 
-    public void deleteById(long id) {
+    public void deleteById(Long id) {
         String sql = "delete from reservation where id = ?";
         jdbcTemplate.update(sql, id);
     }
 
-    public List<Reservation> findByDateAndThemeId(LocalDate date, long themeId) {
+    public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
         String conditionQuery = " where r.date = ? and tm.id = ?";
         String sql = getBasicSelectQuery() + conditionQuery;
 

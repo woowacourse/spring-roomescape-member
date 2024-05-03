@@ -33,7 +33,7 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    public List<AvailableReservationTimeResponse> findAllWithAvailability(LocalDate date, long themeId) {
+    public List<AvailableReservationTimeResponse> findAllWithAvailability(LocalDate date, Long themeId) {
         List<ReservationTime> savedReservationTimes = reservationTimeRepository.findAll();
         List<ReservationTime> bookedReservationTimes = getBookedReservationTimes(date, themeId);
 
@@ -42,7 +42,7 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    private List<ReservationTime> getBookedReservationTimes(LocalDate date, long themeId) {
+    private List<ReservationTime> getBookedReservationTimes(LocalDate date, Long themeId) {
         List<Reservation> bookedReservations = reservationRepository.findByDateAndThemeId(date, themeId);
         return bookedReservations.stream()
                 .map(Reservation::getTime)

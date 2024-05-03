@@ -39,7 +39,7 @@ public class Reservation {
         return getDateTime().isBefore(LocalDateTime.now());
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 

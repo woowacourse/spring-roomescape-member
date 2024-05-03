@@ -28,7 +28,7 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
     }
 
     public ReservationTime save(ReservationTime reservationTime) {
-        long reservationTimeId = jdbcInsert.executeAndReturnKey(Map.of(
+        Long reservationTimeId = jdbcInsert.executeAndReturnKey(Map.of(
                         "start_at", reservationTime.getStartAt()))
                 .longValue();
 
@@ -50,7 +50,7 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
         return reservationTimes.stream().findFirst();
     }
 
-    public void deleteById(long id) {
+    public void deleteById(Long id) {
         String sql = "delete from reservation_time where id = ?";
         jdbcTemplate.update(sql, id);
     }

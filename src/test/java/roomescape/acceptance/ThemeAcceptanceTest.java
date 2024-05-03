@@ -32,7 +32,7 @@ public class ThemeAcceptanceTest extends BasicAcceptanceTest {
 
         return Stream.of(
                 dynamicTest("테마를 추가한다 (10:00)", () -> {
-                    long id = postTheme(201);
+                    Long id = postTheme(201);
                     themeId.set(id);
                 }),
                 dynamicTest("테마를 삭제한다 (10:00)", () -> deleteTheme(themeId.longValue(), 204)),
@@ -41,7 +41,7 @@ public class ThemeAcceptanceTest extends BasicAcceptanceTest {
         );
     }
 
-    private long postTheme(int expectedHttpCode) {
+    private Long postTheme(int expectedHttpCode) {
         Map<?, ?> requestBody = Map.of("name", "테마", "description", "설명서", "thumbnail", "썸네일");
 
         Response response = RestAssured.given().log().all()
@@ -71,7 +71,7 @@ public class ThemeAcceptanceTest extends BasicAcceptanceTest {
         assertThat(themeResponses).hasSize(expectedthemesSize);
     }
 
-    private void deleteTheme(long themeId, int expectedHttpCode) {
+    private void deleteTheme(Long themeId, int expectedHttpCode) {
         RestAssured.given().log().all()
                 .when().delete("/themes/" + themeId)
                 .then().log().all()

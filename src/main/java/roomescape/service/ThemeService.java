@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class ThemeService {
-    public static final int START_DATE_DIFF = 8;
-    public static final int END_DATE_DIFF = 1;
+    public static final long START_DATE_DIFF = 8;
+    public static final long END_DATE_DIFF = 1;
     public static final int TOP_LIMIT_COUNT = 10;
 
     private final ThemeRepository themeRepository;
@@ -44,7 +44,7 @@ public class ThemeService {
         return ThemeResponse.from(savedTheme);
     }
 
-    public void deleteById(long id) {
+    public void deleteById(Long id) {
         themeRepository.deleteById(id);
     }
 
