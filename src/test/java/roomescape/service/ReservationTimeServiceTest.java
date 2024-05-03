@@ -36,7 +36,7 @@ class ReservationTimeServiceTest {
     void saveExistTime() {
         assertThatCode(() ->
                 reservationTimeService.saveTime(new ReservationTimeSaveRequest(LocalTime.parse("09:00")))
-        ).isInstanceOf(IllegalArgumentException.class);
+        ).isInstanceOf(IllegalArgumentException.class).hasMessage("이미 저장된 예약 시간입니다.");
     }
 
     @DisplayName("예약 시간 추가")
@@ -58,14 +58,16 @@ class ReservationTimeServiceTest {
     @Test
     void deleteTimeNotFound() {
         assertThatThrownBy(() -> reservationTimeService.deleteTime(8L))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("존재하지 않는 예약 시간입니다.");
     }
 
     @DisplayName("예약이 존재하는 시간 삭제")
     @Test
     void deleteTimeExistReservation() {
         assertThatThrownBy(() -> reservationTimeService.deleteTime(1L))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("예약이 존재하는 시간은 삭제할 수 없습니다.");
     }
 
     @DisplayName("특정 날짜의 테마에 대한 전체 시간 예약 여부 조회")

@@ -47,14 +47,16 @@ class ThemeServiceTest {
     @Test
     void deleteNonExistTheme() {
         assertThatThrownBy(() -> themeService.deleteTheme(14L))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("존재하지 않는 테마입니다.");
     }
 
     @DisplayName("예약이 존재하는 테마 삭제")
     @Test
     void deleteReservationExistTheme() {
         assertThatThrownBy(() -> themeService.deleteTheme(1L))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("예약이 존재하는 테마는 삭제할 수 없습니다.");
     }
 
     @DisplayName("인기 테마 조회")

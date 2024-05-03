@@ -16,7 +16,8 @@ class ReservationTest {
     void emptyDate() {
         assertThatThrownBy(() ->
                 new Reservation("감자", null, new ReservationTime(LocalTime.parse("10:00")), new Theme("이름", "설명", "썸네일")))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("날짜가 비어 있습니다.");
     }
 
     @Test
