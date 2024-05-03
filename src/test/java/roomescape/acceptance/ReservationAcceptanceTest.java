@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 public class ReservationAcceptanceTest extends BasicAcceptanceTest {
     @TestFactory
-    @Sql("/init-for-reservation.sql")
+    @Sql("/test-data/reservation.sql")
     @DisplayName("예약을 추가한다")
     Stream<DynamicTest> reservationTest() {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
@@ -27,7 +27,7 @@ public class ReservationAcceptanceTest extends BasicAcceptanceTest {
     }
 
     @TestFactory
-    @Sql("/init-for-reservation.sql")
+    @Sql("/test-data/reservation.sql")
     @DisplayName("과거 시간에 대한 예약을 하면, 예외가 발생한다")
     Stream<DynamicTest> pastTimeReservationTest() {
         LocalDate yesterday = LocalDate.now().minusDays(1);
@@ -38,7 +38,7 @@ public class ReservationAcceptanceTest extends BasicAcceptanceTest {
     }
 
     @TestFactory
-    @Sql("/init-for-reservation.sql")
+    @Sql("/test-data/reservation.sql")
     @DisplayName("이미 예약된 테마와 시간을 예약을 하면, 예외가 발생한다")
     Stream<DynamicTest> duplicateReservationTest() {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
