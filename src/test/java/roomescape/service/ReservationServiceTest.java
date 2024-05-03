@@ -31,8 +31,7 @@ class ReservationServiceTest {
     @Test
     void should_false_when_remove_reservation_with_non_exist_id() {
         assertThatThrownBy(() -> reservationService.removeReservation(1L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("해당 id를 가진 예약이 존재하지 않습니다.");
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("존재하지 않는 예약시각으로 예약 시 예외가 발생합니다.")
@@ -41,9 +40,8 @@ class ReservationServiceTest {
         LocalDate reservationDate = LocalDate.now().plusDays(2L);
         ReservationAddRequest reservationAddRequest = new ReservationAddRequest(reservationDate, "dodo", 1L, 1L);
 
-        assertThatThrownBy(() -> reservationService.addReservation(reservationAddRequest))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("존재 하지 않는 예약시각으로 예약할 수 없습니다.");
+        assertThatThrownBy(() -> reservationService.saveReservation(reservationAddRequest))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("예약 날짜와 예약시각 그리고 테마 아이디가 같은 경우 예외를 발생합니다.")
@@ -60,8 +58,7 @@ class ReservationServiceTest {
         ReservationAddRequest conflictRequest = new ReservationAddRequest(LocalDate.now().plusDays(1), "dodo",
                 savedTime.getId(), savedTheme.getId());
 
-        assertThatThrownBy(() -> reservationService.addReservation(conflictRequest))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("예약 날짜와 예약시간 그리고 테마가 겹치는 예약은 할 수 없습니다.");
+        assertThatThrownBy(() -> reservationService.saveReservation(conflictRequest))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }

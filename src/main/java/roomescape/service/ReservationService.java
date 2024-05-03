@@ -28,32 +28,32 @@ public class ReservationService {
         return reservationRepository.findAll();
     }
 
-    public Reservation addReservation(ReservationAddRequest reservationAddRequest) {
-        if (reservationRepository.existByDateAndTimeIdAndThemeId(reservationAddRequest.getDate(),
-                reservationAddRequest.getTimeId(), reservationAddRequest.getThemeId())) {
-            throw new IllegalArgumentException("예약 날짜와 예약시간 그리고 테마가 겹치는 예약은 할 수 없습니다.");
+    public Reservation saveReservation(ReservationAddRequest request) {
+        if (reservationRepository.existByDateAndTimeIdAndThemeId(request.getDate(), request.getTimeId(),
+                request.getThemeId())) {
+            throw new IllegalArgumentException("중복되는 예약이 존재합니다");
         }
 
-        ReservationTime reservationTime = getReservationTime(reservationAddRequest.getTimeId());
-        Theme theme = getTheme(reservationAddRequest);
+        ReservationTime reservationTime = getReservationTime(request.getTimeId());
+        Theme theme = getTheme(request.getThemeId());
 
-        Reservation reservationRequest = reservationAddRequest.toEntity(reservationTime, theme);
-        return reservationRepository.save(reservationRequest);
+        Reservation reservation = request.toEntity(reservationTime, theme);
+        return reservationRepository.save(reservation);
     }
 
-    private Theme getTheme(ReservationAddRequest reservationAddRequest) {
-        return themeRepository.findById(reservationAddRequest.getThemeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재 하지 않는 테마로 예약할 수 없습니다"));
+    private Theme getTheme(long themeId) {
+        return themeRepository.findById(themeId)
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 테마가 존재하지 않습니다 ID: " + themeId));
     }
 
-    private ReservationTime getReservationTime(Long reservationTimeId) {
-        return reservationTimeRepository.findById(reservationTimeId)
-                .orElseThrow(() -> new IllegalArgumentException("존재 하지 않는 예약시각으로 예약할 수 없습니다."));
+    private ReservationTime getReservationTime(long timeId) {
+        return reservationTimeRepository.findById(timeId)
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 예약시간이 존재하지 않습니다 ID: " + timeId));
     }
 
-    public void removeReservation(Long id) {
+    public void removeReservation(long id) {
         if (reservationRepository.findById(id).isEmpty()) {
-            throw new IllegalArgumentException("해당 id를 가진 예약이 존재하지 않습니다.");
+            throw new IllegalArgumentException("해당하는 예약이 존재하지 않습니다 ID: " + id);
         }
         reservationRepository.deleteById(id);
     }

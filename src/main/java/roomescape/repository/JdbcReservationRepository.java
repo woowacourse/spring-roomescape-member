@@ -45,13 +45,13 @@ public class JdbcReservationRepository implements ReservationRepository {
                 r.date, 
                 t.id AS time_id, 
                 t.start_at AS time_value, 
-                theme.id AS theme_id, 
-                theme.name AS theme_name, 
-                theme.description AS theme_description, 
-                theme.thumbnail AS theme_thumbnail 
+                th.id AS theme_id, 
+                th.name AS theme_name, 
+                th.description AS theme_description, 
+                th.thumbnail AS theme_thumbnail 
                 FROM reservation AS r 
                 INNER JOIN reservation_time AS t ON r.time_id = t.id 
-                INNER JOIN theme ON r.theme_id = theme.id;
+                INNER JOIN theme AS th ON r.theme_id = th.id;
                 """;
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
@@ -65,13 +65,13 @@ public class JdbcReservationRepository implements ReservationRepository {
                 r.date, 
                 t.id AS time_id, 
                 t.start_at AS time_value, 
-                theme.id AS theme_id, 
-                theme.name AS theme_name, 
-                theme.description AS theme_description, 
-                theme.thumbnail AS theme_thumbnail 
+                th.id AS theme_id, 
+                th.name AS theme_name, 
+                th.description AS theme_description, 
+                th.thumbnail AS theme_thumbnail 
                 FROM reservation AS r 
                 INNER JOIN reservation_time AS t ON r.time_id = t.id 
-                INNER JOIN theme ON r.theme_id = theme.id 
+                INNER JOIN theme AS th ON r.theme_id = th.id 
                 WHERE r.id = ?;
                 """;
         try {
