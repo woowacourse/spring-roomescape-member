@@ -20,6 +20,10 @@ public class Theme {
         this.thumbnailUrl = thumbnailUrl;
     }
 
+    public Theme(ThemeName name, String description, String thumbnail) {
+        this(null, name, description, thumbnail);
+    }
+
     private void validateDescription(String description) {
         if (description != null && description.length() > MAX_DESCRIPTION_LENGTH) {
             throw new IllegalArgumentException(String.format("테마 설명은 %d자 이하여야 합니다.", MAX_DESCRIPTION_LENGTH));
@@ -30,10 +34,6 @@ public class Theme {
         if (thumbnailUrl != null && thumbnailUrl.length() > MAX_THUMBNAIL_URL_LENGTH) {
             throw new IllegalArgumentException(String.format("테마 썸네일 URL은 %d자 이하여야 합니다.", MAX_THUMBNAIL_URL_LENGTH));
         }
-    }
-
-    public Theme(ThemeName name, String description, String thumbnail) {
-        this(null, name, description, thumbnail);
     }
 
     public Theme withId(long id) {
