@@ -1,81 +1,104 @@
 package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
-import roomescape.domain.ThemeRepository;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.ReservationTimeRepository;
+import roomescape.domain.Theme;
 import roomescape.dto.app.ThemeAppRequest;
 import roomescape.exception.DuplicatedThemeException;
 import roomescape.exception.ReservationExistsException;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ThemeServiceTest {
 
-    @InjectMocks
+    @Autowired
     private ThemeService themeService;
 
-    @Mock
-    private ThemeRepository themeRepository;
-    @Mock
+    @Autowired
+    private ReservationTimeRepository reservationTimeRepository;
+
+    @Autowired
     private ReservationRepository reservationRepository;
 
-    private final String validName = "방탈출";
-    private final String validDescription = "재밌는 방탈출 게임이다";
-    private final String validThumbnail = "https://aaa.jpg";
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
-    @DisplayName("이름이 null 또는 빈 값이면 예외가 발생한다.")
-    @ParameterizedTest
-    @NullAndEmptySource
-    void save_IllegalName(String name) {
-        assertThatThrownBy(() -> themeService.save(new ThemeAppRequest(name, validDescription, validThumbnail)))
-            .isInstanceOf(IllegalArgumentException.class);
+    private final String name = "themeName";
+    private final String description = "themeDesc";
+    private final String thumbnail = "https://";
+
+    @BeforeEach
+    void setUp() {
+        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
+        jdbcTemplate.update("TRUNCATE TABLE reservation_time");
+        jdbcTemplate.update("TRUNCATE TABLE reservation");
+        jdbcTemplate.update("TRUNCATE TABLE theme");
+        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
     }
 
-    @DisplayName("description이 null 또는 빈 값이면 예외가 발생한다.")
+    @DisplayName("실패: 이름이 null 또는 빈 값이면 예외 발생")
     @ParameterizedTest
     @NullAndEmptySource
-    void save_IllegalDescription(String description) {
-        assertThatThrownBy(() -> themeService.save(new ThemeAppRequest(validName, description, validThumbnail)))
-            .isInstanceOf(IllegalArgumentException.class);
+    void save_IllegalName(String invalidName) {
+        assertThatThrownBy(
+            () -> themeService.save(new ThemeAppRequest(invalidName, description, thumbnail))
+        ).isInstanceOf(IllegalArgumentException.class);
     }
 
-    @DisplayName("thumbnail 형식이 잘못된 경우 예외가 발생한다.")
+    @DisplayName("실패: description이 null 또는 빈 값이면 예외 발생")
+    @ParameterizedTest
+    @NullAndEmptySource
+    void save_IllegalDescription(String invalidDescription) {
+        assertThatThrownBy(
+            () -> themeService.save(new ThemeAppRequest(name, invalidDescription, thumbnail))
+        ).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("thumbnail 형식이 잘못된 경우 예외 발생")
     @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = {"ftp://hello.jpg"})
-    void save_IllegalThumbnail(String thumbnail) {
-        assertThatThrownBy(() -> themeService.save(new ThemeAppRequest(validName, validDescription, thumbnail)))
-            .isInstanceOf(IllegalArgumentException.class);
+    void save_IllegalThumbnail(String invalidThumbnail) {
+        assertThatThrownBy(
+            () -> themeService.save(new ThemeAppRequest(name, description, invalidThumbnail))
+        ).isInstanceOf(IllegalArgumentException.class);
     }
 
-    @DisplayName("이름이 동일한 방탈출 테마를 저장하면 예외가 발생한다.")
+    @DisplayName("실패: 이름이 동일한 방탈출 테마를 저장하면 예외 발생")
     @Test
     void save_DuplicatedName() {
-        when(themeRepository.isNameExists(validName))
-            .thenReturn(true);
+        themeService.save(new ThemeAppRequest(name, description, thumbnail));
 
-        assertThatThrownBy(() -> themeService.save(new ThemeAppRequest(validName, validDescription, validThumbnail)))
-            .isInstanceOf(DuplicatedThemeException.class);
+        assertThatThrownBy(
+            () -> themeService.save(new ThemeAppRequest(name, "d", "https://d"))
+        ).isInstanceOf(DuplicatedThemeException.class);
     }
 
-    @DisplayName("테마 사용하는 예약이 존재하면 삭제 불가")
+    @DisplayName("실패: 예약에 사용되는 테마 삭제 시도 시 예외 발생")
     @Test
     void delete_ReservationExists() {
-        Long themeId = 1L;
-        when(reservationRepository.isThemeIdExists(themeId))
-            .thenReturn(true);
+        Theme savedTheme = themeService.save(new ThemeAppRequest(name, description, thumbnail));
 
-        assertThatThrownBy(() -> themeService.delete(themeId))
+        ReservationTime savedTime = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("10:00")));
+
+        reservationRepository.save(
+            new Reservation("name", LocalDate.parse("2060-01-01"), savedTime, savedTheme));
+
+        assertThatThrownBy(() -> themeService.delete(savedTheme.getId()))
             .isInstanceOf(ReservationExistsException.class);
     }
 }
