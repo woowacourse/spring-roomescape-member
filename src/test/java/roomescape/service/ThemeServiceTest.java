@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -12,7 +11,8 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
@@ -23,6 +23,7 @@ import roomescape.exception.DuplicatedThemeException;
 import roomescape.exception.ReservationExistsException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
 class ThemeServiceTest {
 
     @Autowired
@@ -34,25 +35,9 @@ class ThemeServiceTest {
     @Autowired
     private ReservationRepository reservationRepository;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
     private final String name = "themeName";
     private final String description = "themeDesc";
     private final String thumbnail = "https://";
-
-    @AfterEach
-    void clear() {
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
-        jdbcTemplate.update("TRUNCATE TABLE reservation_time");
-        jdbcTemplate.update("TRUNCATE TABLE reservation");
-        jdbcTemplate.update("TRUNCATE TABLE theme");
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
-
-        jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
-    }
 
     @DisplayName("실패: 이름이 null 또는 빈 값이면 예외 발생")
     @ParameterizedTest

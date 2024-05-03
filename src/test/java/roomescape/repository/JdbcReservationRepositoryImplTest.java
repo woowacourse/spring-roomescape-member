@@ -5,13 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
@@ -20,6 +20,7 @@ import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
 class JdbcReservationRepositoryImplTest {
 
     @Autowired
@@ -30,9 +31,6 @@ class JdbcReservationRepositoryImplTest {
 
     @Autowired
     private ThemeRepository themeRepository;
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     private final String name = "tre";
     private final LocalDate date1 = LocalDate.parse("2060-01-01");
@@ -53,19 +51,6 @@ class JdbcReservationRepositoryImplTest {
         ));
         reservation1 = new Reservation(name, date1, reservationTime, theme);
         reservation2 = new Reservation(name, date2, reservationTime, theme);
-    }
-
-    @AfterEach
-    void clear() {
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
-        jdbcTemplate.update("TRUNCATE TABLE reservation_time");
-        jdbcTemplate.update("TRUNCATE TABLE reservation");
-        jdbcTemplate.update("TRUNCATE TABLE theme");
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
-
-        jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
     }
 
     @DisplayName("예약 정보를 DB에 저장한다.")

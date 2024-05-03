@@ -4,24 +4,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
 class JdbcThemeRepositoryTest {
 
     @Autowired
     private ThemeRepository themeRepository;
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     private final String name1 = "theme1";
     private final String description1 = "desc1";
@@ -30,19 +27,6 @@ class JdbcThemeRepositoryTest {
 
     private final String name2 = "theme2";
     private final Theme theme2 = new Theme(name2, "desc2", "https://thumbnail2");
-
-    @AfterEach
-    void clear() {
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
-        jdbcTemplate.update("TRUNCATE TABLE reservation_time");
-        jdbcTemplate.update("TRUNCATE TABLE reservation");
-        jdbcTemplate.update("TRUNCATE TABLE theme");
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
-
-        jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
-    }
 
     @DisplayName("테마 정보를 DB에 저장한다.")
     @Test
