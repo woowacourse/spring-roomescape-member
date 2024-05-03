@@ -1,8 +1,8 @@
 package roomescape.service.exception;
 
-import roomescape.exception.CustomException;
+import roomescape.exception.RoomescapeException;
 
-public class ThemeUsedException extends CustomException {
+public class ThemeUsedException extends RoomescapeException {
 
     public ThemeUsedException(final String message) {
         super(message);
