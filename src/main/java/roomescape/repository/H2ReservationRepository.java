@@ -33,7 +33,8 @@ public class H2ReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {
         final String sql = """
-                SELECT R.ID, R.NAME, R.DATE, R.TIME_ID, R.THEME_ID, RT.START_AT, T.NAME FROM RESERVATION AS R
+                SELECT R.ID, R.NAME, R.DATE, R.TIME_ID, R.THEME_ID, RT.START_AT, T.NAME, T.NAME, T.DESCRIPTION, T.THUMBNAIL
+                FROM RESERVATION AS R
                 LEFT JOIN RESERVATION_TIME RT ON RT.ID = R.TIME_ID
                 LEFT JOIN THEME T ON T.ID = R.THEME_ID
                 """;
@@ -43,9 +44,15 @@ public class H2ReservationRepository implements ReservationRepository {
                 rs.getString("NAME"),
                 rs.getString("DATE"),
                 new ReservationTime(
-                        rs.getLong("RESERVATION.TIME_ID"),
-                        rs.getString("START_AT")),
-                new Theme(rs.getLong("RESERVATION.THEME_ID"))))
+                        rs.getLong("RESERVATION.ID"),
+                        rs.getString("RESERVATION_TIME.START_AT")
+                ), // TODO 여기서 바로 LocalDate로 파싱하면 검증할 필요 없지 않을까
+                new Theme(
+                        rs.getLong("RESERVATION.ID"),
+                        rs.getString("THEME.NAME"),
+                        rs.getString("THEME.DESCRIPTION"),
+                        rs.getString("THEME.THUMBNAIL")
+                )))
         );
     }
 

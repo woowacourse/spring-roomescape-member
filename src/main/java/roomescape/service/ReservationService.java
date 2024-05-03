@@ -34,22 +34,8 @@ public class ReservationService {
 
     public List<ReservationResponse> getReservations() {
         return reservationRepository.findAll().stream()
-                .map(this::assignTime)
-                .map(this::assignTheme)
                 .map(ReservationResponse::from)
                 .toList();
-    }
-
-    private Reservation assignTime(final Reservation reservation) {
-        final ReservationTime time = reservationTimeRepository.findById(reservation.getTime().getId())
-                .orElse(reservation.getTime());
-        return reservation.assignTime(time);
-    }
-
-    private Reservation assignTheme(final Reservation reservation) {
-        final Theme theme = themeRepository.findById(reservation.getTheme().getId())
-                .orElse(reservation.getTheme());
-        return reservation.assignTheme(theme);
     }
 
     // TODO 리팩터링

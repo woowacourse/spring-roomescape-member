@@ -24,7 +24,7 @@ public class Theme {
         this(id, null, null, null);
     }
 
-    public Theme(final String name, final String description, final String thumbnail) {
+    public Theme(final String name, final String description, final String thumbnail) { //todo 이생성자 지워보기
         validateNull(name);
         this.id = null;
         this.name = name;
