@@ -60,4 +60,20 @@ public class JdbcThemeRepository implements ThemeRepository {
             return Optional.empty();
         }
     }
+
+    @Override
+    public List<Theme> findThemeOrderByReservationCount() {
+        String sql = """
+                SELECT id, name, description, thumbnail
+                COUNT(id) AS reservation_count
+                FROM theme AS th
+                INNER JOIN reservation AS r
+                ON id = r.theme_id
+                WHERE r.date BETWEEN DATEADD('day', -7, CURRENT_DATE()) AND DATEADD('day', -1, CURRENT_DATE())
+                GROUP BY th.id
+                ORDER BY reservation_count DESC 
+                LIMIT 10
+                """;
+        return jdbcTemplate.query(sql, rowMapper);
+    }
 }

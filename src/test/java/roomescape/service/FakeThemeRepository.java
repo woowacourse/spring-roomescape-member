@@ -38,4 +38,9 @@ public class FakeThemeRepository implements ThemeRepository {
         }
         return Optional.empty();
     }
+
+    @Override
+    public List<Theme> findThemeOrderByReservationCount() {
+        return null;
+    }
 }
