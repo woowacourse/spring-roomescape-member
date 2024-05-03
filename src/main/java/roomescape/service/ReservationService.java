@@ -48,6 +48,7 @@ public class ReservationService {
                 .orElseThrow(() -> new ThemeNotFoundException("존재하지 않는 테마입니다."));
 
         final Reservation parsedReservation = reservationRequest.toDomain(time, theme);
+        //TODO 이때 테마도 같이 확인 해야함.
         final boolean isExistsReservation = reservationRepository.existsByDateAndTimeId(time.getId(), parsedReservation.getDate());
         if (isExistsReservation) {
             throw new DuplicateReservation("중복된 시간으로 예약이 불가합니다.");
