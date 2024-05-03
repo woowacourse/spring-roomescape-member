@@ -14,13 +14,13 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public class ReservationDAO implements ReservationRepository {
+public class JdbcReservationDao implements ReservationDao {
 
     private final JdbcTemplate jdbcTemplate;
 
     private SimpleJdbcInsert insertActor;
 
-    public ReservationDAO(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+    public JdbcReservationDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.insertActor = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation")

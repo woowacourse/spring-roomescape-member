@@ -5,7 +5,6 @@ import roomescape.exception.BadRequestException;
 import roomescape.exception.DuplicatedException;
 import roomescape.exception.NotFoundException;
 import roomescape.model.ReservationTime;
-import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.service.dto.ReservationTimeDto;
 
@@ -15,11 +14,9 @@ import java.util.List;
 @Service
 public class ReservationTimeService {
 
-    private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
 
-    public ReservationTimeService(ReservationRepository reservationRepository, ReservationTimeRepository reservationTimeRepository) {
-        this.reservationRepository = reservationRepository;
+    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
@@ -46,7 +43,7 @@ public class ReservationTimeService {
         if (count == null || count <= 0) {
             throw new NotFoundException("[ERROR] 존재하지 않는 시간입니다.");
         }
-        Long countOfReservationUsingTime = reservationRepository.countReservationByTimeId(id);
+        Long countOfReservationUsingTime = reservationTimeRepository.countReservationByTimeId(id);
         if (countOfReservationUsingTime == null || countOfReservationUsingTime > 0) {
             throw new BadRequestException("[ERROR] 해당 시간을 사용하고 있는 예약이 있습니다.");
         }

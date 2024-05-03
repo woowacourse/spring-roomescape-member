@@ -1,14 +1,14 @@
 package roomescape.service;
 
 import roomescape.model.ReservationTime;
-import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ReservationTimeDao;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-class FakeReservationTimeRepository implements ReservationTimeRepository {
+class FakeReservationTimeDao implements ReservationTimeDao {
 
     private List<ReservationTime> reservationTimes = new ArrayList<>(List.of(
             new ReservationTime(1, LocalTime.of(10, 0)),
@@ -25,7 +25,7 @@ class FakeReservationTimeRepository implements ReservationTimeRepository {
     }
 
     @Override
-    public ReservationTime findReservationById(long id) {
+    public ReservationTime findReservationTimeById(long id) {
         return reservationTimes.stream()
                 .filter(reservationTime -> reservationTime.getId() == id)
                 .findFirst()

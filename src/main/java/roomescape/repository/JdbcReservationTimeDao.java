@@ -12,13 +12,13 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public class ReservationTimeDAO implements ReservationTimeRepository {
+public class JdbcReservationTimeDao implements ReservationTimeDao {
 
     private final JdbcTemplate jdbcTemplate;
 
     private SimpleJdbcInsert insertActor;
 
-    public ReservationTimeDAO(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+    public JdbcReservationTimeDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.insertActor = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation_time")
@@ -36,7 +36,7 @@ public class ReservationTimeDAO implements ReservationTimeRepository {
     }
 
     @Override
-    public ReservationTime findReservationById(long id) {
+    public ReservationTime findReservationTimeById(long id) {
         String sql = "select * from reservation_time where id = ?";
         return jdbcTemplate.queryForObject(sql, (resultSet, rowNum) ->
                 new ReservationTime(

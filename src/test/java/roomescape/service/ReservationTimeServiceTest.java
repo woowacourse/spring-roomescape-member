@@ -6,6 +6,7 @@ import roomescape.exception.BadRequestException;
 import roomescape.exception.DuplicatedException;
 import roomescape.exception.NotFoundException;
 import roomescape.model.ReservationTime;
+import roomescape.repository.ReservationTimeRepository;
 import roomescape.service.dto.ReservationTimeDto;
 
 import java.time.LocalTime;
@@ -15,10 +16,10 @@ import static org.assertj.core.api.Assertions.*;
 
 class ReservationTimeServiceTest {
 
-    private final ReservationTimeService reservationTimeService = new ReservationTimeService(
-            new FakeReservationRepository(),
-            new FakeReservationTimeRepository()
-    );
+    private final ReservationTimeRepository reservationTimeRepository = new ReservationTimeRepository(
+            new FakeReservationDao(), new FakeReservationTimeDao());
+
+    private final ReservationTimeService reservationTimeService = new ReservationTimeService(reservationTimeRepository);
 
     @DisplayName("모든 예약 시간을 반환한다")
     @Test

@@ -1,7 +1,7 @@
 package roomescape.service;
 
 import roomescape.model.Theme;
-import roomescape.repository.ThemeRepository;
+import roomescape.repository.ThemeDao;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class FakeThemeRepository implements ThemeRepository {
+public class FakeThemeDao implements ThemeDao {
 
     private List<Theme> themes = new ArrayList<>(List.of(
             new Theme(1, "에버", "공포", "공포.jpg"),

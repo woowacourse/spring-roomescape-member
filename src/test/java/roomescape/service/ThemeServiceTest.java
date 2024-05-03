@@ -3,6 +3,7 @@ package roomescape.service;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.model.Theme;
+import roomescape.repository.ThemeRepository;
 import roomescape.service.dto.ThemeDto;
 
 import java.util.List;
@@ -11,7 +12,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ThemeServiceTest {
 
-    private final ThemeService themeService = new ThemeService(new FakeThemeRepository());
+    private final ThemeRepository themeRepository = new ThemeRepository(new FakeThemeDao());
+    private final ThemeService themeService = new ThemeService(themeRepository);
 
     @DisplayName("테마를 조회한다.")
     @Test

@@ -12,12 +12,12 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public class ThemeDAO implements ThemeRepository {
+public class JdbcThemeDao implements ThemeDao {
 
     private final JdbcTemplate jdbcTemplate;
     private SimpleJdbcInsert insertActor;
 
-    public ThemeDAO(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+    public JdbcThemeDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.insertActor = new SimpleJdbcInsert(dataSource)
                 .withTableName("theme")

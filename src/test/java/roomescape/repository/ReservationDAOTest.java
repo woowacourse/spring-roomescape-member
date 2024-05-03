@@ -29,7 +29,7 @@ class ReservationDAOTest {
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    private ReservationRepository reservationRepository;
+    private ReservationDao reservationDao;
 
     @Autowired
     private DataSource dataSource;
@@ -91,14 +91,14 @@ class ReservationDAOTest {
     @DisplayName("모든 예약을 조회한다")
     @Test
     void should_get_reservation() {
-        List<Reservation> reservations = reservationRepository.findAllReservations();
+        List<Reservation> reservations = reservationDao.findAllReservations();
         assertThat(reservations).hasSize(2);
     }
 
     @DisplayName("조회한 예약에 예약 시간이 존재한다.")
     @Test
     void should_get_reservation_times() {
-        List<Reservation> reservations = reservationRepository.findAllReservations();
+        List<Reservation> reservations = reservationDao.findAllReservations();
         assertThat(reservations.get(0).getTime().getStartAt()).isEqualTo(LocalTime.of(10, 0));
     }
 
@@ -109,7 +109,7 @@ class ReservationDAOTest {
         Theme theme = new Theme(1, "에버", "공포", "공포.jpg");
         Reservation reservation = new Reservation("네오", LocalDate.of(2024, 9, 1), reservationTime, theme);
 
-        reservationRepository.saveReservation(reservation);
+        reservationDao.saveReservation(reservation);
 
         Integer count = jdbcTemplate.queryForObject("select count(1) from reservation", Integer.class);
         assertThat(count).isEqualTo(3);
@@ -118,7 +118,7 @@ class ReservationDAOTest {
     @DisplayName("예약을 삭제한다")
     @Test
     void should_delete_reservation() {
-        reservationRepository.deleteReservationById(1);
+        reservationDao.deleteReservationById(1);
         Integer count = jdbcTemplate.queryForObject("select count(1) from reservation", Integer.class);
         assertThat(count).isEqualTo(1);
     }
@@ -126,14 +126,14 @@ class ReservationDAOTest {
     @DisplayName("아이디가 존재하면 참을 반환한다.")
     @Test
     void should_return_true_when_id_exist() {
-        long count = reservationRepository.countReservationById(1);
+        long count = reservationDao.countReservationById(1);
         assertThat(count).isEqualTo(1);
     }
 
     @DisplayName("아이디가 존재하면 거짓을 반환한다.")
     @Test
     void should_return_false_when_id_not_exist() {
-        long count = reservationRepository.countReservationById(100000000);
+        long count = reservationDao.countReservationById(100000000);
         assertThat(count).isEqualTo(0);
     }
 
@@ -141,7 +141,7 @@ class ReservationDAOTest {
     @Test
     void should_get_reservation_times_when_date_and_theme_given() {
         LocalDate date = LocalDate.of(2023, 8, 5);
-        List<ReservationTime> times = reservationRepository.findReservationTimeByDateAndThemeId(date, 1);
+        List<ReservationTime> times = reservationDao.findReservationTimeByDateAndThemeId(date, 1);
         assertThat(times).hasSize(1);
         assertThat(times).containsExactly(new ReservationTime(1, LocalTime.of(10, 0)));
     }

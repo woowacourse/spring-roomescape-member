@@ -1,21 +1,47 @@
 package roomescape.repository;
 
+import org.springframework.stereotype.Repository;
 import roomescape.model.ReservationTime;
 
 import java.time.LocalTime;
 import java.util.List;
 
-public interface ReservationTimeRepository {
+@Repository
+public class ReservationTimeRepository {
 
-    List<ReservationTime> findAllReservationTimes();
+    private final ReservationDao reservationDao;
+    private final ReservationTimeDao reservationTimeDao;
 
-    ReservationTime findReservationById(long id);
+    public ReservationTimeRepository(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao) {
+        this.reservationDao = reservationDao;
+        this.reservationTimeDao = reservationTimeDao;
+    }
 
-    ReservationTime saveReservationTime(ReservationTime reservationTime);
+    public List<ReservationTime> findAllReservationTimes() {
+        return reservationTimeDao.findAllReservationTimes();
+    }
 
-    void deleteReservationTimeById(long id);
+    public Long countReservationTimeByStartAt(LocalTime startAt) {
+        return reservationTimeDao.countReservationTimeByStartAt(startAt);
+    }
 
-    Long countReservationTimeById(long id);
+    public ReservationTime saveReservationTime(ReservationTime reservationTime) {
+        return reservationTimeDao.saveReservationTime(reservationTime);
+    }
 
-    Long countReservationTimeByStartAt(LocalTime startAt);
+    public ReservationTime findReservationById(long id) {
+        return reservationTimeDao.findReservationTimeById(id);
+    }
+
+    public Long countReservationTimeById(long id) {
+        return reservationTimeDao.countReservationTimeById(id);
+    }
+
+    public Long countReservationByTimeId(long timeId) {
+        return reservationDao.countReservationByTimeId(timeId);
+    }
+
+    public void deleteReservationTimeById(long id) {
+        reservationTimeDao.deleteReservationTimeById(id);
+    }
 }

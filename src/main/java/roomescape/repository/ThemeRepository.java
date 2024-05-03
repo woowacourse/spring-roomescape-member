@@ -1,19 +1,33 @@
 package roomescape.repository;
 
+import org.springframework.stereotype.Repository;
 import roomescape.model.Theme;
 
 import java.time.LocalDate;
 import java.util.List;
 
-public interface ThemeRepository {
+@Repository
+public class ThemeRepository {
 
-    List<Theme> findAllThemes();
+    private final ThemeDao themeDao;
 
-    Theme saveTheme(Theme theme);
+    public ThemeRepository(ThemeDao themeDao) {
+        this.themeDao = themeDao;
+    }
 
-    void deleteThemeById(long id);
+    public List<Theme> findAllThemes() {
+        return themeDao.findAllThemes();
+    }
 
-    Theme findThemeById(long id);
+    public Theme saveTheme(Theme theme) {
+        return themeDao.saveTheme(theme);
+    }
 
-    List<Theme> findThemeRankingByDate(LocalDate before, LocalDate after, int limit);
+    public void deleteThemeById(long id) {
+        themeDao.deleteThemeById(id);
+    }
+
+    public List<Theme> findThemeRankingByDate(LocalDate before, LocalDate after, int i) {
+        return themeDao.findThemeRankingByDate(before, after, 10);
+    }
 }

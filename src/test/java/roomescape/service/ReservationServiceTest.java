@@ -8,6 +8,8 @@ import roomescape.exception.DuplicatedException;
 import roomescape.exception.NotFoundException;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeDao;
 import roomescape.service.dto.ReservationDto;
 
 import java.time.LocalDate;
@@ -18,12 +20,13 @@ import static org.assertj.core.api.Assertions.*;
 
 class ReservationServiceTest {
 
-    private final FakeReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
+    private final ReservationTimeDao reservationTimeDao = new FakeReservationTimeDao();
+    private final ReservationRepository reservationRepository = new ReservationRepository(
+            new FakeReservationDao(), reservationTimeDao, new FakeThemeDao());
+//    private ReservationTimeRepository reservationTimeRepository = new ReservationTimeRepository(
+//            new FakeReservationDao(), new FakeReservationTimeDao());
+    private final ReservationService reservationService = new ReservationService(reservationRepository);
 
-    private final ReservationService reservationService = new ReservationService(
-            new FakeReservationRepository(),
-            reservationTimeRepository,
-            new FakeThemeRepository());
 
     @DisplayName("모든 예약 시간을 반환한다")
     @Test
@@ -76,7 +79,7 @@ class ReservationServiceTest {
     @DisplayName("현재로 예약하면 예외가 발생하지 않는다.")
     @Test
     void should_not_throw_exception_when_current_date() {
-        reservationTimeRepository.add(new ReservationTime(3, LocalTime.now()));
+        reservationTimeDao.saveReservationTime(new ReservationTime(3, LocalTime.now()));
         ReservationDto request = new ReservationDto("에버", LocalDate.now(), 3L, 1L);
         assertThatCode(() -> reservationService.saveReservation(request))
                 .doesNotThrowAnyException();

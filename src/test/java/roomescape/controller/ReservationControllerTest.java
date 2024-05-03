@@ -12,7 +12,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import roomescape.controller.request.ReservationRequest;
 import roomescape.controller.response.MemberReservationTimeResponse;
 import roomescape.controller.response.ReservationResponse;
-import roomescape.model.Reservation;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;

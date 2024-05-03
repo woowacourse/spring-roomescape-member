@@ -9,8 +9,6 @@ import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
 import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeRepository;
-import roomescape.repository.ThemeRepository;
 import roomescape.service.dto.ReservationDto;
 
 import java.time.LocalDate;
@@ -23,15 +21,9 @@ import java.util.stream.Stream;
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
-    private final ReservationTimeRepository reservationTimeRepository;
-    private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository,
-                              ThemeRepository themeRepository) {
+    public ReservationService(ReservationRepository reservationRepository) {
         this.reservationRepository = reservationRepository;
-        this.reservationTimeRepository = reservationTimeRepository;
-        this.themeRepository = themeRepository;
     }
 
     public List<Reservation> findAllReservations() {
@@ -39,8 +31,8 @@ public class ReservationService {
     }
 
     public Reservation saveReservation(ReservationDto reservationDto) {
-        ReservationTime reservationTime = reservationTimeRepository.findReservationById(reservationDto.getTimeId());
-        Theme theme = themeRepository.findThemeById(reservationDto.getThemeId());
+        ReservationTime reservationTime = reservationRepository.findReservationTimeById(reservationDto.getTimeId());
+        Theme theme = reservationRepository.findThemeById(reservationDto.getThemeId());
 
         LocalDateTime reservationDateTime = LocalDateTime.of(reservationDto.getDate(), reservationTime.getStartAt());
 
@@ -66,7 +58,7 @@ public class ReservationService {
     }
 
     public List<MemberReservationTimeResponse> findReservationTimesInformation(LocalDate date, long themeId) {
-        List<ReservationTime> allTimes = reservationTimeRepository.findAllReservationTimes();
+        List<ReservationTime> allTimes = reservationRepository.findAllReservationTimes();
         List<ReservationTime> bookedTimes = reservationRepository.findReservationTimeByDateAndThemeId(date, themeId);
         List<ReservationTime> notBookedTimes = filterNotBookedTimes(allTimes, bookedTimes);
         List<MemberReservationTimeResponse> bookedResponse = mapToResponse(bookedTimes, true);
