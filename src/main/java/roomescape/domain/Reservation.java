@@ -24,8 +24,8 @@ public class Reservation {
         this(id, new MemberName(name), new Schedule(new ReservationDate(date), reservationTime), theme);
     }
 
-    public Reservation(final String name, final String date, final ReservationTime reservationTime, final Theme theme) {
-        this(NO_ID, new MemberName(name), new Schedule(new ReservationDate(date), reservationTime), theme);
+    public Reservation(final String name, final ReservationDate reservationDate, final ReservationTime reservationTime, final Theme theme) {
+        this(NO_ID, new MemberName(name), new Schedule(reservationDate, reservationTime), theme);
     }
 
     public long getId() {

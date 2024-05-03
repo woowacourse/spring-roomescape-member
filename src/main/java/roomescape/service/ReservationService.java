@@ -1,16 +1,21 @@
 package roomescape.service;
 
-import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationRepository;
 import roomescape.dao.ReservationTimeRepository;
 import roomescape.dao.ThemeRepository;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.InvalidReservationException;
 import roomescape.service.dto.ReservationRequest;
 import roomescape.service.dto.ReservationResponse;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
 
 @Service
 public class ReservationService {
@@ -27,20 +32,15 @@ public class ReservationService {
     }
 
     public ReservationResponse create(final ReservationRequest reservationRequest) {
-        validateDuplicated(reservationRequest);
+        ReservationDate reservationDate = new ReservationDate(reservationRequest.date());
         ReservationTime reservationTime = findTimeById(reservationRequest.timeId());
         Theme theme = findThemeById(reservationRequest.themeId());
-        Reservation reservation = new Reservation(reservationRequest.name(), reservationRequest.date(), reservationTime,
-                theme);
-        Reservation newReservation = reservationRepository.save(reservation);
-        return new ReservationResponse(newReservation);
-    }
 
-    private void validateDuplicated(ReservationRequest reservationRequest) {
-        if (reservationRepository.existsByDateAndTimeAndTheme(reservationRequest.date(), reservationRequest.timeId(),
-                reservationRequest.themeId())) {
-            throw new InvalidReservationException("선택하신 테마와 일정은 이미 예약이 존재합니다.");
-        }
+        validate(reservationDate, reservationTime, theme);
+
+        Reservation reservation = new Reservation(reservationRequest.name(), reservationDate, reservationTime, theme);
+
+        return new ReservationResponse(reservationRepository.save(reservation));
     }
 
     private ReservationTime findTimeById(final long timeId) {
@@ -51,6 +51,24 @@ public class ReservationService {
     private Theme findThemeById(long themeId) {
         return themeRepository.findById(themeId).
                 orElseThrow(() -> new InvalidReservationException("더이상 존재하지 않는 테마입니다."));
+    }
+
+    private void validate(final ReservationDate reservationDate, final ReservationTime reservationTime, final Theme theme) {
+        validateIfBefore(reservationDate, reservationTime);
+        validateDuplicated(reservationDate, reservationTime, theme);
+    }
+
+    private void validateIfBefore(final ReservationDate date, final ReservationTime time) {
+        LocalDateTime value = LocalDateTime.of(LocalDate.parse(date.getValue()), LocalTime.parse(time.getStartAt()));
+        if (value.isBefore(LocalDateTime.now())) {
+            throw new InvalidReservationException("현재보다 이전으로 일정을 설정할 수 없습니다.");
+        }
+    }
+
+    private void validateDuplicated(final ReservationDate reservationDate, final ReservationTime reservationTime, final Theme theme) {
+        if (reservationRepository.existsByDateAndTimeAndTheme(reservationDate.getValue(), reservationTime.getId(), theme.getId())) {
+            throw new InvalidReservationException("선택하신 테마와 일정은 이미 예약이 존재합니다.");
+        }
     }
 
     public List<ReservationResponse> findAll() {

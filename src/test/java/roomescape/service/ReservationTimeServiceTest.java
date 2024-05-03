@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import roomescape.dao.ReservationRepository;
 import roomescape.dao.ThemeRepository;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.InvalidReservationException;
@@ -93,13 +94,10 @@ class ReservationTimeServiceTest {
     @Test
     void cannotDeleteTime() {
         //given
-        ReservationTimeResponse reservationTimeResponse = reservationTimeService.create(
-                new ReservationTimeCreateRequest("10:00"));
-        ReservationTime reservationTime = new ReservationTime(reservationTimeResponse.id(),
-                reservationTimeResponse.startAt());
-        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
-        reservationRepository.save(new Reservation("lilly", "2222-10-04", reservationTime, theme));
+        ReservationTimeResponse reservationTimeResponse = reservationTimeService.create(new ReservationTimeCreateRequest("10:00"));
+        ReservationTime reservationTime = new ReservationTime(reservationTimeResponse.id(), reservationTimeResponse.startAt());
+        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        reservationRepository.save(new Reservation("lilly", new ReservationDate("2222-10-04"), reservationTime, theme));
 
         //when&then
         assertThatThrownBy(() -> reservationTimeService.deleteById(reservationTimeResponse.id()))
@@ -111,21 +109,15 @@ class ReservationTimeServiceTest {
     @Test
     void findAvailableTimes() {
         //given
-        ReservationTimeResponse notAvailableTimeResponse = reservationTimeService.create(
-                new ReservationTimeCreateRequest("10:00"));
-        ReservationTime reservationTime = new ReservationTime(notAvailableTimeResponse.id(),
-                notAvailableTimeResponse.startAt());
-        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
-        Reservation reservation = reservationRepository.save(
-                new Reservation("lilly", "2222-10-04", reservationTime, theme));
+        ReservationTimeResponse notAvailableTimeResponse = reservationTimeService.create(new ReservationTimeCreateRequest("10:00"));
+        ReservationTime reservationTime = new ReservationTime(notAvailableTimeResponse.id(), notAvailableTimeResponse.startAt());
+        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        Reservation reservation = reservationRepository.save(new Reservation("lilly", new ReservationDate("2222-10-04"), reservationTime, theme));
 
-        ReservationTimeResponse availableTimeResponse = reservationTimeService.create(
-                new ReservationTimeCreateRequest("11:00"));
+        ReservationTimeResponse availableTimeResponse = reservationTimeService.create(new ReservationTimeCreateRequest("11:00"));
 
         //when
-        List<ReservationTimeResponse> result = reservationTimeService.findAvailableTimes(
-                new ReservationTimeReadRequest(reservation.getDate(), theme.getId()));
+        List<ReservationTimeResponse> result = reservationTimeService.findAvailableTimes(new ReservationTimeReadRequest(reservation.getDate(), theme.getId()));
 
         //then
         assertAll(

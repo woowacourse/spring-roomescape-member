@@ -7,7 +7,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import roomescape.dao.ReservationRepository;
 import roomescape.dao.ReservationTimeRepository;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.InvalidReservationException;
@@ -99,7 +99,7 @@ class ThemeServiceTest {
         ThemeResponse themeResponse = createTheme("레벨2 탈출");
         Theme theme = convertToTheme(themeResponse);
         ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime("21:25"));
-        reservationRepository.save(new Reservation("lini", "2024-10-04", reservationTime, theme));
+        reservationRepository.save(new Reservation("lini", new ReservationDate("2024-10-04"), reservationTime, theme));
 
         //when&then
         assertThatThrownBy(() -> themeService.deleteById(theme.getId()))
@@ -107,8 +107,6 @@ class ThemeServiceTest {
                 .hasMessage("해당 테마로 예약이 존재해서 삭제할 수 없습니다.");
     }
 
-    //TODO: 현재보다 이전으로 일정 설정 불가 검증으로 인한 테스트 불가
-    @Disabled
     @DisplayName("인기 테마를 조회한다.")
     @Test
     void findPopularThemes() {
@@ -119,26 +117,25 @@ class ThemeServiceTest {
 
         ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime("21:25"));
         reservationRepository.save(
-                new Reservation("lini", LocalDate.now().minusDays(1).format(DateTimeFormatter.ISO_DATE),
+                new Reservation("lini", new ReservationDate(LocalDate.now().minusDays(1).format(DateTimeFormatter.ISO_DATE)),
                         reservationTime, convertToTheme(theme1)));
         reservationRepository.save(
-                new Reservation("lini", LocalDate.now().minusDays(7).format(DateTimeFormatter.ISO_DATE),
+                new Reservation("lini", new ReservationDate(LocalDate.now().minusDays(7).format(DateTimeFormatter.ISO_DATE)),
                         reservationTime, convertToTheme(theme2)));
         reservationRepository.save(
-                new Reservation("lini", LocalDate.now().minusDays(8).format(DateTimeFormatter.ISO_DATE),
+                new Reservation("lini", new ReservationDate(LocalDate.now().minusDays(8).format(DateTimeFormatter.ISO_DATE)),
                         reservationTime, convertToTheme(theme3)));
 
         //when
         List<ThemeResponse> result = themeService.findPopularThemes();
 
         //then
-        assertThat(result).hasSize(1);
+        assertThat(result).hasSize(2);
     }
 
     private static Theme convertToTheme(ThemeResponse themeResponse) {
-        Theme theme = new Theme(themeResponse.id(),
+        return new Theme(themeResponse.id(),
                 new Theme(themeResponse.name(), themeResponse.description(), themeResponse.thumbnail()));
-        return theme;
     }
 
     private ThemeResponse createTheme(String name) {

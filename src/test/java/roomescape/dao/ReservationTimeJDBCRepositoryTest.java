@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
@@ -130,9 +131,8 @@ class ReservationTimeJDBCRepositoryTest {
     void findNoAvailableTimesByThemeAndDate() {
         //given
         ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime("10:00"));
-        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
-        Reservation reservation = new Reservation("브라운", "2222-05-01", reservationTime, theme);
+        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        Reservation reservation = new Reservation("브라운", new ReservationDate("2222-05-01"), reservationTime, theme);
         reservationRepository.save(reservation);
 
         //when
