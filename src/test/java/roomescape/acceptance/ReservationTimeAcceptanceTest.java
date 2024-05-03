@@ -17,7 +17,7 @@ import org.junit.jupiter.api.TestFactory;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.controller.response.AvailableReservationTimeResponse;
 
-public class ReservationTimeAcceptanceTest extends BasicAcceptanceTest {
+class ReservationTimeAcceptanceTest extends BasicAcceptanceTest {
     @TestFactory
     @DisplayName("동일한 예약 시간을 두번 추가하면, 예외가 발생한다")
     Stream<DynamicTest> duplicateReservationTest() {

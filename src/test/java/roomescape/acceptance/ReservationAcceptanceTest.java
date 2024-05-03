@@ -14,7 +14,7 @@ import org.junit.jupiter.api.TestFactory;
 import org.springframework.test.context.jdbc.Sql;
 
 @Sql("/init-for-reservation.sql")
-public class ReservationAcceptanceTest extends BasicAcceptanceTest {
+class ReservationAcceptanceTest extends BasicAcceptanceTest {
     @TestFactory
     @DisplayName("예약을 추가한다")
     Stream<DynamicTest> reservationTest() {

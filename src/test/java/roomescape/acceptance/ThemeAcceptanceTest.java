@@ -14,7 +14,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 
-public class ThemeAcceptanceTest extends BasicAcceptanceTest {
+class ThemeAcceptanceTest extends BasicAcceptanceTest {
     @TestFactory
     @DisplayName("2개의 테마를 추가한다")
     Stream<DynamicTest> themePostTest() {
