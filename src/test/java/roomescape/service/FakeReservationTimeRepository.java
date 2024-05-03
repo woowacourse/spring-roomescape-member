@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
@@ -55,5 +56,10 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public void deleteById(Long id) {
         reservationTimes.remove(id);
+    }
+
+    @Override
+    public List<ReservationTime> findReservedTimes(LocalDate date, Long themeId) {
+        return null;
     }
 }
