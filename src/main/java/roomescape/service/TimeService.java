@@ -33,9 +33,7 @@ public class TimeService {
     }
 
     public List<AvailabilityTimeResponse> getTimeAvailable(final String date, final String themeId) {
-        final List<ReservationTime> times = timeRepository.findAll()
-                .stream()
-                .toList();
+        final List<ReservationTime> times = timeRepository.findAll();
         final Set<ReservationTime> bookedTimes = reservationRepository
                 .findAllByDateAndThemeId(LocalDate.parse(date), Long.valueOf(themeId))
                 .stream()
