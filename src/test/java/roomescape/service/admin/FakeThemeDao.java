@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.service.admin;
 
 import java.util.HashMap;
 import java.util.List;

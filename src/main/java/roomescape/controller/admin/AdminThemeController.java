@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.admin;
 
 import java.net.URI;
 import java.util.List;
@@ -11,30 +11,30 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeAddRequest;
-import roomescape.service.ThemeService;
+import roomescape.service.admin.AdminThemeService;
 
 @RestController
-public class ThemeController {
-    private final ThemeService themeService;
+public class AdminThemeController {
+    private final AdminThemeService adminThemeService;
 
-    public ThemeController(ThemeService themeService) {
-        this.themeService = themeService;
+    public AdminThemeController(AdminThemeService adminThemeService) {
+        this.adminThemeService = adminThemeService;
     }
 
     @GetMapping("/themes")
     public ResponseEntity<List<Theme>> getThemeList() {
-        return ResponseEntity.ok(themeService.findAllTheme());
+        return ResponseEntity.ok(adminThemeService.findAllTheme());
     }
 
     @PostMapping("/themes")
     public ResponseEntity<Theme> addTheme(@RequestBody ThemeAddRequest themeAddRequest) {
-        Theme theme = themeService.addTheme(themeAddRequest);
+        Theme theme = adminThemeService.addTheme(themeAddRequest);
         return ResponseEntity.created(URI.create("/themes" + theme.getId())).body(theme);
     }
 
     @DeleteMapping("/themes/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable("id") Long id) {
-        themeService.removeTheme(id);
+        adminThemeService.removeTheme(id);
         return ResponseEntity.noContent().build();
     }
 }

@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.service.admin;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -7,11 +7,11 @@ import roomescape.dto.ReservationTimeAddRequest;
 import roomescape.repository.ReservationTimeDao;
 
 @Service
-public class ReservationTimeService {
+public class AdminReservationTimeService {
 
     private ReservationTimeDao reservationTimeDao;
 
-    ReservationTimeService(ReservationTimeDao reservationTimeDao) {
+    AdminReservationTimeService(ReservationTimeDao reservationTimeDao) {
         this.reservationTimeDao = reservationTimeDao;
     }
 

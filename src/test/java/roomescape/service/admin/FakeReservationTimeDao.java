@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.service.admin;
 
 import java.time.LocalTime;
 import java.util.HashMap;

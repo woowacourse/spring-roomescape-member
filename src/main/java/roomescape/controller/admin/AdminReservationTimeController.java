@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.admin;
 
 import java.net.URI;
 import java.util.List;
@@ -11,32 +11,32 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeAddRequest;
-import roomescape.service.ReservationTimeService;
+import roomescape.service.admin.AdminReservationTimeService;
 
 @RestController
-public class ReservationTimeController {
+public class AdminReservationTimeController {
 
-    private final ReservationTimeService reservationTimeService;
+    private final AdminReservationTimeService adminReservationTimeService;
 
-    public ReservationTimeController(ReservationTimeService reservationTimeService) {
-        this.reservationTimeService = reservationTimeService;
+    public AdminReservationTimeController(AdminReservationTimeService adminReservationTimeService) {
+        this.adminReservationTimeService = adminReservationTimeService;
     }
 
     @GetMapping("/times")
     public ResponseEntity<List<ReservationTime>> getReservationTimeList() {
-        return ResponseEntity.ok(reservationTimeService.findAllReservationTime());
+        return ResponseEntity.ok(adminReservationTimeService.findAllReservationTime());
     }
 
     @PostMapping("/times")
     public ResponseEntity<ReservationTime> addReservationTime(
             @RequestBody ReservationTimeAddRequest reservationTimeAddRequest) {
-        ReservationTime reservationTime = reservationTimeService.addReservationTime(reservationTimeAddRequest);
+        ReservationTime reservationTime = adminReservationTimeService.addReservationTime(reservationTimeAddRequest);
         return ResponseEntity.created(URI.create("/times/" + reservationTime.getId())).body(reservationTime);
     }
 
     @DeleteMapping("/times/{id}")
     public ResponseEntity<Void> deleteReservationTime(@PathVariable("id") Long id) {
-        reservationTimeService.removeReservationTime(id);
+        adminReservationTimeService.removeReservationTime(id);
         return ResponseEntity.noContent().build();
     }
 }

@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.admin;
 
 import static org.hamcrest.Matchers.is;
 
@@ -17,7 +17,7 @@ import roomescape.dto.ReservationAddRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class ReservationControllerTest {
+public class AdminReservationControllerTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;

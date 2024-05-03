@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.service.admin;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -7,11 +7,11 @@ import roomescape.dto.ThemeAddRequest;
 import roomescape.repository.ThemeDao;
 
 @Service
-public class ThemeService {
+public class AdminThemeService {
 
     private final ThemeDao themeDao;
 
-    public ThemeService(ThemeDao themeDao) {
+    public AdminThemeService(ThemeDao themeDao) {
         this.themeDao = themeDao;
     }
 

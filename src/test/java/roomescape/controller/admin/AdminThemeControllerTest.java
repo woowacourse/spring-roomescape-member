@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.admin;
 
 import static org.hamcrest.Matchers.is;
 
@@ -16,7 +16,7 @@ import roomescape.dto.ThemeAddRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class ThemeControllerTest {
+class AdminThemeControllerTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
