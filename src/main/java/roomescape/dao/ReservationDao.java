@@ -63,10 +63,10 @@ public class ReservationDao {
         return jdbcTemplate.query(selectSQL, rowMapper);
     }
 
-    public boolean existsByDateTime(LocalDate date, Long timeId) {
-        return jdbcTemplate.queryForObject(
-                "SELECT EXISTS(SELECT * FROM reservation WHERE date = ? AND time_id = ?)",
-                Boolean.class, date, timeId);
+    public boolean existsByDateTime(LocalDate date, Long timeId, Long themeId) {
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
+                "SELECT EXISTS(SELECT * FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?)",
+                Boolean.class, date, timeId, themeId));
     }
 
     public Reservation save(Reservation reservation) {

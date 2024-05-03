@@ -46,7 +46,7 @@ public class ReservationService {
         RoomTheme roomTheme = roomThemeDao.findById(reservationRequest.themeId());
         Reservation reservation = reservationRequest.toReservation(reservationTime, roomTheme);
 
-        validateDuplicatedDateTime(reservation.getDate(), reservationTime.getId());
+        validateDuplicatedDateTime(reservation.getDate(), reservationTime.getId(), roomTheme.getId());
 
         Reservation savedReservation = reservationDao.save(reservation);
         return ReservationResponse.fromReservation(savedReservation);
@@ -63,8 +63,8 @@ public class ReservationService {
         }
     }
 
-    private void validateDuplicatedDateTime(LocalDate date, Long timeId) {
-        boolean exists = reservationDao.existsByDateTime(date, timeId);
+    private void validateDuplicatedDateTime(LocalDate date, Long timeId, Long themeId) {
+        boolean exists = reservationDao.existsByDateTime(date, timeId, themeId);
         if (exists) {
             throw new BadRequestException("중복된 시간과 날짜에 대한 예약을 생성할 수 없습니다.");
         }
