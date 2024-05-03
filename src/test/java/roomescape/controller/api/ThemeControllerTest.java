@@ -25,7 +25,7 @@ class ThemeControllerTest {
         RestAssured.port = port;
     }
 
-    @DisplayName("존재하지 않는 테마 삭제")
+    @DisplayName("존재하지 않는 테마 삭제 시 BadRequest 반환")
     @Test
     void deletedReservationNotFound() {
         RestAssured.given().log().all()

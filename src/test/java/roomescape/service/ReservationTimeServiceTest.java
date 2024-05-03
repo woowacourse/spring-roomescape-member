@@ -31,7 +31,7 @@ class ReservationTimeServiceTest {
         assertThat(reservationTimeResponses.size()).isEqualTo(7);
     }
 
-    @DisplayName("중복된 시간 저장")
+    @DisplayName("중복된 시간 저장 시 예외 발생")
     @Test
     void saveExistTime() {
         assertThatCode(() ->
@@ -54,7 +54,7 @@ class ReservationTimeServiceTest {
         assertThat(reservationTimeService.getTimes().size()).isEqualTo(6);
     }
 
-    @DisplayName("존재하지 않는 예약 시간 삭제")
+    @DisplayName("존재하지 않는 예약 시간 삭제 시 예외 발생")
     @Test
     void deleteTimeNotFound() {
         assertThatThrownBy(() -> reservationTimeService.deleteTime(8L))
@@ -62,7 +62,7 @@ class ReservationTimeServiceTest {
                 .hasMessage("존재하지 않는 예약 시간입니다.");
     }
 
-    @DisplayName("예약이 존재하는 시간 삭제")
+    @DisplayName("예약이 존재하는 시간 삭제 시 예외 발생")
     @Test
     void deleteTimeExistReservation() {
         assertThatThrownBy(() -> reservationTimeService.deleteTime(1L))

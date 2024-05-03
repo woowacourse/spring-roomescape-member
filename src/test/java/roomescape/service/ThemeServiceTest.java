@@ -43,7 +43,7 @@ class ThemeServiceTest {
         assertThat(themeService.getThemes()).hasSize(12);
     }
 
-    @DisplayName("존재하지 않는 테마 삭제")
+    @DisplayName("존재하지 않는 테마 삭제 시 예외 발생")
     @Test
     void deleteNonExistTheme() {
         assertThatThrownBy(() -> themeService.deleteTheme(14L))
@@ -51,7 +51,7 @@ class ThemeServiceTest {
                 .hasMessage("존재하지 않는 테마입니다.");
     }
 
-    @DisplayName("예약이 존재하는 테마 삭제")
+    @DisplayName("예약이 존재하는 테마 삭제 시 예외 발생")
     @Test
     void deleteReservationExistTheme() {
         assertThatThrownBy(() -> themeService.deleteTheme(1L))

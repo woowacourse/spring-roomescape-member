@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ReservationNameTest {
 
-    @DisplayName("예약자 이름에 공백 입력")
+    @DisplayName("예약자 이름에 공백 입력 시 예외 발생")
     @ParameterizedTest
     @ValueSource(strings = {"     ", " ", ""})
     void blankName(final String value) {
@@ -19,7 +19,7 @@ class ReservationNameTest {
                 .hasMessage("예약자 이름이 비어 있습니다.");
     }
 
-    @DisplayName("이름에 숫자만 입력")
+    @DisplayName("이름에 숫자만 입력 시 예외 발생")
     @ParameterizedTest
     @ValueSource(strings = {"123", "456"})
     void numericName(final String value) {
@@ -28,7 +28,7 @@ class ReservationNameTest {
                 .hasMessage(String.format("(%s) 숫자만으로 이루어진 예약자 이름은 사용할 수 없습니다.", value));
     }
 
-    @DisplayName("최대 길이를 넘은 예약 이름 입력")
+    @DisplayName("최대 길이를 넘은 예약 이름 입력 시 예외 발생")
     @Test
     void reservationNameOutOfRange() {
         final String value = "b".repeat(31);

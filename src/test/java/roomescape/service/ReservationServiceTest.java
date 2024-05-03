@@ -40,7 +40,7 @@ class ReservationServiceTest {
         assertThat(reservationRepository.findById(reservationResponse.id())).isPresent();
     }
 
-    @DisplayName("존재하지 않는 예약 시간으로 예약 저장")
+    @DisplayName("존재하지 않는 예약 시간으로 예약 저장 시 예외 발생")
     @Test
     void timeForSaveReservationNotFound() {
         final ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest("고구마", LocalDate.parse("2025-11-11"), 200L, 1L);
@@ -49,7 +49,7 @@ class ReservationServiceTest {
         }).isInstanceOf(IllegalArgumentException.class).hasMessage("존재하지 않는 예약 시간입니다.");
     }
 
-    @DisplayName("존재하지 않는 테마로 예약 저장")
+    @DisplayName("존재하지 않는 테마로 예약 저장 시 예외 발생")
     @Test
     void timeForSaveThemeNotFound() {
         final ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest("고구마", LocalDate.parse("2025-11-11"), 1L, 200L);
@@ -73,7 +73,7 @@ class ReservationServiceTest {
         }).isInstanceOf(IllegalArgumentException.class).hasMessage("존재하지 않는 예약입니다.");
     }
 
-    @DisplayName("지나간 시간 예약 저장")
+    @DisplayName("지나간 시간에 대한 예약 저장 시 예외 발생")
     @Test
     void saveReservationWithGoneTime() {
         assertThatThrownBy(() -> {

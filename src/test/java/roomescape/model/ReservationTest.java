@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 class ReservationTest {
 
-    @DisplayName("비어 있는 날짜 입력")
+    @DisplayName("비어 있는 날짜 입력 시 예외 발생")
     @Test
     void emptyDate() {
         assertThatThrownBy(() ->
@@ -21,7 +21,7 @@ class ReservationTest {
     }
 
     @Test
-    @DisplayName("예약 날짜와 시간이 현재보다 이전인 경우")
+    @DisplayName("예약 날짜와 시간이 현재보다 이전인 경우 isBeforeNow()가 참을 반환")
     void isBeforeNowWithPastDate() {
         final Theme theme = new Theme("테마 이름", "테마 설명", "테마 썸네일");
         final ReservationTime time = new ReservationTime(LocalTime.of(14, 0));
@@ -30,7 +30,7 @@ class ReservationTest {
     }
 
     @Test
-    @DisplayName("예약 날짜와 시간이 현재보다 이후인 경우")
+    @DisplayName("예약 날짜와 시간이 현재보다 이후인 경우 isBeforeNow()가 거짓을 반환")
     void isBeforeNowWithFutureDate() {
         final Theme theme = new Theme("테마 이름", "테마 설명", "테마 썸네일");
         final ReservationTime time = new ReservationTime(LocalTime.of(14, 0));

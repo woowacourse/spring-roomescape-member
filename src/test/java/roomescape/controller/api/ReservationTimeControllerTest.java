@@ -71,7 +71,7 @@ class ReservationTimeControllerTest {
         );
     }
 
-    @DisplayName("중복된 시간 추가")
+    @DisplayName("중복된 시간 추가 시 BadRequest 반환")
     @Test
     void saveDuplicatedTime() {
         final Map<String, String> params = Map.of("startAt", "10:00");
@@ -84,7 +84,7 @@ class ReservationTimeControllerTest {
                 .statusCode(400);
     }
 
-    @DisplayName("존재하지 않는 예약 시간 삭제")
+    @DisplayName("존재하지 않는 예약 시간 삭제 시 BadRequest 반환")
     @Test
     void deleteReservationTimeNotFound() {
         RestAssured.given().log().all()
@@ -93,7 +93,7 @@ class ReservationTimeControllerTest {
                 .statusCode(400);
     }
 
-    @DisplayName("유효하지 않은 시간 형식 입력")
+    @DisplayName("유효하지 않은 시간 형식 입력 시 BadRequest 반환")
     @ParameterizedTest
     @ValueSource(strings = {"", "    ", "11:11:11", "25:10"})
     void invalidTimeFormat(final String time) {

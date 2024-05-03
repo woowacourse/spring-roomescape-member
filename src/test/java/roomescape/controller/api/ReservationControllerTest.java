@@ -27,7 +27,7 @@ class ReservationControllerTest {
         RestAssured.port = port;
     }
 
-    @DisplayName("존재하지 않는 예약 삭제")
+    @DisplayName("존재하지 않는 예약 삭제 요청 시 BadRequest 반환")
     @Test
     void deletedReservationNotFound() {
         RestAssured.given().log().all()
@@ -74,7 +74,7 @@ class ReservationControllerTest {
         );
     }
 
-    @DisplayName("존재하지 않는 시간으로 예약 추가")
+    @DisplayName("존재하지 않는 시간으로 예약 추가 시 BadRequest 반환")
     @Test
     void reservationTimeForSaveNotFound() {
         final Map<String, Object> params = Map.of(
@@ -90,7 +90,7 @@ class ReservationControllerTest {
                 .statusCode(400);
     }
 
-    @DisplayName("유효하지 않은 날짜 형식 입력")
+    @DisplayName("유효하지 않은 날짜 형식 입력 시 BadRequest 반환")
     @ParameterizedTest
     @ValueSource(strings = {"", "    ", "2022.22.11"})
     void invalidTimeFormat(final String time) {
