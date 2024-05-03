@@ -16,7 +16,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
-import roomescape.domain.dto.AvailableTimeDto;
+import roomescape.domain.TimeSlot;
 
 @JdbcTest
 @Import(JdbcReservationTimeRepository.class)
@@ -95,7 +95,7 @@ class JdbcReservationTimeRepositoryTest {
     @Sql("/insert-reservations.sql")
     void shouldReturnAvailableTimes() {
         LocalDate date = LocalDate.of(2024, 12, 25);
-        List<AvailableTimeDto> times = timeRepository.findAvailableReservationTimes(date, 1L)
+        List<TimeSlot> times = timeRepository.getReservationTimeAvailabilities(date, 1L)
                 .stream()
                 .filter(time -> !time.isBooked())
                 .toList();

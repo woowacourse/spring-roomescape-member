@@ -5,7 +5,6 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import roomescape.domain.dto.AvailableTimeDto;
 
 public interface ReservationTimeRepository {
 
@@ -21,5 +20,5 @@ public interface ReservationTimeRepository {
 
     boolean existsByStartAt(LocalTime time);
 
-    List<AvailableTimeDto> findAvailableReservationTimes(LocalDate date, long themeId);
+    List<TimeSlot> getReservationTimeAvailabilities(LocalDate date, long themeId);
 }

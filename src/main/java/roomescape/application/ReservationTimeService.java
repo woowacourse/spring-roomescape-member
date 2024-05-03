@@ -54,9 +54,11 @@ public class ReservationTimeService {
     }
 
     public List<AvailableTimeResponse> findAvailableTimes(LocalDate date, long themeId) {
-        return reservationTimeRepository.findAvailableReservationTimes(date, themeId)
+        return reservationTimeRepository.getReservationTimeAvailabilities(date, themeId)
                 .stream()
-                .map(AvailableTimeResponse::from)
+                .map(timeSlot -> new AvailableTimeResponse(
+                        ReservationTimeResponse.from(timeSlot.reservationTime()),
+                        timeSlot.isBooked()))
                 .toList();
     }
 }

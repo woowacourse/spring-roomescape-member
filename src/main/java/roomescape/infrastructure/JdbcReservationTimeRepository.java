@@ -12,7 +12,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
-import roomescape.domain.dto.AvailableTimeDto;
+import roomescape.domain.TimeSlot;
 import roomescape.infrastructure.rowmapper.ReservationTimeRowMapper;
 
 @Repository
@@ -57,9 +57,9 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public List<ReservationTime> findAll() {
         String sql = "select id, start_at from reservation_time";
-        return jdbcTemplate.query(sql, (resultSet, rowNum) -> new ReservationTime(
-                resultSet.getLong("id"),
-                resultSet.getTime("start_at").toLocalTime()
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new ReservationTime(
+                rs.getLong("id"),
+                rs.getTime("start_at").toLocalTime()
         ));
     }
 
@@ -76,16 +76,15 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public List<AvailableTimeDto> findAvailableReservationTimes(LocalDate date, long themeId) {
+    public List<TimeSlot> getReservationTimeAvailabilities(LocalDate date, long themeId) {
         String sql = """
                 select rt.id, rt.start_at, count(r.id) > 0 as is_booked
                 from reservation_time as rt left join reservation as r
                 on rt.id = r.time_id and r.date = ? and r.theme_id = ?
                 group by rt.id, rt.start_at
                 """;
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new AvailableTimeDto(
-                rs.getLong("id"),
-                rs.getTime("start_at").toLocalTime(),
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new TimeSlot(
+                ReservationTimeRowMapper.mapRow(rs),
                 rs.getBoolean("is_booked")
         ), date, themeId);
     }
