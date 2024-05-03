@@ -1,5 +1,7 @@
 package roomescape.exception;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +11,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+    private final Logger log = LoggerFactory.getLogger(getClass().getSimpleName());
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException e) {
@@ -24,13 +27,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<ErrorResponse> handleDataAccessException(DataAccessException e) {
+        log.error(e.getMessage());
         return ResponseEntity.internalServerError()
-                .body(new ErrorResponse("[DATA ACCESS ERROR] " + e.getMessage()));
+                .body(new ErrorResponse("[DATA ACCESS ERROR]"));
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleException(DataAccessException e) {
+    public ResponseEntity<ErrorResponse> handleException(Exception e) {
+        log.error(e.getMessage());
         return ResponseEntity.internalServerError()
-                .body(new ErrorResponse("[SERVER ERROR] " + e.getMessage()));
+                .body(new ErrorResponse("[SERVER ERROR]"));
     }
 }
