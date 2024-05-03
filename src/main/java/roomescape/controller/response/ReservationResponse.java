@@ -11,15 +11,15 @@ public class ReservationResponse {
     private final long id;
     private final String name;
     private final LocalDate date;
-    private final ReservationTimeResponse timeResponse;
-    private final ThemeResponse themeResponse;
+    private final ReservationTimeResponse time;
+    private final ThemeResponse theme;
 
-    private ReservationResponse(long id, String name, LocalDate date, ReservationTimeResponse timeResponse, ThemeResponse themeResponse) {
+    private ReservationResponse(long id, String name, LocalDate date, ReservationTimeResponse time, ThemeResponse theme) {
         this.id = id;
         this.name = name;
         this.date = date;
-        this.timeResponse = timeResponse;
-        this.themeResponse = themeResponse;
+        this.time = time;
+        this.theme = theme;
     } // TODO: if private, cannot parse?
 
     public static ReservationResponse from(Reservation reservation) {
@@ -42,11 +42,11 @@ public class ReservationResponse {
         return date;
     }
 
-    public ReservationTimeResponse getTimeResponse() {
-        return timeResponse;
+    public ReservationTimeResponse getTime() {
+        return time;
     }
 
-    public ThemeResponse getThemeResponse() {
-        return themeResponse;
+    public ThemeResponse getTheme() {
+        return theme;
     }
 }
