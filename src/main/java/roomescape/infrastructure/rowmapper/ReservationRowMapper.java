@@ -25,8 +25,8 @@ public class ReservationRowMapper {
     }
 
     public static Reservation joinedMapRow(ResultSet rs) throws SQLException {
-        long id = rs.getLong("id");
-        String name = rs.getString("name");
+        long id = rs.getLong("reservation_id");
+        String name = rs.getString("reservation_name");
         String date = rs.getString("date");
         return new Reservation(
                 id,

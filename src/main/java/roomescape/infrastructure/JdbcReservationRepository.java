@@ -16,6 +16,14 @@ import roomescape.infrastructure.rowmapper.ReservationRowMapper;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
+
+    private static final String FIND_ALL_SQL = """
+            select r.id as reservation_id, r.name as reservation_name, date, time_id, start_at,
+            theme_id, t.name as theme_name, description, thumbnail from reservation as r
+            left join reservation_time as rt on time_id = rt.id
+            left join theme as t on theme_id = t.id
+            """;
+
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
@@ -29,15 +37,9 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public Optional<Reservation> findById(long id) {
-        String sql = """
-                select r.id as id, r.name as reservation_name, date, time_id, start_at,
-                theme_id, t.name as theme_name, description, thumbnail from reservation as r
-                left join reservation_time as rt on time_id = rt.id
-                left join theme as t on theme_id = t.id
-                where r.id = ?
-                """;
+        String whereClause = "where r.id = ?";
         try {
-            Reservation reservation = jdbcTemplate.queryForObject(sql,
+            Reservation reservation = jdbcTemplate.queryForObject(FIND_ALL_SQL + whereClause,
                     (rs, rowNum) -> ReservationRowMapper.joinedMapRow(rs), id);
             return Optional.of(reservation);
         } catch (EmptyResultDataAccessException e) {
@@ -47,13 +49,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findAll() {
-        String sql = """
-                select r.id as id, r.name as reservation_name, date, time_id, start_at,
-                theme_id, t.name as theme_name, description, thumbnail from reservation as r
-                left join reservation_time as rt on time_id = rt.id
-                left join theme as t on theme_id = t.id
-                """;
-        return jdbcTemplate.query(sql, (rs, rowNum) -> ReservationRowMapper.joinedMapRow(rs));
+        return jdbcTemplate.query(FIND_ALL_SQL, (rs, rowNum) -> ReservationRowMapper.joinedMapRow(rs));
     }
 
     @Override
