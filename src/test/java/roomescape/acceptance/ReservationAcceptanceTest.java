@@ -1,22 +1,21 @@
 package roomescape.acceptance;
 
+import static org.junit.jupiter.api.DynamicTest.dynamicTest;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import java.time.LocalDate;
+import java.util.Map;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 import org.springframework.test.context.jdbc.Sql;
 
-import java.time.LocalDate;
-import java.util.Map;
-import java.util.stream.Stream;
-
-import static org.junit.jupiter.api.DynamicTest.dynamicTest;
-
+    @Sql("/init-for-reservation.sql")
 public class ReservationAcceptanceTest extends BasicAcceptanceTest {
     @TestFactory
-    @Sql("/init-for-reservation.sql")
     @DisplayName("예약을 추가한다")
     Stream<DynamicTest> reservationTest() {
         LocalDate tomorrow = LocalDate.now().plusDays(1);

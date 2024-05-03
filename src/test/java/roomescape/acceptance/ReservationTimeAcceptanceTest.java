@@ -14,6 +14,8 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
+import org.springframework.test.context.jdbc.Sql;
+import roomescape.controller.response.AvailableReservationTimeResponse;
 
 public class ReservationTimeAcceptanceTest extends BasicAcceptanceTest {
     @TestFactory
@@ -32,7 +34,7 @@ public class ReservationTimeAcceptanceTest extends BasicAcceptanceTest {
                 dynamicTest("예약 시간을 추가한다 (10:00)", () -> postReservation("10:00", 201)),
                 dynamicTest("예약 시간을 추가한다 (11:00)", () -> postReservation("11:00", 201)),
                 dynamicTest("예약 시간을 추가한다 (12:00)", () -> postReservation("12:00", 201)),
-                dynamicTest("모든 예약 시간을 조회한다 (총 3개)", () -> getReservations(200, 3))
+                dynamicTest("모든 예약 시간을 조회한다 (총 3개)", () -> getReservationTimes(200, 3))
         );
     }
 
@@ -48,7 +50,16 @@ public class ReservationTimeAcceptanceTest extends BasicAcceptanceTest {
                 }),
                 dynamicTest("예약 시간을 삭제한다 (10:00)", () -> deleteReservation(reservationId.longValue(), 204)),
                 dynamicTest("예약 시간을 추가한다 (10:00)", () -> postReservation("10:00", 201)),
-                dynamicTest("모든 예약 시간을 조회한다 (총 1개)", () -> getReservations(200, 1))
+                dynamicTest("모든 예약 시간을 조회한다 (총 1개)", () -> getReservationTimes(200, 1))
+        );
+    }
+
+    @TestFactory
+    @Sql("/init-for-available-time.sql")
+    @DisplayName("예약이 가능한 시간을 구분하여 반환한다.")
+    Stream<DynamicTest> res() {
+        return Stream.of(
+                dynamicTest("모든 예약된 시간을 조회한다 (총 3개)", () -> getAvailableTimes(200))
         );
     }
 
@@ -70,7 +81,7 @@ public class ReservationTimeAcceptanceTest extends BasicAcceptanceTest {
         return 0L;
     }
 
-    private void getReservations(int expectedHttpCode, int expectedReservationsSize) {
+    private void getReservationTimes(int expectedHttpCode, int expectedReservationsSize) {
         Response response = RestAssured.given().log().all()
                 .when().get("/times")
                 .then().log().all()
@@ -87,5 +98,21 @@ public class ReservationTimeAcceptanceTest extends BasicAcceptanceTest {
                 .when().delete("/times/" + reservationId)
                 .then().log().all()
                 .statusCode(expectedHttpCode);
+    }
+
+    private void getAvailableTimes(int expectedHttpCode) {
+        Response response = RestAssured.given().log().all()
+                .when().get("/times/available?date=2099-04-29&themeId=1")
+                .then().log().all()
+                .statusCode(expectedHttpCode)
+                .extract().response();
+
+        List<AvailableReservationTimeResponse> reservationTimeResponses = response.jsonPath().getList(".", AvailableReservationTimeResponse.class);
+
+        List<AvailableReservationTimeResponse> list = reservationTimeResponses.stream()
+                .filter(AvailableReservationTimeResponse::alreadyBooked)
+                .toList();
+
+        assertThat(list).hasSize(3);
     }
 }

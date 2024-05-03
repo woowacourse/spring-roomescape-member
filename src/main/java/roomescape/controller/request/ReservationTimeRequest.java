@@ -20,7 +20,6 @@ public record ReservationTimeRequest(String startAt) {
         }
     }
 
-
     public ReservationTime toEntity() {
         return new ReservationTime(LocalTime.parse(startAt).withSecond(0));
     }

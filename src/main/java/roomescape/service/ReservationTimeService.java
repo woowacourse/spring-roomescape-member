@@ -42,7 +42,7 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    private List<ReservationTime> getBookedReservationTimes(final LocalDate date, final long themeId) {
+    private List<ReservationTime> getBookedReservationTimes(LocalDate date, long themeId) {
         List<Reservation> bookedReservations = reservationRepository.findByDateAndThemeId(date, themeId);
         return bookedReservations.stream()
                 .map(Reservation::getTime)

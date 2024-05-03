@@ -57,7 +57,7 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
 
     static class ReservationTimeRowMapper implements RowMapper<ReservationTime> {
         @Override
-        public ReservationTime mapRow(final ResultSet rs, final int rowNum) throws SQLException {
+        public ReservationTime mapRow(ResultSet rs, int rowNum) throws SQLException {
             return new ReservationTime(
                     rs.getLong("id"),
                     rs.getTime("start_at").toLocalTime());
