@@ -51,7 +51,7 @@ class ReservationServiceTest {
         long themeId = 1L;
         ReservationDate reservationDate = new ReservationDate("2050-01-01");
         String name = "브리";
-        LocalTime time = LocalTime.MAX;
+        String time = "10:00";
         ReservationTime reservationTime = new ReservationTime(timeId, time);
         Reservation reservation = new Reservation(name, reservationDate, reservationTime,
             new Theme("방탈출", "방탈출하는 게임",
@@ -88,7 +88,7 @@ class ReservationServiceTest {
     @NullAndEmptySource
     void save_IllegalName(String name) {
         when(reservationTimeRepository.findById(1L))
-            .thenReturn(new ReservationTime(LocalTime.parse("10:00")));
+            .thenReturn(new ReservationTime("10:00"));
         when(themeRepository.findById(1L))
             .thenReturn(new Theme("방탈출1", "방탈출1을 한다.", "https://url"));
         assertThatThrownBy(
@@ -138,7 +138,7 @@ class ReservationServiceTest {
         long timeId = 1L;
         long themeId = 1L;
 
-        ReservationTime reservationTime = new ReservationTime(LocalTime.parse("10:00"));
+        ReservationTime reservationTime = new ReservationTime("10:00");
         when(reservationTimeRepository.findById(timeId))
             .thenReturn(reservationTime);
         when(themeRepository.findById(themeId))
@@ -153,7 +153,7 @@ class ReservationServiceTest {
     @Test
     void save_TodayPastTimeReservation() {
         LocalDate today = LocalDate.now();
-        LocalTime oneMinuteAgo = LocalTime.now().minusMinutes(1);
+        String oneMinuteAgo = LocalTime.now().minusMinutes(1).toString();
 
         long timeId = 1L;
         long themeId = 1L;

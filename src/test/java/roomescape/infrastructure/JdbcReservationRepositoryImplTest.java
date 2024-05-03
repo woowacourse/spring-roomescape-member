@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -38,7 +37,7 @@ class JdbcReservationRepositoryImplTest {
 
     @BeforeEach
     void setUp() {
-        reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.of(5, 30)));
+        reservationTime = reservationTimeRepository.save(new ReservationTime("05:30"));
         theme = themeRepository.save(
             new Theme("방탈출", "방탈출하는 게임", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
     }

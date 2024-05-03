@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.util.Objects;
 
 public class ReservationTime {
@@ -8,13 +9,21 @@ public class ReservationTime {
     private final Long id;
     private final LocalTime startAt;
 
-    public ReservationTime(LocalTime startAt) {
+    public ReservationTime(String startAt) {
         this(null, startAt);
     }
 
-    public ReservationTime(Long id, LocalTime startAt) {
+    public ReservationTime(Long id, String startAt) {
         this.id = id;
-        this.startAt = startAt;
+        this.startAt = parseTime(startAt);
+    }
+
+    private LocalTime parseTime(String rawTime) {
+        try {
+            return LocalTime.parse(rawTime);
+        } catch (DateTimeParseException | NullPointerException e) {
+            throw new IllegalArgumentException("잘못된 시간 형식을 입력하셨습니다.");
+        }
     }
 
     public boolean isBeforeNow() {

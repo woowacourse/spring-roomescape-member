@@ -39,7 +39,7 @@ class ReservationTimeServiceTest {
     @Test
     void save() {
         long timeId = 1L;
-        LocalTime startAt = LocalTime.now();
+        String startAt = LocalTime.now().toString();
 
         when(reservationTimeRepository.save(any(ReservationTime.class)))
             .thenReturn(new ReservationTime(timeId, startAt));

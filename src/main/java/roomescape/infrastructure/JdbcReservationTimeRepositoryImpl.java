@@ -32,7 +32,7 @@ public class JdbcReservationTimeRepositoryImpl implements ReservationTimeReposit
             .executeAndReturnKey(saveSource)
             .longValue();
 
-        return new ReservationTime(id, reservationTime.getStartAt());
+        return new ReservationTime(id, reservationTime.getStartAt().toString());
     }
 
     @Override
@@ -54,8 +54,8 @@ public class JdbcReservationTimeRepositoryImpl implements ReservationTimeReposit
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> new ReservationTime(
             rs.getLong("id"),
-            LocalTime.parse(rs.getString("start_at"))
-        ));
+            rs.getString("start_at"))
+        );
     }
 
     @Override
@@ -67,7 +67,7 @@ public class JdbcReservationTimeRepositoryImpl implements ReservationTimeReposit
     private RowMapper<ReservationTime> getReservationTimeRowMapper() {
         return (rs, rowNum) -> new ReservationTime(
             rs.getLong("id"),
-            rs.getTime("start_at").toLocalTime()
+            rs.getString("start_at")
         );
     }
 }

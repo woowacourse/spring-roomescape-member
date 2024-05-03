@@ -47,7 +47,7 @@ class ReservationControllerTest {
         long themeId = 1L;
         ReservationDate date = new ReservationDate("2040-04-04");
         String name = "브리";
-        Reservation reservation = new Reservation(1L, name, date, new ReservationTime(LocalTime.MIN),
+        Reservation reservation = new Reservation(1L, name, date, new ReservationTime(LocalTime.MIN.toString()),
             new Theme("방탈출", "방탈출하는 게임",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
 
@@ -74,7 +74,7 @@ class ReservationControllerTest {
         ReservationDate date = new ReservationDate("2040-04-04");
 
         String name = "브리";
-        Reservation reservation = new Reservation(1L, name, date, new ReservationTime(LocalTime.MIN),
+        Reservation reservation = new Reservation(1L, name, date, new ReservationTime(LocalTime.MIN.toString()),
             new Theme("방탈출", "방탈출하는 게임",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
 

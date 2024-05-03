@@ -25,7 +25,7 @@ class JdbcReservationTimeRepositoryImplTest {
     @DisplayName("예약 시간 정보를 DB에 저장한다.")
     @Test
     void save() {
-        ReservationTime reservationTime = new ReservationTime(LocalTime.MIDNIGHT);
+        ReservationTime reservationTime = new ReservationTime(LocalTime.MIDNIGHT.toString());
 
         ReservationTime actual = reservationTimeRepository.save(reservationTime);
         ReservationTime expected = reservationTimeRepository.findById(actual.getId());
@@ -39,11 +39,11 @@ class JdbcReservationTimeRepositoryImplTest {
     @DisplayName("id값을 통해 예약 시간 정보를 DB에서 조회한다.")
     @Test
     void findById() {
-        ReservationTime reservationTime = new ReservationTime(LocalTime.MIDNIGHT);
+        ReservationTime reservationTime = new ReservationTime(LocalTime.MIDNIGHT.toString());
         ReservationTime save = reservationTimeRepository.save(reservationTime);
 
         ReservationTime actual = reservationTimeRepository.findById(save.getId());
-        ReservationTime expected = new ReservationTime(save.getId(), save.getStartAt());
+        ReservationTime expected = new ReservationTime(save.getId(), save.getStartAt().toString());
 
         assertAll(
             () -> assertEquals(expected.getId(), actual.getId()),
@@ -54,7 +54,7 @@ class JdbcReservationTimeRepositoryImplTest {
     @DisplayName("id값을 예약 시간 정보를 DB에서 삭제한다.")
     @Test
     void deleteById() {
-        ReservationTime reservationTime = new ReservationTime(LocalTime.MIDNIGHT);
+        ReservationTime reservationTime = new ReservationTime(LocalTime.MIDNIGHT.toString());
         ReservationTime save = reservationTimeRepository.save(reservationTime);
 
         reservationTimeRepository.deleteById(save.getId());
@@ -66,10 +66,10 @@ class JdbcReservationTimeRepositoryImplTest {
     @DisplayName("모든 예약 시간 정보를 DB에서 조회한다.")
     @Test
     void findAll() {
-        ReservationTime reservationTime1 = new ReservationTime(LocalTime.MIDNIGHT);
+        ReservationTime reservationTime1 = new ReservationTime(LocalTime.MIDNIGHT.toString());
         ReservationTime save1 = reservationTimeRepository.save(reservationTime1);
 
-        ReservationTime reservationTime2 = new ReservationTime(LocalTime.MIDNIGHT);
+        ReservationTime reservationTime2 = new ReservationTime(LocalTime.MIDNIGHT.toString());
         ReservationTime save2 = reservationTimeRepository.save(reservationTime2);
 
         List<ReservationTime> actual = reservationTimeRepository.findAll();

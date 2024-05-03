@@ -1,7 +1,6 @@
 package roomescape.infrastructure;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -127,7 +126,7 @@ public class JdbcReservationRepositoryImpl implements ReservationRepository {
             new ReservationDate(rs.getString("reservation_date")),
             new ReservationTime(
                 rs.getLong("time_id"),
-                LocalTime.parse(rs.getString("time_value"))
+                rs.getString("time_value")
             ),
             new Theme(
                 rs.getString("theme_name"),

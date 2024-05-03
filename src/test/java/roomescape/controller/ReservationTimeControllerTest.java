@@ -38,14 +38,15 @@ class ReservationTimeControllerTest {
     @Test
     void create() throws Exception {
         long id = 1L;
-        LocalTime time = LocalTime.now();
+        String time = LocalTime.now().toString();
         ReservationTime reservationTime = new ReservationTime(id, time);
 
-        when(reservationTimeService.save(new ReservationTimeAppRequest(time.toString())))
+        when(reservationTimeService.save(new ReservationTimeAppRequest(time)))
             .thenReturn(reservationTime);
 
-        String requestBody = objectMapper.writeValueAsString(new ReservationTimeWebRequest(id, time.toString()));
-        String responseBody = objectMapper.writeValueAsString(new ReservationTimeWebResponse(id, time));
+        String requestBody = objectMapper.writeValueAsString(new ReservationTimeWebRequest(id, time));
+        String responseBody = objectMapper.writeValueAsString(
+            new ReservationTimeWebResponse(id, reservationTime.getStartAt()));
 
         mvc.perform(post("/times")
                 .content(requestBody)
@@ -58,7 +59,7 @@ class ReservationTimeControllerTest {
     @Test
     void deleteBy() throws Exception {
         long id = 1L;
-        LocalTime time = LocalTime.now();
+        String time = LocalTime.now().toString();
         ReservationTime reservationTime = new ReservationTime(id, time);
 
         when(reservationTimeService.save(new ReservationTimeAppRequest(time.toString())))
@@ -94,7 +95,7 @@ class ReservationTimeControllerTest {
     @Test
     void delete_ReservationExists() throws Exception {
         long timeId = 1L;
-        LocalTime time = LocalTime.now();
+        String time = LocalTime.now().toString();
         ReservationTime reservationTime = new ReservationTime(timeId, time);
 
         when(reservationTimeService.delete(timeId))
