@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Reservation {
@@ -20,6 +21,11 @@ public class Reservation {
 
     public Reservation(PlayerName name, LocalDate date, ReservationTime time, Theme theme) {
         this(null, name, date, time, theme);
+    }
+
+    public boolean isBefore(LocalDateTime dateTime) {
+        LocalDateTime reservedDateTime = LocalDateTime.of(date, time.getStartAt());
+        return reservedDateTime.isBefore(dateTime);
     }
 
     public Long getId() {
