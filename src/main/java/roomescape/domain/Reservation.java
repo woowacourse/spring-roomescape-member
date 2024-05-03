@@ -1,11 +1,11 @@
 package roomescape.domain;
 
+import java.time.LocalDate;
 import roomescape.exception.IllegalDateException;
 import roomescape.exception.IllegalTimeException;
 
-import java.time.LocalDate;
-
 public class Reservation {
+
     private final Long id;
     private final String name;
     private final LocalDate date;
@@ -24,7 +24,7 @@ public class Reservation {
     }
 
     private void validateName(String name) {
-        if (name == null) {
+        if (name.isEmpty()) {
             throw new IllegalArgumentException("[ERROR] 유효하지 않은 예약자 이름입니다.");
         }
     }
@@ -64,7 +64,7 @@ public class Reservation {
         return theme;
     }
 
-    public Long getReservationTimeId() {
+    public Long getTimeId() {
         return time.getId();
     }
 

@@ -22,21 +22,21 @@ public class TimeRestController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TimeResponse>> getTimes() {
+    public ResponseEntity<List<TimeResponse>> getAll() {
         List<TimeResponse> responses = reservationTimeService.findAllTimes();
 
         return ResponseEntity.ok(responses);
     }
 
     @GetMapping("/member")
-    public ResponseEntity<List<TimeMemberResponse>> getTimes(@RequestParam LocalDate date, @RequestParam Long themeId) {
+    public ResponseEntity<List<TimeMemberResponse>> getAll(@RequestParam LocalDate date, @RequestParam Long themeId) {
         List<TimeMemberResponse> responses = reservationTimeService.findAllTimesWithBooking(date, themeId);
 
         return ResponseEntity.ok(responses);
     }
 
     @PostMapping
-    public ResponseEntity<TimeResponse> createTime(@RequestBody TimeRequest request) {
+    public ResponseEntity<TimeResponse> create(@RequestBody TimeRequest request) {
         TimeResponse response = reservationTimeService.saveTime(request);
 
         URI location = URI.create("/times/" + response.id());
@@ -44,7 +44,7 @@ public class TimeRestController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTime(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         reservationTimeService.deleteTimeById(id);
 
         return ResponseEntity.noContent().build();
