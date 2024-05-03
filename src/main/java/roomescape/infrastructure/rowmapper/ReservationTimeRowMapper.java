@@ -10,7 +10,7 @@ public class ReservationTimeRowMapper {
     private ReservationTimeRowMapper() {
     }
 
-    public static ReservationTime mapRow(ResultSet rs, int rowNum) throws SQLException {
+    public static ReservationTime mapRow(ResultSet rs) throws SQLException {
         long id = rs.getLong("id");
         String startAt = rs.getString("start_at");
         return new ReservationTime(id, LocalTime.parse(startAt));

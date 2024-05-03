@@ -10,7 +10,7 @@ public class ThemeRowMapper {
     private ThemeRowMapper() {
     }
 
-    public static Theme mapRow(ResultSet rs, int rowNum) throws SQLException {
+    public static Theme mapRow(ResultSet rs) throws SQLException {
         return new Theme(
                 rs.getLong("id"),
                 new ThemeName(rs.getString("name")),

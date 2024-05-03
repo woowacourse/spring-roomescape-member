@@ -47,6 +47,6 @@ public class JdbcReservationQueryRepository implements ReservationQueryRepositor
                 limit ?
                 """;
 
-        return jdbcTemplate.query(sql, ThemeRowMapper::mapRow, startDate, endDate, limit);
+        return jdbcTemplate.query(sql, (rs, rowNum) -> ThemeRowMapper.mapRow(rs), startDate, endDate, limit);
     }
 }

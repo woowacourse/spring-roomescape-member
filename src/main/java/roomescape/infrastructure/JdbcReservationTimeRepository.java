@@ -27,7 +27,8 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     public Optional<ReservationTime> findById(long id) {
         String sql = "select id, start_at from reservation_time where id = ?";
         try {
-            ReservationTime findReservationTime = jdbcTemplate.queryForObject(sql, ReservationTimeRowMapper::mapRow,
+            ReservationTime findReservationTime = jdbcTemplate.queryForObject(sql,
+                    (rs, rowNum) -> ReservationTimeRowMapper.mapRow(rs),
                     id);
             return Optional.of(findReservationTime);
         } catch (EmptyResultDataAccessException e) {

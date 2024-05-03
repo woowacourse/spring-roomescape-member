@@ -37,7 +37,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                 where r.id = ?
                 """;
         try {
-            Reservation reservation = jdbcTemplate.queryForObject(sql, ReservationRowMapper::joinedMapRow, id);
+            Reservation reservation = jdbcTemplate.queryForObject(sql,
+                    (rs, rowNum) -> ReservationRowMapper.joinedMapRow(rs), id);
             return Optional.of(reservation);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -52,7 +53,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 left join reservation_time as rt on time_id = rt.id
                 left join theme as t on theme_id = t.id
                 """;
-        return jdbcTemplate.query(sql, ReservationRowMapper::joinedMapRow);
+        return jdbcTemplate.query(sql, (rs, rowNum) -> ReservationRowMapper.joinedMapRow(rs));
     }
 
     @Override

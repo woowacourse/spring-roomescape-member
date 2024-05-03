@@ -38,14 +38,14 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public List<Theme> findAll() {
         String sql = "select id, name, description, thumbnail from theme";
-        return jdbcTemplate.query(sql, ThemeRowMapper::mapRow);
+        return jdbcTemplate.query(sql, (rs, rowNum) -> ThemeRowMapper.mapRow(rs));
     }
 
     @Override
     public Optional<Theme> findById(long id) {
         String sql = "select id, name, description, thumbnail from theme where id = ?";
         try {
-            Theme theme = jdbcTemplate.queryForObject(sql, ThemeRowMapper::mapRow, id);
+            Theme theme = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> ThemeRowMapper.mapRow(rs), id);
             return Optional.of(theme);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
