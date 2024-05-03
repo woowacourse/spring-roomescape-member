@@ -10,16 +10,17 @@ import roomescape.controller.reservation.dto.ReservationRequest;
 import roomescape.controller.reservation.dto.ReservationResponse;
 import roomescape.controller.theme.dto.ReservationThemeResponse;
 import roomescape.controller.time.dto.AvailabilityTimeResponse;
-import roomescape.service.exception.DuplicateReservation;
-import roomescape.service.exception.PreviousTimeException;
-import roomescape.service.exception.TimeNotFoundException;
 import roomescape.repository.H2ReservationRepository;
 import roomescape.repository.H2ReservationTimeRepository;
 import roomescape.repository.H2ThemeRepository;
+import roomescape.service.exception.DuplicateReservation;
+import roomescape.service.exception.PreviousTimeException;
+import roomescape.service.exception.TimeNotFoundException;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Sql(scripts = {"/drop.sql", "/schema.sql", "/data.sql"},
@@ -111,5 +112,20 @@ class ReservationServiceTest {
         //then
         assertThatThrownBy(() -> reservationService.addReservation(request))
                 .isInstanceOf(DuplicateReservation.class);
+    }
+
+    @Test
+    @DisplayName("같은 날짜 같은 시간이어도 테마가 다르다면 예약 가능하다.")
+    void duplicateDateTimeDifferentThemeReservation() {
+        //given
+        final ReservationRequest request1 = new ReservationRequest("레디", "2025-11-20", 1L, 1L);
+        final ReservationRequest request2 = new ReservationRequest("레디", "2025-11-20", 1L, 2L);
+
+        //when
+        reservationService.addReservation(request1);
+
+        //then
+        assertThatCode(() -> reservationService.addReservation(request2))
+                .doesNotThrowAnyException();
     }
 }
