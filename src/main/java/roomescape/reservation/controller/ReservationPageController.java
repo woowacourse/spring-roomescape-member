@@ -11,9 +11,9 @@ public class ReservationPageController {
         return "reservation";
     }
 
-    @GetMapping("/admin/reservation")
-    public String adminReservationPage() {
-        return "admin/reservation-new";
+    @GetMapping("/")
+    public String popularPage() {
+        return "index";
     }
 }
 

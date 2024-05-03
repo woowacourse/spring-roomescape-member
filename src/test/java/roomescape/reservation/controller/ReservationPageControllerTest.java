@@ -30,10 +30,10 @@ class ReservationPageControllerTest {
     }
 
     @Test
-    @DisplayName("/admin/reservation 를 요청하면 admin/reservation-new.html 를 반환한다.")
-    void requestAdminReservation() throws Exception {
-        mockMvc.perform(get("/admin/reservation"))
+    @DisplayName("/ 를 요청하면 index.html 를 반환한다.")
+    void requestWelcome() throws Exception {
+        mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("admin/reservation-new"));
+                .andExpect(view().name("index"));
     }
 }
