@@ -62,4 +62,12 @@ public class Reservation {
     public LocalDateTime getDateTime() {
         return LocalDateTime.of(date, time.getStartAt());
     }
+
+    public Long getTimeId() {
+        return time.getId();
+    }
+
+    public Long getThemeId() {
+        return theme.getId();
+    }
 }
