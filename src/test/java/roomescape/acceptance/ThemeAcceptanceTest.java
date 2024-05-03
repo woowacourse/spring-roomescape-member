@@ -1,18 +1,21 @@
 package roomescape.acceptance;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.DynamicTest.dynamicTest;
-
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.TestFactory;
+import org.springframework.test.context.jdbc.Sql;
+
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.DynamicTest;
-import org.junit.jupiter.api.TestFactory;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 public class ThemeAcceptanceTest extends BasicAcceptanceTest {
     @TestFactory
@@ -38,6 +41,15 @@ public class ThemeAcceptanceTest extends BasicAcceptanceTest {
                 dynamicTest("테마를 삭제한다 (10:00)", () -> deleteTheme(themeId.longValue(), 204)),
                 dynamicTest("테마를 추가한다 (10:00)", () -> postTheme(201)),
                 dynamicTest("모든 테마를 조회한다 (총 1개)", () -> getThemes(200, 1))
+        );
+    }
+
+    @TestFactory
+    @Sql("/test-data/theme-tops.sql")
+    @DisplayName("상위 10개 테마를 조회한다")
+    Stream<DynamicTest> themeGetTop10Test() {
+        return Stream.of(
+                DynamicTest.dynamicTest("상위 10개 테마를 조회한다", () -> getTopThemes(200, 10))
         );
     }
 
@@ -76,5 +88,17 @@ public class ThemeAcceptanceTest extends BasicAcceptanceTest {
                 .when().delete("/themes/" + themeId)
                 .then().log().all()
                 .statusCode(expectedHttpCode);
+    }
+
+    private void getTopThemes(int expectedHttpCode, int expectedthemesSize) {
+        Response response = RestAssured.given().log().all()
+                .when().get("/themes/tops")
+                .then().log().all()
+                .statusCode(expectedHttpCode)
+                .extract().response();
+
+        List<?> themeResponses = response.as(List.class);
+
+        assertThat(themeResponses).hasSize(expectedthemesSize);
     }
 }
