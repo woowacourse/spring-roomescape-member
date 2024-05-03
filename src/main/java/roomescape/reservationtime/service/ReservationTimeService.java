@@ -3,7 +3,6 @@ package roomescape.reservationtime.service;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
-import roomescape.reservation.model.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.dto.request.CreateReservationTimeRequest;
 import roomescape.reservationtime.dto.response.CreateReservationTimeResponse;
@@ -25,7 +24,8 @@ public class ReservationTimeService {
 
     public CreateReservationTimeResponse createReservationTime(
             final CreateReservationTimeRequest createReservationTimeRequest) {
-        ReservationTime reservationTime = reservationTimeRepository.save(createReservationTimeRequest.toReservationTime());
+        ReservationTime reservationTime = reservationTimeRepository.save(
+                createReservationTimeRequest.toReservationTime());
         return CreateReservationTimeResponse.of(reservationTime);
     }
 
@@ -36,19 +36,31 @@ public class ReservationTimeService {
     }
 
     public FindReservationTimeResponse getReservationTime(final Long id) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("해당하는 예약 시간이 존재하지 않습니다."));
+        ReservationTime reservationTime = findReservationTime(id);
         return FindReservationTimeResponse.of(reservationTime);
     }
 
-    public void deleteById(final Long id) {
-        reservationTimeRepository.findById(id)
+    private ReservationTime findReservationTime(final Long id) {
+        return reservationTimeRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("해당하는 예약 시간이 존재하지 않습니다."));
-        List<Reservation> reservations = reservationRepository.findAllByTimeId(id);
-        if (!reservations.isEmpty()) {
-            throw new IllegalStateException("시간을 사용 중인 예약이 존재합니다.");
-        }
+    }
+
+    public void deleteById(final Long id) {
+        validateExistReservationTime(id);
+        validateReservationTimeUsage(id);
 
         reservationTimeRepository.deleteById(id);
+    }
+
+    private void validateExistReservationTime(final Long id) {
+        if (!reservationTimeRepository.existsById(id)) {
+            throw new NoSuchElementException("해당하는 예약 시간이 존재하지 않습니다.");
+        }
+    }
+
+    private void validateReservationTimeUsage(final Long id) {
+        if (reservationRepository.existsByTimeId(id)) {
+            throw new IllegalStateException("시간을 사용 중인 예약이 존재합니다.");
+        }
     }
 }

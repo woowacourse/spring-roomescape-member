@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -105,9 +104,8 @@ class ReservationTimeServiceTest extends DummyDataFixture {
         long timeId = 7L;
 
         // stub
-        Mockito.when(reservationTimeRepository.findById(timeId))
-                .thenReturn(Optional.of(new ReservationTime(null, any(LocalTime.class))));
-        Mockito.when(reservationRepository.findAllByTimeId(timeId)).thenReturn(new ArrayList<>());
+        Mockito.when(reservationTimeRepository.existsById(timeId)).thenReturn(true);
+        Mockito.when(reservationRepository.existsByTimeId(timeId)).thenReturn(false);
 
         // when
         reservationTimeService.deleteById(timeId);
@@ -139,11 +137,11 @@ class ReservationTimeServiceTest extends DummyDataFixture {
         long timeId = 2L;
 
         // stub
-        Mockito.when(reservationTimeRepository.findById(timeId))
-                .thenReturn(Optional.of(getReservationTimeById(timeId)));
+        Mockito.when(reservationTimeRepository.existsById(timeId))
+                .thenReturn(true);
 
-        Mockito.when(reservationRepository.findAllByTimeId(timeId))
-                .thenReturn(getPreparedReservations());
+        Mockito.when(reservationRepository.existsByTimeId(timeId))
+                .thenReturn(true);
 
         // when & then
         assertThatThrownBy(() -> reservationTimeService.deleteById(timeId))

@@ -1,6 +1,8 @@
 package roomescape.reservationtime.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -9,10 +11,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import roomescape.reservationtime.model.ReservationTime;
 import roomescape.util.DummyDataFixture;
 
 @SpringBootTest
+@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 class JdbcReservationTimeRepositoryTest extends DummyDataFixture {
 
     @Autowired
@@ -37,6 +42,18 @@ class JdbcReservationTimeRepositoryTest extends DummyDataFixture {
     void findById() {
         ReservationTime reservationTime = super.getReservationTimeById(1L);
         assertThat(jdbcReservationTimeRepository.findById(1L)).isEqualTo(Optional.of(reservationTime));
+    }
+
+    @Test
+    @DisplayName("해당 예약 시간 id값과 일치하는 예약이 존재하는 경우 참을 반환한다.")
+    void existsById() {
+        assertTrue(jdbcReservationTimeRepository.existsById(1L));
+    }
+
+    @Test
+    @DisplayName("해당 예약 시간 id값과 일치하는 예약이 존재하지 않은 경우 거짓을 반환한다.")
+    void existsById_WhenNotExist() {
+        assertFalse(jdbcReservationTimeRepository.existsById(7L));
     }
 
     @Test

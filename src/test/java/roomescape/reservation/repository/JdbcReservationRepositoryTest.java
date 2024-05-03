@@ -108,6 +108,18 @@ class JdbcReservationRepositoryTest extends DummyDataFixture {
     }
 
     @Test
+    @DisplayName("해당 예약 시간 id값과 일치하는 예약이 존재하는 경우 참을 반환한다.")
+    void existsByTimeId() {
+        assertTrue(jdbcReservationRepository.existsByTimeId(1L));
+    }
+
+    @Test
+    @DisplayName("해당 예약 시간 id값과 일치하는 예약이 존재하지 않은 경우 거짓을 반환한다.")
+    void existsByTimeId_WhenNotExist() {
+        assertFalse(jdbcReservationRepository.existsByTimeId(7L));
+    }
+
+    @Test
     @DisplayName("날짜와 시간 컬럼의 값이 동일할 경우 참을 반환한다.")
     void existsByDateAndTime_WhenSameName() {
         assertTrue(jdbcReservationRepository.existsByDateAndTimeAndTheme(
