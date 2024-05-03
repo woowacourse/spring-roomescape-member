@@ -1,7 +1,6 @@
 package roomescape.domain;
 
 import roomescape.domain.exception.InvalidDateException;
-import roomescape.domain.exception.InvalidRequestException;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -9,12 +8,12 @@ import java.util.Objects;
 
 public class Reservation {
     private final Long id;
-    private final String name;
+    private final ReserveName name;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time, final Theme theme) {
+    public Reservation(final Long id, final ReserveName name, final LocalDate date, final ReservationTime time, final Theme theme) {
         this.id = id;
         this.name = name;
         this.date = date;
@@ -22,24 +21,28 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public static Reservation from(final Long id, final String name, final String date, final ReservationTime time, final Theme theme) {
-        validateNull(name);
-        validateNull(date);
-        validateFormat(date);
-        return new Reservation(id, name, LocalDate.parse(date), time, theme);
+    public Reservation(final Long id, final String name, final String date, final ReservationTime time, final Theme theme) {
+        validateDateBlank(date);
+        validateDateFormat(date);
+
+        this.id = id;
+        this.name = new ReserveName(name);
+        this.date = LocalDate.parse(date);
+        this.time = time;
+        this.theme = theme;
     }
 
-    private static void validateFormat(final String date) {
+    private static void validateDateFormat(final String date) {
         try {
             LocalDate.parse(date);
         } catch (DateTimeParseException exception) {
-            throw new InvalidDateException("유효하지 않은 날짜입니다.");
+            throw new InvalidDateException("날짜 형식이 올바르지 않습니다.");
         }
     }
 
-    private static void validateNull(final String value) {
-        if (value == null || value.isBlank()) {
-            throw new InvalidRequestException("공백일 수 없습니다.");
+    private static void validateDateBlank(final String date) {
+        if (date == null || date.isBlank()) {
+            throw new InvalidDateException("날짜는 공백일 수 없습니다.");
         }
     }
 
@@ -60,7 +63,7 @@ public class Reservation {
     }
 
     public String getName() {
-        return name;
+        return name.value();
     }
 
     public LocalDate getDate() {
@@ -98,7 +101,7 @@ public class Reservation {
     public String toString() {
         return "Reservation{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
+                ", name=" + name +
                 ", date=" + date +
                 ", time=" + time +
                 ", theme=" + theme +

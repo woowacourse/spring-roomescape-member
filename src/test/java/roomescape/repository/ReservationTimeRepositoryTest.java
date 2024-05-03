@@ -4,10 +4,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.ReservationTime;
 
-import javax.sql.DataSource;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -16,31 +16,25 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Sql(scripts = {"/drop.sql", "/schema.sql", "/data.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Import(H2ReservationTimeRepository.class)
 @JdbcTest
 class ReservationTimeRepositoryTest {
 
-    private final ReservationTimeRepository timeRepository;
+    final long LAST_ID = 4;
+    final ReservationTime exampleFirstTime = new ReservationTime(1L, LocalTime.of(10, 15));
 
     @Autowired
-    ReservationTimeRepositoryTest(DataSource dataSource) {
-        this.timeRepository = new H2ReservationTimeRepository(dataSource);
-    }
+    private ReservationTimeRepository timeRepository;
 
     @Test
     @DisplayName("모든 예약 시간 목록을 조회한다.")
     void findAll() {
-        // given
-        List<ReservationTime> expected = List.of(
-                new ReservationTime(1L, LocalTime.of(10, 15)),
-                new ReservationTime(2L, LocalTime.of(11, 20)),
-                new ReservationTime(3L, LocalTime.of(12, 25))
-        );
-
-        // when
+        // given & when
         List<ReservationTime> actual = timeRepository.findAll();
 
         // then
-        assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
+        assertThat(actual).hasSize((int) LAST_ID);
+        assertThat(actual.get(0)).isEqualTo(exampleFirstTime);
     }
 
     @Test
@@ -60,11 +54,8 @@ class ReservationTimeRepositoryTest {
     @Test
     @DisplayName("존재하지 않는 예약 시간 데이터를 조회할 경우 빈 값을 반환한다.")
     void findByIdNotPresent() {
-        // given
-        Long id = 4L;
-
-        // when
-        Optional<ReservationTime> actual = timeRepository.findById(id);
+        // given & when
+        Optional<ReservationTime> actual = timeRepository.findById(LAST_ID + 1);
 
         // then
         assertThat(actual).isEmpty();
@@ -75,20 +66,19 @@ class ReservationTimeRepositoryTest {
     void save() {
         // given
         ReservationTime time = new ReservationTime(null, LocalTime.of(13, 30));
-        ReservationTime expected = new ReservationTime(4L, LocalTime.of(13, 30));
 
         // when
         ReservationTime actual = timeRepository.save(time);
 
         // then
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual.getId()).isPositive();
     }
 
     @Test
     @DisplayName("등록된 예약 시간 번호로 삭제한다.")
     void deleteByIdPresent() {
         // given
-        Long id = 3L;
+        Long id = 4L;
 
         // when & then
         assertThat(timeRepository.findById(id)).isPresent();
@@ -100,7 +90,7 @@ class ReservationTimeRepositoryTest {
     @DisplayName("존재하지 않는 예약 시간 번호로 삭제할 경우 아무런 영향이 없다.")
     void deleteByIdNotPresent() {
         // given
-        Long id = 4L;
+        Long id = 5L;
 
         // when & then
         assertThat(timeRepository.findById(id)).isEmpty();

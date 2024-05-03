@@ -1,6 +1,5 @@
 package roomescape.domain;
 
-import roomescape.domain.exception.InvalidRequestException;
 import roomescape.domain.exception.InvalidTimeException;
 
 import java.time.DateTimeException;
@@ -11,33 +10,35 @@ public class ReservationTime {
     private final Long id;
     private final LocalTime startAt;
 
+    public ReservationTime(final Long id) {
+        this.id = id;
+        this.startAt = null;
+    }
+
     public ReservationTime(final Long id, final LocalTime startAt) {
         this.id = id;
         this.startAt = startAt;
     }
 
     public ReservationTime(final Long id, final String startAt) {
+        validateTimeBlank(startAt);
+        validateTimeFormat(startAt);
+
         this.id = id;
         this.startAt = LocalTime.parse(startAt);
     }
 
-    public static ReservationTime from(final String startAt) {
-        validateNull(startAt);
-        validateFormat(startAt);
-        return new ReservationTime(null, LocalTime.parse(startAt));
-    }
-
-    private static void validateNull(final String startAt) {
+    private static void validateTimeBlank(final String startAt) {
         if (startAt == null || startAt.isBlank()) {
-            throw new InvalidRequestException("공백일 수 없습니다.");
+            throw new InvalidTimeException("시간은 공백일 수 없습니다.");
         }
     }
 
-    private static void validateFormat(final String startAt) {
+    private static void validateTimeFormat(final String startAt) {
         try {
             LocalTime.parse(startAt);
         } catch (DateTimeException e) {
-            throw new InvalidTimeException("유효하지 않은 시간 입니다.");
+            throw new InvalidTimeException("시간 형식이 올바르지 않습니다.");
         }
     }
 

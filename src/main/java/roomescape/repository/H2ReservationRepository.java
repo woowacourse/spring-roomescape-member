@@ -13,6 +13,7 @@ import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -30,59 +31,60 @@ public class H2ReservationRepository implements ReservationRepository {
                 .usingGeneratedKeyColumns("ID");
     }
 
-    private Reservation mapRowReservation(final ResultSet rs, final int rowNum) throws SQLException {
-        return Reservation.from(
+    private Reservation mapRowLazy(final ResultSet rs, final int rowNum) throws SQLException {
+        return new Reservation(
                 rs.getLong("ID"),
                 rs.getString("NAME"),
                 rs.getString("DATE"),
-                new ReservationTime(rs.getLong("TIME_ID"), "00:00"),
-                new Theme(rs.getLong("THEME_ID"), null, null, null)
+                new ReservationTime(rs.getLong("TIME_ID"), LocalTime.MIN),
+                new Theme(rs.getLong("THEME_ID"), "", "", "")
+        );
+    }
+
+    private Reservation mapRowFull(final ResultSet rs, final int rowNum) throws SQLException {
+        return new Reservation(
+                rs.getLong("RESERVATION.ID"),
+                rs.getString("RESERVATION.NAME"),
+                rs.getString("RESERVATION.DATE"),
+                new ReservationTime(
+                        rs.getLong("RESERVATION_TIME.ID"),
+                        rs.getString("RESERVATION_TIME.START_AT")),
+                new Theme(
+                        rs.getLong("THEME.ID"),
+                        rs.getString("THEME.NAME"),
+                        rs.getString("THEME.DESCRIPTION"),
+                        rs.getString("THEME.THUMBNAIL"))
         );
     }
 
     @Override
     public List<Reservation> findAll() {
         final String sql = """
-                SELECT R.ID, R.NAME, R.DATE, R.TIME_ID, R.THEME_ID, RT.START_AT, T.NAME FROM RESERVATION AS R
+                SELECT * FROM RESERVATION AS R
                 LEFT JOIN RESERVATION_TIME RT ON RT.ID = R.TIME_ID
                 LEFT JOIN THEME T ON T.ID = R.THEME_ID
                 """;
 
-        return jdbcTemplate.query(sql, ((rs, rowNum) -> Reservation.from(
-                rs.getLong("ID"),
-                rs.getString("NAME"),
-                rs.getString("DATE"),
-                new ReservationTime(
-                        rs.getLong("TIME_ID"),
-                        rs.getString("START_AT")),
-                new Theme(rs.getLong("THEME_ID"), null, null, null))));
+        return jdbcTemplate.query(sql, this::mapRowFull);
     }
 
     @Override
     public List<Reservation> findAllByDateAndThemeId(final LocalDate date, final Long themeId) {
         final String sql = """
-                SELECT R.ID, R.NAME, R.DATE, R.TIME_ID, R.THEME_ID, RT.START_AT, T.NAME FROM RESERVATION AS R
+                SELECT * FROM RESERVATION AS R
                 JOIN RESERVATION_TIME RT ON RT.ID = R.TIME_ID
                 JOIN THEME T ON T.ID = R.THEME_ID
                 WHERE R.DATE = ? AND T.ID = ?
                 """;
 
-        return jdbcTemplate.query(sql, ((rs, rowNum) -> Reservation.from(
-                        rs.getLong("ID"),
-                        rs.getString("NAME"),
-                        rs.getString("DATE"),
-                        new ReservationTime(
-                                rs.getLong("TIME_ID"),
-                                rs.getString("START_AT")),
-                        new Theme(rs.getLong("THEME_ID"), null, null, null))),
-                date, themeId);
+        return jdbcTemplate.query(sql, this::mapRowFull, date, themeId);
     }
 
     @Override
     public Optional<Reservation> findById(final Long id) {
         final String sql = "SELECT * FROM reservation WHERE id = ?";
 
-        return jdbcTemplate.query(sql, this::mapRowReservation, id)
+        return jdbcTemplate.query(sql, this::mapRowLazy, id)
                 .stream()
                 .findAny();
     }
@@ -91,7 +93,7 @@ public class H2ReservationRepository implements ReservationRepository {
     public boolean existsByTimeId(final Long timeId) {
         final String sql = "SELECT * FROM RESERVATION WHERE TIME_ID = ? LIMIT 1";
 
-        return !jdbcTemplate.query(sql, this::mapRowReservation, timeId)
+        return !jdbcTemplate.query(sql, this::mapRowLazy, timeId)
                 .isEmpty();
     }
 
@@ -99,7 +101,7 @@ public class H2ReservationRepository implements ReservationRepository {
     public boolean existsByThemeId(final Long themeId) {
         final String sql = "SELECT * FROM RESERVATION WHERE THEME_ID = ? LIMIT 1";
 
-        return !jdbcTemplate.query(sql, this::mapRowReservation, themeId)
+        return !jdbcTemplate.query(sql, this::mapRowLazy, themeId)
                 .isEmpty();
     }
 
@@ -119,7 +121,7 @@ public class H2ReservationRepository implements ReservationRepository {
     public boolean existsByDateAndTimeId(final Long timeId, final LocalDate date) {
         final String sql = "SELECT * FROM RESERVATION WHERE TIME_ID = ? AND DATE = ? LIMIT 1";
 
-        return !jdbcTemplate.query(sql, this::mapRowReservation, timeId, date).isEmpty();
+        return !jdbcTemplate.query(sql, this::mapRowLazy, timeId, date).isEmpty();
     }
 
     @Override

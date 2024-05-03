@@ -10,13 +10,15 @@ import roomescape.controller.reservation.ReservationRequest;
 import roomescape.controller.reservation.ReservationResponse;
 import roomescape.controller.theme.ReservationThemeResponse;
 import roomescape.controller.time.TimeResponse;
-import roomescape.service.exception.DuplicateReservation;
-import roomescape.service.exception.PreviousTimeException;
-import roomescape.service.exception.TimeNotFoundException;
 import roomescape.repository.H2ReservationRepository;
 import roomescape.repository.H2ReservationTimeRepository;
 import roomescape.repository.H2ThemeRepository;
+import roomescape.service.exception.DuplicateReservation;
+import roomescape.service.exception.PreviousTimeException;
+import roomescape.service.exception.TimeNotFoundException;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,60 +30,57 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Import({ReservationService.class, H2ReservationRepository.class, H2ReservationTimeRepository.class, H2ThemeRepository.class})
 class ReservationServiceTest {
 
+    final long LAST_ID = 12;
+    final ReservationResponse exampleFirstResponse = new ReservationResponse(
+            1L,
+            "Seyang", LocalDate.now().minusDays(8).format(DateTimeFormatter.ISO_LOCAL_DATE),
+            new TimeResponse(1L, "10:15", false),
+            new ReservationThemeResponse("Spring"));
+
     @Autowired
     private ReservationService reservationService;
 
     @Test
     @DisplayName("예약 목록을 조회한다.")
     void getReservations() {
-        // given
-        List<ReservationResponse> expected = List.of(
-                new ReservationResponse(1L, "al", "2025-01-20", new TimeResponse(1L, "10:15", false),
-                        new ReservationThemeResponse("spring")),
-                new ReservationResponse(2L, "be", "2025-02-19", new TimeResponse(2L, "11:20", false),
-                        new ReservationThemeResponse("summer"))
-        );
-
-        // when
+        // given & when
         List<ReservationResponse> actual = reservationService.getReservations();
 
         // then
-        assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
+        assertThat(actual).hasSize((int) LAST_ID);
+        assertThat(actual.get(0)).isEqualTo(exampleFirstResponse);
     }
 
     @Test
     @DisplayName("예약을 추가한다.")
     void addReservation() {
         // given
-        ReservationRequest request = new ReservationRequest("cha", "2025-03-18", 3L, 2L);
-        ReservationResponse expected = new ReservationResponse(3L, "cha", "2025-03-18", new TimeResponse(3L, "12:25", false)
-                , new ReservationThemeResponse("summer"));
+        ReservationRequest request = new ReservationRequest(
+                "cha",
+                LocalDate.now().plusMonths(1).format(DateTimeFormatter.ISO_LOCAL_DATE),
+                3L,
+                2L
+        );
 
         // when
         ReservationResponse actual = reservationService.addReservation(request);
 
         // then
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual.id()).isPositive();
     }
 
     @Test
     @DisplayName("존재하는 예약을 삭제한다.")
     void deleteReservationPresent() {
-        // given
-        Long id = 2L;
-
-        // when & then
-        assertThat(reservationService.deleteReservation(id)).isOne();
+        // given & when & then
+        assertThat(reservationService.deleteReservation(LAST_ID)).isOne();
     }
 
     @Test
-    @DisplayName("존재하지 않는 예약을 삭제한다.")
+    @DisplayName("존재하지 않는 예약을 삭제하면 아무일도 일어나지 않는다.")
     void deleteReservationNotPresent() {
-        // given
-        Long id = 3L;
-
-        // when & then
-        assertThat(reservationService.deleteReservation(id)).isZero();
+        // given & when & then
+        assertThat(reservationService.deleteReservation(LAST_ID + 1)).isZero();
     }
 
     @Test

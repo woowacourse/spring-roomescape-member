@@ -39,7 +39,7 @@ class MissionStepTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(4));
+                .body("size()", is(5));
 
         RestAssured.given().log().all()
                 .when().delete("/times/4")
@@ -63,7 +63,7 @@ class MissionStepTest {
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(3));
+                .body("size()", is(5));
 
         RestAssured.given().log().all()
                 .when().delete("/themes/3")
@@ -88,15 +88,15 @@ class MissionStepTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(3));
+                .body("size()", is(13));
 
         RestAssured.given().log().all()
-                .when().delete("/reservations/3")
+                .when().delete("/reservations/13")
                 .then().log().all()
                 .statusCode(204);
 
         RestAssured.given().log().all()
-                .when().delete("/reservations/3")
+                .when().delete("/reservations/13")
                 .then().log().all()
                 .statusCode(404);
     }
