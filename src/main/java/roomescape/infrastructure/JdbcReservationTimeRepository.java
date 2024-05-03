@@ -27,6 +27,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 .usingGeneratedKeyColumns("id");
     }
 
+    @Override
     public Optional<ReservationTime> findById(long id) {
         String sql = "select id, start_at from reservation_time where id = ?";
         try {
@@ -44,6 +45,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         return findById(id).orElseThrow(() -> new NoSuchElementException("존재하지 않는 예약 시간 입니다."));
     }
 
+    @Override
     public ReservationTime create(ReservationTime reservationTime) {
         LocalTime startAt = reservationTime.getStartAt();
         MapSqlParameterSource params = new MapSqlParameterSource()
@@ -52,6 +54,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         return new ReservationTime(id, startAt);
     }
 
+    @Override
     public List<ReservationTime> findAll() {
         String sql = "select id, start_at from reservation_time";
         return jdbcTemplate.query(sql, (resultSet, rowNum) -> new ReservationTime(
@@ -60,11 +63,13 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         ));
     }
 
+    @Override
     public void deleteById(long id) {
         String sql = "delete from reservation_time where id = ?";
         jdbcTemplate.update(sql, id);
     }
 
+    @Override
     public boolean existsByStartAt(LocalTime startAt) {
         String sql = "select exists(select 1 from reservation_time where start_at = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, startAt);
