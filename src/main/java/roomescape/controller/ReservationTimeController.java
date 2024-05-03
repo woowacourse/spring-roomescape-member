@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -35,13 +36,17 @@ public class ReservationTimeController {
     public ResponseEntity<List<ReservationTimeWithBookStatusResponse>> findReservationTimesWithBookStatus(
             @RequestParam("date") String date,
             @RequestParam("themeId") Long themeId) {
-        ReservationTimeWithBookStatusRequest timeRequest = new ReservationTimeWithBookStatusRequest(date, themeId);
-        return ResponseEntity.ok(reservationTimeService.findReservationTimesWithBookStatus(timeRequest));
+        ReservationTimeWithBookStatusRequest timeRequest = new ReservationTimeWithBookStatusRequest(
+                date, themeId);
+        return ResponseEntity.ok(
+                reservationTimeService.findReservationTimesWithBookStatus(timeRequest));
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTimeResponse> addTime(@RequestBody ReservationTimeRequest reservationTimeRequest) {
-        ReservationTimeResponse reservationTimeResponse = reservationTimeService.save(reservationTimeRequest);
+    public ResponseEntity<ReservationTimeResponse> addTime(
+            @Valid @RequestBody ReservationTimeRequest reservationTimeRequest) {
+        ReservationTimeResponse reservationTimeResponse = reservationTimeService.save(
+                reservationTimeRequest);
         return ResponseEntity.created(URI.create("/admin/time"))
                 .body(reservationTimeResponse);
     }
