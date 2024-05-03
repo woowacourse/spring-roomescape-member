@@ -17,6 +17,16 @@ import roomescape.domain.RoomTheme;
 public class ReservationDao {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
+    private final RowMapper<Reservation> rowMapper = (rs, rowNum) -> new Reservation(
+            rs.getLong("reservation_id"),
+            new Name(rs.getString("reservation_name")),
+            rs.getDate("reservation_date").toLocalDate(),
+            new ReservationTime(rs.getLong("time_id"),
+                    rs.getTime("time_value").toLocalTime()),
+            new RoomTheme(rs.getLong("theme_id"),
+                    rs.getString("theme_name"),
+                    rs.getString("theme_description"),
+                    rs.getString("theme_thumbnail")));
 
     public ReservationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -26,7 +36,7 @@ public class ReservationDao {
     }
 
     public List<Reservation> findAll() {
-        String selectSQL = """
+        String sql = """
                 SELECT 
                     r.id AS reservation_id, 
                     r.name AS reservation_name, 
@@ -43,24 +53,7 @@ public class ReservationDao {
                 INNER JOIN theme AS th
                 ON r.theme_id = th.id
                 """;
-
-        RowMapper<Reservation> rowMapper = (rs, rowNum) -> new Reservation(
-                rs.getLong("reservation_id"),
-                new Name(rs.getString("reservation_name")),
-                rs.getDate("reservation_date").toLocalDate(),
-                new ReservationTime(
-                        rs.getLong("time_id"),
-                        rs.getTime("time_value").toLocalTime()
-                ),
-                new RoomTheme(
-                        rs.getLong("theme_id"),
-                        rs.getString("theme_name"),
-                        rs.getString("theme_description"),
-                        rs.getString("theme_thumbnail")
-                )
-        );
-
-        return jdbcTemplate.query(selectSQL, rowMapper);
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
     public boolean existsByDateTime(LocalDate date, Long timeId) {

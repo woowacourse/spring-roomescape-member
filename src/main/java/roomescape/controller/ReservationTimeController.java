@@ -33,7 +33,7 @@ public class ReservationTimeController {
         return ResponseEntity.ok(reservationTimeService.findAll());
     }
 
-    @GetMapping("/filter")
+    @GetMapping("/search")
     public ResponseEntity<List<ReservationTimeWithBookStatusResponse>> findReservationTimesWithBookStatus(
             @RequestParam("date") String date,
             @RequestParam("themeId") Long themeId) {

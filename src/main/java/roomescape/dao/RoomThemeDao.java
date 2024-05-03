@@ -2,6 +2,7 @@ package roomescape.dao;
 
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -12,6 +13,12 @@ import roomescape.domain.RoomTheme;
 public class RoomThemeDao {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
+    private final RowMapper<RoomTheme> rowMapper = (rs, rowNum) -> new RoomTheme(
+            rs.getLong("id"),
+            rs.getString("name"),
+            rs.getString("description"),
+            rs.getString("thumbnail")
+    );
 
     public RoomThemeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -21,13 +28,7 @@ public class RoomThemeDao {
     }
 
     public List<RoomTheme> findAll() {
-        return jdbcTemplate.query("SELECT * FROM theme",
-                (rs, rowNum) -> new RoomTheme(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("description"),
-                        rs.getString("thumbnail")
-                ));
+        return jdbcTemplate.query("SELECT * FROM theme", rowMapper);
     }
 
     public List<RoomTheme> findAllRanking() {
@@ -38,22 +39,12 @@ public class RoomThemeDao {
                 group by t.id
                 order by count(t.id) desc
                 limit 10
-                """, (rs, rowNum) -> new RoomTheme(
-                rs.getLong("id"),
-                rs.getString("name"),
-                rs.getString("description"),
-                rs.getString("thumbnail")
-        ));
+                """, rowMapper);
     }
 
     public RoomTheme findById(Long id) {
         return jdbcTemplate.queryForObject("SELECT * FROM theme WHERE id = ?",
-                (rs, rowNum) -> new RoomTheme(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("description"),
-                        rs.getString("thumbnail")
-                ), id);
+                rowMapper, id);
     }
 
     public RoomTheme save(RoomTheme roomTheme) {
