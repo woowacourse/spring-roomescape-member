@@ -1,4 +1,4 @@
-package roomescape.controller.api;
+package roomescape.web.api;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.request.ThemeRequest;
-import roomescape.controller.response.ThemeResponse;
+import roomescape.web.request.ThemeRequest;
+import roomescape.web.response.ThemeResponse;
 import roomescape.service.ThemeService;
 
 import java.net.URI;

@@ -1,4 +1,4 @@
-package roomescape.controller.api;
+package roomescape.web.api;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.request.ReservationTimeRequest;
-import roomescape.controller.response.AvailableReservationTimeResponse;
-import roomescape.controller.response.ReservationTimeResponse;
+import roomescape.web.request.ReservationTimeRequest;
+import roomescape.web.response.AvailableReservationTimeResponse;
+import roomescape.web.response.ReservationTimeResponse;
 import roomescape.service.ReservationTimeService;
 
 import java.time.LocalDate;
