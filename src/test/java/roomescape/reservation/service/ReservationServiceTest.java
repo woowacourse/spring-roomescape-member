@@ -200,8 +200,7 @@ class ReservationServiceTest extends DummyDataFixture {
         long reservationId = 1L;
 
         // stub
-        Mockito.when(reservationRepository.findById(reservationId))
-                .thenReturn(Optional.of(super.getReservationById(reservationId)));
+        Mockito.when(reservationRepository.existsById(reservationId)).thenReturn(true);
 
         // when
         reservationService.deleteReservation(reservationId);
