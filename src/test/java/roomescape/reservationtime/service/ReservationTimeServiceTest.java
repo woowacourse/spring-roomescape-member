@@ -57,12 +57,12 @@ class ReservationTimeServiceTest extends DummyDataFixture {
 
         // when & then
         assertThat(reservationTimeService.getReservationTimes()).containsExactly(
-                new FindReservationTimeResponse(1L, "10:00"),
-                new FindReservationTimeResponse(2L, "12:00"),
-                new FindReservationTimeResponse(3L, "14:00"),
-                new FindReservationTimeResponse(4L, "16:00"),
-                new FindReservationTimeResponse(5L, "18:00"),
-                new FindReservationTimeResponse(6L, "20:00")
+                new FindReservationTimeResponse(1L, LocalTime.parse("10:00")),
+                new FindReservationTimeResponse(2L, LocalTime.parse("12:00")),
+                new FindReservationTimeResponse(3L, LocalTime.parse("14:00")),
+                new FindReservationTimeResponse(4L, LocalTime.parse("16:00")),
+                new FindReservationTimeResponse(5L, LocalTime.parse("18:00")),
+                new FindReservationTimeResponse(6L, LocalTime.parse("20:00"))
         );
     }
 
@@ -78,7 +78,7 @@ class ReservationTimeServiceTest extends DummyDataFixture {
 
         // when & then
         assertThat(reservationTimeService.getReservationTime(timeId)).isEqualTo(
-                new FindReservationTimeResponse(timeId, "10:00"));
+                new FindReservationTimeResponse(timeId, LocalTime.parse("10:00")));
     }
 
     @Test

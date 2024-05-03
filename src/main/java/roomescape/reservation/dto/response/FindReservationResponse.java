@@ -1,12 +1,12 @@
 package roomescape.reservation.dto.response;
 
+import java.time.LocalDate;
 import roomescape.reservation.model.Reservation;
-import roomescape.util.CustomDateTimeFormatter;
 
 public record FindReservationResponse(
         Long id,
         String name,
-        String date,
+        LocalDate date,
         FindTimeOfReservationsResponse time,
         FindThemeOfReservationResponse theme) {
 
@@ -14,7 +14,7 @@ public record FindReservationResponse(
         return new FindReservationResponse(
                 reservation.getId(),
                 reservation.getName(),
-                CustomDateTimeFormatter.getFormattedDate(reservation.getDate()),
+                reservation.getDate(),
                 FindTimeOfReservationsResponse.of(reservation.getReservationTime()),
                 FindThemeOfReservationResponse.of(reservation.getTheme())
         );

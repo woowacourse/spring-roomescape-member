@@ -1,12 +1,13 @@
 package roomescape.reservationtime.dto.response;
 
+import java.time.LocalTime;
 import roomescape.reservationtime.model.ReservationTime;
 import roomescape.util.CustomDateTimeFormatter;
 
-public record CreateReservationTimeResponse(Long id, String startAt) {
+public record CreateReservationTimeResponse(Long id, LocalTime startAt) {
     public static CreateReservationTimeResponse of(final ReservationTime reservationTime) {
         return new CreateReservationTimeResponse(
                 reservationTime.getId(),
-                CustomDateTimeFormatter.getFormattedTime(reservationTime.getTime()));
+                reservationTime.getTime());
     }
 }
