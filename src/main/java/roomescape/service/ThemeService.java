@@ -19,6 +19,7 @@ public class ThemeService {
     public static final int START_DATE_DIFF = 8;
     public static final int END_DATE_DIFF = 1;
     public static final int TOP_LIMIT_COUNT = 10;
+
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
 
