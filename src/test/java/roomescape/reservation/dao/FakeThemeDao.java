@@ -34,11 +34,16 @@ public class FakeThemeDao implements ThemeRepository {
 
     @Override
     public boolean deleteById(final long themeId) {
-        if (!themes.containsKey(themeId)) {
+        if (!themes.containsKey(themeId) && containsThemeId(themeId)) {
             return false;
         }
         themes.remove(themeId);
         return true;
+    }
+
+    private boolean containsThemeId(long themeId) {
+        return reservationRepository.findAll().stream()
+                .anyMatch(reservation -> reservation.getTheme().getId() == themeId);
     }
 
     @Override
