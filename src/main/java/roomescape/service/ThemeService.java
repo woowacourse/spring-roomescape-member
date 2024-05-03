@@ -38,7 +38,7 @@ public class ThemeService {
     public void deleteTheme(final Long id) {
         final boolean isReservationExist = reservationRepository.existByThemeId(id);
         if (isReservationExist) {
-            throw new IllegalArgumentException("예약이 존재하는 테마입니다.");
+            throw new IllegalArgumentException("예약이 존재하는 테마는 삭제할 수 없습니다.");
         }
         themeRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));

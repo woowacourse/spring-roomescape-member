@@ -58,7 +58,7 @@ public class ReservationService {
     private void validateDateTime(final Reservation reservation) {
         final boolean isBeforeNow = reservation.isBeforeNow();
         if (isBeforeNow) {
-            throw new IllegalArgumentException("지나간 시간입니다.");
+            throw new IllegalArgumentException("지나간 시간에 대한 예약은 생성할 수 없습니다.");
         }
     }
 
@@ -67,7 +67,7 @@ public class ReservationService {
                 reservation.getTimeId(), reservation.getThemeId());
 
         if (isReservationExist) {
-            throw new IllegalArgumentException("이미 존재하는 예약입니다.");
+            throw new IllegalArgumentException("동일한 날짜, 시간, 테마에 대한 예약이 이미 존재합니다.");
         }
     }
 

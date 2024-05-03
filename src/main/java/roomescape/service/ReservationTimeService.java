@@ -9,7 +9,6 @@ import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
-import roomescape.repository.ThemeRepository;
 
 import java.util.List;
 
@@ -18,12 +17,10 @@ public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;
-    private final ThemeRepository themeRepository;
 
-    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository, ReservationRepository reservationRepository, ThemeRepository themeRepository) {
+    public ReservationTimeService(final ReservationTimeRepository reservationTimeRepository, final ReservationRepository reservationRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
         this.reservationRepository = reservationRepository;
-        this.themeRepository = themeRepository;
     }
 
     public List<ReservationTimeResponse> getTimes() {
@@ -46,9 +43,8 @@ public class ReservationTimeService {
         final boolean isTimeExist = reservationTimeRepository.existByStartAt(reservationTime.getStartAt());
 
         if (isTimeExist) {
-            throw new IllegalArgumentException("중복된 시간입니다.");
+            throw new IllegalArgumentException("이미 저장된 예약 시간입니다.");
         }
-
     }
 
     public void deleteTime(final Long id) {
@@ -58,11 +54,11 @@ public class ReservationTimeService {
 
     private void validateDeleteTime(final Long id) {
         reservationTimeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
 
         final boolean existByTimeId = reservationRepository.existByTimeId(id);
         if (existByTimeId) {
-            throw new IllegalArgumentException("예약이 존재하는 시간입니다.");
+            throw new IllegalArgumentException("예약이 존재하는 시간은 삭제할 수 없습니다.");
         }
     }
 
