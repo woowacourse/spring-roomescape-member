@@ -16,8 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 import static roomescape.TestFixture.MIA_RESERVATION_TIME;
 
@@ -38,10 +37,10 @@ class ReservationTimeAcceptanceTest extends ApiAcceptanceTest {
         ReservationTimeResponse reservationTimeResponse = response.as(ReservationTimeResponse.class);
 
         // then
-        assertAll(() -> {
-            checkHttpStatusCreated(response);
-            assertThat(reservationTimeResponse.id()).isNotNull();
-            assertThat(reservationTimeResponse.startAt()).isEqualTo(MIA_RESERVATION_TIME);
+        assertSoftly(softly -> {
+            checkHttpStatusCreated(softly, response);
+            softly.assertThat(reservationTimeResponse.id()).isNotNull();
+            softly.assertThat(reservationTimeResponse.startAt()).isEqualTo(MIA_RESERVATION_TIME);
         });
     }
 
@@ -60,9 +59,9 @@ class ReservationTimeAcceptanceTest extends ApiAcceptanceTest {
         ErrorResponse errorResponse = response.as(ErrorResponse.class);
 
         // then
-        assertAll(() -> {
-            checkHttpStatusBadRequest(response);
-            assertThat(errorResponse.message()).isNotNull();
+        assertSoftly(softly -> {
+            checkHttpStatusBadRequest(softly, response);
+            softly.assertThat(errorResponse.message()).isNotNull();
         });
     }
 
@@ -75,13 +74,13 @@ class ReservationTimeAcceptanceTest extends ApiAcceptanceTest {
                 .then().log().all()
                 .extract();
         List<ReservationTimeResponse> reservationTimeResponse = Arrays.stream(
-                response.as(ReservationTimeResponse[].class))
+                        response.as(ReservationTimeResponse[].class))
                 .toList();
 
         // then
-        assertAll(() -> {
-            checkHttpStatusOk(response);
-            assertThat(reservationTimeResponse).hasSize(0);
+        assertSoftly(softly -> {
+            checkHttpStatusOk(softly, response);
+            softly.assertThat(reservationTimeResponse).hasSize(0);
         });
     }
 
@@ -107,9 +106,9 @@ class ReservationTimeAcceptanceTest extends ApiAcceptanceTest {
         ErrorResponse errorResponse = response.as(ErrorResponse.class);
 
         // then
-        assertAll(() -> {
-            checkHttpStatusNotFound(response);
-            assertThat(errorResponse.message()).isNotNull();
+        assertSoftly(softly -> {
+            checkHttpStatusNotFound(softly, response);
+            softly.assertThat(errorResponse.message()).isNotNull();
         });
     }
 
@@ -123,9 +122,9 @@ class ReservationTimeAcceptanceTest extends ApiAcceptanceTest {
                 .toList();
 
         // then
-        assertAll(() -> {
-            checkHttpStatusOk(response);
-            assertThat(reservationTimeResponses).hasSize(1)
+        assertSoftly(softly -> {
+            checkHttpStatusOk(softly, response);
+            softly.assertThat(reservationTimeResponses).hasSize(1)
                     .extracting(ReservationTimeResponse::id)
                     .isNotNull();
         });

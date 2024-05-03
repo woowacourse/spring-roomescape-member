@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.assertj.core.api.StandardSoftAssertionsProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -59,23 +60,31 @@ abstract class ApiAcceptanceTest {
                 .id();
     }
 
-    protected void checkHttpStatusOk(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    protected void checkHttpStatusOk(
+            StandardSoftAssertionsProvider softAssertionsProvider, ExtractableResponse<Response> response) {
+        softAssertionsProvider.assertThat(response.statusCode())
+                .isEqualTo(HttpStatus.OK.value());
     }
 
-    protected void checkHttpStatusCreated(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    protected void checkHttpStatusCreated(
+            StandardSoftAssertionsProvider softAssertionsProvider, ExtractableResponse<Response> response) {
+        softAssertionsProvider.assertThat(response.statusCode())
+                .isEqualTo(HttpStatus.CREATED.value());
     }
 
     protected void checkHttpStatusNoContent(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    protected void checkHttpStatusBadRequest(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    protected void checkHttpStatusBadRequest(
+            StandardSoftAssertionsProvider softAssertionsProvider, ExtractableResponse<Response> response) {
+        softAssertionsProvider.assertThat(response.statusCode())
+                .isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    protected void checkHttpStatusNotFound(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    protected void checkHttpStatusNotFound(
+            StandardSoftAssertionsProvider softAssertionsProvider, ExtractableResponse<Response> response) {
+        softAssertionsProvider.assertThat(response.statusCode())
+                .isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 }

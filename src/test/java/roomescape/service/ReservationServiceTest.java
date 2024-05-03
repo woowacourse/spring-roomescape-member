@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,8 +18,10 @@ import roomescape.repository.ReservationRepository;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static roomescape.TestFixture.*;
@@ -76,14 +79,14 @@ class ReservationServiceTest {
         List<ReservationResponse> reservations = reservationService.findAll();
 
         // then
-        assertAll(() -> {
-            assertThat(reservations).hasSize(2)
+        assertSoftly(softly -> {
+            softly.assertThat(reservations).hasSize(2)
                     .extracting(ReservationResponse::name)
                     .containsExactly(USER_MIA, USER_TOMMY);
-            assertThat(reservations).extracting(ReservationResponse::time)
+            softly.assertThat(reservations).extracting(ReservationResponse::time)
                     .extracting(ReservationTimeResponse::startAt)
                     .containsExactly(MIA_RESERVATION_TIME, TOMMY_RESERVATION_TIME);
-            assertThat(reservations).extracting(ReservationResponse::theme)
+            softly.assertThat(reservations).extracting(ReservationResponse::theme)
                     .extracting(ReservedThemeResponse::name)
                     .containsExactly(WOOTECO_THEME_NAME, WOOTECO_THEME_NAME);
         });

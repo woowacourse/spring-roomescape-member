@@ -15,8 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 import static roomescape.TestFixture.*;
 
@@ -36,10 +35,10 @@ class ThemeAcceptanceTest extends ApiAcceptanceTest {
         ThemeResponse themeResponse = response.as(ThemeResponse.class);
 
         // then
-        assertAll(() -> {
-            checkHttpStatusCreated(response);
-            assertThat(themeResponse.id()).isNotNull();
-            assertThat(themeResponse.name()).isEqualTo(WOOTECO_THEME_NAME);
+        assertSoftly(softly -> {
+            checkHttpStatusCreated(softly, response);
+            softly.assertThat(themeResponse.id()).isNotNull();
+            softly.assertThat(themeResponse.name()).isEqualTo(WOOTECO_THEME_NAME);
         });
     }
 
@@ -64,9 +63,9 @@ class ThemeAcceptanceTest extends ApiAcceptanceTest {
                         response.as(ThemeResponse[].class))
                 .toList();
         // then
-        assertAll(() -> {
-            checkHttpStatusOk(response);
-            assertThat(themeResponses).hasSize(size);
+        assertSoftly(softly -> {
+            checkHttpStatusOk(softly, response);
+            softly.assertThat(themeResponses).hasSize(size);
         });
     }
 
@@ -103,9 +102,9 @@ class ThemeAcceptanceTest extends ApiAcceptanceTest {
                 .toList();
 
         // then
-        assertAll(() -> {
-            checkHttpStatusOk(response);
-            assertThat(themeResponses).hasSize(2)
+        assertSoftly(softly -> {
+            checkHttpStatusOk(softly, response);
+            softly.assertThat(themeResponses).hasSize(2)
                     .extracting(ThemeResponse::id)
                     .containsExactly(firstRankThemeId, secondRankThemeId);
         });

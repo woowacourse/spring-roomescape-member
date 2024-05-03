@@ -16,8 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 import static roomescape.TestFixture.*;
 
@@ -34,9 +33,9 @@ class ReservationAcceptanceTest extends ApiAcceptanceTest {
                 .toList();
 
         // then
-        assertAll(() -> {
-            checkHttpStatusOk(response);
-            assertThat(reservationResponses).hasSize(0);
+        assertSoftly(softly -> {
+            checkHttpStatusOk(softly, response);
+            softly.assertThat(reservationResponses).hasSize(0);
         });
     }
 
@@ -57,10 +56,10 @@ class ReservationAcceptanceTest extends ApiAcceptanceTest {
         ReservationResponse reservationResponse = response.as(ReservationResponse.class);
 
         // then
-        assertAll(() -> {
-            checkHttpStatusCreated(response);
-            assertThat(reservationResponse.id()).isNotNull();
-            assertThat(reservationResponse.name()).isEqualTo(USER_MIA);
+        assertSoftly(softly -> {
+            checkHttpStatusCreated(softly, response);
+            softly.assertThat(reservationResponse.id()).isNotNull();
+            softly.assertThat(reservationResponse.name()).isEqualTo(USER_MIA);
         });
     }
 
@@ -81,9 +80,9 @@ class ReservationAcceptanceTest extends ApiAcceptanceTest {
         ErrorResponse errorResponse = response.as(ErrorResponse.class);
 
         // then
-        assertAll(() -> {
-            checkHttpStatusBadRequest(response);
-            assertThat(errorResponse.message()).isNotNull();
+        assertSoftly(softly -> {
+            checkHttpStatusBadRequest(softly, response);
+            softly.assertThat(errorResponse.message()).isNotNull();
         });
     }
 
@@ -104,9 +103,9 @@ class ReservationAcceptanceTest extends ApiAcceptanceTest {
         ErrorResponse errorResponse = response.as(ErrorResponse.class);
 
         // then
-        assertAll(() -> {
-            checkHttpStatusNotFound(response);
-            assertThat(errorResponse.message()).isNotNull();
+        assertSoftly(softly -> {
+            checkHttpStatusNotFound(softly, response);
+            softly.assertThat(errorResponse.message()).isNotNull();
         });
     }
 
@@ -142,9 +141,9 @@ class ReservationAcceptanceTest extends ApiAcceptanceTest {
                 .toList();
 
         // then
-        assertAll(() -> {
-            checkHttpStatusOk(response);
-            assertThat(reservationResponses).hasSize(size)
+        assertSoftly(softly -> {
+            checkHttpStatusOk(softly, response);
+            softly.assertThat(reservationResponses).hasSize(size)
                     .extracting(ReservationResponse::id)
                     .isNotNull();
         });
@@ -161,9 +160,9 @@ class ReservationAcceptanceTest extends ApiAcceptanceTest {
         ErrorResponse errorResponse = response.as(ErrorResponse.class);
 
         // then
-        assertAll(() -> {
-            checkHttpStatusNotFound(response);
-            assertThat(errorResponse.message()).isNotNull();
+        assertSoftly(softly -> {
+            checkHttpStatusNotFound(softly, response);
+            softly.assertThat(errorResponse.message()).isNotNull();
         });
     }
 }
