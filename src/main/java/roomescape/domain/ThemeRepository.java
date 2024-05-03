@@ -2,6 +2,7 @@ package roomescape.domain;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 public interface ThemeRepository {
@@ -11,6 +12,8 @@ public interface ThemeRepository {
     List<Theme> findAll();
 
     Optional<Theme> findById(long id);
+
+    Theme getById(long id) throws NoSuchElementException;
 
     void deleteById(long id);
 

@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,11 +92,11 @@ class ReservationTimeServiceTest {
                 .hasMessageStartingWith("해당 예약 시간에 연관된 예약이 존재하여 삭제할 수 없습니다. 삭제 요청한 시간");
     }
 
-    @DisplayName("존재하지 않는 예약 시간을 삭제 요청하면, IllegalArgumentException 예외가 발생한다.")
+    @DisplayName("존재하지 않는 예약 시간을 삭제 요청하면, 예외가 발생한다.")
     @Test
     void shouldThrowsIllegalArgumentExceptionWhenReservationTimeDoesNotExist() {
         assertThatCode(() -> reservationTimeService.deleteById(99L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(NoSuchElementException.class)
                 .hasMessage("존재하지 않는 예약 시간 입니다.");
     }
 

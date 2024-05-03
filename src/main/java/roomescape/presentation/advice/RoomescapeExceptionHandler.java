@@ -2,6 +2,7 @@ package roomescape.presentation.advice;
 
 import jakarta.annotation.Priority;
 import java.time.format.DateTimeParseException;
+import java.util.NoSuchElementException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -20,7 +21,7 @@ public class RoomescapeExceptionHandler {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "올바르지 않은 시간/날짜 형식입니다.");
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
+    @ExceptionHandler({IllegalArgumentException.class, NoSuchElementException.class})
     public ProblemDetail handleIllegalArgumentException(IllegalArgumentException exception) {
         logger.error(exception.getMessage(), exception);
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exception.getMessage());

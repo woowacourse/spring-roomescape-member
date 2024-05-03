@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,19 +53,19 @@ class ReservationServiceTest {
         assertThat(reservations).hasSize(1);
     }
 
-    @DisplayName("존재하지 않는 예약 시간으로 예약을 생성시 IllegalArgumentException 예외를 반환한다.")
+    @DisplayName("존재하지 않는 예약 시간으로 예약을 생성시 예외가 발생한다.")
     @Test
     void shouldReturnIllegalArgumentExceptionWhenNotFoundReservationTime() {
         Theme savedTheme = themeRepository.create(new Theme(new ThemeName("test"), "test", "test"));
         ReservationRequest request = new ReservationRequest("test", LocalDate.now(), 99L, savedTheme.getId());
 
         assertThatCode(() -> reservationService.create(request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(NoSuchElementException.class)
                 .hasMessage("존재하지 않는 예약 시간 입니다.");
     }
 
     @Test
-    @DisplayName("존재하지 않는 테마로 예약을 생성시 IllegalArgumentException 예외를 반환한다.")
+    @DisplayName("존재하지 않는 테마로 예약을 생성시 예외를 반환한다.")
     void shouldThrowIllegalArgumentExceptionWhenNotFoundTheme() {
         ReservationTime time = reservationTimeRepository.create(new ReservationTime(LocalTime.of(12, 0)));
         ReservationRequest request = new ReservationRequest(
@@ -74,7 +75,7 @@ class ReservationServiceTest {
                 99L
         );
         assertThatCode(() -> reservationService.create(request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(NoSuchElementException.class)
                 .hasMessage("존재하지 않는 테마 입니다.");
     }
 

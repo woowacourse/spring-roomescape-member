@@ -3,12 +3,15 @@ package roomescape.domain;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import roomescape.domain.dto.AvailableTimeDto;
 
 public interface ReservationTimeRepository {
 
     Optional<ReservationTime> findById(long id);
+
+    ReservationTime getById(long id) throws NoSuchElementException;
 
     ReservationTime create(ReservationTime reservationTime);
 

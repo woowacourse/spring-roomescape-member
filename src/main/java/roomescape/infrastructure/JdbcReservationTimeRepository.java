@@ -3,6 +3,7 @@ package roomescape.infrastructure;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -36,6 +37,11 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public ReservationTime getById(long id) throws NoSuchElementException {
+        return findById(id).orElseThrow(() -> new NoSuchElementException("존재하지 않는 예약 시간 입니다."));
     }
 
     public ReservationTime create(ReservationTime reservationTime) {
