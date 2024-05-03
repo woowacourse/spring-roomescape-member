@@ -12,6 +12,7 @@ import roomescape.dto.ReservationResponse;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
+import roomescape.util.Date;
 
 @Service
 public class ReservationService {
@@ -34,7 +35,7 @@ public class ReservationService {
         ReservationTime reservationTime = findReservationTime(reservationRequest);
         Theme theme = findTheme(reservationRequest);
         validateReservationNotDuplicate(reservationRequest);
-        validateUnPassedDate(reservationRequest.date(),reservationTime.getStartAt());
+        validateUnPassedDate(reservationRequest.date(), reservationTime.getStartAt());
         Reservation reservationToSave = reservationRequest.toEntity(reservationTime, theme);
         return reservationRepository.save(reservationToSave);
     }
@@ -84,8 +85,7 @@ public class ReservationService {
     }
 
     private void validateUnPassedDate(LocalDate date, LocalTime time) {
-        if ((date.isBefore(LocalDate.now()) && time.isBefore(LocalTime.now())) ||
-                date.isEqual(LocalDate.now()) && time.isBefore(LocalTime.now())) {
+        if (Date.isPastDateTime(date, time)) {
             throw new IllegalArgumentException("[ERROR] 지나간 날짜와 시간에 대한 예약 생성은 불가능합니다. : " + date + " " + time);
         }
     }
