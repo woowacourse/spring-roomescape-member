@@ -43,10 +43,10 @@ public class GlobalControllerExceptionHandler {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
-//    @Order(4)
-//    @ExceptionHandler(Exception.class)
-//    public ResponseEntity<String> handleException(final Exception e) {
-//        logger.error(e.getMessage(), e);
-//        return ResponseEntity.internalServerError().body("서버 오류입니다.");
-//    }
+    @Order(4)
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleException(final Exception e) {
+        logger.error(e.getMessage(), e);
+        return ResponseEntity.internalServerError().body("서버 오류입니다.");
+    }
 }
