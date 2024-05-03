@@ -1,4 +1,4 @@
-package roomescape.repository;
+package roomescape.infrastructure;
 
 
 import static org.junit.jupiter.api.Assertions.assertAll;

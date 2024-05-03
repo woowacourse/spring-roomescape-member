@@ -1,4 +1,4 @@
-package roomescape.repository;
+package roomescape.infrastructure;
 
 import java.time.LocalTime;
 import java.util.List;
