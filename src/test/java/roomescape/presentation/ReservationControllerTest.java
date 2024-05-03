@@ -12,17 +12,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 import roomescape.application.ReservationService;
 import roomescape.application.dto.ReservationRequest;
 import roomescape.application.dto.ReservationResponse;
@@ -30,13 +27,7 @@ import roomescape.application.dto.ReservationTimeResponse;
 import roomescape.application.dto.ThemeResponse;
 
 @WebMvcTest(ReservationController.class)
-class ReservationControllerTest {
-    @Autowired
-    private MockMvc mvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
+class ReservationControllerTest extends ControllerTest {
     @MockBean
     private ReservationService reservationService;
 
