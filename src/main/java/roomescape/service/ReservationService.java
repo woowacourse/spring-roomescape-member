@@ -38,31 +38,42 @@ public class ReservationService {
                 .toList();
     }
 
-    // TODO 리팩터링
     public ReservationResponse addReservation(final ReservationRequest reservationRequest) {
-        final ReservationTime time = reservationTimeRepository
-                .findById(reservationRequest.timeId())
-                .orElseThrow(() -> new TimeNotFoundException("존재하지 않은 시간입니다."));
-        final Theme theme = themeRepository
-                .findById(reservationRequest.themeId())
-                .orElseThrow(() -> new ThemeNotFoundException("존재하지 않는 테마입니다."));
+        final ReservationTime time = findTime(reservationRequest);
+        final Theme theme = findTheme(reservationRequest);
 
         final Reservation parsedReservation = reservationRequest.toDomain(time, theme);
-        //TODO 이때 테마도 같이 확인 해야함.
+        validateDuplicate(theme, time, parsedReservation);
+        final LocalDateTime reservationDateTime = parsedReservation.getDate().atTime(time.getStartAt());
+        validateBeforeDay(reservationDateTime); // TODO 같은 날짜지만 시간이 이후인 경우 테스트?
+
+        final Reservation savedReservation = reservationRepository.save(parsedReservation);
+        return ReservationResponse.from(savedReservation);
+    }
+
+    private void validateBeforeDay(final LocalDateTime reservationDateTime) {
+        if (reservationDateTime.isBefore(LocalDateTime.now())) {
+            throw new PreviousTimeException("지난 시간으로 예약할 수 없습니다.");
+        }
+    }
+
+    private void validateDuplicate(final Theme theme, final ReservationTime time, final Reservation parsedReservation) {
         final boolean isExistsReservation =
                 reservationRepository.existsByThemesAndDateAndTimeId(theme.getId(), time.getId(),
                         parsedReservation.getDate());
         if (isExistsReservation) {
             throw new DuplicateReservation("중복된 시간으로 예약이 불가합니다.");
         }
+    }
 
-        final LocalDateTime reservationDateTime = parsedReservation.getDate().atTime(time.getStartAt());
-        if (reservationDateTime.isBefore(LocalDateTime.now())) {
-            throw new PreviousTimeException("지난 시간으로 예약할 수 없습니다.");
-        }
+    private Theme findTheme(final ReservationRequest reservationRequest) {
+        return themeRepository.findById(reservationRequest.themeId())
+                .orElseThrow(() -> new ThemeNotFoundException("존재하지 않는 테마입니다."));
+    }
 
-        final Reservation savedReservation = reservationRepository.save(parsedReservation);
-        return ReservationResponse.from(savedReservation);
+    private ReservationTime findTime(final ReservationRequest reservationRequest) {
+        return reservationTimeRepository.findById(reservationRequest.timeId())
+                .orElseThrow(() -> new TimeNotFoundException("존재하지 않은 시간입니다."));
     }
 
     public int deleteReservation(final Long id) {
