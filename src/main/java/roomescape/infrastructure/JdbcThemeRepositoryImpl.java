@@ -70,7 +70,7 @@ public class JdbcThemeRepositoryImpl implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findPopular(int count) {
+    public List<Theme> findMostReservedThemesInPeriod(int period, int count) {
         String sql = """
             SELECT
                 th.id AS id, 
@@ -79,12 +79,12 @@ public class JdbcThemeRepositoryImpl implements ThemeRepository {
                 th.thumbnail AS thumbnail, 
                 COUNT(r.theme_id) AS count
             FROM theme AS th
-            LEFT JOIN reservation AS r ON th.id = r.theme_id AND r.date BETWEEN TIMESTAMPADD(DAY, -8, NOW()) AND TIMESTAMPADD(DAY, -1, NOW())
+            LEFT JOIN reservation AS r ON th.id = r.theme_id AND r.date BETWEEN TIMESTAMPADD(DAY, -?, NOW()) AND TIMESTAMPADD(DAY, -1, NOW())
             GROUP BY th.id
             ORDER BY count DESC
             LIMIT ?
             """;
-        return jdbcTemplate.query(sql, getThemeRowMapper(), count);
+        return jdbcTemplate.query(sql, getThemeRowMapper(), period + 1, count);
     }
 
     private RowMapper<Theme> getThemeRowMapper() {

@@ -13,6 +13,7 @@ import roomescape.service.request.ThemeAppRequest;
 public class ThemeService {
 
     private static final int MAX_POPULAR_THEME_COUNT = 10;
+    private static final int BASED_ON_PERIOD_POPULAR_THEME = 7;
 
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
@@ -46,6 +47,7 @@ public class ThemeService {
     }
 
     public List<Theme> findPopular() {
-        return themeRepository.findPopular(MAX_POPULAR_THEME_COUNT);
+        return themeRepository.findMostReservedThemesInPeriod(BASED_ON_PERIOD_POPULAR_THEME,
+            MAX_POPULAR_THEME_COUNT);
     }
 }

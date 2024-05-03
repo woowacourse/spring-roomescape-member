@@ -15,5 +15,5 @@ public interface ThemeRepository {
 
     boolean isNameExists(String name);
 
-    List<Theme> findPopular(int count);
+    List<Theme> findMostReservedThemesInPeriod(int period, int count);
 }
