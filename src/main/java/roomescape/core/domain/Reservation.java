@@ -32,6 +32,14 @@ public class Reservation {
         }
     }
 
+    public boolean isDatePast() {
+        return date.isBefore(LocalDate.now());
+    }
+
+    public boolean isDateToday() {
+        return date.isEqual(LocalDate.now());
+    }
+
     public Long getId() {
         return id;
     }
@@ -62,13 +70,5 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
-    }
-
-    public boolean isDatePast() {
-        return date.isBefore(LocalDate.now());
-    }
-
-    public boolean isDateToday() {
-        return date.isEqual(LocalDate.now());
     }
 }
