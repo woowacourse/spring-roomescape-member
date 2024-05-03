@@ -91,8 +91,8 @@ class JdbcReservationRepositoryTest {
     @Test
     void shouldReturnCountOfReservationWhenReservationTimeUsed() {
         ReservationTime time = createReservation().getTime();
-        long count = jdbcReservationRepository.findReservationCountByTimeId(time.getId());
-        assertThat(count).isOne();
+        boolean exists = jdbcReservationRepository.existsByTimeId(time.getId());
+        assertThat(exists).isTrue();
     }
 
     @DisplayName("날짜, 시간으로 저장된 예약이 있는지 확인한다.")
@@ -102,8 +102,8 @@ class JdbcReservationRepositoryTest {
         ReservationTime time = reservation.getTime();
         Theme theme = reservation.getTheme();
 
-        boolean isExist = jdbcReservationRepository.existBy(reservation.getDate(), time.getId(), theme.getId());
-        assertThat(isExist).isTrue();
+        boolean exists = jdbcReservationRepository.existBy(reservation.getDate(), time.getId(), theme.getId());
+        assertThat(exists).isTrue();
     }
 
     private Reservation createReservation() {
