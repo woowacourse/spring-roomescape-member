@@ -3,7 +3,6 @@ package roomescape.theme.service;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
-import roomescape.reservation.model.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.dto.request.CreateThemeRequest;
 import roomescape.theme.dto.response.CreateThemeResponse;
@@ -42,12 +41,21 @@ public class ThemeService {
     }
 
     public void deleteById(final Long id) {
-        themeRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("해당하는 테마가 존재하지 않습니다."));
-        List<Reservation> reservations = reservationRepository.findAllByThemeId(id);
-        if (!reservations.isEmpty()) {
+        validateExistTheme(id);
+        validateThemeUsage(id);
+
+        themeRepository.deleteById(id);
+    }
+
+    private void validateExistTheme(final Long id) {
+        if (!themeRepository.existsById(id)) {
+            throw new NoSuchElementException("해당하는 테마가 존재하지 않습니다.");
+        }
+    }
+
+    private void validateThemeUsage(final Long id) {
+        if (reservationRepository.existsByThemeId(id)) {
             throw new IllegalStateException("테마를 사용 중인 예약이 존재합니다.");
         }
-        themeRepository.deleteById(id);
     }
 }

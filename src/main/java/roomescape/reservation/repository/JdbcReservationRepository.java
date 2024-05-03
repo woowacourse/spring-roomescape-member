@@ -169,6 +169,18 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public boolean existsByThemeId(final Long id) {
+        String sql = """
+                select count(*)
+                from reservation as r
+                inner join theme as t
+                on r.theme_id = t.id 
+                where r.theme_id = ?
+                """;
+        return jdbcTemplate.queryForObject(sql, Integer.class, id) != 0;
+    }
+
+    @Override
     public boolean existsByDateAndTimeAndTheme(final LocalDate date, final Long timeId, final Long themeId) {
         String sql = """
                 select count(*)

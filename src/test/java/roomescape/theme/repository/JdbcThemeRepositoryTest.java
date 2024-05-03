@@ -1,16 +1,21 @@
 package roomescape.theme.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import roomescape.theme.model.Theme;
 import roomescape.util.DummyDataFixture;
 
 @SpringBootTest
+@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 class JdbcThemeRepositoryTest extends DummyDataFixture {
 
     @Autowired
@@ -47,6 +52,18 @@ class JdbcThemeRepositoryTest extends DummyDataFixture {
         assertThat(themeRepository.findOrderByReservation())
                 .isEqualTo(super.getPreparedThemes())
                 .hasSize(10);
+    }
+
+    @Test
+    @DisplayName("해당 테마 id값과 일치하는 예약이 존재하는 경우 참을 반환한다.")
+    void existsById() {
+        assertTrue(themeRepository.existsById(1L));
+    }
+
+    @Test
+    @DisplayName("해당 테마 id값과 일치하는 예약이 존재하지 않은 경우 거짓을 반환한다.")
+    void existsById_WhenNotExist() {
+        assertFalse(themeRepository.existsById(12L));
     }
 
     @Test

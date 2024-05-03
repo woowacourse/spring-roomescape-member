@@ -75,6 +75,16 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
+    public boolean existsById(final Long id) {
+        String sql = """
+                select count(*)
+                from theme as t
+                where t.id = ? 
+                """;
+        return jdbcTemplate.queryForObject(sql, Integer.class, id) != 0;
+    }
+
+    @Override
     public void deleteById(final Long id) {
         String sql = "delete from theme where id = ?";
         jdbcTemplate.update(sql, id);

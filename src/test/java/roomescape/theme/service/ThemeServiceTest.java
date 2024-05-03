@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 
-import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -102,8 +101,8 @@ class ThemeServiceTest extends DummyDataFixture {
         long timeId = 10L;
 
         // stub
-        Mockito.when(themeRepository.findById(timeId)).thenReturn(Optional.of(super.getThemeById(10L)));
-        Mockito.when(reservationRepository.findAllByThemeId(timeId)).thenReturn(new ArrayList<>());
+        Mockito.when(themeRepository.existsById(timeId)).thenReturn(true);
+        Mockito.when(reservationRepository.existsByThemeId(timeId)).thenReturn(false);
 
         // when
         themeService.deleteById(timeId);
@@ -135,11 +134,8 @@ class ThemeServiceTest extends DummyDataFixture {
         long themedId = 2L;
 
         // stub
-        Mockito.when(themeRepository.findById(themedId))
-                .thenReturn(Optional.of(super.getThemeById(themedId)));
-
-        Mockito.when(reservationRepository.findAllByThemeId(themedId))
-                .thenReturn(getPreparedReservations());
+        Mockito.when(themeRepository.existsById(themedId)).thenReturn(true);
+        Mockito.when(reservationRepository.existsByThemeId(themedId)).thenReturn(true);
 
         // when & then
         assertThatThrownBy(() -> themeService.deleteById(themedId))
