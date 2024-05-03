@@ -9,10 +9,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
+import roomescape.controller.reservation.dto.ReservationRequest;
+import roomescape.controller.reservation.dto.ReservationResponse;
 import roomescape.service.ReservationService;
 
 import java.net.URI;
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController

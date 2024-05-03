@@ -1,7 +1,7 @@
-package roomescape.controller.reservation;
+package roomescape.controller.reservation.dto;
 
-import roomescape.controller.theme.ReservationThemeResponse;
-import roomescape.controller.time.AvailabilityTimeResponse;
+import roomescape.controller.theme.dto.ReservationThemeResponse;
+import roomescape.controller.time.dto.AvailabilityTimeResponse;
 import roomescape.domain.Reservation;
 
 import java.time.format.DateTimeFormatter;

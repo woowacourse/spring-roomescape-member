@@ -1,9 +1,9 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.controller.reservation.PopularThemeResponse;
-import roomescape.controller.theme.CreateThemeRequest;
-import roomescape.controller.theme.ThemeResponse;
+import roomescape.controller.reservation.dto.PopularThemeResponse;
+import roomescape.controller.theme.dto.CreateThemeRequest;
+import roomescape.controller.theme.dto.ThemeResponse;
 import roomescape.domain.Theme;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;

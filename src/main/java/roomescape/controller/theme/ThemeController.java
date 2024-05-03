@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
-import roomescape.controller.reservation.PopularThemeResponse;
+import roomescape.controller.reservation.dto.PopularThemeResponse;
+import roomescape.controller.theme.dto.CreateThemeRequest;
+import roomescape.controller.theme.dto.ThemeResponse;
 import roomescape.service.ThemeService;
 
 import java.net.URI;
