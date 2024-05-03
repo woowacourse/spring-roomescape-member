@@ -1,9 +1,6 @@
 package roomescape.infrastructure;
 
-
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -30,10 +27,7 @@ class JdbcReservationTimeRepositoryImplTest {
         ReservationTime actual = reservationTimeRepository.save(reservationTime);
         ReservationTime expected = reservationTimeRepository.findById(actual.getId()).get();
 
-        assertAll(
-            () -> assertEquals(expected.getId(), actual.getId()),
-            () -> assertEquals(expected.getStartAt(), actual.getStartAt())
-        );
+        assertThat(actual).isEqualTo(expected);
     }
 
     @DisplayName("id값을 통해 예약 시간 정보를 DB에서 조회한다.")
@@ -45,10 +39,7 @@ class JdbcReservationTimeRepositoryImplTest {
         ReservationTime actual = reservationTimeRepository.findById(save.getId()).get();
         ReservationTime expected = new ReservationTime(save.getId(), save.getStartAt().toString());
 
-        assertAll(
-            () -> assertEquals(expected.getId(), actual.getId()),
-            () -> assertEquals(expected.getStartAt(), actual.getStartAt())
-        );
+        assertThat(actual).isEqualTo(expected);
     }
 
     @DisplayName("id값을 예약 시간 정보를 DB에서 삭제한다.")
@@ -60,7 +51,7 @@ class JdbcReservationTimeRepositoryImplTest {
         reservationTimeRepository.deleteById(save.getId());
         List<ReservationTime> actual = reservationTimeRepository.findAll();
 
-        assertTrue(actual.isEmpty());
+        assertThat(actual.isEmpty()).isTrue();
     }
 
     @DisplayName("모든 예약 시간 정보를 DB에서 조회한다.")
@@ -75,11 +66,6 @@ class JdbcReservationTimeRepositoryImplTest {
         List<ReservationTime> actual = reservationTimeRepository.findAll();
         List<ReservationTime> expected = List.of(save1, save2);
 
-        assertAll(
-            () -> assertEquals(expected.get(0).getId(), actual.get(0).getId()),
-            () -> assertEquals(expected.get(0).getStartAt(), actual.get(0).getStartAt()),
-            () -> assertEquals(expected.get(1).getId(), actual.get(1).getId()),
-            () -> assertEquals(expected.get(1).getStartAt(), actual.get(1).getStartAt())
-        );
+        assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
     }
 }
