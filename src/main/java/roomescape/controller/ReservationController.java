@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
+@RequestMapping("/reservations")
 public class ReservationController {
 
     private final ReservationService reservationService;
@@ -20,24 +21,24 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @GetMapping("/reservations")
+    @GetMapping
     public ResponseEntity<List<Reservation>> getReservations() {
         return ResponseEntity.ok(reservationService.findAllReservations());
     }
 
-    @PostMapping("/reservations")
+    @PostMapping
     public ResponseEntity<Reservation> createReservation(@RequestBody ReservationRequest request) {
         Reservation reservation = reservationService.addReservation(request);
         return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
     }
 
-    @DeleteMapping("/reservations/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable("id") long id) {
         reservationService.deleteReservation(id);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/reservations/times")
+    @GetMapping("/times")
     public ResponseEntity<List<MemberReservationTimeResponse>> getPossibleReservationTimes(
             @RequestParam(name = "date") LocalDate date,
             @RequestParam(name = "themeId") long themeId) {

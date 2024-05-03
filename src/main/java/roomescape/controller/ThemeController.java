@@ -10,6 +10,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
+@RequestMapping("/themes")
 public class ThemeController {
 
     private final ThemeService themeService;
@@ -18,12 +19,12 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
-    @GetMapping("/themes")
+    @GetMapping
     public ResponseEntity<List<Theme>> getThemes() {
         return ResponseEntity.ok(themeService.findAllThemes());
     }
 
-    @PostMapping("/themes")
+    @PostMapping
     public ResponseEntity<Theme> addTheme(@RequestBody ThemeRequest themeRequest) {
         Theme theme = themeService.addTheme(themeRequest);
         return ResponseEntity
@@ -31,13 +32,13 @@ public class ThemeController {
                 .body(theme);
     }
 
-    @DeleteMapping("/themes/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable(name = "id") long id) {
         themeService.deleteTheme(id);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/themes/rank")
+    @GetMapping("/rank")
     public ResponseEntity<List<Theme>> getPopularThemes() {
         return ResponseEntity.ok(themeService.findPopularThemes());
     }
