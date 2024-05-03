@@ -1,12 +1,9 @@
 package roomescape.repository;
 
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalTime;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,64 +19,45 @@ class JdbcReservationTimeRepositoryImplTest {
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
 
+    private final LocalTime startAt1 = LocalTime.parse("10:00");
+    private final ReservationTime reservationTime1 = new ReservationTime(startAt1);
+
+    private final LocalTime startAt2 = LocalTime.parse("11:00");
+    private final ReservationTime reservationTime2 = new ReservationTime(startAt2);
+
     @DisplayName("예약 시간 정보를 DB에 저장한다.")
     @Test
     void save() {
-        ReservationTime reservationTime = new ReservationTime(LocalTime.MIDNIGHT);
+        ReservationTime saved = reservationTimeRepository.save(reservationTime1);
 
-        ReservationTime actual = reservationTimeRepository.save(reservationTime);
-        ReservationTime expected = reservationTimeRepository.findById(actual.getId());
-
-        assertAll(
-            () -> assertEquals(expected.getId(), actual.getId()),
-            () -> assertEquals(expected.getStartAt(), actual.getStartAt())
-        );
+        assertThat(saved).isEqualTo(new ReservationTime(saved.getId(), startAt1));
     }
 
     @DisplayName("id값을 통해 예약 시간 정보를 DB에서 조회한다.")
     @Test
     void findById() {
-        ReservationTime reservationTime = new ReservationTime(LocalTime.MIDNIGHT);
-        ReservationTime save = reservationTimeRepository.save(reservationTime);
+        ReservationTime saved = reservationTimeRepository.save(reservationTime1);
 
-        ReservationTime actual = reservationTimeRepository.findById(save.getId());
-        ReservationTime expected = new ReservationTime(save.getId(), save.getStartAt());
-
-        assertAll(
-            () -> assertEquals(expected.getId(), actual.getId()),
-            () -> assertEquals(expected.getStartAt(), actual.getStartAt())
-        );
-    }
-
-    @DisplayName("id값을 예약 시간 정보를 DB에서 삭제한다.")
-    @Test
-    void deleteById() {
-        ReservationTime reservationTime = new ReservationTime(LocalTime.MIDNIGHT);
-        ReservationTime save = reservationTimeRepository.save(reservationTime);
-
-        reservationTimeRepository.deleteById(save.getId());
-        List<ReservationTime> actual = reservationTimeRepository.findAll();
-
-        assertTrue(actual.isEmpty());
+        assertThat(reservationTimeRepository.findById(saved.getId())).isEqualTo(saved);
     }
 
     @DisplayName("모든 예약 시간 정보를 DB에서 조회한다.")
     @Test
     void findAll() {
-        ReservationTime reservationTime1 = new ReservationTime(LocalTime.MIDNIGHT);
-        ReservationTime save1 = reservationTimeRepository.save(reservationTime1);
+        ReservationTime saved1 = reservationTimeRepository.save(reservationTime1);
+        ReservationTime saved2 = reservationTimeRepository.save(reservationTime2);
 
-        ReservationTime reservationTime2 = new ReservationTime(LocalTime.MIDNIGHT);
-        ReservationTime save2 = reservationTimeRepository.save(reservationTime2);
+        assertThat(reservationTimeRepository.findAll()).containsExactly(saved1, saved2);
+    }
 
-        List<ReservationTime> actual = reservationTimeRepository.findAll();
-        List<ReservationTime> expected = List.of(save1, save2);
+    @DisplayName("id값을 통해 예약 시간 정보를 DB에서 삭제한다.")
+    @Test
+    void deleteById() {
+        ReservationTime saved1 = reservationTimeRepository.save(reservationTime1);
+        ReservationTime saved2 = reservationTimeRepository.save(reservationTime2);
 
-        assertAll(
-            () -> assertEquals(expected.get(0).getId(), actual.get(0).getId()),
-            () -> assertEquals(expected.get(0).getStartAt(), actual.get(0).getStartAt()),
-            () -> assertEquals(expected.get(1).getId(), actual.get(1).getId()),
-            () -> assertEquals(expected.get(1).getStartAt(), actual.get(1).getStartAt())
-        );
+        reservationTimeRepository.deleteById(saved1.getId());
+
+        assertThat(reservationTimeRepository.findAll()).containsExactly(saved2);
     }
 }
