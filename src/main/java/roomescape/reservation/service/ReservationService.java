@@ -32,23 +32,28 @@ public class ReservationService {
     }
 
     public CreateReservationResponse createReservation(final CreateReservationRequest createReservationRequest) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(createReservationRequest.timeId())
-                .orElseThrow(() -> new NoSuchElementException("해당하는 예약 시간이 존재하지 않습니다."));
-
-        Theme theme = themeRepository.findById(createReservationRequest.themeId())
-                .orElseThrow(() -> new NoSuchElementException("해당하는 테마가 존재하지 않습니다."));
-
+        ReservationTime reservationTime = findReservationTime(createReservationRequest.timeId());
+        Theme theme = findTheme(createReservationRequest.themeId());
         Reservation reservation = createReservationRequest.toReservation(reservationTime, theme);
+
+        validateReservationIsPast(reservation);
+        validateAlreadyExistReservation(reservationTime, theme, reservation);
+
+        return CreateReservationResponse.of(reservationRepository.save(reservation));
+    }
+
+    private void validateReservationIsPast(final Reservation reservation) {
         if (reservation.isBeforeDateTimeThanNow(LocalDateTime.now())) {
             throw new IllegalArgumentException("지나간 날짜와 시간에 대한 예약 생성은 불가능합니다.");
         }
+    }
 
+    private void validateAlreadyExistReservation(final ReservationTime reservationTime, final Theme theme,
+                                                 final Reservation reservation) {
         if (reservationRepository.existsByDateAndTimeAndTheme(reservation.getDate(), reservationTime.getId(),
                 theme.getId())) {
             throw new IllegalStateException("동일한 시간의 예약이 존재합니다.");
         }
-
-        return CreateReservationResponse.of(reservationRepository.save(reservation));
     }
 
     public List<FindReservationResponse> getReservations() {
@@ -58,8 +63,7 @@ public class ReservationService {
     }
 
     public FindReservationResponse getReservation(final Long id) {
-        Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("해당하는 예약이 존재하지 않습니다."));
+        Reservation reservation = findReservation(id);
         return FindReservationResponse.of(reservation);
     }
 
@@ -74,15 +78,28 @@ public class ReservationService {
     private static FindAvailableTimesResponse generateFindAvailableTimesResponse(final List<Reservation> reservations,
                                                                                  final ReservationTime reservationTime) {
         return FindAvailableTimesResponse.of(
-                reservationTime.getId(),
-                reservationTime.getTime(),
+                reservationTime,
                 reservations.stream()
                         .anyMatch(reservation -> reservation.isSameTime(reservationTime)));
     }
 
     public void deleteReservation(final Long id) {
-        reservationRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("해당하는 예약이 존재하지 않습니다."));
+        findReservation(id);
         reservationRepository.deleteById(id);
+    }
+
+    private Reservation findReservation(final Long id) {
+        return reservationRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("해당하는 예약이 존재하지 않습니다."));
+    }
+
+    private ReservationTime findReservationTime(final Long id) {
+        return reservationTimeRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("해당하는 예약 시간이 존재하지 않습니다."));
+    }
+
+    private Theme findTheme(final Long id) {
+        return themeRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("해당하는 테마가 존재하지 않습니다."));
     }
 }
