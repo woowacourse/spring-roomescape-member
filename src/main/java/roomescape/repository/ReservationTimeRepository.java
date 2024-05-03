@@ -9,7 +9,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.dto.ReservationTimeBookedResponse;
 import roomescape.model.ReservationTime;
 
 @Repository
@@ -17,9 +16,6 @@ public class ReservationTimeRepository {
 
     private static final RowMapper<ReservationTime> TIME_ROW_MAPPER = (selectedTime, rowNum) ->
             new ReservationTime(selectedTime.getLong("id"), LocalTime.parse(selectedTime.getString("start_at")));
-    private static final RowMapper<ReservationTimeBookedResponse> TIME_WITH_BOOKED_ROW_MAPPER = (selectedTime, rowNum) ->
-            new ReservationTimeBookedResponse(selectedTime.getLong("id"), LocalTime.parse(selectedTime.getString("start_at")), selectedTime.getBoolean("already_booked"));
-
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert reservationTimeInsert;
