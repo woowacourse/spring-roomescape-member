@@ -13,8 +13,16 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
+import roomescape.controller.response.ThemeResponse;
 
 class ThemeAcceptanceTest extends BasicAcceptanceTest {
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     @TestFactory
     @DisplayName("2개의 테마를 추가한다")
     Stream<DynamicTest> themePostTest() {
@@ -38,6 +46,20 @@ class ThemeAcceptanceTest extends BasicAcceptanceTest {
                 dynamicTest("테마를 삭제한다 (10:00)", () -> deleteTheme(themeId.longValue(), 204)),
                 dynamicTest("테마를 추가한다 (10:00)", () -> postTheme(201)),
                 dynamicTest("모든 테마를 조회한다 (총 1개)", () -> getThemes(200, 1))
+        );
+    }
+
+    @TestFactory
+    @Sql("/init-for-top-theme.sql")
+    @DisplayName("예약 횟수 상위 10개의 테마를 조회한다")
+    Stream<DynamicTest> top10Theme() {
+        return Stream.of(
+                dynamicTest("인기 테마를 조회한다", () -> getTopTheme(200, TestFixture.themeResponses1)),
+                dynamicTest("과거 예약을 추가한다", () -> postPastReservation("2024-04-29", "1", "10")),
+                dynamicTest("인기 테마를 조회한다", () -> getTopTheme(200, TestFixture.themeResponses2)),
+                dynamicTest("과거 예약을 추가한다", () -> postPastReservation("2024-04-30", "1", "11")),
+                dynamicTest("과거 예약을 추가한다", () -> postPastReservation("2024-04-30", "2", "11")),
+                dynamicTest("인기 테마를 조회한다", () -> getTopTheme(200, TestFixture.themeResponses3))
         );
     }
 
@@ -76,5 +98,23 @@ class ThemeAcceptanceTest extends BasicAcceptanceTest {
                 .when().delete("/themes/" + themeId)
                 .then().log().all()
                 .statusCode(expectedHttpCode);
+    }
+
+    private void getTopTheme(int expectedHttpCode, List<ThemeResponse> expectedThemeResponses) {
+        Response response = RestAssured.given().log().all()
+                .when().get("/themes/tops")
+                .then().log().all()
+                .statusCode(expectedHttpCode)
+                .extract().response();
+
+        List<ThemeResponse> themeResponses = response.jsonPath().getList(".", ThemeResponse.class);
+
+        assertThat(themeResponses).isEqualTo(expectedThemeResponses);
+    }
+
+    private void postPastReservation(String date, String timeId, String themeId) {
+        jdbcTemplate.update(
+                "insert into reservation (name, date, time_id, theme_id) values ('사람', ?, ?, ?)",
+                date, timeId, themeId);
     }
 }

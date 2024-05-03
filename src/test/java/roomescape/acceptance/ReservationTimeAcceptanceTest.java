@@ -102,7 +102,7 @@ class ReservationTimeAcceptanceTest extends BasicAcceptanceTest {
                 .statusCode(expectedHttpCode);
     }
 
-    private void getAvailableTimes(int expectedHttpCode, int alreadyBookedSize) {
+    private void getAvailableTimes(int expectedHttpCode, int expectedAlreadyBookedSize) {
         Response response = RestAssured.given().log().all()
                 .when().get("/times/available?date=2099-04-29&themeId=1")
                 .then().log().all()
@@ -115,6 +115,6 @@ class ReservationTimeAcceptanceTest extends BasicAcceptanceTest {
                 .filter(AvailableReservationTimeResponse::alreadyBooked)
                 .toList();
 
-        assertThat(list).hasSize(alreadyBookedSize);
+        assertThat(list).hasSize(expectedAlreadyBookedSize);
     }
 }
