@@ -19,8 +19,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import roomescape.reservation.dto.TimeCreateRequest;
 import roomescape.reservation.dto.TimeResponse;
-import roomescape.reservation.dto.TimeSaveRequest;
 import roomescape.reservation.service.ReservationTimeService;
 
 @WebMvcTest(ReservationTimeApiController.class)
@@ -48,18 +48,18 @@ class ReservationTimeApiControllerTest {
     @Test
     @DisplayName("시간 정보를 저장 성공 시 201 응답과 Location 헤더에 리소스 저장 경로를 받는다.")
     public void createSuccessTest() throws Exception {
-        TimeSaveRequest timeSaveRequest = new TimeSaveRequest(LocalTime.now());
-        TimeResponse timeResponse = new TimeResponse(1L, timeSaveRequest.startAt());
+        TimeCreateRequest timeCreateRequest = new TimeCreateRequest(LocalTime.now());
+        TimeResponse timeResponse = new TimeResponse(1L, timeCreateRequest.startAt());
 
         doReturn(1L).when(reservationTimeService)
-                .save(any(TimeSaveRequest.class));
+                .save(any(TimeCreateRequest.class));
 
         doReturn(timeResponse).when(reservationTimeService)
                 .findById(1L);
 
         mockMvc.perform(post("/times")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(timeSaveRequest)))
+                        .content(objectMapper.writeValueAsString(timeCreateRequest)))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "/times/1"))
                 .andExpect(jsonPath("$.id").value(timeResponse.id()));

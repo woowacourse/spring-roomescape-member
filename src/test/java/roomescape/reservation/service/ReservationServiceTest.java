@@ -17,7 +17,7 @@ import roomescape.reservation.domain.Name;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
-import roomescape.reservation.dto.ReservationSaveRequest;
+import roomescape.reservation.dto.ReservationCreateRequest;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.repository.ReservationTimeRepository;
 import roomescape.reservation.repository.ThemeRepository;
@@ -45,18 +45,19 @@ class ReservationServiceTest {
         doReturn(Optional.empty()).when(reservationTimeRepository)
                 .findById(timeId);
 
-        ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest("hogi", LocalDate.now(), 1L, timeId);
-        assertThatThrownBy(() -> reservationService.save(reservationSaveRequest))
+        ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest("hogi", LocalDate.now(), 1L,
+                timeId);
+        assertThatThrownBy(() -> reservationService.save(reservationCreateRequest))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     @DisplayName("지나간 날짜를 예약 하면 예외가 발생한다")
     void beforeDateExceptionTest() {
-        ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest("hogi",
+        ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest("hogi",
                 LocalDate.parse("1998-03-14"), 1L, 1L);
 
-        assertThatThrownBy(() -> reservationService.save(reservationSaveRequest))
+        assertThatThrownBy(() -> reservationService.save(reservationCreateRequest))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -75,9 +76,9 @@ class ReservationServiceTest {
         doReturn(true).when(reservationRepository)
                 .existReservation(Mockito.any(Reservation.class));
 
-        ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest("hogi",
+        ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest("hogi",
                 LocalDate.parse("2025-03-14"), 1L, 1L);
-        assertThatThrownBy(() -> reservationService.save(reservationSaveRequest))
+        assertThatThrownBy(() -> reservationService.save(reservationCreateRequest))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 

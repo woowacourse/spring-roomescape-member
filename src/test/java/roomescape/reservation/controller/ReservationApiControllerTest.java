@@ -18,8 +18,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import roomescape.reservation.dto.ReservationCreateRequest;
 import roomescape.reservation.dto.ReservationResponse;
-import roomescape.reservation.dto.ReservationSaveRequest;
 import roomescape.reservation.dto.ThemeResponse;
 import roomescape.reservation.dto.TimeResponse;
 import roomescape.reservation.service.ReservationService;
@@ -47,21 +47,22 @@ class ReservationApiControllerTest {
     @Test
     @DisplayName("예약을 성공적으로 추가하면 201 응답과 Location 헤더에 리소스 저장 경로를 받는다.")
     void createReservationRequestTest() throws Exception {
-        ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest("hogi", LocalDate.now(), 1L, 1L);
+        ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest("hogi", LocalDate.now(), 1L,
+                1L);
         ThemeResponse themeResponse = new ThemeResponse(1L, "공포", "무서운 테마", "https://i.pinimg.com/236x.jpg");
         TimeResponse timeResponse = new TimeResponse(1L, LocalTime.now());
-        ReservationResponse reservationResponse = new ReservationResponse(1L, "hogi", reservationSaveRequest.date(),
+        ReservationResponse reservationResponse = new ReservationResponse(1L, "hogi", reservationCreateRequest.date(),
                 themeResponse, timeResponse);
 
         doReturn(1L).when(reservationService)
-                .save(reservationSaveRequest);
+                .save(reservationCreateRequest);
 
         doReturn(reservationResponse).when(reservationService)
                 .findById(1L);
 
         mockMvc.perform(post("/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(reservationSaveRequest)))
+                        .content(objectMapper.writeValueAsString(reservationCreateRequest)))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "/reservations/1"))
                 .andExpect(jsonPath("$.id").value(reservationResponse.id()));

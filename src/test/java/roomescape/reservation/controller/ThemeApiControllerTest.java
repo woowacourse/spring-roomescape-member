@@ -16,8 +16,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import roomescape.reservation.dto.ThemeCreateRequest;
 import roomescape.reservation.dto.ThemeResponse;
-import roomescape.reservation.dto.ThemeSaveRequest;
 import roomescape.reservation.service.ThemeService;
 
 @WebMvcTest(ThemeApiController.class)
@@ -51,19 +51,19 @@ class ThemeApiControllerTest {
     @Test
     @DisplayName("테마를 성공적으로 추가하면 201 응답과 Location 헤더에 리소스 저장 경로를 받는다.")
     void createThemeRequestTest() throws Exception {
-        ThemeSaveRequest themeSaveRequest = new ThemeSaveRequest("공포", "진짜 무서움", "https://i.pinimg.com/236x.jpg");
-        ThemeResponse themeResponse = new ThemeResponse(1L, themeSaveRequest.name(), themeSaveRequest.description(),
-                themeSaveRequest.thumbnail());
+        ThemeCreateRequest themeCreateRequest = new ThemeCreateRequest("공포", "진짜 무서움", "https://i.pinimg.com/236x.jpg");
+        ThemeResponse themeResponse = new ThemeResponse(1L, themeCreateRequest.name(), themeCreateRequest.description(),
+                themeCreateRequest.thumbnail());
 
         doReturn(1L).when(themeService)
-                .save(themeSaveRequest);
+                .save(themeCreateRequest);
 
         doReturn(themeResponse).when(themeService)
                 .findById(1L);
 
         mockMvc.perform(post("/themes")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(themeSaveRequest)))
+                        .content(objectMapper.writeValueAsString(themeCreateRequest)))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "/themes/1"))
                 .andExpect(jsonPath("$.id").value(themeResponse.id()));

@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.reservation.dto.ReservationCreateRequest;
 import roomescape.reservation.dto.ReservationResponse;
-import roomescape.reservation.dto.ReservationSaveRequest;
 import roomescape.reservation.service.ReservationService;
 
 @RestController
@@ -30,8 +30,8 @@ public class ReservationApiController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity<ReservationResponse> create(@RequestBody ReservationSaveRequest reservationSaveRequest) {
-        Long id = reservationService.save(reservationSaveRequest);
+    public ResponseEntity<ReservationResponse> create(@RequestBody ReservationCreateRequest reservationCreateRequest) {
+        Long id = reservationService.save(reservationCreateRequest);
         ReservationResponse reservationResponse = reservationService.findById(id);
 
         return ResponseEntity.created(URI.create("/reservations/" + id)).body(reservationResponse);
