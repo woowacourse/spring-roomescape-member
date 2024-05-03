@@ -36,7 +36,7 @@ public class ThemeController {
         if (limit != null) {
             return reservationService.findPopularThemes(limit)
                     .stream()
-                    .map(ReservationResponse::themeResponse)
+                    .map(ReservationResponse::theme)
                     .toList();
         }
         return themeService.findThemes();
