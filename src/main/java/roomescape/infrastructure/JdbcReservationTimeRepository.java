@@ -58,7 +58,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     public boolean existsByStartAt(LocalTime startAt) {
-        String sql = "select count(*) from reservation_time where start_at = ?";
+        String sql = "select exists(select 1 from reservation_time where start_at = ?)";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, startAt);
         return count != null && count > 0;
     }
