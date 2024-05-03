@@ -56,8 +56,4 @@ public class AdminReservationService {
         }
         reservationDao.deleteById(id);
     }
-
-    public List<Theme> getThemeRanking() {
-        return reservationDao.findThemeOrderByReservationCount();
-    }
 }

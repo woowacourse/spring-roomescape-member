@@ -39,9 +39,4 @@ public class AdminReservationController {
         adminReservationService.removeReservation(id);
         return ResponseEntity.noContent().build();
     }
-
-    @GetMapping("/reservations/theme-rank")
-    public ResponseEntity<List<Theme>> getThemeRank() {
-        return ResponseEntity.ok(adminReservationService.getThemeRanking());
-    }
 }
