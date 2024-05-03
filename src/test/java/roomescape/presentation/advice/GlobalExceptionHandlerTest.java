@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.parsing.Problem;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
@@ -29,8 +30,7 @@ class GlobalExceptionHandlerTest extends ControllerTest {
                 .andExpect(status().isMethodNotAllowed())
                 .andReturn()
                 .getResponse();
-        ProblemDetail problemDetail = objectMapper.readValue(response.getContentAsString(), ProblemDetail.class);
-        assertThat(problemDetail.getStatus()).isEqualTo(HttpStatus.METHOD_NOT_ALLOWED.value());
+        mapProblemDetailAndAssert(response, HttpStatus.METHOD_NOT_ALLOWED);
     }
 
     @DisplayName("ErrorResponse가 처리할 수 없는 예외의 경우, 500 서버 오류를 응답한다.")
@@ -41,8 +41,13 @@ class GlobalExceptionHandlerTest extends ControllerTest {
                 .andExpect(status().isInternalServerError())
                 .andReturn()
                 .getResponse();
+        mapProblemDetailAndAssert(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private ProblemDetail mapProblemDetailAndAssert(MockHttpServletResponse response, HttpStatus status) throws Exception {
         ProblemDetail problemDetail = objectMapper.readValue(response.getContentAsString(), ProblemDetail.class);
         int statusCode = problemDetail.getStatus();
-        assertThat(statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(statusCode).isEqualTo(status.value());
+        return problemDetail;
     }
 }
