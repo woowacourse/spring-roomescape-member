@@ -59,12 +59,8 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> findAll() {
-        List<Reservation> reservations = reservationRepository.findAll();
-        return convertToReservationResponses(reservations);
-    }
-
-    private List<ReservationResponse> convertToReservationResponses(List<Reservation> reservations) {
-        return reservations.stream()
+        return reservationRepository.findAll()
+                .stream()
                 .map(ReservationResponse::from)
                 .toList();
     }
