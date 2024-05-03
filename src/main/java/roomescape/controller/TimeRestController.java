@@ -23,21 +23,21 @@ public class TimeRestController {
 
     @GetMapping
     public ResponseEntity<List<TimeResponse>> getAll() {
-        List<TimeResponse> responses = reservationTimeService.findAllTimes();
+        List<TimeResponse> responses = reservationTimeService.findAll();
 
         return ResponseEntity.ok(responses);
     }
 
     @GetMapping("/member")
     public ResponseEntity<List<TimeMemberResponse>> getAll(@RequestParam LocalDate date, @RequestParam Long themeId) {
-        List<TimeMemberResponse> responses = reservationTimeService.findAllTimesWithBooking(date, themeId);
+        List<TimeMemberResponse> responses = reservationTimeService.findAllWithBooking(date, themeId);
 
         return ResponseEntity.ok(responses);
     }
 
     @PostMapping
     public ResponseEntity<TimeResponse> create(@RequestBody TimeRequest request) {
-        TimeResponse response = reservationTimeService.saveTime(request);
+        TimeResponse response = reservationTimeService.save(request);
 
         URI location = URI.create("/times/" + response.id());
         return ResponseEntity.created(location).body(response);

@@ -27,14 +27,14 @@ public class ReservationTimeService {
         this.reservationDao = reservationDao;
     }
 
-    public List<TimeResponse> findAllTimes() {
+    public List<TimeResponse> findAll() {
         List<ReservationTime> reservationTimes = timeDao.findAll();
         return reservationTimes.stream()
                 .map(timeMapper::mapToResponse)
                 .toList();
     }
 
-    public List<TimeMemberResponse> findAllTimesWithBooking(LocalDate date, Long themeId) {
+    public List<TimeMemberResponse> findAllWithBooking(LocalDate date, Long themeId) {
         List<ReservationTime> allTimes = timeDao.findAll();
         List<TimeMemberResponse> allTimeResponsesWithBooking = new ArrayList<>();
         List<Long> bookedTimeIds = reservationDao.findTimeIdsByDateAndThemeId(date, themeId);
@@ -47,7 +47,8 @@ public class ReservationTimeService {
         return allTimeResponsesWithBooking;
     }
 
-    public TimeResponse saveTime(TimeRequest request) {
+    // TODO: 메서드명 간략화
+    public TimeResponse save(TimeRequest request) {
         ReservationTime reservationTime = timeMapper.mapToTime(request);
 
         if (timeDao.existByTime(reservationTime.getStartAt())) {

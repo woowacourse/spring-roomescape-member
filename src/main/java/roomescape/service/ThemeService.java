@@ -39,6 +39,10 @@ public class ThemeService {
     public ThemeResponse save(ThemeRequest request) {
         Theme theme = themeMapper.mapToTheme(request);
 
+//        if (themeDao.existBy(theme.())) {
+//            throw new IllegalThemeException("[ERROR] 중복된 테마는 생성할 수 없습니다.");
+//        }
+
         Theme newTheme = themeDao.save(theme);
         return themeMapper.mapToResponse(newTheme);
     }
