@@ -9,9 +9,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
+import roomescape.controller.reservation.PopularThemeResponse;
 import roomescape.service.ThemeService;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -49,5 +51,11 @@ public class ThemeController {
         }
         return ResponseEntity.noContent()
                 .build();
+    }
+
+    //TODO rest 한가?
+    @GetMapping("/popular")
+    public List<PopularThemeResponse> getPopularThemes() {
+        return themeService.getPopularThemes(LocalDate.now());
     }
 }

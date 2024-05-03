@@ -51,9 +51,4 @@ public class ReservationController {
         return ResponseEntity.noContent()
                 .build();
     }
-
-    @GetMapping("/popular-themes")
-    public List<PopularThemeResponse> getPopularThemes() {
-        return reservationService.getPopularThemes(LocalDate.now());
-    }
 }
