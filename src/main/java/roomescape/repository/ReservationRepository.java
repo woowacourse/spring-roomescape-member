@@ -12,7 +12,7 @@ public interface ReservationRepository {
 
     Reservation findById(Long id);
 
-    List<Long> findThemeReservationCountsForLastWeek();
+    List<Long> findThemeReservationCountsForDate(LocalDate startDate, LocalDate endDate);
 
     List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId);
 

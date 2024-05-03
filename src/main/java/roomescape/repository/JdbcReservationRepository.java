@@ -96,36 +96,37 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Long> findThemeReservationCountsForLastWeek() {
+    public List<Long> findThemeReservationCountsForDate(LocalDate startDate, LocalDate endDate) {
         String sql = """
                 SELECT theme_id
                 FROM reservation
-                WHERE date BETWEEN CURRENT_DATE() - INTERVAL '7' DAY AND CURRENT_DATE() - INTERVAL '1' DAY
+                WHERE date BETWEEN ? AND ?
                 GROUP BY theme_id
                 ORDER BY COUNT(*) DESC
                 LIMIT 10;
                 """;
-        return jdbcTemplate.query(sql, (resultSet, rowNum) -> resultSet.getLong("theme_id"));
+        return jdbcTemplate.query(sql,
+                (resultSet, rowNum) -> resultSet.getLong("theme_id"), startDate, endDate);
     }
 
     @Override
-    public List<Reservation> findByDateAndThemeId(final LocalDate date, final Long themeId) {
+    public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
         String sql = """
-               SELECT
-                    r.id AS reservation_id,
-                    r.name,
-                    r.date,
-                    t.id AS time_id,
-                    t.start_at AS time_value,
-                    th.id AS theme_id,
-                    th.name AS theme_name,
-                    th.description AS theme_description,
-                    th.thumbnail AS theme_thumbnail
-               FROM reservation AS r
-               INNER JOIN reservation_time AS t ON r.time_id = t.id
-               INNER JOIN theme AS th ON r.theme_id = th.id
-               WHERE r.date = ? AND th.id = ?
-                """;
+                SELECT
+                     r.id AS reservation_id,
+                     r.name,
+                     r.date,
+                     t.id AS time_id,
+                     t.start_at AS time_value,
+                     th.id AS theme_id,
+                     th.name AS theme_name,
+                     th.description AS theme_description,
+                     th.thumbnail AS theme_thumbnail
+                FROM reservation AS r
+                INNER JOIN reservation_time AS t ON r.time_id = t.id
+                INNER JOIN theme AS th ON r.theme_id = th.id
+                WHERE r.date = ? AND th.id = ?
+                 """;
         return jdbcTemplate.query(sql, ROW_MAPPER, date, themeId);
     }
 
@@ -148,7 +149,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Boolean existThemeId(final Long id) {
+    public Boolean existThemeId(Long id) {
         String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE theme_id = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, id);
     }
