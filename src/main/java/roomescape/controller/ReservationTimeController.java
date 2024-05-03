@@ -13,14 +13,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.dto.ReservationTimeUserWebResponse;
-import roomescape.controller.dto.ReservationTimeWebRequest;
-import roomescape.controller.dto.ReservationTimeWebResponse;
+import roomescape.controller.request.ReservationTimeWebRequest;
+import roomescape.controller.response.ReservationTimeUserWebResponse;
+import roomescape.controller.response.ReservationTimeWebResponse;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.ReservationExistsException;
 import roomescape.service.ReservationTimeService;
-import roomescape.service.dto.ReservationTimeAppRequest;
-import roomescape.service.dto.ReservationTimeAppResponse;
+import roomescape.service.request.ReservationTimeAppRequest;
+import roomescape.service.response.ReservationTimeAppResponse;
 
 @RestController
 @RequestMapping("/times")

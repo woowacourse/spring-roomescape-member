@@ -16,13 +16,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.controller.dto.ReservationTimeWebRequest;
-import roomescape.controller.dto.ReservationTimeWebResponse;
+import roomescape.controller.request.ReservationTimeWebRequest;
+import roomescape.controller.response.ReservationTimeWebResponse;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.DuplicatedModelException;
 import roomescape.exception.ReservationExistsException;
 import roomescape.service.ReservationTimeService;
-import roomescape.service.dto.ReservationTimeAppRequest;
+import roomescape.service.request.ReservationTimeAppRequest;
 
 @WebMvcTest(ReservationTimeController.class)
 class ReservationTimeControllerTest {

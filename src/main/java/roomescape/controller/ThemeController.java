@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.dto.ThemeWebRequest;
-import roomescape.controller.dto.ThemeWebResponse;
+import roomescape.controller.request.ThemeWebRequest;
+import roomescape.controller.response.ThemeWebResponse;
 import roomescape.domain.Theme;
 import roomescape.exception.ReservationExistsException;
 import roomescape.service.ThemeService;
-import roomescape.service.dto.ThemeAppRequest;
+import roomescape.service.request.ThemeAppRequest;
 
 @RestController
 @RequestMapping("/themes")

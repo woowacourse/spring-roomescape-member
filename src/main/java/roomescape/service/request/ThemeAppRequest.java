@@ -1,4 +1,4 @@
-package roomescape.service.dto;
+package roomescape.service.request;
 
 public record ThemeAppRequest(String name, String description, String thumbnail) {
 

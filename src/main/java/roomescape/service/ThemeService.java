@@ -7,7 +7,7 @@ import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 import roomescape.exception.DuplicatedModelException;
 import roomescape.exception.ReservationExistsException;
-import roomescape.service.dto.ThemeAppRequest;
+import roomescape.service.request.ThemeAppRequest;
 
 @Service
 public class ThemeService {

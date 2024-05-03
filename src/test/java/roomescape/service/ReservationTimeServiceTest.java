@@ -22,7 +22,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.exception.DuplicatedModelException;
 import roomescape.exception.ReservationExistsException;
-import roomescape.service.dto.ReservationTimeAppRequest;
+import roomescape.service.request.ReservationTimeAppRequest;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationTimeServiceTest {
