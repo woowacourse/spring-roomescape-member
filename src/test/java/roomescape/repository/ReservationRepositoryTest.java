@@ -12,6 +12,7 @@ import roomescape.domain.Theme;
 
 import javax.sql.DataSource;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,14 +40,14 @@ class ReservationRepositoryTest {
                         1L,
                         "al",
                         LocalDate.of(2025, 1, 20),
-                        new ReservationTime(1L, "10:15"),
+                        new ReservationTime(1L, LocalTime.parse("10:15")),
                         new Theme(1L, null, null, null)
                 ),
                 new Reservation(
                         2L,
                         "be",
                         LocalDate.of(2025, 2, 19),
-                        new ReservationTime(2L, "11:20"),
+                        new ReservationTime(2L, LocalTime.parse("11:20")),
                         new Theme(2L, null, null, null)
                 )
         );
@@ -67,7 +68,7 @@ class ReservationRepositoryTest {
                 id,
                 "be",
                 LocalDate.of(2025, 2, 19),
-                new ReservationTime(2L, "00:00"),
+                new ReservationTime(2L, LocalTime.parse("00:00")),
                 new Theme(2L, null, null, null)
         );
 
@@ -127,14 +128,14 @@ class ReservationRepositoryTest {
                 null,
                 "cha",
                 LocalDate.of(2024, 3, 1),
-                new ReservationTime(2L, "00:00"),
+                new ReservationTime(2L, LocalTime.parse("00:00")),
                 new Theme(2L, null, null, null)
         );
         Reservation expected = new Reservation(
                 3L,
                 "cha",
                 LocalDate.of(2024, 3, 1),
-                new ReservationTime(2L, "00:00"),
+                new ReservationTime(2L, LocalTime.parse("00:00")),
                 new Theme(2L, null, null, null)
         );
 
@@ -153,14 +154,14 @@ class ReservationRepositoryTest {
                 null,
                 "cha",
                 LocalDate.of(2025, 3, 1),
-                new ReservationTime(4L, "00:00"),
+                new ReservationTime(4L, LocalTime.parse("00:00")),
                 new Theme(2L, null, null, null)
         );
         Reservation expected = new Reservation(
                 3L,
                 "cha",
                 LocalDate.of(2025, 3, 1),
-                new ReservationTime(4L, "00:00"),
+                new ReservationTime(4L, LocalTime.parse("00:00")),
                 new Theme(2L, null, null, null)
         );
 

@@ -45,8 +45,8 @@ public class H2ReservationRepository implements ReservationRepository {
                 rs.getString("DATE"),
                 new ReservationTime(
                         rs.getLong("RESERVATION.ID"),
-                        rs.getString("RESERVATION_TIME.START_AT")
-                ), // TODO 여기서 바로 LocalDate로 파싱하면 검증할 필요 없지 않을까
+                        rs.getTime("RESERVATION_TIME.START_AT").toLocalTime()
+                ),
                 new Theme(
                         rs.getLong("RESERVATION.ID"),
                         rs.getString("THEME.NAME"),
@@ -72,7 +72,7 @@ public class H2ReservationRepository implements ReservationRepository {
                         rs.getString("DATE"),
                         new ReservationTime(
                                 rs.getLong("TIME_ID"),
-                                rs.getString("START_AT")),
+                                rs.getTime("START_AT").toLocalTime()),
                         new Theme(rs.getLong("RESERVATION.THEME_ID")))),
                 date, themeId);
     }
@@ -107,7 +107,7 @@ public class H2ReservationRepository implements ReservationRepository {
                 rs.getLong("ID"),
                 rs.getString("NAME"),
                 rs.getString("DATE"),
-                new ReservationTime(rs.getLong("RESERVATION.TIME_ID"), "00:00"),
+                new ReservationTime(rs.getLong("RESERVATION.TIME_ID"), null),
                 new Theme(rs.getLong("RESERVATION.THEME_ID"))
         );
     }
@@ -148,7 +148,7 @@ public class H2ReservationRepository implements ReservationRepository {
                 JOIN RESERVATION_TIME RT ON RT.ID = R.TIME_ID
                 JOIN THEME T ON T.ID = R.THEME_ID
                 WHERE R.DATE BETWEEN  ? AND ?
-                GROUP BY (R.THEME_ID)
+                GROUP BY R.THEME_ID
                 ORDER BY COUNT DESC
                 LIMIT 10
                 """;

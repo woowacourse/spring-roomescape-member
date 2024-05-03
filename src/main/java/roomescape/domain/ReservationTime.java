@@ -16,14 +16,10 @@ public class ReservationTime {
         this.startAt = startAt;
     }
 
-    public ReservationTime(final Long id, final String startAt) { //TODO 어떤건 this() 어떤건 this. 뭐시기로,,, 통일해보기
-        validateNull(startAt);
-        this.id = id;
-        this.startAt = validateFormatAndConvert(startAt);
-    }
-
     public ReservationTime(final String startAt) {
-        this(null, startAt);
+        validateNull(startAt);
+        this.id = null;
+        this.startAt = validateFormatAndConvert(startAt);
     }
 
     private void validateNull(final String startAt) {
