@@ -48,18 +48,6 @@ public class Reservation {
         }
     }
 
-    public Reservation assignId(final Long id) {
-        return new Reservation(id, name, date, time, theme);
-    }
-
-    public Reservation assignTime(final ReservationTime time) {
-        return new Reservation(id, name, date, time, theme);
-    }
-
-    public Reservation assignTheme(final Theme theme) {
-        return new Reservation(id, name, date, time, theme);
-    }
-
     public Long getId() {
         return id;
     }

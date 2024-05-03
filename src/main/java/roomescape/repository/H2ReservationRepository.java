@@ -121,7 +121,8 @@ public class H2ReservationRepository implements ReservationRepository {
                 .addValue("THEME_ID", reservation.getTheme().getId());
 
         final Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
-        return reservation.assignId(id);
+        return new Reservation(id, reservation.getName(), reservation.getDate(),
+                reservation.getTime(), reservation.getTheme());
     }
 
     @Override

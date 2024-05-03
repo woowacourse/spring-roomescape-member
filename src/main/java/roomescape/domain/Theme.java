@@ -45,10 +45,6 @@ public class Theme {
         }
     }
 
-    public Theme assignId(final Long id) {
-        return new Theme(id, name, description, thumbnail);
-    }
-
     public Long getId() {
         return id;
     }

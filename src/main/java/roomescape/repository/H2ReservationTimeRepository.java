@@ -50,13 +50,12 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
                 .findAny();
     }
 
-
     @Override
     public ReservationTime save(final ReservationTime time) {
         final SqlParameterSource params = new BeanPropertySqlParameterSource(time);
         final Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
 
-        return time.assignId(id);
+        return new ReservationTime(id, time.getStartAt());
     }
 
     @Override

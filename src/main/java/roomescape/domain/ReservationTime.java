@@ -40,10 +40,6 @@ public class ReservationTime {
         }
     }
 
-    public ReservationTime assignId(final Long id) {
-        return new ReservationTime(id, startAt);
-    }
-
     public Long getId() {
         return id;
     }

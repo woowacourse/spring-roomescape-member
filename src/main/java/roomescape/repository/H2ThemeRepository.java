@@ -56,7 +56,7 @@ public class H2ThemeRepository implements ThemeRepository {
         final SqlParameterSource params = new BeanPropertySqlParameterSource(theme);
         final Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
 
-        return theme.assignId(id);
+        return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 
     @Override
