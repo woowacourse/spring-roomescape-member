@@ -16,26 +16,25 @@ public class ReservationTime {
         this.startAt = startAt;
     }
 
-    public ReservationTime(final Long id, final String startAt) {
-        this.id = id;
-        this.startAt = LocalTime.parse(startAt);
-    }
-
-    public static ReservationTime from(final String startAt) {
+    public ReservationTime(final Long id, final String startAt) { //TODO 어떤건 this() 어떤건 this. 뭐시기로,,, 통일해보기
         validateNull(startAt);
-        validateFormat(startAt);
-        return new ReservationTime(null, LocalTime.parse(startAt));
+        this.id = id;
+        this.startAt = validateFormatAndConvert(startAt);
     }
 
-    private static void validateNull(final String startAt) {
+    public ReservationTime(final String startAt) {
+        this(null, startAt);
+    }
+
+    private void validateNull(final String startAt) {
         if (startAt == null || startAt.isBlank()) {
             throw new InvalidRequestException("공백일 수 없습니다.");
         }
     }
 
-    private static void validateFormat(final String startAt) {
+    private LocalTime validateFormatAndConvert(final String startAt) {
         try {
-            LocalTime.parse(startAt);
+            return LocalTime.parse(startAt);
         } catch (DateTimeException e) {
             throw new InvalidTimeException("유효하지 않은 시간 입니다.");
         }

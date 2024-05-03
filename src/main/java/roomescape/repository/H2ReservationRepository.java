@@ -38,7 +38,7 @@ public class H2ReservationRepository implements ReservationRepository {
                 LEFT JOIN THEME T ON T.ID = R.THEME_ID
                 """;
 
-        return jdbcTemplate.query(sql, ((rs, rowNum) -> Reservation.from(
+        return jdbcTemplate.query(sql, ((rs, rowNum) -> new Reservation(
                 rs.getLong("ID"),
                 rs.getString("NAME"),
                 rs.getString("DATE"),
@@ -59,7 +59,7 @@ public class H2ReservationRepository implements ReservationRepository {
                 """;
 
         //TODO 메서드 분리
-        return jdbcTemplate.query(sql, ((rs, rowNum) -> Reservation.from(
+        return jdbcTemplate.query(sql, ((rs, rowNum) -> new Reservation(
                         rs.getLong("ID"),
                         rs.getString("NAME"),
                         rs.getString("DATE"),
@@ -96,7 +96,7 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     private Reservation mapRowReservation(final ResultSet rs, final int rowNum) throws SQLException {
-        return Reservation.from(
+        return new Reservation(
                 rs.getLong("ID"),
                 rs.getString("NAME"),
                 rs.getString("DATE"),

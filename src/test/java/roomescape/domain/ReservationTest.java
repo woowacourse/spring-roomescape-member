@@ -71,7 +71,7 @@ class ReservationTest {
     @Test
     @DisplayName("빈 이름이 입력 될 경우 예외가 발생한다.")
     void validateEmptyName() {
-        assertThatThrownBy(() -> Reservation.from(
+        assertThatThrownBy(() -> new Reservation(
                 2L,
                 "",
                 "2024-04-24",
@@ -83,7 +83,7 @@ class ReservationTest {
     @Test
     @DisplayName("빈 날짜가 입력 될 경우 예외가 발생한다.")
     void validateEmptyDate() {
-        assertThatThrownBy(() -> Reservation.from(
+        assertThatThrownBy(() -> new Reservation(
                 2L,
                 "seyang",
                 "",
@@ -98,7 +98,7 @@ class ReservationTest {
     void validateFormat(String date) {
         final ReservationTime time = new ReservationTime(1L, LocalTime.parse("13:00"));
         final Theme theme = new Theme(1L, "spring", "Escape from spring cold", "Spring thumb");
-        assertThatThrownBy(() -> Reservation.from(1L, "name", date, time, theme))
+        assertThatThrownBy(() -> new Reservation(1L, "name", date, time, theme))
                 .isInstanceOf(InvalidDateException.class);
     }
 }

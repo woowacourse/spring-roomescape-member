@@ -15,7 +15,7 @@ class ThemeTest {
     @NullAndEmptySource
     @DisplayName("이름이 공백일 경우 예외가 발생한다.")
     void validateNull(String name) {
-        assertThatThrownBy(() -> Theme.from(name, "", ""))
+        assertThatThrownBy(() -> new Theme(name, "", ""))
                 .isInstanceOf(InvalidRequestException.class);
     }
 
@@ -24,7 +24,7 @@ class ThemeTest {
     @DisplayName("썸네일이 공백일 경우 기본 썸네일로 대체된다.")
     void getDefaultThumbnailIfNotExists(String thumbnail) {
         // given & when
-        final Theme theme = Theme.from("spring", "", thumbnail);
+        final Theme theme = new Theme("spring", "", thumbnail);
 
         // then
         assertThat(theme.getThumbnail()).isEqualTo(DEFAULT_THUMBNAIL);

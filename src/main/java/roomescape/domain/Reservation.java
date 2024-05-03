@@ -14,7 +14,8 @@ public class Reservation {
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time, final Theme theme) {
+    public Reservation(final Long id, final String name, final LocalDate date,
+                       final ReservationTime time, final Theme theme) {
         this.id = id;
         this.name = name;
         this.date = date;
@@ -22,22 +23,26 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public static Reservation from(final Long id, final String name, final String date, final ReservationTime time, final Theme theme) {
+    public Reservation(final Long id, final String name, final String date,
+                       final ReservationTime time, final Theme theme) {
         validateNull(name);
         validateNull(date);
-        validateFormat(date);
-        return new Reservation(id, name, LocalDate.parse(date), time, theme);
+        this.id = id;
+        this.name = name;
+        this.date = validateFormatAndConvert(date);
+        this.time = time;
+        this.theme = theme;
     }
 
-    private static void validateFormat(final String date) {
+    private LocalDate validateFormatAndConvert(final String date) {
         try {
-            LocalDate.parse(date);
+            return LocalDate.parse(date);
         } catch (DateTimeParseException exception) {
             throw new InvalidDateException("유효하지 않은 날짜입니다.");
         }
     }
 
-    private static void validateNull(final String value) {
+    private void validateNull(final String value) {
         if (value == null || value.isBlank()) {
             throw new InvalidRequestException("공백일 수 없습니다.");
         }

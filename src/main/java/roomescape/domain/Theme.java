@@ -24,19 +24,22 @@ public class Theme {
         this(id, null, null, null);
     }
 
-    public static Theme from(final String name, final String description, final String thumbnail) {
+    public Theme(final String name, final String description, final String thumbnail) {
         validateNull(name);
-        return new Theme(null, name, description, getDefaultThumbnailIfNotExists(thumbnail));
+        this.id = null;
+        this.name = name;
+        this.description = description;
+        this.thumbnail = getDefaultThumbnailIfNotExists(thumbnail);
     }
 
-    private static String getDefaultThumbnailIfNotExists(final String thumbnail) {
+    private String getDefaultThumbnailIfNotExists(final String thumbnail) {
         if (thumbnail == null || thumbnail.isBlank()) {
             return DEFAULT_THUMBNAIL;
         }
         return thumbnail;
     }
 
-    private static void validateNull(final String name) {
+    private void validateNull(final String name) { //TODO 애노테이션 알아보기
         if (name == null || name.isBlank()) {
             throw new InvalidRequestException("공백일 수 없습니다.");
         }
