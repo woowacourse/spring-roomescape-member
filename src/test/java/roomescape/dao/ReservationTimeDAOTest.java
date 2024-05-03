@@ -38,6 +38,7 @@ class ReservationTimeDAOTest {
     }
 
     @Test
+    @DisplayName("예약 시간을 삭제한다.")
     void deleteById() {
         reservationTimeDAO.insert(new ReservationTime(LocalTime.now()));
 
@@ -45,5 +46,27 @@ class ReservationTimeDAOTest {
         final List<ReservationTime> reservationTimes = reservationTimeDAO.selectAll();
 
         assertThat(reservationTimes).hasSize(0);
+    }
+
+    @Test
+    @DisplayName("입력된 시간에 예약이 존재하는지 여부를 알 수 있다.")
+    void existReservationOfTime_true() {
+        final LocalTime time = LocalTime.now();
+        reservationTimeDAO.insert(new ReservationTime(time));
+
+        final Boolean result = reservationTimeDAO.existReservationOfTime(time);
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    @DisplayName("입력된 시간에 예약이 존재하는지 여부를 알 수 있다.")
+    void existReservationOfTime_false() {
+        final LocalTime time = LocalTime.now();
+        reservationTimeDAO.insert(new ReservationTime(time));
+
+        final Boolean result = reservationTimeDAO.existReservationOfTime(time.minusHours(1));
+
+        assertThat(result).isFalse();
     }
 }

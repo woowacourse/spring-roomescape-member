@@ -8,6 +8,7 @@ import roomescape.dto.AvailableTimeResponse;
 import roomescape.dto.ReservationTimeRequest;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -21,23 +22,17 @@ public class ReservationTimeService {
     }
 
     public ReservationTime save(final ReservationTimeRequest reservationTimeRequest) {
-        validateDuplicatedTime(reservationTimeRequest);
+        final LocalTime requestReservationTime = reservationTimeRequest.startAt();
+        validateDuplicatedTime(requestReservationTime);
 
-        final ReservationTime reservationTime = new ReservationTime(reservationTimeRequest.startAt());
+        final ReservationTime reservationTime = new ReservationTime(requestReservationTime);
         return reservationTimeDAO.insert(reservationTime);
     }
 
-    private void validateDuplicatedTime(final ReservationTimeRequest reservationTimeRequest) {
-        if (hasDuplicatedTime(reservationTimeRequest)) {
+    private void validateDuplicatedTime(final LocalTime requestReservationTime) {
+        if (reservationTimeDAO.existReservationOfTime(requestReservationTime)) {
             throw new IllegalArgumentException("중복된 시간을 예약할 수 없습니다.");
         }
-    }
-
-    private boolean hasDuplicatedTime(final ReservationTimeRequest reservationTimeRequest) {
-        final List<ReservationTime> reservationTimes = reservationTimeDAO.selectAll();
-
-        return reservationTimes.stream()
-                .anyMatch(reservationTime -> reservationTime.isMatch(reservationTimeRequest.startAt()));
     }
 
     public List<ReservationTime> findAll() {

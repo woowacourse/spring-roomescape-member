@@ -49,6 +49,17 @@ public class ReservationTimeDAO {
         jdbcTemplate.update(sql, id);
     }
 
+    public Boolean existReservationOfTime(final LocalTime time) {
+        final String sql = """
+                    SELECT CASE WHEN EXISTS (
+                        SELECT 1
+                        FROM reservation_time
+                        WHERE start_at = ?
+                    ) THEN TRUE ELSE FALSE END;
+                """;
+        return jdbcTemplate.queryForObject(sql, Boolean.class, time);
+    }
+
     private RowMapper<ReservationTime> reservationTimeRowMapper() {
         return (resultSet, rowNum) -> new ReservationTime(
                 resultSet.getLong("id"),

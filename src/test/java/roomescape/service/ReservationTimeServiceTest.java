@@ -78,6 +78,7 @@ class ReservationTimeServiceTest {
         reservationTimeService.save(new ReservationTimeRequest(localTime));
 
         assertThatThrownBy(() -> reservationTimeService.save(new ReservationTimeRequest(localTime)))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("중복된 시간을 예약할 수 없습니다.");
     }
 }
