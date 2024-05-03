@@ -19,6 +19,10 @@ public class Reservation {
         this.theme = theme;
     }
 
+    public Reservation(Long id, Reservation reservation) {
+        this(id, reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
+    }
+
     public Long getId() {
         return id;
     }

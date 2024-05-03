@@ -94,8 +94,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         reservationRow.put("time_id", reservation.getTimeId());
         reservationRow.put("theme_id", reservation.getThemeId());
         Long id = simpleJdbcInsert.executeAndReturnKey(reservationRow).longValue();
-        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
-                reservation.getTheme());
+        return new Reservation(id, reservation);
     }
 
     @Override
