@@ -14,15 +14,15 @@ import roomescape.domain.Theme;
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
 
-    private final JdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert simpleJdbcInsert;
-
-    private RowMapper<Theme> rowMapper = ((rs, rowNum) -> new Theme(
+    private static final RowMapper<Theme> ROW_MAPPER = ((rs, rowNum) -> new Theme(
             rs.getLong("id"),
             rs.getString("name"),
             rs.getString("description"),
             rs.getString("thumbnail")
     ));
+
+    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public JdbcThemeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -33,7 +33,7 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findAll() {
-        return jdbcTemplate.query("SELECT * FROM theme", rowMapper);
+        return jdbcTemplate.query("SELECT * FROM theme", ROW_MAPPER);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     public Optional<Theme> findById(Long id) {
         String sql = "SELECT * FROM theme WHERE id = ?";
         try {
-            return Optional.of(jdbcTemplate.queryForObject(sql, rowMapper, id));
+            return Optional.of(jdbcTemplate.queryForObject(sql, ROW_MAPPER, id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -74,6 +74,6 @@ public class JdbcThemeRepository implements ThemeRepository {
                 ORDER BY reservation_count DESC 
                 LIMIT 10
                 """;
-        return jdbcTemplate.query(sql, rowMapper);
+        return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 }

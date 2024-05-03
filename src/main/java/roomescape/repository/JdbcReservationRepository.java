@@ -17,9 +17,7 @@ import roomescape.domain.Theme;
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
 
-    private final JdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert simpleJdbcInsert;
-    private final RowMapper<Reservation> rowMapper = (resultSet, rowNum) -> new Reservation(
+    private static final RowMapper<Reservation> ROW_MAPPER = (resultSet, rowNum) -> new Reservation(
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getDate("date").toLocalDate(),
@@ -27,6 +25,9 @@ public class JdbcReservationRepository implements ReservationRepository {
             new Theme(resultSet.getLong("theme_id"), resultSet.getString("theme_name"),
                     resultSet.getString("theme_description"), resultSet.getString("theme_thumbnail"))
     );
+
+    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -54,7 +55,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 INNER JOIN theme 
                 ON r.theme_id = theme.id;
                 """;
-        return jdbcTemplate.query(sql, rowMapper);
+        return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
     @Override
@@ -78,7 +79,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 WHERE r.id = ?;
                 """;
         try {
-            return Optional.of(jdbcTemplate.queryForObject(sql, rowMapper, id));
+            return Optional.of(jdbcTemplate.queryForObject(sql, ROW_MAPPER, id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }

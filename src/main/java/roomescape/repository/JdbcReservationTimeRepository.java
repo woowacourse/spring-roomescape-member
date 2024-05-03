@@ -16,12 +16,13 @@ import roomescape.domain.ReservationTime;
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
 
-    private final JdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert simpleJdbcInsert;
-    private RowMapper<ReservationTime> rowMapper = ((rs, rowNum) -> new ReservationTime(
+    private static final RowMapper<ReservationTime> ROW_MAPPER = ((rs, rowNum) -> new ReservationTime(
             rs.getLong("id"),
             rs.getTime("start_at").toLocalTime()
     ));
+
+    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public JdbcReservationTimeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -32,7 +33,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public List<ReservationTime> findAll() {
-        return jdbcTemplate.query("SELECT * FROM reservation_time", rowMapper);
+        return jdbcTemplate.query("SELECT * FROM reservation_time", ROW_MAPPER);
     }
 
     @Override
@@ -47,7 +48,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     public Optional<ReservationTime> findById(Long id) {
         String sql = "SELECT * FROM reservation_time WHERE id = ?";
         try {
-            return Optional.of(jdbcTemplate.queryForObject(sql, rowMapper, id));
+            return Optional.of(jdbcTemplate.queryForObject(sql, ROW_MAPPER, id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -79,6 +80,6 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 INNER JOIN reservation AS r ON t.id = r.time_id
                 WHERE r.date = ? AND r.theme_id = ?;  
                 """;
-        return jdbcTemplate.query(sql, rowMapper, date, themeId);
+        return jdbcTemplate.query(sql, ROW_MAPPER, date, themeId);
     }
 }
