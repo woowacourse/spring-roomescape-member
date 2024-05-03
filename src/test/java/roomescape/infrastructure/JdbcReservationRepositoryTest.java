@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.domain.PlayerName;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -26,23 +24,17 @@ import roomescape.domain.ThemeRepository;
 @JdbcTest
 @Import(value = {JdbcReservationRepository.class, JdbcReservationTimeRepository.class, JdbcThemeRepository.class})
 class JdbcReservationRepositoryTest {
-    private final JdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert jdbcInsert;
-    private final JdbcReservationRepository jdbcReservationRepository;
-    private final ThemeRepository themeRepository;
-    private final ReservationTimeRepository reservationTimeRepository;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public JdbcReservationRepositoryTest(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("reservation")
-                .usingColumns("name", "date", "time_id", "theme_id")
-                .usingGeneratedKeyColumns("id");
-        this.jdbcReservationRepository = new JdbcReservationRepository(jdbcTemplate);
-        this.themeRepository = new JdbcThemeRepository(jdbcTemplate);
-        this.reservationTimeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
-    }
+    private JdbcReservationRepository jdbcReservationRepository;
+
+    @Autowired
+    private ThemeRepository themeRepository;
+
+    @Autowired
+    private ReservationTimeRepository reservationTimeRepository;
 
     @DisplayName("id로 예약을 조회한다.")
     @Test
@@ -118,13 +110,9 @@ class JdbcReservationRepositoryTest {
         ReservationTime reservationTime = reservationTimeRepository.create(new ReservationTime(LocalTime.of(12, 0)));
         Theme theme = themeRepository.create(new Theme(new ThemeName("theme1"), "desc", "url"));
         LocalDate date = LocalDate.of(2024, 12, 25);
-        long id = jdbcInsert.executeAndReturnKey(Map.of(
-                "name", "test",
-                "date", date,
-                "time_id", reservationTime.getId(),
-                "theme_id", theme.getId()
-        )).longValue();
-        return new Reservation(id, new PlayerName("test"), date, reservationTime, theme);
+        jdbcTemplate.update("insert into reservation (id, name, date, time_id, theme_id) values (?, ?, ?, ?, ?)",
+                1L, "test", date, reservationTime.getId(), theme.getId());
+        return new Reservation(1L, new PlayerName("test"), date, reservationTime, theme);
     }
 
     private int getTotalRowCount() {
