@@ -3,7 +3,6 @@ package roomescape.domain.reservation.repository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -15,21 +14,23 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.ReservationTime;
-import roomescape.global.query.QueryBuilder;
-import roomescape.global.query.SelectQuery;
-import roomescape.global.query.condition.ComparisonCondition;
-import roomescape.global.query.condition.MultiLineCondition;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
-    private static final String TABLE_NAME = "reservation";
     private static final RowMapper<Reservation> ROW_MAPPER = (rs, rowNum) -> new Reservation(
             rs.getLong("id"),
             rs.getString("name"),
             rs.getDate("reservation_date").toLocalDate(),
-            new ReservationTime(rs.getLong("time_id"), rs.getTime("start_at").toLocalTime()),
-            new Theme(rs.getLong("theme_id"), rs.getString("theme.name"), rs.getString("description"),
-                    rs.getString("thumbnail"))
+            new ReservationTime(
+                    rs.getLong("time_id"),
+                    rs.getTime("start_at").toLocalTime()
+            ),
+            new Theme(
+                    rs.getLong("theme_id"),
+                    rs.getString("theme.name"),
+                    rs.getString("description"),
+                    rs.getString("thumbnail")
+            )
     );
 
     private final JdbcTemplate jdbcTemplate;
@@ -38,7 +39,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName(TABLE_NAME)
+                .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
     }
 
@@ -54,6 +55,17 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public boolean existsByReservationDateTimeAndTheme(LocalDate date, long timeId, long themeId) {
+        String query = """
+                SELECT EXISTS(
+                    SELECT 1 FROM reservation
+                    WHERE reservation_date = ? AND time_id = ? AND theme_id = ?
+                )
+                """;
+        return jdbcTemplate.queryForObject(query, Boolean.class, date, timeId, themeId);
+    }
+
+    @Override
     public Optional<Reservation> findById(long id) {
         String query = """
                 SELECT * FROM reservation AS r
@@ -65,7 +77,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 """;
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(query, ROW_MAPPER, id));
-        } catch (DataAccessException e) {
+        } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
@@ -82,28 +94,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                 """;
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(query, ROW_MAPPER, timeId));
-        } catch (DataAccessException e) {
-            return Optional.empty();
-        }
-    }
-
-    @Override
-    public boolean existsByReservationDateTimeAndTheme(LocalDate date, long timeId, long themeId) {
-        SelectQuery subQuery = QueryBuilder.select(TABLE_NAME)
-                .addColumns("1")
-                .where(ComparisonCondition.equalTo("r.reservation_date", date))
-                .where(ComparisonCondition.equalTo("r.time_id", timeId))
-                .where(ComparisonCondition.equalTo("r.theme_id", themeId));
-        String query = QueryBuilder.select(TABLE_NAME)
-                .alias("r")
-                .addColumns("id")
-                .where(MultiLineCondition.exists(subQuery))
-                .build();
-        try {
-            jdbcTemplate.queryForObject(query, Long.class);
-            return true;
         } catch (EmptyResultDataAccessException e) {
-            return false;
+            return Optional.empty();
         }
     }
 
@@ -121,9 +113,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public void deleteById(long id) {
-        String query = QueryBuilder.delete(TABLE_NAME)
-                .where(ComparisonCondition.equalTo("id", id))
-                .build();
-        jdbcTemplate.update(query);
+        String query = "DELETE FROM reservation WHERE id = ?";
+        jdbcTemplate.update(query, id);
     }
 }

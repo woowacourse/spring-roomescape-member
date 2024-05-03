@@ -12,7 +12,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsertOperations;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.theme.Theme;
-import roomescape.global.query.QueryBuilder;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
@@ -35,52 +34,47 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findAll() {
-        String query = QueryBuilder.select("theme")
-                .addAllColumns()
-                .build();
-
-        return jdbcTemplate.query(query, ROW_MAPPER);
-    }
-
-    @Override
     public Theme save(Theme theme) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", theme.getName())
                 .addValue("description", theme.getDescription())
                 .addValue("thumbnail", theme.getThumbnail());
         long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
-
         return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 
     @Override
-    public void deleteById(long id) {
-        String query = "DELETE FROM theme WHERE id = ?";
-        jdbcTemplate.update(query, id);
-    }
-
-    @Override
     public boolean existsByName(String name) {
-        String query = "SELECT id FROM theme AS t WHERE EXISTS (SELECT 1 FROM theme WHERE t.name = ?)";
-
-        try {
-            jdbcTemplate.queryForObject(query, Long.class, name);
-            return true;
-        } catch (EmptyResultDataAccessException e) {
-            return false;
-        }
+        String query = """
+                SELECT EXISTS(
+                    SELECT 1
+                    FROM theme
+                    WHERE name = ?
+                )
+                """;
+        return jdbcTemplate.queryForObject(query, Boolean.class, name);
     }
 
     @Override
     public Optional<Theme> findById(long id) {
         String query = "SELECT * FROM theme WHERE id = ?";
         try {
-            Theme theme = jdbcTemplate.queryForObject(query, ROW_MAPPER, id);
-            return Optional.ofNullable(theme);
+            return Optional.ofNullable(jdbcTemplate.queryForObject(query, ROW_MAPPER, id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<Theme> findAll() {
+        String query = "SELECT * FROM theme";
+        return jdbcTemplate.query(query, ROW_MAPPER);
+    }
+
+    @Override
+    public void deleteById(long id) {
+        String query = "DELETE FROM theme WHERE id = ?";
+        jdbcTemplate.update(query, id);
     }
 
     public List<Theme> findPopularThemes(LocalDate now) {
