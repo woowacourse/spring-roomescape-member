@@ -3,7 +3,7 @@ package roomescape.service;
 import org.springframework.stereotype.Service;
 import roomescape.controller.reservation.PopularThemeResponse;
 import roomescape.controller.theme.CreateThemeRequest;
-import roomescape.controller.theme.CreateThemeResponse;
+import roomescape.controller.theme.ThemeResponse;
 import roomescape.domain.Theme;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
@@ -23,16 +23,16 @@ public class ThemeService {
         this.themeRepository = themeRepository;
     }
 
-    public List<CreateThemeResponse> getThemes() {
+    public List<ThemeResponse> getThemes() {
         return themeRepository.findAll().stream()
-                .map(CreateThemeResponse::from)
+                .map(ThemeResponse::from)
                 .toList();
     }
 
-    public CreateThemeResponse addTheme(final CreateThemeRequest createThemeRequest) {
+    public ThemeResponse addTheme(final CreateThemeRequest createThemeRequest) {
         final Theme theme = createThemeRequest.toDomain();
         final Theme savedTheme = themeRepository.save(theme);
-        return CreateThemeResponse.from(savedTheme);
+        return ThemeResponse.from(savedTheme);
     }
 
     public int deleteTheme(final Long id) {
