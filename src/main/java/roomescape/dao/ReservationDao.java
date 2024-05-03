@@ -55,7 +55,7 @@ public class ReservationDao implements ReservationRepository {
                 ON
                     r.theme_id = th.id
                 """;
-        return jdbcTemplate.query(sql, this::rowMapper);
+        return jdbcTemplate.query(sql, this::mapRowToObj);
     }
 
     @Override
@@ -84,7 +84,7 @@ public class ReservationDao implements ReservationRepository {
                 WHERE 
                     `date` = ? AND t.start_at = ? AND th.id = ?
                 """;
-        return jdbcTemplate.query(sql, this::rowMapper, Date.valueOf(date), Time.valueOf(time.getStartAt()), themeId);
+        return jdbcTemplate.query(sql, this::mapRowToObj, Date.valueOf(date), Time.valueOf(time.getStartAt()), themeId);
     }
 
     @Override
@@ -138,7 +138,7 @@ public class ReservationDao implements ReservationRepository {
                 Date.valueOf(date), themeId);
     }
 
-    private Reservation rowMapper(ResultSet resultSet, int rowNumber) throws SQLException {
+    private Reservation mapRowToObj(ResultSet resultSet, int rowNumber) throws SQLException {
         ReservationTime reservationTime = new ReservationTime(
                 resultSet.getLong("time_id"),
                 resultSet.getString("time_value")
@@ -149,10 +149,10 @@ public class ReservationDao implements ReservationRepository {
                 resultSet.getString("theme_description"),
                 resultSet.getString("theme_thumbnail")
         );
-        return reservationMapper(resultSet, reservationTime, theme);
+        return mapToReservation(resultSet, reservationTime, theme);
     }
 
-    private Reservation reservationMapper(ResultSet resultSet, ReservationTime reservationTime, Theme theme) throws SQLException {
+    private Reservation mapToReservation(ResultSet resultSet, ReservationTime reservationTime, Theme theme) throws SQLException {
         return new Reservation(
                 resultSet.getLong("reservation_id"),
                 resultSet.getString("name"),

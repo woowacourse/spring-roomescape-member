@@ -38,21 +38,21 @@ public class ReservationTimeDao implements ReservationTimeRepository {
     @Override
     public List<ReservationTime> findAll() {
         String sql = "SELECT id, start_at FROM reservation_time";
-        return jdbcTemplate.query(sql, this::rowMapper);
+        return jdbcTemplate.query(sql, this::mapRowToObject);
     }
 
     @Override
     public Optional<ReservationTime> findById(Long id) {
         try {
             String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
-            ReservationTime reservationTime = jdbcTemplate.queryForObject(sql, this::rowMapper, id);
+            ReservationTime reservationTime = jdbcTemplate.queryForObject(sql, this::mapRowToObject, id);
             return Optional.ofNullable(reservationTime);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
 
-    private ReservationTime rowMapper(ResultSet resultSet, int rowNumber) throws SQLException {
+    private ReservationTime mapRowToObject(ResultSet resultSet, int rowNumber) throws SQLException {
         ReservationTime reservationTime = new ReservationTime(resultSet.getString("start_at"));
         return new ReservationTime(resultSet.getLong("id"), reservationTime);
     }
