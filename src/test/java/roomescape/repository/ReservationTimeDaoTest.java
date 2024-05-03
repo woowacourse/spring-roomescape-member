@@ -11,7 +11,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import roomescape.model.ReservationTime;
 import roomescape.repository.dao.ReservationTimeDao;
 
-import javax.sql.DataSource;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class ReservationTimeDAOTest {
+class ReservationTimeDaoTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;

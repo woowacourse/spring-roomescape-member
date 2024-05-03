@@ -63,7 +63,7 @@ class ReservationTimeControllerTest {
         RestAssured.given().log().all()
                 .when().delete("/times/1")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation_time", Integer.class);
         assertThat(count).isEqualTo(1);

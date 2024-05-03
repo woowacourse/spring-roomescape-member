@@ -13,6 +13,10 @@ import java.util.NoSuchElementException;
 
 class FakeReservationDao implements ReservationDao {
 
+    private List<ReservationTime> reservationTimes = new ArrayList<>(List.of(
+            new ReservationTime(1, LocalTime.of(10, 0)),
+            new ReservationTime(2, LocalTime.of(11, 0))));
+
     private List<Reservation> reservations = new ArrayList<>(List.of(
             new Reservation(1, "브라운", LocalDate.of(2030, 8, 5),
                     new ReservationTime(2, LocalTime.of(11, 0)),
@@ -64,10 +68,17 @@ class FakeReservationDao implements ReservationDao {
     }
 
     @Override
-    public List<ReservationTime> findReservationTimeByDateAndThemeId(LocalDate date, long themeId) {
+    public List<ReservationTime> findReservationTimeBooked(LocalDate date, long themeId) {
         return reservations.stream()
                 .filter(reservation -> reservation.getDate().equals(date) && reservation.getTheme().getThemeId() == themeId)
                 .map(reservation -> new ReservationTime(reservation.getTime().getId(), reservation.getTime().getStartAt()))
                 .toList();
+    }
+
+    @Override
+    public List<ReservationTime> findReservationTimeNotBooked(LocalDate date, long themeId) {
+        List<ReservationTime> all = new ArrayList<>(reservationTimes);
+        all.removeAll(findReservationTimeBooked(date, themeId));
+        return all;
     }
 }

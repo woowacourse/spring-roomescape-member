@@ -13,7 +13,6 @@ import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
 import roomescape.repository.dao.ReservationDao;
 
-import javax.sql.DataSource;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
@@ -24,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class ReservationDAOTest {
+class ReservationDaoTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -139,7 +138,7 @@ class ReservationDAOTest {
     @Test
     void should_get_reservation_times_when_date_and_theme_given() {
         LocalDate date = LocalDate.of(2023, 8, 5);
-        List<ReservationTime> times = reservationDao.findReservationTimeByDateAndThemeId(date, 1);
+        List<ReservationTime> times = reservationDao.findReservationTimeBooked(date, 1);
         assertThat(times).hasSize(1);
         assertThat(times).containsExactly(new ReservationTime(1, LocalTime.of(10, 0)));
     }

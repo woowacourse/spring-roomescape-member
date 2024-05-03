@@ -52,11 +52,11 @@ public class ReservationRepository {
         reservationDao.deleteReservationById(id);
     }
 
-    public List<ReservationTime> findAllReservationTimes() {
-        return reservationTimeDao.findAllReservationTimes();
+    public List<ReservationTime> findReservationTimeBooked(LocalDate date, long themeId) {
+        return reservationDao.findReservationTimeBooked(date, themeId);
     }
 
-    public List<ReservationTime> findReservationTimeByDateAndThemeId(LocalDate date, long themeId) {
-        return reservationDao.findReservationTimeByDateAndThemeId(date, themeId);
+    public List<ReservationTime> findReservationTimeNotBooked(LocalDate date, long themeId) {
+        return reservationDao.findReservationTimeNotBooked(date, themeId);
     }
 }

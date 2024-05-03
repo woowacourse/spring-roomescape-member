@@ -31,45 +31,56 @@ public class ReservationService {
     }
 
     public Reservation saveReservation(ReservationDto reservationDto) {
-        ReservationTime reservationTime = reservationRepository.findReservationTimeById(reservationDto.getTimeId());
-        Theme theme = reservationRepository.findThemeById(reservationDto.getThemeId());
+        String name = reservationDto.getName();
+        LocalDate date = reservationDto.getDate();
+        long timeId = reservationDto.getTimeId();
+        long themeId = reservationDto.getThemeId();
+        ReservationTime time = reservationRepository.findReservationTimeById(timeId);
+        Theme theme = reservationRepository.findThemeById(themeId);
 
-        LocalDateTime reservationDateTime = LocalDateTime.of(reservationDto.getDate(), reservationTime.getStartAt());
-
-        LocalDateTime requestDateTime = reservationDateTime.truncatedTo(ChronoUnit.SECONDS);
-        LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
-        if (requestDateTime.isBefore(now)) {
-            throw new BadRequestException("[ERROR] 현재 이전 예약은 할 수 없습니다.");
-        }
-        Long countReservation = reservationRepository.countReservationByDateAndTimeId(reservationDto.getDate(), reservationDto.getTimeId());
-        if (countReservation == null || countReservation > 0) {
-            throw new DuplicatedException("[ERROR] 중복되는 예약은 추가할 수 없습니다.");
-        }
-        Reservation reservation = new Reservation(reservationDto.getName(), reservationDto.getDate(), reservationTime, theme);
+        validate(date, time);
+        Reservation reservation = new Reservation(name, date, time, theme);
         return reservationRepository.saveReservation(reservation);
     }
 
+    private void validate(LocalDate date, ReservationTime time) {
+        validateDateTime(date, time);
+        validateDuplication(date, time.getId());
+    }
+
+    private void validateDateTime(LocalDate date, ReservationTime time) {
+        LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+        LocalDateTime dateTime = LocalDateTime.of(date, time.getStartAt()).truncatedTo(ChronoUnit.SECONDS);
+        if (dateTime.isBefore(now)) {
+            throw new BadRequestException("[ERROR] 현재 이전 예약은 할 수 없습니다.");
+        }
+    }
+
+    private void validateDuplication(LocalDate date, long timeId) {
+        Long countReservation = reservationRepository.countReservationByDateAndTimeId(date, timeId);
+        if (countReservation == null || countReservation > 0) {
+            throw new DuplicatedException("[ERROR] 중복되는 예약은 추가할 수 없습니다.");
+        }
+    }
+
     public void deleteReservation(long id) {
+        validateExistence(id);
+        reservationRepository.deleteReservationById(id);
+    }
+
+    private void validateExistence(long id) {
         Long count = reservationRepository.countReservationById(id);
         if (count == null || count <= 0) {
             throw new NotFoundException("[ERROR] 존재하지 않는 예약입니다.");
         }
-        reservationRepository.deleteReservationById(id);
     }
 
     public List<MemberReservationTimeResponse> findReservationTimesInformation(LocalDate date, long themeId) {
-        List<ReservationTime> allTimes = reservationRepository.findAllReservationTimes();
-        List<ReservationTime> bookedTimes = reservationRepository.findReservationTimeByDateAndThemeId(date, themeId);
-        List<ReservationTime> notBookedTimes = filterNotBookedTimes(allTimes, bookedTimes);
+        List<ReservationTime> bookedTimes = reservationRepository.findReservationTimeBooked(date, themeId);
+        List<ReservationTime> notBookedTimes = reservationRepository.findReservationTimeNotBooked(date, themeId);
         List<MemberReservationTimeResponse> bookedResponse = mapToResponse(bookedTimes, true);
         List<MemberReservationTimeResponse> notBookedResponse = mapToResponse(notBookedTimes, false);
         return concat(notBookedResponse, bookedResponse);
-    }
-
-    private List<ReservationTime> filterNotBookedTimes(List<ReservationTime> allTimes, List<ReservationTime> bookedTimes) {
-        return allTimes.stream()
-                .filter(time -> !bookedTimes.contains(time))
-                .toList();
     }
 
     private List<MemberReservationTimeResponse> mapToResponse(List<ReservationTime> times, boolean isBooked) {

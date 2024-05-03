@@ -105,7 +105,8 @@ class ReservationServiceTest {
     @DisplayName("예약 가능 상태를 담은 시간 정보를 반환한다.")
     @Test
     void should_return_times_with_book_state() {
-        List<MemberReservationTimeResponse> times = reservationService.findReservationTimesInformation(LocalDate.of(2030, 8, 5), 1);
+        LocalDate date = LocalDate.of(2030, 8, 5);
+        List<MemberReservationTimeResponse> times = reservationService.findReservationTimesInformation(date, 1);
         assertThat(times).hasSize(2);
         assertThat(times).containsOnly(
                 new MemberReservationTimeResponse(1, LocalTime.of(10, 0), false),
