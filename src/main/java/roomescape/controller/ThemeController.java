@@ -1,7 +1,5 @@
 package roomescape.controller;
 
-import java.net.URI;
-import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +12,9 @@ import roomescape.controller.request.ThemeRequest;
 import roomescape.controller.response.ThemeResponse;
 import roomescape.service.ThemeService;
 
+import java.net.URI;
+import java.util.List;
+
 @RestController
 @RequestMapping("/themes")
 public class ThemeController {
@@ -21,13 +22,6 @@ public class ThemeController {
 
     public ThemeController(ThemeService themeService) {
         this.themeService = themeService;
-    }
-
-    @GetMapping
-    public ResponseEntity<List<ThemeResponse>> findAll() {
-        List<ThemeResponse> themeResponses = themeService.findAll();
-
-        return ResponseEntity.ok(themeResponses);
     }
 
     @PostMapping
@@ -38,11 +32,11 @@ public class ThemeController {
                 .body(themeResponse);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
-        themeService.deleteById(id);
+    @GetMapping
+    public ResponseEntity<List<ThemeResponse>> findAll() {
+        List<ThemeResponse> themeResponses = themeService.findAll();
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(themeResponses);
     }
 
     @GetMapping("/tops")
@@ -50,5 +44,12 @@ public class ThemeController {
         List<ThemeResponse> themeResponses = themeService.findTopThemes();
 
         return ResponseEntity.ok(themeResponses);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
+        themeService.deleteById(id);
+
+        return ResponseEntity.noContent().build();
     }
 }
