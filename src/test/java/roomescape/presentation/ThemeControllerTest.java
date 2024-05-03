@@ -14,8 +14,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import roomescape.application.ThemeService;
-import roomescape.application.dto.ThemeRequest;
-import roomescape.application.dto.ThemeResponse;
+import roomescape.application.dto.request.ThemeRequest;
+import roomescape.application.dto.response.ThemeResponse;
 
 @WebMvcTest(ThemeController.class)
 class ThemeControllerTest extends ControllerTest {

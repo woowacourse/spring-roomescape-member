@@ -20,8 +20,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import roomescape.application.ReservationTimeService;
-import roomescape.application.dto.ReservationTimeRequest;
-import roomescape.application.dto.ReservationTimeResponse;
+import roomescape.application.dto.request.ReservationTimeRequest;
+import roomescape.application.dto.response.ReservationTimeResponse;
 
 @WebMvcTest(ReservationTimeController.class)
 class ReservationTimeControllerTest extends ControllerTest {

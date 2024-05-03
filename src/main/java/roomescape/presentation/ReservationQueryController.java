@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.application.ReservationQueryService;
-import roomescape.application.dto.AvailableTimeResponse;
-import roomescape.application.dto.ThemeResponse;
+import roomescape.application.dto.response.AvailableTimeResponse;
+import roomescape.application.dto.response.ThemeResponse;
 
 @RestController
 public class ReservationQueryController {

@@ -4,8 +4,8 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.application.dto.AvailableTimeResponse;
-import roomescape.application.dto.ThemeResponse;
+import roomescape.application.dto.response.AvailableTimeResponse;
+import roomescape.application.dto.response.ThemeResponse;
 import roomescape.domain.ReservationQueryRepository;
 
 @Service

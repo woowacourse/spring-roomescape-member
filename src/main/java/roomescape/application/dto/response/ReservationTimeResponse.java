@@ -1,4 +1,4 @@
-package roomescape.application.dto;
+package roomescape.application.dto.response;
 
 import java.time.LocalTime;
 import roomescape.domain.ReservationTime;
