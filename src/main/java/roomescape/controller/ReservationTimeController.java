@@ -22,7 +22,7 @@ public class ReservationTimeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationTimeResponse>> getReservationTimes() {
+    public ResponseEntity<List<ReservationTimeResponse>> showReservationTimes() {
         List<ReservationTime> times = reservationTimeService.findAllReservationTimes();
         List<ReservationTimeResponse> response = times.stream()
                 .map(ReservationTimeResponse::from)
@@ -31,9 +31,9 @@ public class ReservationTimeController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTimeResponse> createReservationTime(@RequestBody ReservationTimeRequest request) {
+    public ResponseEntity<ReservationTimeResponse> addReservationTime(@RequestBody ReservationTimeRequest request) {
         ReservationTimeDto timeDto = ReservationTimeDto.from(request);
-        ReservationTime time = reservationTimeService.addReservationTime(timeDto);
+        ReservationTime time = reservationTimeService.saveReservationTime(timeDto);
         ReservationTimeResponse response = ReservationTimeResponse.from(time);
         return ResponseEntity
                 .created(URI.create("/times/" + response.getId()))

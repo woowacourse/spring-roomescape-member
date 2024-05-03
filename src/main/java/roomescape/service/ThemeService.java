@@ -21,7 +21,7 @@ public class ThemeService {
         return themeRepository.findAllThemes();
     }
 
-    public Theme addTheme(ThemeDto themeDto) {
+    public Theme saveTheme(ThemeDto themeDto) {
         Theme theme = Theme.from(themeDto);
         return themeRepository.saveTheme(theme);
     }

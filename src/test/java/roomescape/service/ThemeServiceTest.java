@@ -2,7 +2,6 @@ package roomescape.service;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.controller.request.ThemeRequest;
 import roomescape.model.Theme;
 import roomescape.service.dto.ThemeDto;
 
@@ -24,7 +23,7 @@ class ThemeServiceTest {
     @Test
     void should_add_theme() {
         ThemeDto themeDto = new ThemeDto("에버", "공포", "공포.jpg");
-        themeService.addTheme(themeDto);
+        themeService.saveTheme(themeDto);
         assertThat(themeService.findAllThemes()).hasSize(4);
     }
 

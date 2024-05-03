@@ -24,7 +24,7 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> getReservations() {
+    public ResponseEntity<List<ReservationResponse>> showReservations() {
         List<Reservation> reservations = reservationService.findAllReservations();
         List<ReservationResponse> response = reservations.stream()
                 .map(ReservationResponse::from)
@@ -33,9 +33,9 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> createReservation(@RequestBody ReservationRequest request) {
+    public ResponseEntity<ReservationResponse> addReservation(@RequestBody ReservationRequest request) {
         ReservationDto reservationDto = ReservationDto.from(request);
-        Reservation reservation = reservationService.addReservation(reservationDto);
+        Reservation reservation = reservationService.saveReservation(reservationDto);
         ReservationResponse response = ReservationResponse.from(reservation);
         return ResponseEntity
                 .created(URI.create("/reservations/" + response.getId()))
@@ -49,10 +49,10 @@ public class ReservationController {
     }
 
     @GetMapping("/times")
-    public ResponseEntity<List<MemberReservationTimeResponse>> getPossibleReservationTimes(
+    public ResponseEntity<List<MemberReservationTimeResponse>> showReservationTimesInformation(
             @RequestParam(name = "date") LocalDate date,
             @RequestParam(name = "themeId") long themeId) {
-        List<MemberReservationTimeResponse> response = reservationService.getMemberReservationTimes(date, themeId);
+        List<MemberReservationTimeResponse> response = reservationService.findReservationTimesInformation(date, themeId);
         // TODO: 여기서 response 객체로 반환하도록 수정
         return ResponseEntity.ok(response);
     }

@@ -38,7 +38,7 @@ public class ReservationService {
         return reservationRepository.findAllReservations();
     }
 
-    public Reservation addReservation(ReservationDto reservationDto) {
+    public Reservation saveReservation(ReservationDto reservationDto) {
         ReservationTime reservationTime = reservationTimeRepository.findReservationById(reservationDto.getTimeId());
         Theme theme = themeRepository.findThemeById(reservationDto.getThemeId());
 
@@ -65,7 +65,7 @@ public class ReservationService {
         reservationRepository.deleteReservationById(id);
     }
 
-    public List<MemberReservationTimeResponse> getMemberReservationTimes(LocalDate date, long themeId) {
+    public List<MemberReservationTimeResponse> findReservationTimesInformation(LocalDate date, long themeId) {
         List<ReservationTime> allTimes = reservationTimeRepository.findAllReservationTimes();
         List<ReservationTime> bookedTimes = reservationRepository.findReservationTimeByDateAndThemeId(date, themeId);
         List<ReservationTime> notBookedTimes = filterNotBookedTimes(allTimes, bookedTimes);

@@ -2,7 +2,6 @@ package roomescape.service;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.controller.request.ReservationRequest;
 import roomescape.controller.response.MemberReservationTimeResponse;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.DuplicatedException;
@@ -36,7 +35,7 @@ class ReservationServiceTest {
     @DisplayName("예약 시간을 추가한다")
     @Test
     void should_add_reservation_times() {
-        reservationService.addReservation(
+        reservationService.saveReservation(
                 new ReservationDto("네오", LocalDate.of(2030, 1, 1), 1L, 1L));
         List<Reservation> allReservations = reservationService.findAllReservations();
         assertThat(allReservations).hasSize(3);
@@ -69,7 +68,7 @@ class ReservationServiceTest {
     @Test
     void should_throw_exception_when_previous_date() {
         ReservationDto request = new ReservationDto("에버", LocalDate.of(2000, 1, 11), 1L, 1L);
-        assertThatThrownBy(() -> reservationService.addReservation(request))
+        assertThatThrownBy(() -> reservationService.saveReservation(request))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage("[ERROR] 현재 이전 예약은 할 수 없습니다.");
     }
@@ -79,7 +78,7 @@ class ReservationServiceTest {
     void should_not_throw_exception_when_current_date() {
         reservationTimeRepository.add(new ReservationTime(3, LocalTime.now()));
         ReservationDto request = new ReservationDto("에버", LocalDate.now(), 3L, 1L);
-        assertThatCode(() -> reservationService.addReservation(request))
+        assertThatCode(() -> reservationService.saveReservation(request))
                 .doesNotThrowAnyException();
     }
 
@@ -87,7 +86,7 @@ class ReservationServiceTest {
     @Test
     void should_not_throw_exception_when_later_date() {
         ReservationDto request = new ReservationDto("에버", LocalDate.of(2030, 1, 11), 1L, 1L);
-        assertThatCode(() -> reservationService.addReservation(request))
+        assertThatCode(() -> reservationService.saveReservation(request))
                 .doesNotThrowAnyException();
     }
 
@@ -95,7 +94,7 @@ class ReservationServiceTest {
     @Test
     void should_throw_exception_when_add_exist_reservation() {
         ReservationDto request = new ReservationDto("배키", LocalDate.of(2030, 8, 5), 2L, 2L);
-        assertThatThrownBy(() -> reservationService.addReservation(request))
+        assertThatThrownBy(() -> reservationService.saveReservation(request))
                 .isInstanceOf(DuplicatedException.class)
                 .hasMessage("[ERROR] 중복되는 예약은 추가할 수 없습니다.");
     }
@@ -103,7 +102,7 @@ class ReservationServiceTest {
     @DisplayName("예약 가능 상태를 담은 시간 정보를 반환한다.")
     @Test
     void should_return_times_with_book_state() {
-        List<MemberReservationTimeResponse> times = reservationService.getMemberReservationTimes(LocalDate.of(2030, 8, 5), 1);
+        List<MemberReservationTimeResponse> times = reservationService.findReservationTimesInformation(LocalDate.of(2030, 8, 5), 1);
         assertThat(times).hasSize(2);
         assertThat(times).containsOnly(
                 new MemberReservationTimeResponse(1, LocalTime.of(10, 0), false),

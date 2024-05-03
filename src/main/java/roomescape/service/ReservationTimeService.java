@@ -27,7 +27,7 @@ public class ReservationTimeService {
         return reservationTimeRepository.findAllReservationTimes();
     }
 
-    public ReservationTime addReservationTime(ReservationTimeDto reservationTimeDto) {
+    public ReservationTime saveReservationTime(ReservationTimeDto reservationTimeDto) {
         LocalTime startAt = reservationTimeDto.getStartAt();
         Long countReservationTimeByStartAt = reservationTimeRepository.countReservationTimeByStartAt(startAt);
         if (countReservationTimeByStartAt == null || countReservationTimeByStartAt > 0) {
