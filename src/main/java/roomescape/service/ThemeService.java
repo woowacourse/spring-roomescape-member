@@ -11,6 +11,9 @@ import java.util.List;
 @Service
 public class ThemeService {
 
+    private static final int COUNT_OF_DAY = 7;
+    private static final int COUNT_OF_RANKING = 10;
+
     private final ThemeRepository themeRepository;
 
     public ThemeService(ThemeRepository themeRepository) {
@@ -31,8 +34,8 @@ public class ThemeService {
     }
 
     public List<Theme> findPopularThemes() {
-        LocalDate before = LocalDate.now().minusDays(8);
-        LocalDate after = LocalDate.now().minusDays(1);
-        return themeRepository.findThemeRankingByDate(before, after, 10);
+        LocalDate startDate = LocalDate.now().minusDays(1 + COUNT_OF_DAY);
+        LocalDate endDate = LocalDate.now().minusDays(1);
+        return themeRepository.findThemeRankingByDate(startDate, endDate, COUNT_OF_RANKING);
     }
 }

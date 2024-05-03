@@ -28,7 +28,7 @@ public class ThemeRepository {
         themeDao.deleteThemeById(id);
     }
 
-    public List<Theme> findThemeRankingByDate(LocalDate before, LocalDate after, int i) {
-        return themeDao.findThemeRankingByDate(before, after, 10);
+    public List<Theme> findThemeRankingByDate(LocalDate before, LocalDate after, int rankingCount) {
+        return themeDao.findThemeRankingByDate(before, after, rankingCount);
     }
 }
