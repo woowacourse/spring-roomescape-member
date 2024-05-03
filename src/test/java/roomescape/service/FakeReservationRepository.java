@@ -71,9 +71,4 @@ public class FakeReservationRepository implements ReservationRepository {
     public void deleteById(Long id) {
         reservations.remove(id);
     }
-
-    @Override
-    public List<ReservationTime> findByDateAndTheme(LocalDate date, Long themeId) {
-        return null;
-    }
 }

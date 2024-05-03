@@ -1,13 +1,10 @@
 package roomescape.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.BookableTimeResponse;
-import roomescape.dto.BookableTimesRequest;
 import roomescape.dto.ReservationAddRequest;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -59,23 +56,5 @@ public class ReservationService {
             throw new IllegalArgumentException("해당 id를 가진 예약이 존재하지 않습니다.");
         }
         reservationRepository.deleteById(id);
-    }
-
-    public List<BookableTimeResponse> findBookableTimes(BookableTimesRequest bookableTimesRequest) {
-        List<ReservationTime> bookedTimes = reservationRepository.findByDateAndTheme(bookableTimesRequest.getDate(),
-                bookableTimesRequest.getThemeId());
-        List<ReservationTime> allTimes = reservationTimeRepository.findAll();
-        List<BookableTimeResponse> bookableTimeResponses = new ArrayList<>();
-        for (ReservationTime allTime : allTimes) {
-            if (!bookedTimes.contains(allTime)) {
-                bookableTimeResponses.add(new BookableTimeResponse(allTime.getStartAt(), allTime.getId(), false));
-            }
-        }
-        List<BookableTimeResponse> bookedTimeResponse = bookedTimes.stream()
-                .map((reservationTime -> new BookableTimeResponse(reservationTime.getStartAt(), reservationTime.getId(),
-                        true)))
-                .toList();
-        bookableTimeResponses.addAll(bookedTimeResponse);
-        return bookableTimeResponses;
     }
 }

@@ -28,11 +28,6 @@ public class JdbcReservationRepository implements ReservationRepository {
                     resultSet.getString("theme_description"), resultSet.getString("theme_thumbnail"))
     );
 
-    private RowMapper<ReservationTime> timeRowMapper = ((rs, rowNum) -> new ReservationTime(
-            rs.getLong("id"),
-            rs.getTime("start_at").toLocalTime()
-    ));
-
     public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
@@ -112,18 +107,6 @@ public class JdbcReservationRepository implements ReservationRepository {
                 );
                 """;
         return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
-    }
-
-    @Override
-    public List<ReservationTime> findByDateAndTheme(LocalDate date, Long themeId) {
-        String sql = """
-                SELECT t.id, t.start_at 
-                FROM reservation AS r 
-                INNER JOIN reservation_time AS t 
-                ON r.time_id = t.id 
-                WHERE date = ? AND theme_id = ?;
-                """;
-        return jdbcTemplate.query(sql, timeRowMapper, date, themeId);
     }
 
     @Override
