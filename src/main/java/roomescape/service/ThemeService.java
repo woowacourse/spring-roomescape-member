@@ -7,6 +7,7 @@ import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
+import roomescape.util.Date;
 
 @Service
 public class ThemeService {
@@ -38,20 +39,21 @@ public class ThemeService {
         return ThemeResponse.from(theme);
     }
 
+    public List<ThemeResponse> getPopularThemes() {
+        List<Long> popularThemeIds = reservationRepository.findThemeReservationCountsForDate(
+                Date.A_WEEK_AGO, Date.YESTERDAY);
+        return popularThemeIds.stream()
+                .map(themeRepository::findById)
+                .map(ThemeResponse::from)
+                .toList();
+    }
+
     public void deleteTheme(Long id) {
         validateIdExist(id);
         if (reservationRepository.existThemeId(id)) {
             throw new IllegalArgumentException("[ERROR] 해당 테마는 예약이 존재합니다.");
         }
         themeRepository.delete(id);
-    }
-
-    public List<ThemeResponse> getPopularThemes() {
-        List<Long> popularThemeIds = reservationRepository.findThemeReservationCountsForLastWeek();
-        return popularThemeIds.stream()
-                .map(themeRepository::findById)
-                .map(ThemeResponse::from)
-                .toList();
     }
 
     private void validateIdExist(Long id) {
