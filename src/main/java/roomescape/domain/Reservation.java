@@ -75,6 +75,8 @@ public class Reservation {
         return theme;
     }
 
+
+    //TODO id로만 비교
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;

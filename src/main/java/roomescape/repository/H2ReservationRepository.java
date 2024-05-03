@@ -58,6 +58,7 @@ public class H2ReservationRepository implements ReservationRepository {
                 WHERE R.DATE = ? AND T.ID = ?
                 """;
 
+        //TODO 메서드 분리
         return jdbcTemplate.query(sql, ((rs, rowNum) -> Reservation.from(
                         rs.getLong("ID"),
                         rs.getString("NAME"),

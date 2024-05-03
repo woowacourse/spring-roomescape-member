@@ -54,6 +54,7 @@ public class ReservationService {
         return reservation.assignTheme(theme);
     }
 
+    // TODO 리팩터링
     public ReservationResponse addReservation(final ReservationRequest reservationRequest) {
         final ReservationTime time = reservationTimeRepository
                 .findById(reservationRequest.timeId())
