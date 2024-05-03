@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
@@ -32,6 +32,7 @@ class JdbcReservationRepositoryImplTest {
     @Autowired
     private ThemeRepository themeRepository;
 
+    private ReservationDate reservationDate = new ReservationDate("2040-01-01");
     private ReservationTime reservationTime;
     private Theme theme;
 
@@ -45,20 +46,19 @@ class JdbcReservationRepositoryImplTest {
     @DisplayName("예약 정보를 DB에 저장한다.")
     @Test
     void save() {
-        LocalDate date = LocalDate.MAX;
-        Reservation reservation = new Reservation("브리", date, reservationTime, theme);
+        Reservation reservation = new Reservation("브리", reservationDate, reservationTime, theme);
 
         Reservation actual = reservationRepository.save(reservation);
         Reservation expected = new Reservation(
             actual.getId(),
             reservation.getName(),
-            reservation.getDate(),
-            reservation.getTime(),
+            reservation.getReservationDate(),
+            reservation.getReservationTime(),
             reservation.getTheme());
 
         assertAll(
-            () -> assertEquals(expected.getDate(), actual.getDate()),
-            () -> assertEquals(expected.getTime(), actual.getTime()),
+            () -> assertEquals(expected.getReservationDate(), actual.getReservationDate()),
+            () -> assertEquals(expected.getReservationTime(), actual.getReservationTime()),
             () -> assertEquals(expected.getName(), actual.getName()),
             () -> assertEquals(expected.getTheme(), actual.getTheme())
         );
@@ -68,9 +68,9 @@ class JdbcReservationRepositoryImplTest {
     @Test
     void findAll() {
         Reservation save1 = reservationRepository.save(
-            new Reservation("브리", LocalDate.parse("2030-02-01"), reservationTime, theme));
+            new Reservation("브리", reservationDate, reservationTime, theme));
         Reservation save2 = reservationRepository.save(
-            new Reservation("솔라", LocalDate.parse("2040-01-01"), reservationTime, theme));
+            new Reservation("솔라", reservationDate, reservationTime, theme));
 
         List<Reservation> actual = reservationRepository.findAll();
         List<Reservation> expected = List.of(save1, save2);
@@ -87,8 +87,7 @@ class JdbcReservationRepositoryImplTest {
     @DisplayName("id값을 통해 예약 정보를 DB에서 삭제한다.")
     @Test
     void deleteById() {
-        LocalDate date = LocalDate.MAX;
-        Reservation reservation = new Reservation("브리", date, reservationTime, theme);
+        Reservation reservation = new Reservation("브리", reservationDate, reservationTime, theme);
         Reservation save = reservationRepository.save(reservation);
 
         reservationRepository.deleteById(save.getId());
@@ -99,8 +98,8 @@ class JdbcReservationRepositoryImplTest {
     @DisplayName("time_id값을 통해 예약이 존재하는지를 구한다.")
     @Test
     void isTimeIdExists() {
-        Reservation reservation1 = new Reservation("brown1", LocalDate.parse("2040-01-01"), reservationTime, theme);
-        Reservation reservation2 = new Reservation("brown2", LocalDate.parse("2050-02-02"), reservationTime, theme);
+        Reservation reservation1 = new Reservation("brown1", new ReservationDate("2040-01-01"), reservationTime, theme);
+        Reservation reservation2 = new Reservation("brown2", new ReservationDate("2050-02-02"), reservationTime, theme);
         reservationRepository.save(reservation1);
         reservationRepository.save(reservation2);
 
@@ -112,10 +111,10 @@ class JdbcReservationRepositoryImplTest {
     @DisplayName("date, time_id, theme_id로 중복 예약이 존재하는지를 구한다.")
     @Test
     void isDuplication() {
-        LocalDate date = LocalDate.parse("2040-01-01");
-        Reservation reservation = new Reservation("brown1", date, reservationTime, theme);
+        Reservation reservation = new Reservation("brown1", reservationDate, reservationTime, theme);
         reservationRepository.save(reservation);
-        boolean actual = reservationRepository.isDuplicated(date, reservationTime.getId(), theme.getId());
+        boolean actual = reservationRepository.isDuplicated(reservationDate.getDate(), reservationTime.getId(),
+            theme.getId());
         assertThat(actual).isTrue();
     }
 }

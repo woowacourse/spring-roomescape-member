@@ -10,6 +10,7 @@ public record ReservationTimeWebResponse(
     LocalTime startAt) {
 
     public static ReservationTimeWebResponse from(Reservation reservation) {
-        return new ReservationTimeWebResponse(reservation.getTime().getId(), reservation.getTime().getStartAt());
+        return new ReservationTimeWebResponse(reservation.getReservationTime().getId(),
+            reservation.getReservationTime().getStartAt());
     }
 }

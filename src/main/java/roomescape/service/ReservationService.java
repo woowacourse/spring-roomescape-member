@@ -1,12 +1,11 @@
 package roomescape.service;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
@@ -34,7 +33,7 @@ public class ReservationService {
     }
 
     public Reservation save(ReservationAppRequest request) {
-        LocalDate date = parseDate(request.date());
+        ReservationDate date = new ReservationDate(request.date());
         ReservationTime time = findTime(request.timeId());
         Theme theme = findTheme(request.themeId());
         Reservation reservation = new Reservation(request.name(), date, time, theme);
@@ -42,14 +41,6 @@ public class ReservationService {
         validateDuplication(date, request.timeId(), request.themeId());
 
         return reservationRepository.save(reservation);
-    }
-
-    private LocalDate parseDate(String rawDate) {
-        try {
-            return LocalDate.parse(rawDate);
-        } catch (DateTimeParseException | NullPointerException e) {
-            throw new IllegalArgumentException("잘못된 날짜 형식을 입력하셨습니다.");
-        }
     }
 
     private ReservationTime findTime(Long timeId) {
@@ -74,17 +65,14 @@ public class ReservationService {
         }
     }
 
-    private void validatePastReservation(LocalDate date, ReservationTime time) {
-        if (date.isBefore(LocalDate.now())) {
-            throw new PastReservationException();
-        }
-        if (date.isEqual(LocalDate.now()) && time.isBeforeNow()) {
+    private void validatePastReservation(ReservationDate date, ReservationTime time) {
+        if (date.isBeforeNow() || date.isToday() && time.isBeforeNow()) {
             throw new PastReservationException();
         }
     }
 
-    private void validateDuplication(LocalDate date, Long timeId, Long themeId) {
-        if (reservationRepository.isDuplicated(date, timeId, themeId)) {
+    private void validateDuplication(ReservationDate date, Long timeId, Long themeId) {
+        if (reservationRepository.isDuplicated(date.getDate(), timeId, themeId)) {
             throw new DuplicatedModelException(Reservation.class);
         }
     }

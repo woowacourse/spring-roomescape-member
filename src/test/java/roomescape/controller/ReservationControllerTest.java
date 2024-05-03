@@ -9,7 +9,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,6 +22,7 @@ import roomescape.controller.dto.ReservationWebRequest;
 import roomescape.controller.dto.ReservationWebResponse;
 import roomescape.controller.dto.ThemeWebResponse;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.DuplicatedModelException;
@@ -45,7 +45,7 @@ class ReservationControllerTest {
     void reserve() throws Exception {
         long timeId = 1L;
         long themeId = 1L;
-        LocalDate date = LocalDate.EPOCH;
+        ReservationDate date = new ReservationDate("2040-04-04");
         String name = "브리";
         Reservation reservation = new Reservation(1L, name, date, new ReservationTime(LocalTime.MIN),
             new Theme("방탈출", "방탈출하는 게임",
@@ -71,7 +71,8 @@ class ReservationControllerTest {
     void deleteBy() throws Exception {
         long timeId = 1L;
         long themeId = 1L;
-        LocalDate date = LocalDate.EPOCH;
+        ReservationDate date = new ReservationDate("2040-04-04");
+
         String name = "브리";
         Reservation reservation = new Reservation(1L, name, date, new ReservationTime(LocalTime.MIN),
             new Theme("방탈출", "방탈출하는 게임",

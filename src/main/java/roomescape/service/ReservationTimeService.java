@@ -62,7 +62,7 @@ public class ReservationTimeService {
     public List<ReservationTimeAppResponse> findAllWithBookAvailability(LocalDate date, Long themeId) {
         List<Reservation> reservations = reservationRepository.findAllByDateAndThemeId(date, themeId);
         List<ReservationTime> reservedTimes = reservations.stream()
-            .map(Reservation::getTime)
+            .map(Reservation::getReservationTime)
             .toList();
 
         return findAll().stream()

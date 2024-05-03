@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -31,8 +32,8 @@ public class JdbcReservationRepositoryImpl implements ReservationRepository {
     public Reservation save(Reservation reservation) {
         Map<String, Object> saveSource = Map.ofEntries(
             Map.entry("name", reservation.getName()),
-            Map.entry("date", reservation.getDate()),
-            Map.entry("time_id", reservation.getTime().getId()),
+            Map.entry("date", reservation.getReservationDate().getDate()),
+            Map.entry("time_id", reservation.getReservationTime().getId()),
             Map.entry("theme_id", reservation.getTheme().getId())
         );
 
@@ -43,8 +44,8 @@ public class JdbcReservationRepositoryImpl implements ReservationRepository {
         return new Reservation(
             id,
             reservation.getName(),
-            reservation.getDate(),
-            reservation.getTime(),
+            reservation.getReservationDate(),
+            reservation.getReservationTime(),
             reservation.getTheme()
         );
     }
@@ -80,7 +81,7 @@ public class JdbcReservationRepositoryImpl implements ReservationRepository {
 
     @Override
     public boolean isTimeIdExists(Long id) {
-        String sql = "SELECT EXISTS (SELECT id FROM reservation WHERE time_id = ?)";
+        String sql = "SELECT EXISTS(SELECT id FROM reservation WHERE time_id = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, id);
     }
 
@@ -123,7 +124,7 @@ public class JdbcReservationRepositoryImpl implements ReservationRepository {
         return (rs, rowNum) -> new Reservation(
             rs.getLong("reservation_id"),
             rs.getString("reservation_name"),
-            LocalDate.parse(rs.getString("reservation_date")),
+            new ReservationDate(rs.getString("reservation_date")),
             new ReservationTime(
                 rs.getLong("time_id"),
                 LocalTime.parse(rs.getString("time_value"))

@@ -37,7 +37,7 @@ public class ReservationController {
         Long id = newReservation.getId();
 
         ReservationWebResponse reservationWebResponse = new ReservationWebResponse(id, newReservation.getName(),
-            newReservation.getDate(),
+            newReservation.getReservationDate(),
             ReservationTimeWebResponse.from(newReservation),
             ThemeWebResponse.from(newReservation));
 
@@ -59,7 +59,7 @@ public class ReservationController {
             map(reservation -> new ReservationWebResponse(
                 reservation.getId(),
                 reservation.getName(),
-                reservation.getDate(),
+                reservation.getReservationDate(),
                 ReservationTimeWebResponse.from(reservation),
                 ThemeWebResponse.from(reservation)
             )).toList();

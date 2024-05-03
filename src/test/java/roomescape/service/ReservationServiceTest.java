@@ -20,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.EmptyResultDataAccessException;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
@@ -48,11 +49,11 @@ class ReservationServiceTest {
         long reservationId = 1L;
         long timeId = 1L;
         long themeId = 1L;
-        LocalDate date = LocalDate.parse("2050-01-01");
+        ReservationDate reservationDate = new ReservationDate("2050-01-01");
         String name = "브리";
         LocalTime time = LocalTime.MAX;
         ReservationTime reservationTime = new ReservationTime(timeId, time);
-        Reservation reservation = new Reservation(name, date, reservationTime,
+        Reservation reservation = new Reservation(name, reservationDate, reservationTime,
             new Theme("방탈출", "방탈출하는 게임",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
 
@@ -61,21 +62,23 @@ class ReservationServiceTest {
 
         when(reservationRepository.save(any(Reservation.class)))
             .thenReturn(
-                new Reservation(reservationId, reservation.getName(), reservation.getDate(), reservationTime,
+                new Reservation(reservationId, reservation.getName(), reservation.getReservationDate(), reservationTime,
                     new Theme("방탈출", "방탈출하는 게임",
                         "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg")));
 
-        ReservationAppRequest request = new ReservationAppRequest(name, date.toString(), timeId, themeId);
+        ReservationAppRequest request = new ReservationAppRequest(name, reservationDate.getDate().toString(), timeId,
+            themeId);
 
         Reservation actual = reservationService.save(request);
-        Reservation expected = new Reservation(1L, reservation.getName(), reservation.getDate(), reservation.getTime(),
+        Reservation expected = new Reservation(1L, reservation.getName(), reservation.getReservationDate(),
+            reservation.getReservationTime(),
             new Theme("방탈출", "방탈출하는 게임",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
 
         assertAll(
             () -> assertEquals(expected.getId(), actual.getId()),
-            () -> assertEquals(expected.getDate(), actual.getDate()),
-            () -> assertEquals(expected.getTime(), actual.getTime()),
+            () -> assertEquals(expected.getReservationDate(), actual.getReservationDate()),
+            () -> assertEquals(expected.getReservationTime(), actual.getReservationTime()),
             () -> assertEquals(expected.getName(), actual.getName())
         );
     }
