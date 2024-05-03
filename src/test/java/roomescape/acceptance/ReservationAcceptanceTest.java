@@ -2,11 +2,7 @@ package roomescape.acceptance;
 
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
-import io.restassured.response.Response;
 import java.time.LocalDate;
-import java.util.Map;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
@@ -21,7 +17,7 @@ class ReservationAcceptanceTest extends BasicAcceptanceTest {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
 
         return Stream.of(
-                dynamicTest("예약을 추가한다", () -> postReservation(tomorrow.toString(), 1L, 1L, 201))
+                dynamicTest("예약을 추가한다", () -> ReservationCRD.postReservation(tomorrow.toString(), 1L, 1L, 201))
         );
     }
 
@@ -31,7 +27,7 @@ class ReservationAcceptanceTest extends BasicAcceptanceTest {
         LocalDate yesterday = LocalDate.now().minusDays(1);
 
         return Stream.of(
-                dynamicTest("과거 시간에 대한 예약을 추가한다", () -> postReservation(yesterday.toString(), 1L, 1L, 400))
+                dynamicTest("과거 시간에 대한 예약을 추가한다", () -> ReservationCRD.postReservation(yesterday.toString(), 1L, 1L, 400))
         );
     }
 
@@ -41,28 +37,10 @@ class ReservationAcceptanceTest extends BasicAcceptanceTest {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
 
         return Stream.of(
-                dynamicTest("예약을 추가한다", () -> postReservation(tomorrow.toString(), 1L, 1L, 201)),
-                dynamicTest("동일한 예약을 추가한다", () -> postReservation(tomorrow.toString(), 1L, 1L, 400)),
-                dynamicTest("다른 테마를 예약한다", () -> postReservation(tomorrow.toString(), 1L, 2L, 201))
+                dynamicTest("예약을 추가한다", () -> ReservationCRD.postReservation(tomorrow.toString(), 1L, 1L, 201)),
+                dynamicTest("동일한 예약을 추가한다", () -> ReservationCRD.postReservation(tomorrow.toString(), 1L, 1L, 400)),
+                dynamicTest("다른 테마를 예약한다", () -> ReservationCRD.postReservation(tomorrow.toString(), 1L, 2L, 201))
         );
-    }
-
-    private Long postReservation(String date, Long timeId, Long themeId, int expectedHttpCode) {
-        Map<?, ?> requestBody = Map.of("name", "포비", "date", date, "timeId", timeId, "themeId", themeId);
-
-        Response response = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(requestBody)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(expectedHttpCode)
-                .extract().response();
-
-        if (expectedHttpCode == 201) {
-            return response.jsonPath().getLong("id");
-        }
-
-        return null;
     }
 }
 
