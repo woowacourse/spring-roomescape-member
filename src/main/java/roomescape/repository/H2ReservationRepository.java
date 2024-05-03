@@ -125,10 +125,10 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByDateAndTimeId(final Long timeId, final LocalDate date) {
-        final String sql = "SELECT * FROM RESERVATION WHERE TIME_ID = ? AND DATE = ? LIMIT 1";
+    public boolean existsByThemesAndDateAndTimeId(final Long themeId, final Long timeId, final LocalDate date) {
+        final String sql = "SELECT ID FROM RESERVATION WHERE THEME_ID = ? AND TIME_ID = ? AND DATE = ? LIMIT 1";
 
-        return !jdbcTemplate.query(sql, this::mapRowReservation, timeId, date).isEmpty();
+        return !jdbcTemplate.query(sql, this::mapRowReservation, themeId, timeId, date).isEmpty();
     }
 
     @Override
