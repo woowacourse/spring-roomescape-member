@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.NoSuchElementException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +19,7 @@ import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeName;
 import roomescape.domain.ThemeRepository;
+import roomescape.domain.exception.EntityNotFoundException;
 
 @ServiceTest
 class ReservationServiceTest {
@@ -60,8 +60,7 @@ class ReservationServiceTest {
         ReservationRequest request = new ReservationRequest("test", LocalDate.now(), 99L, savedTheme.getId());
 
         assertThatCode(() -> reservationService.create(request))
-                .isInstanceOf(NoSuchElementException.class)
-                .hasMessage("존재하지 않는 예약 시간 입니다.");
+                .isInstanceOf(EntityNotFoundException.class);
     }
 
     @Test
@@ -75,8 +74,7 @@ class ReservationServiceTest {
                 99L
         );
         assertThatCode(() -> reservationService.create(request))
-                .isInstanceOf(NoSuchElementException.class)
-                .hasMessage("존재하지 않는 테마 입니다.");
+                .isInstanceOf(EntityNotFoundException.class);
     }
 
 

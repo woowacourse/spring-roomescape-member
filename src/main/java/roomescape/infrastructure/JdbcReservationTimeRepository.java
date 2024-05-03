@@ -3,7 +3,6 @@ package roomescape.infrastructure;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -13,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.TimeSlot;
+import roomescape.domain.exception.EntityNotFoundException;
 import roomescape.infrastructure.rowmapper.ReservationTimeRowMapper;
 
 @Repository
@@ -41,8 +41,8 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public ReservationTime getById(long id) throws NoSuchElementException {
-        return findById(id).orElseThrow(() -> new NoSuchElementException("존재하지 않는 예약 시간 입니다."));
+    public ReservationTime getById(long id) throws EntityNotFoundException {
+        return findById(id).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 예약 시간 입니다."));
     }
 
     @Override

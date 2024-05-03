@@ -2,7 +2,6 @@ package roomescape.infrastructure;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -11,6 +10,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
+import roomescape.domain.exception.EntityNotFoundException;
 import roomescape.infrastructure.rowmapper.ThemeRowMapper;
 
 @Repository
@@ -55,8 +55,8 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public Theme getById(long id) throws NoSuchElementException {
-        return findById(id).orElseThrow(() -> new NoSuchElementException("존재하지 않는 테마 입니다."));
+    public Theme getById(long id) throws EntityNotFoundException {
+        return findById(id).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 테마 입니다."));
     }
 
     @Override

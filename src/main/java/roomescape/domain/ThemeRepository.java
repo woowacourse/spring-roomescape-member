@@ -2,8 +2,8 @@ package roomescape.domain;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
+import roomescape.domain.exception.EntityNotFoundException;
 
 public interface ThemeRepository {
 
@@ -13,7 +13,7 @@ public interface ThemeRepository {
 
     Optional<Theme> findById(long id);
 
-    Theme getById(long id) throws NoSuchElementException;
+    Theme getById(long id) throws EntityNotFoundException;
 
     void deleteById(long id);
 

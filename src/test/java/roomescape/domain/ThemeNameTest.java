@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
+import roomescape.domain.exception.EntityCreationException;
+import roomescape.domain.exception.EntityNotFoundException;
 
 class ThemeNameTest {
 
@@ -15,7 +17,7 @@ class ThemeNameTest {
     @NullAndEmptySource
     void shouldThrowExceptionWhenNameIsNullOrEmpty(String input) {
         assertThatCode(() -> new ThemeName(input))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(EntityCreationException.class)
                 .hasMessage("테마명은 필수 입력값 입니다.");
     }
 
@@ -24,7 +26,7 @@ class ThemeNameTest {
     void shouldThrowExceptionWhenNameLengthExceededMaxLength() {
         String input = "-".repeat(21);
         assertThatCode(() -> new ThemeName(input))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(EntityCreationException.class)
                 .hasMessage("테마명은 20자 이하여야 합니다.");
     }
 

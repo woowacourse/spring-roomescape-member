@@ -25,6 +25,7 @@ import roomescape.application.dto.request.ReservationRequest;
 import roomescape.application.dto.response.ReservationResponse;
 import roomescape.application.dto.response.ReservationTimeResponse;
 import roomescape.application.dto.response.ThemeResponse;
+import roomescape.domain.exception.EntityNotFoundException;
 
 @WebMvcTest(ReservationController.class)
 class ReservationControllerTest extends ControllerTest {
@@ -90,7 +91,7 @@ class ReservationControllerTest extends ControllerTest {
         String reservationRequestJson = objectMapper.writeValueAsString(reservationRequest);
 
         given(reservationService.create(any(ReservationRequest.class)))
-                .willThrow(new IllegalArgumentException("존재하지 않는 예약 시간 입니다."));
+                .willThrow(new EntityNotFoundException("존재하지 않는 예약 시간 입니다."));
 
         mvc.perform(post("/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -127,7 +128,7 @@ class ReservationControllerTest extends ControllerTest {
     @DisplayName("존재하지 않는 예약의 id로 삭제 요청을 하면 400 Bad Request 응답을 반환한다.")
     @Test
     void shouldReturn400BadRequestWhenReservationIdNotExist() throws Exception {
-        doThrow(new IllegalArgumentException("존재하지 않는 예약입니다."))
+        doThrow(new EntityNotFoundException("존재하지 않는 예약입니다."))
                 .when(reservationService).deleteById(1L);
 
         mvc.perform(delete("/reservations/1"))
