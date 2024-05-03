@@ -16,11 +16,11 @@ import roomescape.domain.theme.ThemeName;
 import roomescape.domain.theme.ThemeThumbnail;
 
 @Repository
-public class WebThemeDao implements ThemeDao {
+public class JdbcThemeDao implements ThemeDao {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public WebThemeDao(JdbcTemplate jdbcTemplate) {
+    public JdbcThemeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

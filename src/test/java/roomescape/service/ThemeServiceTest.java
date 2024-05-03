@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.dao.WebThemeDao;
+import roomescape.dao.JdbcThemeDao;
 import roomescape.domain.theme.Theme;
 import roomescape.dto.theme.ThemeCreateRequest;
 import roomescape.dto.theme.ThemeResponse;
@@ -27,7 +27,7 @@ class ThemeServiceTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
     @Autowired
-    private WebThemeDao themeDao;
+    private JdbcThemeDao themeDao;
     @Autowired
     private ThemeService themeService;
 

@@ -15,9 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.dao.WebReservationDao;
-import roomescape.dao.WebReservationTimeDao;
-import roomescape.dao.WebThemeDao;
+import roomescape.dao.JdbcReservationDao;
+import roomescape.dao.JdbcReservationTimeDao;
+import roomescape.dao.JdbcThemeDao;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
@@ -33,11 +33,11 @@ class ReservationTimeServiceTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
     @Autowired
-    private WebReservationDao reservationDao;
+    private JdbcReservationDao reservationDao;
     @Autowired
-    private WebReservationTimeDao reservationTimeDao;
+    private JdbcReservationTimeDao reservationTimeDao;
     @Autowired
-    private WebThemeDao themeDao;
+    private JdbcThemeDao themeDao;
     @Autowired
     private ReservationTimeService reservationTimeService;
 

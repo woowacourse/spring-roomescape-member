@@ -23,11 +23,11 @@ import roomescape.domain.theme.ThemeName;
 import roomescape.domain.theme.ThemeThumbnail;
 
 @Repository
-public class WebReservationDao implements ReservationDao {
+public class JdbcReservationDao implements ReservationDao {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public WebReservationDao(JdbcTemplate jdbcTemplate) {
+    public JdbcReservationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
