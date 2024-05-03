@@ -90,8 +90,8 @@ class JdbcReservationRepositoryTest {
     @DisplayName("예약 시간 id를 가진 예약의 개수를 조회한다.")
     @Test
     void shouldReturnCountOfReservationWhenReservationTimeUsed() {
-        long id = createReservation().getId();
-        long count = jdbcReservationRepository.findReservationCountByTimeId(id);
+        ReservationTime time = createReservation().getTime();
+        long count = jdbcReservationRepository.findReservationCountByTimeId(time.getId());
         assertThat(count).isOne();
     }
 
