@@ -1,4 +1,4 @@
-package roomescape.web.request;
+package roomescape.service.dto.request;
 
 import java.util.Objects;
 import roomescape.domain.Theme;

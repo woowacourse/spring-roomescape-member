@@ -1,4 +1,4 @@
-package roomescape.web.request;
+package roomescape.service.dto.request;
 
 import roomescape.domain.ReservationTime;
 
