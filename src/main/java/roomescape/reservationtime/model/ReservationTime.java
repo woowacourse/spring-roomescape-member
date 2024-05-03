@@ -1,5 +1,7 @@
 package roomescape.reservationtime.model;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Objects;
 
@@ -35,5 +37,9 @@ public class ReservationTime {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public boolean isBefore(final LocalTime time) {
+        return this.time.isBefore(time);
     }
 }
