@@ -3,15 +3,23 @@ document.addEventListener('DOMContentLoaded', () => {
     TODO: [3단계] 인기 테마 - 인기 테마 목록 조회 API 호출
     */
     const today = new Date();
-    const year = today.getFullYear();
-    const month = ('0' + (today.getMonth() + 1)).slice(-2);
-    const day = ('0' + today.getDate()).slice(-2);
-    const dateString = year + '-' + month + '-' + day;
+    const startDay = today - 7;
 
-    requestRead('/themes/popular?date=' + dateString) // 인기 테마 목록 조회 API endpoint
+    const startDate = createDate(startDay);
+    const endDate = createDate(today)
+    const limit = 10;
+
+    requestRead(`/themes/popular?startDate=${startDate}&endDate=${endDate}&limit=${limit}`) // 인기 테마 목록 조회 API endpoint
         .then(render)
         .catch(error => console.error('Error fetching times:', error));
 });
+
+function createDate(input) {
+    const year = input.getFullYear();
+    const month = ('0' + (input.getMonth() + 1)).slice(-2);
+    const day = ('0' + input.getDate()).slice(-2);
+    return year + '-' + month + '-' + day;
+}
 
 function render(data) {
     const container = document.getElementById('theme-ranking');
