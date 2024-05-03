@@ -1,6 +1,5 @@
 package roomescape.service;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.dao.ReservationRepository;
 import roomescape.dao.ReservationTimeRepository;
+import roomescape.dao.ThemeRepository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
@@ -31,20 +31,20 @@ class ThemeServiceTest {
     @Autowired
     private ThemeService themeService;
     @Autowired
+    private ThemeRepository themeRepository;
+    @Autowired
     private ReservationRepository reservationRepository;
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
-
-    private static Theme convertToTheme(ThemeResponse themeResponse) {
-        return new Theme(themeResponse.id(),
-                new Theme(themeResponse.name(), themeResponse.description(), themeResponse.thumbnail()));
-    }
 
     @DisplayName("테마를 생성한다.")
     @Test
     void create() {
         //given
-        ThemeResponse themeResponse = createTheme("레벨2 탈출");
+        ThemeRequest themeRequest = new ThemeRequest("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+
+        //when
+        ThemeResponse themeResponse = themeService.create(themeRequest);
 
         //then
         assertThat(themeResponse.id()).isNotZero();
@@ -54,9 +54,10 @@ class ThemeServiceTest {
     @Test
     void cannotCreateByDuplicatedName() {
         //given
-        ThemeRequest themeRequest = new ThemeRequest("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        themeService.create(themeRequest);
+        Theme theme = new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        themeRepository.save(theme);
+
+        ThemeRequest themeRequest = new ThemeRequest(theme.getName(), "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
 
         //when&then
         assertThatThrownBy(() -> themeService.create(themeRequest))
@@ -81,10 +82,10 @@ class ThemeServiceTest {
     @Test
     void deleteById() {
         //given
-        ThemeResponse target = createTheme("레벨2 탈출");
+        Theme theme = createTheme("레벨2 탈출");
 
         //when
-        themeService.deleteById(target.id());
+        themeService.deleteById(theme.getId());
 
         //then
         assertThat(themeService.findAll()).hasSize(0);
@@ -94,8 +95,7 @@ class ThemeServiceTest {
     @Test
     void cannotDeleteByReservation() {
         //given
-        ThemeResponse themeResponse = createTheme("레벨2 탈출");
-        Theme theme = convertToTheme(themeResponse);
+        Theme theme = createTheme("레벨2 탈출");
         ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime("21:25"));
         reservationRepository.save(new Reservation("lini", new ReservationDate("2024-10-04"), reservationTime, theme));
 
@@ -109,20 +109,18 @@ class ThemeServiceTest {
     @Test
     void findPopularThemes() {
         //given
-        ThemeResponse theme1 = createTheme("레벨1 탈출");
-        ThemeResponse theme2 = createTheme("레벨2 탈출");
-        ThemeResponse theme3 = createTheme("레벨3 탈출");
+        Theme theme1 = createTheme("레벨1 탈출");
+        Theme theme2 = createTheme("레벨2 탈출");
+        Theme theme3 = createTheme("레벨3 탈출");
 
         ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime("21:25"));
-        reservationRepository.save(
-                new Reservation("lini", new ReservationDate(LocalDate.now().minusDays(1).format(DateTimeFormatter.ISO_DATE)),
-                        reservationTime, convertToTheme(theme1)));
-        reservationRepository.save(
-                new Reservation("lini", new ReservationDate(LocalDate.now().minusDays(7).format(DateTimeFormatter.ISO_DATE)),
-                        reservationTime, convertToTheme(theme2)));
-        reservationRepository.save(
-                new Reservation("lini", new ReservationDate(LocalDate.now().minusDays(8).format(DateTimeFormatter.ISO_DATE)),
-                        reservationTime, convertToTheme(theme3)));
+
+        reservationRepository.save(new Reservation("lini",
+                new ReservationDate(LocalDate.now().minusDays(1).format(DateTimeFormatter.ISO_DATE)), reservationTime, theme1));
+        reservationRepository.save(new Reservation("lini",
+                new ReservationDate(LocalDate.now().minusDays(7).format(DateTimeFormatter.ISO_DATE)), reservationTime, theme2));
+        reservationRepository.save(new Reservation("lini",
+                new ReservationDate(LocalDate.now().minusDays(8).format(DateTimeFormatter.ISO_DATE)), reservationTime, theme3));
 
         //when
         List<ThemeResponse> result = themeService.findPopularThemes();
@@ -131,9 +129,8 @@ class ThemeServiceTest {
         assertThat(result).hasSize(2);
     }
 
-    private ThemeResponse createTheme(String name) {
-        ThemeRequest themeRequest = new ThemeRequest(name, "우테코 레벨2를 탈출하는 내용입니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        return themeService.create(themeRequest);
+    private Theme createTheme(String name) {
+        Theme theme = new Theme(name, "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        return themeRepository.save(theme);
     }
 }

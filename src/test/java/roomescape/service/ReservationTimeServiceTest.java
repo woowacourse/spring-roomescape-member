@@ -1,6 +1,5 @@
 package roomescape.service;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.dao.ReservationRepository;
+import roomescape.dao.ReservationTimeRepository;
 import roomescape.dao.ThemeRepository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
@@ -29,6 +29,8 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 class ReservationTimeServiceTest {
     @Autowired
     private ReservationTimeService reservationTimeService;
+    @Autowired
+    private ReservationTimeRepository reservationTimeRepository;
     @Autowired
     private ThemeRepository themeRepository;
     @Autowired
@@ -55,9 +57,7 @@ class ReservationTimeServiceTest {
     @Test
     void findAll() {
         //given
-        String startAt = "10:00";
-        ReservationTimeCreateRequest reservationTimeCreateRequest = new ReservationTimeCreateRequest(startAt);
-        reservationTimeService.create(reservationTimeCreateRequest);
+        reservationTimeRepository.save(new ReservationTime("10:00"));
 
         //when
         List<ReservationTimeResponse> reservationTimes = reservationTimeService.findAll();
@@ -70,9 +70,9 @@ class ReservationTimeServiceTest {
     @Test
     void duplicatedTime() {
         //given
-        String startAt = "10:00";
-        ReservationTimeCreateRequest reservationTimeCreateRequest = new ReservationTimeCreateRequest(startAt);
-        reservationTimeService.create(reservationTimeCreateRequest);
+        ReservationTime target = reservationTimeRepository.save(new ReservationTime("10:00"));
+
+        ReservationTimeCreateRequest reservationTimeCreateRequest = new ReservationTimeCreateRequest(target.getStartAt());
 
         //when&then
         assertThatThrownBy(() -> reservationTimeService.create(reservationTimeCreateRequest))
@@ -84,13 +84,12 @@ class ReservationTimeServiceTest {
     @Test
     void cannotDeleteTime() {
         //given
-        ReservationTimeResponse reservationTimeResponse = reservationTimeService.create(new ReservationTimeCreateRequest("10:00"));
-        ReservationTime reservationTime = new ReservationTime(reservationTimeResponse.id(), reservationTimeResponse.startAt());
+        ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime("10:00"));
         Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
-        reservationRepository.save(new Reservation("lilly", new ReservationDate("2222-10-04"), reservationTime, theme));
+        reservationRepository.save(new Reservation("lily", new ReservationDate("2222-10-04"), reservationTime, theme));
 
         //when&then
-        assertThatThrownBy(() -> reservationTimeService.deleteById(reservationTimeResponse.id()))
+        assertThatThrownBy(() -> reservationTimeService.deleteById(reservationTime.getId()))
                 .isInstanceOf(InvalidReservationException.class)
                 .hasMessage("해당 시간에 예약이 존재해서 삭제할 수 없습니다.");
     }
@@ -99,12 +98,10 @@ class ReservationTimeServiceTest {
     @Test
     void findAvailableTimes() {
         //given
-        ReservationTimeResponse notAvailableTimeResponse = reservationTimeService.create(new ReservationTimeCreateRequest("10:00"));
-        ReservationTime reservationTime = new ReservationTime(notAvailableTimeResponse.id(), notAvailableTimeResponse.startAt());
+        ReservationTime unavailableReservationTime = reservationTimeRepository.save(new ReservationTime("10:00"));
+        ReservationTime availableReservation = reservationTimeRepository.save(new ReservationTime("11:00"));
         Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
-        Reservation reservation = reservationRepository.save(new Reservation("lilly", new ReservationDate("2222-10-04"), reservationTime, theme));
-
-        ReservationTimeResponse availableTimeResponse = reservationTimeService.create(new ReservationTimeCreateRequest("11:00"));
+        Reservation reservation = reservationRepository.save(new Reservation("lily", new ReservationDate("2222-10-04"), unavailableReservationTime, theme));
 
         //when
         List<ReservationTimeResponse> result = reservationTimeService.findAvailableTimes(new ReservationTimeReadRequest(reservation.getDate(), theme.getId()));
@@ -112,7 +109,7 @@ class ReservationTimeServiceTest {
         //then
         assertAll(
                 () -> assertThat(result).hasSize(1),
-                () -> assertThat(result).contains(availableTimeResponse)
+                () -> assertThat(result.get(0).startAt()).contains(availableReservation.getStartAt())
         );
     }
 }

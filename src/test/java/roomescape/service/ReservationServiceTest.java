@@ -1,20 +1,24 @@
 package roomescape.service;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.dao.ReservationRepository;
 import roomescape.dao.ReservationTimeRepository;
 import roomescape.dao.ThemeRepository;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.InvalidReservationException;
 import roomescape.service.dto.ReservationRequest;
 import roomescape.service.dto.ReservationResponse;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,6 +31,8 @@ class ReservationServiceTest {
     @Autowired
     private ReservationService reservationService;
     @Autowired
+    private ReservationRepository reservationRepository;
+    @Autowired
     private ReservationTimeRepository reservationTimeRepository;
     @Autowired
     private ThemeRepository themeRepository;
@@ -36,8 +42,7 @@ class ReservationServiceTest {
     @BeforeEach
     void setUp() {
         reservationTime = reservationTimeRepository.save(new ReservationTime("10:00"));
-        theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
 
     }
 
@@ -47,8 +52,7 @@ class ReservationServiceTest {
         //given
         String name = "lini";
         String date = "2024-10-04";
-        ReservationRequest reservationRequest = new ReservationRequest(name, date, reservationTime.getId(),
-                theme.getId());
+        ReservationRequest reservationRequest = new ReservationRequest(name, date, reservationTime.getId(), theme.getId());
 
         //when
         ReservationResponse result = reservationService.create(reservationRequest);
@@ -65,11 +69,8 @@ class ReservationServiceTest {
     @Test
     void findAll() {
         //given
-        String name = "lini";
-        String date = "2024-10-04";
-        ReservationRequest reservationRequest = new ReservationRequest(name, date, reservationTime.getId(),
-                theme.getId());
-        reservationService.create(reservationRequest);
+        Reservation reservation = new Reservation("lini", new ReservationDate(LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_DATE)), reservationTime, theme);
+        reservationRepository.save(reservation);
 
         //when
         List<ReservationResponse> reservations = reservationService.findAll();
@@ -82,14 +83,11 @@ class ReservationServiceTest {
     @Test
     void deleteById() {
         //given
-        String name = "lini";
-        String date = "2024-10-04";
-        ReservationRequest reservationRequest = new ReservationRequest(name, date, reservationTime.getId(),
-                theme.getId());
-        ReservationResponse target = reservationService.create(reservationRequest);
+        Reservation reservation = new Reservation("lini", new ReservationDate(LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_DATE)), reservationTime, theme);
+        Reservation target = reservationRepository.save(reservation);
 
         //when
-        reservationService.deleteById(target.id());
+        reservationService.deleteById(target.getId());
 
         //then
         assertThat(reservationService.findAll()).hasSize(0);
@@ -99,11 +97,10 @@ class ReservationServiceTest {
     @Test
     void duplicatedReservation() {
         //given
-        String name = "lini";
-        String date = "2024-10-04";
-        ReservationRequest reservationRequest = new ReservationRequest(name, date, reservationTime.getId(),
-                theme.getId());
-        reservationService.create(reservationRequest);
+        Reservation reservation = new Reservation("lini", new ReservationDate(LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_DATE)), reservationTime, theme);
+        Reservation target = reservationRepository.save(reservation);
+
+        ReservationRequest reservationRequest = new ReservationRequest("lini", target.getDate(), reservationTime.getId(), theme.getId());
 
         //when & then
         assertThatThrownBy(() -> reservationService.create(reservationRequest))
