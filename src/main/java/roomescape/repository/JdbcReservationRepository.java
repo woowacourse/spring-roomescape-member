@@ -15,7 +15,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 @Repository
-public class ReservationDaoImpl implements ReservationDao {
+public class JdbcReservationRepository implements ReservationRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -39,7 +39,7 @@ public class ReservationDaoImpl implements ReservationDao {
             rs.getString("theme_thumbnail")
     ));
 
-    public ReservationDaoImpl(JdbcTemplate jdbcTemplate) {
+    public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("RESERVATION")

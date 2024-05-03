@@ -7,7 +7,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
-public interface ReservationDao {
+public interface ReservationRepository {
 
     List<Reservation> findAll();
 

@@ -19,7 +19,7 @@ import roomescape.domain.Theme;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class ReservationDaoImplTest {
+class JdbcReservationRepositoryTest {
 
     private static final LocalDate DATE_AFTER_TWO = LocalDate.now().plusDays(2);
     private static final LocalDate DATE_AFTER_THREE = LocalDate.now().plusDays(3);
@@ -27,7 +27,7 @@ class ReservationDaoImplTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
     @Autowired
-    private ReservationDaoImpl reservationDaoImpl;
+    private JdbcReservationRepository reservationDaoImpl;
 
     @BeforeEach
     void setUp() {

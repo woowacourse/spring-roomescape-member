@@ -15,15 +15,15 @@ import roomescape.dto.ReservationAddRequest;
 class ReservationServiceTest {
 
     ReservationService reservationService;
-    FakeReservationDao fakeReservationDao;
-    FakeReservationTimeDao fakeReservationTimeDao;
-    FakeThemeDao fakeThemeDao;
+    FakeReservationRepository fakeReservationDao;
+    FakeReservationTimeRepository fakeReservationTimeDao;
+    FakeThemeRepository fakeThemeDao;
 
     @BeforeEach
     void setUp() {
-        fakeReservationDao = new FakeReservationDao();
-        fakeReservationTimeDao = new FakeReservationTimeDao();
-        fakeThemeDao = new FakeThemeDao();
+        fakeReservationDao = new FakeReservationRepository();
+        fakeReservationTimeDao = new FakeReservationTimeRepository();
+        fakeThemeDao = new FakeThemeRepository();
         reservationService = new ReservationService(fakeReservationDao, fakeReservationTimeDao, fakeThemeDao);
     }
 

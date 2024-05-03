@@ -4,30 +4,30 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeAddRequest;
-import roomescape.repository.ThemeDao;
+import roomescape.repository.ThemeRepository;
 
 @Service
 public class ThemeService {
 
-    private final ThemeDao themeDao;
+    private final ThemeRepository themeRepository;
 
-    public ThemeService(ThemeDao themeDao) {
-        this.themeDao = themeDao;
+    public ThemeService(ThemeRepository themeRepository) {
+        this.themeRepository = themeRepository;
     }
 
     public List<Theme> findAllTheme() {
-        return themeDao.findAll();
+        return themeRepository.findAll();
     }
 
     public Theme addTheme(ThemeAddRequest themeAddRequest) {
         Theme theme = themeAddRequest.toEntity();
-        return themeDao.insert(theme);
+        return themeRepository.insert(theme);
     }
 
     public void removeTheme(Long id) {
-        if (themeDao.findById(id).isEmpty()) {
+        if (themeRepository.findById(id).isEmpty()) {
             throw new IllegalArgumentException("해당 id를 가진 테마가 존재하지 않습니다.");
         }
-        themeDao.deleteById(id);
+        themeRepository.deleteById(id);
     }
 }

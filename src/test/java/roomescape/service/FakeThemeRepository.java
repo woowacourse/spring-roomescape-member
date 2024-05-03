@@ -6,9 +6,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.Theme;
-import roomescape.repository.ThemeDao;
+import roomescape.repository.ThemeRepository;
 
-public class FakeThemeDao implements ThemeDao {
+public class FakeThemeRepository implements ThemeRepository {
     Map<Long, Theme> themes = new HashMap<>();
     AtomicLong atomicLong = new AtomicLong(0);
 

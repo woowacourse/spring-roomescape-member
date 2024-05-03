@@ -15,7 +15,7 @@ class ReservationTimeServiceTest {
     @DisplayName("모든 예약 시간을 찾습니다")
     @Test
     void findAllReservationTime() {
-        ReservationTimeService reservationTimeService = new ReservationTimeService(new FakeReservationTimeDao(
+        ReservationTimeService reservationTimeService = new ReservationTimeService(new FakeReservationTimeRepository(
                 Arrays.asList(new ReservationTime(1L, LocalTime.of(10, 0)))
         ));
         int expectedSize = 1;
@@ -28,7 +28,7 @@ class ReservationTimeServiceTest {
     @DisplayName("예약시간을 추가하고 저장된 예약시간을 반환합니다.")
     @Test
     void should_add_reservation_time() {
-        ReservationTimeService reservationTimeService = new ReservationTimeService(new FakeReservationTimeDao());
+        ReservationTimeService reservationTimeService = new ReservationTimeService(new FakeReservationTimeRepository());
         ReservationTime expectedReservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
 
         ReservationTime actualReservationTime = reservationTimeService.addReservationTime(new ReservationTimeAddRequest(
@@ -41,7 +41,7 @@ class ReservationTimeServiceTest {
     @DisplayName("중복되는 예약 시각을 추가할 경우 예외가 발생합니다.")
     @Test
     void should_throw_IllegalArgumentException_when_reservation_time_is_duplicated() {
-        ReservationTimeService reservationTimeService = new ReservationTimeService(new FakeReservationTimeDao(
+        ReservationTimeService reservationTimeService = new ReservationTimeService(new FakeReservationTimeRepository(
                 Arrays.asList(new ReservationTime(1L, LocalTime.of(10, 0)))
         ));
 
@@ -55,7 +55,7 @@ class ReservationTimeServiceTest {
     @DisplayName("원하는 id의 예약시간을 삭제합니다")
     @Test
     void should_remove_reservation_time_with_exist_id() {
-        FakeReservationTimeDao fakeReservationTimeDao = new FakeReservationTimeDao(
+        FakeReservationTimeRepository fakeReservationTimeDao = new FakeReservationTimeRepository(
                 Arrays.asList(new ReservationTime(1L, LocalTime.of(10, 0)))
         );
         ReservationTimeService reservationTimeService = new ReservationTimeService(fakeReservationTimeDao);
@@ -68,7 +68,7 @@ class ReservationTimeServiceTest {
     @DisplayName("없는 id의 예약시간을 삭제하면 예외를 발생합니다.")
     @Test
     void should_throw_exception_when_remove_reservation_time_with_non_exist_id() {
-        FakeReservationTimeDao fakeReservationTimeDao = new FakeReservationTimeDao();
+        FakeReservationTimeRepository fakeReservationTimeDao = new FakeReservationTimeRepository();
         ReservationTimeService reservationTimeService = new ReservationTimeService(fakeReservationTimeDao);
 
         assertThatThrownBy(() -> reservationTimeService.removeReservationTime(1L)).isInstanceOf(
