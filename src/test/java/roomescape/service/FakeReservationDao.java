@@ -70,7 +70,7 @@ class FakeReservationDao implements ReservationDao {
     @Override
     public List<ReservationTime> findReservationTimeBooked(LocalDate date, long themeId) {
         return reservations.stream()
-                .filter(reservation -> reservation.getDate().equals(date) && reservation.getTheme().getThemeId() == themeId)
+                .filter(reservation -> reservation.getDate().equals(date) && reservation.getTheme().getId() == themeId)
                 .map(reservation -> new ReservationTime(reservation.getTime().getId(), reservation.getTime().getStartAt()))
                 .toList();
     }

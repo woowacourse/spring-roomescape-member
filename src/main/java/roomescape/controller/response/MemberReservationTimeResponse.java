@@ -7,16 +7,12 @@ public class MemberReservationTimeResponse {
 
     private final long timeId;
     private final LocalTime startAt;
-    private boolean alreadyBooked;
+    private final boolean isBooked;
 
-    public MemberReservationTimeResponse(long timeId, LocalTime startAt, boolean alreadyBooked) {
+    public MemberReservationTimeResponse(long timeId, LocalTime startAt, boolean isBooked) {
         this.timeId = timeId;
         this.startAt = startAt;
-        this.alreadyBooked = alreadyBooked;
-    }
-
-    public void setAlreadyBooked(boolean alreadyBooked) {
-        this.alreadyBooked = alreadyBooked;
+        this.isBooked = isBooked;
     }
 
     public long getTimeId() {
@@ -27,8 +23,8 @@ public class MemberReservationTimeResponse {
         return startAt;
     }
 
-    public boolean getAlreadyBooked() {
-        return alreadyBooked;
+    public boolean getIsBooked() {
+        return isBooked;
     }
 
     @Override
@@ -36,11 +32,11 @@ public class MemberReservationTimeResponse {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         MemberReservationTimeResponse that = (MemberReservationTimeResponse) o;
-        return timeId == that.timeId && alreadyBooked == that.alreadyBooked && Objects.equals(startAt, that.startAt);
+        return timeId == that.timeId && isBooked == that.isBooked && Objects.equals(startAt, that.startAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(timeId, startAt, alreadyBooked);
+        return Objects.hash(timeId, startAt, isBooked);
     }
 }

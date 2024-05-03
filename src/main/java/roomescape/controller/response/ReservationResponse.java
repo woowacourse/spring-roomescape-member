@@ -27,7 +27,7 @@ public class ReservationResponse {
         Theme theme = reservation.getTheme();
         return new ReservationResponse(reservation.getId(), reservation.getName(), reservation.getDate(),
                 new ReservationTimeResponse(time.getId(), time.getStartAt()),
-                new ThemeResponse(theme.getThemeId(), theme.getName(), theme.getDescription(), theme.getThumbnail()));
+                new ThemeResponse(theme.getId(), theme.getName(), theme.getDescription(), theme.getThumbnail()));
     }
 
     public long getId() {

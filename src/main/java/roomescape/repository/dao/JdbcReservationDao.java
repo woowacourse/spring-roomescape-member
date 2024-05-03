@@ -7,7 +7,6 @@ import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
 
-import javax.sql.DataSource;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -68,7 +67,7 @@ public class JdbcReservationDao implements ReservationDao {
         parameters.put("name", reservation.getName());
         parameters.put("date", reservation.getDate());
         parameters.put("time_id", reservation.getTime().getId());
-        parameters.put("theme_id", reservation.getTheme().getThemeId());
+        parameters.put("theme_id", reservation.getTheme().getId());
         Number newId = insertActor.executeAndReturnKey(parameters);
         return new Reservation(newId.longValue(), reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
     }
