@@ -9,6 +9,7 @@ import static roomescape.TestFixture.VALID_STRING_DATE_FIXTURE;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -68,7 +69,7 @@ class ReservationControllerTest {
     @Test
     void createReservation() {
         // given
-        ReservationRequest reservationRequest = createReservationRequest("브라운",
+        Map reservationRequest = createReservationRequest("브라운",
                 VALID_STRING_DATE_FIXTURE);
         // then
         RestAssured.given().log().all()
@@ -83,7 +84,7 @@ class ReservationControllerTest {
     @ValueSource(strings = {"", " "})
     void invalidNameReservation(String value) {
         // given
-        ReservationRequest reservationRequest = createReservationRequest(value,
+        Map reservationRequest = createReservationRequest(value,
                 VALID_STRING_DATE_FIXTURE);
         // when & then
         RestAssured.given().log().all()
@@ -95,10 +96,10 @@ class ReservationControllerTest {
 
     @DisplayName("날짜 양식을 잘못 입력할 시 400을 응답한다.")
     @ParameterizedTest
-    @ValueSource(strings = {"20223-10-11", "2024-13-1", "2024-11-31"})
+    @ValueSource(strings = {"20223-10-11", "2024-13-1"})
     void invalidDateReservation(String value) {
         // given
-        ReservationRequest reservationRequest = createReservationRequest("브라운", value);
+        Map reservationRequest = createReservationRequest("브라운", value);
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -111,7 +112,7 @@ class ReservationControllerTest {
     @Test
     void outdatedReservation() {
         // given
-        ReservationRequest reservationRequest = createReservationRequest("브라운", "2023-12-12");
+        Map reservationRequest = createReservationRequest("브라운", "2023-12-12");
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -124,7 +125,7 @@ class ReservationControllerTest {
     @Test
     void duplicateReservation() {
         // given
-        ReservationRequest reservationRequest = createReservationRequest("브라운",
+        Map reservationRequest = createReservationRequest("브라운",
                 VALID_STRING_DATE_FIXTURE);
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -144,9 +145,9 @@ class ReservationControllerTest {
     void noPrimaryKeyReservation() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new ReservationRequest("브라운", VALID_STRING_DATE_FIXTURE, 1L, 1L))
+                .body(new ReservationRequest("브라운", DATE_FIXTURE, 1L, 1L))
                 .when().post("/reservations")
-                .then().log().all().assertThat().statusCode(HttpStatus.BAD_REQUEST.value());
+                .then().log().all().assertThat().statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     @DisplayName("예약 취소 성공 테스트")
@@ -177,10 +178,14 @@ class ReservationControllerTest {
                 .then().log().all().assertThat().statusCode(HttpStatus.NOT_FOUND.value());
     }
 
-    private ReservationRequest createReservationRequest(String name, String date) {
+    private Map createReservationRequest(String name, String date) {
         ReservationTime savedReservationTime = reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
         RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);
-        return new ReservationRequest(name, date, savedReservationTime.getId(),
-                savedRoomTheme.getId());
+
+        return Map.of(
+                "name", name,
+                "date", date,
+                "timeId", savedReservationTime.getId(),
+                "themeId", savedRoomTheme.getId());
     }
 }

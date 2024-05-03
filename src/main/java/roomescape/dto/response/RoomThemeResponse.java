@@ -1,8 +1,19 @@
 package roomescape.dto.response;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import roomescape.domain.RoomTheme;
 
-public record RoomThemeResponse(Long id, String name, String description, String thumbnail) {
+public record RoomThemeResponse(
+        @NotNull
+        Long id,
+        @NotBlank
+        String name,
+        @NotBlank
+        String description,
+        @NotBlank
+        String thumbnail)
+{
     public static RoomThemeResponse fromRoomTheme(RoomTheme roomTheme) {
         return new RoomThemeResponse(
                 roomTheme.getId(),

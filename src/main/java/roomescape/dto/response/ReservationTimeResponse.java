@@ -1,14 +1,21 @@
 package roomescape.dto.response;
 
-import java.time.format.DateTimeFormatter;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.NotNull;
+import java.time.LocalTime;
 import roomescape.domain.ReservationTime;
 
-public record ReservationTimeResponse(Long id, String startAt) {
-    private static final String TIME_FORMAT = "HH:mm";
+public record ReservationTimeResponse(
+        @NotNull
+        Long id,
+        @NotNull
+        @JsonFormat(pattern = "HH:mm")
+        LocalTime startAt)
+{
 
     public static ReservationTimeResponse fromReservationTime(ReservationTime reservationTime) {
         return new ReservationTimeResponse(
                 reservationTime.getId(),
-                reservationTime.getStartAt().format(DateTimeFormatter.ofPattern(TIME_FORMAT)));
+                reservationTime.getStartAt());
     }
 }

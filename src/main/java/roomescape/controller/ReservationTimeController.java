@@ -1,8 +1,10 @@
 package roomescape.controller;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,14 +35,14 @@ public class ReservationTimeController {
 
     @GetMapping("/filter")
     public ResponseEntity<List<ReservationTimeWithBookStatusResponse>> findReservationTimesWithBookStatus(
-            @RequestParam("date") String date,
+            @RequestParam("date") LocalDate date,
             @RequestParam("themeId") Long themeId) {
         ReservationTimeWithBookStatusRequest timeRequest = new ReservationTimeWithBookStatusRequest(date, themeId);
         return ResponseEntity.ok(reservationTimeService.findReservationTimesWithBookStatus(timeRequest));
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTimeResponse> addTime(@RequestBody ReservationTimeRequest reservationTimeRequest) {
+    public ResponseEntity<ReservationTimeResponse> addTime(@Validated @RequestBody ReservationTimeRequest reservationTimeRequest) {
         ReservationTimeResponse reservationTimeResponse = reservationTimeService.save(reservationTimeRequest);
         return ResponseEntity.created(URI.create("/admin/time"))
                 .body(reservationTimeResponse);

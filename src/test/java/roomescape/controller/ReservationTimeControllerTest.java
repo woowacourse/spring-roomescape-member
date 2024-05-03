@@ -5,12 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.TestFixture.DATE_FIXTURE;
 import static roomescape.TestFixture.RESERVATION_TIME_FIXTURE;
 import static roomescape.TestFixture.ROOM_THEME_FIXTURE;
-import static roomescape.TestFixture.VALID_STRING_TIME_FIXTURE;
+import static roomescape.TestFixture.TIME_FIXTURE;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -71,7 +72,7 @@ class ReservationTimeControllerTest {
     void createReservationTime() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new ReservationTimeRequest(VALID_STRING_TIME_FIXTURE))
+                .body(new ReservationTimeRequest(TIME_FIXTURE))
                 .when().post("/times")
                 .then().log().all().assertThat().statusCode(HttpStatus.CREATED.value());
     }
@@ -82,7 +83,7 @@ class ReservationTimeControllerTest {
     void invalidTypeReservationTime(String startAt) {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new ReservationTimeRequest(startAt))
+                .body(Map.of("startAt", startAt))
                 .when().post("/times")
                 .then().log().all().assertThat().statusCode(HttpStatus.BAD_REQUEST.value());
     }
@@ -95,7 +96,7 @@ class ReservationTimeControllerTest {
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new ReservationTimeRequest(VALID_STRING_TIME_FIXTURE))
+                .body(new ReservationTimeRequest(TIME_FIXTURE))
                 .when().post("/times")
                 .then().log().all().assertThat().statusCode(HttpStatus.BAD_REQUEST.value());
     }

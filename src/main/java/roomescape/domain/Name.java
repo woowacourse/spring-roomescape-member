@@ -1,5 +1,7 @@
 package roomescape.domain;
 
+import roomescape.handler.BadRequestException;
+
 public class Name {
     private final String name;
 
@@ -10,7 +12,7 @@ public class Name {
 
     public void validateEmpty(String name) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("이름에 null 혹은 빈문자열을 입력할 수 없습니다.");
+            throw new BadRequestException("이름에 null 혹은 빈문자열을 입력할 수 없습니다.");
         }
     }
 

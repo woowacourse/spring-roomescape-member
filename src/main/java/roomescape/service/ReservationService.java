@@ -14,6 +14,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
+import roomescape.handler.BadRequestException;
 
 @Service
 public class ReservationService {
@@ -21,8 +22,11 @@ public class ReservationService {
     private final ReservationTimeDao reservationTimeDao;
     private final RoomThemeDao roomThemeDao;
 
-    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao,
-                              RoomThemeDao roomThemeDao) {
+    public ReservationService(
+            ReservationDao reservationDao,
+            ReservationTimeDao reservationTimeDao,
+            RoomThemeDao roomThemeDao)
+    {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
         this.roomThemeDao = roomThemeDao;
@@ -37,8 +41,7 @@ public class ReservationService {
 
     public ReservationResponse save(ReservationRequest reservationRequest) {
         ReservationTime reservationTime = reservationTimeDao.findById(reservationRequest.timeId());
-        validateOutdatedDateTime(LocalDate.parse(reservationRequest.date()),
-                reservationTime.getStartAt());
+        validateOutdatedDateTime(reservationRequest.date(), reservationTime.getStartAt());
 
         RoomTheme roomTheme = roomThemeDao.findById(reservationRequest.themeId());
         Reservation reservation = reservationRequest.toReservation(reservationTime, roomTheme);
@@ -56,14 +59,14 @@ public class ReservationService {
     private void validateOutdatedDateTime(LocalDate date, LocalTime time) {
         LocalDateTime now = LocalDateTime.now(Clock.systemDefaultZone());
         if (LocalDateTime.of(date, time).isBefore(now)) {
-            throw new IllegalArgumentException("지나간 날짜입니다.");
+            throw new BadRequestException("지나간 날짜와 시간에 대한 예약을 생성할 수 없습니다.");
         }
     }
 
     private void validateDuplicatedDateTime(LocalDate date, Long timeId) {
         boolean exists = reservationDao.existsByDateTime(date, timeId);
         if (exists) {
-            throw new IllegalArgumentException("중복된 예약 시간입니다.");
+            throw new BadRequestException("중복된 시간과 날짜에 대한 예약을 생성할 수 없습니다.");
         }
     }
 }

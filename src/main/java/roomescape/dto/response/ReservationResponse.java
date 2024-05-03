@@ -1,12 +1,19 @@
 package roomescape.dto.response;
 
-import java.time.format.DateTimeFormatter;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import java.time.LocalDate;
 import roomescape.domain.Reservation;
 
 public record ReservationResponse(
+        @NotNull
         Long id,
+        @NotBlank
         String name,
-        String date,
+        @NotNull
+        @JsonFormat(pattern = "yyyy-MM-dd")
+        LocalDate date,
         ReservationTimeResponse time,
         RoomThemeResponse theme) {
 
@@ -14,7 +21,7 @@ public record ReservationResponse(
         return new ReservationResponse(
                 reservation.getId(),
                 reservation.getName(),
-                reservation.getDate().format(DateTimeFormatter.ISO_DATE),
+                reservation.getDate(),
                 ReservationTimeResponse.fromReservationTime(reservation.getTime()),
                 RoomThemeResponse.fromRoomTheme(reservation.getTheme()));
     }

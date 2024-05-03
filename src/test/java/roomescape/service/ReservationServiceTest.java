@@ -9,6 +9,7 @@ import static roomescape.TestFixture.VALID_STRING_DATE_FIXTURE;
 import static roomescape.TestFixture.VALID_STRING_TIME_FIXTURE;
 
 import io.restassured.RestAssured;
+import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,6 +25,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
+import roomescape.handler.BadRequestException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReservationServiceTest {
@@ -85,8 +87,8 @@ class ReservationServiceTest {
         ReservationRequest reservationRequest = createReservationRequest("2000-11-09");
         // when & then
         assertThatThrownBy(() -> reservationService.save(reservationRequest))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("지나간 날짜입니다.");
+                .isInstanceOf(BadRequestException.class)
+                .hasMessage("지나간 날짜와 시간에 대한 예약을 생성할 수 없습니다.");
     }
 
     @DisplayName("삭제 테스트")
@@ -104,7 +106,7 @@ class ReservationServiceTest {
         ReservationTime savedReservationTime = reservationTimeDao.save(
                 RESERVATION_TIME_FIXTURE);
         RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);
-        return new ReservationRequest("aa", date,
+        return new ReservationRequest("aa", LocalDate.parse(date),
                 savedReservationTime.getId(), savedRoomTheme.getId());
     }
 }

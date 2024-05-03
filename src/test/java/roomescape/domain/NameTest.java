@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import roomescape.handler.BadRequestException;
 
 class NameTest {
     @DisplayName("정상 생성 테스트")
@@ -21,7 +22,7 @@ class NameTest {
     @ValueSource(strings = {"", " "})
     void EmptyValueThrowsException(String value) {
         assertThatThrownBy(() -> new Name(value))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(BadRequestException.class)
                 .hasMessage("이름에 null 혹은 빈문자열을 입력할 수 없습니다.");
     }
 
@@ -30,7 +31,7 @@ class NameTest {
     @NullSource
     void nullThrowsException(String value) {
         assertThatThrownBy(() -> new Name(value))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(BadRequestException.class)
                 .hasMessage("이름에 null 혹은 빈문자열을 입력할 수 없습니다.");
     }
 }
