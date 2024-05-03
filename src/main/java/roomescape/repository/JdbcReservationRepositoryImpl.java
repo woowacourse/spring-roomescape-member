@@ -76,6 +76,7 @@ public class JdbcReservationRepositoryImpl implements ReservationRepository {
                     LocalTime.parse(rs.getString("time_value"))
                 ),
                 new Theme(
+                    rs.getLong("theme_id"),
                     rs.getString("theme_name"),
                     rs.getString("theme_description"),
                     rs.getString("theme_thumbnail")
