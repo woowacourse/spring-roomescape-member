@@ -8,6 +8,7 @@ import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 class ReservationTest {
@@ -30,6 +31,7 @@ class ReservationTest {
 
     @DisplayName("예약자명이 1글자 이상 10글자 이하가 아니면 예외가 발생한다.")
     @ParameterizedTest
+    @NullSource
     @ValueSource(strings = {"", " ", "01234567890"})
     void create_WithBlankName(String name) {
         assertThatThrownBy(
@@ -37,6 +39,38 @@ class ReservationTest {
                 new ReservationTime(LocalTime.MAX.toString()),
                 new Theme("방탈출", "방탈출하는 게임",
                     "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg")))
+            .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("날짜를 null로 생성하면 예외가 발생한다.")
+    @Test
+    void create_WithNullDate() {
+        assertThatThrownBy(
+            () -> new Reservation("브리", null,
+                new ReservationTime(LocalTime.MAX.toString()),
+                new Theme("방탈출", "방탈출하는 게임",
+                    "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg")))
+            .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("시간을 null로 생성하면 예외가 발생한다.")
+    @Test
+    void create_WithNullTime() {
+        assertThatThrownBy(
+            () -> new Reservation("브리", new ReservationDate("2040-04-01"),
+                null,
+                new Theme("방탈출", "방탈출하는 게임",
+                    "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg")))
+            .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("테마를 null로 생성하면 예외가 발생한다.")
+    @Test
+    void create_WithNullTheme() {
+        assertThatThrownBy(
+            () -> new Reservation("브리", new ReservationDate("2040-04-01"),
+                new ReservationTime(LocalTime.MAX.toString()),
+                null))
             .isInstanceOf(IllegalArgumentException.class);
     }
 

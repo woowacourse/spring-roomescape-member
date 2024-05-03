@@ -17,6 +17,9 @@ public class Reservation {
 
     public Reservation(Long id, String name, ReservationDate date, ReservationTime time, Theme theme) {
         validateName(name);
+        validateDate(date);
+        validateTime(time);
+        validateTheme(theme);
         this.id = id;
         this.name = name;
         this.date = date;
@@ -27,6 +30,24 @@ public class Reservation {
     private void validateName(String name) {
         if (name == null || name.isBlank() || name.length() > MAX_NAME_SIZE) {
             throw new IllegalArgumentException("예약자 이름은 1글자 이상 10글자 이하만 입력해주세요.");
+        }
+    }
+
+    private void validateDate(ReservationDate date) {
+        if (date == null) {
+            throw new IllegalArgumentException("예약 날짜는 비어있을 수 없습니다.");
+        }
+    }
+
+    private void validateTime(ReservationTime time) {
+        if (time == null) {
+            throw new IllegalArgumentException("예약 시간은 비어있을 수 없습니다.");
+        }
+    }
+
+    private void validateTheme(Theme theme) {
+        if (theme == null) {
+            throw new IllegalArgumentException("예약 테마는 비어있을 수 없습니다.");
         }
     }
 
