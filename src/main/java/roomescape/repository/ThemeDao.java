@@ -57,6 +57,11 @@ public class ThemeDao {
         return Collections.unmodifiableList(themes);
     }
 
+    public boolean existByName(final String name) {
+        int count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM theme WHERE name = ?", Integer.class, name);
+        return count > 0;
+    }
+
     public void deleteById(Long id) {
         jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id);
     }

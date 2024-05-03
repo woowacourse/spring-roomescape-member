@@ -7,6 +7,7 @@ import roomescape.domain.Theme;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
 import roomescape.exception.ExistReservationException;
+import roomescape.exception.IllegalThemeException;
 import roomescape.mapper.ThemeMapper;
 import roomescape.repository.ThemeDao;
 
@@ -39,9 +40,9 @@ public class ThemeService {
     public ThemeResponse save(ThemeRequest request) {
         Theme theme = themeMapper.mapToTheme(request);
 
-//        if (themeDao.existBy(theme.())) {
-//            throw new IllegalThemeException("[ERROR] 중복된 테마는 생성할 수 없습니다.");
-//        }
+        if (themeDao.existByName(theme.getName())) {
+            throw new IllegalThemeException("[ERROR] 중복된 테마는 생성할 수 없습니다.");
+        }
 
         Theme newTheme = themeDao.save(theme);
         return themeMapper.mapToResponse(newTheme);
