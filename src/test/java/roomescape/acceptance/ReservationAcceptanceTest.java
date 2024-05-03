@@ -62,7 +62,7 @@ class ReservationAcceptanceTest extends BasicAcceptanceTest {
             return response.jsonPath().getLong("id");
         }
 
-        return 0L;
+        return null;
     }
 }
 

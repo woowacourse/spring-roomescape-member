@@ -78,7 +78,7 @@ class ReservationTimeAcceptanceTest extends BasicAcceptanceTest {
             return response.jsonPath().getLong("id");
         }
 
-        return 0L;
+        return null;
     }
 
     private void getReservationTimes(int expectedHttpCode, int expectedReservationsSize) {
