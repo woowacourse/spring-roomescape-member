@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -42,13 +42,17 @@ class ReservationTimeServiceTest {
     private final String rawTime = "10:00";
     private final LocalTime localTime = LocalTime.parse(rawTime);
 
-    @BeforeEach
-    void setUp() {
+    @AfterEach
+    void clear() {
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
         jdbcTemplate.update("TRUNCATE TABLE reservation_time");
         jdbcTemplate.update("TRUNCATE TABLE reservation");
         jdbcTemplate.update("TRUNCATE TABLE theme");
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
+
+        jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
     }
 
     @DisplayName("성공: 예약 시간을 저장하고, id 값과 함께 반환한다.")

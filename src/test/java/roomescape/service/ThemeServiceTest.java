@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -41,13 +41,17 @@ class ThemeServiceTest {
     private final String description = "themeDesc";
     private final String thumbnail = "https://";
 
-    @BeforeEach
-    void setUp() {
+    @AfterEach
+    void clear() {
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
         jdbcTemplate.update("TRUNCATE TABLE reservation_time");
         jdbcTemplate.update("TRUNCATE TABLE reservation");
         jdbcTemplate.update("TRUNCATE TABLE theme");
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
+
+        jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
     }
 
     @DisplayName("실패: 이름이 null 또는 빈 값이면 예외 발생")

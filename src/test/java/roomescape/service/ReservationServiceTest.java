@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -45,7 +46,13 @@ class ReservationServiceTest {
     private final Theme theme = new Theme(1L, "theme1", "desc1", "https://");
 
     @BeforeEach
-    void setUp() {
+    void beforeEach() {
+        jdbcTemplate.update("INSERT INTO theme(name, description, thumbnail) VALUES ('theme1', 'desc1', 'https://')");
+        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES ('10:00')");
+    }
+
+    @AfterEach
+    void clear() {
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
         jdbcTemplate.update("TRUNCATE TABLE reservation_time");
         jdbcTemplate.update("TRUNCATE TABLE reservation");
@@ -55,9 +62,6 @@ class ReservationServiceTest {
         jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
-
-        jdbcTemplate.update("INSERT INTO theme(name, description, thumbnail) VALUES ('theme1', 'desc1', 'https://')");
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES ('10:00')");
     }
 
     @DisplayName("성공: 예약을 저장하고, 해당 예약을 id값과 함께 반환한다.")
