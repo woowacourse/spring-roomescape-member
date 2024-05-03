@@ -15,6 +15,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import roomescape.web.exception.response.ErrorResponse;
 
 @ControllerAdvice
@@ -40,18 +41,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity(new ErrorResponse(parameterValidationResults), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler
-    public ResponseEntity<ErrorResponse> handle(IllegalArgumentException exception) {
-        return new ResponseEntity(new ErrorResponse(exception.getMessage()), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<ErrorResponse> handle(IllegalStateException exception) {
-        return new ResponseEntity(new ErrorResponse(exception.getMessage()), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<ErrorResponse> handle(NoSuchElementException exception) {
+    @ExceptionHandler(value = {
+            IllegalArgumentException.class,
+            IllegalStateException.class,
+            NoSuchElementException.class
+    })
+    public ResponseEntity<ErrorResponse> handle(RuntimeException exception) {
         return new ResponseEntity(new ErrorResponse(exception.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
@@ -62,7 +57,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handle(HttpRequestMethodNotSupportedException exception) {
-        return new ResponseEntity<>(new ErrorResponse("지원하지 않는 HTTP 메서드입니다."), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new ErrorResponse("지원하지 않는 HTTP 메서드입니다."), HttpStatus.METHOD_NOT_ALLOWED);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handle(NoResourceFoundException exception) {
+        return new ResponseEntity<>(new ErrorResponse("존재하지 않는 요청 경로입니다."), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler
