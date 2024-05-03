@@ -9,8 +9,6 @@ import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.dto.ReservationSaveRequest;
-import roomescape.reservation.dto.ThemeResponse;
-import roomescape.reservation.dto.TimeResponse;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.repository.ReservationTimeRepository;
 import roomescape.reservation.repository.ThemeRepository;
@@ -61,19 +59,13 @@ public class ReservationService {
     public ReservationResponse findById(Long id) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약입니다."));
-        TimeResponse timeResponse = TimeResponse.toResponse(reservation.getTime());
-        ThemeResponse themeResponse = ThemeResponse.toResponse(reservation.getTheme());
 
         return ReservationResponse.toResponse(reservation);
     }
 
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAll().stream()
-                .map(reservation -> {
-                    TimeResponse timeResponse = TimeResponse.toResponse(reservation.getTime());
-                    ThemeResponse themeResponse = ThemeResponse.toResponse(reservation.getTheme());
-                    return ReservationResponse.toResponse(reservation);
-                })
+                .map(ReservationResponse::toResponse)
                 .collect(Collectors.toList());
     }
 
