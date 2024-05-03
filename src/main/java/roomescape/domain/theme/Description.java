@@ -1,21 +1,15 @@
 package roomescape.domain.theme;
 
-public class Description {
+public record Description(String description) {
+    private static final int MAX_LENGTH = 10;
 
-    private final String description;
-
-    public Description(String description) {
+    public Description {
         validateDescription(description);
-        this.description = description;
-    }
-
-    public String getDescription() {
-        return description;
     }
 
     private void validateDescription(String description) {
-        if (description.length() < 10) {
-            throw new IllegalArgumentException("[ERROR] 설명은 10글자 이상 입력해주세요.");
+        if (description.length() < MAX_LENGTH) {
+            throw new IllegalArgumentException(String.format("설명은 %d글자 이상 입력해주세요.", MAX_LENGTH));
         }
     }
 }

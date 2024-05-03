@@ -40,14 +40,14 @@ public class ThemeService {
 
     public void deleteTheme(Long id) {
         validateIdExist(id);
-        if (reservationRepository.existThemeId(id)) {
-            throw new IllegalArgumentException("[ERROR] 해당 테마는 예약이 존재합니다.");
+        if (reservationRepository.existsByThemeId(id)) {
+            throw new IllegalArgumentException("해당 테마는 예약이 존재합니다.");
         }
         themeRepository.delete(id);
     }
 
     public List<ThemeResponse> getPopularThemes() {
-        List<Long> popularThemeIds = reservationRepository.findThemeReservationCountsForLastWeek();
+        List<Long> popularThemeIds = reservationRepository.findThemeReservationCountsForLastWeek(7, 1, 10);
         return popularThemeIds.stream()
                 .map(themeRepository::findById)
                 .map(ThemeResponse::from)
@@ -55,14 +55,14 @@ public class ThemeService {
     }
 
     private void validateIdExist(Long id) {
-        if (!themeRepository.existId(id)) {
-            throw new IllegalArgumentException("[ERROR] id가 존재하지 않습니다 : " + id);
+        if (!themeRepository.existsById(id)) {
+            throw new IllegalArgumentException("id가 존재하지 않습니다 : " + id);
         }
     }
 
     public void validateNameDuplicate(String name) {
-        if (themeRepository.existName(name)) {
-            throw new IllegalArgumentException("[ERROR] 동일한 이름이 존재합니다. : " + name);
+        if (themeRepository.existsByName(name)) {
+            throw new IllegalArgumentException("동일한 이름이 존재합니다. : " + name);
         }
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+    private static final String PREFIX = "[ERROR] ";
 
     @ExceptionHandler(value = HttpMessageNotReadableException.class)
     private ResponseEntity<String> handleHttpMessageNotReadableException() {
@@ -15,6 +16,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = IllegalArgumentException.class)
     private ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
+        return ResponseEntity.badRequest().body(PREFIX + e.getMessage());
+    }
+
+    @ExceptionHandler(value = Exception.class)
+    private ResponseEntity<String> handleException(Exception e) {
+        return ResponseEntity.badRequest().body(PREFIX + "예상치 못한 예외가 발생했습니다. : " + e.getMessage());
     }
 }

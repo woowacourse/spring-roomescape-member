@@ -12,9 +12,9 @@ public record ThemeResponse(
     public static ThemeResponse from(Theme theme) {
         return new ThemeResponse(
                 theme.getId(),
-                theme.getName().getName(),
-                theme.getDescription().getDescription(),
-                theme.getThumbnail().getThumbnail()
+                theme.getName().name(),
+                theme.getDescription().description(),
+                theme.getThumbnail().thumbnail()
         );
     }
 }

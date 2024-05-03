@@ -1,21 +1,14 @@
 package roomescape.domain.theme;
 
-public class Thumbnail {
+public record Thumbnail(String thumbnail) {
 
-    private final String thumbnail;
-
-    public Thumbnail(String thumbnail) {
+    public Thumbnail {
         validateThumbnail(thumbnail);
-        this.thumbnail = thumbnail;
-    }
-
-    public String getThumbnail() {
-        return thumbnail;
     }
 
     private void validateThumbnail(String thumbnail) {
         if (thumbnail.isEmpty()) {
-            throw new IllegalArgumentException("[ERROR] 썸네일은 1자 이상 가능합니다.");
+            throw new IllegalArgumentException("썸네일은 비어있을 수 없습니다.");
         }
     }
 }

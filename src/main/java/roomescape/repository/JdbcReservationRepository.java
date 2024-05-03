@@ -49,8 +49,8 @@ public class JdbcReservationRepository implements ReservationRepository {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
                 .addValue("date", reservation.getDate())
-                .addValue("time_id", reservation.getTime().getId())
-                .addValue("theme_id", reservation.getTheme().getId());
+                .addValue("time_id", reservation.getTimeId())
+                .addValue("theme_id", reservation.getThemeId());
         return jdbcInsert.executeAndReturnKey(params).longValue();
     }
 
@@ -96,36 +96,36 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Long> findThemeReservationCountsForLastWeek() {
-        String sql = """
+    public List<Long> findThemeReservationCountsForLastWeek(int daysToStartBefore, int daysToEndBefore, int limit) {
+        String sql = String.format("""
                 SELECT theme_id
                 FROM reservation
-                WHERE date BETWEEN CURRENT_DATE() - INTERVAL '7' DAY AND CURRENT_DATE() - INTERVAL '1' DAY
+                WHERE date BETWEEN CURRENT_DATE() - INTERVAL '%d' DAY AND CURRENT_DATE() - INTERVAL '%d' DAY
                 GROUP BY theme_id
                 ORDER BY COUNT(*) DESC
-                LIMIT 10;
-                """;
+                LIMIT %d;
+                """, daysToStartBefore, daysToEndBefore, limit);
         return jdbcTemplate.query(sql, (resultSet, rowNum) -> resultSet.getLong("theme_id"));
     }
 
     @Override
     public List<Reservation> findByDateAndThemeId(final LocalDate date, final Long themeId) {
         String sql = """
-               SELECT
-                    r.id AS reservation_id,
-                    r.name,
-                    r.date,
-                    t.id AS time_id,
-                    t.start_at AS time_value,
-                    th.id AS theme_id,
-                    th.name AS theme_name,
-                    th.description AS theme_description,
-                    th.thumbnail AS theme_thumbnail
-               FROM reservation AS r
-               INNER JOIN reservation_time AS t ON r.time_id = t.id
-               INNER JOIN theme AS th ON r.theme_id = th.id
-               WHERE r.date = ? AND th.id = ?
-                """;
+                SELECT
+                     r.id AS reservation_id,
+                     r.name,
+                     r.date,
+                     t.id AS time_id,
+                     t.start_at AS time_value,
+                     th.id AS theme_id,
+                     th.name AS theme_name,
+                     th.description AS theme_description,
+                     th.thumbnail AS theme_thumbnail
+                FROM reservation AS r
+                INNER JOIN reservation_time AS t ON r.time_id = t.id
+                INNER JOIN theme AS th ON r.theme_id = th.id
+                WHERE r.date = ? AND th.id = ?
+                 """;
         return jdbcTemplate.query(sql, ROW_MAPPER, date, themeId);
     }
 
@@ -136,25 +136,25 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Boolean existId(Long id) {
+    public Boolean existsById(Long id) {
         String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE id = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, id);
     }
 
     @Override
-    public Boolean existTimeId(Long id) {
+    public Boolean existsByTimeId(Long id) {
         String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE time_id = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, id);
     }
 
     @Override
-    public Boolean existThemeId(final Long id) {
+    public Boolean existsByThemeId(final Long id) {
         String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE theme_id = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, id);
     }
 
     @Override
-    public Boolean existDateTimeAndTheme(LocalDate date, Long timeId, Long themeId) {
+    public Boolean existsByDateTimeAndTheme(LocalDate date, Long timeId, Long themeId) {
         String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
     }

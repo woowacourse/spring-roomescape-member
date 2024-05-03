@@ -59,40 +59,40 @@ public class ReservationService {
 
     private ReservationTime findReservationTime(ReservationRequest reservationRequest) {
         Long timeId = reservationRequest.timeId();
-        if (!timeRepository.existId(timeId)) {
-            throw new IllegalArgumentException("[ERROR] time_id가 존재하지 않습니다 : " + timeId);
+        if (!timeRepository.existsById(timeId)) {
+            throw new IllegalArgumentException("time_id가 존재하지 않습니다 : " + timeId);
         }
         return timeRepository.findById(timeId);
     }
 
     private Theme findTheme(ReservationRequest reservationRequest) {
         Long themeId = reservationRequest.themeId();
-        if (!themeRepository.existId(themeId)) {
-            throw new IllegalArgumentException("[ERROR] theme_id가 존재하지 않습니다 : " + themeId);
+        if (!themeRepository.existsById(themeId)) {
+            throw new IllegalArgumentException("theme_id가 존재하지 않습니다 : " + themeId);
         }
         return themeRepository.findById(themeId);
     }
 
     private void validateReservationNotDuplicate(ReservationRequest reservationRequest) {
-        if (reservationRepository.existDateTimeAndTheme(
+        if (reservationRepository.existsByDateTimeAndTheme(
                 reservationRequest.date(),
                 reservationRequest.timeId(),
                 reservationRequest.themeId())
         ) {
-            throw new IllegalArgumentException("[ERROR] 이미 해당 시간에 동일한 테마의 예약이 존재합니다.");
+            throw new IllegalArgumentException("이미 해당 시간에 동일한 테마의 예약이 존재합니다.");
         }
     }
 
     private void validateUnPassedDate(LocalDate date, LocalTime time) {
         if ((date.isBefore(LocalDate.now()) && time.isBefore(LocalTime.now())) ||
                 date.isEqual(LocalDate.now()) && time.isBefore(LocalTime.now())) {
-            throw new IllegalArgumentException("[ERROR] 지나간 날짜와 시간에 대한 예약 생성은 불가능합니다. : " + date + " " + time);
+            throw new IllegalArgumentException("지나간 날짜와 시간에 대한 예약 생성은 불가능합니다. : " + date + " " + time);
         }
     }
 
     public void validateIdExist(Long id) {
-        if (!reservationRepository.existId(id)) {
-            throw new IllegalArgumentException("[ERROR] id가 존재하지 않습니다 : " + id);
+        if (!reservationRepository.existsById(id)) {
+            throw new IllegalArgumentException("id가 존재하지 않습니다 : " + id);
         }
     }
 }

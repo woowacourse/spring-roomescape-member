@@ -13,7 +13,7 @@ public interface ThemeRepository {
 
     void delete(Long id);
 
-    Boolean existId(Long id);
+    Boolean existsById(Long id);
 
-    Boolean existName(String name);
+    Boolean existsByName(String name);
 }

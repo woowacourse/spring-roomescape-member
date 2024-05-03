@@ -34,9 +34,9 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public Long save(Theme theme) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", theme.getName().getName())
-                .addValue("description", theme.getDescription().getDescription())
-                .addValue("thumbnail", theme.getThumbnail().getThumbnail());
+                .addValue("name", theme.getName().name())
+                .addValue("description", theme.getDescription().description())
+                .addValue("thumbnail", theme.getThumbnail().thumbnail());
         return jdbcInsert.executeAndReturnKey(params).longValue();
     }
 
@@ -59,13 +59,13 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public Boolean existId(Long id) {
+    public Boolean existsById(Long id) {
         String sql = "SELECT EXISTS (SELECT 1 FROM theme WHERE id = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, id);
     }
 
     @Override
-    public Boolean existName(String name) {
+    public Boolean existsByName(String name) {
         String sql = "SELECT EXISTS (SELECT 1 FROM theme WHERE name = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, name);
     }
