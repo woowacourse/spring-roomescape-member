@@ -10,7 +10,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
-import roomescape.exception.DuplicatedModelException;
+import roomescape.exception.DuplicatedDomainException;
 import roomescape.exception.PastReservationException;
 import roomescape.service.request.ReservationAppRequest;
 
@@ -68,7 +68,7 @@ public class ReservationService {
 
     private void validateDuplication(ReservationDate date, Long timeId, Long themeId) {
         if (reservationRepository.isDuplicated(date.getDate(), timeId, themeId)) {
-            throw new DuplicatedModelException(Reservation.class);
+            throw new DuplicatedDomainException();
         }
     }
 

@@ -25,7 +25,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.exception.DuplicatedModelException;
+import roomescape.exception.DuplicatedDomainException;
 import roomescape.exception.PastReservationException;
 import roomescape.service.ReservationService;
 import roomescape.service.request.ReservationAppRequest;
@@ -122,7 +122,7 @@ class ReservationControllerTest {
         String requestBody = objectMapper.writeValueAsString(new ReservationWebRequest(name, rawDate, timeId, themeId));
 
         when(reservationService.save(new ReservationAppRequest(name, rawDate, timeId, themeId)))
-            .thenThrow(DuplicatedModelException.class);
+            .thenThrow(DuplicatedDomainException.class);
 
         mvc.perform(post("/reservations")
                 .content(requestBody)

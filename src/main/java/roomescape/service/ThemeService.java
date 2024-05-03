@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
-import roomescape.exception.DuplicatedModelException;
+import roomescape.exception.DuplicatedDomainException;
 import roomescape.exception.ReservationExistsException;
 import roomescape.service.request.ThemeAppRequest;
 
@@ -30,7 +30,7 @@ public class ThemeService {
 
     private void validateDuplication(ThemeAppRequest request) {
         if (themeRepository.isNameExists(request.name())) {
-            throw new DuplicatedModelException(Theme.class);
+            throw new DuplicatedDomainException();
         }
     }
 

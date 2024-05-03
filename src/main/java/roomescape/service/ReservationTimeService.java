@@ -8,7 +8,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
-import roomescape.exception.DuplicatedModelException;
+import roomescape.exception.DuplicatedDomainException;
 import roomescape.exception.ReservationExistsException;
 import roomescape.service.request.ReservationTimeAppRequest;
 import roomescape.service.response.ReservationTimeAppResponse;
@@ -34,7 +34,7 @@ public class ReservationTimeService {
 
     private void validateDuplication(LocalTime parsedTime) {
         if (reservationTimeRepository.isStartTimeExists(parsedTime)) {
-            throw new DuplicatedModelException(ReservationTime.class);
+            throw new DuplicatedDomainException();
         }
     }
 

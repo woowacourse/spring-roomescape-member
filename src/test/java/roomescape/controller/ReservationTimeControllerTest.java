@@ -19,7 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import roomescape.controller.request.ReservationTimeWebRequest;
 import roomescape.controller.response.ReservationTimeWebResponse;
 import roomescape.domain.ReservationTime;
-import roomescape.exception.DuplicatedModelException;
+import roomescape.exception.DuplicatedDomainException;
 import roomescape.exception.ReservationExistsException;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.request.ReservationTimeAppRequest;
@@ -110,7 +110,7 @@ class ReservationTimeControllerTest {
     void create_Duplicate() throws Exception {
         String rawTime = "19:00";
         when(reservationTimeService.save(new ReservationTimeAppRequest(rawTime)))
-            .thenThrow(DuplicatedModelException.class);
+            .thenThrow(DuplicatedDomainException.class);
 
         String requestBody = objectMapper.writeValueAsString(new ReservationTimeWebRequest(4L, rawTime));
 
