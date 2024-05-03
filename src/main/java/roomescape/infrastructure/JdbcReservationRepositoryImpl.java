@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
@@ -67,20 +68,7 @@ public class JdbcReservationRepositoryImpl implements ReservationRepository {
             """;
 
         return jdbcTemplate.query(
-            sql, (rs, rowNum) -> new Reservation(
-                rs.getLong("reservation_id"),
-                rs.getString("reservation_name"),
-                LocalDate.parse(rs.getString("reservation_date")),
-                new ReservationTime(
-                    rs.getLong("time_id"),
-                    LocalTime.parse(rs.getString("time_value"))
-                ),
-                new Theme(
-                    rs.getString("theme_name"),
-                    rs.getString("theme_description"),
-                    rs.getString("theme_thumbnail")
-                )
-            )
+            sql, getReservationRowMapper()
         );
     }
 
@@ -128,19 +116,23 @@ public class JdbcReservationRepositoryImpl implements ReservationRepository {
             """;
 
         return jdbcTemplate.query(
-            sql, (rs, rowNum) -> new Reservation(
-                rs.getLong("reservation_id"),
-                rs.getString("reservation_name"),
-                LocalDate.parse(rs.getString("reservation_date")),
-                new ReservationTime(
-                    rs.getLong("time_id"),
-                    LocalTime.parse(rs.getString("time_value"))
-                ),
-                new Theme(
-                    rs.getString("theme_name"),
-                    rs.getString("theme_description"),
-                    rs.getString("theme_thumbnail")
-                )
-            ), date, themeId);
+            sql, getReservationRowMapper(), date, themeId);
+    }
+
+    private RowMapper<Reservation> getReservationRowMapper() {
+        return (rs, rowNum) -> new Reservation(
+            rs.getLong("reservation_id"),
+            rs.getString("reservation_name"),
+            LocalDate.parse(rs.getString("reservation_date")),
+            new ReservationTime(
+                rs.getLong("time_id"),
+                LocalTime.parse(rs.getString("time_value"))
+            ),
+            new Theme(
+                rs.getString("theme_name"),
+                rs.getString("theme_description"),
+                rs.getString("theme_thumbnail")
+            )
+        );
     }
 }

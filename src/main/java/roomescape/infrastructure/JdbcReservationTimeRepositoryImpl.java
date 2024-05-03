@@ -4,6 +4,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -38,10 +39,7 @@ public class JdbcReservationTimeRepositoryImpl implements ReservationTimeReposit
     public ReservationTime findById(Long id) {
         String sql = "SELECT * FROM reservation_time WHERE id = ?";
 
-        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new ReservationTime(
-            rs.getLong("id"),
-            rs.getTime("start_at").toLocalTime()
-        ), id);
+        return jdbcTemplate.queryForObject(sql, getReservationTimeRowMapper(), id);
     }
 
     @Override
@@ -64,5 +62,12 @@ public class JdbcReservationTimeRepositoryImpl implements ReservationTimeReposit
     public boolean isStartTimeExists(LocalTime localTime) {
         String sql = "SELECT EXISTS(SELECT id FROM reservation_time WHERE start_at = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, localTime);
+    }
+
+    private RowMapper<ReservationTime> getReservationTimeRowMapper() {
+        return (rs, rowNum) -> new ReservationTime(
+            rs.getLong("id"),
+            rs.getTime("start_at").toLocalTime()
+        );
     }
 }

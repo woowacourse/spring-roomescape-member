@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
@@ -46,23 +47,13 @@ public class JdbcThemeRepositoryImpl implements ThemeRepository {
     public List<Theme> findAll() {
         String sql = "SELECT * FROM theme";
 
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new Theme(
-            rs.getLong("id"),
-            rs.getString("name"),
-            rs.getString("description"),
-            rs.getString("thumbnail")
-        ));
+        return jdbcTemplate.query(sql, getThemeRowMapper());
     }
 
     @Override
     public Theme findById(Long id) {
         String sql = "SELECT * FROM theme WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new Theme(
-            rs.getLong("id"),
-            rs.getString("name"),
-            rs.getString("description"),
-            rs.getString("thumbnail")
-        ), id);
+        return jdbcTemplate.queryForObject(sql, getThemeRowMapper(), id);
     }
 
     @Override
@@ -86,11 +77,15 @@ public class JdbcThemeRepositoryImpl implements ThemeRepository {
             ORDER BY count DESC
             LIMIT ?
             """;
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new Theme(
+        return jdbcTemplate.query(sql, getThemeRowMapper(), count);
+    }
+
+    private RowMapper<Theme> getThemeRowMapper() {
+        return (rs, rowNum) -> new Theme(
             rs.getLong("id"),
             rs.getString("name"),
             rs.getString("description"),
             rs.getString("thumbnail")
-        ), count);
+        );
     }
 }
