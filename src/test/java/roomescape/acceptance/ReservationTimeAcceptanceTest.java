@@ -22,8 +22,8 @@ class ReservationTimeAcceptanceTest extends BasicAcceptanceTest {
     @DisplayName("동일한 예약 시간을 두번 추가하면, 예외가 발생한다")
     Stream<DynamicTest> duplicateReservationTest() {
         return Stream.of(
-                dynamicTest("예약 시간을 추가한다 (10:00)", () -> postReservation("10:00", 201)),
-                dynamicTest("동일한 예약 시간을 추가한다 (10:00)", () -> postReservation("10:00", 400))
+                dynamicTest("예약 시간을 추가한다 (10:00)", () -> postReservationTime("10:00", 201)),
+                dynamicTest("동일한 예약 시간을 추가한다 (10:00)", () -> postReservationTime("10:00", 400))
         );
     }
 
@@ -31,9 +31,9 @@ class ReservationTimeAcceptanceTest extends BasicAcceptanceTest {
     @DisplayName("3개의 예약 시간을 추가한다")
     Stream<DynamicTest> reservationPostTest() {
         return Stream.of(
-                dynamicTest("예약 시간을 추가한다 (10:00)", () -> postReservation("10:00", 201)),
-                dynamicTest("예약 시간을 추가한다 (11:00)", () -> postReservation("11:00", 201)),
-                dynamicTest("예약 시간을 추가한다 (12:00)", () -> postReservation("12:00", 201)),
+                dynamicTest("예약 시간을 추가한다 (10:00)", () -> postReservationTime("10:00", 201)),
+                dynamicTest("예약 시간을 추가한다 (11:00)", () -> postReservationTime("11:00", 201)),
+                dynamicTest("예약 시간을 추가한다 (12:00)", () -> postReservationTime("12:00", 201)),
                 dynamicTest("모든 예약 시간을 조회한다 (총 3개)", () -> getReservationTimes(200, 3))
         );
     }
@@ -45,11 +45,11 @@ class ReservationTimeAcceptanceTest extends BasicAcceptanceTest {
 
         return Stream.of(
                 dynamicTest("예약 시간을 추가한다 (10:00)", () -> {
-                    Long id = postReservation("10:00", 201);
+                    Long id = postReservationTime("10:00", 201);
                     reservationId.set(id);
                 }),
-                dynamicTest("예약 시간을 삭제한다 (10:00)", () -> deleteReservation(reservationId.longValue(), 204)),
-                dynamicTest("예약 시간을 추가한다 (10:00)", () -> postReservation("10:00", 201)),
+                dynamicTest("예약 시간을 삭제한다 (10:00)", () -> deleteReservationTime(reservationId.longValue(), 204)),
+                dynamicTest("예약 시간을 추가한다 (10:00)", () -> postReservationTime("10:00", 201)),
                 dynamicTest("모든 예약 시간을 조회한다 (총 1개)", () -> getReservationTimes(200, 1))
         );
     }
@@ -63,7 +63,7 @@ class ReservationTimeAcceptanceTest extends BasicAcceptanceTest {
         );
     }
 
-    private Long postReservation(String time, int expectedHttpCode) {
+    private Long postReservationTime(String time, int expectedHttpCode) {
         Map<?, ?> requestBody = Map.of("startAt", time);
 
         Response response = RestAssured.given().log().all()
@@ -93,7 +93,7 @@ class ReservationTimeAcceptanceTest extends BasicAcceptanceTest {
         assertThat(reservationTimeResponses).hasSize(expectedReservationsSize);
     }
 
-    private void deleteReservation(Long reservationId, int expectedHttpCode) {
+    private void deleteReservationTime(Long reservationId, int expectedHttpCode) {
         RestAssured.given().log().all()
                 .when().delete("/times/" + reservationId)
                 .then().log().all()
