@@ -1,7 +1,6 @@
 package roomescape.repository;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -75,13 +74,13 @@ public class ReservationDao {
         return jdbcTemplate.queryForObject(sql, reservationRowMapper, id);
     }
 
-    public boolean existByDateAndTimeAndTheme(LocalDate date, LocalTime time, Long themeId) {
+    public boolean existByDateAndTimeAndTheme(LocalDate date, Long timeId, Long themeId) {
         int count = jdbcTemplate.queryForObject("""
                 SELECT count(*) 
                 FROM reservation as r 
                 INNER JOIN reservation_time as t ON r.time_id = t.id
-                WHERE r.date = ? AND t.start_at = ? AND r.theme_id = ?
-                """, Integer.class, date, time, themeId);
+                WHERE r.date = ? AND r.time_id = ? AND r.theme_id = ?
+                """, Integer.class, date, timeId, themeId);
         return count > 0;
     }
 

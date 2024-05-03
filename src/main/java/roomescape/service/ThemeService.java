@@ -8,13 +8,11 @@ import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
 import roomescape.exception.ExistReservationException;
 import roomescape.exception.IllegalThemeException;
-import roomescape.mapper.ThemeMapper;
 import roomescape.repository.ThemeDao;
 
 @Service
 public class ThemeService {
 
-    private final ThemeMapper themeMapper = new ThemeMapper();
     private final ThemeDao themeDao;
 
     public ThemeService(ThemeDao themeDao) {
@@ -24,28 +22,25 @@ public class ThemeService {
     public List<ThemeResponse> findAllThemes() {
         List<Theme> themes = themeDao.findAll();
 
-        return themes.stream()
-                .map(themeMapper::mapToResponse)
-                .toList();
+        return ThemeResponse.fromThemes(themes);
     }
 
     public List<ThemeResponse> findRankThemes() {
         List<Theme> themesByDescOrder = themeDao.findThemesByDescOrder();
 
-        return themesByDescOrder.stream()
-                .map(themeMapper::mapToResponse)
-                .toList();
+        return ThemeResponse.fromThemes(themesByDescOrder);
+
     }
 
     public ThemeResponse save(ThemeRequest request) {
-        Theme theme = themeMapper.mapToTheme(request);
+        Theme theme = ThemeRequest.toTheme(request);
 
         if (themeDao.existByName(theme.getName())) {
             throw new IllegalThemeException("[ERROR] 중복된 테마는 생성할 수 없습니다.");
         }
 
         Theme newTheme = themeDao.save(theme);
-        return themeMapper.mapToResponse(newTheme);
+        return ThemeResponse.fromTheme(newTheme);
     }
 
     public void deleteThemeById(Long id) {

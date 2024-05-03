@@ -36,7 +36,8 @@ class ReservationControllerTest {
         // given
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "테마이름", "설명", "썸네일");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2024-08-05", 1, 1);
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운",
+                "2024-08-05", 1, 1);
 
         // when
         List<ReservationResponse> reservations = RestAssured.given().log().all()
@@ -76,25 +77,6 @@ class ReservationControllerTest {
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
         assertThat(count).isEqualTo(1);
     }
-//
-//    @Test
-//    void create_invalid_reservation_bad_request() {
-//        // given
-//        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
-//        Map<String, String> params = Map.of(
-//                "name", "",
-//                "date", "",
-//                "timeId", ""
-//        );
-//
-//        // when & then
-//        RestAssured.given().log().all()
-//                .contentType(ContentType.JSON)
-//                .body(params)
-//                .when().post("/reservations")
-//                .then().log().all()
-//                .statusCode(HttpStatus.SC_BAD_REQUEST);
-//    }
 
     @Test
     void create_invalid_date_bad_request() {

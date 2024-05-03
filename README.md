@@ -89,13 +89,4 @@ Content-Type: application/json
 - [x] API 명세 정리해보기
 - [x] 컨트롤러 메서드명 변경
 - [x] simpleJdbc 적용
-- [ ] 테스트 추가
-  - [x] 통합 테스트 - 컨트롤러 : theme만
-  - [ ] 유닛 테스트 - dao, service
-  - [ ] httpStatus 통일
-- [ ] mapper 방식과 기존 dto에서의 변환 방식 고민
-- [ ] 예외 처리 다시 해보기
-- [ ] 테스트 포트 확인
-- [ ] /times/member -> /times/available
-- [ ] exception 핸들러 컨트롤러 어드바이스 이해하기
-- [ ] 날짜 7일 상수화
+- [x] mapper 방식과 기존 dto에서의 변환 방식 고민

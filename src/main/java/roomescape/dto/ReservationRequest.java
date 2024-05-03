@@ -1,6 +1,9 @@
 package roomescape.dto;
 
 import java.time.LocalDate;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.exception.IllegalReservationException;
 
 public record ReservationRequest(
@@ -15,6 +18,10 @@ public record ReservationRequest(
         validateTimeID(timeId);
         validateThemeID(themeId);
         validateDate(date);
+    }
+
+    public static Reservation toReservation(final ReservationRequest request, final ReservationTime time, final Theme theme) {
+        return new Reservation(request.id(), request.name(), request.date(), time, theme);
     }
 
     private void validateTimeID(final Long timeId) {
