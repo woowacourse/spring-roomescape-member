@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.ReservationTheme;
-import roomescape.dto.theme.ReservationThemeRequestDto;
+import roomescape.dto.theme.ThemeRequest;
 
 import java.util.List;
 
@@ -32,10 +32,10 @@ public class ReservationThemeServiceTest {
     @DisplayName("테마를 추가한다.")
     @Test
     void insertThemeTest() {
-        ReservationThemeRequestDto reservationThemeRequestDto = new ReservationThemeRequestDto(
+        ThemeRequest themeRequest = new ThemeRequest(
                 "레벨2 탈출", "우테코 레벨2 탈출", "https://hi.com"
         );
-        ReservationTheme reservationTheme = reservationThemeService.insertTheme(reservationThemeRequestDto);
+        ReservationTheme reservationTheme = reservationThemeService.insertTheme(themeRequest);
 
         assertThat(reservationTheme.getName()).isEqualTo("레벨2 탈출");
         assertThat(reservationTheme.getDescription()).isEqualTo("우테코 레벨2 탈출");
@@ -45,10 +45,10 @@ public class ReservationThemeServiceTest {
     @DisplayName("테마 ID를 이용하여 테마를 삭제한다.")
     @Test
     void deleteThemeTest() {
-        ReservationThemeRequestDto reservationThemeRequestDto = new ReservationThemeRequestDto(
+        ThemeRequest themeRequest = new ThemeRequest(
                 "레벨2 탈출", "우테코 레벨2 탈출", "https://hi.com"
         );
-        ReservationTheme reservationTheme = reservationThemeService.insertTheme(reservationThemeRequestDto);
+        ReservationTheme reservationTheme = reservationThemeService.insertTheme(themeRequest);
 
         int sizeBeforeDelete = reservationThemeService.getAllThemes().size();
         assertThatCode(() -> reservationThemeService.deleteTheme(reservationTheme.getId())).doesNotThrowAnyException();

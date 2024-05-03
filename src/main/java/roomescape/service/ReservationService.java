@@ -8,7 +8,7 @@ import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTheme;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.reservation.ReservationRequestDto;
+import roomescape.dto.reservation.ReservationRequest;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -33,17 +33,17 @@ public class ReservationService {
     }
 
     @Transactional
-    public Reservation insertReservation(ReservationRequestDto reservationRequestDto) {
-        ReservationTime reservationTime = reservationTimeDao.findById(reservationRequestDto.timeId())
+    public Reservation insertReservation(ReservationRequest reservationRequest) {
+        ReservationTime reservationTime = reservationTimeDao.findById(reservationRequest.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("올바르지 않은 입력입니다."));
-        LocalDate date = reservationRequestDto.date();
+        LocalDate date = reservationRequest.date();
         validatePast(date, LocalTime.parse(reservationTime.getStartAt()));
-        validateDuplicated(date, reservationRequestDto.timeId(), reservationRequestDto.themeId());
+        validateDuplicated(date, reservationRequest.timeId(), reservationRequest.themeId());
         Long id = reservationDao.insert(
-                reservationRequestDto.name(), reservationRequestDto.date().toString(), reservationRequestDto.timeId(), reservationRequestDto.themeId());
-        ReservationTheme reservationTheme = reservationThemeDao.findById(reservationRequestDto.themeId())
+                reservationRequest.name(), reservationRequest.date().toString(), reservationRequest.timeId(), reservationRequest.themeId());
+        ReservationTheme reservationTheme = reservationThemeDao.findById(reservationRequest.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("올바르지 않은 입력입니다."));
-        return new Reservation(id, reservationRequestDto.name(), reservationRequestDto.date().toString(), reservationTime, reservationTheme);
+        return new Reservation(id, reservationRequest.name(), reservationRequest.date().toString(), reservationTime, reservationTheme);
     }
 
     private void validatePast(LocalDate localDate, LocalTime localTime) {

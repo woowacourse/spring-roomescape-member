@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.time.ReservationTimeRequestDto;
+import roomescape.dto.time.TimeRequest;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -38,8 +38,8 @@ public class ReservationTimeServiceTest {
     @DisplayName("예약 시간을 추가한다.")
     @Test
     void insertReservationTimeTest() {
-        ReservationTimeRequestDto reservationTimeRequestDto = new ReservationTimeRequestDto(LocalTime.parse("01:01"));
-        ReservationTime reservationTime = reservationTimeService.insertReservationTime(reservationTimeRequestDto);
+        TimeRequest timeRequest = new TimeRequest(LocalTime.parse("01:01"));
+        ReservationTime reservationTime = reservationTimeService.insertReservationTime(timeRequest);
 
         assertThat(reservationTime.getStartAt()).isEqualTo("01:01");
     }
@@ -47,8 +47,8 @@ public class ReservationTimeServiceTest {
     @DisplayName("예약 시간 ID를 이용하여 시간을 삭제한다.")
     @Test
     void deleteReservationTimeTest() {
-        ReservationTimeRequestDto reservationTimeRequestDto = new ReservationTimeRequestDto(LocalTime.parse("01:01"));
-        ReservationTime reservationTime = reservationTimeService.insertReservationTime(reservationTimeRequestDto);
+        TimeRequest timeRequest = new TimeRequest(LocalTime.parse("01:01"));
+        ReservationTime reservationTime = reservationTimeService.insertReservationTime(timeRequest);
         int sizeBeforeDelete = reservationTimeService.getAllReservationTimes().size();
         assertThatCode(() -> reservationTimeService.deleteReservationTime(reservationTime.getId())).doesNotThrowAnyException();
         assertThat(reservationTimeService.getAllReservationTimes().size()).isEqualTo(sizeBeforeDelete - 1);

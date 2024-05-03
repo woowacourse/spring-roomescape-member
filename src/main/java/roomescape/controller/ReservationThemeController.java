@@ -4,7 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import roomescape.domain.ReservationTheme;
-import roomescape.dto.theme.ReservationThemeRequestDto;
+import roomescape.dto.theme.ThemeRequest;
 import roomescape.service.ReservationThemeService;
 
 import java.net.URI;
@@ -31,8 +31,8 @@ public class ReservationThemeController {
     }
 
     @PostMapping("/themes")
-    public ResponseEntity<ReservationTheme> createTheme(@RequestBody ReservationThemeRequestDto reservationThemeRequestDto) {
-        ReservationTheme theme = reservationThemeService.insertTheme(reservationThemeRequestDto);
+    public ResponseEntity<ReservationTheme> createTheme(@RequestBody ThemeRequest themeRequest) {
+        ReservationTheme theme = reservationThemeService.insertTheme(themeRequest);
         return ResponseEntity.created(URI.create("/themes/" + theme.getId())).body(theme);
     }
 

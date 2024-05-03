@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Reservation;
-import roomescape.dto.reservation.ReservationRequestDto;
+import roomescape.dto.reservation.ReservationRequest;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -38,12 +38,12 @@ public class ReservationServiceTest {
     @DisplayName("예약을 추가한다.")
     @Test
     void insertReservationTest() {
-        ReservationRequestDto reservationRequestDto = new ReservationRequestDto("test", LocalDate.now().plusDays(1), 1L, 1L);
-        Reservation reservation = reservationService.insertReservation(reservationRequestDto);
+        ReservationRequest reservationRequest = new ReservationRequest("test", LocalDate.now().plusDays(1), 1L, 1L);
+        Reservation reservation = reservationService.insertReservation(reservationRequest);
 
         assertThat(reservation.getId()).isEqualTo(2L);
-        assertThat(reservation.getName()).isEqualTo(reservationRequestDto.name());
-        assertThat(reservation.getDate()).isEqualTo(reservationRequestDto.date().toString());
+        assertThat(reservation.getName()).isEqualTo(reservationRequest.name());
+        assertThat(reservation.getDate()).isEqualTo(reservationRequest.date().toString());
     }
 
     @DisplayName("예약을 삭제한다.")
@@ -59,9 +59,9 @@ public class ReservationServiceTest {
     void invalidDateTimeTest() {
         LocalDate localDate = LocalDate.now().minusDays(2);
 
-        ReservationRequestDto reservationRequestDto = new ReservationRequestDto("test", localDate, 1L, 1L);
+        ReservationRequest reservationRequest = new ReservationRequest("test", localDate, 1L, 1L);
 
-        assertThatThrownBy(() -> reservationService.insertReservation(reservationRequestDto))
+        assertThatThrownBy(() -> reservationService.insertReservation(reservationRequest))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("지나간 날짜와 시간에 대한 예약 생성은 불가능합니다.");
     }
@@ -69,11 +69,11 @@ public class ReservationServiceTest {
     @DisplayName("같은 날짜, 시간, 테마에 대한 중복 예약은 불가능하다.")
     @Test
     void duplicatedReservationTest() {
-        ReservationRequestDto reservationRequestDto = new ReservationRequestDto("test", LocalDate.now().plusDays(2), 1L, 1L);
+        ReservationRequest reservationRequest = new ReservationRequest("test", LocalDate.now().plusDays(2), 1L, 1L);
 
-        reservationService.insertReservation(reservationRequestDto);
+        reservationService.insertReservation(reservationRequest);
 
-        assertThatThrownBy(() -> reservationService.insertReservation(reservationRequestDto))
+        assertThatThrownBy(() -> reservationService.insertReservation(reservationRequest))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 해당 시간에 예약이 존재합니다.");
     }

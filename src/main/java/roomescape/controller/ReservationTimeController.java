@@ -4,8 +4,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.time.ReservationTimeRequestDto;
-import roomescape.dto.time.ReservationTimeResponseDto;
+import roomescape.dto.time.TimeRequest;
+import roomescape.dto.time.BookableTimeResponse;
 import roomescape.service.ReservationTimeService;
 
 import java.net.URI;
@@ -26,8 +26,8 @@ public class ReservationTimeController {
     }
 
     @PostMapping("/times")
-    public ResponseEntity<ReservationTime> insertTime(@RequestBody ReservationTimeRequestDto reservationTimeRequestDto) {
-        ReservationTime reservationTime = reservationTimeService.insertReservationTime(reservationTimeRequestDto);
+    public ResponseEntity<ReservationTime> insertTime(@RequestBody TimeRequest timeRequest) {
+        ReservationTime reservationTime = reservationTimeService.insertReservationTime(timeRequest);
         return ResponseEntity.created(URI.create("/times/" + reservationTime.getId())).body(reservationTime);
     }
 
@@ -38,12 +38,12 @@ public class ReservationTimeController {
     }
 
     @GetMapping("/times/{date}/{themeId}")
-    public ResponseEntity<List<ReservationTimeResponseDto>> getTimesByDateAndTheme(@PathVariable String date, @PathVariable Long themeId) {
+    public ResponseEntity<List<BookableTimeResponse>> getTimesByDateAndTheme(@PathVariable String date, @PathVariable Long themeId) {
         List<ReservationTime> reservationTimes = reservationTimeService.getAllReservationTimes();
-        List<ReservationTimeResponseDto> timeResponses = reservationTimes.stream()
-                .map(time -> new ReservationTimeResponseDto(time.getId(), time.getStartAt(), reservationTimeService.isBooked(date, time.getId(), themeId)))
+        List<BookableTimeResponse> bookableTimeRespons = reservationTimes.stream()
+                .map(time -> new BookableTimeResponse(time.getId(), time.getStartAt(), reservationTimeService.isBooked(date, time.getId(), themeId)))
                 .toList();
-        return ResponseEntity.ok().body(timeResponses);
+        return ResponseEntity.ok().body(bookableTimeRespons);
     }
 
     @DeleteMapping("/times/{id}")
