@@ -15,7 +15,7 @@ public interface ReservationTimeDao {
 
     void deleteReservationTimeById(long id);
 
-    Long countReservationTimeById(long id);
+    boolean isExistReservationTimeById(long id);
 
-    Long countReservationTimeByStartAt(LocalTime startAt);
+    boolean isExistReservationTimeByStartAt(LocalTime startAt);
 }

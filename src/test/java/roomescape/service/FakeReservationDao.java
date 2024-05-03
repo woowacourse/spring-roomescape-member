@@ -46,25 +46,19 @@ class FakeReservationDao implements ReservationDao {
     }
 
     @Override
-    public Long countReservationById(long id) {
-        return reservations.stream()
-                .filter(reservation -> reservation.getId() == id)
-                .count();
+    public boolean isExistReservationById(long id) {
+        return reservations.stream().anyMatch(reservation -> reservation.getId() == id);
     }
 
     @Override
-    public Long countReservationByTimeId(long timeId) {
-        return reservations.stream()
-                .filter(reservation -> reservation.getTime().getId() == timeId)
-                .count();
+    public boolean isExistReservationByTimeId(long timeId) {
+        return reservations.stream().anyMatch(reservation -> reservation.getTime().getId() == timeId);
     }
 
     @Override
-    public Long countReservationByDateAndTimeId(LocalDate date, long timeId) {
+    public boolean isExistReservationByDateAndTimeId(LocalDate date, long timeId) {
         return reservations.stream()
-                .filter(reservation -> reservation.getDate().isEqual(date)
-                        && reservation.getTime().getId() == timeId)
-                .count();
+                .anyMatch(reservation -> reservation.getDate().isEqual(date) && reservation.getTime().getId() == timeId);
     }
 
     @Override

@@ -57,8 +57,8 @@ public class ReservationService {
     }
 
     private void validateDuplication(LocalDate date, long timeId) {
-        Long countReservation = reservationRepository.countReservationByDateAndTimeId(date, timeId);
-        if (countReservation == null || countReservation > 0) {
+        boolean isExist = reservationRepository.isExistReservationByDateAndTimeId(date, timeId);
+        if (isExist) {
             throw new DuplicatedException("[ERROR] 중복되는 예약은 추가할 수 없습니다.");
         }
     }
@@ -69,8 +69,8 @@ public class ReservationService {
     }
 
     private void validateExistence(long id) {
-        Long count = reservationRepository.countReservationById(id);
-        if (count == null || count <= 0) {
+        boolean isNotExist = !reservationRepository.isExistReservationById(id);
+        if (isNotExist) {
             throw new NotFoundException("[ERROR] 존재하지 않는 예약입니다.");
         }
     }

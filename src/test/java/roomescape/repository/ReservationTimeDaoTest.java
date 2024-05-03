@@ -79,17 +79,17 @@ class ReservationTimeDaoTest {
         assertThat(reservationTime.getStartAt()).isEqualTo(LocalTime.of(10, 0));
     }
 
-    @DisplayName("아이디가 존재하면 참을 반환한다.")
+    @DisplayName("특정 id를 갖는 데이터가 존재하는 경우 참을 반환한다.")
     @Test
-    void should_return_true_when_id_exist() {
-        long count = reservationTimeDao.countReservationTimeById(1);
-        assertThat(count).isEqualTo(1);
+    void should_return_true_when_exist() {
+        Boolean isExist = reservationTimeDao.isExistReservationTimeById(1);
+        assertThat(isExist).isTrue();
     }
 
-    @DisplayName("아이디가 존재하면 거짓을 반환한다.")
+    @DisplayName("특정 id를 갖는 데이터가 존재하지 않는 경우 거짓을 반환한다.")
     @Test
-    void should_return_false_when_id_not_exist() {
-        long count = reservationTimeDao.countReservationTimeById(100000000);
-        assertThat(count).isEqualTo(0);
+    void should_return_false_when_not_exist() {
+        Boolean isExist = reservationTimeDao.isExistReservationTimeById(100000000);
+        assertThat(isExist).isFalse();
     }
 }

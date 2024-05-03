@@ -23,8 +23,8 @@ public class ReservationTimeRepository {
         return reservationTimeDao.findAllReservationTimes();
     }
 
-    public Long countReservationTimeByStartAt(LocalTime startAt) {
-        return reservationTimeDao.countReservationTimeByStartAt(startAt);
+    public boolean isExistReservationTimeByStartAt(LocalTime startAt) {
+        return reservationTimeDao.isExistReservationTimeByStartAt(startAt);
     }
 
     public ReservationTime saveReservationTime(ReservationTime reservationTime) {
@@ -35,12 +35,12 @@ public class ReservationTimeRepository {
         return reservationTimeDao.findReservationTimeById(id);
     }
 
-    public Long countReservationTimeById(long id) {
-        return reservationTimeDao.countReservationTimeById(id);
+    public boolean isExistReservationTimeById(long id) {
+        return reservationTimeDao.isExistReservationTimeById(id);
     }
 
-    public Long countReservationByTimeId(long timeId) {
-        return reservationDao.countReservationByTimeId(timeId);
+    public boolean isExistReservationByTimeId(long timeId) {
+        return reservationDao.isExistReservationByTimeId(timeId);
     }
 
     public void deleteReservationTimeById(long id) {

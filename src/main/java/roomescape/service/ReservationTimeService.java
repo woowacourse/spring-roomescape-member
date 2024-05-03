@@ -26,12 +26,16 @@ public class ReservationTimeService {
 
     public ReservationTime saveReservationTime(ReservationTimeDto reservationTimeDto) {
         LocalTime startAt = reservationTimeDto.getStartAt();
-        Long countReservationTimeByStartAt = reservationTimeRepository.countReservationTimeByStartAt(startAt);
-        if (countReservationTimeByStartAt == null || countReservationTimeByStartAt > 0) {
-            throw new DuplicatedException("[ERROR] 중복되는 시간은 추가할 수 없습니다.");
-        }
+        validateDuplication(startAt);
         ReservationTime reservationTime = new ReservationTime(reservationTimeDto.getStartAt());
         return reservationTimeRepository.saveReservationTime(reservationTime);
+    }
+
+    private void validateDuplication(LocalTime startAt) {
+        boolean isExist = reservationTimeRepository.isExistReservationTimeByStartAt(startAt);
+        if (isExist) {
+            throw new DuplicatedException("[ERROR] 중복되는 시간은 추가할 수 없습니다.");
+        }
     }
 
     public ReservationTime findReservationTime(long id) {
@@ -39,14 +43,26 @@ public class ReservationTimeService {
     }
 
     public void deleteReservationTime(long id) {
-        Long count = reservationTimeRepository.countReservationTimeById(id);
-        if (count == null || count <= 0) {
-            throw new NotFoundException("[ERROR] 존재하지 않는 시간입니다.");
-        }
-        Long countOfReservationUsingTime = reservationTimeRepository.countReservationByTimeId(id);
-        if (countOfReservationUsingTime == null || countOfReservationUsingTime > 0) {
+        validate(id);
+        reservationTimeRepository.deleteReservationTimeById(id);
+    }
+
+    private void validate(long id) {
+        validateExistence(id);
+        validateDependence(id);
+    }
+
+    private void validateDependence(long id) {
+        boolean isExist = reservationTimeRepository.isExistReservationByTimeId(id);
+        if (isExist) {
             throw new BadRequestException("[ERROR] 해당 시간을 사용하고 있는 예약이 있습니다.");
         }
-        reservationTimeRepository.deleteReservationTimeById(id);
+    }
+
+    private void validateExistence(long id) {
+        boolean isNotExist = !reservationTimeRepository.isExistReservationTimeById(id);
+        if (isNotExist) {
+            throw new NotFoundException("[ERROR] 존재하지 않는 시간입니다.");
+        }
     }
 }

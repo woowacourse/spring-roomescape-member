@@ -36,16 +36,16 @@ public class ReservationRepository {
         return themeDao.findThemeById(id);
     }
 
-    public Long countReservationByDateAndTimeId(LocalDate date, long timeId) {
-        return reservationDao.countReservationByDateAndTimeId(date, timeId);
+    public boolean isExistReservationByDateAndTimeId(LocalDate date, long timeId) {
+        return reservationDao.isExistReservationByDateAndTimeId(date, timeId);
     }
 
     public Reservation saveReservation(Reservation reservation) {
         return reservationDao.saveReservation(reservation);
     }
 
-    public Long countReservationById(long id) {
-        return reservationDao.countReservationById(id);
+    public boolean isExistReservationById(long id) {
+        return reservationDao.isExistReservationById(id);
     }
 
     public void deleteReservationById(long id) {

@@ -10,7 +10,7 @@ import java.util.NoSuchElementException;
 
 class FakeReservationTimeDao implements ReservationTimeDao {
 
-    private List<ReservationTime> reservationTimes = new ArrayList<>(List.of(
+    private final List<ReservationTime> reservationTimes = new ArrayList<>(List.of(
             new ReservationTime(1, LocalTime.of(10, 0)),
             new ReservationTime(2, LocalTime.of(11, 0))
     ));
@@ -49,16 +49,12 @@ class FakeReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public Long countReservationTimeById(long id) {
-        return reservationTimes.stream()
-                .filter(reservationTime -> reservationTime.getId() == id)
-                .count();
+    public boolean isExistReservationTimeById(long id) {
+        return reservationTimes.stream().anyMatch(reservationTime -> reservationTime.getId() == id);
     }
 
     @Override
-    public Long countReservationTimeByStartAt(LocalTime startAt) {
-        return reservationTimes.stream()
-                .filter(reservationTime -> reservationTime.getStartAt() == startAt)
-                .count();
+    public boolean isExistReservationTimeByStartAt(LocalTime startAt) {
+        return reservationTimes.stream().anyMatch(reservationTime -> reservationTime.getStartAt() == startAt);
     }
 }

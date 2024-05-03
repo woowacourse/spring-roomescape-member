@@ -5,7 +5,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.model.ReservationTime;
 
-import javax.sql.DataSource;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
@@ -60,16 +59,14 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public Long countReservationTimeById(long id) {
-        String sql = "select count(id) from reservation_time where id = ?";
-        return jdbcTemplate.queryForObject(sql, (resultSet, ignored) ->
-                resultSet.getLong(1), id);
+    public boolean isExistReservationTimeById(long id) {
+        String sql = "select exists(select id from reservation_time where id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
     }
 
     @Override
-    public Long countReservationTimeByStartAt(LocalTime startAt) {
-        String sql = "select count(id) from reservation_time where start_at = ?";
-        return jdbcTemplate.queryForObject(sql, (resultSet, ignored) ->
-                resultSet.getLong(1), startAt);
+    public boolean isExistReservationTimeByStartAt(LocalTime startAt) {
+        String sql = "select exists (select id from reservation_time where start_at = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, startAt);
     }
 }
