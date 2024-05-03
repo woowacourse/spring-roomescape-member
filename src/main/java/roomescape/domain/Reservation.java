@@ -29,6 +29,10 @@ public class Reservation {
         }
     }
 
+    public boolean isPast() {
+        return date.isBeforeNow() || date.isToday() && time.isBeforeNow();
+    }
+
     public Long getId() {
         return id;
     }

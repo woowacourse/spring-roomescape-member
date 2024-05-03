@@ -1,5 +1,6 @@
 package roomescape.domain;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -37,5 +38,14 @@ class ReservationTest {
                 new Theme("방탈출", "방탈출하는 게임",
                     "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg")))
             .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("과거의 예약인지를 판단한다.")
+    @Test
+    void isPast() {
+        Reservation reservation = new Reservation("name", new ReservationDate("1900-01-01"),
+            new ReservationTime("10:00"), new Theme("theme", "desc", "https://"));
+
+        assertThat(reservation.isPast()).isTrue();
     }
 }

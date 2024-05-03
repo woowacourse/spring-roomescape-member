@@ -36,7 +36,7 @@ public class ReservationService {
         ReservationTime time = findTime(request.timeId());
         Theme theme = findTheme(request.themeId());
         Reservation reservation = new Reservation(request.name(), date, time, theme);
-        validatePastReservation(date, time);
+        validatePastReservation(reservation);
         validateDuplication(date, request.timeId(), request.themeId());
 
         return reservationRepository.save(reservation);
@@ -60,8 +60,8 @@ public class ReservationService {
             .orElseThrow(() -> new NoSuchElementException("예약에 대한 테마가 존재하지 않습니다."));
     }
 
-    private void validatePastReservation(ReservationDate date, ReservationTime time) {
-        if (date.isBeforeNow() || date.isToday() && time.isBeforeNow()) {
+    private void validatePastReservation(Reservation reservation) {
+        if (reservation.isPast()) {
             throw new PastReservationException();
         }
     }
