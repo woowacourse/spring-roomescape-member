@@ -46,7 +46,6 @@ public class JdbcReservationQueryRepository implements ReservationQueryRepositor
                 order by reservation_count desc
                 limit ?
                 """;
-
         return jdbcTemplate.query(sql, (rs, rowNum) -> ThemeRowMapper.mapRow(rs), startDate, endDate, limit);
     }
 }

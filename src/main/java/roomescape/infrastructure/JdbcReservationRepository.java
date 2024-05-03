@@ -16,7 +16,6 @@ import roomescape.infrastructure.rowmapper.ReservationRowMapper;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
-
     private static final String FIND_ALL_SQL = """
             select r.id as reservation_id, r.name as reservation_name, date, time_id, start_at,
             theme_id, t.name as theme_name, description, thumbnail from reservation as r
@@ -39,8 +38,9 @@ public class JdbcReservationRepository implements ReservationRepository {
     public Optional<Reservation> findById(long id) {
         String whereClause = "where r.id = ?";
         try {
-            Reservation reservation = jdbcTemplate.queryForObject(FIND_ALL_SQL + whereClause,
-                    (rs, rowNum) -> ReservationRowMapper.joinedMapRow(rs), id);
+            Reservation reservation = jdbcTemplate.queryForObject(
+                    FIND_ALL_SQL + whereClause, (rs, rowNum) -> ReservationRowMapper.joinedMapRow(rs), id
+            );
             return Optional.of(reservation);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
