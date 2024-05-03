@@ -9,6 +9,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.application.dto.request.ReservationTimeRequest;
 import roomescape.application.dto.response.ReservationTimeResponse;
 import roomescape.application.exception.DuplicatedEntityException;
@@ -77,19 +78,9 @@ class ReservationTimeServiceTest {
 
     @DisplayName("예약에 사용된 예약 시간을 삭제 요청하면, 예외가 발생한다.")
     @Test
+    @Sql("/insert-single-reservation.sql")
     void shouldThrowsExceptionReservationWhenReservedInTime() {
-        ReservationTime reservationTime = createTime(10, 0);
-        Theme theme = new Theme(1L, new ThemeName("test"), "description", "url");
-        Theme savedTheme = themeRepository.create(theme);
-        reservationRepository.create(
-                new Reservation(
-                        new PlayerName("test"),
-                        LocalDate.of(2024, 12, 25),
-                        reservationTime,
-                        savedTheme)
-        );
-
-        assertThatCode(() -> reservationTimeService.deleteById(reservationTime.getId()))
+        assertThatCode(() -> reservationTimeService.deleteById(1L))
                 .isInstanceOf(EntityReferenceOnDeleteException.class)
                 .hasMessageStartingWith("해당 예약 시간에 연관된 예약이 존재하여 삭제할 수 없습니다. 삭제 요청한 시간");
     }
