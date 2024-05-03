@@ -28,7 +28,7 @@ import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
-import roomescape.dto.request.ReservationTimeRequest;
+import roomescape.service.dto.request.ReservationTimeRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReservationTimeControllerTest {

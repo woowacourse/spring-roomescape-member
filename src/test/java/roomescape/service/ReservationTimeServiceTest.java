@@ -24,11 +24,11 @@ import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
-import roomescape.dto.request.ReservationTimeRequest;
-import roomescape.dto.request.ReservationTimeWithBookStatusRequest;
-import roomescape.dto.response.ReservationTimeResponse;
-import roomescape.dto.response.ReservationTimeWithBookStatusResponse;
 import roomescape.handler.BadRequestException;
+import roomescape.service.dto.request.ReservationTimeRequest;
+import roomescape.service.dto.request.ReservationTimeWithBookStatusRequest;
+import roomescape.service.dto.response.ReservationTimeResponse;
+import roomescape.service.dto.response.ReservationTimeWithBookStatusResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReservationTimeServiceTest {

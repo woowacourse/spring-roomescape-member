@@ -1,4 +1,4 @@
-package roomescape.handler;
+package roomescape.handler.dto;
 
 import org.springframework.http.HttpStatus;
 

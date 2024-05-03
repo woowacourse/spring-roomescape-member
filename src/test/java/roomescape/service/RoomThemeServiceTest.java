@@ -13,8 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import roomescape.dao.RoomThemeDao;
 import roomescape.domain.RoomTheme;
-import roomescape.dto.request.RoomThemeCreateRequest;
-import roomescape.dto.response.RoomThemeResponse;
+import roomescape.service.dto.request.RoomThemeCreateRequest;
+import roomescape.service.dto.response.RoomThemeResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class RoomThemeServiceTest {
