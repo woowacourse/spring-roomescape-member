@@ -86,13 +86,4 @@ public class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(204);
     }
-
-    @DisplayName("존재하지 않는 리소스에 대한 삭제 요청시, 500 Internel Server Error를 응답한다.")
-    @Test
-    void should_response_bad_request_when_nonExist_id() {
-        RestAssured.given().log().all()
-                .when().delete("/reservations/2")
-                .then().log().all()
-                .statusCode(400);
-    }
 }

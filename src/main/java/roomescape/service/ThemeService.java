@@ -20,21 +20,18 @@ public class ThemeService {
         return themeRepository.findAll();
     }
 
+    public List<ThemeResponse> readPopularThemes() {
+        return themeRepository.findTopOrderByReservationCount().stream()
+                .map(ThemeResponse::new)
+                .toList();
+    }
+
     public Theme addTheme(ThemeAddRequest themeAddRequest) {
         Theme theme = themeAddRequest.toEntity();
         return themeRepository.save(theme);
     }
 
     public void removeTheme(Long id) {
-        if (themeRepository.findById(id).isEmpty()) {
-            throw new IllegalArgumentException("해당 id를 가진 테마가 존재하지 않습니다.");
-        }
         themeRepository.deleteById(id);
-    }
-
-    public List<ThemeResponse> readPopularThemes() {
-        return themeRepository.findTopOrderByReservationCount().stream()
-                .map(ThemeResponse::new)
-                .toList();
     }
 }

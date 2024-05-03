@@ -29,13 +29,6 @@ public class ReservationTimeService {
         return reservationTimeRepository.save(reservationTimeAddRequest.toEntity());
     }
 
-    public void removeReservationTime(Long id) {
-        if (reservationTimeRepository.findById(id).isEmpty()) {
-            throw new IllegalArgumentException("해당 id를 가진 예약시간이 존재하지 않습니다.");
-        }
-        reservationTimeRepository.deleteById(id);
-    }
-
     public List<BookableTimeResponse> findReservationTimesWithReservationStatus(LocalDate date, Long themeId) {
         List<ReservationTime> reservedTimes = reservationTimeRepository.findByReserved(date, themeId);
         List<ReservationTime> allTimes = reservationTimeRepository.findAll();
@@ -51,5 +44,9 @@ public class ReservationTimeService {
                 .toList();
         bookableTimeResponses.addAll(bookedTimeResponse);
         return bookableTimeResponses;
+    }
+
+    public void removeReservationTime(Long id) {
+        reservationTimeRepository.deleteById(id);
     }
 }

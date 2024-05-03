@@ -64,15 +64,4 @@ class ReservationTimeServiceTest {
 
         assertThat(fakeReservationTimeDao.reservationTimes.containsKey(1L)).isFalse();
     }
-
-    @DisplayName("없는 id의 예약시간을 삭제하면 예외를 발생합니다.")
-    @Test
-    void should_throw_exception_when_remove_reservation_time_with_non_exist_id() {
-        FakeReservationTimeRepository fakeReservationTimeDao = new FakeReservationTimeRepository();
-        ReservationTimeService reservationTimeService = new ReservationTimeService(fakeReservationTimeDao);
-
-        assertThatThrownBy(() -> reservationTimeService.removeReservationTime(1L)).isInstanceOf(
-                        IllegalArgumentException.class)
-                .hasMessage("해당 id를 가진 예약시간이 존재하지 않습니다.");
-    }
 }

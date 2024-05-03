@@ -27,13 +27,6 @@ class ReservationServiceTest {
         reservationService = new ReservationService(fakeReservationDao, fakeReservationTimeDao, fakeThemeDao);
     }
 
-    @DisplayName("없는 id의 예약을 삭제하면 예외를 발생합니다.")
-    @Test
-    void should_false_when_remove_reservation_with_non_exist_id() {
-        assertThatThrownBy(() -> reservationService.removeReservation(1L))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
     @DisplayName("존재하지 않는 예약시각으로 예약 시 예외가 발생합니다.")
     @Test
     void should_throw_IllegalArgumentException_when_reserve_non_exist_time() {

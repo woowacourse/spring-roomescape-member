@@ -65,13 +65,4 @@ class ReservationTimeControllerTest {
                 .then().log().all()
                 .statusCode(204);
     }
-
-    @DisplayName("delete 요청 시 id값이 존재하지 않으면 500 Internel Server Error로 응답한다.")
-    @Test
-    void should_response_bad_request_when_nonExist_id() {
-        RestAssured.given().log().all()
-                .when().delete("/times/2")
-                .then().log().all()
-                .statusCode(400);
-    }
 }
