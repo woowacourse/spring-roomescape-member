@@ -1,8 +1,9 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.controller.time.AvailabilityTimeResponse;
+import roomescape.controller.time.ReadTimeResponse;
 import roomescape.controller.time.TimeRequest;
-import roomescape.controller.time.TimeResponse;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.repository.ReservationRepository;
@@ -25,13 +26,13 @@ public class TimeService {
         this.timeRepository = timeRepository;
     }
 
-    public List<TimeResponse> getTimes() {
+    public List<ReadTimeResponse> getTimes() {
         return timeRepository.findAll().stream()
-                .map(time -> TimeResponse.from(time, false))
+                .map(ReadTimeResponse::from)
                 .toList();
     }
 
-    public List<TimeResponse> getTimeAvailable(final String date, final String themeId) {
+    public List<AvailabilityTimeResponse> getTimeAvailable(final String date, final String themeId) {
         final List<ReservationTime> times = timeRepository.findAll()
                 .stream()
                 .toList();
@@ -42,14 +43,14 @@ public class TimeService {
                 .collect(Collectors.toSet());
 
         return times.stream()
-                .map(time -> TimeResponse.from(time, bookedTimes.contains(time)))
+                .map(time -> AvailabilityTimeResponse.from(time, bookedTimes.contains(time)))
                 .toList();
     }
 
-    public TimeResponse addTime(final TimeRequest timeRequest) {
+    public AvailabilityTimeResponse addTime(final TimeRequest timeRequest) {
         final ReservationTime parsedTime = timeRequest.toDomain();
         final ReservationTime savedTime = timeRepository.save(parsedTime);
-        return TimeResponse.from(savedTime, false);
+        return AvailabilityTimeResponse.from(savedTime, false);
     }
 
     public int deleteTime(final Long id) {

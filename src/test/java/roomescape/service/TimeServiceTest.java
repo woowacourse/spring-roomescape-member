@@ -6,11 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.controller.time.AvailabilityTimeResponse;
+import roomescape.controller.time.ReadTimeResponse;
 import roomescape.controller.time.TimeRequest;
-import roomescape.controller.time.TimeResponse;
-import roomescape.service.exception.TimeUsedException;
 import roomescape.repository.H2ReservationRepository;
 import roomescape.repository.H2ReservationTimeRepository;
+import roomescape.service.exception.TimeUsedException;
 
 import java.util.List;
 
@@ -30,14 +31,14 @@ class TimeServiceTest {
     @DisplayName("예약 시간 목록을 조회한다.")
     void getTimes() {
         // given
-        List<TimeResponse> expected = List.of(
-                new TimeResponse(1L, "10:15", false),
-                new TimeResponse(2L, "11:20", false),
-                new TimeResponse(3L, "12:25", false)
+        List<ReadTimeResponse> expected = List.of(
+                new ReadTimeResponse(1L, "10:15"),
+                new ReadTimeResponse(2L, "11:20"),
+                new ReadTimeResponse(3L, "12:25")
         );
 
         // when
-        List<TimeResponse> actual = timeService.getTimes();
+        List<ReadTimeResponse> actual = timeService.getTimes();
 
         // then
         assertThat(actual).containsExactlyElementsOf(expected);
@@ -48,10 +49,10 @@ class TimeServiceTest {
     void addTIme() {
         // given
         TimeRequest request = new TimeRequest("13:30");
-        TimeResponse expected = new TimeResponse(4L, "13:30", false);
+        AvailabilityTimeResponse expected = new AvailabilityTimeResponse(4L, "13:30", false);
 
         // when
-        TimeResponse actual = timeService.addTime(request);
+        AvailabilityTimeResponse actual = timeService.addTime(request);
 
         // then
         assertThat(actual).isEqualTo(expected);

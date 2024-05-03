@@ -14,7 +14,6 @@ import roomescape.service.TimeService;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/times")
@@ -27,18 +26,20 @@ public class TimeController {
     }
 
     @GetMapping
-    public List<TimeResponse> getTimes(
-            @RequestParam(value = "date", required = false) final String date,
-            @RequestParam(value = "themeId", required = false) final String themeId) {
-        if (Objects.isNull(date) || Objects.isNull(themeId)) {
-            return timeService.getTimes();
-        }
+    public List<ReadTimeResponse> getTimes() {
+        return timeService.getTimes();
+    }
+
+    @GetMapping("/availability") //TODO api 명세 수정
+    public List<AvailabilityTimeResponse> getAvailableTimes(@RequestParam(value = "date") final String date,
+                                                            @RequestParam(value = "themeId") final String themeId) {
+        //TODO long으로 변경
         return timeService.getTimeAvailable(date, themeId);
     }
 
     @PostMapping
-    public ResponseEntity<TimeResponse> addTime(@RequestBody final TimeRequest timeRequest) {
-        final TimeResponse time = timeService.addTime(timeRequest);
+    public ResponseEntity<AvailabilityTimeResponse> addTime(@RequestBody final TimeRequest timeRequest) {
+        final AvailabilityTimeResponse time = timeService.addTime(timeRequest);
         final URI uri = UriComponentsBuilder.fromPath("/reservations/{id}")
                 .buildAndExpand(time.id())
                 .toUri();

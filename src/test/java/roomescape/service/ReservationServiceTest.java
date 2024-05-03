@@ -9,7 +9,7 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.controller.reservation.ReservationRequest;
 import roomescape.controller.reservation.ReservationResponse;
 import roomescape.controller.theme.ReservationThemeResponse;
-import roomescape.controller.time.TimeResponse;
+import roomescape.controller.time.AvailabilityTimeResponse;
 import roomescape.service.exception.DuplicateReservation;
 import roomescape.service.exception.PreviousTimeException;
 import roomescape.service.exception.TimeNotFoundException;
@@ -36,9 +36,9 @@ class ReservationServiceTest {
     void getReservations() {
         // given
         List<ReservationResponse> expected = List.of(
-                new ReservationResponse(1L, "al", "2025-01-20", new TimeResponse(1L, "10:15", false),
+                new ReservationResponse(1L, "al", "2025-01-20", new AvailabilityTimeResponse(1L, "10:15", false),
                         new ReservationThemeResponse("spring")),
-                new ReservationResponse(2L, "be", "2025-02-19", new TimeResponse(2L, "11:20", false),
+                new ReservationResponse(2L, "be", "2025-02-19", new AvailabilityTimeResponse(2L, "11:20", false),
                         new ReservationThemeResponse("summer"))
         );
 
@@ -54,7 +54,7 @@ class ReservationServiceTest {
     void addReservation() {
         // given
         ReservationRequest request = new ReservationRequest("cha", "2025-03-18", 3L, 2L);
-        ReservationResponse expected = new ReservationResponse(3L, "cha", "2025-03-18", new TimeResponse(3L, "12:25", false)
+        ReservationResponse expected = new ReservationResponse(3L, "cha", "2025-03-18", new AvailabilityTimeResponse(3L, "12:25", false)
                 , new ReservationThemeResponse("summer"));
 
         // when

@@ -1,12 +1,12 @@
 package roomescape.controller.reservation;
 
 import roomescape.controller.theme.ReservationThemeResponse;
-import roomescape.controller.time.TimeResponse;
+import roomescape.controller.time.AvailabilityTimeResponse;
 import roomescape.domain.Reservation;
 
 import java.time.format.DateTimeFormatter;
 
-public record ReservationResponse(Long id, String name, String date, TimeResponse time,
+public record ReservationResponse(Long id, String name, String date, AvailabilityTimeResponse time,
                                   ReservationThemeResponse theme) {
 
     public static ReservationResponse from(final Reservation reservation) {
@@ -14,7 +14,7 @@ public record ReservationResponse(Long id, String name, String date, TimeRespons
                 reservation.getId(),
                 reservation.getName(),
                 reservation.getDate().format(DateTimeFormatter.ISO_LOCAL_DATE),
-                TimeResponse.from(reservation.getTime(), false),
+                AvailabilityTimeResponse.from(reservation.getTime(), false),
                 ReservationThemeResponse.from(reservation.getTheme())
         );
     }
