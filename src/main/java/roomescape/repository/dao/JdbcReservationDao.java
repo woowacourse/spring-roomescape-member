@@ -18,11 +18,11 @@ public class JdbcReservationDao implements ReservationDao {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private SimpleJdbcInsert insertActor;
+    private final SimpleJdbcInsert insertActor;
 
-    public JdbcReservationDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+    public JdbcReservationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.insertActor = new SimpleJdbcInsert(dataSource)
+        this.insertActor = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
     }

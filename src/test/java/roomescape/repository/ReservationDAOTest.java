@@ -32,9 +32,6 @@ class ReservationDAOTest {
     @Autowired
     private ReservationDao reservationDao;
 
-    @Autowired
-    private DataSource dataSource;
-
     private SimpleJdbcInsert reservationTimeInsertActor;
     private SimpleJdbcInsert reservationInsertActor;
     private SimpleJdbcInsert themeInsertActor;
@@ -46,13 +43,13 @@ class ReservationDAOTest {
         jdbcTemplate.execute("TRUNCATE TABLE reservation_time RESTART IDENTITY");
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
 
-        reservationTimeInsertActor = new SimpleJdbcInsert(dataSource)
+        reservationTimeInsertActor = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation_time")
                 .usingGeneratedKeyColumns("id");
-        reservationInsertActor = new SimpleJdbcInsert(dataSource)
+        reservationInsertActor = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
-        themeInsertActor = new SimpleJdbcInsert(dataSource)
+        themeInsertActor = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("theme")
                 .usingGeneratedKeyColumns("id");
 

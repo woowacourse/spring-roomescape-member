@@ -25,9 +25,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ThemeDAOTest {
 
     @Autowired
-    private DataSource dataSource;
-
-    @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
@@ -42,13 +39,13 @@ class ThemeDAOTest {
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
         jdbcTemplate.execute("TRUNCATE TABLE theme RESTART IDENTITY");
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
-        themeInsertActor = new SimpleJdbcInsert(dataSource)
+        themeInsertActor = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("theme")
                 .usingGeneratedKeyColumns("id");
-        reservationInsertActor = new SimpleJdbcInsert(dataSource)
+        reservationInsertActor = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
-        timeInsertActor = new SimpleJdbcInsert(dataSource)
+        timeInsertActor = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation_time")
                 .usingGeneratedKeyColumns("id");
         insertTheme("에버", "공포", "공포.jpg");

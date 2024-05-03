@@ -16,11 +16,11 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private SimpleJdbcInsert insertActor;
+    private final SimpleJdbcInsert insertActor;
 
-    public JdbcReservationTimeDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+    public JdbcReservationTimeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.insertActor = new SimpleJdbcInsert(dataSource)
+        this.insertActor = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation_time")
                 .usingGeneratedKeyColumns("id");
     }

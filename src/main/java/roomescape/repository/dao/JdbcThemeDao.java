@@ -15,11 +15,11 @@ import java.util.Map;
 public class JdbcThemeDao implements ThemeDao {
 
     private final JdbcTemplate jdbcTemplate;
-    private SimpleJdbcInsert insertActor;
+    private final SimpleJdbcInsert insertActor;
 
-    public JdbcThemeDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+    public JdbcThemeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.insertActor = new SimpleJdbcInsert(dataSource)
+        this.insertActor = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("theme")
                 .usingGeneratedKeyColumns("id");
     }

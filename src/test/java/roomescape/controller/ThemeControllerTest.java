@@ -28,9 +28,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 class ThemeControllerTest {
 
     @Autowired
-    private DataSource dataSource;
-
-    @Autowired
     private JdbcTemplate jdbcTemplate;
 
     private SimpleJdbcInsert reservationInsertActor;
@@ -39,13 +36,13 @@ class ThemeControllerTest {
 
     @BeforeEach
     void setUp() {
-        reservationInsertActor = new SimpleJdbcInsert(dataSource)
+        reservationInsertActor = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
-        timeInsertActor = new SimpleJdbcInsert(dataSource)
+        timeInsertActor = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation_time")
                 .usingGeneratedKeyColumns("id");
-        themeInsertActor = new SimpleJdbcInsert(dataSource)
+        themeInsertActor = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("theme")
                 .usingGeneratedKeyColumns("id");
     }
