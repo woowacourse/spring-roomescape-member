@@ -1,8 +1,8 @@
 package roomescape.service;
 
-import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.dto.PopularThemeRequest;
 import roomescape.dto.ThemeResponse;
 import roomescape.dto.ThemeSaveRequest;
 import roomescape.model.Theme;
@@ -32,8 +32,8 @@ public class ThemeService {
                 .toList();
     }
 
-    public List<ThemeResponse> getPopularThemes(final LocalDate localDate, final int limit) {
-        return reservationRepository.findWeeklyTopThemesOrderByCount(localDate, limit)
+    public List<ThemeResponse> getPopularThemes(final PopularThemeRequest popularThemeRequest) {
+        return reservationRepository.findWeeklyTopThemesOrderByCount(popularThemeRequest.startDate(), popularThemeRequest.endDate(), popularThemeRequest.limit())
                 .stream()
                 .map(ThemeResponse::new)
                 .toList();

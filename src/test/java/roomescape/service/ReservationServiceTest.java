@@ -16,6 +16,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationSaveRequest;
+import roomescape.exception.ReservationBusinessException;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
@@ -67,7 +68,7 @@ class ReservationServiceTest {
         final ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest("고구마", LocalDate.parse("2025-11-11"), 2L, 1L);
         assertThatThrownBy(() -> {
             reservationService.saveReservation(reservationSaveRequest);
-        }).isInstanceOf(IllegalArgumentException.class);
+        }).isInstanceOf(ReservationBusinessException.class);
     }
 
     @DisplayName("예약 삭제")
@@ -82,15 +83,7 @@ class ReservationServiceTest {
     void deleteReservationNotFound() {
         assertThatThrownBy(() -> {
             reservationService.deleteReservation(2L);
-        }).isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @DisplayName("지나간 시간 예약 저장")
-    @Test
-    void saveReservationWithGoneTime() {
-        assertThatThrownBy(() -> {
-            reservationService.saveReservation(new ReservationSaveRequest("백호", LocalDate.parse("2023-11-11"), 1L, 1L));
-        }).isInstanceOf(IllegalArgumentException.class);
+        }).isInstanceOf(ReservationBusinessException.class);
     }
 
     @DisplayName("중복된 예약 저장")
@@ -98,6 +91,6 @@ class ReservationServiceTest {
     void saveDuplicatedReservation() {
         assertThatThrownBy(() -> {
             reservationService.saveReservation(new ReservationSaveRequest("호롤로", LocalDate.parse("2025-05-13"), 1L, 1L));
-        }).isInstanceOf(IllegalArgumentException.class);
+        }).isInstanceOf(ReservationBusinessException.class);
     }
 }

@@ -1,5 +1,6 @@
 package roomescape.controller.api;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.dto.ReservationTimeBookedRequest;
@@ -22,7 +23,7 @@ public class ReservationTimeController {
     }
 
     @GetMapping(params = {"date", "themeId"})
-    public ResponseEntity<List<ReservationTimeBookedResponse>> getTimesWithBooked(@ModelAttribute final ReservationTimeBookedRequest reservationTimeBookedRequest) {
+    public ResponseEntity<List<ReservationTimeBookedResponse>> getTimesWithBooked(@ModelAttribute @Valid final ReservationTimeBookedRequest reservationTimeBookedRequest) {
         final List<ReservationTimeBookedResponse> reservationTimeBookedResponses = reservationTimeService.getTimesWithBooked(reservationTimeBookedRequest);
         return ResponseEntity.ok(reservationTimeBookedResponses);
     }
@@ -34,14 +35,14 @@ public class ReservationTimeController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTimeResponse> saveTime(@RequestBody final ReservationTimeSaveRequest reservationTimeSaveRequest) {
+    public ResponseEntity<ReservationTimeResponse> saveTime(@RequestBody @Valid final ReservationTimeSaveRequest reservationTimeSaveRequest) {
         final ReservationTimeResponse reservationTimeResponse = reservationTimeService.saveTime(reservationTimeSaveRequest);
         return ResponseEntity.created(URI.create("/times/" + reservationTimeResponse.id()))
                 .body(reservationTimeResponse);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTime(final @PathVariable("id") Long id) {
+    public ResponseEntity<Void> deleteTime(@PathVariable("id") final Long id) {
         reservationTimeService.deleteTime(id);
         return ResponseEntity.noContent().build();
     }

@@ -14,17 +14,10 @@ public class Theme {
     }
 
     public Theme(final Long id, final String name, final String description, final String thumbnail) {
-        validateNameBlank(name);
         this.id = id;
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
-    }
-
-    private void validateNameBlank(final String name) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("Name cannot be null or empty");
-        }
     }
 
     public Long getId() {

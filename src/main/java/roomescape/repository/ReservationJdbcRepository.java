@@ -196,7 +196,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Theme> findWeeklyTopThemesOrderByCount(final LocalDate localDate, final int limit) {
+    public List<Theme> findWeeklyTopThemesOrderByCount(final LocalDate startDate, final LocalDate endDate, final Integer limit) {
         final String sql = """
                 SELECT t.id, t.name, t.description, t.thumbnail
                 FROM theme AS t
@@ -208,6 +208,6 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 LIMIT ?
                 """;
 
-        return jdbcTemplate.query(sql, THEME_ROW_MAPPER, localDate.minusWeeks(1), localDate, limit);
+        return jdbcTemplate.query(sql, THEME_ROW_MAPPER, startDate, endDate, limit);
     }
 }

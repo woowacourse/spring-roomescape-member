@@ -7,7 +7,7 @@ import java.util.Objects;
 public class Reservation {
 
     private final Long id;
-    private final UserName userName;
+    private final String name;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
@@ -17,18 +17,11 @@ public class Reservation {
     }
 
     public Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time, final Theme theme) {
-        validateDate(date);
         this.id = id;
-        this.userName = new UserName(name);
+        this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
-    }
-
-    private static void validateDate(final LocalDate date) {
-        if (date == null) {
-            throw new IllegalArgumentException("날짜가 비어 있습니다.");
-        }
     }
 
     public boolean isTime(final ReservationTime time) {
@@ -52,7 +45,7 @@ public class Reservation {
     }
 
     public String getName() {
-        return userName.getValue();
+        return name;
     }
 
     public LocalDate getDate() {

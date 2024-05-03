@@ -15,6 +15,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
+import roomescape.dto.PopularThemeRequest;
 import roomescape.dto.ThemeResponse;
 import roomescape.dto.ThemeSaveRequest;
 import roomescape.model.Reservation;
@@ -105,8 +106,11 @@ class ThemeServiceTest {
     @Test
     @Sql(scripts = {"/test.sql"}, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
     void getPopularTheme() {
-        // given & when
-        final List<ThemeResponse> popularThemes = themeService.getPopularThemes(LocalDate.parse("2024-04-29"), 2);
+        // given
+        final PopularThemeRequest popularThemeRequest = new PopularThemeRequest(LocalDate.parse("2024-04-22"), LocalDate.parse("2024-04-29"), 2);
+
+        // when
+        final List<ThemeResponse> popularThemes = themeService.getPopularThemes(popularThemeRequest);
 
         // then
         assertThat(popularThemes).hasSize(2)

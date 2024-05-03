@@ -1,17 +1,18 @@
 package roomescape.controller.api;
 
+import jakarta.validation.Valid;
 import java.net.URI;
-import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.dto.PopularThemeRequest;
 import roomescape.dto.ThemeResponse;
 import roomescape.dto.ThemeSaveRequest;
 import roomescape.service.ThemeService;
@@ -27,7 +28,7 @@ public class ThemeController {
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponse> saveTheme(@RequestBody final ThemeSaveRequest themeSaveRequest) {
+    public ResponseEntity<ThemeResponse> saveTheme(@RequestBody @Valid final ThemeSaveRequest themeSaveRequest) {
         final ThemeResponse themeResponse = themeService.saveTheme(themeSaveRequest);
         return ResponseEntity.created(URI.create("/themes/" + themeResponse.id()))
                 .body(themeResponse);
@@ -41,10 +42,9 @@ public class ThemeController {
 
     @GetMapping("/popular")
     public ResponseEntity<List<ThemeResponse>> getPopularThemes(
-            @RequestParam("date") final LocalDate localDate,
-            @RequestParam("limit") final Integer limit
+            @ModelAttribute @Valid final PopularThemeRequest popularThemeRequest
     ) {
-        final List<ThemeResponse> themeResponses = themeService.getPopularThemes(localDate, limit);
+        final List<ThemeResponse> themeResponses = themeService.getPopularThemes(popularThemeRequest);
         return ResponseEntity.ok(themeResponses);
     }
 
