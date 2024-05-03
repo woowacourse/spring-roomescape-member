@@ -41,14 +41,14 @@ class ReservationTimeAcceptanceTest extends BasicAcceptanceTest {
     @TestFactory
     @DisplayName("예약 시간을 추가하고 삭제한다")
     Stream<DynamicTest> reservationPostAndDeleteTest() {
-        AtomicLong reservationId = new AtomicLong();
+        AtomicLong reservationTimeId = new AtomicLong();
 
         return Stream.of(
                 dynamicTest("예약 시간을 추가한다 (10:00)", () -> {
                     Long id = postReservationTime("10:00", 201);
-                    reservationId.set(id);
+                    reservationTimeId.set(id);
                 }),
-                dynamicTest("예약 시간을 삭제한다 (10:00)", () -> deleteReservationTime(reservationId.longValue(), 204)),
+                dynamicTest("예약 시간을 삭제한다 (10:00)", () -> deleteReservationTime(reservationTimeId.longValue(), 204)),
                 dynamicTest("예약 시간을 추가한다 (10:00)", () -> postReservationTime("10:00", 201)),
                 dynamicTest("모든 예약 시간을 조회한다 (총 1개)", () -> getReservationTimes(200, 1))
         );
@@ -83,7 +83,7 @@ class ReservationTimeAcceptanceTest extends BasicAcceptanceTest {
         return null;
     }
 
-    private void getReservationTimes(int expectedHttpCode, int expectedReservationsSize) {
+    private void getReservationTimes(int expectedHttpCode, int expectedReservationTimesSize) {
         Response response = RestAssured.given().log().all()
                 .when().get("/times")
                 .then().log().all()
@@ -92,12 +92,12 @@ class ReservationTimeAcceptanceTest extends BasicAcceptanceTest {
 
         List<?> reservationTimeResponses = response.as(List.class);
 
-        assertThat(reservationTimeResponses).hasSize(expectedReservationsSize);
+        assertThat(reservationTimeResponses).hasSize(expectedReservationTimesSize);
     }
 
-    private void deleteReservationTime(Long reservationId, int expectedHttpCode) {
+    private void deleteReservationTime(Long reservationTimeId, int expectedHttpCode) {
         RestAssured.given().log().all()
-                .when().delete("/times/" + reservationId)
+                .when().delete("/times/" + reservationTimeId)
                 .then().log().all()
                 .statusCode(expectedHttpCode);
     }
