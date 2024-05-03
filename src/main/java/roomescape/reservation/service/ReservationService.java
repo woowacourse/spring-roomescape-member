@@ -2,7 +2,6 @@ package roomescape.reservation.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
@@ -39,21 +38,17 @@ public class ReservationService {
         Theme theme = themeRepository.findById(createReservationRequest.themeId())
                 .orElseThrow(() -> new NoSuchElementException("해당하는 테마가 존재하지 않습니다."));
 
-        validateReservationDateTime(createReservationRequest.date(), reservationTime.getTime());
         Reservation reservation = createReservationRequest.toReservation(reservationTime, theme);
+        if (reservation.isBeforeDateTimeThanNow(LocalDateTime.now())) {
+            throw new IllegalArgumentException("지나간 날짜와 시간에 대한 예약 생성은 불가능합니다.");
+        }
 
-        if (reservationRepository.existsByDateAndTimeAndTheme(reservation.getDate(), reservationTime.getId(), theme.getId())) {
+        if (reservationRepository.existsByDateAndTimeAndTheme(reservation.getDate(), reservationTime.getId(),
+                theme.getId())) {
             throw new IllegalStateException("동일한 시간의 예약이 존재합니다.");
         }
 
         return CreateReservationResponse.of(reservationRepository.save(reservation));
-    }
-
-    private void validateReservationDateTime(final LocalDate reservationDate, final LocalTime reservationTime) {
-        LocalDateTime reservationDateTime = LocalDateTime.of(reservationDate, reservationTime);
-        if (reservationDateTime.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("지나간 날짜와 시간에 대한 예약 생성은 불가능합니다.");
-        }
     }
 
     public List<FindReservationResponse> getReservations() {
