@@ -1,14 +1,15 @@
 package roomescape.member.domain;
 
 import java.util.Objects;
+import roomescape.global.Name;
 
 public class Member {
     private Long id;
-    private String name;
+    private Name name;
 
     public Member(Long id, String name) {
         this.id = id;
-        this.name = name;
+        this.name = new Name(name);
     }
 
     public Member(String name) {
@@ -20,7 +21,7 @@ public class Member {
     }
 
     public String getName() {
-        return name;
+        return name.getName();
     }
 
     @Override

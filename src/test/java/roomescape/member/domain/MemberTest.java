@@ -1,10 +1,14 @@
 package roomescape.member.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
+@DisplayName("사용자 도메인 테스트")
 class MemberTest {
     @DisplayName("동일한 id는 같은 사용자다.")
     @Test
@@ -20,5 +24,16 @@ class MemberTest {
 
         //then
         assertThat(member1).isEqualTo(member2);
+    }
+
+    @DisplayName("한글, 영어 이외의 이름에 대해 예외가 발생한다.")
+    @ParameterizedTest
+    @ValueSource(strings = {"", "   ", "$#@%!"})
+    void invalidName(String invalidName) {
+        //given
+        long id = 1;
+
+        //when & then
+        assertThatThrownBy(() -> new Member(invalidName)).isInstanceOf(IllegalArgumentException.class);
     }
 }
