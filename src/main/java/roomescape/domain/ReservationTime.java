@@ -17,7 +17,7 @@ public class ReservationTime {
     }
 
     public boolean hasSameStartAt(ReservationTime reservationTime) {
-        return this.startAt.equals(reservationTime.startAt);
+        return startAt.equals(reservationTime.startAt);
     }
 
     public long getId() {

@@ -28,11 +28,11 @@ public class Reservation {
     }
 
     public boolean hasSameTheme(Reservation reservation) {
-        return this.theme.equals(reservation.theme);
+        return theme.equals(reservation.theme);
     }
 
     public boolean hasSameDateTime(Reservation reservation) {
-        return this.getDateTime().equals(reservation.getDateTime());
+        return getDateTime().equals(reservation.getDateTime());
     }
 
     public long getId() {
@@ -56,6 +56,6 @@ public class Reservation {
     }
 
     public LocalDateTime getDateTime() {
-        return LocalDateTime.of(this.date, this.time.getStartAt());
+        return LocalDateTime.of(date, time.getStartAt());
     }
 }
