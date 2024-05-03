@@ -102,7 +102,7 @@ class JdbcReservationRepositoryTest {
         ReservationTime time = reservation.getTime();
         Theme theme = reservation.getTheme();
 
-        boolean exists = jdbcReservationRepository.existBy(reservation.getDate(), time.getId(), theme.getId());
+        boolean exists = jdbcReservationRepository.existsBy(reservation.getDate(), time.getId(), theme.getId());
         assertThat(exists).isTrue();
     }
 
