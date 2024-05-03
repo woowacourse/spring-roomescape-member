@@ -32,7 +32,7 @@ public class JdbcTest {
     @Test
     void should_right_catalog() {
         try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
-            assertThat(connection.getCatalog()).isEqualTo("DATABASE");
+            assertThat(connection.getCatalog()).isEqualTo("TESTDATABASE");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
