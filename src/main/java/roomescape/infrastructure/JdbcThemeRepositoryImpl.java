@@ -10,12 +10,12 @@ import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 
 @Repository
-public class JdbcThemeRepository implements ThemeRepository {
+public class JdbcThemeRepositoryImpl implements ThemeRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public JdbcThemeRepository(JdbcTemplate jdbcTemplate) {
+    public JdbcThemeRepositoryImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(Objects.requireNonNull(jdbcTemplate.getDataSource()))
             .withTableName("theme")

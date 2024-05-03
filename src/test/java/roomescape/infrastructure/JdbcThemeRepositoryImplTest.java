@@ -14,7 +14,7 @@ import roomescape.domain.ThemeRepository;
 
 @SpringBootTest
 @Transactional
-class JdbcThemeRepositoryTest {
+class JdbcThemeRepositoryImplTest {
 
     @Autowired
     private ThemeRepository themeRepository;
