@@ -4,6 +4,9 @@ import org.springframework.stereotype.Repository;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
+import roomescape.repository.dao.ReservationDao;
+import roomescape.repository.dao.ReservationTimeDao;
+import roomescape.repository.dao.ThemeDao;
 
 import java.time.LocalDate;
 import java.util.List;

@@ -9,7 +9,7 @@ import roomescape.exception.NotFoundException;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeDao;
+import roomescape.repository.dao.ReservationTimeDao;
 import roomescape.service.dto.ReservationDto;
 
 import java.time.LocalDate;

@@ -1,4 +1,4 @@
-package roomescape.repository;
+package roomescape.repository.dao;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;

@@ -2,6 +2,7 @@ package roomescape.repository;
 
 import org.springframework.stereotype.Repository;
 import roomescape.model.Theme;
+import roomescape.repository.dao.ThemeDao;
 
 import java.time.LocalDate;
 import java.util.List;

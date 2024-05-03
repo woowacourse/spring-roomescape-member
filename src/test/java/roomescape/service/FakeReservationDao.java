@@ -3,7 +3,7 @@ package roomescape.service;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
-import roomescape.repository.ReservationDao;
+import roomescape.repository.dao.ReservationDao;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

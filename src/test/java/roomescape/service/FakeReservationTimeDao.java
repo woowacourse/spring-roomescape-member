@@ -1,7 +1,7 @@
 package roomescape.service;
 
 import roomescape.model.ReservationTime;
-import roomescape.repository.ReservationTimeDao;
+import roomescape.repository.dao.ReservationTimeDao;
 
 import java.time.LocalTime;
 import java.util.ArrayList;

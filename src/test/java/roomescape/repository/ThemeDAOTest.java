@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.model.Theme;
+import roomescape.repository.dao.ThemeDao;
 
 import javax.sql.DataSource;
 import java.time.LocalDate;

@@ -1,7 +1,7 @@
 package roomescape.service;
 
 import roomescape.model.Theme;
-import roomescape.repository.ThemeDao;
+import roomescape.repository.dao.ThemeDao;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

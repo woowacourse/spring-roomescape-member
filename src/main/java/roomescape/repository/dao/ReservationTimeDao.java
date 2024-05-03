@@ -1,4 +1,4 @@
-package roomescape.repository;
+package roomescape.repository.dao;
 
 import roomescape.model.ReservationTime;
 

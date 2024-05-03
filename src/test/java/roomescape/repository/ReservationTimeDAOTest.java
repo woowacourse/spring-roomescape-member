@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.model.ReservationTime;
+import roomescape.repository.dao.ReservationTimeDao;
 
 import javax.sql.DataSource;
 import java.time.LocalTime;
