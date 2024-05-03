@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.application.dto.request.ReservationTimeRequest;
 import roomescape.application.dto.response.ReservationTimeResponse;
+import roomescape.application.exception.DuplicatedEntityException;
+import roomescape.application.exception.EntityReferenceOnDeleteException;
 import roomescape.domain.PlayerName;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
@@ -51,7 +53,7 @@ class ReservationTimeServiceTest {
         LocalTime startAt = createTime(10, 0).getStartAt();
         ReservationTimeRequest request = new ReservationTimeRequest(startAt);
         assertThatCode(() -> reservationTimeService.create(request))
-                .isInstanceOf(IllegalStateException.class)
+                .isInstanceOf(DuplicatedEntityException.class)
                 .hasMessage(String.format("이미 존재하는 예약시간이 있습니다. 해당 시간:%s", startAt));
     }
 
@@ -73,7 +75,7 @@ class ReservationTimeServiceTest {
         assertThat(reservationTimeRepository.findAll()).isEmpty();
     }
 
-    @DisplayName("예약에 사용된 예약 시간을 삭제 요청하면, IllegalStateException 예외가 발생한다.")
+    @DisplayName("예약에 사용된 예약 시간을 삭제 요청하면, 예외가 발생한다.")
     @Test
     void shouldThrowsExceptionReservationWhenReservedInTime() {
         ReservationTime reservationTime = createTime(10, 0);
@@ -88,7 +90,7 @@ class ReservationTimeServiceTest {
         );
 
         assertThatCode(() -> reservationTimeService.deleteById(reservationTime.getId()))
-                .isInstanceOf(IllegalStateException.class)
+                .isInstanceOf(EntityReferenceOnDeleteException.class)
                 .hasMessageStartingWith("해당 예약 시간에 연관된 예약이 존재하여 삭제할 수 없습니다. 삭제 요청한 시간");
     }
 

@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.application.dto.request.ReservationTimeRequest;
 import roomescape.application.dto.response.AvailableTimeResponse;
 import roomescape.application.dto.response.ReservationTimeResponse;
+import roomescape.application.exception.DuplicatedEntityException;
+import roomescape.application.exception.EntityReferenceOnDeleteException;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
@@ -26,7 +28,9 @@ public class ReservationTimeService {
     @Transactional
     public ReservationTimeResponse create(ReservationTimeRequest request) {
         if (existsByStartAt(request.startAt())) {
-            throw new IllegalStateException(String.format("이미 존재하는 예약시간이 있습니다. 해당 시간:%s", request.startAt()));
+            throw new DuplicatedEntityException(
+                    String.format("이미 존재하는 예약시간이 있습니다. 해당 시간:%s", request.startAt())
+            );
         }
         ReservationTime reservationTime = reservationTimeRepository.create(request.toReservationTime());
         return ReservationTimeResponse.from(reservationTime);
@@ -47,8 +51,10 @@ public class ReservationTimeService {
     public void deleteById(long id) {
         ReservationTime findReservationTime = reservationTimeRepository.getById(id);
         if (reservationRepository.existsByTimeId(id)) {
-            throw new IllegalStateException(String.format("해당 예약 시간에 연관된 예약이 존재하여 삭제할 수 없습니다. 삭제 요청한 시간:%s",
-                    findReservationTime.getStartAt()));
+            throw new EntityReferenceOnDeleteException(String.format(
+                    "해당 예약 시간에 연관된 예약이 존재하여 삭제할 수 없습니다. 삭제 요청한 시간:%s",
+                    findReservationTime.getStartAt())
+            );
         }
         reservationTimeRepository.deleteById(id);
     }

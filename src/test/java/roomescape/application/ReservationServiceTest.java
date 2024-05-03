@@ -6,11 +6,14 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import javax.swing.text.DefaultEditorKit.PasteAction;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.application.dto.request.ReservationRequest;
 import roomescape.application.dto.response.ReservationResponse;
+import roomescape.application.exception.DuplicatedEntityException;
+import roomescape.application.exception.ReserveOnPastException;
 import roomescape.domain.PlayerName;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
@@ -78,7 +81,7 @@ class ReservationServiceTest {
     }
 
 
-    @DisplayName("중복된 예약을 하는 경우 IllegalStateException 예외를 반환한다.")
+    @DisplayName("중복된 예약을 하는 경우 예외를 반환한다.")
     @Test
     void shouldReturnIllegalStateExceptionWhenDuplicatedReservationCreate() {
         ReservationTime time = reservationTimeRepository.create(new ReservationTime(LocalTime.of(10, 0)));
@@ -92,11 +95,11 @@ class ReservationServiceTest {
         reservationRepository.create(request.toReservation(time, theme));
 
         assertThatCode(() -> reservationService.create(request))
-                .isInstanceOf(IllegalStateException.class)
+                .isInstanceOf(DuplicatedEntityException.class)
                 .hasMessage("이미 존재하는 예약입니다.");
     }
 
-    @DisplayName("과거 시간을 예약하는 경우 IllegalArgumentException 예외를 반환한다.")
+    @DisplayName("과거 시간을 예약하는 경우 예외를 반환한다.")
     @Test
     void shouldThrowsIllegalArgumentExceptionWhenReservationDateIsBeforeCurrentDate() {
         ReservationTime time = reservationTimeRepository.create(new ReservationTime(1L, LocalTime.of(12, 0)));
@@ -105,7 +108,7 @@ class ReservationServiceTest {
                 theme.getId());
 
         assertThatCode(() -> reservationService.create(reservationRequest))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ReserveOnPastException.class)
                 .hasMessage("현재 시간보다 과거로 예약할 수 없습니다.");
     }
 
@@ -127,11 +130,11 @@ class ReservationServiceTest {
         assertThat(reservations).isEmpty();
     }
 
-    @DisplayName("예약 삭제 요청시 예약이 존재하지 않으면 IllegalArgumentException 예외를 반환한다.")
+    @DisplayName("예약 삭제 요청시 예약이 존재하지 않으면 예외를 반환한다.")
     @Test
     void shouldThrowsIllegalArgumentExceptionWhenReservationDoesNotExist() {
         assertThatCode(() -> reservationService.deleteById(99L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("존재하지 않는 예약 입니다.");
     }
 

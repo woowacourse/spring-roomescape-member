@@ -12,6 +12,7 @@ import roomescape.application.dto.response.ThemeResponse;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeName;
 import roomescape.domain.ThemeRepository;
+import roomescape.domain.exception.EntityNotFoundException;
 
 @ServiceTest
 class ThemeServiceTest {
@@ -51,7 +52,7 @@ class ThemeServiceTest {
     @Test
     void shouldThrowIllegalArgumentExceptionWhenDeleteWithNonExistId() {
         assertThatCode(() -> themeService.deleteById(1L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("존재하지 않는 테마 입니다.");
     }
 

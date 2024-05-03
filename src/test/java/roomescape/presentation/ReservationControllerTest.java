@@ -25,6 +25,7 @@ import roomescape.application.dto.request.ReservationRequest;
 import roomescape.application.dto.response.ReservationResponse;
 import roomescape.application.dto.response.ReservationTimeResponse;
 import roomescape.application.dto.response.ThemeResponse;
+import roomescape.application.exception.DuplicatedEntityException;
 import roomescape.domain.exception.EntityNotFoundException;
 
 @WebMvcTest(ReservationController.class)
@@ -107,7 +108,7 @@ class ReservationControllerTest extends ControllerTest {
         String reservationRequestJson = objectMapper.writeValueAsString(reservationRequest);
 
         given(reservationService.create(reservationRequest))
-                .willThrow(new IllegalStateException("이미 존재하는 예약입니다."));
+                .willThrow(new DuplicatedEntityException("이미 존재하는 예약입니다."));
 
         mvc.perform(post("/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
