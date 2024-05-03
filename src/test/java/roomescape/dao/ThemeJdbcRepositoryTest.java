@@ -16,7 +16,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
-class ThemeJDBCRepositoryTest {
+class ThemeJdbcRepositoryTest {
     private ThemeRepository themeRepository;
     private ReservationTimeRepository reservationTimeRepository;
     private ReservationRepository reservationRepository;
@@ -26,9 +26,9 @@ class ThemeJDBCRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        themeRepository = new ThemeJDBCRepository(jdbcTemplate);
-        reservationTimeRepository = new ReservationTimeJDBCRepository(jdbcTemplate);
-        reservationRepository = new ReservationJDBCRepository(jdbcTemplate);
+        themeRepository = new ThemeJdbcRepository(jdbcTemplate);
+        reservationTimeRepository = new ReservationTimeJdbcRepository(jdbcTemplate);
+        reservationRepository = new ReservationJdbcRepository(jdbcTemplate);
     }
 
     @DisplayName("새로운 테마를 저장한다.")

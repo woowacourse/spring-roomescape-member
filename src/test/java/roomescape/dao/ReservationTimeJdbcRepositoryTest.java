@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @JdbcTest
-class ReservationTimeJDBCRepositoryTest {
+class ReservationTimeJdbcRepositoryTest {
     private ReservationTimeRepository reservationTimeRepository;
     private ReservationRepository reservationRepository;
     private ThemeRepository themeRepository;
@@ -27,9 +27,9 @@ class ReservationTimeJDBCRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        reservationTimeRepository = new ReservationTimeJDBCRepository(jdbcTemplate);
-        reservationRepository = new ReservationJDBCRepository(jdbcTemplate);
-        themeRepository = new ThemeJDBCRepository(jdbcTemplate);
+        reservationTimeRepository = new ReservationTimeJdbcRepository(jdbcTemplate);
+        reservationRepository = new ReservationJdbcRepository(jdbcTemplate);
+        themeRepository = new ThemeJdbcRepository(jdbcTemplate);
     }
 
     @DisplayName("새로운 예약 시간을 저장한다.")

@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public class ReservationJDBCRepository implements ReservationRepository {
+public class ReservationJdbcRepository implements ReservationRepository {
     private static final String TABLE_NAME = "reservation";
 
     private final JdbcTemplate jdbcTemplate;
@@ -31,7 +31,7 @@ public class ReservationJDBCRepository implements ReservationRepository {
         return reservation;
     };
 
-    public ReservationJDBCRepository(final JdbcTemplate jdbcTemplate) {
+    public ReservationJdbcRepository(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(TABLE_NAME)

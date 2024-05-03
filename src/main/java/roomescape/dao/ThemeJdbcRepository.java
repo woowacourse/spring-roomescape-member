@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Repository
-public class ThemeJDBCRepository implements ThemeRepository {
+public class ThemeJdbcRepository implements ThemeRepository {
     private static final String TABLE_NAME = "theme";
 
     private final JdbcTemplate jdbcTemplate;
@@ -26,7 +26,7 @@ public class ThemeJDBCRepository implements ThemeRepository {
         );
     };
 
-    public ThemeJDBCRepository(JdbcTemplate jdbcTemplate) {
+    public ThemeJdbcRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(TABLE_NAME)

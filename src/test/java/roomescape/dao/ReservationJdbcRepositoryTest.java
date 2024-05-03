@@ -18,7 +18,7 @@ import java.util.List;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @JdbcTest
-class ReservationJDBCRepositoryTest {
+class ReservationJdbcRepositoryTest {
     private final JdbcTemplate jdbcTemplate;
     private ReservationRepository reservationRepository;
     private ReservationDate reservationDate;
@@ -26,15 +26,15 @@ class ReservationJDBCRepositoryTest {
     private Theme theme;
 
     @Autowired
-    ReservationJDBCRepositoryTest(final JdbcTemplate jdbcTemplate) {
+    ReservationJdbcRepositoryTest(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @BeforeEach
     void setUp() {
-        reservationRepository = new ReservationJDBCRepository(jdbcTemplate);
-        ReservationTimeRepository reservationTimeRepository = new ReservationTimeJDBCRepository(jdbcTemplate);
-        ThemeRepository themeRepository = new ThemeJDBCRepository(jdbcTemplate);
+        reservationRepository = new ReservationJdbcRepository(jdbcTemplate);
+        ReservationTimeRepository reservationTimeRepository = new ReservationTimeJdbcRepository(jdbcTemplate);
+        ThemeRepository themeRepository = new ThemeJdbcRepository(jdbcTemplate);
 
         reservationDate = new ReservationDate(LocalDate.now().plusDays(1).toString());
         reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.now().toString()));
