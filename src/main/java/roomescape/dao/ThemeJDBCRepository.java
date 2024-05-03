@@ -1,8 +1,5 @@
 package roomescape.dao;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -10,20 +7,16 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 @Repository
 public class ThemeJDBCRepository implements ThemeRepository {
     private static final String TABLE_NAME = "theme";
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
-
-    public ThemeJDBCRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName(TABLE_NAME)
-                .usingGeneratedKeyColumns("id");
-    }
-
     private final RowMapper<Theme> rowMapper = (resultSet, rowNum) -> {
         return new Theme(
                 resultSet.getLong("id"),
@@ -32,6 +25,13 @@ public class ThemeJDBCRepository implements ThemeRepository {
                 resultSet.getString("thumbnail")
         );
     };
+
+    public ThemeJDBCRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName(TABLE_NAME)
+                .usingGeneratedKeyColumns("id");
+    }
 
     @Override
     public Theme save(Theme theme) {

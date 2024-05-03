@@ -1,11 +1,5 @@
 package roomescape.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,6 +16,13 @@ import roomescape.exception.InvalidReservationException;
 import roomescape.service.dto.ThemeRequest;
 import roomescape.service.dto.ThemeResponse;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 class ThemeServiceTest {
 
@@ -31,6 +32,11 @@ class ThemeServiceTest {
     private ReservationRepository reservationRepository;
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
+
+    private static Theme convertToTheme(ThemeResponse themeResponse) {
+        return new Theme(themeResponse.id(),
+                new Theme(themeResponse.name(), themeResponse.description(), themeResponse.thumbnail()));
+    }
 
     @AfterEach
     void init() {
@@ -131,11 +137,6 @@ class ThemeServiceTest {
 
         //then
         assertThat(result).hasSize(2);
-    }
-
-    private static Theme convertToTheme(ThemeResponse themeResponse) {
-        return new Theme(themeResponse.id(),
-                new Theme(themeResponse.name(), themeResponse.description(), themeResponse.thumbnail()));
     }
 
     private ThemeResponse createTheme(String name) {

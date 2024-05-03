@@ -1,10 +1,5 @@
 package roomescape.domain;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import roomescape.exception.InvalidReservationException;
-
 public class Schedule {
     private final ReservationDate date;
     private final ReservationTime time;

@@ -1,22 +1,23 @@
 package roomescape.controller;
 
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.is;
-
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.service.dto.ReservationRequest;
 import roomescape.service.dto.ReservationTimeCreateRequest;
 import roomescape.service.dto.ReservationTimeReadRequest;
 import roomescape.service.dto.ThemeRequest;
 
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql(scripts = {"classpath:truncate.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 class ReservationTimeControllerTest {
     @LocalServerPort
     private int port;
@@ -24,21 +25,6 @@ class ReservationTimeControllerTest {
     @BeforeEach
     void initPort() {
         RestAssured.port = port;
-    }
-
-    @AfterEach
-    void initData() {
-        RestAssured.get("/reservations")
-                .then().extract().body().jsonPath().getList("id")
-                .forEach(id -> RestAssured.delete("/reservations/" + id));
-
-        RestAssured.get("/times")
-                .then().extract().body().jsonPath().getList("id")
-                .forEach(id -> RestAssured.delete("/times/" + id));
-
-        RestAssured.get("/themes")
-                .then().extract().body().jsonPath().getList("id")
-                .forEach(id -> RestAssured.delete("/themes/" + id));
     }
 
     @DisplayName("시간 정보를 추가한다.")

@@ -1,9 +1,10 @@
 package roomescape.domain;
 
+import roomescape.exception.InvalidReservationException;
+
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import roomescape.exception.InvalidReservationException;
 
 public class ReservationTime {
     private final static String TIME_FORMAT = "HH:mm";
