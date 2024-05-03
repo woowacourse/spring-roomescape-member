@@ -29,7 +29,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleException(DataAccessException e) {
+    public ResponseEntity<ErrorResponse> handleException(Exception e) {
         return ResponseEntity.internalServerError()
                 .body(new ErrorResponse("[SERVER ERROR] " + e.getMessage()));
     }
