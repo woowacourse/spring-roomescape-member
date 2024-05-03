@@ -59,8 +59,10 @@ class ReservationTimeAcceptanceTest extends BasicAcceptanceTest {
     @DisplayName("예약이 가능한 시간을 구분하여 반환한다.")
     Stream<DynamicTest> res() {
         return Stream.of(
-                dynamicTest("모든 예약된 시간을 조회한다 (총 3개)", () -> getAvailableTimes(200))
-        );
+                dynamicTest("모든 예약된 시간을 조회한다 (총 3개)", () -> getAvailableTimes(200, 3)),
+                dynamicTest("예약을 추가한다", () -> ReservationCRD.postReservation("2099-04-29", 4L, 1L, 201)),
+                dynamicTest("모든 예약된 시간을 조회한다 (총 4개)", () -> getAvailableTimes(200, 4))
+                );
     }
 
     private Long postReservationTime(String time, int expectedHttpCode) {
@@ -100,7 +102,7 @@ class ReservationTimeAcceptanceTest extends BasicAcceptanceTest {
                 .statusCode(expectedHttpCode);
     }
 
-    private void getAvailableTimes(int expectedHttpCode) {
+    private void getAvailableTimes(int expectedHttpCode, int alreadyBookedSize) {
         Response response = RestAssured.given().log().all()
                 .when().get("/times/available?date=2099-04-29&themeId=1")
                 .then().log().all()
@@ -113,6 +115,6 @@ class ReservationTimeAcceptanceTest extends BasicAcceptanceTest {
                 .filter(AvailableReservationTimeResponse::alreadyBooked)
                 .toList();
 
-        assertThat(list).hasSize(3);
+        assertThat(list).hasSize(alreadyBookedSize);
     }
 }
