@@ -30,7 +30,12 @@ public class Reservation {
         }
     }
 
-    public LocalDateTime getDateTime() {
+    public boolean isBeforeNow() {
+        final LocalDateTime reservationDateTime = getDateTime();
+        return reservationDateTime.isBefore(LocalDateTime.now());
+    }
+
+    private LocalDateTime getDateTime() {
         return LocalDateTime.of(date, time.getStartAt());
     }
 

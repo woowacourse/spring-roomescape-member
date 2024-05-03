@@ -10,7 +10,6 @@ import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -57,8 +56,7 @@ public class ReservationService {
     }
 
     private void validateDateTime(final Reservation reservation) {
-        final LocalDateTime reservationDateTime = reservation.getDateTime();
-        final boolean isBeforeNow = reservationDateTime.isBefore(LocalDateTime.now());
+        final boolean isBeforeNow = reservation.isBeforeNow();
         if (isBeforeNow) {
             throw new IllegalArgumentException("지나간 시간입니다.");
         }
