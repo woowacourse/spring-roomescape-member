@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.ReservationTimeRequestDto;
+import roomescape.dto.time.ReservationTimeRequestDto;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;

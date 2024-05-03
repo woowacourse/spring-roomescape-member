@@ -4,8 +4,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.ReservationTimeRequestDto;
-import roomescape.dto.ReservationTimeResponseDto;
+import roomescape.dto.time.ReservationTimeRequestDto;
+import roomescape.dto.time.ReservationTimeResponseDto;
 import roomescape.service.ReservationTimeService;
 
 import java.net.URI;

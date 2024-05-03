@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.ReservationTimeRequestDto;
+import roomescape.dto.time.ReservationTimeRequestDto;
 
 import java.time.LocalTime;
 import java.util.List;

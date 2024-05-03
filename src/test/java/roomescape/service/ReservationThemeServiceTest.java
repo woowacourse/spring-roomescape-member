@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.ReservationTheme;
-import roomescape.dto.ReservationThemeRequestDto;
+import roomescape.dto.theme.ReservationThemeRequestDto;
 
 import java.util.List;
 

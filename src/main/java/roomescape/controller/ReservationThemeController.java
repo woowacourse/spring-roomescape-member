@@ -4,7 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import roomescape.domain.ReservationTheme;
-import roomescape.dto.ReservationThemeRequestDto;
+import roomescape.dto.theme.ReservationThemeRequestDto;
 import roomescape.service.ReservationThemeService;
 
 import java.net.URI;
