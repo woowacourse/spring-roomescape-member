@@ -86,7 +86,7 @@ class ReservationServiceTest {
         // when & then
         assertThatThrownBy(() -> reservationService.save(reservationRequest))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("지나간 날짜입니다.");
+                .hasMessage("지난 날짜에는 예약할 수 없습니다.");
     }
 
     @DisplayName("삭제 테스트")

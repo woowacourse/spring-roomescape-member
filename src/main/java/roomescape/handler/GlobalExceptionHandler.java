@@ -12,12 +12,20 @@ import roomescape.dto.ExceptionDto;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler({
-            DateTimeException.class,
-            IllegalArgumentException.class,
-            IncorrectResultSizeDataAccessException.class})
-    public ResponseEntity<ExceptionDto> handleException(Exception e) {
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ExceptionDto> handleException(IllegalArgumentException e) {
         return ResponseEntity.badRequest().body(new ExceptionDto(e.getMessage()));
+    }
+
+    @ExceptionHandler(IncorrectResultSizeDataAccessException.class)
+    public ResponseEntity<ExceptionDto> handleException(IncorrectResultSizeDataAccessException e) {
+        return ResponseEntity.badRequest().body(new ExceptionDto("해당 예약 시간 혹은 테마가 존재하지 않습니다."));
+    }
+
+    @ExceptionHandler(DateTimeException.class)
+    public ResponseEntity<ExceptionDto> handleException(DateTimeException e) {
+        return ResponseEntity.badRequest().body(new ExceptionDto(
+                "날짜 혹은 시간 입력 양식이 잘못되었습니다. ex)YYYY-mm-dd, HH:mm"));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

@@ -44,13 +44,6 @@ public class ReservationTimeService {
         return reservationTimeDao.deleteById(id);
     }
 
-    private void validateTimeExistence(LocalTime startAt) {
-        boolean exists = reservationTimeDao.existByStartAt(startAt);
-        if (exists) {
-            throw new IllegalArgumentException("이미 존재하는 예약 시간입니다.");
-        }
-    }
-
     public List<ReservationTimeWithBookStatusResponse> findReservationTimesWithBookStatus(
             ReservationTimeWithBookStatusRequest timeRequest) {
         List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
@@ -75,5 +68,12 @@ public class ReservationTimeService {
 
         return reservations.stream()
                 .anyMatch(reservation -> reservation.contains(date, reservationTime, themeId));
+    }
+
+    private void validateTimeExistence(LocalTime startAt) {
+        boolean exists = reservationTimeDao.existByStartAt(startAt);
+        if (exists) {
+            throw new IllegalArgumentException("이미 예약된 시간입니다.");
+        }
     }
 }
