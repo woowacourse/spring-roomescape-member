@@ -3,10 +3,13 @@ package roomescape.controller;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import roomescape.dto.ThemeResponse;
 import roomescape.dto.ThemeSaveRequest;
 import roomescape.exception.NotFoundException;
+import roomescape.service.ThemeService;
 
 import java.util.List;
 
@@ -18,7 +21,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static roomescape.TestFixture.*;
 
+@WebMvcTest(ThemeController.class)
 class ThemeControllerTest extends ControllerTest {
+    @MockBean
+    protected ThemeService themeService;
 
     @Test
     @DisplayName("테마 생성 POST 요청 시 상태코드 201을 반환한다.")
@@ -32,8 +38,8 @@ class ThemeControllerTest extends ControllerTest {
 
         // when & then
         mockMvc.perform(post("/themes")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsBytes(request)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(request)))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value(WOOTECO_THEME_NAME))
@@ -53,7 +59,7 @@ class ThemeControllerTest extends ControllerTest {
 
         // when & then
         mockMvc.perform(get("/themes")
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].name").value(WOOTECO_THEME_NAME))

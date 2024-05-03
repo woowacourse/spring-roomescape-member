@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.BDDMockito;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -14,6 +16,9 @@ import roomescape.dto.ReservationSaveRequest;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.ThemeResponse;
 import roomescape.exception.NotFoundException;
+import roomescape.service.ReservationService;
+import roomescape.service.ReservationTimeService;
+import roomescape.service.ThemeService;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -26,7 +31,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static roomescape.TestFixture.*;
 
+@WebMvcTest(ReservationController.class)
 class ReservationControllerTest extends ControllerTest {
+    @MockBean
+    private ReservationService reservationService;
+
+    @MockBean
+    protected ReservationTimeService reservationTimeService;
+
+    @MockBean
+    protected ThemeService themeService;
 
     @Test
     @DisplayName("예약 목록 GET 요청 시 상태코드 200을 반환한다.")
