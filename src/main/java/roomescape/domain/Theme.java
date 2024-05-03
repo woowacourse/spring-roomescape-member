@@ -3,16 +3,33 @@ package roomescape.domain;
 import java.util.Objects;
 
 public class Theme {
+    private static final int MAX_DESCRIPTION_LENGTH = 200;
+    private static final int MAX_THUMBNAIL_URL_LENGTH = 200;
+
     private final Long id;
     private final ThemeName name;
     private final String description;
     private final String thumbnailUrl;
 
     public Theme(Long id, ThemeName name, String description, String thumbnailUrl) {
+        validateDescription(description);
+        validateThumbnailUrl(thumbnailUrl);
         this.id = id;
         this.name = name;
         this.description = description;
         this.thumbnailUrl = thumbnailUrl;
+    }
+
+    private void validateDescription(String description) {
+        if (description != null && description.length() > MAX_DESCRIPTION_LENGTH) {
+            throw new IllegalArgumentException(String.format("테마 설명은 %d자 이하여야 합니다.", MAX_DESCRIPTION_LENGTH));
+        }
+    }
+
+    private void validateThumbnailUrl(String thumbnailUrl) {
+        if (thumbnailUrl != null && thumbnailUrl.length() > MAX_THUMBNAIL_URL_LENGTH) {
+            throw new IllegalArgumentException(String.format("테마 썸네일 URL은 %d자 이하여야 합니다.", MAX_THUMBNAIL_URL_LENGTH));
+        }
     }
 
     public Theme(ThemeName name, String description, String thumbnail) {
