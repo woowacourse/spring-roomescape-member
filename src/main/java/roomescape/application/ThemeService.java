@@ -42,7 +42,7 @@ public class ThemeService {
     public List<ThemeResponse> findPopularThemes() {
         LocalDate today = LocalDate.now(clock);
         return themeRepository.findPopularThemesDateBetween(
-                        today.minusDays(8),
+                        today.minusDays(7),
                         today.minusDays(1),
                         10)
                 .stream()
