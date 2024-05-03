@@ -8,12 +8,17 @@ public class ReservationTime {
     private LocalTime startAt;
 
     public ReservationTime(Long id, LocalTime startAt) {
+        validate(startAt);
         this.id = id;
         this.startAt = startAt;
     }
 
     public ReservationTime(LocalTime startAt) {
         this(null, startAt);
+    }
+
+    public void validate(LocalTime startAt) {
+        Objects.requireNonNull(startAt, "시작 시간은 null을 허용하지 않습니다.");
     }
 
     public Long getId() {

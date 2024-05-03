@@ -1,6 +1,7 @@
 package roomescape.reservation.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
@@ -22,5 +23,16 @@ class ReservationTimeTest {
 
         //then
         assertThat(reservationTime1).isEqualTo(reservationTime2);
+    }
+
+    @DisplayName("시간 필드에 null을 허용하지 않는다.")
+    @Test
+    void invalidLocalTime() {
+        //given
+        long id1 = 1;
+
+        //when & then
+        assertThatThrownBy(() -> new ReservationTime(id1, null))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }

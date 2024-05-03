@@ -1,9 +1,13 @@
 package roomescape.reservation.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 @DisplayName("테마 도메인 테스트")
 class ThemeTest {
@@ -26,5 +30,26 @@ class ThemeTest {
 
         //then
         assertThat(theme1).isEqualTo(theme2);
+    }
+
+    @DisplayName("문자열 필드에 빈칸을 허용하지 않는다.")
+    @ParameterizedTest
+    @ValueSource(strings = {"", "    "})
+    void invalidStings(String value) {
+        //given
+        long id = 1;
+        String name = "name1";
+        String description = "description1";
+        String thumbnail = "thumbnail1";
+
+        //when & then
+        assertAll(
+                () -> assertThatThrownBy(() -> new Theme(id, value, description, thumbnail))
+                        .isInstanceOf(IllegalArgumentException.class),
+                () -> assertThatThrownBy(() -> new Theme(id, name, value, thumbnail))
+                        .isInstanceOf(IllegalArgumentException.class),
+                () -> assertThatThrownBy(() -> new Theme(id, name, description, value))
+                        .isInstanceOf(IllegalArgumentException.class)
+        );
     }
 }

@@ -8,15 +8,28 @@ public class Theme {
     private String description;
     private String thumbnail;
 
-    public Theme(final Long id, final String name, final String description, final String thumbnail) {
+    public Theme(Long id, String name, String description, String thumbnail) {
+        validate(name, description, thumbnail);
         this.id = id;
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
     }
 
-    public Theme(final String name, final String description, final String thumbnail) {
+    public Theme(String name, String description, String thumbnail) {
         this(null, name, description, thumbnail);
+    }
+
+    private void validate(String name, String description, String thumbnail) {
+        validateString(name);
+        validateString(description);
+        validateString(thumbnail);
+    }
+
+    private void validateString(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            throw new IllegalArgumentException("필드는 null이거나 빈 값이 될 수 없습니다.");
+        }
     }
 
     public Long getId() {
