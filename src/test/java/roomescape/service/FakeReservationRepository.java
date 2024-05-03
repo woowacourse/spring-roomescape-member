@@ -22,18 +22,18 @@ class FakeReservationRepository implements ReservationRepository {
                     new Theme(2, "배키", "스릴러", "스릴러.jpg"))));
 
     @Override
-    public List<Reservation> getAllReservations() {
+    public List<Reservation> findAllReservations() {
         return reservations;
     }
 
     @Override
-    public Reservation addReservation(Reservation reservation) {
+    public Reservation saveReservation(Reservation reservation) {
         reservations.add(reservation);
         return reservation;
     }
 
     @Override
-    public void deleteReservation(long id) {
+    public void deleteReservationById(long id) {
         Reservation foundReservation = reservations.stream()
                 .filter(reservation -> reservation.getId() == id)
                 .findFirst()
@@ -64,7 +64,7 @@ class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<ReservationTime> findReservationTimeByDateAndTheme(LocalDate date, long themeId) {
+    public List<ReservationTime> findReservationTimeByDateAndThemeId(LocalDate date, long themeId) {
         return reservations.stream()
                 .filter(reservation -> reservation.getDate().equals(date) && reservation.getTheme().getThemeId() == themeId)
                 .map(reservation -> new ReservationTime(reservation.getTime().getId(), reservation.getTime().getStartAt()))

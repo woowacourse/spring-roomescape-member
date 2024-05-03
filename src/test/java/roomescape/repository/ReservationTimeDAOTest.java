@@ -62,7 +62,7 @@ class ReservationTimeDAOTest {
     @DisplayName("예약 시간을 추가한다")
     @Test
     void should_add_reservation_time() {
-        reservationTimeRepository.addReservationTime(new ReservationTime(LocalTime.of(12, 0)));
+        reservationTimeRepository.saveReservationTime(new ReservationTime(LocalTime.of(12, 0)));
         Integer count = jdbcTemplate.queryForObject("select count(1) from reservation_time", Integer.class);
         assertThat(count).isEqualTo(3);
     }
@@ -70,7 +70,7 @@ class ReservationTimeDAOTest {
     @DisplayName("예약 시간을 삭제한다")
     @Test
     void should_delete_reservation_time() {
-        reservationTimeRepository.deleteReservationTime(1);
+        reservationTimeRepository.deleteReservationTimeById(1);
         Integer count = jdbcTemplate.queryForObject("select count(1) from reservation_time", Integer.class);
         assertThat(count).isEqualTo(1);
     }

@@ -37,7 +37,7 @@ public class ThemeDAO implements ThemeRepository {
     }
 
     @Override
-    public Theme addTheme(Theme theme) {
+    public Theme saveTheme(Theme theme) {
         Map<String, Object> parameters = new HashMap<>(1);
         parameters.put("name", theme.getName());
         parameters.put("description", theme.getDescription());
@@ -47,7 +47,7 @@ public class ThemeDAO implements ThemeRepository {
     }
 
     @Override
-    public void deleteTheme(long id) {
+    public void deleteThemeById(long id) {
         String sql = "delete from theme where id = ?";
         jdbcTemplate.update(sql, id);
     }

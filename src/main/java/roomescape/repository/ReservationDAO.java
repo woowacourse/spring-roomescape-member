@@ -28,7 +28,7 @@ public class ReservationDAO implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> getAllReservations() {
+    public List<Reservation> findAllReservations() {
         String sql = """
                 select
                     r.id as reservation_id,
@@ -63,7 +63,7 @@ public class ReservationDAO implements ReservationRepository {
     }
 
     @Override
-    public Reservation addReservation(Reservation reservation) {
+    public Reservation saveReservation(Reservation reservation) {
         Map<String, Object> parameters = new HashMap<>(3);
         parameters.put("name", reservation.getName());
         parameters.put("date", reservation.getDate());
@@ -74,7 +74,7 @@ public class ReservationDAO implements ReservationRepository {
     }
 
     @Override
-    public void deleteReservation(long id) {
+    public void deleteReservationById(long id) {
         String sql = "delete from reservation where id = ?";
         jdbcTemplate.update(sql, id);
     }
@@ -98,7 +98,7 @@ public class ReservationDAO implements ReservationRepository {
     }
 
     @Override
-    public List<ReservationTime> findReservationTimeByDateAndTheme(LocalDate date, long themeId) {
+    public List<ReservationTime> findReservationTimeByDateAndThemeId(LocalDate date, long themeId) {
         String sql = """
                 select t.id as time_id, t.start_at as start_at
                 from reservation as r inner join reservation_time as t on r.time_id = t.id

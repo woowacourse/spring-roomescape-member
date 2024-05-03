@@ -34,7 +34,7 @@ public class ReservationTimeService {
             throw new DuplicatedException("[ERROR] 중복되는 시간은 추가할 수 없습니다.");
         }
         ReservationTime reservationTime = new ReservationTime(reservationTimeDto.getStartAt());
-        return reservationTimeRepository.addReservationTime(reservationTime);
+        return reservationTimeRepository.saveReservationTime(reservationTime);
     }
 
     public ReservationTime findReservationTime(long id) {
@@ -50,6 +50,6 @@ public class ReservationTimeService {
         if (countOfReservationUsingTime == null || countOfReservationUsingTime > 0) {
             throw new BadRequestException("[ERROR] 해당 시간을 사용하고 있는 예약이 있습니다.");
         }
-        reservationTimeRepository.deleteReservationTime(id);
+        reservationTimeRepository.deleteReservationTimeById(id);
     }
 }

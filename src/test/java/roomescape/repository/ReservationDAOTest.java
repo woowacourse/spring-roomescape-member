@@ -91,14 +91,14 @@ class ReservationDAOTest {
     @DisplayName("모든 예약을 조회한다")
     @Test
     void should_get_reservation() {
-        List<Reservation> reservations = reservationRepository.getAllReservations();
+        List<Reservation> reservations = reservationRepository.findAllReservations();
         assertThat(reservations).hasSize(2);
     }
 
     @DisplayName("조회한 예약에 예약 시간이 존재한다.")
     @Test
     void should_get_reservation_times() {
-        List<Reservation> reservations = reservationRepository.getAllReservations();
+        List<Reservation> reservations = reservationRepository.findAllReservations();
         assertThat(reservations.get(0).getTime().getStartAt()).isEqualTo(LocalTime.of(10, 0));
     }
 
@@ -109,7 +109,7 @@ class ReservationDAOTest {
         Theme theme = new Theme(1, "에버", "공포", "공포.jpg");
         Reservation reservation = new Reservation("네오", LocalDate.of(2024, 9, 1), reservationTime, theme);
 
-        reservationRepository.addReservation(reservation);
+        reservationRepository.saveReservation(reservation);
 
         Integer count = jdbcTemplate.queryForObject("select count(1) from reservation", Integer.class);
         assertThat(count).isEqualTo(3);
@@ -118,7 +118,7 @@ class ReservationDAOTest {
     @DisplayName("예약을 삭제한다")
     @Test
     void should_delete_reservation() {
-        reservationRepository.deleteReservation(1);
+        reservationRepository.deleteReservationById(1);
         Integer count = jdbcTemplate.queryForObject("select count(1) from reservation", Integer.class);
         assertThat(count).isEqualTo(1);
     }
@@ -141,7 +141,7 @@ class ReservationDAOTest {
     @Test
     void should_get_reservation_times_when_date_and_theme_given() {
         LocalDate date = LocalDate.of(2023, 8, 5);
-        List<ReservationTime> times = reservationRepository.findReservationTimeByDateAndTheme(date, 1);
+        List<ReservationTime> times = reservationRepository.findReservationTimeByDateAndThemeId(date, 1);
         assertThat(times).hasSize(1);
         assertThat(times).containsExactly(new ReservationTime(1, LocalTime.of(10, 0)));
     }

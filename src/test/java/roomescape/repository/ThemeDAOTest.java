@@ -73,14 +73,14 @@ class ThemeDAOTest {
     @Test
     void should_add_theme() {
         Theme theme = new Theme("브라운", "공포", "공포.jpg");
-        themeRepository.addTheme(theme);
+        themeRepository.saveTheme(theme);
         assertThat(themeRepository.findAllThemes()).hasSize(3);
     }
 
     @DisplayName("테마를 삭제한다.")
     @Test
     void should_delete_theme() {
-        themeRepository.deleteTheme(1);
+        themeRepository.deleteThemeById(1);
         assertThat(themeRepository.findAllThemes()).hasSize(1);
     }
 

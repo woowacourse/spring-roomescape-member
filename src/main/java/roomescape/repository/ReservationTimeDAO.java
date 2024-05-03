@@ -46,7 +46,7 @@ public class ReservationTimeDAO implements ReservationTimeRepository {
     }
 
     @Override
-    public ReservationTime addReservationTime(ReservationTime reservationTime) {
+    public ReservationTime saveReservationTime(ReservationTime reservationTime) {
         Map<String, Object> parameters = new HashMap<>(1);
         parameters.put("start_at", reservationTime.getStartAt());
         Number newId = insertActor.executeAndReturnKey(parameters);
@@ -54,7 +54,7 @@ public class ReservationTimeDAO implements ReservationTimeRepository {
     }
 
     @Override
-    public void deleteReservationTime(long id) {
+    public void deleteReservationTimeById(long id) {
         String sql = "delete from reservation_time where id = ?";
         jdbcTemplate.update(sql, id);
     }

@@ -35,7 +35,7 @@ public class ReservationService {
     }
 
     public List<Reservation> findAllReservations() {
-        return reservationRepository.getAllReservations();
+        return reservationRepository.findAllReservations();
     }
 
     public Reservation addReservation(ReservationDto reservationDto) {
@@ -54,7 +54,7 @@ public class ReservationService {
             throw new DuplicatedException("[ERROR] 중복되는 예약은 추가할 수 없습니다.");
         }
         Reservation reservation = new Reservation(reservationDto.getName(), reservationDto.getDate(), reservationTime, theme);
-        return reservationRepository.addReservation(reservation);
+        return reservationRepository.saveReservation(reservation);
     }
 
     public void deleteReservation(long id) {
@@ -62,12 +62,12 @@ public class ReservationService {
         if (count == null || count <= 0) {
             throw new NotFoundException("[ERROR] 존재하지 않는 예약입니다.");
         }
-        reservationRepository.deleteReservation(id);
+        reservationRepository.deleteReservationById(id);
     }
 
     public List<MemberReservationTimeResponse> getMemberReservationTimes(LocalDate date, long themeId) {
         List<ReservationTime> allTimes = reservationTimeRepository.findAllReservationTimes();
-        List<ReservationTime> bookedTimes = reservationRepository.findReservationTimeByDateAndTheme(date, themeId);
+        List<ReservationTime> bookedTimes = reservationRepository.findReservationTimeByDateAndThemeId(date, themeId);
         List<ReservationTime> notBookedTimes = filterNotBookedTimes(allTimes, bookedTimes);
         List<MemberReservationTimeResponse> bookedResponse = mapToResponse(bookedTimes, true);
         List<MemberReservationTimeResponse> notBookedResponse = mapToResponse(notBookedTimes, false);

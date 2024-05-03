@@ -7,11 +7,12 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface ReservationRepository {
-    List<Reservation> getAllReservations();
 
-    Reservation addReservation(Reservation reservation);
+    List<Reservation> findAllReservations();
 
-    void deleteReservation(long id);
+    Reservation saveReservation(Reservation reservation);
+
+    void deleteReservationById(long id);
 
     Long countReservationById(long id);
 
@@ -19,5 +20,5 @@ public interface ReservationRepository {
 
     Long countReservationByDateAndTimeId(LocalDate date, long timeId);
 
-    List<ReservationTime> findReservationTimeByDateAndTheme(LocalDate date, long themeId);
+    List<ReservationTime> findReservationTimeByDateAndThemeId(LocalDate date, long themeId);
 }

@@ -23,11 +23,11 @@ public class ThemeService {
 
     public Theme addTheme(ThemeDto themeDto) {
         Theme theme = Theme.from(themeDto);
-        return themeRepository.addTheme(theme);
+        return themeRepository.saveTheme(theme);
     }
 
     public void deleteTheme(long id) {
-        themeRepository.deleteTheme(id);
+        themeRepository.deleteThemeById(id);
     }
 
     public List<Theme> findPopularThemes() {

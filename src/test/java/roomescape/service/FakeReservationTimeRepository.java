@@ -33,13 +33,13 @@ class FakeReservationTimeRepository implements ReservationTimeRepository {
     }
 
     @Override
-    public ReservationTime addReservationTime(ReservationTime reservationTime) {
+    public ReservationTime saveReservationTime(ReservationTime reservationTime) {
         reservationTimes.add(reservationTime);
         return new ReservationTime(3, reservationTime.getStartAt());
     }
 
     @Override
-    public void deleteReservationTime(long id) {
+    public void deleteReservationTimeById(long id) {
         ReservationTime findReservationTime = reservationTimes.stream()
                 .filter(reservationTime -> reservationTime.getId() == id)
                 .findFirst()

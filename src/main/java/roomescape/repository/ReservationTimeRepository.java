@@ -6,13 +6,14 @@ import java.time.LocalTime;
 import java.util.List;
 
 public interface ReservationTimeRepository {
+
     List<ReservationTime> findAllReservationTimes();
 
     ReservationTime findReservationById(long id);
 
-    ReservationTime addReservationTime(ReservationTime reservationTime);
+    ReservationTime saveReservationTime(ReservationTime reservationTime);
 
-    void deleteReservationTime(long id);
+    void deleteReservationTimeById(long id);
 
     Long countReservationTimeById(long id);
 

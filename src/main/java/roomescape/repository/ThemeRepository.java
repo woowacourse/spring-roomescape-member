@@ -9,9 +9,9 @@ public interface ThemeRepository {
 
     List<Theme> findAllThemes();
 
-    Theme addTheme(Theme theme);
+    Theme saveTheme(Theme theme);
 
-    void deleteTheme(long id);
+    void deleteThemeById(long id);
 
     Theme findThemeById(long id);
 

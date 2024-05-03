@@ -25,14 +25,14 @@ public class FakeThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public Theme addTheme(Theme theme) {
+    public Theme saveTheme(Theme theme) {
         Theme newTheme = new Theme(index.getAndIncrement(), theme.getName(), theme.getDescription(), theme.getThumbnail());
         themes.add(newTheme);
         return newTheme;
     }
 
     @Override
-    public void deleteTheme(long id) {
+    public void deleteThemeById(long id) {
         Theme targetTheme = themes.stream()
                 .filter(theme -> theme.getThemeId() == id)
                 .findFirst()
