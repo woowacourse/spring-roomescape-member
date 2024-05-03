@@ -8,7 +8,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
@@ -20,7 +19,7 @@ import roomescape.fixture.ThemeFixture;
 import roomescape.service.dto.input.ReservationInput;
 import roomescape.service.util.DateTimeFormatter;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class ReservationServiceTest {
 
     @Autowired
@@ -81,7 +80,7 @@ public class ReservationServiceTest {
         Long timeId = reservationTimeDao.create(ReservationTime.from(null, "10:00")).getId();
         Long themeId = themeDao.create(ThemeFixture.getDomain()).getId();
         assertThatThrownBy(
-                () -> reservationService.createReservation(new ReservationInput("제리", "1300-03-10", timeId, themeId)))
+                () -> reservationService.createReservation(new ReservationInput("제리", "1900-03-10", timeId, themeId)))
                 .isInstanceOf(PastTimeReservationException.class);
     }
 }
