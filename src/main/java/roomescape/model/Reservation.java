@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 public class Reservation {
 
     private final Long id;
-    private final Name name;
+    private final ReservationName name;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
@@ -18,7 +18,7 @@ public class Reservation {
     public Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time, final Theme theme) {
         validateDate(date);
         this.id = id;
-        this.name = new Name(name);
+        this.name = new ReservationName(name);
         this.date = date;
         this.time = time;
         this.theme = theme;
