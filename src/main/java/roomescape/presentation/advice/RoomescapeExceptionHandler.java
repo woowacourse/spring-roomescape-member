@@ -26,10 +26,4 @@ public class RoomescapeExceptionHandler {
         logger.error(exception.getBody().getDetail(), exception);
         return exception.getBody();
     }
-
-    @ExceptionHandler(IllegalStateException.class)
-    public ProblemDetail handleIllegalStateException(IllegalStateException exception) {
-        logger.error(exception.getMessage(), exception);
-        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
-    }
 }
