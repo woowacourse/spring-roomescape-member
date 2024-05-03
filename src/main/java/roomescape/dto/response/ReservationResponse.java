@@ -9,7 +9,6 @@ public record ReservationResponse(
         String date,
         ReservationTimeResponse time,
         RoomThemeResponse theme) {
-
     public static ReservationResponse fromReservation(Reservation reservation) {
         return new ReservationResponse(
                 reservation.getId(),

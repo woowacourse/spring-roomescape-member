@@ -46,17 +46,7 @@ public class ReservationTimeService {
 
     public List<ReservationTimeWithBookStatusResponse> findReservationTimesWithBookStatus(
             ReservationTimeWithBookStatusRequest timeRequest) {
-        List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
-        List<Reservation> reservations = reservationDao.findAll();
-
-        return reservationTimes.stream()
-                .map(reservationTime -> {
-                    boolean isBooked = isReservationTimeBooked(reservations, timeRequest,
-                            reservationTime);
-                    return ReservationTimeWithBookStatusResponse.fromReservationTime(
-                            reservationTime, isBooked);
-                })
-                .toList();
+        return reservationTimeDao.findAllWithBookStatus(timeRequest.date(), timeRequest.themeId());
     }
 
     private boolean isReservationTimeBooked(

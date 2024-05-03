@@ -58,7 +58,7 @@ public class ReservationDao {
 
     public boolean existsByDateTime(LocalDate date, Long timeId) {
         return jdbcTemplate.queryForObject(
-                "SELECT EXISTS(SELECT * FROM reservation WHERE date = ? AND time_id = ?)",
+                "SELECT EXISTS(SELECT 1 FROM reservation WHERE date = ? AND time_id = ?)",
                 Boolean.class, date, timeId);
     }
 

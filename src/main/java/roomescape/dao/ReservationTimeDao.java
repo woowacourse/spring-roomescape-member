@@ -1,5 +1,6 @@
 package roomescape.dao;
 
+import java.sql.Date;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -9,6 +10,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.response.ReservationTimeWithBookStatusResponse;
 
 @Repository
 public class ReservationTimeDao {
@@ -27,6 +29,28 @@ public class ReservationTimeDao {
 
     public List<ReservationTime> findAll() {
         return jdbcTemplate.query("SELECT * FROM reservation_time", rowMapper);
+    }
+
+    public List<ReservationTimeWithBookStatusResponse> findAllWithBookStatus(String bookedDate,
+                                                                             Long bookedThemeId) {
+        String sql = """
+                SELECT 
+                    t.id,
+                    t.start_at,
+                    EXISTS
+                    (SELECT 1 FROM reservation AS r
+                    WHERE r.time_id = t.id
+                    AND r.date = ?
+                    AND r.theme_id = ?) AS booked
+                FROM reservation_time AS t
+                """;
+        RowMapper<ReservationTimeWithBookStatusResponse> mapper = (rs, rowNum) ->
+                ReservationTimeWithBookStatusResponse.fromReservationTime(
+                        new ReservationTime(rs.getLong("id"),
+                                rs.getTime("start_at").toLocalTime()),
+                        rs.getBoolean("booked"));
+
+        return jdbcTemplate.query(sql, mapper, Date.valueOf(bookedDate), bookedThemeId);
     }
 
     public ReservationTime findById(Long id) {
