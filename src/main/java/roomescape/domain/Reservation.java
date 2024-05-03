@@ -75,25 +75,21 @@ public class Reservation {
         return theme;
     }
 
-
-    //TODO id로만 비교
     @Override
-    public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        final Reservation that = (Reservation) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(date, that.date) && Objects.equals(time, that.time) && Objects.equals(theme, that.theme);
+    public boolean equals(final Object target) {
+        if (this == target) {
+            return true;
+        }
+        if (target == null || getClass() != target.getClass()) {
+            return false;
+        }
+        final Reservation that = (Reservation) target;
+        return Objects.equals(getId(), that.getId());
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hashCode(id);
-        result = 31 * result + Objects.hashCode(name);
-        result = 31 * result + Objects.hashCode(date);
-        result = 31 * result + Objects.hashCode(time);
-        result = 31 * result + Objects.hashCode(theme);
-        return result;
+        return Objects.hash(getId());
     }
 
     @Override
