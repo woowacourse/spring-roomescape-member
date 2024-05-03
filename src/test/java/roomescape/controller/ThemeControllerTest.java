@@ -122,7 +122,7 @@ class ThemeControllerTest {
         System.out.println(l);
 
         List<Theme> popularThemes = RestAssured.given().log().all()
-                .when().get("/themes/rank")
+                .when().get("/themes/top10")
                 .then().log().all()
                 .statusCode(200)
                 .extract()

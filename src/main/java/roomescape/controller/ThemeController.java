@@ -42,7 +42,7 @@ public class ThemeController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/themes/rank")
+    @GetMapping("/themes/top10")
     public ResponseEntity<List<Theme>> getPopularThemes() {
         return ResponseEntity.ok(themeService.findPopularThemes());
     }
