@@ -2,7 +2,6 @@ package roomescape.time.domain;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.exception.NullPointTimeException;
 
 import java.time.format.DateTimeParseException;
 
@@ -16,7 +15,7 @@ class ReservationTimeTest {
     void validateTimeExist() {
         assertAll(
                 () -> assertThatThrownBy(() -> new ReservationTime(1L, null))
-                        .isInstanceOf(NullPointTimeException.class),
+                        .isInstanceOf(NullPointerException.class),
                 () -> assertThatThrownBy(() -> new ReservationTime(1L, "25:00"))
                         .isInstanceOf(DateTimeParseException.class),
                 () -> assertThatThrownBy(() -> new ReservationTime(1L, "15:68"))

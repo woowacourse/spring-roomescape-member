@@ -1,7 +1,6 @@
 package roomescape.reservation.domain;
 
 import roomescape.exception.InvalidNameException;
-import roomescape.exception.NullPointDateException;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
@@ -36,7 +35,7 @@ public class Reservation {
 
     private void validateDateIsNotNull(final String date) {
         if (Objects.isNull(date)) {
-            throw new NullPointDateException("날짜가 null인 경우 저장을 할 수 없습니다.");
+            throw new NullPointerException("날짜가 null인 경우 저장을 할 수 없습니다.");
         }
     }
 

@@ -30,26 +30,26 @@ public class ReservationAcceptanceTest {
     @Test
     void findAll() {
         RestAssured.given()
-                .log()
-                .all()
-                .when()
-                .get("/reservations")
-                .then()
-                .log()
-                .all()
-                .statusCode(200)
-                .body("size()", is(0));
+                   .log()
+                   .all()
+                   .when()
+                   .get("/reservations")
+                   .then()
+                   .log()
+                   .all()
+                   .statusCode(200)
+                   .body("size()", is(0));
         save();
         RestAssured.given()
-                .log()
-                .all()
-                .when()
-                .get("/reservations")
-                .then()
-                .log()
-                .all()
-                .statusCode(200)
-                .body("size()", is(1));
+                   .log()
+                   .all()
+                   .when()
+                   .get("/reservations")
+                   .then()
+                   .log()
+                   .all()
+                   .statusCode(200)
+                   .body("size()", is(1));
     }
 
     @Test
@@ -58,16 +58,16 @@ public class ReservationAcceptanceTest {
         params.put("startAt", "10:00");
 
         RestAssured.given()
-                .log()
-                .all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when()
-                .post("/times")
-                .then()
-                .log()
-                .all()
-                .statusCode(201);
+                   .log()
+                   .all()
+                   .contentType(ContentType.JSON)
+                   .body(params)
+                   .when()
+                   .post("/times")
+                   .then()
+                   .log()
+                   .all()
+                   .statusCode(201);
 
         Map<String, String> theme = new HashMap<>();
         theme.put("name", "정글모험");
@@ -75,86 +75,82 @@ public class ReservationAcceptanceTest {
         theme.put("thumbnail", "정글모험 이미지");
 
         RestAssured.given()
-                .log()
-                .all()
-                .contentType(ContentType.JSON)
-                .body(theme)
-                .when()
-                .post("/themes")
-                .then()
-                .log()
-                .all()
-                .statusCode(201);
+                   .log()
+                   .all()
+                   .contentType(ContentType.JSON)
+                   .body(theme)
+                   .when()
+                   .post("/themes")
+                   .then()
+                   .log()
+                   .all()
+                   .statusCode(201);
 
 
         ReservationRequestDto reservationRequestDto = new ReservationRequestDto("hi", LocalDate.MAX.toString(), 1, 1);
 
         RestAssured.given()
-                .log()
-                .all()
-                .contentType(ContentType.JSON)
-                .body(reservationRequestDto)
-                .when()
-                .post("/reservations")
-                .then()
-                .log()
-                .all()
-                .statusCode(201);
+                   .log()
+                   .all()
+                   .contentType(ContentType.JSON)
+                   .body(reservationRequestDto)
+                   .when()
+                   .post("/reservations")
+                   .then()
+                   .log()
+                   .all()
+                   .statusCode(201);
 
         RestAssured.given()
-                .log()
-                .all()
-                .when()
-                .get("/reservations")
-                .then()
-                .log()
-                .all()
-                .statusCode(200)
-                .body("size()", is(1));
+                   .log()
+                   .all()
+                   .when()
+                   .get("/reservations")
+                   .then()
+                   .log()
+                   .all()
+                   .statusCode(200)
+                   .body("size()", is(1));
     }
 
     @Test
     void duplicateSave() {
         save();
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("reservation_name", "브라운");
-        reservation.put("date", LocalDate.MAX.toString());
-        reservation.put("timeId", 1);
-
+        ReservationRequestDto reservationRequestDto = new ReservationRequestDto("브라운", LocalDate.MAX.toString(), 1, 1);
         RestAssured.given()
-                .log()
-                .all()
-                .contentType(ContentType.JSON)
-                .body(reservation)
-                .when()
-                .post("/reservations")
-                .then()
-                .log()
-                .all()
-                .statusCode(500);
+                   .log()
+                   .all()
+                   .contentType(ContentType.JSON)
+                   .body(reservationRequestDto)
+                   .when()
+                   .post("/reservations")
+                   .then()
+                   .log()
+                   .all()
+                   .statusCode(409);
     }
 
     @Test
     void delete() {
         save();
         RestAssured.given()
-                .log()
-                .all()
-                .when()
-                .delete("/reservations/1")
-                .then()
-                .log()
-                .all()
-                .statusCode(204);
+                   .log()
+                   .all()
+                   .when()
+                   .delete("/reservations/1")
+                   .then()
+                   .log()
+                   .all()
+                   .statusCode(204);
 
         RestAssured.given()
-                .log()
-                .all()
-                .when()
-                .delete("/reservations/1")
-                .then()
-                .log()
-                .all()
-                .statusCode(404);
+                   .log()
+                   .all()
+                   .when()
+                   .delete("/reservations/1")
+                   .then()
+                   .log()
+                   .all()
+                   .statusCode(404);
     }
 }

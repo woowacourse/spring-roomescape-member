@@ -18,17 +18,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleInvalidName(InvalidNameException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
-
-    @ExceptionHandler(value = NullPointDateException.class)
-    public ResponseEntity<String> handleNullPointDate(NullPointDateException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(value = NullPointTimeException.class)
-    public ResponseEntity<String> handleNullPointTime(NullPointTimeException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-    }
-
     @ExceptionHandler(value = PastDateReservationException.class)
     public ResponseEntity<String> handlePastDateReservation(PastDateReservationException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
