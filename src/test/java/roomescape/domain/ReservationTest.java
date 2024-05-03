@@ -28,9 +28,9 @@ class ReservationTest {
 
     }
 
-    @DisplayName("빈 이름으로 생성하면 예외가 발생한다.")
+    @DisplayName("예약자명이 1글자 이상 10글자 이하가 아니면 예외가 발생한다.")
     @ParameterizedTest
-    @ValueSource(strings = {"", " "})
+    @ValueSource(strings = {"", " ", "01234567890"})
     void create_WithBlankName(String name) {
         assertThatThrownBy(
             () -> new Reservation(name, new ReservationDate("2040-04-01"),

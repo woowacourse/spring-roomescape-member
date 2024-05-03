@@ -4,6 +4,7 @@ import java.util.Objects;
 
 public class Reservation {
 
+    private static final int MAX_NAME_SIZE = 10;
     private final Long id;
     private final String name;
     private final ReservationDate date;
@@ -24,8 +25,8 @@ public class Reservation {
     }
 
     private void validateName(String name) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("예약자 이름은 비어 있을 수 없습니다.");
+        if (name == null || name.isBlank() || name.length() > MAX_NAME_SIZE) {
+            throw new IllegalArgumentException("예약자 이름은 1글자 이상 10글자 이하만 입력해주세요.");
         }
     }
 
