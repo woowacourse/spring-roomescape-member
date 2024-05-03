@@ -42,6 +42,21 @@ public class ReservationService {
         return CreateReservationResponse.of(reservationRepository.save(reservation));
     }
 
+    private Reservation findReservation(final Long id) {
+        return reservationRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("해당하는 예약이 존재하지 않습니다."));
+    }
+
+    private ReservationTime findReservationTime(final Long id) {
+        return reservationTimeRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("해당하는 예약 시간이 존재하지 않습니다."));
+    }
+
+    private Theme findTheme(final Long id) {
+        return themeRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("해당하는 테마가 존재하지 않습니다."));
+    }
+
     private void validateReservationIsPast(final Reservation reservation) {
         if (reservation.isBeforeDateTimeThanNow(LocalDateTime.now())) {
             throw new IllegalArgumentException("지나간 날짜와 시간에 대한 예약 생성은 불가능합니다.");
@@ -84,22 +99,13 @@ public class ReservationService {
     }
 
     public void deleteReservation(final Long id) {
-        findReservation(id);
+        validateExistReservation(id);
         reservationRepository.deleteById(id);
     }
 
-    private Reservation findReservation(final Long id) {
-        return reservationRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("해당하는 예약이 존재하지 않습니다."));
-    }
-
-    private ReservationTime findReservationTime(final Long id) {
-        return reservationTimeRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("해당하는 예약 시간이 존재하지 않습니다."));
-    }
-
-    private Theme findTheme(final Long id) {
-        return themeRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("해당하는 테마가 존재하지 않습니다."));
+    private void validateExistReservation(final Long id) {
+        if (reservationRepository.existsById(id)) {
+            throw new NoSuchElementException("해당하는 예약이 존재하지 않습니다.");
+        }
     }
 }

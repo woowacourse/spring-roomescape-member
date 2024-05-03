@@ -14,11 +14,13 @@ public interface ReservationRepository {
 
     List<Reservation> findAllByTimeId(Long timeId);
 
+    List<Reservation> findAllByThemeId(Long themeId);
+
     List<Reservation> findAllByDateAndThemeId(LocalDate date, Long themeId);
 
     boolean existsByDateAndTimeAndTheme(LocalDate date, Long timeId, Long themeId);
 
-    void deleteById(Long id);
+    boolean existsById(Long id);
 
-    List<Reservation> findAllByThemeId(Long themeId);
+    void deleteById(Long id);
 }

@@ -184,12 +184,12 @@ class ReservationServiceTest extends DummyDataFixture {
         // when & then
         assertThat(reservationService.getAvailableTimes(date, 1L))
                 .isEqualTo(List.of(
-                        FindAvailableTimesResponse.of(1L, getReservationTimeById(1L).getTime(), true),
-                        FindAvailableTimesResponse.of(2L, getReservationTimeById(2L).getTime(), true),
-                        FindAvailableTimesResponse.of(3L, getReservationTimeById(3L).getTime(), false),
-                        FindAvailableTimesResponse.of(4L, getReservationTimeById(4L).getTime(), false),
-                        FindAvailableTimesResponse.of(5L, getReservationTimeById(5L).getTime(), false),
-                        FindAvailableTimesResponse.of(6L, getReservationTimeById(6L).getTime(), false)));
+                        FindAvailableTimesResponse.of(getReservationTimeById(1L), true),
+                        FindAvailableTimesResponse.of(getReservationTimeById(2L), true),
+                        FindAvailableTimesResponse.of(getReservationTimeById(3L), false),
+                        FindAvailableTimesResponse.of(getReservationTimeById(4L), false),
+                        FindAvailableTimesResponse.of(getReservationTimeById(5L), false),
+                        FindAvailableTimesResponse.of(getReservationTimeById(6L), false)));
     }
 
 
