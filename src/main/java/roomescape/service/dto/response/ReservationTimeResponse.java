@@ -12,7 +12,6 @@ public record ReservationTimeResponse(
         @JsonFormat(pattern = "HH:mm")
         LocalTime startAt)
 {
-
     public static ReservationTimeResponse fromReservationTime(ReservationTime reservationTime) {
         return new ReservationTimeResponse(
                 reservationTime.getId(),

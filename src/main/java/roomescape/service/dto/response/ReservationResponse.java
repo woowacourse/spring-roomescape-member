@@ -15,7 +15,8 @@ public record ReservationResponse(
         @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate date,
         ReservationTimeResponse time,
-        RoomThemeResponse theme) {
+        RoomThemeResponse theme)
+{
 
     public static ReservationResponse fromReservation(Reservation reservation) {
         return new ReservationResponse(

@@ -8,11 +8,11 @@ import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.handler.BadRequestException;
+import roomescape.exception.BadRequestException;
+import roomescape.service.dto.request.ReservationAvailabilityTimeRequest;
 import roomescape.service.dto.request.ReservationTimeRequest;
-import roomescape.service.dto.request.ReservationTimeWithBookStatusRequest;
+import roomescape.service.dto.response.ReservationAvailabilityTimeResponse;
 import roomescape.service.dto.response.ReservationTimeResponse;
-import roomescape.service.dto.response.ReservationTimeWithBookStatusResponse;
 
 @Service
 public class ReservationTimeService {
@@ -52,8 +52,9 @@ public class ReservationTimeService {
         }
     }
 
-    public List<ReservationTimeWithBookStatusResponse> findReservationTimesWithBookStatus(
-            ReservationTimeWithBookStatusRequest timeRequest) {
+    public List<ReservationAvailabilityTimeResponse> findReservationAvailabilityTimes(
+            ReservationAvailabilityTimeRequest timeRequest)
+    {
         List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
         List<Reservation> reservations = reservationDao.findAll();
 
@@ -61,7 +62,7 @@ public class ReservationTimeService {
                 .map(reservationTime -> {
                     boolean isBooked = isReservationTimeBooked(reservations, timeRequest,
                             reservationTime);
-                    return ReservationTimeWithBookStatusResponse.fromReservationTime(
+                    return ReservationAvailabilityTimeResponse.fromReservationTime(
                             reservationTime, isBooked);
                 })
                 .toList();
@@ -69,12 +70,13 @@ public class ReservationTimeService {
 
     private boolean isReservationTimeBooked(
             List<Reservation> reservations,
-            ReservationTimeWithBookStatusRequest timeRequest,
-            ReservationTime reservationTime) {
+            ReservationAvailabilityTimeRequest timeRequest,
+            ReservationTime reservationTime)
+    {
         LocalDate date = timeRequest.date();
         Long themeId = timeRequest.themeId();
 
         return reservations.stream()
-                .anyMatch(reservation -> reservation.contains(date, reservationTime, themeId));
+                .anyMatch(reservation -> reservation.hasSameDateTimeAndTheme(date, reservationTime, themeId));
     }
 }

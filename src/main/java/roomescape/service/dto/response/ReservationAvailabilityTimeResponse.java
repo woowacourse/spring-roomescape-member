@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalTime;
 import roomescape.domain.ReservationTime;
 
-public record ReservationTimeWithBookStatusResponse(
+public record ReservationAvailabilityTimeResponse(
         @NotNull
         Long id,
         @NotNull
@@ -13,9 +13,8 @@ public record ReservationTimeWithBookStatusResponse(
         LocalTime startAt,
         boolean booked)
 {
-
-    public static ReservationTimeWithBookStatusResponse fromReservationTime(ReservationTime reservationTime, boolean booked) {
-        return new ReservationTimeWithBookStatusResponse(
+    public static ReservationAvailabilityTimeResponse fromReservationTime(ReservationTime reservationTime, boolean booked) {
+        return new ReservationAvailabilityTimeResponse(
                 reservationTime.getId(),
                 reservationTime.getStartAt(),
                 booked);

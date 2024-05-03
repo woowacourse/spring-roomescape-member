@@ -12,6 +12,7 @@ import roomescape.domain.RoomTheme;
 public record ReservationRequest(
         @NotBlank
         String name,
+        @NotNull
         @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate date,
         @NotNull

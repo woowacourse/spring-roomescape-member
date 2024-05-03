@@ -12,7 +12,7 @@ import roomescape.dao.RoomThemeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
-import roomescape.handler.BadRequestException;
+import roomescape.exception.BadRequestException;
 import roomescape.service.dto.request.ReservationRequest;
 import roomescape.service.dto.response.ReservationResponse;
 

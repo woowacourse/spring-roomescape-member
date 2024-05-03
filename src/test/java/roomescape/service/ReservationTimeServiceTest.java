@@ -24,11 +24,11 @@ import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
-import roomescape.handler.BadRequestException;
+import roomescape.exception.BadRequestException;
+import roomescape.service.dto.request.ReservationAvailabilityTimeRequest;
 import roomescape.service.dto.request.ReservationTimeRequest;
-import roomescape.service.dto.request.ReservationTimeWithBookStatusRequest;
+import roomescape.service.dto.response.ReservationAvailabilityTimeResponse;
 import roomescape.service.dto.response.ReservationTimeResponse;
-import roomescape.service.dto.response.ReservationTimeWithBookStatusResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReservationTimeServiceTest {
@@ -75,13 +75,13 @@ class ReservationTimeServiceTest {
         RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);
         reservationDao.save(new Reservation(new Name("brown"), DATE_FIXTURE,
                 savedReservationTime, savedRoomTheme));
-        ReservationTimeWithBookStatusRequest timeRequest = new ReservationTimeWithBookStatusRequest(
+        ReservationAvailabilityTimeRequest timeRequest = new ReservationAvailabilityTimeRequest(
                 DATE_FIXTURE, savedRoomTheme.getId());
         // when
-        List<ReservationTimeWithBookStatusResponse> timeResponses =
-                reservationTimeService.findReservationTimesWithBookStatus(timeRequest);
+        List<ReservationAvailabilityTimeResponse> timeResponses =
+                reservationTimeService.findReservationAvailabilityTimes(timeRequest);
         // then
-        ReservationTimeWithBookStatusResponse timeResponse = timeResponses.get(0);
+        ReservationAvailabilityTimeResponse timeResponse = timeResponses.get(0);
         assertAll(
                 () -> assertThat(timeResponse.id()).isEqualTo(savedReservationTime.getId()),
                 () -> assertThat(timeResponse.startAt()).isEqualTo(

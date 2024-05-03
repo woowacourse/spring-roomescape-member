@@ -1,6 +1,6 @@
 package roomescape.domain;
 
-import roomescape.handler.BadRequestException;
+import roomescape.exception.BadRequestException;
 
 public class Name {
     private final String name;

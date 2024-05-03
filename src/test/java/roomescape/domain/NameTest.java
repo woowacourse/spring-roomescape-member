@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import roomescape.handler.BadRequestException;
+import roomescape.exception.BadRequestException;
 
 class NameTest {
     @DisplayName("정상 생성 테스트")
