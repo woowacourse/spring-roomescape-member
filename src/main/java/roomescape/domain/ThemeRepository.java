@@ -18,4 +18,6 @@ public interface ThemeRepository {
     void deleteById(long id);
 
     List<Theme> findPopularThemesDateBetween(LocalDate startDate, LocalDate endDate, int limit);
+
+    boolean existsByTimeId(long id);
 }

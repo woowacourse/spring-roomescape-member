@@ -77,4 +77,10 @@ public class JdbcThemeRepository implements ThemeRepository {
                 """;
         return jdbcTemplate.query(sql, (rs, rowNum) -> ThemeRowMapper.mapRow(rs), startDate, endDate, limit);
     }
+
+    @Override
+    public boolean existsByTimeId(long id) {
+        String sql = "select exists(select 1 from reservation where theme_id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
+    }
 }
