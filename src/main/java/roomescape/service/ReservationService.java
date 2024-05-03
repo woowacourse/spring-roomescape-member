@@ -52,12 +52,10 @@ public class ReservationService {
     }
 
     private void rejectPastTimeReservation(Reservation reservation) {
-        LocalDateTime reservationDataTime = reservation.getDateTime();
-        LocalDateTime currentDateTime = LocalDateTime.now();
-
-        if (reservationDataTime.isBefore(currentDateTime)) {
+        if (reservation.isBeforeNow()) {
+            LocalDateTime reservationDataTime = reservation.getDateTime();
             throw new IllegalArgumentException("이미 지난 시간입니다. 입력한 시간: " + reservationDataTime.toLocalDate() + " "
-                                               + reservationDataTime.toLocalTime());
+                    + reservationDataTime.toLocalTime());
         }
     }
 

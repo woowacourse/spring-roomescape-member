@@ -35,6 +35,10 @@ public class Reservation {
         return getDateTime().equals(reservation.getDateTime());
     }
 
+    public boolean isBeforeNow() {
+        return getDateTime().isBefore(LocalDateTime.now());
+    }
+
     public long getId() {
         return id;
     }
