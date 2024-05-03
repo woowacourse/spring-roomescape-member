@@ -55,9 +55,7 @@ public class ReservationTimeService {
 
     public void deleteReservationTime(Long id) {
         validateIdExist(id);
-        if (reservationRepository.existTimeId(id)) {
-            throw new IllegalArgumentException("[ERROR] 해당 시간에 예약이 존재합니다.");
-        }
+        validateDeletable(id);
         reservationRepository.delete(id);
     }
 
@@ -70,6 +68,12 @@ public class ReservationTimeService {
     public void validateTimeDuplicate(LocalTime time) {
         if (reservationTimeRepository.existTime(time)) {
             throw new IllegalArgumentException("[ERROR] 이미 등록된 시간 입니다. : " + time);
+        }
+    }
+
+    private void validateDeletable(Long id) {
+        if (reservationRepository.existTimeId(id)) {
+            throw new IllegalArgumentException("[ERROR] 해당 시간에 예약이 존재합니다.");
         }
     }
 }
