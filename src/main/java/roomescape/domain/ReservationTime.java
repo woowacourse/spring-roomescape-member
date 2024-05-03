@@ -1,5 +1,7 @@
 package roomescape.domain;
 
+import roomescape.exception.BadRequestException;
+
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.Objects;
@@ -28,18 +30,18 @@ public class ReservationTime {
 
     private void validateTimeUnit(LocalTime time) {
         if (time.getMinute() % TIME_UNIT != 0) {
-            throw new IllegalArgumentException("예약 시간은 10분 단위입니다.");
+            throw new BadRequestException("예약 시간은 10분 단위입니다.");
         }
     }
 
     private LocalTime convertToLocalTime(String time) {
         if (time == null || time.isEmpty()) {
-            throw new IllegalArgumentException("예약 시간이 비어 있습니다.");
+            throw new BadRequestException("예약 시간이 비어 있습니다.");
         }
         try {
             return LocalTime.parse(time);
         } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("유효하지 않은 예약 시간입니다.");
+            throw new BadRequestException("유효하지 않은 예약 시간입니다.");
         }
     }
 

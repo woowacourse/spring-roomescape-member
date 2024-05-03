@@ -15,6 +15,7 @@ import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationSaveRequest;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.ThemeResponse;
+import roomescape.exception.BadRequestException;
 import roomescape.exception.NotFoundException;
 import roomescape.service.ReservationService;
 import roomescape.service.ReservationTimeService;
@@ -100,7 +101,7 @@ class ReservationControllerTest extends ControllerTest {
         ThemeResponse themeResponse = ThemeResponse.from(WOOTECO_THEME(1L));
 
         BDDMockito.given(reservationService.create(any()))
-                .willThrow(IllegalArgumentException.class);
+                .willThrow(BadRequestException.class);
         BDDMockito.given(reservationTimeService.findById(1L))
                 .willReturn(timeResponse);
         BDDMockito.given(themeService.findById(1L))

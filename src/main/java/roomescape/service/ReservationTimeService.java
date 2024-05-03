@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.AvailableReservationTimeResponse;
 import roomescape.dto.ReservationTimeResponse;
+import roomescape.exception.BadRequestException;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -56,7 +57,7 @@ public class ReservationTimeService {
     private void validateHasReservation(ReservationTime reservationTime) {
         int reservationCount = reservationRepository.countByTimeId(reservationTime.getId());
         if (reservationCount > 0) {
-            throw new IllegalArgumentException("해당 예약 시간의 예약 건이 존재합니다.");
+            throw new BadRequestException("해당 예약 시간의 예약 건이 존재합니다.");
         }
     }
 

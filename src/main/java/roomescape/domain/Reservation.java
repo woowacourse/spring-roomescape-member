@@ -1,5 +1,7 @@
 package roomescape.domain;
 
+import roomescape.exception.BadRequestException;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Objects;
@@ -40,28 +42,28 @@ public class Reservation {
 
     private void validateName(String name) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("예약자 이름은 비어있을 수 없습니다.");
+            throw new BadRequestException("예약자 이름은 비어있을 수 없습니다.");
         }
         Matcher matcher = NAME_PATTERN.matcher(name);
         if (matcher.matches()) {
-            throw new IllegalArgumentException("예약자 이름은 숫자로만 구성될 수 없습니다.");
+            throw new BadRequestException("예약자 이름은 숫자로만 구성될 수 없습니다.");
         }
     }
 
     private void validateDate(LocalDate date) {
         if (date.isBefore(LocalDate.now()) || date.equals(LocalDate.now())) {
-            throw new IllegalArgumentException("이전 날짜 혹은 당일은 예약할 수 없습니다.");
+            throw new BadRequestException("이전 날짜 혹은 당일은 예약할 수 없습니다.");
         }
     }
 
     private LocalDate convertToLocalDate(String date) {
         if (date == null || date.isEmpty()) {
-            throw new IllegalArgumentException("예약 날짜가 비어있습니다.");
+            throw new BadRequestException("예약 날짜가 비어있습니다.");
         }
         try {
             return LocalDate.parse(date);
         } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("유효하지 않은 예약 날짜입니다.");
+            throw new BadRequestException("유효하지 않은 예약 날짜입니다.");
         }
     }
 

@@ -3,6 +3,7 @@ package roomescape.domain;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
+import roomescape.exception.BadRequestException;
 
 import java.time.LocalDate;
 import java.util.stream.Stream;
@@ -20,7 +21,7 @@ class ReservationTest {
     void validateName(String invalidName) {
         // when & then
         assertThatThrownBy(() -> new Reservation(invalidName, MIA_RESERVATION_DATE, new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(BadRequestException.class);
     }
 
     @ParameterizedTest
@@ -29,7 +30,7 @@ class ReservationTest {
     void validateDate(LocalDate invalidDate) {
         // when & then
         assertThatThrownBy(() -> new Reservation(USER_MIA, invalidDate.toString(), new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(BadRequestException.class);
     }
 
     private static Stream<LocalDate> invalidLocalDate() {
@@ -46,7 +47,7 @@ class ReservationTest {
     void convertToLocalDate(String invalidDate) {
         // when & then
         assertThatThrownBy(() -> new Reservation(USER_MIA, invalidDate, new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(BadRequestException.class);
     }
 
     @ParameterizedTest

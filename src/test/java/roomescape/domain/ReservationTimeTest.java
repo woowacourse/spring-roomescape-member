@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import roomescape.exception.BadRequestException;
 
 class ReservationTimeTest {
 
@@ -18,7 +19,7 @@ class ReservationTimeTest {
 
         // when & then
         assertThatThrownBy(() -> new ReservationTime(invalidTime))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(BadRequestException.class);
     }
 
     @ParameterizedTest
@@ -28,6 +29,6 @@ class ReservationTimeTest {
     void convertToLocalTime(String invalidTime) {
         // when & then
         assertThatThrownBy(() -> new ReservationTime(invalidTime))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(BadRequestException.class);
     }
 }

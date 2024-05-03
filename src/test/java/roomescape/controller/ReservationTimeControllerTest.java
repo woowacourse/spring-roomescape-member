@@ -10,6 +10,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.dto.AvailableReservationTimeResponse;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.ReservationTimeSaveRequest;
+import roomescape.exception.BadRequestException;
 import roomescape.exception.NotFoundException;
 import roomescape.service.ReservationTimeService;
 
@@ -57,7 +58,7 @@ class ReservationTimeControllerTest extends ControllerTest {
         ReservationTimeSaveRequest request = new ReservationTimeSaveRequest("15:03");
 
         BDDMockito.given(reservationTimeService.create(any()))
-                .willThrow(IllegalArgumentException.class);
+                .willThrow(BadRequestException.class);
 
         // when & then
         mockMvc.perform(post("/times")

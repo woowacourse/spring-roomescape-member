@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.AvailableReservationTimeResponse;
 import roomescape.dto.ReservationTimeResponse;
+import roomescape.exception.BadRequestException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
@@ -100,7 +101,7 @@ class ReservationTimeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationTimeService.delete(1L))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(BadRequestException.class);
     }
 
     @Test

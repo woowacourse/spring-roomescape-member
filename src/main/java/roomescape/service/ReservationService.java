@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
 import roomescape.dto.ReservationResponse;
+import roomescape.exception.BadRequestException;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
 
@@ -33,7 +34,7 @@ public class ReservationService {
 
     private void validateDuplicatedReservation(List<Reservation> reservationsInSameDateTime) {
         if (reservationsInSameDateTime.size() >= MAX_RESERVATIONS_PER_TIME) {
-            throw new IllegalArgumentException("해당 시간대에 예약이 모두 찼습니다.");
+            throw new BadRequestException("해당 시간대에 예약이 모두 찼습니다.");
         }
     }
 
