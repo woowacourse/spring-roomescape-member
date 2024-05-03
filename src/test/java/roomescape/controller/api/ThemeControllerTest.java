@@ -2,16 +2,16 @@ package roomescape.controller.api;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = {"/test.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -45,25 +45,30 @@ class ThemeControllerTest {
     }
 
     @DisplayName("테마 추가 및 삭제")
-    @Test
-    void saveAndDeleteReservation() {
-        final Map<String, Object> params = Map.of(
-                "name", "테마테마",
-                "description", "설명설명",
-                "thumbnail", "썸네일썸네일");
+    @TestFactory
+    Stream<DynamicTest> saveAndDeleteTheme() {
+        return Stream.of(
+                dynamicTest("테마를 추가한다", () -> {
+                    final Map<String, Object> params = Map.of(
+                            "name", "테마테마",
+                            "description", "설명설명",
+                            "thumbnail", "썸네일썸네일");
 
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/themes")
-                .then().log().all()
-                .statusCode(201)
-                .header("Location", "/themes/14");
-
-        RestAssured.given().log().all()
-                .when().delete("/themes/14")
-                .then().log().all()
-                .statusCode(204);
+                    RestAssured.given().log().all()
+                            .contentType(ContentType.JSON)
+                            .body(params)
+                            .when().post("/themes")
+                            .then().log().all()
+                            .statusCode(201)
+                            .header("Location", "/themes/14");
+                }),
+                dynamicTest("테마를 삭제한다", () ->
+                        RestAssured.given().log().all()
+                                .when().delete("/themes/14")
+                                .then().log().all()
+                                .statusCode(204)
+                )
+        );
     }
 
     @DisplayName("인기 테마 조회")
