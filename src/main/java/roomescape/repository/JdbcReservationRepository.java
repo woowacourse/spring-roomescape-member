@@ -32,12 +32,6 @@ public class JdbcReservationRepository implements ReservationRepository {
             rs.getLong("id"),
             rs.getTime("start_at").toLocalTime()
     ));
-    private RowMapper<Theme> themeRowMapper = ((rs, rowNum) -> new Theme(
-            rs.getLong("theme_id"),
-            rs.getString("theme_name"),
-            rs.getString("theme_description"),
-            rs.getString("theme_thumbnail")
-    ));
 
     public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -130,27 +124,6 @@ public class JdbcReservationRepository implements ReservationRepository {
                 WHERE date = ? AND theme_id = ?;
                 """;
         return jdbcTemplate.query(sql, timeRowMapper, date, themeId);
-    }
-
-    @Override
-    public List<Theme> findThemeOrderByReservationCount() {
-        String sql = """
-                SELECT 
-                th.id AS theme_id,
-                th.name AS theme_name,
-                th.description AS theme_description,
-                th.thumbnail AS theme_thumbnail,
-                COUNT(th.id) AS reservation_count
-                FROM reservation AS r
-                INNER JOIN theme AS th
-                ON r.theme_id = th.id
-                WHERE r.date BETWEEN DATEADD('day', -7, CURRENT_DATE()) AND DATEADD('day', -1, CURRENT_DATE())
-                GROUP BY th.id
-                ORDER BY reservation_count DESC 
-                LIMIT 10
-                """;
-
-        return jdbcTemplate.query(sql, themeRowMapper);
     }
 
     @Override

@@ -78,8 +78,4 @@ public class ReservationService {
         bookableTimeResponses.addAll(bookedTimeResponse);
         return bookableTimeResponses;
     }
-
-    public List<Theme> getThemeRanking() {
-        return reservationRepository.findThemeOrderByReservationCount();
-    }
 }

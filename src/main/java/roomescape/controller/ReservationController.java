@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Reservation;
-import roomescape.domain.Theme;
 import roomescape.dto.BookableTimeResponse;
 import roomescape.dto.BookableTimesRequest;
 import roomescape.dto.ReservationAddRequest;
@@ -48,10 +47,5 @@ public class ReservationController {
             @PathVariable("date") LocalDate date,
             @PathVariable("themeId") Long themeId) {
         return ResponseEntity.ok(reservationService.findBookableTimes(new BookableTimesRequest(date, themeId)));
-    }
-
-    @GetMapping("/reservations/theme-rank")
-    public ResponseEntity<List<Theme>> getThemeRank() {
-        return ResponseEntity.ok(reservationService.getThemeRanking());
     }
 }
