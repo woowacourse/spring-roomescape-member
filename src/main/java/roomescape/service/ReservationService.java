@@ -31,10 +31,10 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public ReservationResponse createReservation(ReservationRequest createDto) {
-        ReservationTime reservationTime = getReservationTime(createDto.timeId());
-        Theme theme = getTheme(createDto.themeId());
-        Reservation reservation = createDto.toDomain(reservationTime, theme);
+    public ReservationResponse createReservation(ReservationRequest request) {
+        ReservationTime reservationTime = getReservationTime(request.timeId());
+        Theme theme = getTheme(request.themeId());
+        Reservation reservation = request.toDomain(reservationTime, theme);
         validate(reservation, reservationTime);
 
         Reservation createdReservation = reservationRepository.create(reservation);

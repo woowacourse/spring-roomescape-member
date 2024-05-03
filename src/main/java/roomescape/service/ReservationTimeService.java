@@ -24,13 +24,13 @@ public class ReservationTimeService {
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
-    public ReservationTimeResponse createReservationTime(ReservationTimeRequest createDto) {
-        ReservationTime time = createDto.toDomain();
-        if (reservationTimeRepository.hasDuplicateTime(time)) {
+    public ReservationTimeResponse createReservationTime(ReservationTimeRequest request) {
+        ReservationTime reservationTime = request.toDomain();
+        if (reservationTimeRepository.hasDuplicateTime(reservationTime)) {
             throw new IllegalStateException("해당 예약 시간이 존재합니다.");
         }
 
-        ReservationTime createdReservationTime = reservationTimeRepository.create(time);
+        ReservationTime createdReservationTime = reservationTimeRepository.create(reservationTime);
         return ReservationTimeResponse.from(createdReservationTime);
     }
 

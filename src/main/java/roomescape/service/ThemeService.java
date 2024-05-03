@@ -20,8 +20,8 @@ public class ThemeService {
         this.themeRepository = themeRepository;
     }
 
-    public ThemeResponse create(ThemeRequest themeRequest) {
-        Theme theme = themeRequest.toDomain();
+    public ThemeResponse create(ThemeRequest request) {
+        Theme theme = request.toDomain();
         Theme createdTheme = themeRepository.create(theme);
 
         return ThemeResponse.from(createdTheme);
