@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.dto.theme.ThemeCreateRequest;
 import roomescape.dto.theme.ThemeResponse;
+import roomescape.exception.InvalidValueException;
 import roomescape.service.ThemeService;
 
 @WebMvcTest(ThemeController.class)
@@ -76,13 +77,13 @@ class ThemeControllerTest {
     }
 
     @Test
-    @DisplayName("유효하지않는 값이 입력되면 Bad Request 응답을 반환한다.")
+    @DisplayName("유효하지않은 값이 입력되면 Bad Request 응답을 반환한다.")
     void createThemeByInvalidRequest() throws Exception {
         //given
         ThemeCreateRequest givenRequest
                 = ThemeCreateRequest.of("InvalidName", "InvalidDescription", "InvalidThumbnail");
         given(themeService.add(givenRequest))
-                .willThrow(IllegalArgumentException.class);
+                .willThrow(InvalidValueException.class);
         String requestBody = objectMapper.writeValueAsString(givenRequest);
 
         //when //then

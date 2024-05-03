@@ -1,6 +1,7 @@
 package roomescape.domain.theme;
 
 import java.util.Objects;
+import roomescape.exception.InvalidValueException;
 
 public class ThemeDescription {
 
@@ -17,7 +18,7 @@ public class ThemeDescription {
 
     private static void validateNull(String value) {
         if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException("테마 설명은 공백일 수 없습니다.");
+            throw new InvalidValueException("테마 설명은 공백일 수 없습니다.");
         }
     }
 

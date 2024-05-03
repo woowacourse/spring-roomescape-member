@@ -19,6 +19,7 @@ import roomescape.dao.WebThemeDao;
 import roomescape.domain.theme.Theme;
 import roomescape.dto.theme.ThemeCreateRequest;
 import roomescape.dto.theme.ThemeResponse;
+import roomescape.exception.InvalidValueException;
 import roomescape.service.fixture.ThemeFixtures;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -95,7 +96,7 @@ class ThemeServiceTest {
 
         //when //then
         assertThatThrownBy(() -> themeService.add(request))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidValueException.class);
     }
 
     @ParameterizedTest
@@ -108,7 +109,7 @@ class ThemeServiceTest {
 
         //when //then
         assertThatThrownBy(() -> themeService.add(request))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidValueException.class);
     }
 
     @ParameterizedTest
@@ -121,7 +122,7 @@ class ThemeServiceTest {
 
         //when //then
         assertThatThrownBy(() -> themeService.add(request))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidValueException.class);
     }
 
     @Test
@@ -150,7 +151,7 @@ class ThemeServiceTest {
 
         //when //then
         assertThatThrownBy(() -> themeService.delete(givenId))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidValueException.class);
     }
 
     @Test
@@ -163,6 +164,6 @@ class ThemeServiceTest {
 
         //when //then
         assertThatThrownBy(() -> themeService.delete(givenId))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidValueException.class);
     }
 }

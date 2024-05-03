@@ -3,6 +3,7 @@ package roomescape.domain.reservationtime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import roomescape.exception.InvalidValueException;
 
 public class ReservationStartAt {
 
@@ -23,13 +24,13 @@ public class ReservationStartAt {
         try {
             return LocalTime.parse(value);
         } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("시작 시간 형식은 HH:mm 이어야 합니다.");
+            throw new InvalidValueException("시작 시간 형식은 HH:mm 이어야 합니다.");
         }
     }
 
     private static void validateValue(String value) {
         if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException("시작 시간은 비어있을 수 없습니다.");
+            throw new InvalidValueException("시작 시간은 비어있을 수 없습니다.");
         }
     }
 

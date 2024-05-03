@@ -27,6 +27,7 @@ import roomescape.domain.theme.Theme;
 import roomescape.dto.reservation.AvailableReservationResponse;
 import roomescape.dto.reservation.ReservationCreateRequest;
 import roomescape.dto.reservation.ReservationResponse;
+import roomescape.exception.InvalidValueException;
 import roomescape.service.fixture.ReservationFixtures;
 import roomescape.service.fixture.ReservationTimeFixtures;
 import roomescape.service.fixture.ThemeFixtures;
@@ -137,7 +138,7 @@ class ReservationServiceTest {
 
             //when //then
             assertThatThrownBy(() -> reservationService.add(givenRequest))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(InvalidValueException.class);
         }
 
         @ParameterizedTest
@@ -152,7 +153,7 @@ class ReservationServiceTest {
 
             //when //then
             assertThatThrownBy(() -> reservationService.add(request))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(InvalidValueException.class);
         }
 
         @ParameterizedTest
@@ -167,7 +168,7 @@ class ReservationServiceTest {
 
             //when //then
             assertThatThrownBy(() -> reservationService.add(request))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(InvalidValueException.class);
         }
 
         @ParameterizedTest
@@ -182,7 +183,7 @@ class ReservationServiceTest {
 
             //when //then
             assertThatThrownBy(() -> reservationService.add(request))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(InvalidValueException.class);
         }
 
         @Test
@@ -196,7 +197,7 @@ class ReservationServiceTest {
 
             //when //then
             assertThatThrownBy(() -> reservationService.add(request))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(InvalidValueException.class);
         }
 
         @Test
@@ -211,7 +212,7 @@ class ReservationServiceTest {
 
             //when //then
             assertThatThrownBy(() -> reservationService.add(request))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(InvalidValueException.class);
         }
 
         @Test
@@ -225,7 +226,7 @@ class ReservationServiceTest {
 
             //when //then
             assertThatThrownBy(() -> reservationService.add(request))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(InvalidValueException.class);
         }
     }
 
@@ -260,7 +261,7 @@ class ReservationServiceTest {
 
             //when //then
             assertThatThrownBy(() -> reservationService.delete(givenId))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(InvalidValueException.class);
         }
 
         @Test
@@ -274,7 +275,7 @@ class ReservationServiceTest {
 
             //when //then
             assertThatThrownBy(() -> reservationService.delete(givenId))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(InvalidValueException.class);
         }
     }
 }

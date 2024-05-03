@@ -24,6 +24,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.dto.reservationtime.ReservationTimeCreateRequest;
 import roomescape.dto.reservationtime.ReservationTimeResponse;
+import roomescape.exception.InvalidValueException;
 import roomescape.service.ReservationTimeService;
 
 @WebMvcTest(ReservationTimeController.class)
@@ -94,12 +95,12 @@ class ReservationTimeControllerTest {
     @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = {"1212", "anytime"})
-    @DisplayName("유효하지않는 값이 입력되면 Bad Request 응답을 반환한다.")
+    @DisplayName("유효하지 않은 값이 입력되면 Bad Request 응답을 반환한다.")
     void createReservationTimeByInvalidStartAt(String given) throws Exception {
         //given
         ReservationTimeCreateRequest givenRequest = ReservationTimeCreateRequest.from(given);
         given(reservationTimeService.add(givenRequest))
-                .willThrow(IllegalArgumentException.class);
+                .willThrow(InvalidValueException.class);
         String requestBody = objectMapper.writeValueAsString(givenRequest);
 
         //when //then

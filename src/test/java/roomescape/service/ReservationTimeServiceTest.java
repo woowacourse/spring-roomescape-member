@@ -23,6 +23,7 @@ import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
 import roomescape.dto.reservationtime.ReservationTimeCreateRequest;
 import roomescape.dto.reservationtime.ReservationTimeResponse;
+import roomescape.exception.InvalidValueException;
 import roomescape.service.fixture.ReservationFixtures;
 import roomescape.service.fixture.ReservationTimeFixtures;
 import roomescape.service.fixture.ThemeFixtures;
@@ -102,7 +103,7 @@ class ReservationTimeServiceTest {
 
             //when //then
             assertThatThrownBy(() -> reservationTimeService.add(request))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(InvalidValueException.class);
         }
 
         @Test
@@ -114,7 +115,7 @@ class ReservationTimeServiceTest {
 
             //when //then
             assertThatThrownBy(() -> reservationTimeService.add(request))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(InvalidValueException.class);
         }
     }
 
@@ -146,7 +147,7 @@ class ReservationTimeServiceTest {
 
             //when //then
             assertThatThrownBy(() -> reservationTimeService.delete(givenId))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(InvalidValueException.class);
         }
 
         @Test
@@ -158,7 +159,7 @@ class ReservationTimeServiceTest {
 
             //when //then
             assertThatThrownBy(() -> reservationTimeService.delete(givenId))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(InvalidValueException.class);
         }
 
         @Test
@@ -173,7 +174,7 @@ class ReservationTimeServiceTest {
 
             //when //then
             assertThatThrownBy(() -> reservationTimeService.delete(1L))
-                    .isInstanceOf(IllegalArgumentException.class);
+                    .isInstanceOf(InvalidValueException.class);
         }
     }
 }

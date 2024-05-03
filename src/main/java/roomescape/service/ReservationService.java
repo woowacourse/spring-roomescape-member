@@ -13,6 +13,7 @@ import roomescape.domain.theme.Theme;
 import roomescape.dto.reservation.AvailableReservationResponse;
 import roomescape.dto.reservation.ReservationCreateRequest;
 import roomescape.dto.reservation.ReservationResponse;
+import roomescape.exception.InvalidValueException;
 
 @Service
 public class ReservationService {
@@ -74,7 +75,7 @@ public class ReservationService {
             ReservationTime reservationTime,
             Theme theme) {
         if (reservationDao.exist(reservationDate, reservationTime, theme)) {
-            throw new IllegalArgumentException("중복된 예약을 생성할 수 없습니다.");
+            throw new InvalidValueException("중복된 예약을 생성할 수 없습니다.");
         }
     }
 
@@ -91,31 +92,31 @@ public class ReservationService {
 
     private void validateDate(ReservationDate reservationDate, LocalDate date) {
         if (reservationDate.isBeforeDate(date)) {
-            throw new IllegalArgumentException("예약일은 오늘보다 과거일 수 없습니다.");
+            throw new InvalidValueException("예약일은 오늘보다 과거일 수 없습니다.");
         }
     }
 
     private void validatePastTimeWhenToday(Reservation reservation, ReservationTime reservationTime, LocalDate date) {
         if (reservation.isSameDate(date) && reservationTime.isBeforeNow()) {
-            throw new IllegalArgumentException("현재보다 이전 시간을 예약할 수 없습니다.");
+            throw new InvalidValueException("현재보다 이전 시간을 예약할 수 없습니다.");
         }
     }
 
     private void validateNull(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException("예약 아이디는 비어있을 수 없습니다.");
+            throw new InvalidValueException("예약 아이디는 비어있을 수 없습니다.");
         }
     }
 
     private void validateNotExistReservation(Long id) {
         if (!reservationDao.exist(id)) {
-            throw new IllegalArgumentException("해당 아이디를 가진 예약이 존재하지 않습니다.");
+            throw new InvalidValueException("해당 아이디를 가진 예약이 존재하지 않습니다.");
         }
     }
 
     private void validateNotExistReservationTime(Long id) {
         if (!reservationTimeDao.exist(id)) {
-            throw new IllegalArgumentException("예약 시간 아이디에 해당하는 예약 시간이 존재하지 않습니다.");
+            throw new InvalidValueException("예약 시간 아이디에 해당하는 예약 시간이 존재하지 않습니다.");
         }
     }
 }

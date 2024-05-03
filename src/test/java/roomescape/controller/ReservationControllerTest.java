@@ -23,6 +23,7 @@ import roomescape.dto.reservation.ReservationCreateRequest;
 import roomescape.dto.reservation.ReservationResponse;
 import roomescape.dto.reservationtime.ReservationTimeResponse;
 import roomescape.dto.theme.ThemeResponse;
+import roomescape.exception.InvalidValueException;
 import roomescape.service.ReservationService;
 
 @WebMvcTest(ReservationController.class)
@@ -95,13 +96,13 @@ class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("유효하지않는 값이 입력되면 Bad Request 응답을 반환한다.")
+    @DisplayName("유효하지 않은 값이 입력되면 Bad Request 응답을 반환한다.")
     void createReservationByInvalidRequest() throws Exception {
         //given
         ReservationCreateRequest givenRequest
                 = ReservationCreateRequest.of("InvalidName", "InvalidDate", -1L, 1L);
         given(reservationService.add(givenRequest))
-                .willThrow(IllegalArgumentException.class);
+                .willThrow(InvalidValueException.class);
         String requestBody = objectMapper.writeValueAsString(givenRequest);
 
         //when //then
