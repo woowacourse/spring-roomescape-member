@@ -3,6 +3,7 @@ package roomescape.infrastructure;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -12,8 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
+import roomescape.domain.dto.AvailableTimeDto;
 
 @JdbcTest
 @Import(JdbcReservationTimeRepository.class)
@@ -85,6 +88,18 @@ class JdbcReservationTimeRepositoryTest {
         timeRepository.deleteById(1L);
         int count = getTotalRowCount();
         assertThat(count).isZero();
+    }
+
+    @DisplayName("날짜와 테마 id가 주어지면, 예약 가능한 시간을 반환한다.")
+    @Test
+    @Sql("/insert-reservations.sql")
+    void shouldReturnAvailableTimes() {
+        LocalDate date = LocalDate.of(2024, 12, 25);
+        List<AvailableTimeDto> times = timeRepository.findAvailableReservationTimes(date, 1L)
+                .stream()
+                .filter(time -> !time.isBooked())
+                .toList();
+        assertThat(times).hasSize(4);
     }
 
     private int getTotalRowCount() {

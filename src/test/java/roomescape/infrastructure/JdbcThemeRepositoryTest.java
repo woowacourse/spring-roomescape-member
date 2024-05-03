@@ -2,6 +2,7 @@ package roomescape.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeName;
 import roomescape.domain.ThemeRepository;
@@ -61,6 +63,21 @@ class JdbcThemeRepositoryTest {
 
         int rowCount = getTotalRowCount();
         assertThat(rowCount).isZero();
+    }
+
+    @DisplayName("주어진 날짜 사이에 예약된 갯수를 기준으로 테마를 반환한다.")
+    @Test
+    @Sql("/insert-reservations.sql")
+    void shouldReturnPopularThemes() {
+        LocalDate from = LocalDate.of(2024, 12, 24);
+        LocalDate to = LocalDate.of(2024, 12, 28);
+        int limit = 3;
+
+        List<Long> themeIds = themeRepository.findPopularThemesDateBetween(from, to, limit)
+                .stream()
+                .map(Theme::getId)
+                .toList();
+        assertThat(themeIds).containsExactly(4L, 3L, 2L);
     }
 
     private int getTotalRowCount() {

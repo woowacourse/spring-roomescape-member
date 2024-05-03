@@ -1,5 +1,7 @@
 package roomescape.application;
 
+import java.time.Clock;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,9 +13,11 @@ import roomescape.domain.ThemeRepository;
 @Service
 public class ThemeService {
     private final ThemeRepository themeRepository;
+    private final Clock clock;
 
-    public ThemeService(ThemeRepository themeRepository) {
+    public ThemeService(ThemeRepository themeRepository, Clock clock) {
         this.themeRepository = themeRepository;
+        this.clock = clock;
     }
 
     public ThemeResponse create(ThemeRequest request) {
@@ -33,5 +37,16 @@ public class ThemeService {
         Theme theme = themeRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마 입니다."));
         themeRepository.deleteById(theme.getId());
+    }
+
+    public List<ThemeResponse> findPopularThemes() {
+        LocalDate today = LocalDate.now(clock);
+        return themeRepository.findPopularThemesDateBetween(
+                        today.minusDays(8),
+                        today.minusDays(1),
+                        10)
+                .stream()
+                .map(ThemeResponse::from)
+                .toList();
     }
 }

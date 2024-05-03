@@ -1,5 +1,6 @@
 package roomescape.infrastructure;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -10,6 +11,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
+import roomescape.domain.dto.AvailableTimeDto;
 import roomescape.infrastructure.rowmapper.ReservationTimeRowMapper;
 
 @Repository
@@ -61,5 +63,24 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         String sql = "select exists(select 1 from reservation_time where start_at = ?)";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, startAt);
         return count != null && count > 0;
+    }
+
+    @Override
+    public List<AvailableTimeDto> findAvailableReservationTimes(LocalDate date, long themeId) {
+        String sql = """
+                select id, start_at, start_at in (
+                    select start_at
+                    from reservation as r
+                    left join reservation_time as rt on r.time_id = rt.id
+                    where date = ? and r.theme_id = ?
+                ) as is_booked
+                from reservation_time;
+                """;
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new AvailableTimeDto(
+                rs.getLong("id"),
+                rs.getTime("start_at").toLocalTime(),
+                rs.getBoolean("is_booked")
+        ), date, themeId);
     }
 }

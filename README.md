@@ -236,7 +236,7 @@
 
 ### Request
 
-- GET /popular-themes
+- GET /themes/popular
 
 ### Response
 
@@ -266,7 +266,7 @@
 
 ### Request
 
-- GET /available-times?date={date}&themeId={id}
+- GET /times/available?date={date}&themeId={id}
 - date: yyyy-MM-dd
 - themeId: 테마 id
 

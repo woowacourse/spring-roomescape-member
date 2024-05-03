@@ -1,5 +1,6 @@
 package roomescape.infrastructure;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -56,5 +57,18 @@ public class JdbcThemeRepository implements ThemeRepository {
     public void deleteById(long id) {
         String sql = "delete from theme where id = ?";
         jdbcTemplate.update(sql, id);
+    }
+
+    @Override
+    public List<Theme> findPopularThemesDateBetween(LocalDate startDate, LocalDate endDate, int limit) {
+        String sql = """
+                select t.id, t.name, t.description, t.thumbnail, count(r.id) as reservation_count
+                from theme as t left join reservation as r on t.id = r.theme_id
+                where r.date between ? and ?
+                group by t.id
+                order by reservation_count desc
+                limit ?
+                """;
+        return jdbcTemplate.query(sql, (rs, rowNum) -> ThemeRowMapper.mapRow(rs), startDate, endDate, limit);
     }
 }
