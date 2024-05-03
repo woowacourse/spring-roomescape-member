@@ -10,6 +10,10 @@ import java.util.List;
 
 @Service
 public class ThemeService {
+    private static final int NUMBER_TO_MAKE_WEEK_AGO = 7;
+    private static final int NUMBER_TO_MAKE_DAY_AGO = 1;
+    private static final int TOP_RANKING_LIMIT = 10;
+
     private final ThemeDAO themeDAO;
 
     public ThemeService(final ThemeDAO themeDAO) {
@@ -31,9 +35,9 @@ public class ThemeService {
 
     public List<Theme> findTopRanking() {
         final LocalDate currentDate = LocalDate.now();
-        final LocalDate firstDayOfPeriod = currentDate.minusDays(7);
-        final LocalDate lastDayOfPeriod = currentDate.minusDays(1);
+        final LocalDate startDate = currentDate.minusDays(NUMBER_TO_MAKE_WEEK_AGO);
+        final LocalDate endDate = currentDate.minusDays(NUMBER_TO_MAKE_DAY_AGO);
 
-        return themeDAO.findTopRanking(firstDayOfPeriod, lastDayOfPeriod);
+        return themeDAO.findTopRankingThemes(startDate, endDate, TOP_RANKING_LIMIT);
     }
 }
