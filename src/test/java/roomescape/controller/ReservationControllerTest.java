@@ -26,7 +26,7 @@ import roomescape.dto.web.ReservationTimeWebResponse;
 import roomescape.dto.web.ReservationWebRequest;
 import roomescape.dto.web.ReservationWebResponse;
 import roomescape.dto.web.ThemeWebResponse;
-import roomescape.exception.DuplicatedReservationException;
+import roomescape.exception.DuplicatedModelException;
 import roomescape.exception.PastReservationException;
 import roomescape.service.ReservationService;
 
@@ -48,7 +48,8 @@ class ReservationControllerTest {
         LocalDate date = LocalDate.EPOCH;
         String name = "브리";
         Reservation reservation = new Reservation(1L, name, date, new ReservationTime(LocalTime.MIN),
-            new Theme("방탈출", "방탈출하는 게임", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+            new Theme("방탈출", "방탈출하는 게임",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
 
         when(reservationService.save(new ReservationAppRequest(name, date.toString(), timeId, themeId)))
             .thenReturn(reservation);
@@ -73,7 +74,8 @@ class ReservationControllerTest {
         LocalDate date = LocalDate.EPOCH;
         String name = "브리";
         Reservation reservation = new Reservation(1L, name, date, new ReservationTime(LocalTime.MIN),
-            new Theme("방탈출", "방탈출하는 게임", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+            new Theme("방탈출", "방탈출하는 게임",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
 
         when(reservationService.save(new ReservationAppRequest(name, date.toString(), timeId, themeId)))
             .thenReturn(reservation);
@@ -119,7 +121,7 @@ class ReservationControllerTest {
         String requestBody = objectMapper.writeValueAsString(new ReservationWebRequest(name, rawDate, timeId, themeId));
 
         when(reservationService.save(new ReservationAppRequest(name, rawDate, timeId, themeId)))
-            .thenThrow(DuplicatedReservationException.class);
+            .thenThrow(DuplicatedModelException.class);
 
         mvc.perform(post("/reservations")
                 .content(requestBody)

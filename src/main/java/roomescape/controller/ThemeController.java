@@ -15,7 +15,6 @@ import roomescape.domain.Theme;
 import roomescape.dto.app.ThemeAppRequest;
 import roomescape.dto.web.ThemeWebRequest;
 import roomescape.dto.web.ThemeWebResponse;
-import roomescape.exception.DuplicatedThemeException;
 import roomescape.exception.ReservationExistsException;
 import roomescape.service.ThemeService;
 
@@ -80,10 +79,6 @@ public class ThemeController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(DuplicatedThemeException.class)
-    public ResponseEntity<String> handleDuplicatedThemeException(DuplicatedThemeException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
 
     @ExceptionHandler(ReservationExistsException.class)
     public ResponseEntity<String> handleReservationExistsException(ReservationExistsException e) {

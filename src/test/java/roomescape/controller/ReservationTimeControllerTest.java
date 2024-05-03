@@ -20,7 +20,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.dto.app.ReservationTimeAppRequest;
 import roomescape.dto.web.ReservationTimeWebRequest;
 import roomescape.dto.web.ReservationTimeWebResponse;
-import roomescape.exception.DuplicatedReservationTimeException;
+import roomescape.exception.DuplicatedModelException;
 import roomescape.exception.ReservationExistsException;
 import roomescape.service.ReservationTimeService;
 
@@ -109,7 +109,7 @@ class ReservationTimeControllerTest {
     void create_Duplicate() throws Exception {
         String rawTime = "19:00";
         when(reservationTimeService.save(new ReservationTimeAppRequest(rawTime)))
-            .thenThrow(DuplicatedReservationTimeException.class);
+            .thenThrow(DuplicatedModelException.class);
 
         String requestBody = objectMapper.writeValueAsString(new ReservationTimeWebRequest(4L, rawTime));
 

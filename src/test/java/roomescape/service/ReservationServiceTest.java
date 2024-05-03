@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.NoSuchElementException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,9 +26,8 @@ import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 import roomescape.dto.app.ReservationAppRequest;
-import roomescape.exception.DuplicatedReservationException;
+import roomescape.exception.DuplicatedModelException;
 import roomescape.exception.PastReservationException;
-import roomescape.exception.ReservationTimeNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
@@ -53,7 +53,8 @@ class ReservationServiceTest {
         LocalTime time = LocalTime.MAX;
         ReservationTime reservationTime = new ReservationTime(timeId, time);
         Reservation reservation = new Reservation(name, date, reservationTime,
-            new Theme("방탈출", "방탈출하는 게임", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+            new Theme("방탈출", "방탈출하는 게임",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
 
         when(reservationTimeRepository.findById(timeId))
             .thenReturn(reservationTime);
@@ -68,7 +69,8 @@ class ReservationServiceTest {
 
         Reservation actual = reservationService.save(request);
         Reservation expected = new Reservation(1L, reservation.getName(), reservation.getDate(), reservation.getTime(),
-            new Theme("방탈출", "방탈출하는 게임", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+            new Theme("방탈출", "방탈출하는 게임",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
 
         assertAll(
             () -> assertEquals(expected.getId(), actual.getId()),
@@ -106,7 +108,7 @@ class ReservationServiceTest {
             .thenThrow(EmptyResultDataAccessException.class);
 
         assertThatThrownBy(() -> reservationService.save(new ReservationAppRequest("brown", "2030-12-31", 1L, 1L)))
-            .isInstanceOf(ReservationTimeNotFoundException.class);
+            .isInstanceOf(NoSuchElementException.class);
     }
 
     @DisplayName("실패: 중복 예약을 생성하면 예외가 발생한다.")
@@ -122,7 +124,7 @@ class ReservationServiceTest {
             .thenReturn(new Theme("방탈출1", "방탈출1을 한다.", "https://url"));
 
         assertThatThrownBy(() -> reservationService.save(new ReservationAppRequest("brown", rawDate, timeId, themeId)))
-            .isInstanceOf(DuplicatedReservationException.class);
+            .isInstanceOf(DuplicatedModelException.class);
     }
 
     @DisplayName("실패: 어제 날짜에 대한 예약을 생성하면 예외가 발생한다.")

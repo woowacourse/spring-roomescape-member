@@ -6,7 +6,7 @@ import roomescape.domain.ReservationRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 import roomescape.dto.app.ThemeAppRequest;
-import roomescape.exception.DuplicatedThemeException;
+import roomescape.exception.DuplicatedModelException;
 import roomescape.exception.ReservationExistsException;
 
 @Service
@@ -30,7 +30,7 @@ public class ThemeService {
 
     private void validateDuplication(ThemeAppRequest request) {
         if (themeRepository.isNameExists(request.name())) {
-            throw new DuplicatedThemeException();
+            throw new DuplicatedModelException(Theme.class);
         }
     }
 

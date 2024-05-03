@@ -3,6 +3,7 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
@@ -12,10 +13,8 @@ import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 import roomescape.dto.app.ReservationAppRequest;
-import roomescape.exception.DuplicatedReservationException;
+import roomescape.exception.DuplicatedModelException;
 import roomescape.exception.PastReservationException;
-import roomescape.exception.ReservationTimeNotFoundException;
-import roomescape.exception.ThemeNotFoundException;
 
 @Service
 public class ReservationService {
@@ -60,7 +59,7 @@ public class ReservationService {
         try {
             return reservationTimeRepository.findById(timeId);
         } catch (EmptyResultDataAccessException e) {
-            throw new ReservationTimeNotFoundException();
+            throw new NoSuchElementException("예약에 대한 예약 시간이 존재하지 않습니다.");
         }
     }
 
@@ -71,7 +70,7 @@ public class ReservationService {
         try {
             return themeRepository.findById(themeId);
         } catch (EmptyResultDataAccessException e) {
-            throw new ThemeNotFoundException();
+            throw new NoSuchElementException("예약에 대한 테마가 존재하지 않습니다.");
         }
     }
 
@@ -86,7 +85,7 @@ public class ReservationService {
 
     private void validateDuplication(LocalDate date, Long timeId, Long themeId) {
         if (reservationRepository.isDuplicated(date, timeId, themeId)) {
-            throw new DuplicatedReservationException();
+            throw new DuplicatedModelException(Reservation.class);
         }
     }
 

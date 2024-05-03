@@ -11,7 +11,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.dto.app.ReservationTimeAppRequest;
 import roomescape.dto.app.ReservationTimeAppResponse;
-import roomescape.exception.DuplicatedReservationTimeException;
+import roomescape.exception.DuplicatedModelException;
 import roomescape.exception.ReservationExistsException;
 
 @Service
@@ -21,7 +21,7 @@ public class ReservationTimeService {
     private final ReservationRepository reservationRepository;
 
     public ReservationTimeService(ReservationTimeRepository reservationTimeRepository,
-        ReservationRepository reservationRepository) {
+                                  ReservationRepository reservationRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
         this.reservationRepository = reservationRepository;
     }
@@ -44,7 +44,7 @@ public class ReservationTimeService {
 
     private void validateDuplication(LocalTime parsedTime) {
         if (reservationTimeRepository.isStartTimeExists(parsedTime)) {
-            throw new DuplicatedReservationTimeException();
+            throw new DuplicatedModelException(ReservationTime.class);
         }
     }
 

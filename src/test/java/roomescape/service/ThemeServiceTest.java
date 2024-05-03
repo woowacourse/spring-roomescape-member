@@ -15,7 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ThemeRepository;
 import roomescape.dto.app.ThemeAppRequest;
-import roomescape.exception.DuplicatedThemeException;
+import roomescape.exception.DuplicatedModelException;
 import roomescape.exception.ReservationExistsException;
 
 @ExtendWith(MockitoExtension.class)
@@ -65,7 +65,7 @@ class ThemeServiceTest {
             .thenReturn(true);
 
         assertThatThrownBy(() -> themeService.save(new ThemeAppRequest(validName, validDescription, validThumbnail)))
-            .isInstanceOf(DuplicatedThemeException.class);
+            .isInstanceOf(DuplicatedModelException.class);
     }
 
     @DisplayName("테마 사용하는 예약이 존재하면 삭제 불가")

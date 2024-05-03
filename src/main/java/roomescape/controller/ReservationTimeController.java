@@ -19,7 +19,6 @@ import roomescape.dto.app.ReservationTimeAppResponse;
 import roomescape.dto.web.ReservationTimeUserWebResponse;
 import roomescape.dto.web.ReservationTimeWebRequest;
 import roomescape.dto.web.ReservationTimeWebResponse;
-import roomescape.exception.DuplicatedReservationTimeException;
 import roomescape.exception.ReservationExistsException;
 import roomescape.service.ReservationTimeService;
 
@@ -74,19 +73,14 @@ public class ReservationTimeController {
             .map(response -> new ReservationTimeUserWebResponse(
                 response.id(),
                 response.startAt(),
-                response.alreadyBooked())
-            ).toList();
+                response.alreadyBooked()))
+            .toList();
 
         return ResponseEntity.ok(webResponses);
     }
 
     @ExceptionHandler(ReservationExistsException.class)
     public ResponseEntity<String> handleReservationExistsException(ReservationExistsException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
-
-    @ExceptionHandler(DuplicatedReservationTimeException.class)
-    public ResponseEntity<String> handleDuplicatedReservationTimeException(DuplicatedReservationTimeException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 }

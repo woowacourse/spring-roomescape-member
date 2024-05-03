@@ -17,9 +17,7 @@ import roomescape.dto.web.ReservationTimeWebResponse;
 import roomescape.dto.web.ReservationWebRequest;
 import roomescape.dto.web.ReservationWebResponse;
 import roomescape.dto.web.ThemeWebResponse;
-import roomescape.exception.DuplicatedReservationException;
 import roomescape.exception.PastReservationException;
-import roomescape.exception.ReservationTimeNotFoundException;
 import roomescape.service.ReservationService;
 
 @RestController
@@ -69,19 +67,9 @@ public class ReservationController {
         return ResponseEntity.ok(reservationWebResponse);
     }
 
-
-    @ExceptionHandler(ReservationTimeNotFoundException.class)
-    public ResponseEntity<String> handleReservationTimeNotFoundException(ReservationTimeNotFoundException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
-
     @ExceptionHandler(PastReservationException.class)
     public ResponseEntity<String> handlePastReservationException(PastReservationException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
-    @ExceptionHandler(DuplicatedReservationException.class)
-    public ResponseEntity<String> handleDuplicatedReservationException(DuplicatedReservationException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
 }
