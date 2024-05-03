@@ -79,7 +79,7 @@ public class H2ReservationRepository implements ReservationRepository {
 
     @Override
     public Optional<Reservation> findById(final Long id) {
-        final String sql = "SELECT * FROM reservation WHERE id = ?";
+        final String sql = "SELECT * FROM reservation WHERE ID = ?";
 
         return jdbcTemplate.query(sql, this::mapRowReservation, id)
                 .stream()
@@ -126,8 +126,7 @@ public class H2ReservationRepository implements ReservationRepository {
 
     @Override
     public boolean existsByThemesAndDateAndTimeId(final Long themeId, final Long timeId, final LocalDate date) {
-        final String sql = "SELECT ID FROM RESERVATION WHERE THEME_ID = ? AND TIME_ID = ? AND DATE = ? LIMIT 1";
-
+        final String sql = "SELECT * FROM RESERVATION WHERE THEME_ID = ? AND TIME_ID = ? AND DATE = ? LIMIT 1";
         return !jdbcTemplate.query(sql, this::mapRowReservation, themeId, timeId, date).isEmpty();
     }
 

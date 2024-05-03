@@ -57,7 +57,6 @@ public class ReservationService {
         }
 
         final LocalDateTime reservationDateTime = parsedReservation.getDate().atTime(time.getStartAt());
-
         if (reservationDateTime.isBefore(LocalDateTime.now())) {
             throw new PreviousTimeException("지난 시간으로 예약할 수 없습니다.");
         }
