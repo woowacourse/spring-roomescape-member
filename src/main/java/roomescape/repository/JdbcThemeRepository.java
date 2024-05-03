@@ -33,7 +33,7 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findAll() {
-        return jdbcTemplate.query("select * from theme", rowMapper);
+        return jdbcTemplate.query("SELECT * FROM theme", rowMapper);
     }
 
     @Override
@@ -48,12 +48,12 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public void deleteById(Long id) {
-        jdbcTemplate.update("delete from theme where id = ?", id);
+        jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id);
     }
 
     @Override
     public Optional<Theme> findById(Long id) {
-        String sql = "select * from theme where id = ?";
+        String sql = "SELECT * FROM theme WHERE id = ?";
         try {
             return Optional.of(jdbcTemplate.queryForObject(sql, rowMapper, id));
         } catch (EmptyResultDataAccessException e) {

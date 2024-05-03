@@ -31,7 +31,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public List<ReservationTime> findAll() {
-        return jdbcTemplate.query("select * from reservation_time", rowMapper);
+        return jdbcTemplate.query("SELECT * FROM reservation_time", rowMapper);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public Optional<ReservationTime> findById(Long id) {
-        String sql = "select * from reservation_time where id = ?";
+        String sql = "SELECT * FROM reservation_time WHERE id = ?";
         try {
             return Optional.of(jdbcTemplate.queryForObject(sql, rowMapper, id));
         } catch (EmptyResultDataAccessException e) {
@@ -54,16 +54,19 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public boolean existByStartAt(LocalTime startAt) {
-        String sql = "select exists ( "
-                + "    select 1 "
-                + "    from reservation_time "
-                + "    where start_at = ?"
-                + ")";
+        String sql = """
+                SELECT EXISTS ( 
+                    SELECT 1 
+                    FROM reservation_time 
+                    WHERE start_at = ?
+                );
+                """;
+
         return jdbcTemplate.queryForObject(sql, Boolean.class, startAt);
     }
 
     @Override
     public void deleteById(Long id) {
-        jdbcTemplate.update("delete from reservation_time where id = ?", id);
+        jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
     }
 }
