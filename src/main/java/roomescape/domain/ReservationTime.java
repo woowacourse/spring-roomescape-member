@@ -8,7 +8,7 @@ public class ReservationTime {
     private final LocalTime startAt;
 
     public ReservationTime(LocalTime startAt) {
-        this(0L, startAt);
+        this(null, startAt);
     }
 
     public ReservationTime(Long id, LocalTime startAt) {
