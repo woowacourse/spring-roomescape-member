@@ -70,23 +70,17 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("존재하는 예약을 삭제한다.")
-    void deleteReservationPresent() {
+    @DisplayName("예약을 삭제한다.")
+    void deleteReservation() {
         // given & when & then
         assertThat(reservationService.deleteReservation(LAST_ID)).isOne();
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 예약을 삭제하면 아무일도 일어나지 않는다.")
-    void deleteReservationNotPresent() {
-        // given & when & then
-        assertThat(reservationService.deleteReservation(LAST_ID + 1)).isZero();
+        assertThat(reservationService.deleteReservation(LAST_ID)).isZero();
     }
 
     @Test
     @DisplayName("존재하지 않는 시간(id)로 예약을 할 때 예외가 발생한다.")
     void addReservationNonExistTime() {
-        ReservationRequest request = new ReservationRequest("redddy", "2024-06-21", 100L, 2L);
+        ReservationRequest request = new ReservationRequest("Redddy", "2024-06-21", 100L, 2L);
         assertThatThrownBy(() -> reservationService.addReservation(request))
                 .isInstanceOf(TimeNotFoundException.class);
     }
@@ -102,7 +96,7 @@ class ReservationServiceTest {
     @DisplayName("중복된 시간으로 예약을 할 때 예외가 발생한다.")
     void duplicateDateTimeReservation() {
         //given
-        final ReservationRequest request = new ReservationRequest("레디", "2025-11-20", 1L, 1L);
+        final ReservationRequest request = new ReservationRequest("Redddy", "2025-11-20", 1L, 1L);
 
         //when
         reservationService.addReservation(request);

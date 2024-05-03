@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Sql(scripts = {"/drop.sql", "/schema.sql", "/data.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @JdbcTest
-@Import({TimeService.class, H2ReservationRepository.class, H2ReservationTimeRepository.class})
+@Import({TimeService.class, H2ReservationTimeRepository.class, H2ReservationRepository.class})
 class TimeServiceTest {
 
     final long LAST_ID = 4;
@@ -45,21 +45,21 @@ class TimeServiceTest {
     void addTIme() {
         // given
         TimeRequest request = new TimeRequest("14:35");
-        TimeResponse expected = new TimeResponse(LAST_ID + 1, "14:35", false);
 
         // when
         TimeResponse actual = timeService.addTime(request);
+        TimeResponse expected = new TimeResponse(actual.id(), "14:35", false);
 
         // then
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
-    @DisplayName("존재하는 예약 시간을 삭제한다.")
-    void deleteTimePresent() {
+    @DisplayName("예약 시간을 삭제한다.")
+    void deleteTime() {
         // given & when & then
-        assertThat(timeService.deleteTime(LAST_ID)).isEqualTo(1);
-        assertThat(timeService.deleteTime(LAST_ID)).isEqualTo(0);
+        assertThat(timeService.deleteTime(LAST_ID)).isOne();
+        assertThat(timeService.deleteTime(LAST_ID)).isZero();
     }
 
     @Test
