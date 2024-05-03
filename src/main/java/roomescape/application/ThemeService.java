@@ -34,7 +34,7 @@ public class ThemeService {
 
     public Theme save(ThemeCreationRequest request) {
         validateDuplicateName(request.name());
-        Theme theme = new Theme(request.name(), request.description(), request.thumbnail());
+        Theme theme = request.toTheme();
         return themeRepository.save(theme);
     }
 

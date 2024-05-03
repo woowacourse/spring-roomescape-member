@@ -24,7 +24,7 @@ public class ReservationTimeService {
         if (reservationTimeRepository.existsByStartAt(request.startAt())) {
             throw new IllegalArgumentException("이미 존재하는 예약 시간입니다.");
         }
-        ReservationTime reservationTime = new ReservationTime(request.startAt());
+        ReservationTime reservationTime = request.toReservationTime();
         return reservationTimeRepository.save(reservationTime);
     }
 
@@ -33,7 +33,7 @@ public class ReservationTimeService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
     }
 
-    public List<ReservationTime> getReservationTimes() {
+    public List<ReservationTime> getReservationTimes() { // todo 메서드명 변경
         return reservationTimeRepository.findAll();
     }
 
