@@ -19,7 +19,6 @@ import roomescape.core.service.ReservationService;
 @RestController
 @RequestMapping("/reservations")
 public class ReservationController {
-
     private final ReservationService reservationService;
 
     public ReservationController(final ReservationService reservationService) {
@@ -31,7 +30,7 @@ public class ReservationController {
         validateRequest(request);
         final ReservationResponseDto result = reservationService.create(request);
         return ResponseEntity.created(URI.create("/reservations/" + result.getId()))
-            .body(result);
+                .body(result);
     }
 
     @GetMapping
@@ -40,9 +39,8 @@ public class ReservationController {
     }
 
     @GetMapping(params = {"date", "themeId"})
-    public ResponseEntity<List<BookingTimeResponseDto>> findBookable(
-        @RequestParam("date") String date, @RequestParam("themeId") Long themeId
-    ) {
+    public ResponseEntity<List<BookingTimeResponseDto>> findBookable(@RequestParam("date") String date,
+                                                                     @RequestParam("themeId") Long themeId) {
         return ResponseEntity.ok(reservationService.findBookable(date, themeId));
     }
 

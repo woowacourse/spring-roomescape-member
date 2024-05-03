@@ -15,16 +15,13 @@ import roomescape.core.repository.ThemeRepository;
 
 @Service
 public class ReservationService {
-
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
 
-    public ReservationService(
-        final ReservationRepository reservationRepository,
-        final ReservationTimeRepository reservationTimeRepository,
-        final ThemeRepository themeRepository
-    ) {
+    public ReservationService(final ReservationRepository reservationRepository,
+                              final ReservationTimeRepository reservationTimeRepository,
+                              final ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
@@ -54,8 +51,7 @@ public class ReservationService {
 
     private void validateDuplicatedReservation(final Reservation reservation, final ReservationTime reservationTime) {
         final Integer reservationCount = reservationRepository.countByDateAndTimeIdAndThemeId(
-            reservation.getDateString(),
-            reservationTime.getId(), reservation.getTheme().getId());
+                reservation.getDateString(), reservationTime.getId(), reservation.getTheme().getId());
         if (reservationCount > 0) {
             throw new IllegalArgumentException("예약 내역이 존재합니다.");
         }
@@ -64,9 +60,9 @@ public class ReservationService {
     @Transactional(readOnly = true)
     public List<ReservationResponseDto> findAll() {
         return reservationRepository.findAll()
-            .stream()
-            .map(ReservationResponseDto::new)
-            .toList();
+                .stream()
+                .map(ReservationResponseDto::new)
+                .toList();
     }
 
     @Transactional(readOnly = true)

@@ -5,7 +5,6 @@ import roomescape.core.domain.Reservation;
 import roomescape.core.dto.BookingTimeResponseDto;
 
 public interface ReservationRepository {
-
     Long save(final Reservation reservation);
 
     List<Reservation> findAll();
@@ -16,8 +15,7 @@ public interface ReservationRepository {
 
     Integer countByThemeId(final long themeId);
 
-    Integer countByDateAndTimeIdAndThemeId(final String date, final long timeId,
-        final long themeId);
+    Integer countByDateAndTimeIdAndThemeId(final String date, final long timeId, final long themeId);
 
     void deleteById(final long id);
 }

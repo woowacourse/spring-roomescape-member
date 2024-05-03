@@ -1,7 +1,6 @@
 package roomescape.core.dto;
 
 public class BookingTimeResponseDto {
-
     private Long id;
     private String startAt;
     private boolean alreadyBooked;
@@ -9,8 +8,7 @@ public class BookingTimeResponseDto {
     public BookingTimeResponseDto() {
     }
 
-    public BookingTimeResponseDto(final Long id, final String startAt,
-        final boolean alreadyBooked) {
+    public BookingTimeResponseDto(final Long id, final String startAt, final boolean alreadyBooked) {
         this.id = id;
         this.startAt = startAt;
         this.alreadyBooked = alreadyBooked;

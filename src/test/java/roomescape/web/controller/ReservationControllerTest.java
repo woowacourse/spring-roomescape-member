@@ -28,7 +28,9 @@ import roomescape.core.dto.BookingTimeResponseDto;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @TestPropertySource(properties = {"spring.config.location = classpath:application-test.yml"})
 class ReservationControllerTest {
-    private static final String TOMORROW_DATE = LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_DATE);
+    private static final String TOMORROW_DATE = LocalDate.now()
+            .plusDays(1)
+            .format(DateTimeFormatter.ISO_DATE);
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -216,11 +218,11 @@ class ReservationControllerTest {
         params.put("themeId", findLastIdOfTheme() + 1);
 
         RestAssured.given().log().all()
-            .contentType(ContentType.JSON)
-            .body(params)
-            .when().post("/reservations")
-            .then().log().all()
-            .statusCode(400);
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
     }
 
     @Test
@@ -233,28 +235,28 @@ class ReservationControllerTest {
         params.put("themeId", 1);
 
         RestAssured.given().log().all()
-            .contentType(ContentType.JSON)
-            .body(params)
-            .when().post("/reservations")
-            .then().log().all()
-            .statusCode(201);
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
 
         RestAssured.given().log().all()
-            .contentType(ContentType.JSON)
-            .body(params)
-            .when().post("/reservations")
-            .then().log().all()
-            .statusCode(400);
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
     }
 
     @Test
     @DisplayName("모든 예약 목록을 조회한다.")
     void findAllReservations() {
         RestAssured.given().log().all()
-            .when().get("/reservations")
-            .then().log().all()
-            .statusCode(200)
-            .body("size()", is(countReservation()));
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(countReservation()));
     }
 
     @Test
@@ -267,20 +269,20 @@ class ReservationControllerTest {
         params.put("themeId", 1);
 
         RestAssured.given().log().all()
-            .contentType(ContentType.JSON)
-            .body(params)
-            .when().post("/reservations")
-            .then().log().all()
-            .statusCode(201);
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
 
         List<BookingTimeResponseDto> times = RestAssured.given().log().all()
-            .when().get("/reservations?date=" + TOMORROW_DATE + "&themeId=1")
-            .then().log().all()
-            .statusCode(200).extract()
-            .jsonPath().getList(".", BookingTimeResponseDto.class);
+                .when().get("/reservations?date=" + TOMORROW_DATE + "&themeId=1")
+                .then().log().all()
+                .statusCode(200).extract()
+                .jsonPath().getList(".", BookingTimeResponseDto.class);
 
         assertThat(times).hasSize(countReservationTime())
-            .allMatch(response -> validateBookingTime(response, 1));
+                .allMatch(response -> validateBookingTime(response, 1));
     }
 
     private boolean validateBookingTime(final BookingTimeResponseDto bookingTime, final int timeId) {
@@ -300,19 +302,19 @@ class ReservationControllerTest {
         params.put("themeId", 1);
 
         RestAssured.given().log().all()
-            .contentType(ContentType.JSON)
-            .body(params)
-            .when().post("/reservations")
-            .then().log().all()
-            .statusCode(201);
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
 
         int beforeSize = countReservation();
 
         RestAssured.given().log().all()
-            .contentType(ContentType.JSON)
-            .when().delete("/reservations/" + findLastIdOfReservation())
-            .then().log().all()
-            .statusCode(204);
+                .contentType(ContentType.JSON)
+                .when().delete("/reservations/" + findLastIdOfReservation())
+                .then().log().all()
+                .statusCode(204);
 
         int afterSize = countReservation();
 

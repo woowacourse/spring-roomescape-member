@@ -9,7 +9,6 @@ import roomescape.core.dto.ReservationRequestDto;
 import roomescape.core.dto.ReservationTimeRequestDto;
 
 public class FrontController {
-
     private static final String EXIT = "exit";
 
     private final ReservationConsoleController reservationConsoleController;
@@ -17,8 +16,8 @@ public class FrontController {
     private final RequestBodyMapper requestBodyMapper;
 
     public FrontController(final ReservationConsoleController reservationConsoleController,
-        final ReservationTimeConsoleController reservationTimeConsoleController,
-        final RequestBodyMapper requestBodyMapper) {
+                           final ReservationTimeConsoleController reservationTimeConsoleController,
+                           final RequestBodyMapper requestBodyMapper) {
         this.reservationConsoleController = reservationConsoleController;
         this.reservationTimeConsoleController = reservationTimeConsoleController;
         this.requestBodyMapper = requestBodyMapper;
@@ -57,15 +56,13 @@ public class FrontController {
 
     private void saveReservation(final Request request) {
         final List<String> body = request.body();
-        final ReservationRequestDto reservationRequestDto = requestBodyMapper.mapReservationRequest(
-            body);
+        final ReservationRequestDto reservationRequestDto = requestBodyMapper.mapReservationRequest(body);
         reservationConsoleController.save(reservationRequestDto);
     }
 
     private void saveReservationTime(final Request request) {
         final List<String> body = request.body();
-        final ReservationTimeRequestDto reservationTimeRequestDto = requestBodyMapper.mapReservationTimeRequest(
-            body);
+        final ReservationTimeRequestDto reservationTimeRequestDto = requestBodyMapper.mapReservationTimeRequest(body);
         reservationTimeConsoleController.save(reservationTimeRequestDto);
     }
 }

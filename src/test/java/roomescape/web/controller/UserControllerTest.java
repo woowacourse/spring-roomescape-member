@@ -12,7 +12,6 @@ import org.springframework.test.context.TestPropertySource;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @TestPropertySource(properties = {"spring.config.location = classpath:application-test.yml"})
 class UserControllerTest {
-
     @LocalServerPort
     private int port;
 
@@ -24,8 +23,8 @@ class UserControllerTest {
     @Test
     void moveToReservationPage() {
         RestAssured.given().log().all()
-            .when().get("/reservation")
-            .then().log().all()
-            .statusCode(200);
+                .when().get("/reservation")
+                .then().log().all()
+                .statusCode(200);
     }
 }

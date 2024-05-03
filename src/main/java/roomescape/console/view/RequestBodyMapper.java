@@ -5,10 +5,9 @@ import roomescape.core.dto.ReservationRequestDto;
 import roomescape.core.dto.ReservationTimeRequestDto;
 
 public class RequestBodyMapper {
-
     public ReservationRequestDto mapReservationRequest(final List<String> body) {
         return new ReservationRequestDto(body.get(0), body.get(1), Long.parseLong(body.get(2)),
-            Long.parseLong(body.get(3)));
+                Long.parseLong(body.get(3)));
     }
 
     public ReservationTimeRequestDto mapReservationTimeRequest(final List<String> body) {

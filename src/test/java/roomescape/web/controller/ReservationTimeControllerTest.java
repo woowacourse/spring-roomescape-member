@@ -4,8 +4,6 @@ import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,8 +22,6 @@ import org.springframework.test.context.TestPropertySource;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @TestPropertySource(properties = {"spring.config.location = classpath:application-test.yml"})
 class ReservationTimeControllerTest {
-    private static final String TOMORROW_DATE = LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_DATE);
-
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -73,28 +69,28 @@ class ReservationTimeControllerTest {
         params.put("startAt", "10:10");
 
         RestAssured.given().log().all()
-            .contentType(ContentType.JSON)
-            .body(params)
-            .when().post("/times")
-            .then().log().all()
-            .statusCode(201);
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(201);
 
         RestAssured.given().log().all()
-            .contentType(ContentType.JSON)
-            .body(params)
-            .when().post("/times")
-            .then().log().all()
-            .statusCode(400);
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(400);
     }
 
     @Test
     @DisplayName("모든 시간 목록을 조회한다.")
     void findAllReservationTimes() {
         RestAssured.given().log().all()
-            .when().get("/times")
-            .then().log().all()
-            .statusCode(200)
-            .body("size()", is(countReservationTime()));
+                .when().get("/times")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(countReservationTime()));
     }
 
     @Test
@@ -113,16 +109,16 @@ class ReservationTimeControllerTest {
         params.put("startAt", "10:10");
 
         RestAssured.given().log().all()
-            .contentType(ContentType.JSON)
-            .body(params)
-            .when().post("/times")
-            .then().log().all()
-            .statusCode(201);
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(201);
 
         RestAssured.given().log().all()
-            .when().delete("/times/1")
-            .then().log().all()
-            .statusCode(400);
+                .when().delete("/times/1")
+                .then().log().all()
+                .statusCode(400);
     }
 
     private int countReservationTime() {

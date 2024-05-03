@@ -20,9 +20,9 @@ public enum RequestMethod {
 
     public static RequestMethod of(final String value) {
         return Arrays.stream(values())
-            .filter(request -> request.method.equals(value))
-            .findAny()
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 명령어입니다."));
+                .filter(request -> request.method.equals(value))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 명령어입니다."));
     }
 
     public boolean hasBody() {

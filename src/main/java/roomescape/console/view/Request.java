@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.List;
 
 public record Request(RequestMethod method, List<String> body) {
-
     public static final String REQUEST_DELIMITER = " ";
     public static final String BODY_DELIMITER = ",";
     public static final int METHOD_INDEX = 0;
@@ -20,7 +19,7 @@ public record Request(RequestMethod method, List<String> body) {
     }
 
     private static void validateInputParts(final RequestMethod method,
-        final String[] requestInputParts) {
+                                           final String[] requestInputParts) {
         if (method.hasBody() && requestInputParts.length < 2) {
             throw new IllegalArgumentException("요청 형식이 잘못되었습니다. 요청에 필요한 BODY를 모두 입력해주세요.");
         }

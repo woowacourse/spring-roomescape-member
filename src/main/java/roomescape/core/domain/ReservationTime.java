@@ -5,7 +5,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 public class ReservationTime {
-
     public static final String TIME_FORMAT = "HH:mm";
 
     private Long id;

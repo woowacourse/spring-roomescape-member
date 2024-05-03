@@ -28,13 +28,17 @@ import roomescape.web.controller.ReservationController;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @TestPropertySource(properties = {"spring.config.location = classpath:application-test.yml"})
 class MissionStepTest {
-    private static final String TOMORROW_DATE = LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_DATE);
+    private static final String TOMORROW_DATE = LocalDate.now()
+            .plusDays(1)
+            .format(DateTimeFormatter.ISO_DATE);
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @LocalServerPort
     private int port;
+    @Autowired
+    private ReservationController reservationController;
 
     @BeforeEach
     void setUp() {
@@ -130,7 +134,11 @@ class MissionStepTest {
         try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
             assertThat(connection).isNotNull();
             assertThat(connection.getCatalog()).isEqualTo("DATABASE");
-            assertThat(connection.getMetaData().getTables(null, null, "RESERVATION", null).next()).isTrue();
+            assertThat(
+                    connection.getMetaData()
+                            .getTables(null, null, "RESERVATION", null)
+                            .next()
+            ).isTrue();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -211,9 +219,6 @@ class MissionStepTest {
                 .statusCode(200)
                 .body("size()", is(countReservation()));
     }
-
-    @Autowired
-    private ReservationController reservationController;
 
     @Test
     void 구단계() {

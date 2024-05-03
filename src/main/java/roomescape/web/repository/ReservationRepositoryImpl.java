@@ -16,46 +16,45 @@ import roomescape.core.repository.ReservationRepository;
 
 @Repository
 public class ReservationRepositoryImpl implements ReservationRepository {
-
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
     public ReservationRepositoryImpl(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
-            .withTableName("reservation")
-            .usingGeneratedKeyColumns("id");
+                .withTableName("reservation")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
     public Long save(final Reservation reservation) {
         SqlParameterSource parameters = new MapSqlParameterSource()
-            .addValue("name", reservation.getName())
-            .addValue("date", reservation.getDate())
-            .addValue("time_id", reservation.getTimeId())
-            .addValue("theme_id", reservation.getThemeId());
+                .addValue("name", reservation.getName())
+                .addValue("date", reservation.getDate())
+                .addValue("time_id", reservation.getTimeId())
+                .addValue("theme_id", reservation.getThemeId());
         return jdbcInsert.executeAndReturnKey(parameters).longValue();
     }
 
     @Override
     public List<Reservation> findAll() {
         final String query = """
-            SELECT
-                r.id as reservation_id,
-                r.name,
-                r.date,
-                t.id as time_id,
-                t.start_at as time_value,
-                m.id as theme_id,
-                m.name as theme_name,
-                m.description as theme_description,
-                m.thumbnail as theme_thumbnail
-            FROM reservation as r
-            inner join reservation_time as t
-            on r.time_id = t.id
-            inner join theme as m
-            on r.theme_id = m.id
-            """;
+                SELECT
+                    r.id as reservation_id,
+                    r.name,
+                    r.date,
+                    t.id as time_id,
+                    t.start_at as time_value,
+                    m.id as theme_id,
+                    m.name as theme_name,
+                    m.description as theme_description,
+                    m.thumbnail as theme_thumbnail
+                FROM reservation as r
+                inner join reservation_time as t
+                on r.time_id = t.id
+                inner join theme as m
+                on r.theme_id = m.id
+                """;
         return jdbcTemplate.query(query, getReservationRowMapper());
     }
 
@@ -80,13 +79,13 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     @Override
     public List<BookingTimeResponseDto> findAllByDateAndThemeId(final String date, final long themeId) {
         final String query = """
-            SELECT t.id, t.start_at, r.id IS NOT NULL AS already_booked
-            FROM reservation_time AS t 
-            LEFT JOIN (
-                SELECT * FROM reservation WHERE date LIKE ? AND theme_id = ?
-            ) AS r
-            ON t.id = r.time_id;
-            """;
+                SELECT t.id, t.start_at, r.id IS NOT NULL AS already_booked
+                FROM reservation_time AS t 
+                LEFT JOIN (
+                    SELECT * FROM reservation WHERE date LIKE ? AND theme_id = ?
+                ) AS r
+                ON t.id = r.time_id;
+                """;
         return jdbcTemplate.query(query, getBookingTimeRowMapper(), date, themeId);
     }
 
@@ -103,34 +102,34 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     @Override
     public Integer countByTimeId(final long timeId) {
         final String query = """
-            SELECT count(*)
-            FROM reservation
-            WHERE time_id = ?
-            """;
+                SELECT count(*)
+                FROM reservation
+                WHERE time_id = ?
+                """;
         return jdbcTemplate.queryForObject(query, Integer.class, timeId);
     }
 
     @Override
     public Integer countByThemeId(final long themeId) {
         final String query = """
-            SELECT count(*)
-            FROM reservation
-            WHERE theme_id = ?
-            """;
+                SELECT count(*)
+                FROM reservation
+                WHERE theme_id = ?
+                """;
         return jdbcTemplate.queryForObject(query, Integer.class, themeId);
     }
 
     @Override
     public Integer countByDateAndTimeIdAndThemeId(final String date, final long timeId, final long themeId) {
         final String query = """
-            SELECT count(*)
-            FROM reservation as r
-            inner join reservation_time as t
-            on r.time_id = t.id
-            inner join theme as m
-            on r.theme_id = m.id
-            WHERE r.date = ? and t.id = ? and m.id = ?
-            """;
+                SELECT count(*)
+                FROM reservation as r
+                inner join reservation_time as t
+                on r.time_id = t.id
+                inner join theme as m
+                on r.theme_id = m.id
+                WHERE r.date = ? and t.id = ? and m.id = ?
+                """;
         return jdbcTemplate.queryForObject(query, Integer.class, date, timeId, themeId);
     }
 

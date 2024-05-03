@@ -11,7 +11,6 @@ import roomescape.core.repository.ThemeRepository;
 
 @Service
 public class ThemeService {
-
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
 
@@ -39,9 +38,9 @@ public class ThemeService {
     @Transactional(readOnly = true)
     public List<ThemeResponseDto> findAll() {
         return themeRepository.findAll()
-            .stream()
-            .map(ThemeResponseDto::new)
-            .toList();
+                .stream()
+                .map(ThemeResponseDto::new)
+                .toList();
     }
 
     @Transactional
@@ -55,8 +54,8 @@ public class ThemeService {
 
     public List<ThemeResponseDto> findPopular() {
         return themeRepository.findPopular()
-            .stream()
-            .map(ThemeResponseDto::new)
-            .toList();
+                .stream()
+                .map(ThemeResponseDto::new)
+                .toList();
     }
 }

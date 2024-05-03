@@ -3,7 +3,6 @@ package roomescape.core.dto;
 import roomescape.core.domain.Reservation;
 
 public class ReservationResponseDto {
-
     private Long id;
     private String name;
     private String date;

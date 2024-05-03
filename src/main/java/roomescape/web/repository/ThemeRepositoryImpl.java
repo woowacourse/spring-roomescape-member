@@ -15,30 +15,29 @@ import roomescape.core.repository.ThemeRepository;
 
 @Repository
 public class ThemeRepositoryImpl implements ThemeRepository {
-
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
     public ThemeRepositoryImpl(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
-            .withTableName("theme")
-            .usingGeneratedKeyColumns("id");
+                .withTableName("theme")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
     public Long save(final Theme theme) {
         SqlParameterSource parameters = new MapSqlParameterSource()
-            .addValue("name", theme.getName())
-            .addValue("description", theme.getDescription())
-            .addValue("thumbnail", theme.getThumbnail());
+                .addValue("name", theme.getName())
+                .addValue("description", theme.getDescription())
+                .addValue("thumbnail", theme.getThumbnail());
         return jdbcInsert.executeAndReturnKey(parameters).longValue();
     }
 
     @Override
     public List<Theme> findAll() {
         return jdbcTemplate.query("SELECT id, name, description, thumbnail FROM theme",
-            getThemeRowMapper());
+                getThemeRowMapper());
     }
 
     @Override
@@ -47,14 +46,14 @@ public class ThemeRepositoryImpl implements ThemeRepository {
         final LocalDate lastWeek = today.minusWeeks(1);
 
         final String query = """
-            SELECT t.id, t.name, t.description, t.thumbnail
-            FROM theme as t
-            JOIN reservation as r ON t.id = r.theme_id
-            WHERE r.date BETWEEN ? AND ?
-            GROUP BY t.id
-            ORDER BY count(r.id) DESC
-            LIMIT 10
-            """;
+                SELECT t.id, t.name, t.description, t.thumbnail
+                FROM theme as t
+                JOIN reservation as r ON t.id = r.theme_id
+                WHERE r.date BETWEEN ? AND ?
+                GROUP BY t.id
+                ORDER BY count(r.id) DESC
+                LIMIT 10
+                """;
         return jdbcTemplate.query(query, getThemeRowMapper(), lastWeek, today);
     }
 
@@ -82,10 +81,10 @@ public class ThemeRepositoryImpl implements ThemeRepository {
     @Override
     public Integer countByName(final String name) {
         final String query = """
-            SELECT count(*)
-            FROM theme as t
-            WHERE t.name = ?
-            """;
+                SELECT count(*)
+                FROM theme as t
+                WHERE t.name = ?
+                """;
         return jdbcTemplate.queryForObject(query, Integer.class, name);
     }
 

@@ -17,7 +17,6 @@ import roomescape.core.service.ReservationTimeService;
 @RestController
 @RequestMapping("/times")
 public class ReservationTimeController {
-
     private final ReservationTimeService reservationTimeService;
 
     public ReservationTimeController(final ReservationTimeService reservationTimeService) {
@@ -29,7 +28,7 @@ public class ReservationTimeController {
         validateRequest(request);
         final ReservationTimeResponseDto response = reservationTimeService.create(request);
         return ResponseEntity.created(URI.create("/times/" + response.getId()))
-            .body(response);
+                .body(response);
     }
 
     @GetMapping

@@ -9,7 +9,6 @@ import roomescape.core.dto.BookingTimeResponseDto;
 import roomescape.core.repository.ReservationRepository;
 
 public class ReservationConsoleRepository implements ReservationRepository {
-
     private final List<Reservation> reservations;
     private final AtomicLong id;
 
@@ -21,11 +20,12 @@ public class ReservationConsoleRepository implements ReservationRepository {
     @Override
     public Long save(final Reservation reservation) {
         final Reservation persistReservation = new Reservation(
-            id.getAndIncrement(),
-            reservation.getName(),
-            reservation.getDateString(),
-            reservation.getReservationTime(),
-            reservation.getTheme());
+                id.getAndIncrement(),
+                reservation.getName(),
+                reservation.getDateString(),
+                reservation.getReservationTime(),
+                reservation.getTheme()
+        );
         reservations.add(persistReservation);
         return persistReservation.getId();
     }
@@ -36,8 +36,7 @@ public class ReservationConsoleRepository implements ReservationRepository {
     }
 
     @Override
-    public List<BookingTimeResponseDto> findAllByDateAndThemeId(String date,
-        long themeId) {
+    public List<BookingTimeResponseDto> findAllByDateAndThemeId(String date, long themeId) {
         return List.of();
     }
 
@@ -52,8 +51,7 @@ public class ReservationConsoleRepository implements ReservationRepository {
     }
 
     @Override
-    public Integer countByDateAndTimeIdAndThemeId(final String date, final long timeId,
-        final long themeId) {
+    public Integer countByDateAndTimeIdAndThemeId(final String date, final long timeId, final long themeId) {
         return null;
     }
 

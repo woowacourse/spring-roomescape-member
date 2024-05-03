@@ -11,14 +11,11 @@ import roomescape.core.repository.ReservationTimeRepository;
 
 @Service
 public class ReservationTimeService {
-
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;
 
-    public ReservationTimeService(
-        final ReservationTimeRepository reservationTimeRepository,
-        final ReservationRepository reservationRepository
-    ) {
+    public ReservationTimeService(final ReservationTimeRepository reservationTimeRepository,
+                                  final ReservationRepository reservationRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
         this.reservationRepository = reservationRepository;
     }
@@ -32,7 +29,8 @@ public class ReservationTimeService {
     }
 
     private void validateDuplicatedStartAt(final ReservationTime reservationTime) {
-        final Integer reservationTimeCount = reservationTimeRepository.countByStartAt(reservationTime.getStartAtString());
+        final Integer reservationTimeCount = reservationTimeRepository.countByStartAt(
+                reservationTime.getStartAtString());
         if (reservationTimeCount > 0) {
             throw new IllegalArgumentException("해당 시간이 이미 존재합니다.");
         }
@@ -41,9 +39,9 @@ public class ReservationTimeService {
     @Transactional(readOnly = true)
     public List<ReservationTimeResponseDto> findAll() {
         return reservationTimeRepository.findAll()
-            .stream()
-            .map(ReservationTimeResponseDto::new)
-            .toList();
+                .stream()
+                .map(ReservationTimeResponseDto::new)
+                .toList();
     }
 
     @Transactional

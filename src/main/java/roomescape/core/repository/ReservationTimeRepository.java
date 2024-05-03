@@ -4,7 +4,6 @@ import java.util.List;
 import roomescape.core.domain.ReservationTime;
 
 public interface ReservationTimeRepository {
-
     Long save(final ReservationTime reservationTime);
 
     List<ReservationTime> findAll();
