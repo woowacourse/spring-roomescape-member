@@ -3,6 +3,8 @@ package roomescape.infrastructure;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -36,10 +38,14 @@ public class JdbcReservationTimeRepositoryImpl implements ReservationTimeReposit
     }
 
     @Override
-    public ReservationTime findById(Long id) {
+    public Optional<ReservationTime> findById(Long id) {
         String sql = "SELECT * FROM reservation_time WHERE id = ?";
 
-        return jdbcTemplate.queryForObject(sql, getReservationTimeRowMapper(), id);
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, getReservationTimeRowMapper(), id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override

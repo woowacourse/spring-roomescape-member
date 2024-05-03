@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +19,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.dao.EmptyResultDataAccessException;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationRepository;
@@ -53,12 +53,16 @@ class ReservationServiceTest {
         String name = "브리";
         String time = "10:00";
         ReservationTime reservationTime = new ReservationTime(timeId, time);
+        Theme theme = new Theme("방탈출", "방탈출하는 게임",
+            "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         Reservation reservation = new Reservation(name, reservationDate, reservationTime,
-            new Theme("방탈출", "방탈출하는 게임",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+            theme);
 
         when(reservationTimeRepository.findById(timeId))
-            .thenReturn(reservationTime);
+            .thenReturn(Optional.of(reservationTime));
+
+        when(themeRepository.findById(themeId))
+            .thenReturn(Optional.of(theme));
 
         when(reservationRepository.save(any(Reservation.class)))
             .thenReturn(
@@ -88,9 +92,9 @@ class ReservationServiceTest {
     @NullAndEmptySource
     void save_IllegalName(String name) {
         when(reservationTimeRepository.findById(1L))
-            .thenReturn(new ReservationTime("10:00"));
+            .thenReturn(Optional.of(new ReservationTime("10:00")));
         when(themeRepository.findById(1L))
-            .thenReturn(new Theme("방탈출1", "방탈출1을 한다.", "https://url"));
+            .thenReturn(Optional.of(new Theme("방탈출1", "방탈출1을 한다.", "https://url")));
         assertThatThrownBy(
             () -> reservationService.save(new ReservationAppRequest(name, "2050-01-01", 1L, 1L)))
             .isInstanceOf(IllegalArgumentException.class);
@@ -107,9 +111,6 @@ class ReservationServiceTest {
     @DisplayName("실패: 존재하지 않는 시간 ID 입력 시 예외가 발생한다.")
     @Test
     void save_TimeIdDoesntExist() {
-        when(reservationTimeRepository.findById(1L))
-            .thenThrow(EmptyResultDataAccessException.class);
-
         assertThatThrownBy(() -> reservationService.save(new ReservationAppRequest("brown", "2030-12-31", 1L, 1L)))
             .isInstanceOf(NoSuchElementException.class);
     }
@@ -121,10 +122,12 @@ class ReservationServiceTest {
         long timeId = 1L;
         long themeId = 1L;
 
+        when(themeRepository.findById(themeId))
+            .thenReturn(Optional.of(new Theme("방탈출1", "방탈출1을 한다.", "https://url")));
+        when(reservationTimeRepository.findById(timeId))
+            .thenReturn(Optional.of(new ReservationTime("10:00")));
         when(reservationRepository.isDuplicated(LocalDate.parse(rawDate), timeId, themeId))
             .thenReturn(true);
-        when(themeRepository.findById(themeId))
-            .thenReturn(new Theme("방탈출1", "방탈출1을 한다.", "https://url"));
 
         assertThatThrownBy(() -> reservationService.save(new ReservationAppRequest("brown", rawDate, timeId, themeId)))
             .isInstanceOf(DuplicatedModelException.class);
@@ -140,9 +143,9 @@ class ReservationServiceTest {
 
         ReservationTime reservationTime = new ReservationTime("10:00");
         when(reservationTimeRepository.findById(timeId))
-            .thenReturn(reservationTime);
+            .thenReturn(Optional.of(reservationTime));
         when(themeRepository.findById(themeId))
-            .thenReturn(new Theme("방탈출1", "방탈출1을 한다.", "https://url"));
+            .thenReturn(Optional.of(new Theme("방탈출1", "방탈출1을 한다.", "https://url")));
 
         assertThatThrownBy(
             () -> reservationService.save(new ReservationAppRequest("brown", yesterday.toString(), timeId, themeId))
@@ -162,9 +165,9 @@ class ReservationServiceTest {
         Theme theme = new Theme("방탈출1", "방탈출1을 한다.", "https://url");
 
         when(reservationTimeRepository.findById(timeId))
-            .thenReturn(reservationTime);
+            .thenReturn(Optional.of(reservationTime));
         when(themeRepository.findById(themeId))
-            .thenReturn(theme);
+            .thenReturn(Optional.of(theme));
 
         assertThatThrownBy(
             () -> reservationService.save(new ReservationAppRequest("brown", today.toString(), timeId, themeId))

@@ -59,7 +59,7 @@ class JdbcThemeRepositoryImplTest {
     void findById() {
         Theme theme = new Theme("방탈출1", "방탈출1을 한다.", "https://url1");
         Theme saved = themeRepository.save(theme);
-        assertThat(themeRepository.findById(saved.getId())).isEqualTo(saved);
+        assertThat(themeRepository.findById(saved.getId()).get()).isEqualTo(saved);
     }
 
     @DisplayName("테마 이름을 받아서 개수를 센다.")

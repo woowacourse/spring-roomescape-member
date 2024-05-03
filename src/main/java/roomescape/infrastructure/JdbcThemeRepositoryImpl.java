@@ -3,6 +3,8 @@ package roomescape.infrastructure;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -51,9 +53,14 @@ public class JdbcThemeRepositoryImpl implements ThemeRepository {
     }
 
     @Override
-    public Theme findById(Long id) {
+    public Optional<Theme> findById(Long id) {
         String sql = "SELECT * FROM theme WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, getThemeRowMapper(), id);
+
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, getThemeRowMapper(), id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override

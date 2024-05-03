@@ -2,7 +2,6 @@ package roomescape.service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
@@ -47,22 +46,18 @@ public class ReservationService {
         if (timeId == null) {
             throw new IllegalArgumentException("시간 id는 null이 입력될 수 없습니다.");
         }
-        try {
-            return reservationTimeRepository.findById(timeId);
-        } catch (EmptyResultDataAccessException e) {
-            throw new NoSuchElementException("예약에 대한 예약 시간이 존재하지 않습니다.");
-        }
+
+        return reservationTimeRepository.findById(timeId)
+            .orElseThrow(() -> new NoSuchElementException("예약에 대한 예약시간이 존재하지 않습니다."));
     }
 
     private Theme findTheme(Long themeId) {
         if (themeId == null) {
             throw new IllegalArgumentException("테마 id는 null이 입력될 수 없습니다.");
         }
-        try {
-            return themeRepository.findById(themeId);
-        } catch (EmptyResultDataAccessException e) {
-            throw new NoSuchElementException("예약에 대한 테마가 존재하지 않습니다.");
-        }
+
+        return themeRepository.findById(themeId)
+            .orElseThrow(() -> new NoSuchElementException("예약에 대한 테마가 존재하지 않습니다."));
     }
 
     private void validatePastReservation(ReservationDate date, ReservationTime time) {

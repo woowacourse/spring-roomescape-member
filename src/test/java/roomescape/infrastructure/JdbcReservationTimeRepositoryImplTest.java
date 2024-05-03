@@ -28,7 +28,7 @@ class JdbcReservationTimeRepositoryImplTest {
         ReservationTime reservationTime = new ReservationTime(LocalTime.MIDNIGHT.toString());
 
         ReservationTime actual = reservationTimeRepository.save(reservationTime);
-        ReservationTime expected = reservationTimeRepository.findById(actual.getId());
+        ReservationTime expected = reservationTimeRepository.findById(actual.getId()).get();
 
         assertAll(
             () -> assertEquals(expected.getId(), actual.getId()),
@@ -42,7 +42,7 @@ class JdbcReservationTimeRepositoryImplTest {
         ReservationTime reservationTime = new ReservationTime(LocalTime.MIDNIGHT.toString());
         ReservationTime save = reservationTimeRepository.save(reservationTime);
 
-        ReservationTime actual = reservationTimeRepository.findById(save.getId());
+        ReservationTime actual = reservationTimeRepository.findById(save.getId()).get();
         ReservationTime expected = new ReservationTime(save.getId(), save.getStartAt().toString());
 
         assertAll(

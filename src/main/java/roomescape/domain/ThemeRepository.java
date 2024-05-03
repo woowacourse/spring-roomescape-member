@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ThemeRepository {
 
@@ -10,7 +11,7 @@ public interface ThemeRepository {
 
     List<Theme> findAll();
 
-    Theme findById(Long id);
+    Optional<Theme> findById(Long id);
 
     boolean isNameExists(String name);
 
