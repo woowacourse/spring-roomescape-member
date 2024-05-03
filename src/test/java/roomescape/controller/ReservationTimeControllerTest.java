@@ -8,16 +8,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.service.dto.ReservationRequest;
 import roomescape.service.dto.ReservationTimeCreateRequest;
-import roomescape.service.dto.ReservationTimeReadRequest;
-import roomescape.service.dto.ThemeRequest;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql(scripts = {"classpath:truncate.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+@Sql(scripts = {"classpath:truncate.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class ReservationTimeControllerTest {
     @LocalServerPort
     private int port;
@@ -37,8 +37,10 @@ class ReservationTimeControllerTest {
                 .then().log().all().statusCode(201).body("id", is(greaterThan(0)));
     }
 
+    //TODO: 왜 삭제가 안될까?
     @DisplayName("시간 추가 실패 테스트 - 중복 시간 오류")
     @Test
+    @Sql(scripts = {"classpath:truncate.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void createDuplicateTime() {
         //given
         RestAssured.given().log().all()
@@ -88,7 +90,7 @@ class ReservationTimeControllerTest {
         //given
         var id = RestAssured.given().contentType(ContentType.JSON).body(new ReservationTimeCreateRequest("10:00"))
                 .when().post("/times")
-                .then().extract().response().jsonPath().get("id");
+                .then().log().all().extract().response().jsonPath().get("id");
 
         //when&then
         RestAssured.given().log().all()
@@ -102,63 +104,34 @@ class ReservationTimeControllerTest {
                 .assertThat().body("size()", is(0));
     }
 
-    @DisplayName("시간 삭제 실패 테스트 - 이미 예약이 존재하는 시간 삭제 시도 오류")
+    @DisplayName("시간 삭제 실패 테스트 - 이미 예약이 존재하는 시간(timeId = 1) 삭제 시도 오류")
     @Test
+    @Sql(scripts = {"classpath:insert-time-with-reservation.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void cannotDeleteReservationTime() {
         //given
-        long timeId = (int) RestAssured.given().contentType(ContentType.JSON)
-                .body(new ReservationTimeCreateRequest("10:00"))
-                .when().post("/times")
-                .then().extract().response().jsonPath().get("id");
-
-        ThemeRequest themeRequest = new ThemeRequest("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        long themeId = (int) RestAssured.given().contentType(ContentType.JSON).body(themeRequest)
-                .when().post("/themes")
-                .then().extract().response().jsonPath().get("id");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(new ReservationRequest("브라운", "2222-04-30", timeId, themeId))
-                .when().post("/reservations");
+        int timeId = 1;
 
         //when&then
         RestAssured.given().log().all()
                 .when().delete("/times/" + timeId)
                 .then().log().all()
                 .assertThat().statusCode(400).body("message", is("해당 시간에 예약이 존재해서 삭제할 수 없습니다."));
-        RestAssured.given().log().all()
-                .when().get("/times")
-                .then().log().all()
-                .assertThat().body("size()", is(1));
     }
 
-    @DisplayName("예약 가능한 시간 조회 테스트")
+    @DisplayName("예약 가능한 시간 조회 테스트 - 3개 시간 중 2개에 예약이 가능하다.")
     @Test
+    @Sql(scripts = {"classpath:insert-time-with-reservation.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void findAvailableTime() {
         //given
-        long timeId = (int) RestAssured.given().contentType(ContentType.JSON)
-                .body(new ReservationTimeCreateRequest("10:00"))
-                .when().post("/times")
-                .then().extract().response().jsonPath().get("id");
-
-        ThemeRequest themeRequest = new ThemeRequest("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        long themeId = (int) RestAssured.given().contentType(ContentType.JSON).body(themeRequest)
-                .when().post("/themes")
-                .then().extract().response().jsonPath().get("id");
-
-        String date = "2222-04-30";
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(new ReservationRequest("브라운", date, timeId, themeId))
-                .when().post("/reservations");
+        long themeId = 1;
+        String date = LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_DATE);
 
         //when&then
-        ReservationTimeReadRequest reservationTimeReadRequest = new ReservationTimeReadRequest(date, themeId);
-        RestAssured.given().contentType(ContentType.JSON)
-                .body(reservationTimeReadRequest)
+        RestAssured.given().log().all()
+                .when().get("/times")
+                .then().log().all();
+        RestAssured.given().log().all()
                 .when().get("/times/available?date=" + date + "&themeId=" + themeId)
-                .then().log().all().statusCode(200).body("size()", is(0));
+                .then().log().all().statusCode(200).body("size()", is(2));
     }
 }

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.dao.ReservationRepository;
 import roomescape.dao.ThemeRepository;
 import roomescape.domain.Reservation;
@@ -24,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
+@Sql(scripts = {"classpath:truncate.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class ReservationTimeServiceTest {
     @Autowired
     private ReservationTimeService reservationTimeService;
@@ -31,19 +33,6 @@ class ReservationTimeServiceTest {
     private ThemeRepository themeRepository;
     @Autowired
     private ReservationRepository reservationRepository;
-
-    @AfterEach
-    void init() {
-        for (final Reservation reservation : reservationRepository.findAll()) {
-            reservationRepository.deleteById(reservation.getId());
-        }
-        for (final ReservationTimeResponse reservationTimeResponse : reservationTimeService.findAll()) {
-            reservationTimeService.deleteById(reservationTimeResponse.id());
-        }
-        for (Theme theme : themeRepository.findAll()) {
-            themeRepository.deleteById(theme.getId());
-        }
-    }
 
     @DisplayName("새로운 예약 시간을 저장한다.")
     @Test

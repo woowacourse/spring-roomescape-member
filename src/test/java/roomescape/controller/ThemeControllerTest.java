@@ -18,7 +18,7 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@Sql(scripts = {"classpath:truncate.sql"}, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
+@Sql(scripts = {"classpath:truncate.sql"}, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 class ThemeControllerTest {
     @LocalServerPort
     private int port;

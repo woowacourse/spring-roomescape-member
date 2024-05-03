@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.dao.ReservationRepository;
 import roomescape.dao.ReservationTimeRepository;
 import roomescape.domain.Reservation;
@@ -24,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
+@Sql(scripts = {"classpath:truncate.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class ThemeServiceTest {
 
     @Autowired
@@ -36,16 +38,6 @@ class ThemeServiceTest {
     private static Theme convertToTheme(ThemeResponse themeResponse) {
         return new Theme(themeResponse.id(),
                 new Theme(themeResponse.name(), themeResponse.description(), themeResponse.thumbnail()));
-    }
-
-    @AfterEach
-    void init() {
-        for (Reservation reservation : reservationRepository.findAll()) {
-            reservationRepository.deleteById(reservation.getId());
-        }
-        for (ThemeResponse themeResponse : themeService.findAll()) {
-            themeService.deleteById(themeResponse.id());
-        }
     }
 
     @DisplayName("테마를 생성한다.")

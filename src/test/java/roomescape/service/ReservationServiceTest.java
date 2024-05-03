@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.dao.ReservationTimeRepository;
 import roomescape.dao.ThemeRepository;
 import roomescape.domain.ReservationTime;
@@ -21,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@Sql(scripts = {"classpath:truncate.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class ReservationServiceTest {
     @Autowired
     private ReservationService reservationService;
@@ -37,19 +39,6 @@ class ReservationServiceTest {
         theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
 
-    }
-
-    @AfterEach
-    void init() {
-        for (final ReservationResponse reservationResponse : reservationService.findAll()) {
-            reservationService.deleteById(reservationResponse.id());
-        }
-        for (final ReservationTime reservationTime : reservationTimeRepository.findAll()) {
-            reservationTimeRepository.deleteById(reservationTime.getId());
-        }
-        for (final Theme theme : themeRepository.findAll()) {
-            themeRepository.deleteById(theme.getId());
-        }
     }
 
     @DisplayName("새로운 예약을 저장한다.")
