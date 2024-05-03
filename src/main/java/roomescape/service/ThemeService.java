@@ -33,7 +33,7 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> getPopularThemes(final PopularThemeRequest popularThemeRequest) {
-        return reservationRepository.findWeeklyTopThemesOrderByCount(popularThemeRequest.startDate(), popularThemeRequest.endDate(), popularThemeRequest.limit())
+        return reservationRepository.findTopThemesDurationOrderByCount(popularThemeRequest.startDate(), popularThemeRequest.endDate(), popularThemeRequest.limit())
                 .stream()
                 .map(ThemeResponse::new)
                 .toList();

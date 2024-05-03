@@ -11,6 +11,7 @@ public record ReservationTimeSaveRequest(
         @JsonFormat(shape = Shape.STRING, pattern = "HH:mm", timezone = "Asia/Seoul")
         LocalTime startAt
 ) {
+
     public ReservationTime toReservationTime() {
         return new ReservationTime(startAt);
     }
