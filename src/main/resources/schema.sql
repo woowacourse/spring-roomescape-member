@@ -1,9 +1,9 @@
 create table if not exists theme
 (
     id          bigint       not null auto_increment,
-    name        varchar(255) not null,
-    description varchar(255) not null,
-    thumbnail   varchar(255) not null,
+    name        varchar(20) not null,
+    description varchar(200) not null,
+    thumbnail   varchar(200) not null,
     primary key (id)
 );
 
@@ -17,7 +17,7 @@ create table if not exists reservation_time
 create table if not exists reservation
 (
     id       bigint       not null auto_increment,
-    name     varchar(255) not null,
+    name     varchar(20) not null,
     date     date         not null,
     time_id  bigint       not null,
     theme_id bigint       not null,
