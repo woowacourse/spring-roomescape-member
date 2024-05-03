@@ -69,19 +69,7 @@ class ReservationControllerTest {
     @DisplayName("예약을 삭제한다. -> 204")
     @Test
     void deleteBy() throws Exception {
-        long timeId = 1L;
-        long themeId = 1L;
-        ReservationDate date = new ReservationDate("2040-04-04");
-
-        String name = "브리";
-        Reservation reservation = new Reservation(1L, name, date, new ReservationTime(LocalTime.MIN.toString()),
-            new Theme("방탈출", "방탈출하는 게임",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
-
-        when(reservationService.save(new ReservationAppRequest(name, date.toString(), timeId, themeId)))
-            .thenReturn(reservation);
-
-        mvc.perform(delete("/reservations/" + reservation.getId()))
+        mvc.perform(delete("/reservations/" + 1L))
             .andExpect(status().isNoContent());
     }
 
@@ -95,57 +83,30 @@ class ReservationControllerTest {
     @DisplayName("실패: 예약 추가에서 IllegalArgumentException 발생 시 -> 400")
     @Test
     void reserve_BadRequest() throws Exception {
-        long timeId = 1L;
-        long themeId = 1L;
-        String rawDate = "2040-01-01";
-        String name = "brown";
-
-        String requestBody = objectMapper.writeValueAsString(new ReservationWebRequest(name, rawDate, timeId, themeId));
-
         when(reservationService.save(any(ReservationAppRequest.class)))
             .thenThrow(IllegalArgumentException.class);
 
-        mvc.perform(post("/reservations")
-                .content(requestBody)
-                .contentType(MediaType.APPLICATION_JSON))
+        mvc.perform(post("/reservations"))
             .andExpect(status().isBadRequest());
     }
 
     @DisplayName("중복 예약 시도 -> 400")
     @Test
     void reserve_Duplication() throws Exception {
-        long timeId = 1L;
-        long themeId = 1L;
-        String rawDate = "2040-01-01";
-        String name = "brown";
-
-        String requestBody = objectMapper.writeValueAsString(new ReservationWebRequest(name, rawDate, timeId, themeId));
-
-        when(reservationService.save(new ReservationAppRequest(name, rawDate, timeId, themeId)))
+        when(reservationService.save(any(ReservationAppRequest.class)))
             .thenThrow(DuplicatedDomainException.class);
 
-        mvc.perform(post("/reservations")
-                .content(requestBody)
-                .contentType(MediaType.APPLICATION_JSON))
+        mvc.perform(post("/reservations"))
             .andExpect(status().isBadRequest());
     }
 
     @DisplayName("과거 시간에 예약을 넣을 경우 -> 400")
     @Test
     void reserve_PastTime() throws Exception {
-        long timeId = 1L;
-        long themeId = 1L;
-        String rawDate = "2000-01-01";
-        String name = "brown";
-
-        when(reservationService.save(new ReservationAppRequest(name, rawDate, timeId, themeId)))
+        when(reservationService.save(any(ReservationAppRequest.class)))
             .thenThrow(PastReservationException.class);
 
-        String requestBody = objectMapper.writeValueAsString(new ReservationWebRequest(name, rawDate, timeId, themeId));
-
-        mvc.perform(post("/reservations")
-                .content(requestBody)
-                .contentType(MediaType.APPLICATION_JSON))
+        mvc.perform(post("/reservations"))
             .andExpect(status().isBadRequest());
     }
 }

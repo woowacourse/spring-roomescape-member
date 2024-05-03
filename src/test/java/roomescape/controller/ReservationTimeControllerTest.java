@@ -58,14 +58,7 @@ class ReservationTimeControllerTest {
     @DisplayName("예약 시간을 삭제한다 -> 204")
     @Test
     void deleteBy() throws Exception {
-        long id = 1L;
-        String time = LocalTime.now().toString();
-        ReservationTime reservationTime = new ReservationTime(id, time);
-
-        when(reservationTimeService.save(new ReservationTimeAppRequest(time.toString())))
-            .thenReturn(reservationTime);
-
-        mvc.perform(delete("/times/" + reservationTime.getId()))
+        mvc.perform(delete("/times/" + 1L))
             .andExpect(status().isNoContent());
     }
 
@@ -79,15 +72,10 @@ class ReservationTimeControllerTest {
     @DisplayName("예약 시간 포맷이 잘못될 경우 -> 400")
     @Test
     void create_IllegalTimeFormat() throws Exception {
-        String illegalTime = "24:00";
-        String requestBody = objectMapper.writeValueAsString(new ReservationTimeWebRequest(1L, illegalTime));
-
-        when(reservationTimeService.save(new ReservationTimeAppRequest(illegalTime)))
+        when(reservationTimeService.save(new ReservationTimeAppRequest("24:00")))
             .thenThrow(IllegalArgumentException.class);
 
-        mvc.perform(post("/times")
-                .content(requestBody)
-                .contentType(MediaType.APPLICATION_JSON))
+        mvc.perform(post("/times"))
             .andExpect(status().isBadRequest());
     }
 
@@ -95,13 +83,11 @@ class ReservationTimeControllerTest {
     @Test
     void delete_ReservationExists() throws Exception {
         long timeId = 1L;
-        String time = LocalTime.now().toString();
-        ReservationTime reservationTime = new ReservationTime(timeId, time);
 
         when(reservationTimeService.delete(timeId))
             .thenThrow(ReservationExistsException.class);
 
-        mvc.perform(delete("/times/" + reservationTime.getId()))
+        mvc.perform(delete("/times/" + timeId))
             .andExpect(status().isBadRequest());
     }
 
@@ -112,11 +98,7 @@ class ReservationTimeControllerTest {
         when(reservationTimeService.save(new ReservationTimeAppRequest(rawTime)))
             .thenThrow(DuplicatedDomainException.class);
 
-        String requestBody = objectMapper.writeValueAsString(new ReservationTimeWebRequest(4L, rawTime));
-
-        mvc.perform(post("/times")
-                .content(requestBody)
-                .contentType(MediaType.APPLICATION_JSON))
+        mvc.perform(post("/times"))
             .andExpect(status().isBadRequest());
     }
 }
