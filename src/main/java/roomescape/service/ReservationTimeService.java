@@ -63,11 +63,12 @@ public class ReservationTimeService {
             List<Reservation> reservations,
             ReservationTimeWithBookStatusRequest timeRequest,
             ReservationTime reservationTime) {
-        LocalDate date = LocalDate.parse(timeRequest.date());
+        LocalDate reservationDate = LocalDate.parse(timeRequest.date());
         Long themeId = timeRequest.themeId();
 
         return reservations.stream()
-                .anyMatch(reservation -> reservation.contains(date, reservationTime, themeId));
+                .anyMatch(reservation -> reservation.hasCharacteristic(
+                        reservationDate, reservationTime, themeId));
     }
 
     private void validateTimeExistence(LocalTime startAt) {

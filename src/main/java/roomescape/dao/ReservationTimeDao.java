@@ -44,7 +44,7 @@ public class ReservationTimeDao {
         SqlParameterSource params = new MapSqlParameterSource("start_at",
                 reservationTime.getStartAt());
         Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
-        return reservationTime.withId(id);
+        return new ReservationTime(id, reservationTime);
     }
 
     public boolean deleteById(Long id) {

@@ -54,7 +54,7 @@ public class RoomThemeDao {
                 .addValue("thumbnail", roomTheme.getThumbnail());
 
         long id = simpleJdbcInsert.executeAndReturnKey(parameterSource).longValue();
-        return roomTheme.withId(id);
+        return new RoomTheme(id, roomTheme);
     }
 
     public boolean deleteById(Long id) {

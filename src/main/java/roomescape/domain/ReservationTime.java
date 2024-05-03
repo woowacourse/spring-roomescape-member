@@ -10,13 +10,17 @@ public class ReservationTime {
         this(null, startAt);
     }
 
+    public ReservationTime(Long id, ReservationTime reservationTime) {
+        this(id, reservationTime.startAt);
+    }
+
     public ReservationTime(Long id, LocalTime startAt) {
         this.id = id;
         this.startAt = startAt;
     }
 
-    public ReservationTime withId(Long id) {
-        return new ReservationTime(id, startAt);
+    public boolean hasStartAt(LocalTime startAt) {
+        return this.startAt.equals(startAt);
     }
 
     public Long getId() {

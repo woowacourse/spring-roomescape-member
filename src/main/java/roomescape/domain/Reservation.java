@@ -13,6 +13,10 @@ public class Reservation {
         this(null, name, date, time, theme);
     }
 
+    public Reservation(Long id, Reservation reservation) {
+        this(id, reservation.name, reservation.date, reservation.time, reservation.theme);
+    }
+
     public Reservation(Long id, Name name, LocalDate date, ReservationTime time, RoomTheme theme) {
         this.id = id;
         this.name = name;
@@ -21,14 +25,11 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public Reservation withId(Long id) {
-        return new Reservation(id, name, date, time, theme);
-    }
-
-    public boolean contains(LocalDate date, ReservationTime reservationTime, Long roomThemeId) {
-        return this.date.equals(date)
-                && this.time.getStartAt().equals(reservationTime.getStartAt())
-                && this.theme.getId().equals(roomThemeId);
+    public boolean hasCharacteristic(LocalDate reservationDate, ReservationTime reservationTime,
+                                     Long roomThemeId) {
+        return date.equals(reservationDate)
+                && time.hasStartAt(reservationTime.getStartAt())
+                && theme.hasId(roomThemeId);
     }
 
     public Long getId() {

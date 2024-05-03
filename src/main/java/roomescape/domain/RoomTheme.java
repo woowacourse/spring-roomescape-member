@@ -1,5 +1,7 @@
 package roomescape.domain;
 
+import java.util.Objects;
+
 public class RoomTheme {
     private final Long id;
     private final String name;
@@ -10,6 +12,10 @@ public class RoomTheme {
         this(null, name, description, thumbnail);
     }
 
+    public RoomTheme(Long id, RoomTheme roomTheme) {
+        this(id, roomTheme.name, roomTheme.description, roomTheme.thumbnail);
+    }
+
     public RoomTheme(Long id, String name, String description, String thumbnail) {
         this.id = id;
         this.name = name;
@@ -17,8 +23,8 @@ public class RoomTheme {
         this.thumbnail = thumbnail;
     }
 
-    public RoomTheme withId(Long id) {
-        return new RoomTheme(id, name, description, thumbnail);
+    public boolean hasId(Long roomThemeId) {
+        return Objects.equals(id, roomThemeId);
     }
 
     public Long getId() {
