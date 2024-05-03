@@ -3,7 +3,7 @@ package roomescape.domain.user;
 import java.util.regex.Pattern;
 
 public class UserName {
-    private static final Pattern NAME_FORMAT = Pattern.compile("^[a-zA-Z가-힣]*$");
+    private static final Pattern NAME_PATTERN = Pattern.compile("^[a-zA-Z가-힣]*$");
     private static final int MIN_LENGTH = 2;
     private static final int MAX_LENGTH = 10;
 
@@ -18,19 +18,20 @@ public class UserName {
 
     private void validateBlank(String name) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("이름이 비어있습니다.");
+            throw new IllegalArgumentException("사용자명이 비어있습니다.");
         }
     }
 
     private void validatePattern(String name) {
-        if (!NAME_FORMAT.matcher(name).matches()) {
-            throw new IllegalArgumentException("이름이 영어이거나 한글이 아닙니다.");
+        if (!NAME_PATTERN.matcher(name).matches()) {
+            throw new IllegalArgumentException("사용자명은 영어, 한글만 가능합니다.");
         }
     }
 
     private void validateLength(String name) {
-        if (name.length() < MIN_LENGTH || name.length() > MAX_LENGTH) {
-            throw new IllegalArgumentException("이름 길이는 2글자 이상, 10글자 이하여야 합니다.");
+        if (name.length() < MIN_LENGTH || MAX_LENGTH < name.length()) {
+            throw new IllegalArgumentException(
+                    String.format("사용자명은 %d글자 이상, %d글자 이하여야 합니다.", MIN_LENGTH, MAX_LENGTH));
         }
     }
 

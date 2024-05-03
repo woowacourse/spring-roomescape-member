@@ -3,32 +3,36 @@ package roomescape.domain.user;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 
 class UserNameTest {
-    @Test
-    void 이름의_길이가_2글자_미만이면_예외가_발생한다() {
-        assertThatThrownBy(() -> new UserName("a"))
+    @ParameterizedTest
+    @NullAndEmptySource
+    void 사용자명이_비어있으면_예외가_발생한다(String name) {
+        assertThatThrownBy(() -> new UserName(name))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("이름 길이는 2글자 이상, 10글자 이하여야 합니다.");
+                .hasMessageContaining("사용자명이 비어있습니다.");
     }
 
     @Test
-    void 이름의_길이가_10글자_초과이면_예외가_발생한다() {
-        assertThatThrownBy(() -> new UserName("qwerasdfghz"))
-                .isExactlyInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("이름 길이는 2글자 이상, 10글자 이하여야 합니다.");
-    }
-
-    @Test
-    void 이름에_한글_영어_외의_문자가_포함되어있으면_예외가_발생한다() {
+    void 사용자명에_영어_한글_외의_문자가_포함되어있으면_예외가_발생한다() {
         assertThatThrownBy(() -> new UserName("홍길동1"))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("이름이 영어이거나 한글이 아닙니다.");
+                .hasMessageContaining("사용자명은 영어, 한글만 가능합니다.");
     }
 
     @Test
-    void 이름이_비어있으면_예외가_발생한다() {
-        assertThatThrownBy(() -> new UserName(null))
-                .isExactlyInstanceOf(IllegalArgumentException.class);
+    void 사용자명이_2글자_미만이면_예외가_발생한다() {
+        assertThatThrownBy(() -> new UserName("a"))
+                .isExactlyInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("사용자명은 2글자 이상, 10글자 이하여야 합니다.");
+    }
+
+    @Test
+    void 사용자명이_10글자_초과이면_예외가_발생한다() {
+        assertThatThrownBy(() -> new UserName("qwerasdfghz"))
+                .isExactlyInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("사용자명은 2글자 이상, 10글자 이하여야 합니다.");
     }
 }
