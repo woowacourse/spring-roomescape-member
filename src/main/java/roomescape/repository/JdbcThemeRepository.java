@@ -37,7 +37,32 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public Theme insert(Theme theme) {
+    public Optional<Theme> findById(Long id) {
+        String sql = "SELECT * FROM theme WHERE id = ?";
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(sql, ROW_MAPPER, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public List<Theme> findTopOrderByReservationCount() {
+        String sql = """
+                SELECT id, name, description, thumbnail
+                COUNT(id) AS reservation_count
+                FROM theme AS th
+                INNER JOIN reservation AS r ON id = r.theme_id
+                WHERE r.date BETWEEN DATEADD('day', -7, CURRENT_DATE()) AND DATEADD('day', -1, CURRENT_DATE())
+                GROUP BY th.id
+                ORDER BY reservation_count DESC 
+                LIMIT 10
+                """;
+        return jdbcTemplate.query(sql, ROW_MAPPER);
+    }
+
+    @Override
+    public Theme save(Theme theme) {
         Map<String, Object> themeRow = new HashMap<>();
         themeRow.put("name", theme.getName());
         themeRow.put("description", theme.getDescription());
@@ -49,31 +74,5 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public void deleteById(Long id) {
         jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id);
-    }
-
-    @Override
-    public Optional<Theme> findById(Long id) {
-        String sql = "SELECT * FROM theme WHERE id = ?";
-        try {
-            return Optional.of(jdbcTemplate.queryForObject(sql, ROW_MAPPER, id));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
-    }
-
-    @Override
-    public List<Theme> findThemeOrderByReservationCount() {
-        String sql = """
-                SELECT id, name, description, thumbnail
-                COUNT(id) AS reservation_count
-                FROM theme AS th
-                INNER JOIN reservation AS r
-                ON id = r.theme_id
-                WHERE r.date BETWEEN DATEADD('day', -7, CURRENT_DATE()) AND DATEADD('day', -1, CURRENT_DATE())
-                GROUP BY th.id
-                ORDER BY reservation_count DESC 
-                LIMIT 10
-                """;
-        return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 }

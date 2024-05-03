@@ -37,14 +37,6 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public ReservationTime insert(ReservationTime reservationTime) {
-        Map<String, Object> reservationTimeRow = new HashMap<>();
-        reservationTimeRow.put("start_at", reservationTime.getStartAt());
-        Long id = simpleJdbcInsert.executeAndReturnKey(reservationTimeRow).longValue();
-        return new ReservationTime(id, reservationTime.getStartAt());
-    }
-
-    @Override
     public Optional<ReservationTime> findById(Long id) {
         String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
         try {
@@ -52,6 +44,25 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<ReservationTime> findByReserved(LocalDate date, Long themeId) {
+        String sql = """
+                SELECT t.id, t.start_at
+                FROM reservation_time AS t
+                INNER JOIN reservation AS r ON t.id = r.time_id
+                WHERE r.date = ? AND r.theme_id = ?;  
+                """;
+        return jdbcTemplate.query(sql, ROW_MAPPER, date, themeId);
+    }
+
+    @Override
+    public ReservationTime save(ReservationTime reservationTime) {
+        Map<String, Object> reservationTimeRow = new HashMap<>();
+        reservationTimeRow.put("start_at", reservationTime.getStartAt());
+        Long id = simpleJdbcInsert.executeAndReturnKey(reservationTimeRow).longValue();
+        return new ReservationTime(id, reservationTime.getStartAt());
     }
 
     @Override
@@ -70,16 +81,5 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public void deleteById(Long id) {
         jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
-    }
-
-    @Override
-    public List<ReservationTime> findReservedTimes(LocalDate date, Long themeId) {
-        String sql = """
-                SELECT t.id, t.start_at
-                FROM reservation_time AS t
-                INNER JOIN reservation AS r ON t.id = r.time_id
-                WHERE r.date = ? AND r.theme_id = ?;  
-                """;
-        return jdbcTemplate.query(sql, ROW_MAPPER, date, themeId);
     }
 }

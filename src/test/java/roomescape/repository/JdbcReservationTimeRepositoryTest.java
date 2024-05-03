@@ -69,7 +69,7 @@ class JdbcReservationTimeRepositoryTest {
     @Test
     void should_get_reservation_time_after_insert() {
         ReservationTime requestReservationTime = new ReservationTime(null, LocalTime.of(11, 0));
-        ReservationTime actualReservationTime = reservationTimeRepository.insert(requestReservationTime);
+        ReservationTime actualReservationTime = reservationTimeRepository.save(requestReservationTime);
 
         assertThat(actualReservationTime.getId()).isNotNull();
     }

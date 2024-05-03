@@ -22,7 +22,7 @@ public class ThemeService {
 
     public Theme addTheme(ThemeAddRequest themeAddRequest) {
         Theme theme = themeAddRequest.toEntity();
-        return themeRepository.insert(theme);
+        return themeRepository.save(theme);
     }
 
     public void removeTheme(Long id) {
@@ -33,7 +33,7 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> readPopularThemes() {
-        return themeRepository.findThemeOrderByReservationCount().stream()
+        return themeRepository.findTopOrderByReservationCount().stream()
                 .map(ThemeResponse::new)
                 .toList();
     }

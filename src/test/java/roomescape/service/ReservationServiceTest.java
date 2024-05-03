@@ -53,9 +53,9 @@ class ReservationServiceTest {
         Theme theme = new Theme(1L, "dummy", "description", "url");
 
         Reservation reservation = new Reservation(null, "lib", LocalDate.now().plusDays(1), reservationTime, theme);
-        ReservationTime savedTime = fakeReservationTimeDao.insert(reservationTime);
-        Theme savedTheme = fakeThemeDao.insert(theme);
-        Reservation savedReservation = fakeReservationDao.insert(reservation);
+        ReservationTime savedTime = fakeReservationTimeDao.save(reservationTime);
+        Theme savedTheme = fakeThemeDao.save(theme);
+        Reservation savedReservation = fakeReservationDao.save(reservation);
 
         ReservationAddRequest conflictRequest = new ReservationAddRequest(LocalDate.now().plusDays(1), "dodo",
                 savedTime.getId(), savedTheme.getId());

@@ -19,7 +19,7 @@ public class FakeThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public Theme insert(Theme theme) {
+    public Theme save(Theme theme) {
         long id = atomicLong.getAndIncrement();
         Theme savedTheme = new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
         themes.put(id, savedTheme);
@@ -40,7 +40,7 @@ public class FakeThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findThemeOrderByReservationCount() {
+    public List<Theme> findTopOrderByReservationCount() {
         return null;
     }
 }

@@ -26,7 +26,7 @@ public class ReservationTimeService {
         if (reservationTimeRepository.existByStartAt(reservationTimeAddRequest.getStartAt())) {
             throw new IllegalArgumentException("이미 존재하는 예약시간은 추가할 수 없습니다.");
         }
-        return reservationTimeRepository.insert(reservationTimeAddRequest.toEntity());
+        return reservationTimeRepository.save(reservationTimeAddRequest.toEntity());
     }
 
     public void removeReservationTime(Long id) {
@@ -37,7 +37,7 @@ public class ReservationTimeService {
     }
 
     public List<BookableTimeResponse> findReservationTimesWithReservationStatus(LocalDate date, Long themeId) {
-        List<ReservationTime> reservedTimes = reservationTimeRepository.findReservedTimes(date, themeId);
+        List<ReservationTime> reservedTimes = reservationTimeRepository.findByReserved(date, themeId);
         List<ReservationTime> allTimes = reservationTimeRepository.findAll();
         List<BookableTimeResponse> bookableTimeResponses = new ArrayList<>();
         for (ReservationTime allTime : allTimes) {

@@ -40,7 +40,7 @@ class JdbcThemeRepositoryTest {
     @Test
     void should_insert_theme() {
         Theme theme = new Theme(null, "리비", "멋짐", "url");
-        Theme inserted = themeRepository.insert(theme);
+        Theme inserted = themeRepository.save(theme);
 
         assertThat(inserted.getId()).isNotNull();
     }

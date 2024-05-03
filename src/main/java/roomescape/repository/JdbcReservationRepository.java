@@ -50,10 +50,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                 theme.description AS theme_description, 
                 theme.thumbnail AS theme_thumbnail 
                 FROM reservation AS r 
-                INNER JOIN reservation_time AS t 
-                ON r.time_id = t.id 
-                INNER JOIN theme 
-                ON r.theme_id = theme.id;
+                INNER JOIN reservation_time AS t ON r.time_id = t.id 
+                INNER JOIN theme ON r.theme_id = theme.id;
                 """;
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
@@ -72,10 +70,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                 theme.description AS theme_description, 
                 theme.thumbnail AS theme_thumbnail 
                 FROM reservation AS r 
-                INNER JOIN reservation_time AS t 
-                ON r.time_id = t.id 
-                INNER JOIN theme 
-                ON r.theme_id = theme.id 
+                INNER JOIN reservation_time AS t ON r.time_id = t.id 
+                INNER JOIN theme ON r.theme_id = theme.id 
                 WHERE r.id = ?;
                 """;
         try {
@@ -87,7 +83,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation insert(Reservation reservation) {
+    public Reservation save(Reservation reservation) {
         Map<String, Object> reservationRow = new HashMap<>();
         reservationRow.put("name", reservation.getName());
         reservationRow.put("date", reservation.getDate());

@@ -73,7 +73,7 @@ class JdbcReservationRepositoryTest {
         Theme theme = new Theme(1L, "리비", "머리 쓰는 중", "url");
         Reservation reservation = new Reservation(null, "도도", DATE_AFTER_THREE, reservationTime, theme);
 
-        Reservation savedReservation = reservationDaoImpl.insert(reservation);
+        Reservation savedReservation = reservationDaoImpl.save(reservation);
 
         assertThat(savedReservation.getId()).isNotNull();
     }

@@ -46,7 +46,7 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public ReservationTime insert(ReservationTime reservationTimeAddRequest) {
+    public ReservationTime save(ReservationTime reservationTimeAddRequest) {
         Long id = atomicLong.incrementAndGet();
         ReservationTime reservationTime = new ReservationTime(id, reservationTimeAddRequest.getStartAt());
         reservationTimes.put(id, reservationTime);
@@ -59,7 +59,7 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public List<ReservationTime> findReservedTimes(LocalDate date, Long themeId) {
+    public List<ReservationTime> findByReserved(LocalDate date, Long themeId) {
         return null;
     }
 }

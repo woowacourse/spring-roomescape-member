@@ -44,7 +44,7 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation insert(Reservation reservationAddRequest) {
+    public Reservation save(Reservation reservationAddRequest) {
         Long id = reservationAtomicLong.incrementAndGet();
 
         long timeId = reservationTimeAtomicLong.incrementAndGet();

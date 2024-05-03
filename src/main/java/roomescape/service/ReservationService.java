@@ -38,7 +38,7 @@ public class ReservationService {
         Theme theme = getTheme(reservationAddRequest);
 
         Reservation reservationRequest = reservationAddRequest.toEntity(reservationTime, theme);
-        return reservationRepository.insert(reservationRequest);
+        return reservationRepository.save(reservationRequest);
     }
 
     private Theme getTheme(ReservationAddRequest reservationAddRequest) {
