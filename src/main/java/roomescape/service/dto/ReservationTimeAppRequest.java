@@ -1,4 +1,4 @@
-package roomescape.dto.app;
+package roomescape.service.dto;
 
 public record ReservationTimeAppRequest(String startAt) {
 

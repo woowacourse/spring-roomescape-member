@@ -9,10 +9,10 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
-import roomescape.dto.app.ReservationTimeAppRequest;
-import roomescape.dto.app.ReservationTimeAppResponse;
 import roomescape.exception.DuplicatedModelException;
 import roomescape.exception.ReservationExistsException;
+import roomescape.service.dto.ReservationTimeAppRequest;
+import roomescape.service.dto.ReservationTimeAppResponse;
 
 @Service
 public class ReservationTimeService {

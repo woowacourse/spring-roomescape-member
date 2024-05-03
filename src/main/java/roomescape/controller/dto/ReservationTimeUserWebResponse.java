@@ -1,12 +1,11 @@
-package roomescape.dto.app;
+package roomescape.controller.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalTime;
 
-public record ReservationTimeAppResponse(
+public record ReservationTimeUserWebResponse(
     Long id,
     @JsonFormat(pattern = "HH:mm") LocalTime startAt,
-    boolean alreadyBooked
-) {
+    boolean alreadyBooked) {
 
 }

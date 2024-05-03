@@ -5,9 +5,9 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
-import roomescape.dto.app.ThemeAppRequest;
 import roomescape.exception.DuplicatedModelException;
 import roomescape.exception.ReservationExistsException;
+import roomescape.service.dto.ThemeAppRequest;
 
 @Service
 public class ThemeService {

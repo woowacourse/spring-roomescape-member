@@ -25,9 +25,9 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
-import roomescape.dto.app.ReservationAppRequest;
 import roomescape.exception.DuplicatedModelException;
 import roomescape.exception.PastReservationException;
+import roomescape.service.dto.ReservationAppRequest;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {

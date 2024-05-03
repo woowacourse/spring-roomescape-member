@@ -20,9 +20,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
-import roomescape.dto.app.ReservationTimeAppRequest;
 import roomescape.exception.DuplicatedModelException;
 import roomescape.exception.ReservationExistsException;
+import roomescape.service.dto.ReservationTimeAppRequest;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationTimeServiceTest {

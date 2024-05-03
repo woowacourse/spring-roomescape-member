@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.controller.dto.ReservationTimeWebResponse;
+import roomescape.controller.dto.ReservationWebRequest;
+import roomescape.controller.dto.ReservationWebResponse;
+import roomescape.controller.dto.ThemeWebResponse;
 import roomescape.domain.Reservation;
-import roomescape.dto.app.ReservationAppRequest;
-import roomescape.dto.web.ReservationTimeWebResponse;
-import roomescape.dto.web.ReservationWebRequest;
-import roomescape.dto.web.ReservationWebResponse;
-import roomescape.dto.web.ThemeWebResponse;
 import roomescape.exception.PastReservationException;
 import roomescape.service.ReservationService;
+import roomescape.service.dto.ReservationAppRequest;
 
 @RestController
 @RequestMapping("/reservations")
