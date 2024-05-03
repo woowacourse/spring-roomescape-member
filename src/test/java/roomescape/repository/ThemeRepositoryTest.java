@@ -9,6 +9,7 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Theme;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,5 +39,61 @@ class ThemeRepositoryTest {
         // then
         assertThat(actual).hasSize((int) LAST_ID);
         assertThat(actual.get(0)).isEqualTo(exampleFirstTheme);
+    }
+
+    @Test
+    @DisplayName("특정 id를 통해 테마를 조회한다.")
+    void findByIdPresent() {
+        // given & when
+        final Optional<Theme> actual = themeRepository.findById(exampleFirstTheme.getId());
+
+        // then
+        assertThat(actual).hasValue(exampleFirstTheme);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 테마를 조회할 경우 빈 값을 반환한다.")
+    void findByIdNotPresent() {
+        // given & when
+        final Optional<Theme> actual = themeRepository.findById(LAST_ID + 1);
+
+        // then
+        assertThat(actual).isEmpty();
+    }
+
+    @Test
+    @DisplayName("테마를 저장하면 새로운 아이디가 부여된다.")
+    void save() {
+        // given
+        final Theme theme = new Theme(null, "ThemeName", "ThemeDescription", "ThemeImage");
+
+        // when
+        final Theme actual = themeRepository.save(theme);
+
+        // then
+        assertThat(actual.getId()).isPositive();
+    }
+
+    @Test
+    @DisplayName("등록된 테마 번호로 삭제한다.")
+    void deleteByIdPresent() {
+        // given
+        final Long id = LAST_ID;
+
+        // when & then
+        assertThat(themeRepository.findById(id)).isPresent();
+        assertThat(themeRepository.delete(id)).isNotZero();
+        assertThat(themeRepository.findById(id)).isEmpty();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 테마를 삭제할 경우 아무런 영향이 없다.")
+    void deleteByNotPresent() {
+        // given
+        final Long id = LAST_ID + 1;
+
+        // when & then
+        assertThat(themeRepository.findById(id)).isEmpty();
+        assertThat(themeRepository.delete(id)).isZero();
     }
 }

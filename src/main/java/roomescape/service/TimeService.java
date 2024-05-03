@@ -56,6 +56,6 @@ public class TimeService {
         if (reservationRepository.existsByTimeId(id)) {
             throw new TimeUsedException("예약된 시간은 삭제할 수 없습니다.");
         }
-        return timeRepository.deleteById(id);
+        return timeRepository.delete(id);
     }
 }

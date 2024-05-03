@@ -150,7 +150,7 @@ class ReservationRepositoryTest {
 
     @Test
     @DisplayName("등록된 예약 번호로 삭제한다.")
-    void deleteAssignedId() {
+    void deleteByIdPrsent() {
         // given & when & then
         assertThat(reservationRepository.findById(LAST_ID)).isPresent();
         assertThat(reservationRepository.deleteById(LAST_ID)).isNotZero();
@@ -158,7 +158,7 @@ class ReservationRepositoryTest {
 
     @Test
     @DisplayName("없는 예약 번호로 삭제할 경우 아무런 영향이 없다.")
-    void deleteNotExistId() {
+    void deleteByIdNotPresent() {
         // given
         final long nonExistId = LAST_ID + 1;
 
