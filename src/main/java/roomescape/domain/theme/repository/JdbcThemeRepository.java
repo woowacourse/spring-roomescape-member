@@ -15,7 +15,7 @@ import roomescape.domain.theme.Theme;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
-    private static final int DATE_RANGE = 7;
+    private static final int POPULAR_THEMES_SELECTION_DAYS = 7;
     private static final RowMapper<Theme> ROW_MAPPER = (rs, rowNum) -> new Theme(
             rs.getLong("id"),
             rs.getString("name"),
@@ -78,7 +78,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     public List<Theme> findPopularThemes(LocalDate now) {
-        LocalDate prev = now.minusDays(DATE_RANGE);
+        LocalDate baseDate = now.minusDays(POPULAR_THEMES_SELECTION_DAYS);
         String query = """
                 SELECT * FROM theme AS t
                 JOIN (
@@ -90,6 +90,6 @@ public class JdbcThemeRepository implements ThemeRepository {
                 LIMIT 10
                 """;
 
-        return jdbcTemplate.query(query, ROW_MAPPER, prev, now);
+        return jdbcTemplate.query(query, ROW_MAPPER, baseDate, now);
     }
 }
