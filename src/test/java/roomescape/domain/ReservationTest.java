@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.Test;
-import roomescape.exception.IllegalDateException;
 
 class ReservationTest {
 
@@ -23,6 +22,6 @@ class ReservationTest {
         assertThatThrownBy(
                 () -> new Reservation(1L, "테니", null, new ReservationTime(1L, LocalTime.now()),
                         new Theme(1L, "테니", "설명", "썸네일")))
-                .isInstanceOf(IllegalDateException.class);
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }

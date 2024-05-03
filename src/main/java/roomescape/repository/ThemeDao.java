@@ -11,7 +11,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
-import roomescape.exception.IllegalThemeException;
 
 @Repository
 public class ThemeDao {
@@ -48,7 +47,7 @@ public class ThemeDao {
         String sql = "SELECT * FROM theme WHERE id = ?";
         Optional<Theme> optionalTheme = Optional.ofNullable(jdbcTemplate.queryForObject(sql, timeRowMapper, id));
         if (optionalTheme.isEmpty()) {
-            throw new IllegalThemeException("[ERROR] 테마를 찾을 수 없습니다");
+            throw new IllegalArgumentException("[ERROR] 존재하지 않는 테마입니다.");
         }
         return optionalTheme.get();
     }

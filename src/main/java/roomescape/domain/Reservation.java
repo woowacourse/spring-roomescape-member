@@ -1,7 +1,6 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
-import roomescape.exception.IllegalDateException;
 
 public class Reservation {
 
@@ -23,13 +22,13 @@ public class Reservation {
 
     private void validateName(String name) {
         if (name.isEmpty()) {
-            throw new IllegalArgumentException("[ERROR] 유효하지 않은 예약자 이름입니다.");
+            throw new IllegalArgumentException("[ERROR] 예약자 이름은 비어있을 수 없습니다.");
         }
     }
 
     private void validateDate(LocalDate date) {
         if (date == null) {
-            throw new IllegalDateException("[ERROR] 유효하지 않은 날짜입니다.");
+            throw new IllegalArgumentException("[ERROR] 날짜는 비어있을 수 없습니다.");
         }
     }
 

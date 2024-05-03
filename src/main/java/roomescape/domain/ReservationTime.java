@@ -15,7 +15,7 @@ public class ReservationTime {
 
     private void validate(LocalTime startAt) {
         if (startAt == null) {
-            throw new IllegalArgumentException("[ERROR] 올바르지 않은 시간 입력입니다.");
+            throw new IllegalArgumentException("[ERROR] 시간은 비어있을 수 없습니다.");
         }
     }
 

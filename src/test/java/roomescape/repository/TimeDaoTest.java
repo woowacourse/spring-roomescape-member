@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.exception.IllegalTimeException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class TimeDaoTest {
@@ -23,7 +22,7 @@ class TimeDaoTest {
     @Test
     @DisplayName("해당 ID를 가진 시간이 존재하지 않는다면 아무것도 반환하지 않는다.")
     void findTimeById_AbsenceId_Empty() {
-        assertThatThrownBy(() -> timeDao.findById(0L)).isInstanceOf(IllegalTimeException.class);
+        assertThatThrownBy(() -> timeDao.findById(0L)).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test

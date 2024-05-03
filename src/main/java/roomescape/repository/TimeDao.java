@@ -11,7 +11,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
-import roomescape.exception.IllegalTimeException;
 
 @Repository
 public class TimeDao {
@@ -40,7 +39,7 @@ public class TimeDao {
         try {
             return jdbcTemplate.queryForObject(sql, timeRowMapper, id);
         } catch (EmptyResultDataAccessException e) {
-            throw new IllegalTimeException("[ERROR] 예약 시간을 찾을 수 없습니다");
+            throw new IllegalArgumentException("[ERROR] 존재하지 않는 예약 시간입니다.");
         }
     }
 

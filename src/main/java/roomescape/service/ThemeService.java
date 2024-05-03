@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
-import roomescape.exception.IllegalThemeException;
+import roomescape.exception.ExistReservationException;
 import roomescape.mapper.ThemeMapper;
 import roomescape.repository.ThemeDao;
 
@@ -47,7 +47,7 @@ public class ThemeService {
         try {
             themeDao.deleteById(id);
         } catch (DataIntegrityViolationException e) {
-            throw new IllegalThemeException("[ERROR] 예약이 존재하는 테마는 삭제할 수 없습니다.");
+            throw new ExistReservationException("[ERROR] 예약이 존재하는 테마는 삭제할 수 없습니다.");
         }
     }
 }

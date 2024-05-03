@@ -10,7 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import roomescape.exception.IllegalTimeException;
+import roomescape.exception.ExistReservationException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReservationTimeServiceTest {
@@ -28,7 +28,7 @@ class ReservationTimeServiceTest {
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "테니", "13:00", savedId);
 
         assertThatThrownBy(() -> reservationTimeService.deleteTimeById(savedId))
-                .isInstanceOf(IllegalTimeException.class);
+                .isInstanceOf(ExistReservationException.class);
     }
 
     private long saveReservationTime() {

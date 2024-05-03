@@ -9,6 +9,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.dto.TimeMemberResponse;
 import roomescape.dto.TimeResponse;
 import roomescape.dto.TimeRequest;
+import roomescape.exception.ExistReservationException;
 import roomescape.exception.IllegalTimeException;
 import roomescape.mapper.TimeMapper;
 import roomescape.repository.ReservationDao;
@@ -50,7 +51,7 @@ public class ReservationTimeService {
         ReservationTime reservationTime = timeMapper.mapToTime(request);
 
         if (timeDao.existByTime(reservationTime.getStartAt())) {
-            throw new IllegalTimeException("[ERROR] 중복된 시간을 생성할 수 없습니다.");
+            throw new IllegalTimeException("[ERROR] 중복된 시간은 생성할 수 없습니다.");
         }
 
         ReservationTime newReservationTime = timeDao.save(reservationTime);
@@ -61,7 +62,7 @@ public class ReservationTimeService {
         try {
             timeDao.deleteById(id);
         } catch (DataIntegrityViolationException e) {
-            throw new IllegalTimeException("[ERROR] 예약이 존재하는 시간은 삭제할 수 없습니다.");
+            throw new ExistReservationException("[ERROR] 예약이 존재하는 시간은 삭제할 수 없습니다.");
         }
     }
 }
