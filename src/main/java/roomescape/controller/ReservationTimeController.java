@@ -3,8 +3,10 @@ package roomescape.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.controller.request.ReservationTimeRequest;
+import roomescape.controller.response.ReservationTimeResponse;
 import roomescape.model.ReservationTime;
 import roomescape.service.ReservationTimeService;
+import roomescape.service.dto.ReservationTimeDto;
 
 import java.net.URI;
 import java.util.List;
@@ -20,15 +22,22 @@ public class ReservationTimeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationTime>> getReservationTimes() {
-        List<ReservationTime> reservationTimes = reservationTimeService.findAllReservationTimes();
-        return ResponseEntity.ok(reservationTimes);
+    public ResponseEntity<List<ReservationTimeResponse>> getReservationTimes() {
+        List<ReservationTime> times = reservationTimeService.findAllReservationTimes();
+        List<ReservationTimeResponse> response = times.stream()
+                .map(ReservationTimeResponse::from)
+                .toList();
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTime> createReservationTime(@RequestBody ReservationTimeRequest request) {
-        ReservationTime reservationTime = reservationTimeService.addReservationTime(request);
-        return ResponseEntity.created(URI.create("/times/" + reservationTime.getId())).body(reservationTime);
+    public ResponseEntity<ReservationTimeResponse> createReservationTime(@RequestBody ReservationTimeRequest request) {
+        ReservationTimeDto timeDto = ReservationTimeDto.from(request);
+        ReservationTime time = reservationTimeService.addReservationTime(timeDto);
+        ReservationTimeResponse response = ReservationTimeResponse.from(time);
+        return ResponseEntity
+                .created(URI.create("/times/" + response.getId()))
+                .body(response);
     }
 
     @DeleteMapping("/{id}")

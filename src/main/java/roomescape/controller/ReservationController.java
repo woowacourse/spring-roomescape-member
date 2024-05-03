@@ -4,8 +4,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.controller.request.ReservationRequest;
 import roomescape.controller.response.MemberReservationTimeResponse;
+import roomescape.controller.response.ReservationResponse;
 import roomescape.model.Reservation;
 import roomescape.service.ReservationService;
+import roomescape.service.dto.ReservationDto;
 
 import java.net.URI;
 import java.time.LocalDate;
@@ -22,14 +24,22 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Reservation>> getReservations() {
-        return ResponseEntity.ok(reservationService.findAllReservations());
+    public ResponseEntity<List<ReservationResponse>> getReservations() {
+        List<Reservation> reservations = reservationService.findAllReservations();
+        List<ReservationResponse> response = reservations.stream()
+                .map(ReservationResponse::from)
+                .toList();
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping
-    public ResponseEntity<Reservation> createReservation(@RequestBody ReservationRequest request) {
-        Reservation reservation = reservationService.addReservation(request);
-        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
+    public ResponseEntity<ReservationResponse> createReservation(@RequestBody ReservationRequest request) {
+        ReservationDto reservationDto = ReservationDto.from(request);
+        Reservation reservation = reservationService.addReservation(reservationDto);
+        ReservationResponse response = ReservationResponse.from(reservation);
+        return ResponseEntity
+                .created(URI.create("/reservations/" + response.getId()))
+                .body(response);
     }
 
     @DeleteMapping("/{id}")
@@ -43,6 +53,7 @@ public class ReservationController {
             @RequestParam(name = "date") LocalDate date,
             @RequestParam(name = "themeId") long themeId) {
         List<MemberReservationTimeResponse> response = reservationService.getMemberReservationTimes(date, themeId);
+        // TODO: 여기서 response 객체로 반환하도록 수정
         return ResponseEntity.ok(response);
     }
 }

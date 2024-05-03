@@ -3,8 +3,10 @@ package roomescape.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.controller.request.ThemeRequest;
+import roomescape.controller.response.ThemeResponse;
 import roomescape.model.Theme;
 import roomescape.service.ThemeService;
+import roomescape.service.dto.ThemeDto;
 
 import java.net.URI;
 import java.util.List;
@@ -20,16 +22,22 @@ public class ThemeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Theme>> getThemes() {
-        return ResponseEntity.ok(themeService.findAllThemes());
+    public ResponseEntity<List<ThemeResponse>> getThemes() {
+        List<Theme> themes = themeService.findAllThemes();
+        List<ThemeResponse> response = themes.stream()
+                .map(ThemeResponse::from)
+                .toList();
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping
-    public ResponseEntity<Theme> addTheme(@RequestBody ThemeRequest themeRequest) {
-        Theme theme = themeService.addTheme(themeRequest);
+    public ResponseEntity<ThemeResponse> addTheme(@RequestBody ThemeRequest request) {
+        ThemeDto themeDto = ThemeDto.from(request);
+        Theme theme = themeService.addTheme(themeDto);
+        ThemeResponse response = ThemeResponse.from(theme);
         return ResponseEntity
-                .created(URI.create("/themes/" + theme.getThemeId()))
-                .body(theme);
+                .created(URI.create("/themes/" + response.getId()))
+                .body(response);
     }
 
     @DeleteMapping("/{id}")
@@ -39,7 +47,11 @@ public class ThemeController {
     }
 
     @GetMapping("/rank")
-    public ResponseEntity<List<Theme>> getPopularThemes() {
-        return ResponseEntity.ok(themeService.findPopularThemes());
+    public ResponseEntity<List<ThemeResponse>> getPopularThemes() {
+        List<Theme> themes = themeService.findPopularThemes();
+        List<ThemeResponse> response = themes.stream()
+                .map(ThemeResponse::from)
+                .toList();
+        return ResponseEntity.ok(response);
     }
 }

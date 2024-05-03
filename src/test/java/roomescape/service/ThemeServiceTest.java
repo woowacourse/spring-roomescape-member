@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.controller.request.ThemeRequest;
 import roomescape.model.Theme;
+import roomescape.service.dto.ThemeDto;
 
 import java.util.List;
 
@@ -22,8 +23,8 @@ class ThemeServiceTest {
     @DisplayName("테마를 저장한다.")
     @Test
     void should_add_theme() {
-        ThemeRequest themeRequest = new ThemeRequest("에버", "공포", "공포.jpg");
-        themeService.addTheme(themeRequest);
+        ThemeDto themeDto = new ThemeDto("에버", "공포", "공포.jpg");
+        themeService.addTheme(themeDto);
         assertThat(themeService.findAllThemes()).hasSize(4);
     }
 

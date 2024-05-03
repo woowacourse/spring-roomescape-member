@@ -1,5 +1,7 @@
 package roomescape.model;
 
+import roomescape.service.dto.ThemeDto;
+
 import java.util.Objects;
 
 public class Theme {
@@ -23,6 +25,10 @@ public class Theme {
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
+    }
+
+    public static Theme from(ThemeDto themeDto) {
+        return new Theme(themeDto.getName(), themeDto.getDescription(), themeDto.getThumbnail());
     }
 
     public long getThemeId() {

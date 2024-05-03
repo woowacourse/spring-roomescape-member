@@ -5,7 +5,7 @@ import java.util.Objects;
 
 public class ReservationTime {
 
-    private long id;
+    private long id; // Long
     private LocalTime startAt;
 
     private ReservationTime() {

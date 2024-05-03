@@ -1,9 +1,9 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.controller.request.ThemeRequest;
 import roomescape.model.Theme;
 import roomescape.repository.ThemeRepository;
+import roomescape.service.dto.ThemeDto;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -21,8 +21,8 @@ public class ThemeService {
         return themeRepository.findAllThemes();
     }
 
-    public Theme addTheme(ThemeRequest themeRequest) {
-        Theme theme = new Theme(themeRequest.getName(), themeRequest.getDescription(), themeRequest.getThumbnail());
+    public Theme addTheme(ThemeDto themeDto) {
+        Theme theme = Theme.from(themeDto);
         return themeRepository.addTheme(theme);
     }
 

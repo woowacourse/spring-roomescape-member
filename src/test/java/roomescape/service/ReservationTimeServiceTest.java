@@ -2,11 +2,11 @@ package roomescape.service;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.controller.request.ReservationTimeRequest;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.DuplicatedException;
 import roomescape.exception.NotFoundException;
 import roomescape.model.ReservationTime;
+import roomescape.service.dto.ReservationTimeDto;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -37,8 +37,7 @@ class ReservationTimeServiceTest {
     @DisplayName("예약 시간을 추가한다")
     @Test
     void should_add_reservation_times() {
-        ReservationTime reservationTime
-                = reservationTimeService.addReservationTime(new ReservationTimeRequest(LocalTime.of(12, 0)));
+        reservationTimeService.addReservationTime(new ReservationTimeDto(LocalTime.of(12, 0)));
         List<ReservationTime> allReservationTimes = reservationTimeService.findAllReservationTimes();
         assertThat(allReservationTimes).hasSize(3);
     }
@@ -77,8 +76,7 @@ class ReservationTimeServiceTest {
     @DisplayName("존재하는 시간을 추가하려 할 때 예외가 발생한다.")
     @Test
     void should_throw_exception_when_add_exist_time() {
-        ReservationTimeRequest request = new ReservationTimeRequest(LocalTime.of(10, 0));
-        assertThatThrownBy(() -> reservationTimeService.addReservationTime(request))
+        assertThatThrownBy(() -> reservationTimeService.addReservationTime(new ReservationTimeDto(LocalTime.of(10, 0))))
                 .isInstanceOf(DuplicatedException.class)
                 .hasMessage("[ERROR] 중복되는 시간은 추가할 수 없습니다.");
     }

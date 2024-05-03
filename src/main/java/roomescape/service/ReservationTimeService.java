@@ -1,13 +1,13 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.controller.request.ReservationTimeRequest;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.DuplicatedException;
 import roomescape.exception.NotFoundException;
 import roomescape.model.ReservationTime;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.service.dto.ReservationTimeDto;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -27,13 +27,13 @@ public class ReservationTimeService {
         return reservationTimeRepository.findAllReservationTimes();
     }
 
-    public ReservationTime addReservationTime(ReservationTimeRequest request) {
-        LocalTime startAt = request.getStartAt();
+    public ReservationTime addReservationTime(ReservationTimeDto reservationTimeDto) {
+        LocalTime startAt = reservationTimeDto.getStartAt();
         Long countReservationTimeByStartAt = reservationTimeRepository.countReservationTimeByStartAt(startAt);
         if (countReservationTimeByStartAt == null || countReservationTimeByStartAt > 0) {
             throw new DuplicatedException("[ERROR] 중복되는 시간은 추가할 수 없습니다.");
         }
-        ReservationTime reservationTime = new ReservationTime(startAt);
+        ReservationTime reservationTime = new ReservationTime(reservationTimeDto.getStartAt());
         return reservationTimeRepository.addReservationTime(reservationTime);
     }
 

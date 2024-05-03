@@ -1,7 +1,6 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.controller.request.ReservationRequest;
 import roomescape.controller.response.MemberReservationTimeResponse;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.DuplicatedException;
@@ -12,6 +11,7 @@ import roomescape.model.Theme;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
+import roomescape.service.dto.ReservationDto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -38,22 +38,22 @@ public class ReservationService {
         return reservationRepository.getAllReservations();
     }
 
-    public Reservation addReservation(ReservationRequest request) {
-        ReservationTime reservationTime = reservationTimeRepository.findReservationById(request.getTimeId());
-        Theme theme = themeRepository.findThemeById(request.getThemeId());
+    public Reservation addReservation(ReservationDto reservationDto) {
+        ReservationTime reservationTime = reservationTimeRepository.findReservationById(reservationDto.getTimeId());
+        Theme theme = themeRepository.findThemeById(reservationDto.getThemeId());
 
-        LocalDateTime reservationDateTime = LocalDateTime.of(request.getDate(), reservationTime.getStartAt());
+        LocalDateTime reservationDateTime = LocalDateTime.of(reservationDto.getDate(), reservationTime.getStartAt());
 
         LocalDateTime requestDateTime = reservationDateTime.truncatedTo(ChronoUnit.SECONDS);
         LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
         if (requestDateTime.isBefore(now)) {
             throw new BadRequestException("[ERROR] 현재 이전 예약은 할 수 없습니다.");
         }
-        Long countReservation = reservationRepository.countReservationByDateAndTimeId(request.getDate(), request.getTimeId());
+        Long countReservation = reservationRepository.countReservationByDateAndTimeId(reservationDto.getDate(), reservationDto.getTimeId());
         if (countReservation == null || countReservation > 0) {
             throw new DuplicatedException("[ERROR] 중복되는 예약은 추가할 수 없습니다.");
         }
-        Reservation reservation = new Reservation(request.getName(), request.getDate(), reservationTime, theme);
+        Reservation reservation = new Reservation(reservationDto.getName(), reservationDto.getDate(), reservationTime, theme);
         return reservationRepository.addReservation(reservation);
     }
 

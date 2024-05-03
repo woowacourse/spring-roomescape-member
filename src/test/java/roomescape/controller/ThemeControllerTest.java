@@ -2,6 +2,7 @@ package roomescape.controller;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.controller.request.ThemeRequest;
+import roomescape.controller.response.ThemeResponse;
 import roomescape.model.Theme;
 
 import javax.sql.DataSource;
@@ -21,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -56,11 +59,11 @@ class ThemeControllerTest {
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "배키", "미스터리", "미스터리.jpg");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "포비", "스릴러", "스릴러.jpg");
 
-        List<Theme> themes = RestAssured.given().log().all()
+        List<ThemeResponse> themes = RestAssured.given().log().all()
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200).extract()
-                .jsonPath().getList(".", Theme.class);
+                .jsonPath().getList(".", ThemeResponse.class);
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from theme", Integer.class);
         assertThat(themes).hasSize(count);
@@ -118,29 +121,28 @@ class ThemeControllerTest {
         insertReservation("name14", LocalDate.now().minusDays(1), 1L, 9);
         insertReservation("name15", LocalDate.now().minusDays(1), 1L, 9);
 
-        Long l = jdbcTemplate.queryForObject("select count(1) from reservation", Long.class);
-        System.out.println(l);
+        jdbcTemplate.queryForObject("select count(1) from reservation", Long.class);
 
-        List<Theme> popularThemes = RestAssured.given().log().all()
+        List<ThemeResponse> popularThemes = RestAssured.given().log().all()
                 .when().get("/themes/rank")
                 .then().log().all()
                 .statusCode(200)
                 .extract()
-                .jsonPath().getList(".", Theme.class);
+                .jsonPath().getList(".", ThemeResponse.class);
 
         assertThat(popularThemes).hasSize(10);
-        assertThat(popularThemes).containsExactly(
-                new Theme(10, "name10", "description10", "thumbnail10"),
-                new Theme(9, "name9", "description9", "thumbnail9"),
-                new Theme(1, "name1", "description1", "thumbnail1"),
-                new Theme(2, "name2", "description2", "thumbnail2"),
-                new Theme(3, "name3", "description3", "thumbnail3"),
-                new Theme(4, "name4", "description4", "thumbnail4"),
-                new Theme(5, "name5", "description5", "thumbnail5"),
-                new Theme(6, "name6", "description6", "thumbnail6"),
-                new Theme(7, "name7", "description7", "thumbnail7"),
-                new Theme(8, "name8", "description8", "thumbnail8")
-        );
+        assertAll(() -> {
+            assertThat(popularThemes.get(0).getId()).isEqualTo(10);
+            assertThat(popularThemes.get(1).getId()).isEqualTo(9);
+            assertThat(popularThemes.get(2).getId()).isEqualTo(1);
+            assertThat(popularThemes.get(3).getId()).isEqualTo(2);
+            assertThat(popularThemes.get(4).getId()).isEqualTo(3);
+            assertThat(popularThemes.get(5).getId()).isEqualTo(4);
+            assertThat(popularThemes.get(6).getId()).isEqualTo(5);
+            assertThat(popularThemes.get(7).getId()).isEqualTo(6);
+            assertThat(popularThemes.get(8).getId()).isEqualTo(7);
+            assertThat(popularThemes.get(9).getId()).isEqualTo(8);
+        });
     }
 
     private void insertReservationTime(LocalTime startAt) {
