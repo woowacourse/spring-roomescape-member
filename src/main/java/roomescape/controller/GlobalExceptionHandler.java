@@ -1,6 +1,9 @@
 package roomescape.controller;
 
-import org.springframework.http.ResponseEntity;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -8,13 +11,25 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    private final Logger logger = Logger.getLogger(getClass().getName());
+
     @ExceptionHandler(value = HttpMessageNotReadableException.class)
-    private ResponseEntity<String> handleHttpMessageNotReadableException() {
-        return ResponseEntity.badRequest().build();
+    private ProblemDetail handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        logger.log(Level.SEVERE, e.getMessage());
+        String errorMessage = "요청 본문을 읽을 수 없습니다. 요청 형식을 확인해 주세요.";
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, errorMessage);
     }
 
     @ExceptionHandler(value = IllegalArgumentException.class)
-    private ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
+    private ProblemDetail handleIllegalArgumentException(IllegalArgumentException e) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
+    @ExceptionHandler(value = Exception.class)
+    private ProblemDetail handleGeneralException(Exception e) {
+        logger.log(Level.SEVERE, e.getMessage());
+        String errorMessage = "시스템에서 오류가 발생했습니다. 관리자에게 문의해주세요.";
+        return ProblemDetail.forStatusAndDetail(
+                HttpStatus.INTERNAL_SERVER_ERROR, errorMessage);
     }
 }
