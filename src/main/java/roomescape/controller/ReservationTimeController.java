@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.dto.ExceptionDto;
 import roomescape.dto.request.ReservationTimeRequest;
 import roomescape.dto.request.ReservationTimeWithBookStatusRequest;
 import roomescape.dto.response.ReservationTimeResponse;
@@ -52,11 +53,11 @@ public class ReservationTimeController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTime(@PathVariable Long id) {
+    public ResponseEntity<ExceptionDto> deleteTime(@PathVariable Long id) {
         boolean isDeleted = reservationTimeService.deleteById(id);
         if (isDeleted) {
             return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.badRequest().body(new ExceptionDto("대상 예약 시간이 존재하지 않습니다."));
     }
 }

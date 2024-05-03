@@ -18,18 +18,19 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(IncorrectResultSizeDataAccessException.class)
-    public ResponseEntity<ExceptionDto> handleException(IncorrectResultSizeDataAccessException e) {
+    public ResponseEntity<ExceptionDto> handleIncorrectResultSizeDataAccessException() {
         return ResponseEntity.badRequest().body(new ExceptionDto("해당 예약 시간 혹은 테마가 존재하지 않습니다."));
     }
 
     @ExceptionHandler(DateTimeException.class)
-    public ResponseEntity<ExceptionDto> handleException(DateTimeException e) {
+    public ResponseEntity<ExceptionDto> handleDateTimeException() {
         return ResponseEntity.badRequest().body(new ExceptionDto(
                 "날짜 혹은 시간 입력 양식이 잘못되었습니다. ex)YYYY-mm-dd, HH:mm"));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<List<ExceptionDto>> handleException(MethodArgumentNotValidException e) {
+    public ResponseEntity<List<ExceptionDto>> handleMethodArgumentNotValidException(
+            MethodArgumentNotValidException e) {
         List<ExceptionDto> exceptionDtos = e.getBindingResult()
                 .getAllErrors()
                 .stream()

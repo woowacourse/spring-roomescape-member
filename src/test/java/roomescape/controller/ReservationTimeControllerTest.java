@@ -120,7 +120,7 @@ class ReservationTimeControllerTest {
         // when & then
         RestAssured.given().log().all()
                 .when().delete("/reservations/" + invalidId)
-                .then().log().all().assertThat().statusCode(HttpStatus.NOT_FOUND.value());
+                .then().log().all().assertThat().statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("예약 시간 삭제 시, 해당 id를 참조하는 예약도 삭제된다.")

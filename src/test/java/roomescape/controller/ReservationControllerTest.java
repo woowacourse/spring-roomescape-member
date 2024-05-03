@@ -174,7 +174,7 @@ class ReservationControllerTest {
         // when & then
         RestAssured.given().log().all()
                 .when().delete("/reservations/" + invalidId)
-                .then().log().all().assertThat().statusCode(HttpStatus.NOT_FOUND.value());
+                .then().log().all().assertThat().statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     private ReservationRequest createReservationRequest(String name, String date) {

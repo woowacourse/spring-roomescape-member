@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.dto.ExceptionDto;
 import roomescape.dto.request.RoomThemeCreateRequest;
 import roomescape.dto.response.RoomThemeResponse;
 import roomescape.service.RoomThemeService;
@@ -43,11 +44,11 @@ public class RoomThemeController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteRoomTheme(@PathVariable Long id) {
+    public ResponseEntity<ExceptionDto> deleteRoomTheme(@PathVariable Long id) {
         boolean isDeleted = roomThemeService.deleteById(id);
         if (isDeleted) {
             return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.badRequest().body(new ExceptionDto("대상 테마가 존재하지 않습니다."));
     }
 }
