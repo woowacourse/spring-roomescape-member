@@ -1,7 +1,5 @@
 package roomescape.domain;
 
-import roomescape.domain.exception.InvalidRequestException;
-
 import java.util.Objects;
 
 public class Theme {
@@ -25,7 +23,6 @@ public class Theme {
     }
 
     public Theme(final String name, final String description, final String thumbnail) { //todo 이생성자 지워보기
-        validateNull(name);
         this.id = null;
         this.name = name;
         this.description = description;
@@ -33,16 +30,10 @@ public class Theme {
     }
 
     private String getDefaultThumbnailIfNotExists(final String thumbnail) {
-        if (thumbnail == null || thumbnail.isBlank()) {
-            return DEFAULT_THUMBNAIL;
+        if (thumbnail.isBlank()) {
+            return DEFAULT_THUMBNAIL; //TODO 그냥 디비에 default로 박을까
         }
         return thumbnail;
-    }
-
-    private void validateNull(final String name) { //TODO 애노테이션 알아보기
-        if (name == null || name.isBlank()) {
-            throw new InvalidRequestException("공백일 수 없습니다.");
-        }
     }
 
     public Long getId() {

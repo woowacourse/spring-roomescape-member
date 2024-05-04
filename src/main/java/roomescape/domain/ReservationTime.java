@@ -1,6 +1,5 @@
 package roomescape.domain;
 
-import roomescape.domain.exception.InvalidRequestException;
 import roomescape.domain.exception.InvalidTimeException;
 
 import java.time.DateTimeException;
@@ -17,15 +16,8 @@ public class ReservationTime {
     }
 
     public ReservationTime(final String startAt) {
-        validateNull(startAt);
         this.id = null;
         this.startAt = validateFormatAndConvert(startAt);
-    }
-
-    private void validateNull(final String startAt) {
-        if (startAt == null || startAt.isBlank()) {
-            throw new InvalidRequestException("공백일 수 없습니다.");
-        }
     }
 
     private LocalTime validateFormatAndConvert(final String startAt) {

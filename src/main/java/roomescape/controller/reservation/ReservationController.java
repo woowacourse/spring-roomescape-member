@@ -1,6 +1,7 @@
 package roomescape.controller.reservation;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,7 +33,8 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> addReservation(@RequestBody final ReservationRequest request) {
+    public ResponseEntity<ReservationResponse> addReservation(@RequestBody
+                                                              @Validated final ReservationRequest request) {
         final ReservationResponse reservation = reservationService.addReservation(request);
         final URI uri = UriComponentsBuilder.fromPath("/reservations/{id}")
                 .buildAndExpand(reservation.id())

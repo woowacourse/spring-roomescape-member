@@ -25,8 +25,6 @@ public class Reservation {
 
     public Reservation(final Long id, final String name, final String date,
                        final ReservationTime time, final Theme theme) {
-        validateNull(name);
-        validateNull(date);
         this.id = id;
         this.name = name;
         this.date = validateFormatAndConvert(date);
@@ -39,12 +37,6 @@ public class Reservation {
             return LocalDate.parse(date);
         } catch (DateTimeParseException exception) {
             throw new InvalidDateException("유효하지 않은 날짜입니다.");
-        }
-    }
-
-    private void validateNull(final String value) {
-        if (value == null || value.isBlank()) {
-            throw new InvalidRequestException("공백일 수 없습니다.");
         }
     }
 

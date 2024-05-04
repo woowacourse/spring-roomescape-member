@@ -1,6 +1,7 @@
 package roomescape.controller.time;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,12 +35,14 @@ public class TimeController {
     }
 
     @GetMapping(value = "/availability", params = {"date", "themeId"}) //TODO api 명세 수정
-    public List<AvailabilityTimeResponse> getAvailableTimes(final AvailabilityTimeRequest availabilityTimeRequest) {
+    public List<AvailabilityTimeResponse> getAvailableTimes(
+            @Validated final AvailabilityTimeRequest availabilityTimeRequest) {
         return timeService.getTimeAvailable(availabilityTimeRequest);
     }
 
     @PostMapping
-    public ResponseEntity<AvailabilityTimeResponse> addTime(@RequestBody final CreateTimeRequest createTimeRequest) {
+    public ResponseEntity<AvailabilityTimeResponse> addTime(@RequestBody
+                                                            @Validated final CreateTimeRequest createTimeRequest) {
         final AvailabilityTimeResponse time = timeService.addTime(createTimeRequest);
         final URI uri = UriComponentsBuilder.fromPath("/reservations/{id}")
                 .buildAndExpand(time.id())
