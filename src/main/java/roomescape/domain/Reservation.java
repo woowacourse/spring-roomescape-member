@@ -5,14 +5,14 @@ import java.time.LocalDateTime;
 
 public class Reservation {
     private final Long id;
-    private final Name name;
+    private final UserName userName;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
     public Reservation(
             final Long id,
-            final Name name,
+            final UserName userName,
             final LocalDate date,
             final ReservationTime time,
             final Theme theme
@@ -20,7 +20,7 @@ public class Reservation {
         validateDate(date);
         validateIsNotBeforeReservation(date, time);
         this.id = id;
-        this.name = name;
+        this.userName = userName;
         this.date = date;
         this.time = time;
         this.theme = theme;
@@ -44,21 +44,21 @@ public class Reservation {
             final ReservationTime reservationTime, final Theme theme
     ) {
         LocalDate parsedDate = LocalDate.parse(date);
-        return new Reservation(id, new Name(name), parsedDate, reservationTime, theme);
+        return new Reservation(id, new UserName(name), parsedDate, reservationTime, theme);
     }
 
     public static Reservation of(
             final String name, final LocalDate date,
             final ReservationTime reservationTime, final Theme theme) {
-        return new Reservation(null, new Name(name), date, reservationTime, theme);
+        return new Reservation(null, new UserName(name), date, reservationTime, theme);
     }
 
     public long getId() {
         return id;
     }
 
-    public Name getName() {
-        return name;
+    public UserName getName() {
+        return userName;
     }
 
     public LocalDate getDate() {
