@@ -1,103 +1,85 @@
 package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static roomescape.fixture.DateTimeFixture.DAY_AFTER_TOMORROW;
+import static roomescape.fixture.DateTimeFixture.TOMORROW;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+/**
+ * 테스트 초기 데이터 {ID=1, NAME=리비, DATE=내일, TIME={ID=1, START_AT=10:00}, THEME={ID=1, NAME=잠실 캠퍼스 탈출}} {ID=2, NAME=도도,
+ * DATE=내일, TIME={ID=2, START_AT=11:00}, THEME={ID=1, NAME=잠실 캠퍼스 탈출}} {ID=3, NAME=썬, DATE=내일, TIME={ID=2,
+ * START_AT=10:00}, THEME={ID=2, NAME=선릉 캠퍼스 탈출}}
+ */
+@JdbcTest
+@Sql(scripts = "/test_data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_CLASS)
 class JdbcReservationRepositoryTest {
-
-    private static final LocalDate DATE_AFTER_TWO = LocalDate.now().plusDays(2);
-    private static final LocalDate DATE_AFTER_THREE = LocalDate.now().plusDays(3);
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-    @Autowired
-    private JdbcReservationRepository reservationDaoImpl;
+
+    private ReservationRepository reservationRepository;
 
     @BeforeEach
     void setUp() {
-        jdbcTemplate.update("insert into reservation_time values(1,'10:00')");
-        jdbcTemplate.update("insert into theme(name, description, thumbnail) values(?,?,?)", "리비", "머리 쓰는 중",
-                "url");
-        jdbcTemplate.update("insert into reservation (name, date, time_id, theme_id) values(?,?,?,?)", "브라운",
-                DATE_AFTER_TWO, 1L, 1L);
+        reservationRepository = new JdbcReservationRepository(jdbcTemplate);
     }
 
-    @AfterEach
-    void setDown() {
-        jdbcTemplate.update("delete from reservation");
-    }
-
-    @DisplayName("예약목록 모두를 불러옵니다.")
+    @DisplayName("예약 데이터를 모두 가져올 수 있다")
     @Test
     void should_findAll() {
-        int expectedSize = 1;
-
-        int actualSize = reservationDaoImpl.findAll().size();
-
-        assertThat(actualSize).isEqualTo(expectedSize);
+        assertThat(reservationRepository.findAll()).hasSize(3);
     }
 
 
-    @DisplayName("원하는 ID의 예약을 불러옵니다.")
+    @DisplayName("원하는 ID의 예약을 불러올 수 있다")
     @Test
     void should_findById() {
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
-        Theme theme = new Theme(1L, "리비", "머리 쓰는 중", "url");
-        Reservation expectedReservation = new Reservation(1L, "브라운", DATE_AFTER_TWO, reservationTime, theme);
-
-        List<Reservation> all = reservationDaoImpl.findAll();
-        System.out.println("all = " + all);
-        assertThat(reservationDaoImpl.findById(1L)).isPresent();
+        assertThat(reservationRepository.findById(1L)).isPresent();
     }
 
-    @DisplayName("예약을 추가할 수 있습니다.")
+    @DisplayName("예약을 추가할 수 있다")
     @Test
     void should_insert() {
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
-        Theme theme = new Theme(1L, "리비", "머리 쓰는 중", "url");
-        Reservation reservation = new Reservation(null, "도도", DATE_AFTER_THREE, reservationTime, theme);
+        ReservationTime reservationTime = new ReservationTime(3L, LocalTime.of(10, 0));
+        Theme theme = new Theme(2L,
+                "잠실 캠퍼스 탈출",
+                "미션을 빨리 진행하고 잠실 캠퍼스를 탈출하자!",
+                "https://velog.velcdn.com/images/jangws/post/cfe0e548-1242-470d-bfa8-19eeb72debc5/image.jpg");
 
-        Reservation savedReservation = reservationDaoImpl.save(reservation);
+        Reservation reservation = new Reservation(null, "도도", DAY_AFTER_TOMORROW, reservationTime, theme);
+        Reservation savedReservation = reservationRepository.save(reservation);
 
         assertThat(savedReservation.getId()).isNotNull();
     }
 
-    @DisplayName("원하는 ID의 예약을 삭제할 수 있습니다.")
+    @DisplayName("원하는 ID의 예약을 삭제할 수 있다")
     @Test
     void should_deleteById() {
-        int expectedCount = 0;
-
-        reservationDaoImpl.deleteById(1L);
-        int actualCount = jdbcTemplate.queryForObject("select count(*) from reservation where id = 1", Integer.class);
-
-        assertThat(actualCount).isEqualTo(expectedCount);
+        reservationRepository.deleteById(1L);
+        assertThat(reservationRepository.findAll()).hasSize(2);
     }
 
-    @DisplayName("예약날짜와 예약 시간 ID와 테마 ID가 동일한 경우를 알 수 있습니다.")
+    @DisplayName("예약 간 예약날짜와 예약 시간 ID와 테마 ID가 동일한 경우를 알 수 있다")
     @Test
     void should_return_true_when_reservation_date_and_time_id_and_theme_id_equal() {
-        assertThat(reservationDaoImpl.existByDateAndTimeIdAndThemeId(DATE_AFTER_TWO, 1L, 1L)).isTrue();
+        assertThat(reservationRepository.existByDateAndTimeIdAndThemeId(TOMORROW, 1L, 1L)).isTrue();
     }
 
-    @DisplayName("예약날짜와 예약 시간 ID와 테마 ID가 동일하지 않은 경우를 알 수 있습니다.")
+    @DisplayName("예약날짜와 예약 시간 ID와 테마 ID가 동일하지 않은 경우를 알 수 있다")
     @Test
     void should_return_false_when_reservation_date_and_time_id_and_theme_id_not_equal() {
-        assertThat(reservationDaoImpl.existByDateAndTimeIdAndThemeId(DATE_AFTER_THREE, 1L, 1L)).isFalse();
+        assertThat(reservationRepository.existByDateAndTimeIdAndThemeId(DAY_AFTER_TOMORROW, 2L, 3L)).isFalse();
     }
 }
