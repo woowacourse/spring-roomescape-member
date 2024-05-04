@@ -39,9 +39,6 @@ public class Reservation {
     }
 
     private void validateName(String name) {
-        if (name == null || name.isBlank()) {
-            throw new BadRequestException("예약자 이름은 비어있을 수 없습니다.");
-        }
         Matcher matcher = NAME_PATTERN.matcher(name);
         if (matcher.matches()) {
             throw new BadRequestException("예약자 이름은 숫자로만 구성될 수 없습니다.");
@@ -52,14 +49,6 @@ public class Reservation {
         if (date.isBefore(LocalDate.now()) || date.equals(LocalDate.now())) {
             throw new BadRequestException("이전 날짜 혹은 당일은 예약할 수 없습니다.");
         }
-    }
-
-    public boolean hasSameDateTime(LocalDate date, ReservationTime time) {
-        return this.time.equals(time) && this.date.equals(date);
-    }
-
-    public boolean hasSameName(Reservation reservation) {
-        return this.name.equals(reservation.name);
     }
 
     public Long getReservationTimeId() {
