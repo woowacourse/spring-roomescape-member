@@ -12,7 +12,7 @@ public class Reservation {
     private final ReservationTime time;
     private final Theme theme;
 
-    public static Reservation of(
+    public static Reservation createRequest(
             final String clientName,
             final LocalDate date,
             final ReservationTime time,
@@ -31,7 +31,7 @@ public class Reservation {
     }
 
     private static void validateReservationDateAndTime(final ReservationDate date, final ReservationTime time) {
-        LocalDateTime reservationLocalDateTime = LocalDateTime.of(date.getValue(), time.getStartAt());
+        final LocalDateTime reservationLocalDateTime = LocalDateTime.of(date.getValue(), time.getStartAt());
         if (reservationLocalDateTime.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("현재 날짜보다 이전 날짜를 예약할 수 없습니다.");
         }
@@ -95,7 +95,7 @@ public class Reservation {
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (!(o instanceof final Reservation that)) return false;
-        return id == that.id;
+        return Objects.equals(id, that.id);
     }
 
     @Override
