@@ -112,7 +112,7 @@ class ThemeControllerTest extends BaseControllerTest {
         });
     }
 
-    void addTheme() {
+    private void addTheme() {
         ThemeRequest request = new ThemeRequest("테마 이름", "테마 설명", "https://example.com/image.jpg");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -132,7 +132,7 @@ class ThemeControllerTest extends BaseControllerTest {
         });
     }
 
-    void addThemeFailWhenDuplicatedTheme() {
+    private void addThemeFailWhenDuplicatedTheme() {
         ThemeRequest request = new ThemeRequest("테마 이름", "테마 설명-2", "https://example.com/image-2.jpg");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -149,7 +149,7 @@ class ThemeControllerTest extends BaseControllerTest {
 
     }
 
-    void getAllThemes() {
+    private void getAllThemes() {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when().get("/themes")
                 .then().log().all()
@@ -166,7 +166,7 @@ class ThemeControllerTest extends BaseControllerTest {
         });
     }
 
-    void deleteThemeById() {
+    private void deleteThemeById() {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when().delete("/themes/1")
                 .then().log().all()

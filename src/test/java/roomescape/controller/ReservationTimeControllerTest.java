@@ -121,7 +121,7 @@ class ReservationTimeControllerTest extends BaseControllerTest {
         });
     }
 
-    void addReservationTime() {
+    private void addReservationTime() {
         ReservationTimeRequest request = new ReservationTimeRequest(LocalTime.of(10, 30));
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -140,7 +140,7 @@ class ReservationTimeControllerTest extends BaseControllerTest {
         });
     }
 
-    void addReservationTimeFailWhenDuplicatedTime() {
+    private void addReservationTimeFailWhenDuplicatedTime() {
         ReservationTimeRequest request = new ReservationTimeRequest(LocalTime.of(10, 30));
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -156,7 +156,7 @@ class ReservationTimeControllerTest extends BaseControllerTest {
         });
     }
 
-    void getAllReservationTimes() {
+    private void getAllReservationTimes() {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when().get("/times")
                 .then().log().all()
@@ -173,7 +173,7 @@ class ReservationTimeControllerTest extends BaseControllerTest {
         });
     }
 
-    void deleteReservationTimeById() {
+    private void deleteReservationTimeById() {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when().delete("/times/1")
                 .then().log().all()

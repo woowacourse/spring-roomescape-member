@@ -18,12 +18,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.repository.ReservationTimeRepository;
+import roomescape.domain.repository.ThemeRepository;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.ThemeResponse;
-import roomescape.domain.repository.ReservationTimeRepository;
-import roomescape.domain.repository.ThemeRepository;
 
 class ReservationControllerTest extends BaseControllerTest {
 
@@ -91,7 +91,7 @@ class ReservationControllerTest extends BaseControllerTest {
     }
 
 
-    void addReservation() {
+    private void addReservation() {
         ReservationRequest request = new ReservationRequest("구름", LocalDate.of(2024, 4, 9), 1L, 1L);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
@@ -114,7 +114,7 @@ class ReservationControllerTest extends BaseControllerTest {
         });
     }
 
-    void getAllReservations() {
+    private void getAllReservations() {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
@@ -135,7 +135,7 @@ class ReservationControllerTest extends BaseControllerTest {
         });
     }
 
-    void deleteReservationById() {
+    private void deleteReservationById() {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when().delete("/reservations/1")
                 .then().log().all()
@@ -146,7 +146,7 @@ class ReservationControllerTest extends BaseControllerTest {
         });
     }
 
-    void addReservationFailWhenDuplicatedReservation() {
+    private void addReservationFailWhenDuplicatedReservation() {
         ReservationRequest request = new ReservationRequest("구름", LocalDate.of(2024, 4, 9), 1L, 1L);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
