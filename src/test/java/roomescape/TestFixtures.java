@@ -3,6 +3,8 @@ package roomescape;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import roomescape.controller.request.ReservationTimeRequest;
+import roomescape.controller.response.ReservationTimeResponse;
 import roomescape.controller.response.ThemeResponse;
 import roomescape.domain.Name;
 import roomescape.domain.Reservation;
@@ -13,6 +15,11 @@ public class TestFixtures {
     public static final ReservationTime TIME_1 = new ReservationTime(1L, LocalTime.of(10, 0));
     public static final ReservationTime TIME_2 = new ReservationTime(2L, LocalTime.of(11, 0));
     public static final ReservationTime TIME_3 = new ReservationTime(3L, LocalTime.of(12, 0));
+    public static final ReservationTimeRequest TIME_REQUEST_2 = new ReservationTimeRequest("11:00");
+    public static final ReservationTimeRequest TIME_REQUEST_3 = new ReservationTimeRequest("12:00");
+    public static final ReservationTimeResponse TIME_RESPONSE_1 = new ReservationTimeResponse(1L, LocalTime.of(10, 0));
+    public static final ReservationTimeResponse TIME_RESPONSE_2 = new ReservationTimeResponse(2L, LocalTime.of(11, 0));
+    public static final ReservationTimeResponse TIME_RESPONSE_3 = new ReservationTimeResponse(3L, LocalTime.of(12, 0));
     public static final Theme THEME_1 = new Theme(
             1L, "name1", "description1", "thumbnail1"
     );
