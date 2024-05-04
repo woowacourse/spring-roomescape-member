@@ -25,4 +25,11 @@ public class RoomescapeExceptionHandler {
                 .status(e.getHttpStatus())
                 .body(new ErrorResponse(e.getMessage()));
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handle(Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(500)
+                .body(new ErrorResponse("예상치 못한 오류입니다. 서버 관계자에게 문의하세요."));
+    }
 }
