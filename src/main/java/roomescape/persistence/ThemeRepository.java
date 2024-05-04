@@ -60,7 +60,7 @@ public class ThemeRepository {
     public Optional<Theme> findById(long id) {
         String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
         try {
-            return Optional.of(jdbcTemplate.queryForObject(sql, getThemeRowMapper(), id));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, getThemeRowMapper(), id));
         } catch (Exception exception) {
             return Optional.empty();
         }
