@@ -33,12 +33,12 @@ public class ReservationThemeServiceTest {
     @Test
     void insertThemeTest() {
         ReservationThemeRequestDto reservationThemeRequestDto = new ReservationThemeRequestDto(
-                "레벨2 탈출", "우테코 레벨2 탈출", "https://hi.com"
+                "레벨3 탈출", "우테코 레벨3 탈출", "https://hi.com"
         );
         ReservationTheme reservationTheme = reservationThemeService.insertTheme(reservationThemeRequestDto);
 
-        assertThat(reservationTheme.getName()).isEqualTo("레벨2 탈출");
-        assertThat(reservationTheme.getDescription()).isEqualTo("우테코 레벨2 탈출");
+        assertThat(reservationTheme.getName()).isEqualTo("레벨3 탈출");
+        assertThat(reservationTheme.getDescription()).isEqualTo("우테코 레벨3 탈출");
         assertThat(reservationTheme.getThumbnail()).isEqualTo("https://hi.com");
     }
 
@@ -46,7 +46,7 @@ public class ReservationThemeServiceTest {
     @Test
     void deleteThemeTest() {
         ReservationThemeRequestDto reservationThemeRequestDto = new ReservationThemeRequestDto(
-                "레벨2 탈출", "우테코 레벨2 탈출", "https://hi.com"
+                "레벨3 탈출", "우테코 레벨3 탈출", "https://hi.com"
         );
         ReservationTheme reservationTheme = reservationThemeService.insertTheme(reservationThemeRequestDto);
 

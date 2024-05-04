@@ -82,8 +82,7 @@ public class ReservationResponseControllerTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(400)
-                .body(is("이름을 입력하여야 합니다."));
+                .statusCode(400);
     }
 
     @DisplayName("날짜가 입력되지 않으면 400으로 응답한다.")

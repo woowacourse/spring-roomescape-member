@@ -44,8 +44,8 @@ public class ReservationThemeResponseControllerTest {
     @Test
     void insertTest() throws JsonProcessingException {
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "레벨2 탈출");
-        params.put("description", "우테코 레벨2를 탈출하는 내용입니다.");
+        params.put("name", "레벨3 탈출");
+        params.put("description", "우테코 레벨3를 탈출하는 내용입니다.");
         params.put("thumbnail", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -61,8 +61,8 @@ public class ReservationThemeResponseControllerTest {
     @Test
     void deleteTest() {
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "레벨2 탈출");
-        params.put("description", "우테코 레벨2를 탈출하는 내용입니다.");
+        params.put("name", "레벨3 탈출");
+        params.put("description", "우테코 레벨3를 탈출하는 내용입니다.");
         params.put("thumbnail", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
 
 
