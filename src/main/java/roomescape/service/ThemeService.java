@@ -6,7 +6,7 @@ import roomescape.domain.Name;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ThemeAddRequest;
 import roomescape.dto.response.ThemeResponse;
-import roomescape.exceptions.UserException;
+import roomescape.exceptions.ClientException;
 import roomescape.repository.theme.ThemeRepository;
 
 import java.util.List;
@@ -22,7 +22,7 @@ public class ThemeService {
 
     public ThemeResponse addTheme(ThemeAddRequest themeAddRequest) {
         if (themeRepository.hasTheme(new Name(themeAddRequest.name()))) {
-            throw new UserException("이미 존재하는 테마 이름입니다.");
+            throw new ClientException("이미 존재하는 테마 이름입니다.");
         }
 
         Theme theme = themeRepository.save(themeAddRequest.toTheme());
@@ -53,7 +53,7 @@ public class ThemeService {
 
     private Theme getValidTheme(Long id) {
         return themeRepository.findById(id)
-                .orElseThrow(() -> new UserException("존재하지 않는 테마 id입니다. theme_id = " + id));
+                .orElseThrow(() -> new ClientException("존재하지 않는 테마 id입니다. theme_id = " + id));
     }
 
     public void deleteTheme(Long id) {

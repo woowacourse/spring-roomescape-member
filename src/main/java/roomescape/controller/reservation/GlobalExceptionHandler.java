@@ -6,14 +6,14 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.format.DateTimeParseException;
-import roomescape.exceptions.UserException;
+import roomescape.exceptions.ClientException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(UserException.class)
+    @ExceptionHandler(ClientException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleIllegalArgumentException(UserException e) {
+    public String handleIllegalArgumentException(ClientException e) {
         return e.getMessage();
     }
 

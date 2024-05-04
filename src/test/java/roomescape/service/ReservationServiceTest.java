@@ -18,7 +18,7 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Name;
 import roomescape.dto.request.ReservationAddRequest;
 import roomescape.dto.response.ReservationResponse;
-import roomescape.exceptions.UserException;
+import roomescape.exceptions.ClientException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -42,7 +42,7 @@ ReservationServiceTest {
         );
 
         assertThatThrownBy(() -> reservationService.addReservation(reservationAddRequest))
-                .isInstanceOf(UserException.class);
+                .isInstanceOf(ClientException.class);
     }
 
     @Test
@@ -56,7 +56,7 @@ ReservationServiceTest {
         );
 
         assertThatThrownBy(() -> reservationService.addReservation(reservationAddRequest))
-                .isInstanceOf(UserException.class);
+                .isInstanceOf(ClientException.class);
     }
 
     @Test
@@ -77,7 +77,7 @@ ReservationServiceTest {
                 LocalDate.now().plusDays(1), -1L, 1L);
 
         assertThatThrownBy(() -> reservationService.addReservation(reservationAddRequest))
-                .isInstanceOf(UserException.class);
+                .isInstanceOf(ClientException.class);
     }
 
     @Test

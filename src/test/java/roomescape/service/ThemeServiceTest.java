@@ -10,7 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.request.ThemeAddRequest;
-import roomescape.exceptions.UserException;
+import roomescape.exceptions.ClientException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -30,7 +30,7 @@ class ThemeServiceTest {
         );
 
         assertThatThrownBy(() -> themeService.addTheme(themeAddRequest))
-                .isInstanceOf(UserException.class);
+                .isInstanceOf(ClientException.class);
     }
 
 }

@@ -15,7 +15,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.request.ReservationTimeAddRequest;
 import roomescape.dto.response.ReservationTimeResponse;
-import roomescape.exceptions.UserException;
+import roomescape.exceptions.ClientException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -32,7 +32,7 @@ class ReservationTimeServiceTest {
     void saveDuplicatedGetTime() {
         assertThatThrownBy(
                 () -> reservationTimeService.addTime(new ReservationTimeAddRequest(RESERVATION_TIME_1.getStartAt()))
-        ).isInstanceOf(UserException.class);
+        ).isInstanceOf(ClientException.class);
     }
 
     @Test

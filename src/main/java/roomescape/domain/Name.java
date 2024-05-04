@@ -1,7 +1,7 @@
 package roomescape.domain;
 
 import java.util.Objects;
-import roomescape.exceptions.UserException;
+import roomescape.exceptions.ClientException;
 
 public class Name {
 
@@ -14,7 +14,7 @@ public class Name {
 
     private void validate(String name) {
         if (name == null || name.isBlank() || name.isEmpty()) {
-            throw new UserException("이름은 필수 값입니다.");
+            throw new ClientException("이름은 필수 값입니다.");
         }
     }
 
