@@ -52,8 +52,8 @@ public class ReservationService {
         Theme theme = themeRepository.getById(reservationRequest.themeId());
         Reservation reservation = reservationRequest.toReservation(reservationTime, theme);
 
-        validateDateTimeNotPassed(reservation.getDate(), reservationTime.getStartAt());
         validateDuplicatedReservation(reservation);
+        validateDateTimeNotPassed(reservation.getDate(), reservationTime.getStartAt());
 
         Reservation savedReservation = reservationRepository.save(reservation);
 
