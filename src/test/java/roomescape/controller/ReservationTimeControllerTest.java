@@ -112,7 +112,9 @@ public class ReservationTimeControllerTest {
     @Test
     void getAvailableForReservationTimes() {
         RestAssured.given().log().all()
-                .when().get("/times/2024-05-01/1")
+                .param("date", "2024-05-01")
+                .param("themeId", "1")
+                .when().get("/times/user")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1))
@@ -124,7 +126,9 @@ public class ReservationTimeControllerTest {
     @Test
     void getUnavailableForReservationTimes() {
         RestAssured.given().log().all()
-                .when().get("/times/2024-01-01/1")
+                .param("date", "2024-01-01")
+                .param("themeId", "1")
+                .when().get("/times/user")
                 .then().log().all()
                 .statusCode(200)
                 .body("[0].startAt", is("01:00"))

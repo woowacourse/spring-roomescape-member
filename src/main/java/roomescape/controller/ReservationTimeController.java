@@ -37,8 +37,8 @@ public class ReservationTimeController {
         return ResponseEntity.ok().body(reservationTimes);
     }
 
-    @GetMapping("/times/{date}/{themeId}")
-    public ResponseEntity<List<ReservationTimeResponseDto>> getTimesByDateAndTheme(@PathVariable String date, @PathVariable Long themeId) {
+    @GetMapping("/times/user")
+    public ResponseEntity<List<ReservationTimeResponseDto>> getTimesByDateAndTheme(@RequestParam String date, @RequestParam Long themeId) {
         List<ReservationTime> reservationTimes = reservationTimeService.getAllReservationTimes();
         List<ReservationTimeResponseDto> timeResponses = reservationTimes.stream()
                 .map(time -> new ReservationTimeResponseDto(time.getId(), time.getStartAt(), reservationTimeService.isBooked(date, time.getId(), themeId)))
