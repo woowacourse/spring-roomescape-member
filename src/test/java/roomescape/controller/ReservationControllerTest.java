@@ -56,7 +56,7 @@ class ReservationControllerTest {
 
         //then
         ReservationResponse expected = new ReservationResponse(id, "폴라", date,
-                new ReservationTimeResponse(1L, LocalTime.now()),
+                new ReservationTimeResponse(1L, defaultTime.getStartAt()),
                 new ThemeResponse(defualtTheme.getId(), defualtTheme.getName(), defualtTheme.getDescription(),
                         defualtTheme.getThumbnail()));
 
