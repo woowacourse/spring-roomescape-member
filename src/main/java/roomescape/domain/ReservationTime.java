@@ -40,11 +40,11 @@ public class ReservationTime {
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (!(o instanceof final ReservationTime that)) return false;
-        return Objects.equals(id, that.id);
+        return Objects.equals(id, that.id) && Objects.equals(startAt, that.startAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(id, startAt);
     }
 }
