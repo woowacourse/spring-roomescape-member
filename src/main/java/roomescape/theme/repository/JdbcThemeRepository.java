@@ -52,7 +52,12 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public Optional<Theme> findById(final Long id) {
-        String sql = " select id, name, description, thumbnail from theme where id = ? ";
+        String sql = """
+                select id, name, description, thumbnail 
+                from theme 
+                where id = ? 
+                limit 1
+                """;
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, themeRowMapper, id));
         } catch (EmptyResultDataAccessException emptyResultDataAccessException) {

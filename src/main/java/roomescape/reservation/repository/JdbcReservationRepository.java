@@ -90,6 +90,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 inner join theme as t
                 on r.theme_id = t.id 
                 where r.id = ?
+                limit 1
                 """;
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, reservationRowMapper, id));
