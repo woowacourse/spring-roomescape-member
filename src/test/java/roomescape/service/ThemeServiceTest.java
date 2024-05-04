@@ -5,63 +5,77 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.jdbc.Sql;
 import roomescape.controller.theme.CreateThemeRequest;
 import roomescape.controller.theme.CreateThemeResponse;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.ReserveName;
+import roomescape.domain.Theme;
 import roomescape.repository.H2ReservationRepository;
+import roomescape.repository.H2ReservationTimeRepository;
 import roomescape.repository.H2ThemeRepository;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
 import roomescape.service.exception.ThemeUsedException;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@Sql(scripts = {"/drop.sql", "/schema.sql", "/data.sql"},
-        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @JdbcTest
-@Import({ThemeService.class, H2ThemeRepository.class, H2ReservationRepository.class})
+@Import({
+        ThemeService.class,
+        H2ReservationRepository.class,
+        H2ReservationTimeRepository.class,
+        H2ThemeRepository.class
+})
 class ThemeServiceTest {
 
-    final long LAST_ID = 4;
-    final CreateThemeResponse exampleFirstResponse = new CreateThemeResponse(
-            1L,
-            "Spring",
-            "A time of renewal and growth, as nature awakens from its slumber and bursts forth with vibrant colors and fragrant blooms.",
-            "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
-    );
+    final List<CreateThemeRequest> sampleThemes = IntStream.range(1, 9)
+            .mapToObj(i -> new CreateThemeRequest(
+                    "Theme " + i,
+                    "Description " + i,
+                    "Thumbnail " + i
+            )).toList();
 
     @Autowired
     ThemeService themeService;
+    @Autowired
+    ReservationRepository reservationRepository;
+    @Autowired
+    ReservationTimeRepository reservationTimeRepository;
 
     @Test
     @DisplayName("테마 목록을 조회한다.")
     void getThemes() {
-        // given & when
-        final List<CreateThemeResponse> themes = themeService.getThemes();
+        // given
+        final List<CreateThemeResponse> expected = sampleThemes.stream()
+                .map(themeService::addTheme)
+                .toList();
+
+        // when
+        final List<CreateThemeResponse> actual = themeService.getThemes();
 
         // then
-        assertThat(themes).hasSize((int) LAST_ID);
-        assertThat(themes.get(0)).isEqualTo(exampleFirstResponse);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     @DisplayName("테마를 추가한다.")
     void addTheme() {
         // given
-        final CreateThemeRequest response = new CreateThemeRequest(
-                "NewTheme",
-                "NewDescription",
-                "NewImage"
-        );
+        final CreateThemeRequest themeRequest = sampleThemes.get(0);
 
         // when
-        final CreateThemeResponse actual = themeService.addTheme(response);
+        final CreateThemeResponse actual = themeService.addTheme(themeRequest);
         final CreateThemeResponse expected = new CreateThemeResponse(
                 actual.id(),
-                response.name(),
-                response.description(),
-                response.thumbnail()
+                themeRequest.name(),
+                themeRequest.description(),
+                themeRequest.thumbnail()
         );
 
         // then
@@ -71,15 +85,34 @@ class ThemeServiceTest {
     @Test
     @DisplayName("테마를 삭제한다.")
     void deleteTheme() {
-        // given & when & then
-        assertThat(themeService.deleteTheme(LAST_ID)).isOne();
-        assertThat(themeService.deleteTheme(LAST_ID)).isZero();
+        // given
+        final Long id = themeService.addTheme(sampleThemes.get(0)).id();
+
+        // when & then
+        assertThat(themeService.deleteTheme(id)).isPositive();
+        assertThat(themeService.deleteTheme(id)).isZero();
     }
 
     @Test
     @DisplayName("예약이 있는 테마를 삭제할 경우 예외가 발생한다.")
-    void exceptionOnDeletingReserved() {
-        assertThatThrownBy(() -> themeService.deleteTheme(2L))
+    void exceptionOnDeletingThemeAlreadyReserved() {
+        final CreateThemeResponse themeResponse = themeService.addTheme(sampleThemes.get(0));
+        final Long themeId = themeResponse.id();
+        final ReservationTime time = new ReservationTime(null, "08:00");
+        final Reservation reservation = new Reservation(
+                null,
+                new ReserveName("User 1"),
+                LocalDate.now().plusDays(1),
+                null,
+                new Theme(themeId)
+        );
+
+        final ReservationTime saveTime = reservationTimeRepository.save(time);
+        final Reservation assignedReservation = reservation.assignTime(saveTime);
+        reservationRepository.save(assignedReservation);
+
+        // when & then
+        assertThatThrownBy(() -> themeService.deleteTheme(themeId))
                 .isInstanceOf(ThemeUsedException.class);
     }
 }
