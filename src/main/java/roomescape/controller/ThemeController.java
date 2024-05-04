@@ -25,19 +25,19 @@ public class ThemeController {
     }
 
     @GetMapping("/themes")
-    public ResponseEntity<ThemesResponse> readThemes() {
+    public ResponseEntity<ThemesResponse> getAllThemes() {
 
         return ResponseEntity.ok(themeService.findAllThemes());
     }
 
     @GetMapping("/themes/top")
-    public ResponseEntity<ThemesResponse> readTopNThemes(@RequestParam int count) {
+    public ResponseEntity<ThemesResponse> getTopNThemes(@RequestParam int count) {
 
         return ResponseEntity.ok(themeService.findTopNThemes(count));
     }
 
     @PostMapping("/themes")
-    public ResponseEntity<ThemeResponse> createTheme(@RequestBody ThemeRequest request) {
+    public ResponseEntity<ThemeResponse> saveTheme(@RequestBody ThemeRequest request) {
         ThemeResponse response = themeService.createTheme(request);
 
         return ResponseEntity.created(URI.create("/themes/" + response.id()))
@@ -45,7 +45,7 @@ public class ThemeController {
     }
 
     @DeleteMapping("/themes/{id}")
-    public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
+    public ResponseEntity<Void> removeTheme(@PathVariable Long id) {
         themeService.deleteTheme(id);
 
         return ResponseEntity.noContent().build();

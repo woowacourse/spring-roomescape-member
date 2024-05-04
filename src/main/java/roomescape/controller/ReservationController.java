@@ -28,19 +28,19 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations")
-    public ResponseEntity<ReservationsResponse> readReservations() {
+    public ResponseEntity<ReservationsResponse> getAllReservations() {
         return ResponseEntity.ok(reservationService.findAllReservations());
     }
 
     @GetMapping("/reservations/themes/{themeId}")
-    public ResponseEntity<ReservationTimeInfosResponse> readAvailableTimeReservations(
+    public ResponseEntity<ReservationTimeInfosResponse> getReservationTimeInfos(
             @PathVariable Long themeId,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
         return ResponseEntity.ok(reservationService.findReservationByDateAndThemeId(date, themeId));
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity<ReservationResponse> createReservation(@RequestBody ReservationRequest reservationRequest) {
+    public ResponseEntity<ReservationResponse> saveReservation(@RequestBody ReservationRequest reservationRequest) {
         ReservationResponse reservationResponse = reservationService.createReservation(reservationRequest);
 
         return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.id()))
@@ -48,7 +48,7 @@ public class ReservationController {
     }
 
     @DeleteMapping("/reservations/{id}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
+    public ResponseEntity<Void> removeReservation(@PathVariable Long id) {
         reservationService.deleteReservation(id);
 
         return ResponseEntity.noContent().build();
