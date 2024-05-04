@@ -17,6 +17,7 @@ public class Theme {
         this(null, name, description, thumbnail);
     }
 
+    // id만 있는 Theme를 theme라 부를 수 있는가?
     public Theme(final long themeId) {
         this(themeId, null, null, null);
     }

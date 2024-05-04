@@ -13,6 +13,7 @@ public record ReservationResponse(
         ReservationTime time,
         Theme theme
 ) {
+    // TODO 일반 생성자 고려하기
     public static ReservationResponse from(final Reservation reservation) {
         return new ReservationResponse(
                 reservation.getId(),

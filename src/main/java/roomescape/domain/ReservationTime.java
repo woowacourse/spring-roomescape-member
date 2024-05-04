@@ -16,6 +16,7 @@ public class ReservationTime {
         this.startAt = startAt;
     }
 
+    // TODO ReservationTime은 startAt이 있어야 완전한 객체가 아닐까?
     public ReservationTime(final long id) {
         this(id, null);
     }
