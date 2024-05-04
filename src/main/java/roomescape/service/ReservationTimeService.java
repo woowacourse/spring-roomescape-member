@@ -36,7 +36,7 @@ public class ReservationTimeService {
         if (reservationTimeRepository.existsByStartAt(reservationTimeRequest.startAt())) {
             throw new RoomescapeException(DUPLICATE_RESERVATION_TIME);
         }
-        ReservationTime beforeSavedReservationTime = new ReservationTime(reservationTimeRequest.startAt());
+        ReservationTime beforeSavedReservationTime = reservationTimeRequest.toReservationTime();
         ReservationTime savedReservationTime = reservationTimeRepository.save(beforeSavedReservationTime);
         return ReservationTimeResponse.from(savedReservationTime);
     }

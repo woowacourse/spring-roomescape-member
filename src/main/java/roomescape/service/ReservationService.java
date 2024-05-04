@@ -40,13 +40,8 @@ public class ReservationService {
                 .orElseThrow(() -> new RoomescapeException(NOT_FOUND_RESERVATION_TIME));
         Theme requestedTheme = themeRepository.findById(reservationRequest.themeId())
                 .orElseThrow(() -> new RoomescapeException(NOT_FOUND_THEME));
+        Reservation beforeSaveReservation = reservationRequest.toReservation(requestedTime, requestedTheme);
 
-        Reservation beforeSaveReservation = new Reservation(
-                reservationRequest.name(),
-                reservationRequest.date(),
-                requestedTime,
-                requestedTheme
-        );
         Reservations reservations = reservationRepository.findAll();
         if (reservations.hasSameReservation(beforeSaveReservation)) {
             throw new RoomescapeException(DUPLICATE_RESERVATION);

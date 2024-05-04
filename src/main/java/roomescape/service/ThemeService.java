@@ -30,7 +30,7 @@ public class ThemeService {
         if (themes.hasNameOf(themeRequest.name())) {
             throw new RoomescapeException(DUPLICATE_THEME);
         }
-        Theme beforeSavedTheme = new Theme(themeRequest.name(), themeRequest.description(), themeRequest.thumbnail());
+        Theme beforeSavedTheme = themeRequest.toTheme();
         Theme savedTheme = themeRepository.save(beforeSavedTheme);
         return ThemeResponse.from(savedTheme);
     }
