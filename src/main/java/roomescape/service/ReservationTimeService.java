@@ -12,6 +12,8 @@ import roomescape.repository.ReservationTimeRepository;
 
 import java.util.List;
 
+import static java.util.Comparator.comparing;
+
 @Service
 public class ReservationTimeService {
 
@@ -67,6 +69,7 @@ public class ReservationTimeService {
         final List<Reservation> reservations = reservationRepository.findByDateAndThemeId(reservationTimeBookedRequest.date(), reservationTimeBookedRequest.themeId());
 
         return reservationTimes.stream()
+                .sorted(comparing(ReservationTime::getStartAt))
                 .map(reservationTime -> createReservationTimeBooked(reservationTime, reservations))
                 .toList();
     }
