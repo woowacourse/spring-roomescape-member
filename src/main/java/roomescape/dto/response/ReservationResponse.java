@@ -5,6 +5,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public record ReservationResponse(
         long id,
@@ -13,14 +14,19 @@ public record ReservationResponse(
         ReservationTime time,
         Theme theme
 ) {
-    // TODO 일반 생성자 고려하기
-    public static ReservationResponse from(final Reservation reservation) {
-        return new ReservationResponse(
+    public ReservationResponse(final Reservation reservation) {
+        this(
                 reservation.getId(),
                 reservation.getName(),
                 reservation.getDate(),
                 reservation.getTime(),
                 reservation.getTheme()
         );
+    }
+
+    public static List<ReservationResponse> listOf(final List<Reservation> reservations) {
+        return reservations.stream()
+                .map(ReservationResponse::new)
+                .toList();
     }
 }
