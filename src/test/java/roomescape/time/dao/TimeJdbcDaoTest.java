@@ -27,7 +27,7 @@ class TimeJdbcDaoTest {
     @Test
     @DisplayName("시간 데이터들이 잘 저장되는지 확인.")
     void saveTime() {
-        Time time = new Time(LocalTime.now());
+        Time time = new Time(LocalTime.of(12,0));
         timeJdbcDao.save(time);
 
         Assertions.assertThat(time.getId())
