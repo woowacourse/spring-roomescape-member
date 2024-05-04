@@ -273,15 +273,14 @@ GET /themes/popular HTTP/1.1
 **response**
 
 ```http request
-HTTP/1.1
+HTTP/1.1 200
 Content-Type: application/json
 
 [
     {
-        name: "theme1",
-        thumbnail: "https://abc.com/thumb.png",
-        description: "spring desc"
-    },
-    ...
+        "name": "theme1",
+        "thumbnail": "https://abc.com/thumb.png",
+        "description": "spring desc"
+    }
 ]
 ```
