@@ -7,10 +7,10 @@ import roomescape.domain.builder.ReservationTimeBuilderImpl;
 import java.time.LocalTime;
 
 public class ReservationTime {
-    private Long id;
+    private final Long id;
 
     @JsonFormat(pattern = "kk:mm")
-    private LocalTime startAt;
+    private final LocalTime startAt;
 
     public ReservationTime(final Long id, final LocalTime startAt) {
         validateTime(startAt);
@@ -26,10 +26,6 @@ public class ReservationTime {
         if (startAt == null) {
             throw new IllegalArgumentException("[ERROR] 잘못된 예약 시작 시간을 입력하였습니다.");
         }
-    }
-
-    public boolean isBefore(final LocalTime now) {
-        return startAt.isBefore(now);
     }
 
     public long getId() {
