@@ -1,5 +1,6 @@
 package roomescape.repository.theme;
 
+import java.time.LocalDate;
 import roomescape.domain.Theme;
 
 import java.util.List;
@@ -14,4 +15,6 @@ public interface ThemeRepository {
     Optional<Theme> findById(Long id);
 
     List<Theme> findAll();
+
+    List<Theme> findTrendings(LocalDate start, LocalDate end, Long limit);
 }

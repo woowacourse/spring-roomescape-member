@@ -1,25 +1,27 @@
 package roomescape.controller.reservation;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import roomescape.dto.request.ThemeAddRequest;
-import roomescape.dto.response.ReservationResponse;
-import roomescape.dto.response.ThemeResponse;
-import roomescape.service.ReservationService;
-import roomescape.service.ThemeService;
-
 import java.net.URI;
 import java.util.List;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import roomescape.dto.request.ThemeAddRequest;
+import roomescape.dto.response.ThemeResponse;
+import roomescape.service.ThemeService;
 
 @RestController
 @RequestMapping("/themes")
 public class ThemeController {
 
-    private final ReservationService reservationService;
     private final ThemeService themeService;
 
-    public ThemeController(ReservationService reservationService, ThemeService themeService) {
-        this.reservationService = reservationService;
+    public ThemeController(ThemeService themeService) {
         this.themeService = themeService;
     }
 
@@ -32,14 +34,15 @@ public class ThemeController {
     }
 
     @GetMapping
-    public List<ThemeResponse> findThemes(@RequestParam(required = false) Long limit) {
-        if (limit != null) {
-            return reservationService.findPopularThemes(limit)
-                    .stream()
-                    .map(ReservationResponse::theme)
-                    .toList();
-        }
+    public List<ThemeResponse> findThemes() {
         return themeService.findThemes();
+    }
+
+    @GetMapping("/trending")
+    public List<ThemeResponse> findTrendingThemes(@RequestParam Long limit) {
+        return themeService.findTrendingThemes(limit)
+                .stream()
+                .toList();
     }
 
     @DeleteMapping("/{id}")

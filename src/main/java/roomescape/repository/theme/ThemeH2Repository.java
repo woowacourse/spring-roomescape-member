@@ -1,5 +1,6 @@
 package roomescape.repository.theme;
 
+import java.time.LocalDate;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -88,5 +89,17 @@ public class ThemeH2Repository implements ThemeRepository {
                 "SELECT * FROM theme",
                 getThemeRowMapper()
         );
+    }
+
+    @Override
+    public List<Theme> findTrendings(LocalDate start, LocalDate end, Long limit) {
+        String sql = "SELECT t.id, t.name, t.description, t.thumbnail, COUNT(r.id) AS reservation_count " +
+                "FROM theme t " +
+                "LEFT JOIN reservation r ON t.id = r.theme_id AND r.date >= ? AND r.date <= ? " +
+                "GROUP BY t.id " +
+                "ORDER BY reservation_count DESC " +
+                "LIMIT ?";
+
+        return jdbcTemplate.query(sql, getThemeRowMapper(), start, end, limit);
     }
 }

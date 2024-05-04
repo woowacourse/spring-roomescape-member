@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ThemeAddRequest;
@@ -10,6 +11,7 @@ import java.util.List;
 
 @Service
 public class ThemeService {
+
     private final ThemeRepository themeRepository;
 
     public ThemeService(ThemeRepository themeRepository) {
@@ -23,6 +25,16 @@ public class ThemeService {
 
     public List<ThemeResponse> findThemes() {
         return themeRepository.findAll()
+                .stream()
+                .map(ThemeResponse::from)
+                .toList();
+    }
+
+    public List<ThemeResponse> findTrendingThemes(Long limit) {
+        LocalDate trendingStatsStart = LocalDate.now().minusDays(7);
+        LocalDate trendingStatsEnd = LocalDate.now().minusDays(1);
+
+        return themeRepository.findTrendings(trendingStatsStart, trendingStatsEnd, limit)
                 .stream()
                 .map(ThemeResponse::from)
                 .toList();
