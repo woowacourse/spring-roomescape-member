@@ -1,7 +1,7 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 public class Reservation {
     private final Long id;
@@ -18,7 +18,7 @@ public class Reservation {
             final Theme theme
     ) {
         validateDate(date);
-        validateTime(date, time);
+        validateIsNotBeforeReservation(date, time);
         this.id = id;
         this.name = name;
         this.date = date;
@@ -30,17 +30,12 @@ public class Reservation {
         if (date == null) {
             throw new IllegalArgumentException("[ERROR] 잘못된 예약 날짜 입력입니다.");
         }
-        LocalDate now = LocalDate.now();
-        if (now.isAfter(date)) {
-            throw new IllegalArgumentException("[ERROR] 현재 날짜보다 이전의 예약 날짜를 선택할 수 없습니다.");
-        }
     }
 
-    private void validateTime(final LocalDate date, final ReservationTime time) {
-        LocalDate now = LocalDate.now();
-        boolean isEqualDate = now.isEqual(date);
-        if (isEqualDate && time.isBefore(LocalTime.now())) {
-            throw new IllegalArgumentException("[ERROR] 현재 시간보다 이전의 시간을 선택할 수 없습니다.");
+    private void validateIsNotBeforeReservation(final LocalDate date, final ReservationTime time) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
+        if (reservationDateTime.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("[ERROR] 현재 날짜보다 이전의 예약 날짜를 선택할 수 없습니다.");
         }
     }
 
@@ -49,7 +44,8 @@ public class Reservation {
         return new Reservation(id, new Name(name), parsedDate, new ReservationTime(timeId), new Theme(themeId));
     }
 
-    public static Reservation of(final long id, final String name, final String date, final ReservationTime reservationTime,
+    public static Reservation of(final long id, final String name, final String date,
+                                 final ReservationTime reservationTime,
                                  final Theme theme) {
         LocalDate parsedDate = LocalDate.parse(date);
         return new Reservation(id, new Name(name), parsedDate, reservationTime, theme);
