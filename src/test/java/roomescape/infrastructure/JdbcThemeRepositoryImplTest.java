@@ -3,12 +3,14 @@ package roomescape.infrastructure;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 
@@ -60,6 +62,15 @@ class JdbcThemeRepositoryImplTest {
         Theme theme = new Theme("방탈출1", "방탈출1을 한다.", "https://url1");
         Theme saved = themeRepository.save(theme);
         assertThat(themeRepository.findById(saved.getId()).get()).isEqualTo(saved);
+    }
+
+
+    @DisplayName("id값이 db에 존재하지 않으면 optional.empty를 반환한다.")
+    @Test
+    void findById_NoSuchId() {
+        Optional<Theme> actual = themeRepository.findById(1L);
+
+        assertThat(actual).isEqualTo(Optional.empty());
     }
 
     @DisplayName("테마 이름을 받아서 개수를 센다.")
