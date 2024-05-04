@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.request.ReservationTimeAddRequest;
 import roomescape.dto.response.ReservationTimeResponse;
+import roomescape.exception.DuplicateSaveException;
 
 class ReservationTimeServiceTest {
 
@@ -50,8 +51,7 @@ class ReservationTimeServiceTest {
         ReservationTimeAddRequest reservationTimeAddRequest = new ReservationTimeAddRequest(LocalTime.of(10, 0));
 
         assertThatThrownBy(() -> reservationTimeService.saveReservationTime(reservationTimeAddRequest))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미 존재하는 예약시간은 추가할 수 없습니다.");
+                .isInstanceOf(DuplicateSaveException.class);
     }
 
     @DisplayName("원하는 id의 예약시간을 삭제합니다")

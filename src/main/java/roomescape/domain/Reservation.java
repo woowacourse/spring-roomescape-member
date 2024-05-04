@@ -23,6 +23,10 @@ public class Reservation {
         this(id, reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
     }
 
+    public boolean isDateBefore(LocalDate target) {
+        return getDate().isBefore(target);
+    }
+
     public Long getId() {
         return id;
     }
@@ -68,15 +72,5 @@ public class Reservation {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, date, time, theme);
-    }
-
-    @Override
-    public String toString() {
-        return "Reservation{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", date=" + date +
-                ", time=" + time +
-                '}';
     }
 }

@@ -8,15 +8,8 @@ public class ReservationTime {
     private final LocalTime startAt;
 
     public ReservationTime(Long id, LocalTime startAt) {
-        validateNonNull(startAt);
         this.id = id;
         this.startAt = startAt;
-    }
-
-    private void validateNonNull(LocalTime startAt) {
-        if (startAt == null) {
-            throw new NullPointerException("예약 가능 시각은 null일 수 없습니다");
-        }
     }
 
     public Long getId() {
@@ -42,13 +35,5 @@ public class ReservationTime {
     @Override
     public int hashCode() {
         return Objects.hash(id, startAt);
-    }
-
-    @Override
-    public String toString() {
-        return "ReservationTime{" +
-                "id=" + id +
-                ", startAt=" + startAt +
-                '}';
     }
 }

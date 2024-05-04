@@ -11,6 +11,8 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ReservationAddRequest;
+import roomescape.exception.DuplicateSaveException;
+import roomescape.exception.NoSuchRecordException;
 
 class ReservationServiceTest {
 
@@ -34,7 +36,7 @@ class ReservationServiceTest {
         ReservationAddRequest reservationAddRequest = new ReservationAddRequest("dodo", reservationDate, 1L, 1L);
 
         assertThatThrownBy(() -> reservationService.saveReservation(reservationAddRequest))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(NoSuchRecordException.class);
     }
 
     @DisplayName("예약 날짜와 예약시각 그리고 테마 아이디가 같은 경우 예외를 발생합니다.")
@@ -52,6 +54,6 @@ class ReservationServiceTest {
                 savedTime.getId(), savedTheme.getId());
 
         assertThatThrownBy(() -> reservationService.saveReservation(conflictRequest))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(DuplicateSaveException.class);
     }
 }

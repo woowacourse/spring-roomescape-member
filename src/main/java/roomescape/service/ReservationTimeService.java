@@ -7,6 +7,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.dto.request.ReservationTimeAddRequest;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.dto.response.ReservationTimeWithBookStatusResponse;
+import roomescape.exception.DuplicateSaveException;
 import roomescape.repository.ReservationTimeRepository;
 
 @Service
@@ -30,7 +31,7 @@ public class ReservationTimeService {
 
     public ReservationTimeResponse saveReservationTime(ReservationTimeAddRequest reservationTimeAddRequest) {
         if (reservationTimeRepository.existByStartAt(reservationTimeAddRequest.startAt())) {
-            throw new IllegalArgumentException("이미 존재하는 예약시간은 추가할 수 없습니다.");
+            throw new DuplicateSaveException("이미 존재하는 예약시간은 추가할 수 없습니다.");
         }
         ReservationTime saved = reservationTimeRepository.save(reservationTimeAddRequest.toEntity());
         return new ReservationTimeResponse(saved);
