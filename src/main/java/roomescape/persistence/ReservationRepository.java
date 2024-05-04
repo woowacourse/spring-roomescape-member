@@ -31,12 +31,17 @@ public class ReservationRepository {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.getName().value())
                 .addValue("date", reservation.getDate())
-                .addValue("time_id", reservation.getTime().getId())
-                .addValue("theme_id", reservation.getTheme().getId());
+                .addValue("time_id", reservation.getTimeId())
+                .addValue("theme_id", reservation.getThemeId());
         long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
 
-        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
-                reservation.getTheme());
+        return new Reservation(
+                id,
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.getTime(),
+                reservation.getTheme()
+        );
     }
 
     public void removeById(long id) {
@@ -53,8 +58,8 @@ public class ReservationRepository {
         int duplicatedCount = jdbcTemplate.queryForObject(
                 sql,
                 Integer.class, reservation.getDate(),
-                reservation.getTime().getId(),
-                reservation.getTheme().getId()
+                reservation.getTimeId(),
+                reservation.getThemeId()
         );
 
         return duplicatedCount > 0;

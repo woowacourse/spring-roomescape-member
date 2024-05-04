@@ -38,7 +38,15 @@ public class Reservation {
         return time;
     }
 
+    public Long getTimeId() {
+        return time.getId();
+    }
+
     public Theme getTheme() {
         return theme;
+    }
+
+    public Long getThemeId() {
+        return theme.getId();
     }
 }
