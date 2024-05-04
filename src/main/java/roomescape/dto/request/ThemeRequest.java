@@ -8,6 +8,10 @@ public record ThemeRequest(
         String thumbnail
 ) {
     public Theme toEntity() {
-        return new Theme(name, description, thumbnail);
+        return Theme.builder()
+                .name(this.name)
+                .description(this.description)
+                .thumbnail(thumbnail)
+                .build();
     }
 }

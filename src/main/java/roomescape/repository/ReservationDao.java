@@ -85,31 +85,27 @@ public class ReservationDao {
     }
 
     public List<Reservation> findByTimeId(final long timeId) {
-        String sql = "SELECT * FROM reservation WHERE time_id = ?";
-        return jdbcTemplate.query(
-                sql,
-                (resultSet, rowNum) -> Reservation.of(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("date"),
-                        resultSet.getLong("time_id"),
-                        resultSet.getLong("theme_id")
-                ),
-                timeId);
+        String sql = "SELECT r.id as reservation_id, r.name, r.date, time.id as time_id, time.start_at as time_value, "
+                + "theme.id as theme_id, theme.name as theme_name, theme.description, theme.thumbnail "
+                + "FROM reservation as r "
+                + "INNER JOIN reservation_time as time "
+                + "ON r.time_id = time.id "
+                + "INNER JOIN theme as theme "
+                + "ON r.theme_id = theme.id "
+                + "WHERE r.time_id = ?";
+        return jdbcTemplate.query(sql, reservationRowMapper, timeId);
     }
 
     public List<Reservation> findByThemeId(final long themeId) {
-        String sql = "SELECT * FROM reservation WHERE theme_id = ?";
-        return jdbcTemplate.query(
-                sql,
-                (resultSet, rowNum) -> Reservation.of(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("date"),
-                        resultSet.getLong("time_id"),
-                        resultSet.getLong("theme_id")
-                ),
-                themeId);
+        String sql = "SELECT r.id as reservation_id, r.name, r.date, time.id as time_id, time.start_at as time_value, "
+                + "theme.id as theme_id, theme.name as theme_name, theme.description, theme.thumbnail "
+                + "FROM reservation as r "
+                + "INNER JOIN reservation_time as time "
+                + "ON r.time_id = time.id "
+                + "INNER JOIN theme as theme "
+                + "ON r.theme_id = theme.id "
+                + "WHERE r.theme_id = ?";
+        return jdbcTemplate.query(sql, reservationRowMapper, themeId);
     }
 
 

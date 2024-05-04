@@ -13,6 +13,11 @@ public record ReservationRequest(
         long themeId
 ) {
     public Reservation toEntity(final ReservationTime reservationTime, final Theme theme) {
-        return Reservation.of(name, date, reservationTime, theme);
+        return Reservation.builder()
+                .name(name)
+                .date(date)
+                .time(reservationTime)
+                .theme(theme)
+                .build();
     }
 }

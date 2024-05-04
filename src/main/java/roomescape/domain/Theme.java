@@ -1,5 +1,8 @@
 package roomescape.domain;
 
+import roomescape.domain.builder.ThemeBuilder;
+import roomescape.domain.builder.ThemeBuilderImpl;
+
 public class Theme {
     private final Long id;
     private final String name;
@@ -13,13 +16,8 @@ public class Theme {
         this.thumbnail = thumbnail;
     }
 
-    public Theme(final String name, final String description, final String thumbnail) {
-        this(null, name, description, thumbnail);
-    }
-
-    // id만 있는 Theme를 theme라 부를 수 있는가?
-    public Theme(final long themeId) {
-        this(themeId, null, null, null);
+    public static ThemeBuilder builder() {
+        return new ThemeBuilderImpl();
     }
 
     public long getId() {

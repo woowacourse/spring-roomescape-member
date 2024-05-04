@@ -12,12 +12,12 @@ public class ThemeRowMapper implements RowMapper<Theme> {
     @Override
     public Theme mapRow(final ResultSet resultSet, final int rowNumber) {
         try {
-            return new Theme(
-                    resultSet.getLong("id"),
-                    resultSet.getString("name"),
-                    resultSet.getString("description"),
-                    resultSet.getString("thumbnail")
-            );
+            return Theme.builder()
+                    .themeId(resultSet.getLong("id"))
+                    .name(resultSet.getString("name"))
+                    .description(resultSet.getString("description"))
+                    .thumbnail(resultSet.getString("thumbnail"))
+                    .build();
         } catch (SQLException exception) {
             throw new RuntimeException(exception);
         }

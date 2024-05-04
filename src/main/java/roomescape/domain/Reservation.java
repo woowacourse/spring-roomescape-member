@@ -1,5 +1,8 @@
 package roomescape.domain;
 
+import roomescape.domain.builder.ReservationBuilder;
+import roomescape.domain.builder.ReservationBuilderImpl;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -26,6 +29,10 @@ public class Reservation {
         this.theme = theme;
     }
 
+    public static ReservationBuilder builder() {
+        return new ReservationBuilderImpl();
+    }
+
     private void validateDate(final LocalDate date) {
         if (date == null) {
             throw new IllegalArgumentException("[ERROR] 잘못된 예약 날짜 입력입니다.");
@@ -42,22 +49,6 @@ public class Reservation {
         if (isEqualDate && time.isBefore(LocalTime.now())) {
             throw new IllegalArgumentException("[ERROR] 현재 시간보다 이전의 시간을 선택할 수 없습니다.");
         }
-    }
-
-    public static Reservation of(long id, String name, String date, long timeId, long themeId) {
-        LocalDate parsedDate = LocalDate.parse(date);
-        return new Reservation(id, new Name(name), parsedDate, new ReservationTime(timeId), new Theme(themeId));
-    }
-
-    public static Reservation of(final long id, final String name, final String date, final ReservationTime reservationTime,
-                                 final Theme theme) {
-        LocalDate parsedDate = LocalDate.parse(date);
-        return new Reservation(id, new Name(name), parsedDate, reservationTime, theme);
-    }
-
-    public static Reservation of(final String name, final LocalDate date, final ReservationTime reservationTime,
-                                 final Theme theme) {
-        return new Reservation(null, new Name(name), date, reservationTime, theme);
     }
 
     public long getId() {
