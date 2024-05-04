@@ -24,13 +24,13 @@ public class Theme {
 
     private void validate(String name, String description, String thumbnail) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("name은 필수 값입니다.");
+            throw new IllegalArgumentException("이름은 필수 값입니다.");
         }
         if (description == null || description.isBlank()) {
-            throw new IllegalArgumentException("description은 필수 값입니다.");
+            throw new IllegalArgumentException("설명은 필수 값입니다.");
         }
         if (thumbnail == null || thumbnail.isBlank()) {
-            throw new IllegalArgumentException("thumbnail은 필수 값입니다.");
+            throw new IllegalArgumentException("이미지는 필수 값입니다.");
         }
     }
 

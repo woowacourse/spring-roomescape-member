@@ -27,16 +27,16 @@ public class Reservation {
 
     private void validate(String name, LocalDate date, ReservationTime time, Theme theme) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("name은 필수 값입니다.");
+            throw new IllegalArgumentException("이름은 필수 값입니다.");
         }
         if (date == null) {
-            throw new IllegalArgumentException("date는 필수 값입니다.");
+            throw new IllegalArgumentException("날짜는 필수 값입니다.");
         }
         if (time == null) {
-            throw new IllegalArgumentException("time은 필수 값입니다.");
+            throw new IllegalArgumentException("예약 시간은 필수 값입니다.");
         }
         if (theme == null) {
-            throw new IllegalArgumentException("theme은 필수 값입니다.");
+            throw new IllegalArgumentException("테마는 필수 값입니다.");
         }
     }
 

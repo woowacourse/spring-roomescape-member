@@ -21,7 +21,7 @@ public class ReservationTime {
 
     private void validate(LocalTime startAt) {
         if (startAt == null) {
-            throw new IllegalArgumentException("startAt은 필수 값입니다.");
+            throw new IllegalArgumentException("시작 시간은 필수 값입니다.");
         }
     }
 
