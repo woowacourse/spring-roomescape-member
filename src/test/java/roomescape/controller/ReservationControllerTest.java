@@ -18,10 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.ReservationRequest;
-import roomescape.dto.ReservationResponse;
-import roomescape.dto.ReservationTimeResponse;
-import roomescape.dto.ThemeResponse;
+import roomescape.service.dto.ReservationRequest;
+import roomescape.service.dto.ReservationResponse;
+import roomescape.service.dto.ReservationTimeResponse;
+import roomescape.service.dto.ThemeResponse;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.ThemeRepository;
 
