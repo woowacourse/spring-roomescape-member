@@ -4,7 +4,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.reservation.dto.ReservationRequestDto;
 import roomescape.reservation.dto.ReservationResponseDto;
-import roomescape.response.ResponseCode;
 import roomescape.reservation.service.ReservationService;
 
 import java.net.URI;
@@ -32,7 +31,7 @@ public class ReservationController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") final long id) {
-        final ResponseCode deletedStatus = reservationService.deleteById(id);
-        return ResponseEntity.status(deletedStatus.getHttpStatus()).build();
+        reservationService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

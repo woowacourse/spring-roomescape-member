@@ -2,7 +2,6 @@ package roomescape.theme.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.response.ResponseCode;
 import roomescape.theme.dto.ThemeRequestDto;
 import roomescape.theme.dto.ThemeResponseDto;
 import roomescape.theme.service.ThemeService;
@@ -32,8 +31,8 @@ public class ThemeController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") final long id) {
-        final ResponseCode deletedStatus = themeService.deleteById(id);
-        return ResponseEntity.status(deletedStatus.getHttpStatus()).build();
+        themeService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/popular")

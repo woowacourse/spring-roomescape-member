@@ -1,6 +1,5 @@
 package roomescape.reservation.service;
 
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.PastDateReservationException;
@@ -9,12 +8,12 @@ import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationRequestDto;
 import roomescape.reservation.dto.ReservationResponseDto;
-import roomescape.response.ResponseCode;
 import roomescape.time.dao.ReservationTimeDao;
 import roomescape.time.domain.ReservationTime;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class ReservationService {
@@ -46,6 +45,13 @@ public class ReservationService {
         return new ReservationResponseDto(findReservation);
     }
 
+    public void deleteById(final long id) {
+        int deleteCount = reservationDao.deleteById(id);
+        if (deleteCount == 0) {
+            throw new NoSuchElementException(id + "를 아이디로 갖는 예약이 존재하지 않습니다.");
+        }
+    }
+
     private void validateNoReservationsForPastDates(final LocalDate localDate, final ReservationTime time) {
         if (localDate.isBefore(LocalDate.now())) {
             throw new PastDateReservationException("날짜가 과거인 경우 모든 시간에 대한 예약이 불가능 합니다.");
@@ -58,17 +64,6 @@ public class ReservationService {
     private void validateDuplicationReservation(final boolean isExist) {
         if (isExist) {
             throw new DuplicateReservationException("이미 해당 날짜, 시간에 예약이 존재합니다.");
-        }
-    }
-
-    public ResponseCode deleteById(final long id) {
-        try {
-            if (reservationDao.deleteById(id) > 0) {
-                return ResponseCode.SUCCESS_DELETE;
-            }
-            return ResponseCode.NOT_FOUND;
-        } catch (final DataAccessException dataAccessException) {
-            return ResponseCode.FAILED_DELETE;
         }
     }
 }

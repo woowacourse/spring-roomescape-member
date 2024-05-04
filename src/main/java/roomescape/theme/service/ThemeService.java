@@ -1,8 +1,6 @@
 package roomescape.theme.service;
 
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
-import roomescape.response.ResponseCode;
 import roomescape.theme.dao.ThemeDao;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.dto.ThemeRequestDto;
@@ -10,6 +8,7 @@ import roomescape.theme.dto.ThemeResponseDto;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class ThemeService {
@@ -31,14 +30,10 @@ public class ThemeService {
         return new ThemeResponseDto(id, requestDto.name(), requestDto.description(), requestDto.thumbnail());
     }
 
-    public ResponseCode deleteById(final long id) {
-        try {
-            if (themeDao.deleteById(id) > 0) {
-                return ResponseCode.SUCCESS_DELETE;
-            }
-            return ResponseCode.NOT_FOUND;
-        } catch (final DataAccessException dataAccessException) {
-            return ResponseCode.FAILED_DELETE;
+    public void deleteById(final long id) {
+        int deleteCount = themeDao.deleteById(id);
+        if (deleteCount == 0) {
+            throw new NoSuchElementException(id + "를 아이디로 갖는 테마가 존재하지 않습니다.");
         }
     }
 

@@ -1,8 +1,6 @@
 package roomescape.time.service;
 
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
-import roomescape.response.ResponseCode;
 import roomescape.time.dao.ReservationTimeDao;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.domain.ReservationUserTime;
@@ -10,6 +8,7 @@ import roomescape.time.dto.ReservationTimeRequestDto;
 import roomescape.time.dto.ReservationTimeResponseDto;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class ReservationTimeService {
@@ -33,14 +32,10 @@ public class ReservationTimeService {
         return new ReservationTimeResponseDto(id, reservationTime.getStartAt().toString());
     }
 
-    public ResponseCode deleteById(final long id) {
-        try {
-            if (reservationTimeDao.deleteById(id) > 0) {
-                return ResponseCode.SUCCESS_DELETE;
-            }
-            return ResponseCode.NOT_FOUND;
-        } catch (final DataAccessException dataAccessException) {
-            return ResponseCode.FAILED_DELETE;
+    public void deleteById(final long id) {
+        int deleteCount = reservationTimeDao.deleteById(id);
+        if (deleteCount == 0) {
+            throw new NoSuchElementException(id + "를 아이디로 갖는 시간이 존재하지 않습니다.");
         }
     }
 

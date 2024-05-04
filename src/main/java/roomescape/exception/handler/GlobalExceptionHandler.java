@@ -1,10 +1,13 @@
 package roomescape.exception.handler;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import roomescape.exception.*;
+
+import java.util.NoSuchElementException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -41,6 +44,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = PastTimeReservationException.class)
     public ResponseEntity<String> handlePastTimeReservation(PastTimeReservationException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = DataAccessException.class)
+    public ResponseEntity<String> handleDataAccess(DataAccessException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = NoSuchElementException.class)
+    public ResponseEntity<String> handleNoSuchElement(NoSuchElementException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
