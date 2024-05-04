@@ -87,6 +87,7 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, int limit) {
+        // BETWEEN A AND B: A와 B를 포함한 구간
         String sql = """
                     SELECT
                         th.id,

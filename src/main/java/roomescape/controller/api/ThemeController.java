@@ -23,7 +23,8 @@ public class ThemeController {
 
     private static final String POPULAR_THEME_LIMIT = "10";
     private static final int POPULAR_THEME_MIN_LIMIT = 1;
-    private static final int POPULAR_THEME_DAYS_AGO = 7;
+    private static final int POPULAR_THEME_DAYS_AGO = 6;
+    public static final int POPULAR_THEME_END_DATE_OFFSET = 1;
 
     private final ThemeService themeService;
     private final Clock clock;
@@ -61,12 +62,13 @@ public class ThemeController {
             @RequestParam(required = false) LocalDate endDate,
             @RequestParam(defaultValue = POPULAR_THEME_LIMIT) int limit
     ) {
-        if (startDate == null) {
-            startDate = LocalDate.now(clock).minusDays(POPULAR_THEME_DAYS_AGO);
-        }
 
         if (endDate == null) {
-            endDate = LocalDate.now(clock);
+            endDate = LocalDate.now(clock).minusDays(POPULAR_THEME_END_DATE_OFFSET);
+        }
+
+        if (startDate == null) {
+            startDate = endDate.minusDays(POPULAR_THEME_DAYS_AGO);
         }
 
         if (limit < POPULAR_THEME_MIN_LIMIT) {
