@@ -1,6 +1,6 @@
 package roomescape.repository;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -86,7 +86,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findPopularThemes(LocalDateTime now, int period, int limit) {
+    public List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, int limit) {
         String sql = """
                     SELECT
                         th.id,
@@ -102,8 +102,6 @@ public class JdbcThemeRepository implements ThemeRepository {
                     LIMIT ?;
                 """;
 
-        LocalDateTime startDate = now.minusDays(period);
-
-        return jdbcTemplate.query(sql, rowMapper, startDate, now, limit);
+        return jdbcTemplate.query(sql, rowMapper, startDate, endDate, limit);
     }
 }

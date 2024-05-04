@@ -312,12 +312,14 @@ HTTP/1.1 204
 #### Request
 
 ```http
-GET /themes/popular HTTP/1.1
+GET /themes/popular?startDate={startDate}&endDate={endDate}&limit={limit} HTTP/1.1
 ```
 
-최근 일주일을 기준으로 하여 해당 기간 내에 방문하는 예약이 많은 테마 10개를 조회한다.  
-예를 들어, 오늘이 4월 8일인 경우, 게임 날짜가 4월 1일부터 4월 7일까지인 예약 건수가 많은 순서대로 10개의 테마를 조회한다.
+시작날짜와 끝날짜를 입력받아 해당 기간 동안 예약이 가장 많은 테마 10개를 조회한다.
 
+startDate: (required=false) 시작 날짜 (형식: YYYY-MM-DD)
+endDate: (required=false) 끝 날짜 (형식: YYYY-MM-DD)
+limit: (default=10) 조회할 테마의 개수
 #### Response
 
 ```http
