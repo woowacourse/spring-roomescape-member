@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.Theme;
+import roomescape.domain.Themes;
 
 public class CollectionThemeRepository implements ThemeRepository {
 
@@ -19,12 +20,12 @@ public class CollectionThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findAll() {
-        return new ArrayList<>(themes);
+    public Themes findAll() {
+        return new Themes(themes);
     }
 
     @Override
-    public List<Theme> findAndOrderByPopularity(LocalDate start, LocalDate end, int count) {
+    public Themes findAndOrderByPopularity(LocalDate start, LocalDate end, int count) {
         return null;
     }
 

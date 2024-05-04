@@ -10,6 +10,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.ReservationTimes;
 
 @Repository
 public class JdbcTemplateReservationTimeRepository implements ReservationTimeRepository {
@@ -44,12 +45,13 @@ public class JdbcTemplateReservationTimeRepository implements ReservationTimeRep
     }
 
     @Override
-    public List<ReservationTime> findAll() {
-        return jdbcTemplate.query("select * from reservation_time", (rs, rowNum) -> {
+    public ReservationTimes findAll() {
+        List<ReservationTime> findReservationTimes = jdbcTemplate.query("select * from reservation_time", (rs, rowNum) -> {
             long id = rs.getLong(1);
             LocalTime time = rs.getTime(2).toLocalTime();
             return new ReservationTime(id, time);
         });
+        return new ReservationTimes(findReservationTimes);
     }
 
     @Override

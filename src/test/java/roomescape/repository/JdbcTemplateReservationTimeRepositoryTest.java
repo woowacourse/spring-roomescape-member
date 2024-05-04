@@ -29,9 +29,9 @@ class JdbcTemplateReservationTimeRepositoryTest {
     @Test
     @DisplayName("ReservationTime 을 잘 저장하는지 확인한다.")
     void save() {
-        var beforeSave = reservationTimeRepository.findAll().stream().map(ReservationTime::getId).toList();
+        var beforeSave = reservationTimeRepository.findAll().getReservationTimes().stream().map(ReservationTime::getId).toList();
         ReservationTime saved = reservationTimeRepository.save(new ReservationTime(LocalTime.now()));
-        var afterSave = reservationTimeRepository.findAll().stream().map(ReservationTime::getId).toList();
+        var afterSave = reservationTimeRepository.findAll().getReservationTimes().stream().map(ReservationTime::getId).toList();
 
         Assertions.assertThat(afterSave)
                 .containsAll(beforeSave)
@@ -41,11 +41,11 @@ class JdbcTemplateReservationTimeRepositoryTest {
     @Test
     @DisplayName("ReservationTime 을 잘 조회하는지 확인한다.")
     void findAll() {
-        List<ReservationTime> beforeSave = reservationTimeRepository.findAll();
+        List<ReservationTime> beforeSave = reservationTimeRepository.findAll().getReservationTimes();
         reservationTimeRepository.save(new ReservationTime(LocalTime.now()));
         reservationTimeRepository.save(new ReservationTime(LocalTime.now()));
 
-        List<ReservationTime> afterSave = reservationTimeRepository.findAll();
+        List<ReservationTime> afterSave = reservationTimeRepository.findAll().getReservationTimes();
 
         Assertions.assertThat(afterSave.size())
                 .isEqualTo(beforeSave.size() + 2);
@@ -54,12 +54,12 @@ class JdbcTemplateReservationTimeRepositoryTest {
     @Test
     @DisplayName("ReservationTime 을 잘 지우하는지 확인한다.")
     void delete() {
-        List<ReservationTime> beforeSaveAndDelete = reservationTimeRepository.findAll();
+        List<ReservationTime> beforeSaveAndDelete = reservationTimeRepository.findAll().getReservationTimes();
         reservationTimeRepository.save(new ReservationTime(LocalTime.now()));
 
         reservationTimeRepository.delete(1L);
 
-        List<ReservationTime> afterSaveAndDelete = reservationTimeRepository.findAll();
+        List<ReservationTime> afterSaveAndDelete = reservationTimeRepository.findAll().getReservationTimes();
 
         Assertions.assertThat(beforeSaveAndDelete)
                 .containsExactlyInAnyOrderElementsOf(afterSaveAndDelete);

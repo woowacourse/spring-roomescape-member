@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.ReservationTimes;
 
 public class CollectionReservationTimeRepository implements ReservationTimeRepository {
     private final List<ReservationTime> reservationTimes;
@@ -45,8 +46,8 @@ public class CollectionReservationTimeRepository implements ReservationTimeRepos
     }
 
     @Override
-    public List<ReservationTime> findAll() {
-        return List.copyOf(reservationTimes);
+    public ReservationTimes findAll() {
+        return new ReservationTimes(reservationTimes);
     }
 
     @Override

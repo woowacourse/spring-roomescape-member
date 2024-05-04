@@ -10,6 +10,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
+import roomescape.domain.Themes;
 
 @Repository
 public class JdbcTemplateThemeRepository implements ThemeRepository {
@@ -27,15 +28,17 @@ public class JdbcTemplateThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findAll() {
-        return jdbcTemplate.query("select ID, NAME, DESCRIPTION, THUMBNAIL from THEME", themeRowMapper);
+    public Themes findAll() {
+        List<Theme> findThemes = jdbcTemplate.query("select ID, NAME, DESCRIPTION, THUMBNAIL from THEME", themeRowMapper);
+        return new Themes(findThemes);
     }
 
     @Override
-    public List<Theme> findAndOrderByPopularity(LocalDate start, LocalDate end, int count) {
-        return jdbcTemplate.query(
+    public Themes findAndOrderByPopularity(LocalDate start, LocalDate end, int count) {
+        List<Theme> findThemes = jdbcTemplate.query(
                 "select th.*, count(*) as count from theme th join reservation r on r.theme_id = th.id where PARSEDATETIME(r.date,'yyyy-MM-dd') >= PARSEDATETIME(?,'yyyy-MM-dd') and PARSEDATETIME(r.date,'yyyy-MM-dd') <= PARSEDATETIME(?,'yyyy-MM-dd') group by th.id order by count desc limit ?",
                 themeRowMapper, start, end, count);
+        return new Themes(findThemes);
     }
 
     @Override

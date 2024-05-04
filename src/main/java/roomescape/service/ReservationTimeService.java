@@ -46,7 +46,7 @@ public class ReservationTimeService {
     }
 
     public List<ReservationTimeResponse> findAll() {
-        return reservationTimeRepository.findAll().stream()
+        return reservationTimeRepository.findAll().getReservationTimes().stream()
                 .map(this::toResponse)
                 .toList();
     }
@@ -57,7 +57,7 @@ public class ReservationTimeService {
                 .orElseThrow(() -> new RoomescapeException(NOT_FOUND_THEME));
         Reservations findReservations = reservationRepository.findByThemeAndDate(theme, date);
 
-        return reservationTimeRepository.findAll().stream()
+        return reservationTimeRepository.findAll().getReservationTimes().stream()
                 .map(reservationTime ->
                         new AvailableTimeResponse(
                                 reservationTime.getId(),

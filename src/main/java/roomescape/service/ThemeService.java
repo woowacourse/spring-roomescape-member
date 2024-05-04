@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
+import roomescape.domain.Themes;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
 import roomescape.exception.RoomescapeException;
@@ -25,9 +26,8 @@ public class ThemeService {
     }
 
     public ThemeResponse save(ThemeRequest themeRequest) {
-        boolean hasDuplicateTheme = themeRepository.findAll().stream()
-                .anyMatch(theme -> theme.isNameOf(themeRequest.name()));
-        if (hasDuplicateTheme) {
+        Themes themes = themeRepository.findAll();
+        if (themes.hasNameOf(themeRequest.name())) {
             throw new RoomescapeException(DUPLICATE_THEME);
         }
         Theme saved = themeRepository.save(
@@ -40,13 +40,13 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> findAll() {
-        return themeRepository.findAll().stream()
+        return themeRepository.findAll().getThemes().stream()
                 .map(this::toResponse)
                 .toList();
     }
 
     public List<ThemeResponse> findAndOrderByPopularity(LocalDate start, LocalDate end, int count) {
-        return themeRepository.findAndOrderByPopularity(start, end, count).stream()
+        return themeRepository.findAndOrderByPopularity(start, end, count).getThemes().stream()
                 .map(this::toResponse)
                 .toList();
     }

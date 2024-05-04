@@ -92,7 +92,7 @@ class ReservationTimeServiceTest {
             reservationTimeService.delete(1L);
 
             //then
-            assertThat(reservationTimeRepository.findAll())
+            assertThat(reservationTimeRepository.findAll().getReservationTimes())
                     .isEmpty();
         }
 
