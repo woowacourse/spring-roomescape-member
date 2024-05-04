@@ -10,7 +10,6 @@ public interface ThemeRepository {
 
     List<Theme> findAll();
 
-    // TODO: Convert to primitive type
     Optional<Theme> findById(long id);
 
     List<Theme> findPopularThemes(LocalDate start, LocalDate end, int count);

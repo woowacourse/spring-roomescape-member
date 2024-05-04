@@ -5,25 +5,36 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.ReserveName;
 import roomescape.domain.Theme;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Import(H2ThemeRepository.class)
+@Import({H2ReservationRepository.class, H2ReservationTimeRepository.class, H2ThemeRepository.class})
 @JdbcTest
 class ThemeRepositoryTest {
 
-    final List<Theme> sampleThemes = List.of(
-            new Theme(null, "Theme 1", "Description 1", "Thumbnail 1"),
-            new Theme(null, "Theme 2", "Description 2", "Thumbnail 2"),
-            new Theme(null, "Theme 3", "Description 3", "Thumbnail 3"),
-            new Theme(null, "Theme 4", "Description 4", "Thumbnail 4")
-    );
+    final List<Theme> sampleThemes = IntStream.range(1, 9)
+            .mapToObj(i -> new Theme(
+                    null,
+                    "Theme " + i,
+                    "Description " + i,
+                    "Thumbnail " + i
+            )).toList();
 
+    @Autowired
+    ReservationRepository reservationRepository;
+    @Autowired
+    ReservationTimeRepository reservationTimeRepository;
     @Autowired
     ThemeRepository themeRepository;
 
@@ -70,6 +81,51 @@ class ThemeRepositoryTest {
 
         // then
         assertThat(actual).isEmpty();
+    }
+
+    @Test
+    @DisplayName("인기 테마 목록을 조회한다.")
+    void findPopularThemes() {
+        // given
+        final ReservationTime time = reservationTimeRepository.save(new ReservationTime(null, "08:00"));
+        final List<Theme> themes = sampleThemes.stream()
+                .map(themeRepository::save)
+                .toList();
+        final Random random = new Random();
+
+        List<Reservation> reservations = new ArrayList<>();
+        final int days = 7;
+        for (int day = 1; day < days * 2; day++) {
+            LocalDate date = LocalDate.now().minusDays(day);
+            for (Theme theme : themes) {
+                if (random.nextBoolean()) {
+                    Reservation reservation = new Reservation(
+                            null,
+                            new ReserveName("Person"),
+                            date,
+                            time,
+                            theme
+                    );
+                    reservations.add(reservationRepository.save(reservation));
+                }
+            }
+        }
+
+        final LocalDate start = LocalDate.now().minusDays(days);
+        final LocalDate end = LocalDate.now().minusDays(1);
+        final int count = 2;
+
+        // when
+        final List<Theme> actual = themeRepository.findPopularThemes(start, end, count);
+        final List<Theme> reservationsContainExpected = reservations.stream()
+                .filter(r -> r.getDate().isAfter(start))
+                .map(Reservation::getTheme)
+                .distinct()
+                .toList();
+
+        // then
+        assertThat(actual.size()).isLessThanOrEqualTo(count);
+        assertThat(reservationsContainExpected.containsAll(actual)).isTrue();
     }
 
     @Test
