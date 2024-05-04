@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,7 +15,6 @@ import roomescape.controller.response.ReservationTimeWebResponse;
 import roomescape.controller.response.ReservationWebResponse;
 import roomescape.controller.response.ThemeWebResponse;
 import roomescape.domain.Reservation;
-import roomescape.exception.PastReservationException;
 import roomescape.service.ReservationService;
 import roomescape.service.request.ReservationAppRequest;
 
@@ -65,11 +63,6 @@ public class ReservationController {
             )).toList();
 
         return ResponseEntity.ok(reservationWebResponse);
-    }
-
-    @ExceptionHandler(PastReservationException.class)
-    public ResponseEntity<String> handlePastReservationException(PastReservationException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
     }
 
 }

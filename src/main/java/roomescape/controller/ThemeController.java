@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.request.ThemeWebRequest;
 import roomescape.controller.response.ThemeWebResponse;
 import roomescape.domain.Theme;
-import roomescape.exception.ReservationExistsException;
 import roomescape.service.ThemeService;
 import roomescape.service.request.ThemeAppRequest;
 
@@ -77,11 +75,5 @@ public class ThemeController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         themeService.delete(id);
         return ResponseEntity.noContent().build();
-    }
-
-
-    @ExceptionHandler(ReservationExistsException.class)
-    public ResponseEntity<String> handleReservationExistsException(ReservationExistsException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
     }
 }

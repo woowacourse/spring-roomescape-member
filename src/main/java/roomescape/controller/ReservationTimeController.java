@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +16,6 @@ import roomescape.controller.request.ReservationTimeWebRequest;
 import roomescape.controller.response.ReservationTimeUserWebResponse;
 import roomescape.controller.response.ReservationTimeWebResponse;
 import roomescape.domain.ReservationTime;
-import roomescape.exception.ReservationExistsException;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.request.ReservationTimeAppRequest;
 import roomescape.service.response.ReservationTimeAppResponse;
@@ -79,8 +77,4 @@ public class ReservationTimeController {
         return ResponseEntity.ok(webResponses);
     }
 
-    @ExceptionHandler(ReservationExistsException.class)
-    public ResponseEntity<String> handleReservationExistsException(ReservationExistsException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
 }
