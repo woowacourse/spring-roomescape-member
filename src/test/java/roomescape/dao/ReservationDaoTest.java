@@ -125,8 +125,8 @@ public class ReservationDaoTest {
 
     @DisplayName("최근 일주일간 가장 많이 예약된 테마를 조회한다.")
     @Test
-    void findBestThemeIdInWeekTest() {
-        List<Long> bestTheme = reservationDao.findBestThemeIdInWeek("2023-12-28", "2024-01-02", 10);
+    void findBestThemesFromTo() {
+        List<Long> bestTheme = reservationDao.findBestThemesFromTo("2023-12-28", "2024-01-02", 10);
 
         assertThat(bestTheme.size()).isEqualTo(1);
     }
