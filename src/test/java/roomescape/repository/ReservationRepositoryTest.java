@@ -15,7 +15,6 @@ import roomescape.domain.Theme;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -64,24 +63,17 @@ class ReservationRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        Random random = new Random();
-
         sampleTimes = sampleTimes.stream()
                 .map(reservationTimeRepository::save)
                 .toList();
         sampleThemes = sampleThemes.stream()
                 .map(themeRepository::save)
                 .toList();
-        sampleReservations = sampleReservations.stream()
-                .map(reservation -> {
-                    final ReservationTime randomTime = sampleTimes.get(random.nextInt(sampleTimes.size()));
-                    final Theme randomTheme = sampleThemes.get(random.nextInt(sampleThemes.size()));
-
-                    return reservation
-                            .assignTime(randomTime)
-                            .assignTheme(randomTheme);
-                })
-                .toList();
+        sampleReservations = IntStream.range(0, sampleReservations.size())
+                .mapToObj(i -> sampleReservations.get(i)
+                        .assignTime(sampleTimes.get(i % sampleTimes.size()))
+                        .assignTheme(sampleThemes.get(i % sampleThemes.size()))
+                ).toList();
     }
 
     @Test

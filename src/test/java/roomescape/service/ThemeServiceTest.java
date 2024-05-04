@@ -89,7 +89,7 @@ class ThemeServiceTest {
         final Long id = themeService.addTheme(sampleThemes.get(0)).id();
 
         // when & then
-        assertThat(themeService.deleteTheme(id)).isPositive();
+        assertThat(themeService.deleteTheme(id)).isOne();
         assertThat(themeService.deleteTheme(id)).isZero();
     }
 

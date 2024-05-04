@@ -91,8 +91,8 @@ class ThemeRepositoryTest {
         final List<Theme> themes = sampleThemes.stream()
                 .map(themeRepository::save)
                 .toList();
-        final Random random = new Random();
 
+        Random random = new Random();
         List<Reservation> reservations = new ArrayList<>();
         final int days = 7;
         for (int day = 1; day < days * 2; day++) {

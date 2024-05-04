@@ -58,6 +58,7 @@ public class TimeService {
         }
     }
 
+    // TODO: validate duplicate
     public TimeResponse addTime(final TimeRequest timeRequest) {
         final ReservationTime parsedTime = timeRequest.toDomain();
         final ReservationTime savedTime = timeRepository.save(parsedTime);

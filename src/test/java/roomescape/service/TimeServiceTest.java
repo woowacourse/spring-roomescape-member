@@ -115,7 +115,7 @@ class TimeServiceTest {
         final Long id = timeService.addTime(sampleTimes.get(0)).id();
 
         // when & then
-        assertThat(timeService.deleteTime(id)).isPositive();
+        assertThat(timeService.deleteTime(id)).isOne();
         assertThat(timeService.deleteTime(id)).isZero();
     }
 
