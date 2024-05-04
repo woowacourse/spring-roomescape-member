@@ -20,7 +20,7 @@ public class ThemeName {
 
     private void validateFormat(String name) {
         if (!THEME_NAME_FORMAT.matcher(name).matches()) {
-            throw new IllegalArgumentException("공백, 한글, 영어, 숫자만 입력 가능합니다.");
+            throw new IllegalArgumentException("테마명은 공백, 한글, 영어, 숫자만 입력 가능합니다.");
         }
     }
 

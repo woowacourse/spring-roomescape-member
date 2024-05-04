@@ -20,7 +20,7 @@ public class Description {
 
     private void validateFormat(String name) {
         if (!DESCRIPTION_FORMAT.matcher(name).matches()) {
-            throw new IllegalArgumentException("공백, 한글, 숫자만 입력 가능합니다.");
+            throw new IllegalArgumentException("설명은 공백, 한글, 숫자만 입력 가능합니다.");
         }
     }
 

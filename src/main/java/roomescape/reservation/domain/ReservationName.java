@@ -20,7 +20,7 @@ public class ReservationName {
 
     private void validateFormat(String name) {
         if (!RESERVATION_NAME_FORMAT.matcher(name).matches()) {
-            throw new IllegalArgumentException("한글로만 입력 가능합니다.");
+            throw new IllegalArgumentException("예약자명은 한글로만 입력 가능합니다.");
         }
     }
 
