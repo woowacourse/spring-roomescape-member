@@ -1,9 +1,14 @@
 package roomescape;
 
+import java.time.LocalTime;
 import java.util.List;
 import roomescape.controller.response.ThemeResponse;
+import roomescape.domain.ReservationTime;
 
 public class TestFixtures {
+    public static final ReservationTime FIRST_TIME = new ReservationTime(1L, LocalTime.of(10, 5));
+    public static final ReservationTime SECOND_TIME = new ReservationTime(2L, LocalTime.of(9, 15));
+    public static final ReservationTime THIRD_TIME = new ReservationTime(3L, LocalTime.of(12, 30));
     public static ThemeResponse theme1 = new ThemeResponse(1L, "name1", "description1", "thumbnail1");
     public static ThemeResponse theme2 = new ThemeResponse(2L, "name2", "description2", "thumbnail2");
     public static ThemeResponse theme3 = new ThemeResponse(3L, "name3", "description3", "thumbnail3");
