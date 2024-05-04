@@ -13,7 +13,7 @@ import roomescape.theme.dto.ThemeResponse;
 @Service
 public class ThemeService {
 
-    public static final int NUMEBER_OF_ONE_WEEK = 7;
+    public static final int NUMBER_OF_ONE_WEEK = 7;
     public static final int NUMBER_OF_ONE_DAY = 1;
     public static final int TOP_THEMES_LIMIT = 10;
 
@@ -43,14 +43,12 @@ public class ThemeService {
     }
 
     public List<ThemeRankResponse> findRankedThemes() {
-        LocalDate today = LocalDate.now()
+        LocalDate yesterday = LocalDate.now()
                 .minusDays(NUMBER_OF_ONE_DAY);
-        LocalDate beforeOneWeek = today.minusDays(NUMEBER_OF_ONE_WEEK);
+        LocalDate beforeOneWeek = yesterday.minusDays(NUMBER_OF_ONE_WEEK);
 
-        List<Theme> rankedThemes = reservationDao.findThemeByDateOrderByThemeIdCount(beforeOneWeek, today);
-        System.out.println(rankedThemes);
+        List<Theme> rankedThemes = reservationDao.findThemeByDateOrderByThemeIdCount(beforeOneWeek, yesterday);
         return rankedThemes.stream()
-                .sequential()
                 .limit(TOP_THEMES_LIMIT)
                 .map(ThemeRankResponse::fromTheme)
                 .toList();
