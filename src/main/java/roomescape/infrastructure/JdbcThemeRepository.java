@@ -48,7 +48,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         String sql = "select id, name, description, thumbnail from theme where id = ?";
         try {
             Theme theme = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> ThemeRowMapper.mapRow(rs), id);
-            return Optional.of(theme);
+            return Optional.ofNullable(theme);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -81,6 +81,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public boolean existsByTimeId(long id) {
         String sql = "select exists(select 1 from reservation where theme_id = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
+        Boolean result = jdbcTemplate.queryForObject(sql, Boolean.class, id);
+        return Boolean.TRUE.equals(result);
     }
 }

@@ -34,7 +34,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
             ReservationTime findReservationTime = jdbcTemplate.queryForObject(
                     sql, (rs, rowNum) -> ReservationTimeRowMapper.mapRow(rs), id
             );
-            return Optional.of(findReservationTime);
+            return Optional.ofNullable(findReservationTime);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -72,7 +72,8 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public boolean existsByStartAt(LocalTime startAt) {
         String sql = "select exists(select 1 from reservation_time where start_at = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, startAt);
+        Boolean result = jdbcTemplate.queryForObject(sql, Boolean.class, startAt);
+        return Boolean.TRUE.equals(result);
     }
 
     @Override

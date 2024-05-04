@@ -41,7 +41,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             Reservation reservation = jdbcTemplate.queryForObject(
                     FIND_ALL_SQL + whereClause, (rs, rowNum) -> ReservationRowMapper.joinedMapRow(rs), id
             );
-            return Optional.of(reservation);
+            return Optional.ofNullable(reservation);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -74,12 +74,14 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public boolean existsByTimeId(long timeId) {
         String sql = "select exists(select 1 from reservation where time_id = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
+        Boolean result = jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
+        return Boolean.TRUE.equals(result);
     }
 
     @Override
     public boolean existsBy(LocalDate date, long timeId, long themeId) {
         String sql = "select exists(select 1 from reservation where date = ? and time_id = ? and theme_id = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
+        Boolean result = jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
+        return Boolean.TRUE.equals(result);
     }
 }
