@@ -1,10 +1,11 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Reservation {
+
+    private static final int NAME_MAX_LENGTH = 255;
 
     private final Long id;
     private final String name;
@@ -27,24 +28,29 @@ public class Reservation {
     }
 
     private void validate(String name, LocalDate date, ReservationTime time, Theme theme) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("이름은 필수 값입니다.");
-        }
+        validateName(name);
+
         if (date == null) {
             throw new IllegalArgumentException("날짜는 필수 값입니다.");
         }
+
         if (time == null) {
             throw new IllegalArgumentException("예약 시간은 필수 값입니다.");
         }
+
         if (theme == null) {
             throw new IllegalArgumentException("테마는 필수 값입니다.");
         }
     }
 
-    public boolean isBefore(LocalDateTime dateTime) {
-        LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
+    private void validateName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("이름은 필수 값입니다.");
+        }
 
-        return reservationDateTime.isBefore(dateTime);
+        if (name.length() > NAME_MAX_LENGTH) {
+            throw new IllegalArgumentException(String.format("이름은 %d자를 넘을 수 없습니다.", NAME_MAX_LENGTH));
+        }
     }
 
     @Override

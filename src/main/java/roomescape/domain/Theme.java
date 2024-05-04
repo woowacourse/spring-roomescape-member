@@ -4,6 +4,10 @@ import java.util.Objects;
 
 public class Theme {
 
+    private static final int NAME_MAX_LENGTH = 255;
+    private static final int DESCRIPTION_MAX_LENGTH = 255;
+    private static final int THUMBNAIL_MAX_LENGTH = 255;
+
     private final Long id;
     private final String name;
     private final String description;
@@ -23,14 +27,38 @@ public class Theme {
     }
 
     private void validate(String name, String description, String thumbnail) {
+        validateNAme(name);
+        validateDescription(description);
+        validateThumbnail(thumbnail);
+    }
+
+    private void validateNAme(String name) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("이름은 필수 값입니다.");
         }
+
+        if (name.length() > NAME_MAX_LENGTH) {
+            throw new IllegalArgumentException(String.format("이름은 %d자를 넘을 수 없습니다.", NAME_MAX_LENGTH));
+        }
+    }
+
+    private static void validateDescription(String description) {
         if (description == null || description.isBlank()) {
             throw new IllegalArgumentException("설명은 필수 값입니다.");
         }
+
+        if (description.length() > DESCRIPTION_MAX_LENGTH) {
+            throw new IllegalArgumentException(String.format("설명은 %d자를 넘을 수 없습니다.", DESCRIPTION_MAX_LENGTH));
+        }
+    }
+
+    private void validateThumbnail(String thumbnail) {
         if (thumbnail == null || thumbnail.isBlank()) {
             throw new IllegalArgumentException("이미지는 필수 값입니다.");
+        }
+
+        if (thumbnail.length() > THUMBNAIL_MAX_LENGTH) {
+            throw new IllegalArgumentException(String.format("이미지는 %d자를 넘을 수 없습니다.", THUMBNAIL_MAX_LENGTH));
         }
     }
 

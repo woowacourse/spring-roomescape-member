@@ -1,7 +1,9 @@
 package roomescape.service;
 
 import java.time.Clock;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
@@ -50,7 +52,7 @@ public class ReservationService {
         Theme theme = themeRepository.getById(reservationRequest.themeId());
         Reservation reservation = reservationRequest.toReservation(reservationTime, theme);
 
-        validateDateTimeNotPassed(reservation);
+        validateDateTimeNotPassed(reservation.getDate(), reservationTime.getStartAt());
         validateDuplicatedReservation(reservation);
 
         Reservation savedReservation = reservationRepository.save(reservation);
@@ -58,8 +60,10 @@ public class ReservationService {
         return ReservationResponse.from(savedReservation);
     }
 
-    private void validateDateTimeNotPassed(Reservation reservation) {
-        if (reservation.isBefore(LocalDateTime.now(clock))) {
+    private void validateDateTimeNotPassed(LocalDate date, LocalTime time) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(date, time);
+
+        if (reservationDateTime.isBefore(LocalDateTime.now(clock))) {
             throw new IllegalArgumentException("지나간 날짜/시간에 대한 예약은 불가능합니다.");
         }
     }

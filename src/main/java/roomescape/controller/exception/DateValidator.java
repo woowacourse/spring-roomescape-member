@@ -4,7 +4,6 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import org.springframework.format.annotation.DateTimeFormat;
 
 public class DateValidator implements ConstraintValidator<DateValid, String> {
 
