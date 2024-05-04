@@ -29,21 +29,34 @@ public class JdbcTemplateThemeRepository implements ThemeRepository {
 
     @Override
     public Themes findAll() {
-        List<Theme> findThemes = jdbcTemplate.query("select ID, NAME, DESCRIPTION, THUMBNAIL from THEME", themeRowMapper);
+        List<Theme> findThemes = jdbcTemplate.query(
+                "SELECT id, name, description, thumbnail FROM THEME", themeRowMapper
+        );
         return new Themes(findThemes);
     }
 
     @Override
     public Themes findAndOrderByPopularity(LocalDate start, LocalDate end, int count) {
         List<Theme> findThemes = jdbcTemplate.query(
-                "select th.*, count(*) as count from theme th join reservation r on r.theme_id = th.id where PARSEDATETIME(r.date,'yyyy-MM-dd') >= PARSEDATETIME(?,'yyyy-MM-dd') and PARSEDATETIME(r.date,'yyyy-MM-dd') <= PARSEDATETIME(?,'yyyy-MM-dd') group by th.id order by count desc limit ?",
+                """
+                        SELECT TH.*, COUNT(*) AS count FROM THEME TH
+                            JOIN RESERVATION R
+                            ON R.theme_id = TH.id
+                        WHERE PARSEDATETIME(R.date,'yyyy-MM-dd') >= PARSEDATETIME(?,'yyyy-MM-dd') 
+                            AND PARSEDATETIME(R.date,'yyyy-MM-dd') <= PARSEDATETIME(?,'yyyy-MM-dd') 
+                        GROUP BY TH.id 
+                        ORDER BY count 
+                        DESC 
+                        LIMIT ?
+                        """,
                 themeRowMapper, start, end, count);
         return new Themes(findThemes);
     }
 
     @Override
     public Optional<Theme> findById(long id) {
-        List<Theme> themes = jdbcTemplate.query("select id, name, description, thumbnail from theme where id = ?",
+        List<Theme> themes = jdbcTemplate.query(
+                "SELECT id, name, description, thumbnail FROM THEME WHERE id = ?",
                 themeRowMapper, id);
         return themes.stream().findFirst();
     }
@@ -59,7 +72,9 @@ public class JdbcTemplateThemeRepository implements ThemeRepository {
     private void save(Theme theme, KeyHolder keyHolder) {
         jdbcTemplate.update(con -> {
                     PreparedStatement pstm = con.prepareStatement(
-                            "insert into THEME (NAME, DESCRIPTION, THUMBNAIL) values (?, ?, ?) ", new String[]{"id"});
+                            "INSERT INTO THEME (name, description, thumbnail) VALUES (?, ?, ?) ",
+                            new String[]{"id"}
+                    );
                     pstm.setString(1, theme.getName());
                     pstm.setString(2, theme.getDescription());
                     pstm.setString(3, theme.getThumbnail());
@@ -70,6 +85,6 @@ public class JdbcTemplateThemeRepository implements ThemeRepository {
 
     @Override
     public void delete(long id) {
-        jdbcTemplate.update("delete from THEME where id = ?", id);
+        jdbcTemplate.update("DELETE FROM THEME WHERE id = ?", id);
     }
 }

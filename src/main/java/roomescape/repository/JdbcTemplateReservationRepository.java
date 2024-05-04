@@ -50,7 +50,7 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
     }
 
     private ReservationTime findReservationTime(long timeId) {
-        String reservationTimeSelectSql = "select * from reservation_time where id = ?";
+        String reservationTimeSelectSql = "SELECT * FROM RESERVATION_TIME WHERE id = ?";
         return jdbcTemplate.queryForObject(reservationTimeSelectSql, (rs, rowNum) -> {
             long id = rs.getLong(1);
             LocalTime startAt = rs.getTime(2).toLocalTime();
@@ -60,7 +60,7 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
 
     private void save(Reservation reservation, KeyHolder keyHolder) {
         jdbcTemplate.update(con -> {
-            String sql = "insert into reservation(name,date,time_id,THEME_ID) values ( ?,?,?,? )";
+            String sql = "INSERT INTO RESERVATION(name,date,time_id,THEME_ID) VALUES ( ?,?,?,? )";
             PreparedStatement preparedStatement = con.prepareStatement(sql, new String[]{"id"});
             preparedStatement.setString(1, reservation.getName());
             preparedStatement.setDate(2, Date.valueOf(reservation.getDate()));
@@ -73,21 +73,19 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
     @Override
     public Reservations findAll() {
         String query = """
-                   SELECT 
-                   r.id as reservation_id,
-                   r.name as reservation_name,
-                   r.date as reservation_date,
-                   t.id as time_id,
-                   t.start_at as time_value,
-                   t2.id as theme_id,
-                   t2.NAME as theme_name,
-                   t2.DESCRIPTION as description,
-                   t2.THUMBNAIL as thumbnail
-                FROM reservation as r
-                inner join reservation_time t 
-                on r.time_id = t.id
-                inner join theme t2  
-                on t2.id = r.theme_id""";
+                SELECT
+                    R.id AS reservation_id,
+                    R.name AS reservation_name,
+                    R.date AS reservation_date,
+                    T.id AS time_id,
+                    T.start_at AS time_value,
+                    T2.id AS theme_id,
+                    T2.name AS theme_name,
+                    T2.description AS description,
+                    T2.thumbnail AS thumbnail
+                FROM RESERVATION AS R
+                    INNER JOIN RESERVATION_TIME T ON R.time_id = T.id
+                    INNER JOIN THEME T2 ON T2.id = R.theme_id""";
 
         List<Reservation> findReservations = jdbcTemplate.query(query, RESERVATION_ROW_MAPPER);
         return new Reservations(findReservations);
@@ -96,23 +94,21 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
     @Override
     public Reservations findByThemeAndDate(Theme theme, LocalDate date) {
         String query = """
-                   SELECT 
-                   r.id as reservation_id,
-                   r.name as reservation_name,
-                   r.date as reservation_date,
-                   t.id as time_id,
-                   t.start_at as time_value,
-                   t2.id as theme_id,
-                   t2.NAME as theme_name,
-                   t2.DESCRIPTION as description,
-                   t2.THUMBNAIL as thumbnail
-                FROM reservation as r
-                inner join reservation_time t 
-                on r.time_id = t.id
-                inner join theme t2  
-                on t2.id = r.theme_id
-                WHERE theme_id = ? AND r.date = ?; 
-                """;
+                SELECT
+                    R.id AS reservation_id,
+                    R.name AS reservation_name,
+                    R.date AS reservation_date,
+                    T.id AS time_id,
+                    T.start_at AS time_value,
+                    T2.id AS theme_id,
+                    T2.name AS theme_name,
+                    T2.description AS description,
+                    T2.thumbnail AS thumbnail
+                 FROM RESERVATION AS R
+                     INNER JOIN RESERVATION_TIME T ON R.time_id = T.id
+                     INNER JOIN THEME T2 ON T2.id = R.theme_id
+                 WHERE theme_id = ? AND R.date = ?;
+                 """;
 
         List<Reservation> findReservations = jdbcTemplate.query(query, RESERVATION_ROW_MAPPER, theme.getId(),
                 Date.valueOf(date));
@@ -137,6 +133,6 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
 
     @Override
     public void delete(long id) {
-        jdbcTemplate.update("delete from reservation where id = ?", id);
+        jdbcTemplate.update("DELETE FROM RESERVATION WHERE id = ?", id);
     }
 }
