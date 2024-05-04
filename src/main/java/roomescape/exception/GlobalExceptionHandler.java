@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     @ExceptionHandler

@@ -15,6 +15,7 @@ import roomescape.domain.Theme;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class JdbcThemeRepositoryTest {
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
     @Autowired

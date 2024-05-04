@@ -8,6 +8,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.dto.response.ReservationTimeWithBookStatusResponse;
 
 public interface ReservationTimeRepository {
+
     List<ReservationTime> findAll();
 
     Optional<ReservationTime> findById(Long id);
