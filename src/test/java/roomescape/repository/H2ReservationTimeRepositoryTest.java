@@ -16,7 +16,7 @@ class H2ReservationTimeRepositoryTest extends BasicAcceptanceTest {
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
 
-    @DisplayName("예약 시간을 DB에 저장한다.")
+    @DisplayName("예약 시간을 DB에 저장한다")
     @Test
     void save() {
         reservationTimeRepository.save(TestFixtures.TIME_3);
@@ -26,7 +26,7 @@ class H2ReservationTimeRepositoryTest extends BasicAcceptanceTest {
         assertThat(reservationTimeRepository.findAll()).isEqualTo(expected);
     }
 
-    @DisplayName("DB에 저장된 전체 예약 시간을 반환한다.")
+    @DisplayName("DB에 저장된 전체 예약 시간을 반환한다")
     @Test
     void findAll() {
         List<ReservationTime> reservationTimes = List.of(TestFixtures.TIME_1, TestFixtures.TIME_2);
@@ -34,13 +34,13 @@ class H2ReservationTimeRepositoryTest extends BasicAcceptanceTest {
         assertThat(reservationTimeRepository.findAll()).isEqualTo(reservationTimes);
     }
 
-    @DisplayName("해당 id의 예약 시간을 반환한다.")
+    @DisplayName("해당 id의 예약 시간을 반환한다")
     @Test
     void findById() {
         assertThat(reservationTimeRepository.findById(1L).orElseThrow()).isEqualTo(TestFixtures.TIME_1);
     }
 
-    @DisplayName("해당 id의 예약 시간을 삭제한다.")
+    @DisplayName("해당 id의 예약 시간을 삭제한다")
     @Test
     void deleteById() {
         reservationTimeRepository.deleteById(1L);

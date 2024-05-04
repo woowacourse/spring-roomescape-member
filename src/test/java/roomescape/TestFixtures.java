@@ -10,9 +10,9 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 public class TestFixtures {
-    public static final ReservationTime TIME_1 = new ReservationTime(1L, LocalTime.of(10, 5));
-    public static final ReservationTime TIME_2 = new ReservationTime(2L, LocalTime.of(9, 15));
-    public static final ReservationTime TIME_3 = new ReservationTime(3L, LocalTime.of(12, 30));
+    public static final ReservationTime TIME_1 = new ReservationTime(1L, LocalTime.of(10, 0));
+    public static final ReservationTime TIME_2 = new ReservationTime(2L, LocalTime.of(11, 0));
+    public static final ReservationTime TIME_3 = new ReservationTime(3L, LocalTime.of(12, 0));
     public static final Theme THEME_1 = new Theme(
             1L, "name1", "description1", "thumbnail1"
     );
@@ -68,12 +68,18 @@ public class TestFixtures {
             THEME_RESPONSE_6, THEME_RESPONSE_7, THEME_RESPONSE_8, THEME_RESPONSE_9
     );
     public static final Reservation RESERVATION_1 = new Reservation(
-            1L, new Name("first"), LocalDate.of(2024, 5, 10), TIME_1, THEME_1
+            1L, new Name("first"), LocalDate.of(2024, 5, 9), TIME_1, THEME_1
     );
     public static final Reservation RESERVATION_2 = new Reservation(
-            2L, new Name("second"), LocalDate.of(2024, 10, 6), TIME_2, THEME_2
+            2L, new Name("second"), LocalDate.of(2024, 5, 10), TIME_2, THEME_2
     );
     public static final Reservation RESERVATION_3 = new Reservation(
-            3L, new Name("third"), LocalDate.of(2024, 1, 2), TIME_2, THEME_3
+            3L, new Name("third"), LocalDate.of(2024, 5, 11), TIME_2, THEME_3
+    );
+    public static final Reservation RESERVATION_4 = new Reservation(
+            4L, new Name("fourth"), LocalDate.of(2024, 5, 12), TIME_3, THEME_1
+    );
+    public static final Reservation RESERVATION_5 = new Reservation(
+            5L, new Name("fifth"), LocalDate.of(2024, 5, 13), TIME_3, THEME_2
     );
 }
