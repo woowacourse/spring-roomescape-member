@@ -33,11 +33,6 @@ public class ReservationTimeH2Repository implements ReservationTimeRepository {
 
     @Override
     public ReservationTime save(ReservationTime reservationTime) {
-        // TODO: 서비스 단에서 예외처리
-        if (isDuplicatedTime(reservationTime.getStartAt())) {
-            throw new UserException("이미 존재하는 시간입니다.");
-        }
-
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("start_at", reservationTime.getStartAt());
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
@@ -45,7 +40,8 @@ public class ReservationTimeH2Repository implements ReservationTimeRepository {
         return new ReservationTime(id, reservationTime.getStartAt());
     }
 
-    private boolean isDuplicatedTime(LocalTime localTime) {
+    @Override
+    public boolean isDuplicatedTime(LocalTime localTime) {
         String sql = "SELECT * FROM reservation_time WHERE start_at = ?";
         return !jdbcTemplate.query(sql, (rs, rowNum) -> 0, localTime).isEmpty();
     }

@@ -19,6 +19,9 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponse addTime(ReservationTimeAddRequest reservationTimeAddRequest) {
+        if (reservationTimeRepository.isDuplicatedTime(reservationTimeAddRequest.startAt())) {
+            throw new UserException("이미 존재하는 시간입니다.");
+        }
         ReservationTime reservationTime = reservationTimeRepository.save(reservationTimeAddRequest.toReservationTime());
         return ReservationTimeResponse.from(reservationTime);
     }
