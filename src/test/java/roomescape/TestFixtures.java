@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import java.util.List;
 import roomescape.controller.request.ReservationRequest;
 import roomescape.controller.request.ReservationTimeRequest;
+import roomescape.controller.request.ThemeRequest;
 import roomescape.controller.response.ReservationResponse;
 import roomescape.controller.response.ReservationTimeResponse;
 import roomescape.controller.response.ThemeResponse;
@@ -30,6 +31,9 @@ public class TestFixtures {
     );
     public static final Theme THEME_3 = new Theme(
             3L, "name3", "description3", "thumbnail3"
+    );
+    public static final ThemeRequest THEME_REQUEST_3 = new ThemeRequest(
+            "name3", "description3", "thumbnail3"
     );
     public static final ThemeResponse THEME_RESPONSE_1 = new ThemeResponse(
             1L, "name1", "description1", "thumbnail1"
@@ -77,23 +81,32 @@ public class TestFixtures {
             THEME_RESPONSE_6, THEME_RESPONSE_7, THEME_RESPONSE_8, THEME_RESPONSE_9
     );
     public static final Reservation RESERVATION_1 = new Reservation(
-            1L, new Name("first"), LocalDate.of(2024, 5, 9), TIME_1, THEME_1
+            1L, new Name("first"), LocalDate.now().plusDays(5), TIME_1, THEME_1
     );
     public static final Reservation RESERVATION_2 = new Reservation(
-            2L, new Name("second"), LocalDate.of(2024, 5, 10), TIME_2, THEME_2
+            2L, new Name("second"), LocalDate.now().plusDays(6), TIME_2, THEME_2
     );
     public static final Reservation RESERVATION_3 = new Reservation(
-            3L, new Name("third"), LocalDate.of(2024, 5, 11), TIME_2, THEME_3
+            3L, new Name("third"), LocalDate.now().plusDays(7), TIME_2, THEME_3
     );
     public static final Reservation RESERVATION_4 = new Reservation(
-            4L, new Name("fourth"), LocalDate.of(2024, 5, 12), TIME_3, THEME_1
+            4L, new Name("fourth"), LocalDate.now().plusDays(8), TIME_3, THEME_1
     );
     public static final Reservation RESERVATION_5 = new Reservation(
-            5L, new Name("fifth"), LocalDate.of(2024, 5, 13), TIME_3, THEME_2
+            5L, new Name("fifth"), LocalDate.now().plusDays(9), TIME_3, THEME_2
     );
-    public static final ReservationRequest PAST_RESERVATION_REQUEST = new ReservationRequest("past", "2023-05-11", 2L, 3L);
-    public static final ReservationRequest RESERVATION_REQUEST_2 = new ReservationRequest("second", "2024-05-10", 2L, 2L);
-    public static final ReservationRequest RESERVATION_REQUEST_3 = new ReservationRequest("third", "2024-05-11", 2L, 3L);
+    public static final Reservation PAST_RESERVATION_1 = new Reservation(
+            5L, new Name("fifth"), LocalDate.now().minusDays(4), TIME_3, THEME_1
+    );
+    public static final Reservation PAST_RESERVATION_2 = new Reservation(
+            5L, new Name("fifth"), LocalDate.now().minusDays(5), TIME_3, THEME_2
+    );
+    public static final Reservation PAST_RESERVATION_3 = new Reservation(
+            5L, new Name("fifth"), LocalDate.now().minusDays(6), TIME_3, THEME_2
+    );
+    public static final ReservationRequest PAST_RESERVATION_REQUEST = new ReservationRequest("past", LocalDate.now().minusYears(1).toString(), 2L, 3L);
+    public static final ReservationRequest RESERVATION_REQUEST_2 = new ReservationRequest("second", LocalDate.now().plusDays(6).toString(), 2L, 2L);
+    public static final ReservationRequest RESERVATION_REQUEST_3 = new ReservationRequest("third", LocalDate.now().plusDays(7).toString(), 2L, 3L);
     public static final ReservationResponse RESERVATION_RESPONSE_1 = ReservationResponse.from(RESERVATION_1);
     public static final ReservationResponse RESERVATION_RESPONSE_2 = ReservationResponse.from(RESERVATION_2);
     public static final ReservationResponse RESERVATION_RESPONSE_3 = ReservationResponse.from(RESERVATION_3);
