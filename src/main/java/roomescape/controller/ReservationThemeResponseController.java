@@ -42,9 +42,4 @@ public class ReservationThemeResponseController {
         List<ReservationTheme> reservationThemes = reservationThemeService.getBestThemes();
         return ResponseEntity.ok().body(reservationThemes);
     }
-
-    @ExceptionHandler(value = IllegalStateException.class)
-    public ResponseEntity<String> handleIllegalStateException(IllegalStateException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
 }
