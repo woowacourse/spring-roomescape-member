@@ -93,7 +93,7 @@ public class ReservationTimeH2Repository implements ReservationTimeRepository {
                 "FROM reservation_time rt " +
                 "LEFT JOIN reservation r ON rt.id = r.time_id AND r.date = ? AND r.theme_id = ? ";
 
-        return jdbcTemplate.query(sql, new Object[]{date, themeId}, getReservationTimeRowMapperWithAlreadyBooked());
+        return jdbcTemplate.query(sql, getReservationTimeRowMapperWithAlreadyBooked(), date, themeId);
     }
 
     private RowMapper<ReservationTime> getReservationTimeRowMapperWithAlreadyBooked() {
