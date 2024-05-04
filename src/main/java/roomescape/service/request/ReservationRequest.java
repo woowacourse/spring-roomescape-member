@@ -1,13 +1,8 @@
 package roomescape.service.request;
 
-import java.time.LocalDate;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import roomescape.domain.Name;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
 import roomescape.web.exception.DateValid;
 
 public record ReservationRequest(
@@ -16,8 +11,4 @@ public record ReservationRequest(
         @NotNull @Positive Long timeId,
         @NotNull @Positive Long themeId
 ) {
-
-    public Reservation toDomain(ReservationTime reservationTime, Theme theme) {
-        return new Reservation(new Name(name), LocalDate.parse(date), reservationTime, theme);
-    }
 }
