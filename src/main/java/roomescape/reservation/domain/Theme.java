@@ -3,10 +3,10 @@ package roomescape.reservation.domain;
 import java.util.Objects;
 
 public class Theme {
-    private Long id;
-    private String name;
-    private String description;
-    private String thumbnail;
+    private final Long id;
+    private final String name;
+    private final String description;
+    private final String thumbnail;
 
     public Theme(final Long id, final String name, final String description, final String thumbnail) {
         this.id = id;
