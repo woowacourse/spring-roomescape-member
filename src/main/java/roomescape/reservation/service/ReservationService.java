@@ -12,6 +12,8 @@ import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -53,10 +55,14 @@ public class ReservationService {
     }
 
     private void validateNoReservationsForPastDates(final LocalDate localDate, final ReservationTime time) {
-        if (localDate.isBefore(LocalDate.now())) {
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        LocalDate currentDate = currentDateTime.toLocalDate();
+        LocalTime currentTime = currentDateTime.toLocalTime();
+
+        if (localDate.isBefore(currentDate)) {
             throw new InvalidDateException("지난 날짜에 대한 예약은 할 수 없습니다.");
         }
-        if (localDate.equals(LocalDate.now()) && time.checkPastTime()) {
+        if (localDate.equals(currentDate) && time.checkPastTime(currentTime)) {
             throw new InvalidTimeException("지난 시간에 대한 예약은 할 수 없습니다.");
         }
     }
