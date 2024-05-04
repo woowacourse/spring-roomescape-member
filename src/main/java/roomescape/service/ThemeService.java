@@ -30,24 +30,20 @@ public class ThemeService {
         if (themes.hasNameOf(themeRequest.name())) {
             throw new RoomescapeException(DUPLICATE_THEME);
         }
-        Theme savedTheme = themeRepository.save(
-                new Theme(themeRequest.name(), themeRequest.description(), themeRequest.thumbnail()));
-        return toResponse(savedTheme);
-    }
-
-    private ThemeResponse toResponse(Theme theme) {
-        return new ThemeResponse(theme.getId(), theme.getName(), theme.getDescription(), theme.getThumbnail());
+        Theme beforeSavedTheme = new Theme(themeRequest.name(), themeRequest.description(), themeRequest.thumbnail());
+        Theme savedTheme = themeRepository.save(beforeSavedTheme);
+        return ThemeResponse.from(savedTheme);
     }
 
     public List<ThemeResponse> findAll() {
         return themeRepository.findAll().getThemes().stream()
-                .map(this::toResponse)
+                .map(ThemeResponse::from)
                 .toList();
     }
 
     public List<ThemeResponse> findAndOrderByPopularity(LocalDate start, LocalDate end, int count) {
         return themeRepository.findAndOrderByPopularity(start, end, count).getThemes().stream()
-                .map(this::toResponse)
+                .map(ThemeResponse::from)
                 .toList();
     }
 

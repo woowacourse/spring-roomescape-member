@@ -38,16 +38,12 @@ public class ReservationTimeService {
         }
         ReservationTime beforeSavedReservationTime = new ReservationTime(reservationTimeRequest.startAt());
         ReservationTime savedReservationTime = reservationTimeRepository.save(beforeSavedReservationTime);
-        return toResponse(savedReservationTime);
-    }
-
-    private ReservationTimeResponse toResponse(ReservationTime saved) {
-        return new ReservationTimeResponse(saved.getId(), saved.getStartAt());
+        return ReservationTimeResponse.from(savedReservationTime);
     }
 
     public List<ReservationTimeResponse> findAll() {
         return reservationTimeRepository.findAll().getReservationTimes().stream()
-                .map(this::toResponse)
+                .map(ReservationTimeResponse::from)
                 .toList();
     }
 
@@ -58,13 +54,7 @@ public class ReservationTimeService {
         Reservations findReservations = reservationRepository.findByThemeAndDate(requestedTheme, date);
 
         return reservationTimeRepository.findAll().getReservationTimes().stream()
-                .map(reservationTime ->
-                        new AvailableTimeResponse(
-                                reservationTime.getId(),
-                                reservationTime.getStartAt(),
-                                findReservations.hasReservationTimeOf(reservationTime.getId())
-                        )
-                )
+                .map(reservationTime -> AvailableTimeResponse.of(reservationTime, findReservations))
                 .toList();
     }
 

@@ -55,24 +55,13 @@ public class ReservationService {
             throw new RoomescapeException(PAST_TIME_RESERVATION);
         }
 
-        return toResponse(reservationRepository.save(beforeSaveReservation));
-    }
-
-    private ReservationResponse toResponse(Reservation reservation) {
-        ReservationTime reservationTime = reservation.getReservationTime();
-        ReservationTimeResponse reservationTimeResponse = new ReservationTimeResponse(reservationTime.getId(),
-                reservation.getTime());
-        Theme theme = reservation.getTheme();
-        ThemeResponse themeResponse = new ThemeResponse(theme.getId(), theme.getName(), theme.getDescription(),
-                theme.getThumbnail());
-        return new ReservationResponse(reservation.getId(),
-                reservation.getName(), reservation.getDate(), reservationTimeResponse, themeResponse);
+        return ReservationResponse.from(reservationRepository.save(beforeSaveReservation));
     }
 
     public List<ReservationResponse> findAll() {
         Reservations reservations = reservationRepository.findAll();
         return reservations.getReservations().stream()
-                .map(this::toResponse)
+                .map(ReservationResponse::from)
                 .toList();
     }
 
