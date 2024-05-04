@@ -25,7 +25,7 @@ public class TimeController {
     }
 
     @PostMapping
-    public ResponseEntity<TimeResponse> reservationTimeSave(@RequestBody TimeRequest timeRequest) {
+    public ResponseEntity<TimeResponse> createReservationTime(@RequestBody TimeRequest timeRequest) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(timeService.addReservationTime(timeRequest));
     }
@@ -36,7 +36,7 @@ public class TimeController {
     }
 
     @DeleteMapping("/{reservationTimeId}")
-    public ResponseEntity<Void> reservationTimeRemove(@PathVariable long reservationTimeId) {
+    public ResponseEntity<Void> deleteReservationTime(@PathVariable long reservationTimeId) {
         timeService.removeReservationTime(reservationTimeId);
         return ResponseEntity.noContent()
                 .build();

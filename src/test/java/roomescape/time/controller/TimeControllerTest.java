@@ -37,7 +37,7 @@ class TimeControllerTest {
 
     @Test
     @DisplayName("시간을 잘 저장하는지 확인한다.")
-    void reservationTimeSave() throws Exception {
+    void createReservationTime() throws Exception {
         Mockito.when(timeService.addReservationTime(any()))
                 .thenReturn(toResponse(time));
 
@@ -71,7 +71,7 @@ class TimeControllerTest {
 
     @Test
     @DisplayName("예약 정보를 잘 지우는지 확인한다.")
-    void reservationTimeRemove() throws Exception {
+    void deleteReservationTime() throws Exception {
         mockMvc.perform(delete("/times/4"))
                 .andDo(print())
                 .andExpect(status().isNoContent());
