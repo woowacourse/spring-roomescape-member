@@ -167,6 +167,9 @@ function onReservationButtonClick() {
     })
     .then(response => {
       if (!response.ok) {
+        response.text().then(text => {
+          alert(text);
+        });
         throw new Error('Reservation failed');
       }
       return response.json();
@@ -176,8 +179,7 @@ function onReservationButtonClick() {
       location.reload();
     })
     .catch(error => {
-      alert("An error occurred while making the reservation.");
-      console.error(error);
+      console.error();
     });
   } else {
     alert("Please select a date, theme, and time before making a reservation.");
