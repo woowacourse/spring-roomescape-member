@@ -190,12 +190,12 @@ HTTP/1.1 204
 </details>
 
 <details>
-<summary>GET <code>/available-times</code> 이용 가능한 시간 조회 API</summary>
+<summary>GET <code>/times/available</code> 이용 가능한 시간 조회 API</summary>
 
 #### Request
 
 ```http
-GET /available-times?date={date}&themeId={themeId} HTTP/1.1
+GET /times/available?date={date}&themeId={themeId} HTTP/1.1
 
 date: (필수) 예약 가능한 시간을 조회할 날짜 (형식: YYYY-MM-DD)
 themeId: (필수) 조회할 테마의 ID
@@ -312,7 +312,7 @@ HTTP/1.1 204
 #### Request
 
 ```http
-GET /popular-themes HTTP/1.1
+GET /themes/popular HTTP/1.1
 ```
 
 최근 일주일을 기준으로 하여 해당 기간 내에 방문하는 예약이 많은 테마 10개를 조회한다.  

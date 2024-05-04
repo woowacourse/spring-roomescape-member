@@ -1,4 +1,4 @@
-package roomescape.exception;
+package roomescape.controller.exception;
 
 import java.util.NoSuchElementException;
 import org.springframework.http.HttpStatus;
