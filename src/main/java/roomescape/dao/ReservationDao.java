@@ -1,6 +1,5 @@
 package roomescape.dao;
 
-import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -12,7 +11,6 @@ import roomescape.domain.ReservationTime;
 
 import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class ReservationDao {
@@ -64,29 +62,6 @@ public class ReservationDao {
     public void deleteById(Long id) {
         String deleteFromIdSql = "DELETE FROM reservation WHERE id = ?";
         jdbcTemplate.update(deleteFromIdSql, id);
-    }
-
-    public Optional<Reservation> findById(Long id) {
-        String findByIdSql = """
-                SELECT 
-                    r.id as reservation_id, 
-                    r.name,     
-                    r.date, 
-                    t.id as time_id, 
-                    t.start_at as time_value, 
-                    tm.id as theme_id, 
-                    tm.name as theme_name, 
-                    tm.description,     
-                    tm.thumbnail 
-                FROM reservation AS r 
-                INNER JOIN reservation_time AS t 
-                ON r.time_id = t.id 
-                INNER JOIN theme AS tm 
-                ON r.theme_id = tm.id
-                WHERE t.id = ?
-        """;
-        List<Reservation> reservations = jdbcTemplate.query(findByIdSql, getReservationRowMapper(), id);
-        return Optional.ofNullable(DataAccessUtils.singleResult(reservations));
     }
 
     public int countByTimeId(Long timeId) {

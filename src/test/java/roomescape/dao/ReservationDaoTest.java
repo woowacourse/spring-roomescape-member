@@ -15,7 +15,6 @@ import roomescape.domain.Reservation;
 
 import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -39,22 +38,6 @@ public class ReservationDaoTest {
         List<Reservation> reservations = reservationDao.findAll();
 
         assertThat(reservations.size()).isEqualTo(1);
-    }
-
-    @DisplayName("예약 ID를 이용하여 예약을 조회한다.")
-    @Test
-    void findByIdTest() {
-        Reservation reservation = reservationDao.findById(1L).get();
-
-        assertThat(reservation.getId()).isEqualTo(1L);
-    }
-
-    @DisplayName("ID가 존재하지 않으면 빈 예약을 반환한다.")
-    @Test
-    void findByWrongIdTest() {
-        Optional<Reservation> reservation = reservationDao.findById(9L);
-
-        assertThat(reservation).isEqualTo(Optional.empty());
     }
 
     @DisplayName("예약을 추가한다.")
@@ -93,10 +76,14 @@ public class ReservationDaoTest {
             return ps;
         }, keyHolder);
 
+        int countBeforeDelete = reservationDao.findAll().size();
+
         Long key = keyHolder.getKey().longValue();
         reservationDao.deleteById(key);
 
-        assertThat(reservationDao.findById(key)).isEqualTo(Optional.empty());
+        int countAfterDelete = reservationDao.findAll().size();
+
+        assertThat(countAfterDelete).isEqualTo(countBeforeDelete - 1);
     }
 
     @DisplayName("특정 시간에 대한 모든 예약의 개수를 조회한다.")
