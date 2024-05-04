@@ -18,7 +18,7 @@ class AdminViewControllerTest {
 
     @DisplayName("어드민 메인 페이지 요청을 처리할 수 있다")
     @Test
-    void should_response_admin_main_page_when_requested() throws Exception {
+    void should_handle_admin_main_page_request_when_requested() throws Exception {
         mockMvc.perform(get("/admin"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("admin/index"));
@@ -26,7 +26,7 @@ class AdminViewControllerTest {
 
     @DisplayName("어드민 예약 페이지 요청을 처리할 수 있다")
     @Test
-    void should_response_admin_reservation_page_when_requested() throws Exception {
+    void should_handle_admin_reservation_page_request_when_requested() throws Exception {
         mockMvc.perform(get("/admin/reservation"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("admin/reservation-new"));
@@ -34,7 +34,7 @@ class AdminViewControllerTest {
 
     @DisplayName("어드민 시간 관리 페이지 요청을 처리할 수 있다")
     @Test
-    void should_response_admin_time_page_when_requested() throws Exception {
+    void should_handle_admin_time_page_request_when_requested() throws Exception {
         mockMvc.perform(get("/admin/time"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("admin/time"));
@@ -42,7 +42,7 @@ class AdminViewControllerTest {
 
     @DisplayName("어드민 테마 관리 페이지 요청을 처리할 수 있다")
     @Test
-    void should_response_admin_theme_page_when_requested() throws Exception {
+    void should_handle_admin_theme_page_request_when_requested() throws Exception {
         mockMvc.perform(get("/admin/theme"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("admin/theme"));

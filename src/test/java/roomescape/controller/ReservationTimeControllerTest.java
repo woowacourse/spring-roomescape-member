@@ -1,68 +1,82 @@
 package roomescape.controller;
 
-import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static roomescape.fixture.DateTimeFixture.DAY_AFTER_TOMORROW;
+import static roomescape.fixture.DateTimeFixture.TIME_11_00;
 
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
-import java.time.LocalTime;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Collections;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 import roomescape.dto.request.ReservationTimeAddRequest;
+import roomescape.dto.response.ReservationTimeResponse;
+import roomescape.service.ReservationTimeService;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@WebMvcTest(ReservationTimeController.class)
 class ReservationTimeControllerTest {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private MockMvc mockMvc;
 
-    @BeforeEach
-    void setUp() {
-        jdbcTemplate.update("insert into reservation_time (start_at) values('10:00')");
-    }
+    @Autowired
+    private ObjectMapper objectMapper;
 
-    @AfterEach
-    void setDown() {
-        jdbcTemplate.update("delete from reservation_time");
-    }
+    @MockBean
+    private ReservationTimeService reservationTimeService;
 
-    @DisplayName("예약 시간을 추가 성공할 시, 201 created를 응답한다.")
+    @DisplayName("전체 시간을 읽는 요청을 처리할 수 있다")
     @Test
-    void should_add_reservation_time_to_db() {
-        ReservationTimeAddRequest reservationTimeAddRequest = new ReservationTimeAddRequest(LocalTime.of(11, 0));
+    void should_handle_get_times_request_when_requested() throws Exception {
+        ReservationTimeAddRequest reservationTimeAddRequest = new ReservationTimeAddRequest(TIME_11_00);
 
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservationTimeAddRequest)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(201);
+        mockMvc.perform(get("/times"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$").isArray());
     }
 
-    @DisplayName("존재하는 예약 시간을 조회시, 200 ok를 응답한다.")
+    @DisplayName("예약 시간 추가 요청을 처리할 수 있다")
     @Test
-    void should_get_reservation_time_list_in_db() {
-        ReservationTimeAddRequest reservationTimeAddRequest = new ReservationTimeAddRequest(LocalTime.of(10, 0));
+    void should_handle_post_times_when_requested() throws Exception {
+        ReservationTimeAddRequest reservationTimeAddRequest = new ReservationTimeAddRequest(TIME_11_00);
+        ReservationTimeResponse mockResponse = new ReservationTimeResponse(1L, TIME_11_00);
 
-        RestAssured.given().log().all()
-                .when().get("/times")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
+        when(reservationTimeService.saveReservationTime(reservationTimeAddRequest)).thenReturn(mockResponse);
+
+        mockMvc.perform(post("/times")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(reservationTimeAddRequest)))
+                .andExpect(status().isCreated())
+                .andExpect(header().string("Location", "/times/" + mockResponse.id()));
+    }
+
+    @DisplayName("날짜와 테마를 기반으로 예약 상태를 담은 전체 시간 요청을 처리할 수 있다")
+    @Test
+    void should_handle_get_times_with_book_status_when_requested() throws Exception {
+        when(reservationTimeService.findAllWithBookStatus(DAY_AFTER_TOMORROW, 1L)).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/times/{date}/{themeId}", DAY_AFTER_TOMORROW, 1))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$").isArray());
     }
 
     @DisplayName("존재하는 리소스에 대한 삭제 요청시, 204 no content를 응답한다.")
     @Test
-    void should_remove_reservation_time_in_db() {
-        RestAssured.given().log().all()
-                .when().delete("/times/1")
-                .then().log().all()
-                .statusCode(204);
+    void should_handle_delete_time_when_requested() throws Exception {
+        mockMvc.perform(delete("/times/{id}", 1))
+                .andExpect(status().isNoContent());
     }
 }

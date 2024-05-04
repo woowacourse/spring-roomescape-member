@@ -37,7 +37,7 @@ class ReservationControllerTest {
 
     @DisplayName("전체 예약 목록을 읽는 요청을 처리할 수 있다")
     @Test
-    void should_response_all_reservations_when_requested() throws Exception {
+    void should_handle_read_all_reservations_request_when_requested() throws Exception {
         when(reservationService.findAllReservation()).thenReturn(Collections.emptyList());
 
         mockMvc.perform(get("/reservations"))
@@ -48,7 +48,7 @@ class ReservationControllerTest {
 
     @DisplayName("예약 추가 요청을 처리할 수 있다")
     @Test
-    void should_add_reservation_when_post_request_reservations() throws Exception {
+    void should_handle_save_reservation_request_when_requested() throws Exception {
         ReservationAddRequest reservationAddRequest = new ReservationAddRequest("썬", DAY_AFTER_TOMORROW, 1L, 1L);
         ReservationResponse mockResponse = new ReservationResponse(1L, "썬", DAY_AFTER_TOMORROW, 1L, 1L);
 
@@ -63,7 +63,7 @@ class ReservationControllerTest {
 
     @DisplayName("예약 삭제 요청을 처리할 수 있다")
     @Test
-    void should_remove_reservation_when_delete_request_reservations_id() throws Exception {
+    void should_handle_delete_reservation_when_requested() throws Exception {
         mockMvc.perform(delete("/reservations/{id}", 1))
                 .andExpect(status().isNoContent());
     }

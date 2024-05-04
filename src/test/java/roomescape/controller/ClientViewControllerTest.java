@@ -18,15 +18,15 @@ class ClientViewControllerTest {
 
     @DisplayName("메인 페이지 요청을 처리할 수 있다")
     @Test
-    void should_response_main_page_when_requested() throws Exception {
+    void should_handle_main_page_request_when_requested() throws Exception {
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("index"));
     }
 
-    @DisplayName("예약 페이지 요청 테스트 - 200 OK")
+    @DisplayName("예약 페이지 요청을 처리할 수 있다")
     @Test
-    void should_response_reservation_page_when_requested() throws Exception {
+    void should_handle_reservation_page_request_when_requested() throws Exception {
         mockMvc.perform(get("/reservation"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("reservation"));

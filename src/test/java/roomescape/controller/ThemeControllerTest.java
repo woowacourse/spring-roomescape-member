@@ -1,65 +1,80 @@
 package roomescape.controller;
 
-import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Collections;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 import roomescape.dto.request.ThemeAddRequest;
+import roomescape.dto.response.ThemeResponse;
+import roomescape.service.ThemeService;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@WebMvcTest(ThemeController.class)
 class ThemeControllerTest {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private MockMvc mockMvc;
 
-    @BeforeEach
-    void setUp() {
-        jdbcTemplate.update("insert into theme (name, description, thumbnail) values('리비', '힘듦', 'url')");
-    }
+    @Autowired
+    private ObjectMapper objectMapper;
 
-    @AfterEach
-    void setDown() {
-        jdbcTemplate.update("delete from theme");
-    }
+    @MockBean
+    private ThemeService themeService;
 
-    @DisplayName("전체 테마를 조회할 수 있다 (200 OK)")
+    @DisplayName("전체 테마 목록을 읽는 요청을 처리할 수 있다")
     @Test
-    void should_get_theme_list() {
-        RestAssured.given().log().all()
-                .when().get("/themes")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
+    void should_handle_get_themes_request_when_requested() throws Exception {
+        when(themeService.findAllTheme()).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/themes"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$").isArray());
     }
 
-    @DisplayName("테마를 추가할 수 있다 (201 created)")
+    @DisplayName("테마 추가 요청을 처리할 수 있다")
     @Test
-    void should_add_theme() {
-        ThemeAddRequest themeAddRequest = new ThemeAddRequest("도도", "배고픔", "url");
+    void should_handle_post_theme_request_when_requested() throws Exception {
+        ThemeAddRequest themeAddRequest = new ThemeAddRequest("리비 테마", "리비 설명", "리비 경로");
+        ThemeResponse mockResponse = new ThemeResponse(1L, "리비 테마", "리비 설명", "리비 경로");
 
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(themeAddRequest)
-                .when().post("/themes")
-                .then().log().all()
-                .statusCode(201);
+        when(themeService.saveTheme(themeAddRequest)).thenReturn(mockResponse);
+
+        mockMvc.perform(post("/themes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(themeAddRequest)))
+                .andExpect(status().isCreated())
+                .andExpect(header().string("Location", "/themes/" + mockResponse.id()));
     }
 
-    @DisplayName("테마를 삭제할 수 있다 (204 no content)")
+    @DisplayName("인기 테마 목록을 읽는 요청을 처리할 수 있다")
     @Test
-    void should_remove_theme() {
-        RestAssured.given().log().all()
-                .when().delete("/themes/1")
-                .then().log().all()
-                .statusCode(204);
+    void should_handle_get_popular_themes_request_when_requested() throws Exception {
+        when(themeService.findPopularTheme()).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/themes/popular"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$").isArray());
+    }
+
+    @DisplayName("테마 삭제 요청을 처리할 수 있다")
+    @Test
+    void should_handle_delete_theme_when_requested() throws Exception {
+        mockMvc.perform(delete("/themes/{id}", 1))
+                .andExpect(status().isNoContent());
     }
 }
