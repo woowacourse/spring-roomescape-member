@@ -1,7 +1,9 @@
 package roomescape.repository;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import javax.sql.DataSource;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -121,6 +123,11 @@ public class JdbcReservationRepository implements ReservationRepository {
                 WHERE r.id = :savedId;
                 """;
         SqlParameterSource paramMap = new MapSqlParameterSource().addValue("savedId", savedId);
-        return jdbcTemplate.query(sql, paramMap, rowMapper).get(0);
+
+        try {
+            return jdbcTemplate.queryForObject(sql, paramMap, rowMapper);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NoSuchElementException("아이디가 " + savedId + "인 예약이 존재하지 않습니다.");
+        }
     }
 }

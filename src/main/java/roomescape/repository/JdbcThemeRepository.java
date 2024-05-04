@@ -2,7 +2,9 @@ package roomescape.repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
 import javax.sql.DataSource;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -87,6 +89,11 @@ public class JdbcThemeRepository implements ThemeRepository {
                 WHERE t.id = :savedId;
                 """;
         SqlParameterSource paramMap = new MapSqlParameterSource().addValue("savedId", savedId);
-        return jdbcTemplate.query(sql, paramMap, rowMapper).get(0);
+
+        try {
+            return jdbcTemplate.queryForObject(sql, paramMap, rowMapper);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NoSuchElementException("아이디가 " + savedId + "인 테마가 존재하지 않습니다.");
+        }
     }
 }
