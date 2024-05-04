@@ -11,10 +11,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import roomescape.reservation.domain.Name;
+import roomescape.reservation.domain.ReservationName;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
+import roomescape.reservation.domain.ThemeName;
 
 @JdbcTest
 @Import({ThemeRepository.class, ReservationTimeRepository.class, ReservationRepository.class})
@@ -32,7 +33,7 @@ class ThemeRepositoryTest {
     @Test
     @DisplayName("id 로 엔티티를 찾는다.")
     void findByIdTest() {
-        Theme theme = new Theme(new Name("공포"), "무서운 테마", "https://i.pinimg.com/236x.jpg");
+        Theme theme = new Theme(new ThemeName("공포"), "무서운 테마", "https://i.pinimg.com/236x.jpg");
         Long themeId = themeRepository.save(theme);
         Theme findTheme = themeRepository.findById(themeId).get();
 
@@ -42,8 +43,8 @@ class ThemeRepositoryTest {
     @Test
     @DisplayName("전체 엔티티를 조회한다.")
     void findAllTest() {
-        Theme theme1 = new Theme(new Name("공포"), "무서운 테마", "https://i.pinimg.com/236x.jpg");
-        Theme theme2 = new Theme(new Name("SF"), "미래 테마", "https://i.pinimg.com/123x.jpg");
+        Theme theme1 = new Theme(new ThemeName("공포"), "무서운 테마", "https://i.pinimg.com/236x.jpg");
+        Theme theme2 = new Theme(new ThemeName("SF"), "미래 테마", "https://i.pinimg.com/123x.jpg");
         themeRepository.save(theme1);
         themeRepository.save(theme2);
         List<Theme> themes = themeRepository.findAll();
@@ -57,18 +58,18 @@ class ThemeRepositoryTest {
         Long timeId = reservationTimeRepository.save(new ReservationTime(LocalTime.now()));
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId).get();
 
-        Long theme1Id = themeRepository.save(new Theme(new Name("공포"), "a", "a"));
+        Long theme1Id = themeRepository.save(new Theme(new ThemeName("공포"), "a", "a"));
         Theme theme1 = themeRepository.findById(theme1Id).get();
 
-        Long theme2Id = themeRepository.save(new Theme(new Name("액션"), "b", "b"));
+        Long theme2Id = themeRepository.save(new Theme(new ThemeName("액션"), "b", "b"));
         Theme theme2 = themeRepository.findById(theme2Id).get();
 
         reservationRepository.save(
-                new Reservation(new Name("hogi"), LocalDate.now(), theme1, reservationTime));
+                new Reservation(new ReservationName("호기"), LocalDate.now(), theme1, reservationTime));
         reservationRepository.save(
-                new Reservation(new Name("kaki"), LocalDate.now(), theme2, reservationTime));
+                new Reservation(new ReservationName("카키"), LocalDate.now(), theme2, reservationTime));
         reservationRepository.save(
-                new Reservation(new Name("neo"), LocalDate.now(), theme2, reservationTime));
+                new Reservation(new ReservationName("네오"), LocalDate.now(), theme2, reservationTime));
 
         List<Theme> themes = themeRepository.findPopularThemeLimitTen();
 
@@ -81,7 +82,7 @@ class ThemeRepositoryTest {
     @Test
     @DisplayName("id를 받아 삭제한다.")
     void deleteTest() {
-        Theme theme = new Theme(new Name("공포"), "무서운 테마", "https://i.pinimg.com/236x.jpg");
+        Theme theme = new Theme(new ThemeName("공포"), "무서운 테마", "https://i.pinimg.com/236x.jpg");
         Long themeId = themeRepository.save(theme);
         themeRepository.delete(themeId);
         List<Theme> themes = themeRepository.findAll();

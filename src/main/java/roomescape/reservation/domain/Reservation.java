@@ -5,21 +5,21 @@ import java.time.LocalDate;
 public class Reservation {
 
     private Long id;
-    private final Name name;
+    private final ReservationName reservationName;
     private final LocalDate date;
     private final Theme theme;
     private final ReservationTime reservationTime;
 
-    public Reservation(Name name, LocalDate date, Theme theme, ReservationTime reservationTime) {
-        this.name = name;
+    public Reservation(ReservationName reservationName, LocalDate date, Theme theme, ReservationTime reservationTime) {
+        this.reservationName = reservationName;
         this.date = date;
         this.theme = theme;
         this.reservationTime = reservationTime;
     }
 
-    public Reservation(Long id, Name name, LocalDate date, Theme theme, ReservationTime reservationTime) {
+    public Reservation(Long id, ReservationName reservationName, LocalDate date, Theme theme, ReservationTime reservationTime) {
         this.id = id;
-        this.name = name;
+        this.reservationName = reservationName;
         this.date = date;
         this.theme = theme;
         this.reservationTime = reservationTime;
@@ -30,7 +30,7 @@ public class Reservation {
     }
 
     public String getName() {
-        return name.getName();
+        return reservationName.getName();
     }
 
     public Theme getTheme() {

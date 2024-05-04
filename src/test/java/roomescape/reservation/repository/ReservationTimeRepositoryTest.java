@@ -10,10 +10,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import roomescape.reservation.domain.Name;
+import roomescape.reservation.domain.ReservationName;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
+import roomescape.reservation.domain.ThemeName;
 
 @JdbcTest
 @Import({ReservationTimeRepository.class, ThemeRepository.class, ReservationRepository.class})
@@ -53,13 +54,13 @@ class ReservationTimeRepositoryTest {
     @Test
     @DisplayName("해당 시간을 참조하는 Reservation이 있는지 찾는다.")
     void findReservationInSameIdTest() {
-        Long themeId = themeRepository.save(new Theme(new Name("공포"), "무서운 테마", "https://i.pinimg.com/236x.jpg"));
+        Long themeId = themeRepository.save(new Theme(new ThemeName("공포"), "무서운 테마", "https://i.pinimg.com/236x.jpg"));
         Theme theme = themeRepository.findById(themeId).get();
 
         Long timeId = reservationTimeRepository.save(new ReservationTime(LocalTime.now()));
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId).get();
 
-        Reservation reservation = new Reservation(new Name("kaki"), LocalDate.now(), theme, reservationTime);
+        Reservation reservation = new Reservation(new ReservationName("카키"), LocalDate.now(), theme, reservationTime);
         Long reservationId = reservationRepository.save(reservation);
         boolean exist = reservationTimeRepository.findReservationInSameId(timeId).isPresent();
 

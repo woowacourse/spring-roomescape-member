@@ -10,8 +10,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.reservation.domain.Name;
 import roomescape.reservation.domain.Theme;
+import roomescape.reservation.domain.ThemeName;
 
 @Repository
 public class ThemeRepository {
@@ -75,13 +75,11 @@ public class ThemeRepository {
     }
 
     private RowMapper<Theme> createThemeRowMapper() {
-        return (rs, rowNum) -> {
-            return new Theme(
-                    rs.getLong("id"),
-                    new Name(rs.getString("name")),
-                    rs.getString("description"),
-                    rs.getString("thumbnail")
-            );
-        };
+        return (rs, rowNum) -> new Theme(
+                rs.getLong("id"),
+                new ThemeName(rs.getString("name")),
+                rs.getString("description"),
+                rs.getString("thumbnail")
+        );
     }
 }

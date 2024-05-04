@@ -10,10 +10,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import roomescape.reservation.domain.Name;
+import roomescape.reservation.domain.ReservationName;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
+import roomescape.reservation.domain.ThemeName;
 
 @JdbcTest
 @Import({ReservationRepository.class, ThemeRepository.class, ReservationTimeRepository.class})
@@ -34,11 +35,11 @@ public class ReservationRepositoryTest {
         Long timeId = reservationTimeRepository.save(new ReservationTime(LocalTime.now()));
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId).get();
 
-        Long themeId = themeRepository.save(new Theme(new Name("공포"), "무서운 테마", "https://i.pinimg.com/236x.jpg"));
+        Long themeId = themeRepository.save(new Theme(new ThemeName("공포"), "무서운 테마", "https://i.pinimg.com/236x.jpg"));
         Theme theme = themeRepository.findById(themeId).get();
 
-        Reservation reservation1 = new Reservation(new Name("hogi"), LocalDate.now(), theme, reservationTime);
-        Reservation reservation2 = new Reservation(new Name("kaki"), LocalDate.now(), theme, reservationTime);
+        Reservation reservation1 = new Reservation(new ReservationName("호기"), LocalDate.now(), theme, reservationTime);
+        Reservation reservation2 = new Reservation(new ReservationName("카키"), LocalDate.now(), theme, reservationTime);
         reservationRepository.save(reservation1);
         reservationRepository.save(reservation2);
         List<Reservation> reservations = reservationRepository.findAll();
@@ -52,10 +53,10 @@ public class ReservationRepositoryTest {
         Long timeId = reservationTimeRepository.save(new ReservationTime(LocalTime.now()));
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId).get();
 
-        Long themeId = themeRepository.save(new Theme(new Name("공포"), "무서운 테마", "https://i.pinimg.com/236x.jpg"));
+        Long themeId = themeRepository.save(new Theme(new ThemeName("공포"), "무서운 테마", "https://i.pinimg.com/236x.jpg"));
         Theme theme = themeRepository.findById(themeId).get();
 
-        Reservation reservation = new Reservation(new Name("hogi"), LocalDate.now(), theme, reservationTime);
+        Reservation reservation = new Reservation(new ReservationName("호기"), LocalDate.now(), theme, reservationTime);
         Long reservationId = reservationRepository.save(reservation);
         Reservation findReservation = reservationRepository.findById(reservationId).get();
 
@@ -65,13 +66,13 @@ public class ReservationRepositoryTest {
     @Test
     @DisplayName("이미 저장된 예약일 경우 true를 반환한다.")
     void existReservationTest() {
-        Long themeId = themeRepository.save(new Theme(new Name("공포"), "무서운 테마", "https://i.pinimg.com/236x.jpg"));
+        Long themeId = themeRepository.save(new Theme(new ThemeName("공포"), "무서운 테마", "https://i.pinimg.com/236x.jpg"));
         Theme theme = themeRepository.findById(themeId).get();
 
         Long timeId = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("10:00")));
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId).get();
 
-        Reservation reservation = new Reservation(new Name("hogi"), LocalDate.now(), theme, reservationTime);
+        Reservation reservation = new Reservation(new ReservationName("호기"), LocalDate.now(), theme, reservationTime);
         Long reservationId = reservationRepository.save(reservation);
         Reservation findReservation = reservationRepository.findById(reservationId).get();
 
@@ -86,10 +87,10 @@ public class ReservationRepositoryTest {
         Long timeId = reservationTimeRepository.save(new ReservationTime(LocalTime.now()));
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId).get();
 
-        Long themeId = themeRepository.save(new Theme(new Name("공포"), "무서운 테마", "https://i.pinimg.com/236x.jpg"));
+        Long themeId = themeRepository.save(new Theme(new ThemeName("공포"), "무서운 테마", "https://i.pinimg.com/236x.jpg"));
         Theme theme = themeRepository.findById(themeId).get();
 
-        Reservation reservation = new Reservation(new Name("hogi"), LocalDate.now(), theme, reservationTime);
+        Reservation reservation = new Reservation(new ReservationName("호기"), LocalDate.now(), theme, reservationTime);
         Long reservationId = reservationRepository.save(reservation);
         reservationRepository.delete(reservationId);
         List<Reservation> reservations = reservationRepository.findAll();

@@ -47,10 +47,10 @@ class ReservationApiControllerTest {
     @Test
     @DisplayName("예약을 성공적으로 추가하면 201 응답과 Location 헤더에 리소스 저장 경로를 받는다.")
     void createReservationRequestTest() throws Exception {
-        ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest("hogi", LocalDate.now(), 1L, 1L);
+        ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest("호기", LocalDate.now(), 1L, 1L);
         ThemeResponse themeResponse = new ThemeResponse(1L, "공포", "무서운 테마", "https://i.pinimg.com/236x.jpg");
         TimeResponse timeResponse = new TimeResponse(1L, LocalTime.now());
-        ReservationResponse reservationResponse = new ReservationResponse(1L, "hogi", reservationSaveRequest.date(),
+        ReservationResponse reservationResponse = new ReservationResponse(1L, "호기", reservationSaveRequest.date(),
                 themeResponse, timeResponse);
 
         doReturn(1L).when(reservationService)
