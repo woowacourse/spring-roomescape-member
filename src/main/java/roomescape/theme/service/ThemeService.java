@@ -33,7 +33,7 @@ public class ThemeService {
     public void deleteById(final long id) {
         final int deleteCount = themeDao.deleteById(id);
         if (deleteCount == 0) {
-            throw new NoSuchElementException(id + "를 아이디로 갖는 테마가 존재하지 않습니다.");
+            throw new NoSuchElementException("해당하는 테마가 없습니다.");
         }
     }
 

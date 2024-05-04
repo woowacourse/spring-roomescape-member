@@ -48,22 +48,22 @@ public class ReservationService {
     public void deleteById(final long id) {
         final int deleteCount = reservationDao.deleteById(id);
         if (deleteCount == 0) {
-            throw new NoSuchElementException(id + "를 아이디로 갖는 예약이 존재하지 않습니다.");
+            throw new NoSuchElementException("해당하는 예약이 없습니다.");
         }
     }
 
     private void validateNoReservationsForPastDates(final LocalDate localDate, final ReservationTime time) {
         if (localDate.isBefore(LocalDate.now())) {
-            throw new PastDateReservationException("날짜가 과거인 경우 모든 시간에 대한 예약이 불가능 합니다.");
+            throw new PastDateReservationException("지난 날짜에 대한 예약은 할 수 없습니다.");
         }
         if (localDate.equals(LocalDate.now()) && time.checkPastTime()) {
-            throw new PastTimeReservationException("날짜가 오늘인 경우 지나간 시간에 대한 예약이 불가능 합니다.");
+            throw new PastTimeReservationException("지난 시간에 대한 예약은 할 수 없습니다.");
         }
     }
 
     private void validateDuplicationReservation(final boolean isExist) {
         if (isExist) {
-            throw new DuplicateReservationException("이미 해당 날짜, 시간에 예약이 존재합니다.");
+            throw new DuplicateReservationException("이미 해당 날짜, 시간에 예약이 있습니다.");
         }
     }
 }

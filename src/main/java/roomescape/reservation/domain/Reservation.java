@@ -30,13 +30,13 @@ public class Reservation {
 
     private void validateNameExist(final String name) {
         if (Objects.isNull(name) || name.isBlank()) {
-            throw new InvalidNameException("예약자명이 null 이거나 공백인 경우 저장을 할 수 없습니다.");
+            throw new InvalidNameException("예약자명이 비어있습니다.");
         }
     }
 
     private void validateDateIsNotNull(final String date) {
         if (Objects.isNull(date)) {
-            throw new NullPointDateException("날짜가 null인 경우 저장을 할 수 없습니다.");
+            throw new NullPointDateException("날짜가 비어있습니다.");
         }
     }
 

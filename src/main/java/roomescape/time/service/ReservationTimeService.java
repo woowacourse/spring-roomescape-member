@@ -35,7 +35,7 @@ public class ReservationTimeService {
     public void deleteById(final long id) {
         final int deleteCount = reservationTimeDao.deleteById(id);
         if (deleteCount == 0) {
-            throw new NoSuchElementException(id + "를 아이디로 갖는 시간이 존재하지 않습니다.");
+            throw new NoSuchElementException("해당하는 시간이 없습니다.");
         }
     }
 

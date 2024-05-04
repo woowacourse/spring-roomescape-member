@@ -20,7 +20,7 @@ public class ReservationTime {
 
     private void validateTimeIsNotNull(final String time) {
         if (Objects.isNull(time)) {
-            throw new NullPointTimeException("시간인 null인 경우 저장을 할 수 없습니다.");
+            throw new NullPointTimeException("시간이 비어있습니다.");
         }
     }
 
