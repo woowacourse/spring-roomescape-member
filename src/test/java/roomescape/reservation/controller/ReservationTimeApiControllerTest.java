@@ -2,6 +2,7 @@ package roomescape.reservation.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -10,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import org.junit.jupiter.api.DisplayName;
@@ -34,6 +36,21 @@ class ReservationTimeApiControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Test
+    @DisplayName("예약 가능 시간 조회 성공 시 200 응답을 받는다.")
+    void findAvailableTest() throws Exception {
+        LocalDate date = LocalDate.of(2024, 5, 4);
+        Long themeId = 1L;
+
+        when(reservationTimeService.findAvailableTime(date, themeId)).thenReturn(new ArrayList<>());
+
+        mockMvc.perform(get("/times/available")
+                        .param("date", date.toString())
+                        .param("themeId", themeId.toString())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
 
     @Test
     @DisplayName("모든 시간 조회 성공 시 200 응답을 받는다.")

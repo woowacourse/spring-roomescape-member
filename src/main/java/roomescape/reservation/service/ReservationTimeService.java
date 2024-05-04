@@ -1,9 +1,11 @@
 package roomescape.reservation.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.dto.AvailableTimeResponse;
 import roomescape.reservation.dto.TimeCreateRequest;
 import roomescape.reservation.dto.TimeResponse;
 import roomescape.reservation.repository.ReservationTimeRepository;
@@ -40,5 +42,9 @@ public class ReservationTimeService {
             throw new IllegalArgumentException("이미 해당 시간에 예약이 있습니다.");
         }
         reservationTimeRepository.delete(id);
+    }
+
+    public List<AvailableTimeResponse> findAvailableTime(LocalDate date, Long themeId) {
+        return reservationTimeRepository.findAvailableTime(date, themeId);
     }
 }
