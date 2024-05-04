@@ -87,7 +87,7 @@ class ThemeRepositoryTest {
                 new Reservation(new ReservationName("네오"), LocalDate.now(), theme2, reservationTime)
         );
 
-        List<Theme> themes = themeRepository.findTopTenPopularThemesOfWeek();
+        List<Theme> themes = themeRepository.findTopTenThemesDescendingOfLastWeek();
 
         assertAll(
                 () -> assertThat(themes.get(0).getName()).isEqualTo("액션"),

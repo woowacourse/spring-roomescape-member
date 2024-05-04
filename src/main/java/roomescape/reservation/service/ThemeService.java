@@ -36,8 +36,8 @@ public class ThemeService {
                 .toList();
     }
 
-    public List<PopularThemeResponse> findPopularThemeLimitTen() {
-        List<Theme> popularTheme = themeRepository.findTopTenPopularThemesOfWeek();
+    public List<PopularThemeResponse> findTopTenThemesDescendingOfLastWeek() {
+        List<Theme> popularTheme = themeRepository.findTopTenThemesDescendingOfLastWeek();
         return popularTheme.stream()
                 .map(PopularThemeResponse::toResponse)
                 .toList();
