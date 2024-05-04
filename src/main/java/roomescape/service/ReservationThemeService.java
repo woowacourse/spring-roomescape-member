@@ -25,6 +25,9 @@ public class ReservationThemeService {
     }
 
     public ReservationTheme insertTheme(ReservationThemeRequestDto reservationThemeRequestDto) {
+        if (reservationThemeDao.existName(reservationThemeRequestDto.name())) {
+            throw new IllegalArgumentException("이미 존재하는 테마 이름입니다.");
+        }
         Long id = reservationThemeDao.insert(reservationThemeRequestDto.name(), reservationThemeRequestDto.description(), reservationThemeRequestDto.thumbnail());
         return new ReservationTheme(id, reservationThemeRequestDto.name(), reservationThemeRequestDto.description(), reservationThemeRequestDto.thumbnail());
     }

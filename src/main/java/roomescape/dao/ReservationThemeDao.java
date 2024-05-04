@@ -62,6 +62,11 @@ public class ReservationThemeDao {
         jdbcTemplate.update(deleteFromIdSql, id);
     }
 
+    public boolean existName(String name) {
+        String findByNameSql = "SELECT count(*) FROM theme WHERE name = ?";
+        return jdbcTemplate.queryForObject(findByNameSql, Integer.class, name) > 0;
+    }
+
     private RowMapper<ReservationTheme> getReservationThemeRowMapper() {
         return (resultSet, numRow) -> new ReservationTheme(
                 resultSet.getLong("id"),

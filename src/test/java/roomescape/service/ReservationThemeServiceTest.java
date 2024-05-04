@@ -69,4 +69,15 @@ public class ReservationThemeServiceTest {
 
         assertThat(reservationThemes.size()).isEqualTo(0);
     }
+
+    @DisplayName("이미 존재하는 테마 이름이면 예외를 발생한다.")
+    @Test
+    void insertExistNameThemeTest() {
+        String name = "레벨2 탈출";
+        ReservationThemeRequestDto reservationThemeRequestDto = new ReservationThemeRequestDto(name, "testDesc", "testImg");
+
+        assertThatThrownBy(() -> reservationThemeService.insertTheme(reservationThemeRequestDto))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이미 존재하는 테마 이름입니다.");
+    }
 }

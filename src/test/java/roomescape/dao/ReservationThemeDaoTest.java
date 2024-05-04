@@ -88,4 +88,12 @@ public class ReservationThemeDaoTest {
 
         assertThat(bestTheme.size()).isEqualTo(1);
     }
+
+    @DisplayName("존재하는 테마 이름인지 확인한다.")
+    @Test
+    void existNameTest() {
+        String name = "레벨2 탈출";
+
+        assertThat(reservationThemeDao.existName(name)).isTrue();
+    }
 }
