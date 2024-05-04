@@ -14,46 +14,46 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<String> handleGeneralException(Exception ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
 
     @ExceptionHandler(value = DuplicateReservationException.class)
     public ResponseEntity<String> handleDuplicateReservation(DuplicateReservationException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
 
     @ExceptionHandler(value = InvalidNameException.class)
     public ResponseEntity<String> handleInvalidName(InvalidNameException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        return ResponseEntity.badRequest().body(ex.getMessage());
     }
 
     @ExceptionHandler(value = NullPointDateException.class)
     public ResponseEntity<String> handleNullPointDate(NullPointDateException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        return ResponseEntity.badRequest().body(ex.getMessage());
     }
 
     @ExceptionHandler(value = NullPointTimeException.class)
     public ResponseEntity<String> handleNullPointTime(NullPointTimeException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        return ResponseEntity.badRequest().body(ex.getMessage());
     }
 
     @ExceptionHandler(value = PastDateReservationException.class)
     public ResponseEntity<String> handlePastDateReservation(PastDateReservationException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        return ResponseEntity.badRequest().body(ex.getMessage());
     }
 
     @ExceptionHandler(value = PastTimeReservationException.class)
     public ResponseEntity<String> handlePastTimeReservation(PastTimeReservationException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        return ResponseEntity.badRequest().body(ex.getMessage());
     }
 
     @ExceptionHandler(value = DataAccessException.class)
     public ResponseEntity<String> handleDataAccess(DataAccessException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return ResponseEntity.internalServerError().body(ex.getMessage());
     }
 
     @ExceptionHandler(value = NoSuchElementException.class)
     public ResponseEntity<String> handleNoSuchElement(NoSuchElementException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+        return ResponseEntity.notFound().build();
     }
 }
