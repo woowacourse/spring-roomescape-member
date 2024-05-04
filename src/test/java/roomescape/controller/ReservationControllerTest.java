@@ -95,7 +95,7 @@ public class ReservationControllerTest {
                 .body(new ReservationRequest("", date, timeId, themeId))
                 .when().post("/reservations")
                 .then().log().all()
-                .assertThat().statusCode(400).body("message", is("이름은 1자 이상, 5자 이하여야 합니다."));
+                .assertThat().statusCode(400).body("message", is("이름은 빈칸(공백)일 수 없습니다."));
     }
 
     @DisplayName("예약 추가 실패 테스트 - 일정 오류")
