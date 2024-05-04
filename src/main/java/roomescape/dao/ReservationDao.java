@@ -104,9 +104,9 @@ public class ReservationDao {
         return jdbcTemplate.queryForObject(findByIdSql, Integer.class, timeId, themeId, date);
     }
 
-    public List<Long> findBestThemeIdInWeek(String from, String to) {
-        String findBestThemeIdSql = "SELECT theme_id, count(*) AS total FROM reservation WHERE date BETWEEN ? AND ? GROUP BY theme_id ORDER BY total DESC";
-        return jdbcTemplate.query(findBestThemeIdSql, (rs, rowNum) -> rs.getLong("theme_id"), from, to);
+    public List<Long> findBestThemeIdInWeek(String from, String to, int count) {
+        String findBestThemeIdSql = "SELECT theme_id, count(*) AS total FROM reservation WHERE date BETWEEN ? AND ? GROUP BY theme_id ORDER BY total DESC LIMIT ?";
+        return jdbcTemplate.query(findBestThemeIdSql, (rs, rowNum) -> rs.getLong("theme_id"), from, to, count);
     }
 
     private RowMapper<Reservation> getReservationRowMapper() {

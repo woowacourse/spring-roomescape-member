@@ -42,11 +42,10 @@ public class ReservationThemeService {
         LocalDate from = now.minusWeeks(1);
         LocalDate to = now.minusDays(1);
 
-        List<Long> bestTheme = reservationDao.findBestThemeIdInWeek(from.toString(), to.toString());
+        List<Long> bestTheme = reservationDao.findBestThemeIdInWeek(from.toString(), to.toString(), 10);
         return bestTheme.stream()
                 .map(themeId -> reservationThemeDao.findById(themeId)
                         .orElseThrow(IllegalArgumentException::new))
-                .limit(10)
                 .toList();
     }
 }
