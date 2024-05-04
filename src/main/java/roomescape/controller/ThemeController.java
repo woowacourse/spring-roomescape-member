@@ -28,19 +28,19 @@ public class ThemeController {
     }
 
     @PostMapping("/themes")
-    public ResponseEntity<Theme> addTheme(@RequestBody ThemeAddRequest themeAddRequest) {
-        Theme theme = themeService.saveTheme(themeAddRequest);
-        return ResponseEntity.created(URI.create("/themes" + theme.getId())).body(theme);
+    public ResponseEntity<ThemeResponse> addTheme(@RequestBody ThemeAddRequest themeAddRequest) {
+        ThemeResponse saveResponse = themeService.saveTheme(themeAddRequest);
+        return ResponseEntity.created(URI.create("/themes" + saveResponse.id())).body(saveResponse);
+    }
+
+    @GetMapping("/themes/popular")
+    public ResponseEntity<List<ThemeResponse>> getPopularTheme() {
+        return ResponseEntity.ok(themeService.findPopularTheme());
     }
 
     @DeleteMapping("/themes/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable("id") Long id) {
         themeService.removeTheme(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/themes/popular")
-    public ResponseEntity<List<ThemeResponse>> getPopularTheme() {
-        return ResponseEntity.ok(themeService.findPopularTheme());
     }
 }

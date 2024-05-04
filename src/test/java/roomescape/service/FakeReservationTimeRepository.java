@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.TimeWithBookStatusResponse;
+import roomescape.dto.ReservationTimeWithBookStatusResponse;
 import roomescape.repository.ReservationTimeRepository;
 
 public class FakeReservationTimeRepository implements ReservationTimeRepository {
@@ -60,7 +60,8 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public List<TimeWithBookStatusResponse> findByDateAndThemeIdWithBookStatus(LocalDate date, Long themeId) {
+    public List<ReservationTimeWithBookStatusResponse> findByDateAndThemeIdWithBookStatus(LocalDate date,
+                                                                                          Long themeId) {
         return null;
     }
 }

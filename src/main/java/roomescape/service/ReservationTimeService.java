@@ -5,7 +5,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeAddRequest;
-import roomescape.dto.TimeWithBookStatusResponse;
+import roomescape.dto.ReservationTimeResponse;
+import roomescape.dto.ReservationTimeWithBookStatusResponse;
 import roomescape.repository.ReservationTimeRepository;
 
 @Service
@@ -17,19 +18,22 @@ public class ReservationTimeService {
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
-    public List<ReservationTime> findAllReservationTime() {
-        return reservationTimeRepository.findAll();
+    public List<ReservationTimeResponse> findAllReservationTime() {
+        return reservationTimeRepository.findAll().stream()
+                .map(ReservationTimeResponse::new)
+                .toList();
     }
 
-    public List<TimeWithBookStatusResponse> findWithBookStatus(LocalDate date, Long themeId) {
+    public List<ReservationTimeWithBookStatusResponse> findAllWithBookStatus(LocalDate date, Long themeId) {
         return reservationTimeRepository.findByDateAndThemeIdWithBookStatus(date, themeId);
     }
 
-    public ReservationTime saveReservationTime(ReservationTimeAddRequest reservationTimeAddRequest) {
+    public ReservationTimeResponse saveReservationTime(ReservationTimeAddRequest reservationTimeAddRequest) {
         if (reservationTimeRepository.existByStartAt(reservationTimeAddRequest.startAt())) {
             throw new IllegalArgumentException("이미 존재하는 예약시간은 추가할 수 없습니다.");
         }
-        return reservationTimeRepository.save(reservationTimeAddRequest.toEntity());
+        ReservationTime saved = reservationTimeRepository.save(reservationTimeAddRequest.toEntity());
+        return new ReservationTimeResponse(saved);
     }
 
     public void removeReservationTime(Long id) {

@@ -5,14 +5,14 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.TimeWithBookStatusResponse;
+import roomescape.dto.ReservationTimeWithBookStatusResponse;
 
 public interface ReservationTimeRepository {
     List<ReservationTime> findAll();
 
     Optional<ReservationTime> findById(Long id);
 
-    List<TimeWithBookStatusResponse> findByDateAndThemeIdWithBookStatus(LocalDate date, Long themeId);
+    List<ReservationTimeWithBookStatusResponse> findByDateAndThemeIdWithBookStatus(LocalDate date, Long themeId);
 
     ReservationTime save(ReservationTime reservationTime);
 

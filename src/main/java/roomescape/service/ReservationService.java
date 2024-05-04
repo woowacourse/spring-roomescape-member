@@ -6,6 +6,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationAddRequest;
+import roomescape.dto.ReservationResponse;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -24,11 +25,13 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public List<Reservation> findAllReservation() {
-        return reservationRepository.findAll();
+    public List<ReservationResponse> findAllReservation() {
+        return reservationRepository.findAll().stream()
+                .map(ReservationResponse::new)
+                .toList();
     }
 
-    public Reservation saveReservation(ReservationAddRequest request) {
+    public ReservationResponse saveReservation(ReservationAddRequest request) {
         if (reservationRepository.existByDateAndTimeIdAndThemeId(request.date(), request.timeId(),
                 request.themeId())) {
             throw new IllegalArgumentException("중복되는 예약이 존재합니다");
@@ -38,7 +41,8 @@ public class ReservationService {
         Theme theme = getTheme(request.themeId());
 
         Reservation reservation = request.toEntity(reservationTime, theme);
-        return reservationRepository.save(reservation);
+        Reservation saved = reservationRepository.save(reservation);
+        return new ReservationResponse(saved);
     }
 
     private Theme getTheme(long themeId) {

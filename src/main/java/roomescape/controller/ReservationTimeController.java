@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeAddRequest;
-import roomescape.dto.TimeWithBookStatusResponse;
+import roomescape.dto.ReservationTimeResponse;
+import roomescape.dto.ReservationTimeWithBookStatusResponse;
 import roomescape.service.ReservationTimeService;
 
 @RestController
@@ -25,27 +25,27 @@ public class ReservationTimeController {
     }
 
     @GetMapping("/times")
-    public ResponseEntity<List<ReservationTime>> getReservationTimeList() {
+    public ResponseEntity<List<ReservationTimeResponse>> getReservationTimeList() {
         return ResponseEntity.ok(reservationTimeService.findAllReservationTime());
     }
 
     @PostMapping("/times")
-    public ResponseEntity<ReservationTime> addReservationTime(
+    public ResponseEntity<ReservationTimeResponse> saveReservationTime(
             @RequestBody ReservationTimeAddRequest reservationTimeAddRequest) {
-        ReservationTime reservationTime = reservationTimeService.saveReservationTime(reservationTimeAddRequest);
-        return ResponseEntity.created(URI.create("/times/" + reservationTime.getId())).body(reservationTime);
-    }
-
-    @DeleteMapping("/times/{id}")
-    public ResponseEntity<Void> deleteReservationTime(@PathVariable("id") Long id) {
-        reservationTimeService.removeReservationTime(id);
-        return ResponseEntity.noContent().build();
+        ReservationTimeResponse saveResponse = reservationTimeService.saveReservationTime(reservationTimeAddRequest);
+        return ResponseEntity.created(URI.create("/times/" + saveResponse.id())).body(saveResponse);
     }
 
     @GetMapping("/times/{date}/{themeId}")
-    public ResponseEntity<List<TimeWithBookStatusResponse>> readTimesStatus(
+    public ResponseEntity<List<ReservationTimeWithBookStatusResponse>> readTimesStatus(
             @PathVariable("date") LocalDate date,
             @PathVariable("themeId") Long themeId) {
-        return ResponseEntity.ok(reservationTimeService.findWithBookStatus(date, themeId));
+        return ResponseEntity.ok(reservationTimeService.findAllWithBookStatus(date, themeId));
+    }
+
+    @DeleteMapping("/times/{id}")
+    public ResponseEntity<Void> removeReservationTime(@PathVariable("id") Long id) {
+        reservationTimeService.removeReservationTime(id);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -12,7 +12,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.TimeWithBookStatusResponse;
+import roomescape.dto.ReservationTimeWithBookStatusResponse;
 
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
@@ -22,7 +22,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
             rs.getTime("start_at").toLocalTime()
     ));
 
-    private static final RowMapper<TimeWithBookStatusResponse> WITH_BOOK_STATUS_ROW_MAPPER = ((rs, rowNum) -> new TimeWithBookStatusResponse(
+    private static final RowMapper<ReservationTimeWithBookStatusResponse> WITH_BOOK_STATUS_ROW_MAPPER = ((rs, rowNum) -> new ReservationTimeWithBookStatusResponse(
             rs.getLong("id"),
             rs.getTime("start_at").toLocalTime(),
             rs.getBoolean("already_booked")
@@ -54,7 +54,8 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public List<TimeWithBookStatusResponse> findByDateAndThemeIdWithBookStatus(LocalDate date, Long themeId) {
+    public List<ReservationTimeWithBookStatusResponse> findByDateAndThemeIdWithBookStatus(LocalDate date,
+                                                                                          Long themeId) {
         String sql = """
                 SELECT 
                     t.id,

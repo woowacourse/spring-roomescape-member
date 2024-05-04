@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeAddRequest;
+import roomescape.dto.ReservationTimeResponse;
 
 class ReservationTimeServiceTest {
 
@@ -29,14 +30,14 @@ class ReservationTimeServiceTest {
     @Test
     void should_add_reservation_time() {
         ReservationTimeService reservationTimeService = new ReservationTimeService(new FakeReservationTimeRepository());
-        ReservationTime expectedReservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
+        ReservationTimeResponse expectedResponse = new ReservationTimeResponse(1L, LocalTime.of(10, 0));
 
-        ReservationTime actualReservationTime = reservationTimeService.saveReservationTime(
-                new ReservationTimeAddRequest(
-                        LocalTime.of(10, 0)
-                ));
+        ReservationTimeAddRequest reservationTimeAddRequest = new ReservationTimeAddRequest(LocalTime.of(10, 0));
 
-        assertThat(actualReservationTime).isEqualTo(expectedReservationTime);
+        ReservationTimeResponse actualReservationTime = reservationTimeService.saveReservationTime(
+                reservationTimeAddRequest);
+
+        assertThat(actualReservationTime).isEqualTo(expectedResponse);
     }
 
     @DisplayName("중복되는 예약 시각을 추가할 경우 예외가 발생합니다.")

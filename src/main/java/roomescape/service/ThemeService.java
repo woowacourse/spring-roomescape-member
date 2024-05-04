@@ -26,9 +26,9 @@ public class ThemeService {
                 .toList();
     }
 
-    public Theme saveTheme(ThemeAddRequest themeAddRequest) {
-        Theme theme = themeAddRequest.toEntity();
-        return themeRepository.save(theme);
+    public ThemeResponse saveTheme(ThemeAddRequest themeAddRequest) {
+        Theme saved = themeRepository.save(themeAddRequest.toEntity());
+        return new ThemeResponse(saved);
     }
 
     public void removeTheme(Long id) {
