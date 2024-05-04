@@ -1,60 +1,43 @@
 package roomescape.admin;
 
-import io.restassured.RestAssured;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.test.annotation.DirtiesContext;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+import roomescape.admin.controller.AdminController;
+
+
+@WebMvcTest(AdminController.class)
 public class AdminControllerTest {
 
-    @LocalServerPort
-    private int port;
+    @Autowired
+    private MockMvc mockMvc;
 
-    @BeforeEach
-    void setUp() {
-        RestAssured.port = port;
+    @Test
+    void admin() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/admin"))
+               .andExpect(status().isOk());
     }
 
     @Test
-    void admin() {
-        RestAssured.given()
-                   .log()
-                   .all()
-                   .when()
-                   .get("/admin")
-                   .then()
-                   .log()
-                   .all()
-                   .statusCode(200);
+    void reservation() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/admin/reservation"))
+               .andExpect(status().isOk());
     }
 
     @Test
-    void reservation() {
-        RestAssured.given()
-                   .log()
-                   .all()
-                   .when()
-                   .get("/admin/reservation")
-                   .then()
-                   .log()
-                   .all()
-                   .statusCode(200);
+    void time() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/admin/time"))
+               .andExpect(status().isOk());
     }
 
     @Test
-    void time() {
-        RestAssured.given()
-                   .log()
-                   .all()
-                   .when()
-                   .get("/admin/time")
-                   .then()
-                   .log()
-                   .all()
-                   .statusCode(200);
+    void theme() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/admin/theme"))
+               .andExpect(status().isOk());
     }
 }
