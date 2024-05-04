@@ -1,6 +1,5 @@
 package roomescape.reservation.service;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -9,8 +8,6 @@ import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.dto.ReservationSaveRequest;
-import roomescape.reservation.dto.ThemeResponse;
-import roomescape.reservation.dto.TimeResponse;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.repository.ReservationTimeRepository;
 import roomescape.reservation.repository.ThemeRepository;
@@ -45,10 +42,6 @@ public class ReservationService {
         Theme theme = themeRepository.findById(reservationSaveRequest.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
 
-        if (LocalDate.now().isAfter(reservationSaveRequest.date())) {
-            throw new IllegalArgumentException("지난 날짜는 예약할 수 없습니다.");
-        }
-
         Reservation reservation = reservationSaveRequest.toReservation(theme, reservationTime);
 
         if (reservationRepository.existReservation(reservation)) {
@@ -61,19 +54,13 @@ public class ReservationService {
     public ReservationResponse findById(Long id) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약입니다."));
-        TimeResponse timeResponse = TimeResponse.toResponse(reservation.getTime());
-        ThemeResponse themeResponse = ThemeResponse.toResponse(reservation.getTheme());
 
         return ReservationResponse.toResponse(reservation);
     }
 
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAll().stream()
-                .map(reservation -> {
-                    TimeResponse timeResponse = TimeResponse.toResponse(reservation.getTime());
-                    ThemeResponse themeResponse = ThemeResponse.toResponse(reservation.getTheme());
-                    return ReservationResponse.toResponse(reservation);
-                })
+                .map(ReservationResponse::toResponse)
                 .collect(Collectors.toList());
     }
 

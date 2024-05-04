@@ -11,6 +11,7 @@ public class Reservation {
     private final ReservationTime reservationTime;
 
     public Reservation(ReservationName reservationName, LocalDate date, Theme theme, ReservationTime reservationTime) {
+        validateLastDate(date);
         this.reservationName = reservationName;
         this.date = date;
         this.theme = theme;
@@ -23,6 +24,12 @@ public class Reservation {
         this.date = date;
         this.theme = theme;
         this.reservationTime = reservationTime;
+    }
+
+    private void validateLastDate(LocalDate date) {
+        if (date.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("지난 날짜는 예약할 수 없습니다.");
+        }
     }
 
     public Long getId() {

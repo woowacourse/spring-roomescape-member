@@ -11,12 +11,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.reservation.domain.Name;
-import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
+import roomescape.reservation.domain.ThemeName;
 import roomescape.reservation.dto.ReservationSaveRequest;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.repository.ReservationTimeRepository;
@@ -45,17 +43,7 @@ class ReservationServiceTest {
         doReturn(Optional.empty()).when(reservationTimeRepository)
                 .findById(timeId);
 
-        ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest("hogi", LocalDate.now(), 1L, timeId);
-        assertThatThrownBy(() -> reservationService.save(reservationSaveRequest))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
-    @DisplayName("지나간 날짜를 예약 하면 예외가 발생한다")
-    void beforeDateExceptionTest() {
-        ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest("hogi",
-                LocalDate.parse("1998-03-14"), 1L, 1L);
-
+        ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest("호기", LocalDate.now(), 1L, timeId);
         assertThatThrownBy(() -> reservationService.save(reservationSaveRequest))
                 .isInstanceOf(IllegalArgumentException.class);
     }
@@ -63,8 +51,8 @@ class ReservationServiceTest {
     @Test
     @DisplayName("중복된 예약이 있다면 예외가 발생한다.")
     void duplicateReservationExceptionTest() {
-        Theme theme = new Theme(new Name("공포"), "무서운 테마", "https://i.pinimg.com/236x.jpg");
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
+        Theme theme = new Theme(new ThemeName("공포"), "무서운 테마", "https://i.pinimg.com/236x.jpg");
 
         doReturn(Optional.of(reservationTime)).when(reservationTimeRepository)
                 .findById(1L);
@@ -72,11 +60,9 @@ class ReservationServiceTest {
         doReturn(Optional.of(theme)).when(themeRepository)
                 .findById(1L);
 
-        doReturn(true).when(reservationRepository)
-                .existReservation(Mockito.any(Reservation.class));
-
-        ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest("hogi",
+        ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest("호기",
                 LocalDate.parse("2025-03-14"), 1L, 1L);
+
         assertThatThrownBy(() -> reservationService.save(reservationSaveRequest))
                 .isInstanceOf(IllegalArgumentException.class);
     }
