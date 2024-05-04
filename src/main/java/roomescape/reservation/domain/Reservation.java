@@ -25,7 +25,7 @@ public class Reservation {
     }
 
     private void validate(LocalDate date, ReservationTime time) {
-        if (LocalDateTime.of(date, time.getStartAt()).isBefore(LocalDateTime.now())) {
+        if (!LocalDateTime.of(date, time.getStartAt()).isAfter(LocalDateTime.now())) {
             throw new IllegalArgumentException("현재보다 이전 시간의 예약을 생성할 수 없습니다.");
         }
     }
