@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -54,10 +55,14 @@ public class JdbcTemplateThemeRepository implements ThemeRepository {
 
     @Override
     public Optional<Theme> findById(long id) {
-        List<Theme> themes = jdbcTemplate.query(
-                "SELECT id, name, description, thumbnail FROM THEME WHERE id = ?",
-                THEME_ROW_MAPPER, id);
-        return themes.stream().findFirst();
+        try {
+            Theme theme = jdbcTemplate.queryForObject(
+                    "SELECT id, name, description, thumbnail FROM THEME WHERE id = ?",
+                    THEME_ROW_MAPPER, id);
+            return Optional.of(theme);
+        } catch (DataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
