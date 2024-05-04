@@ -307,7 +307,7 @@ HTTP/1.1 204
 </details>
 
 <details>
-<summary>GET <code>/popular-themes</code> 인기 테마 조회 API</summary>
+<summary>GET <code>/themes/popular</code> 인기 테마 조회 API</summary>
 
 #### Request
 

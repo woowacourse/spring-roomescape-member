@@ -92,7 +92,7 @@ class ThemeControllerTest extends BaseControllerTest {
     @Sql("/reservations.sql")
     void getPopularThemes() {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when().get("/popular-themes")
+                .when().get("/themes/popular")
                 .then().log().all()
                 .extract();
 
