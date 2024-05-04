@@ -8,15 +8,17 @@ import org.springframework.validation.method.ParameterValidationResult;
 
 public record ErrorResponse(String message, List<ErrorDetail> details) {
 
+    private static final String INVALID_VALUE_MESSAGE = "올바른 값을 입력해주세요.";
+
     public ErrorResponse(String message) {
         this(message, Collections.emptyList());
     }
 
     public ErrorResponse(FieldError[] errors) {
-        this("", Arrays.stream(errors).map(ErrorDetail::new).toList());
+        this(INVALID_VALUE_MESSAGE, Arrays.stream(errors).map(ErrorDetail::new).toList());
     }
 
     public ErrorResponse(ParameterValidationResult[] parameterValidationResults) {
-        this("", Arrays.stream(parameterValidationResults).map(ErrorDetail::new).toList());
+        this(INVALID_VALUE_MESSAGE, Arrays.stream(parameterValidationResults).map(ErrorDetail::new).toList());
     }
 }
