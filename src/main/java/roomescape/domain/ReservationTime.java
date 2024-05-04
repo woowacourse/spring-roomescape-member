@@ -5,34 +5,27 @@ import java.time.format.DateTimeParseException;
 import java.util.Objects;
 
 public class ReservationTime {
-    private static final int TIME_UNIT = 10;
+
+    private static final int AVAILABLE_TIME_UNIT = 10;
 
     private final Long id;
     private final LocalTime startAt;
 
-    public ReservationTime(String startAt) {
+    public ReservationTime(final String startAt) {
         this(null, startAt);
     }
 
-    public ReservationTime(Long id, ReservationTime time) {
-        this.id = id;
-        this.startAt = time.startAt;
+    public ReservationTime(final Long id, final String startAt) {
+        this(id, convertToLocalTime(startAt));
     }
 
-    public ReservationTime(Long id, String startAtInput) {
-        LocalTime startAt = convertToLocalTime(startAtInput);
+    public ReservationTime(final Long id, final LocalTime startAt) {
         validateTimeUnit(startAt);
         this.id = id;
         this.startAt = startAt;
     }
 
-    private void validateTimeUnit(LocalTime time) {
-        if (time.getMinute() % TIME_UNIT != 0) {
-            throw new IllegalArgumentException("예약 시간은 10분 단위입니다.");
-        }
-    }
-
-    private LocalTime convertToLocalTime(String time) {
+    private static LocalTime convertToLocalTime(final String time) {
         if (time == null || time.isEmpty()) {
             throw new IllegalArgumentException("예약 시간이 비어 있습니다.");
         }
@@ -40,6 +33,12 @@ public class ReservationTime {
             return LocalTime.parse(time);
         } catch (DateTimeParseException e) {
             throw new IllegalArgumentException("유효하지 않은 예약 시간입니다.");
+        }
+    }
+
+    private void validateTimeUnit(final LocalTime time) {
+        if (time.getMinute() % AVAILABLE_TIME_UNIT != 0) {
+            throw new IllegalArgumentException("예약 시간은 10분 단위로 등록할 수 있습니다.");
         }
     }
 

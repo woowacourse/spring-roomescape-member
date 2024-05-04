@@ -1,18 +1,5 @@
 package roomescape.controller;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.BDDMockito;
-import org.springframework.http.MediaType;
-import roomescape.domain.ReservationTime;
-import roomescape.dto.AvailableReservationTimeResponse;
-import roomescape.dto.ReservationTimeResponse;
-import roomescape.dto.ReservationTimeSaveRequest;
-import roomescape.exception.NotFoundException;
-
-import java.time.LocalDate;
-import java.util.List;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -24,14 +11,26 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static roomescape.TestFixture.MIA_RESERVATION_DATE;
 import static roomescape.TestFixture.MIA_RESERVATION_TIME;
 
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.mockito.BDDMockito;
+import org.springframework.http.MediaType;
+import roomescape.domain.ReservationTime;
+import roomescape.dto.AvailableReservationTimeResponse;
+import roomescape.dto.ReservationTimeResponse;
+import roomescape.dto.ReservationTimeSaveRequest;
+import roomescape.exception.NotFoundException;
+import java.time.LocalDate;
+import java.util.List;
+
 class ReservationTimeControllerTest extends ControllerTest {
 
     @Test
     @DisplayName("예약 시간 POST 요청 시 상태코드 201을 반환한다.")
     void createReservationTime() throws Exception {
         // given
-        ReservationTimeSaveRequest request = new ReservationTimeSaveRequest(MIA_RESERVATION_TIME);
-        ReservationTimeResponse expectedResponse = ReservationTimeResponse.from(new ReservationTime(1L, request.toModel()));
+        final ReservationTimeSaveRequest request = new ReservationTimeSaveRequest(MIA_RESERVATION_TIME);
+        final ReservationTimeResponse expectedResponse = ReservationTimeResponse.from(new ReservationTime(1L, request.startAt()));
 
         BDDMockito.given(reservationTimeService.create(any()))
                 .willReturn(expectedResponse);

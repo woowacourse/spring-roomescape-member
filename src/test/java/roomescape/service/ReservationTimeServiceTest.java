@@ -39,8 +39,8 @@ class ReservationTimeServiceTest {
     @DisplayName("예약 시간을 생성한다.")
     void create() {
         // given
-        ReservationTime reservationTime = new ReservationTime(MIA_RESERVATION_TIME);
-        ReservationTime expectedReservationTime = new ReservationTime(1L, reservationTime);
+        final ReservationTime reservationTime = new ReservationTime(MIA_RESERVATION_TIME);
+        final ReservationTime expectedReservationTime = new ReservationTime(1L, reservationTime.getStartAt());
 
         BDDMockito.given(reservationTimeRepository.save(any()))
                 .willReturn(expectedReservationTime);
