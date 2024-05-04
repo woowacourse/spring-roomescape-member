@@ -17,6 +17,8 @@ import java.util.Optional;
 
 @Repository
 public class ReservationDao {
+    private static final String TABLE_NAME = "reservation";
+    private static final String KEY_COLUMN_NAME = "id";
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -29,27 +31,16 @@ public class ReservationDao {
     ) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(source)
-                .withTableName("reservation")
-                .usingGeneratedKeyColumns("id");
+                .withTableName(TABLE_NAME)
+                .usingGeneratedKeyColumns(KEY_COLUMN_NAME);
         this.reservationRowMapper = reservationRowMapper;
     }
 
     public Reservation save(final Reservation reservation) {
         try {
-            SqlParameterSource params = new MapSqlParameterSource()
-                    .addValue("name", reservation.getName())
-                    .addValue("date", reservation.getDate().toString())
-                    .addValue("time_id", String.valueOf(reservation.getTimeId()))
-                    .addValue("theme_id", String.valueOf(reservation.getThemeId()));
-
+            SqlParameterSource params = makeInsertParams(reservation);
             long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
-            return Reservation.builder()
-                    .id(id)
-                    .name(reservation.getName())
-                    .date(reservation.getDate())
-                    .time(reservation.getTime())
-                    .theme(reservation.getTheme())
-                    .build();
+            return makeSavedReservation(reservation, id);
         } catch (DuplicateKeyException exception) {
             throw new IllegalStateException("[ERROR] 키 값 에러 : 중복된 예약 키가 존재합니다");
         }
@@ -80,9 +71,7 @@ public class ReservationDao {
                 + "ON r.time_id = time.id "
                 + "INNER JOIN theme as theme "
                 + "ON r.theme_id = theme.id ";
-        return jdbcTemplate.query(
-                sql,
-                reservationRowMapper
+        return jdbcTemplate.query(sql, reservationRowMapper
         );
     }
 
@@ -138,5 +127,23 @@ public class ReservationDao {
 
     public void delete(final long id) {
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", Long.valueOf(id));
+    }
+
+    private Reservation makeSavedReservation(Reservation reservation, long id) {
+        return Reservation.builder()
+                .id(id)
+                .name(reservation.getName())
+                .date(reservation.getDate())
+                .time(reservation.getTime())
+                .theme(reservation.getTheme())
+                .build();
+    }
+
+    private MapSqlParameterSource makeInsertParams(Reservation reservation) {
+        return new MapSqlParameterSource()
+                .addValue("name", reservation.getName())
+                .addValue("date", reservation.getDate().toString())
+                .addValue("time_id", String.valueOf(reservation.getTimeId()))
+                .addValue("theme_id", String.valueOf(reservation.getThemeId()));
     }
 }
