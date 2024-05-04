@@ -18,14 +18,7 @@ import java.util.List;
 public class ThemeDao {
 
     private final JdbcTemplate jdbcTemplate;
-    private final RowMapper<Theme> timeRowMapper = (resultSet, rowNum) -> new Theme(
-            resultSet.getLong("id"),
-            resultSet.getString("name"),
-            resultSet.getString("description"),
-            resultSet.getString("thumbnail")
-    );
-
-    private RowMapper<Theme> themeRowMapper = (resultSet, rowNum) -> new Theme(
+    private final RowMapper<Theme> themeRowMapper = (resultSet, rowNum) -> new Theme(
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("description"),
@@ -54,14 +47,14 @@ public class ThemeDao {
     public Theme findById(long id) {
         String sql = "SELECT * FROM theme WHERE id = ?";
         try {
-            return jdbcTemplate.queryForObject(sql, timeRowMapper, id);
+            return jdbcTemplate.queryForObject(sql, themeRowMapper, id);
         } catch (EmptyResultDataAccessException e) {
             throw new IllegalThemeException("[ERROR] 테마를 찾을 수 없습니다");
         }
     }
 
     public List<Theme> findAll() {
-        List<Theme> themes = jdbcTemplate.query("SELECT * FROM theme", timeRowMapper);
+        List<Theme> themes = jdbcTemplate.query("SELECT * FROM theme", themeRowMapper);
         return Collections.unmodifiableList(themes);
     }
 
