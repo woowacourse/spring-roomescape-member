@@ -47,10 +47,10 @@ public class ReservationRepository {
         String sql = """
                 select
                 r.id,
-                r.name,
+                r.name as reservation_name,
                 r.date,
                 t.id as theme_id,
-                t.name,
+                t.name as theme_name,
                 t.description,
                 t.thumbnail,
                 rt.id as time_id,
@@ -73,10 +73,10 @@ public class ReservationRepository {
         String sql = """
                 select
                 r.id,
-                r.name,
+                r.name as reservation_name,
                 r.date,
                 t.id as theme_id,
-                t.name,
+                t.name as theme_name,
                 t.description,
                 t.thumbnail,
                 rt.id as time_id,
@@ -111,11 +111,11 @@ public class ReservationRepository {
         return (rs, rowNum) -> {
             return new Reservation(
                     rs.getLong("id"),
-                    new ReservationName(rs.getString("name")),
+                    new ReservationName(rs.getString("reservation_name")),
                     rs.getDate("date").toLocalDate(),
                     new Theme(
                             rs.getLong("theme_id"),
-                            new ThemeName(rs.getString("name")),
+                            new ThemeName(rs.getString("theme_name")),
                             rs.getString("description"),
                             rs.getString("thumbnail")
                     ),
