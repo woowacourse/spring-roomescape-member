@@ -17,7 +17,7 @@ public record ReservationResponse(Long id, String name, String date, Reservation
                 ));
     }
 
-    public static ReservationResponse from(Theme theme) {
+    public static ReservationResponse from(Theme theme) { // TODO 필요없는 정보까지 건내주는건 위험하지 않을까?
         return new ReservationResponse(
                 null,
                 null,

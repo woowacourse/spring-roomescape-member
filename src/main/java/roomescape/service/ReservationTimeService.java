@@ -2,18 +2,23 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.request.ReservationTimeAddRequest;
+import roomescape.dto.response.AvailableReservationTimeResponse;
 import roomescape.dto.response.ReservationTimeResponse;
+import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationtime.ReservationTimeRepository;
 
 @Service
 public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository) {
+    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository, ReservationRepository reservationRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public ReservationTimeResponse addTime(ReservationTimeAddRequest reservationTimeAddRequest) {
@@ -26,6 +31,25 @@ public class ReservationTimeService {
                 .stream()
                 .map(ReservationTimeResponse::from)
                 .toList();
+    }
+
+    public List<AvailableReservationTimeResponse> findAvailableTimes(String date, Long themeId) {
+        List<ReservationTime> bookedTimes = reservationRepository.findAll()
+                .stream()
+                .filter(reservation -> reservation.isSameDate(date))
+                .filter(reservation -> reservation.isSameTheme(themeId))
+                .map(Reservation::getTime)
+                .toList();
+
+        return reservationTimeRepository.findAll()
+                .stream()
+                .map(reservationTime -> convertToAvailableReservationTimeResponse(reservationTime, bookedTimes))
+                .toList();
+    }
+
+    private static AvailableReservationTimeResponse convertToAvailableReservationTimeResponse(ReservationTime reservationTime, List<ReservationTime> bookedTimes) {
+        boolean alreadyBooked = bookedTimes.contains(reservationTime);
+        return new AvailableReservationTimeResponse(reservationTime, alreadyBooked);
     }
 
     public ReservationTimeResponse getTime(Long id) {

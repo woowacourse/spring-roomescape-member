@@ -3,15 +3,12 @@ package roomescape.controller.reservation;
 import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import roomescape.dto.request.ReservationTimeAddRequest;
+import roomescape.dto.response.AvailableReservationTimeResponse;
+import roomescape.dto.response.ReservationResponse;
 import roomescape.dto.response.ReservationTimeResponse;
+import roomescape.service.ReservationService;
 import roomescape.service.ReservationTimeService;
 
 @RestController
@@ -33,8 +30,8 @@ public class ReservationTimeController {
     }
 
     @GetMapping
-    public List<ReservationTimeResponse> findTimes() {
-        return reservationTimeService.findTimes();
+    public List<AvailableReservationTimeResponse> findTimes(@RequestParam(required = false) String date, @RequestParam(required = false) Long themeId) {
+        return reservationTimeService.findAvailableTimes(date, themeId);
     }
 
     @GetMapping("/{id}")

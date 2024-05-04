@@ -25,6 +25,21 @@ public class Reservation {
         this(null, name, date, time, theme);
     }
 
+    public boolean isSameDate(String date) {
+        if (date == null) {
+            return false;
+        }
+        LocalDate parse = LocalDate.parse(date);
+        return this.date.equals(parse);
+    }
+
+    public boolean isSameTheme(Long themeId) {
+        if (themeId == null) {
+            return false;
+        }
+        return this.theme.getId().equals(themeId);
+    }
+
     public Long getId() {
         return id;
     }
