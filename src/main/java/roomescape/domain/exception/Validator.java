@@ -1,13 +1,13 @@
 package roomescape.domain.exception;
 
 public class Validator {
-    public static void allNonNull(Object... objects) {
+    public static void nonNull(Object... objects) {
         for (Object object : objects) {
-            requireNonNull(object);
+            validateNonNull(object);
         }
     }
 
-    private static <T> void requireNonNull(T obj) {
+    private static <T> void validateNonNull(T obj) {
         if (obj == null)
             throw new IllegalNullArgumentException();
     }

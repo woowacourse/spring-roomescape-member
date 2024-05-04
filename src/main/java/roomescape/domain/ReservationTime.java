@@ -10,7 +10,7 @@ public record ReservationTime(Long id, LocalTime startAt) {
     }
 
     public ReservationTime {
-        Validator.allNonNull(startAt);
+        Validator.nonNull(startAt);
     }
 
     public ReservationTime createWithId(Long id) {
