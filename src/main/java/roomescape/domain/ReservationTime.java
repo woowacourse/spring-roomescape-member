@@ -1,7 +1,6 @@
 package roomescape.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import java.time.LocalTime;
 
 public class ReservationTime {
@@ -16,10 +15,6 @@ public class ReservationTime {
         this.startAt = startAt;
     }
 
-    public ReservationTime(final long id) {
-        this(id, null);
-    }
-
     public ReservationTime(final LocalTime startAt) {
         this(null, startAt);
     }
@@ -32,10 +27,6 @@ public class ReservationTime {
 
     public static ReservationTime of(final long id, final String start_at) {
         return new ReservationTime(id, LocalTime.parse(start_at));
-    }
-
-    public boolean isBefore(final LocalTime now) {
-        return startAt.isBefore(now);
     }
 
     public long getId() {

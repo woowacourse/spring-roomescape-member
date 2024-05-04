@@ -39,20 +39,17 @@ public class Reservation {
         }
     }
 
-    public static Reservation of(long id, String name, String date, long timeId, long themeId) {
-        LocalDate parsedDate = LocalDate.parse(date);
-        return new Reservation(id, new Name(name), parsedDate, new ReservationTime(timeId), new Theme(themeId));
-    }
-
-    public static Reservation of(final long id, final String name, final String date,
-                                 final ReservationTime reservationTime,
-                                 final Theme theme) {
+    public static Reservation of(
+            final long id, final String name, final String date,
+            final ReservationTime reservationTime, final Theme theme
+    ) {
         LocalDate parsedDate = LocalDate.parse(date);
         return new Reservation(id, new Name(name), parsedDate, reservationTime, theme);
     }
 
-    public static Reservation of(final String name, final LocalDate date, final ReservationTime reservationTime,
-                                 final Theme theme) {
+    public static Reservation of(
+            final String name, final LocalDate date,
+            final ReservationTime reservationTime, final Theme theme) {
         return new Reservation(null, new Name(name), date, reservationTime, theme);
     }
 
