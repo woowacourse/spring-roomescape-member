@@ -17,12 +17,12 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationSaveRequest;
 import roomescape.exception.ReservationBusinessException;
-import roomescape.model.Reservation;
-import roomescape.model.ReservationTime;
-import roomescape.model.Theme;
-import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeRepository;
-import roomescape.repository.ThemeRepository;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
+import roomescape.domain.ReservationRepository;
+import roomescape.domain.ReservationTimeRepository;
+import roomescape.repository.ThemeJdbcRepository;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
@@ -38,12 +38,12 @@ class ReservationServiceTest {
     private ReservationTimeRepository reservationTimeRepository;
 
     @Autowired
-    private ThemeRepository themeRepository;
+    private ThemeJdbcRepository themeJdbcRepository;
 
     @BeforeEach
     void init() {
         final ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("10:00")));
-        final Theme theme = themeRepository.save(new Theme("이름", "설명", "썸네일"));
+        final Theme theme = themeJdbcRepository.save(new Theme("이름", "설명", "썸네일"));
         reservationRepository.save(new Reservation("감자", LocalDate.parse("2025-05-13"), time, theme));
     }
 

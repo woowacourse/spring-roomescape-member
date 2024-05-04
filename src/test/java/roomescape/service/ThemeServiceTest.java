@@ -18,12 +18,12 @@ import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.dto.PopularThemeRequest;
 import roomescape.dto.ThemeResponse;
 import roomescape.dto.ThemeSaveRequest;
-import roomescape.model.Reservation;
-import roomescape.model.ReservationTime;
-import roomescape.model.Theme;
-import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeRepository;
-import roomescape.repository.ThemeRepository;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
+import roomescape.domain.ReservationRepository;
+import roomescape.domain.ReservationTimeRepository;
+import roomescape.repository.ThemeJdbcRepository;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
@@ -39,7 +39,7 @@ class ThemeServiceTest {
     private ReservationTimeRepository reservationTimeRepository;
 
     @Autowired
-    private ThemeRepository themeRepository;
+    private ThemeJdbcRepository themeJdbcRepository;
 
     @DisplayName("테마 저장")
     @Test
@@ -94,7 +94,7 @@ class ThemeServiceTest {
     void deleteExistReservation() {
         // given
         final ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("10:00")));
-        final Theme theme = themeRepository.save(new Theme("이름", "설명", "썸네일"));
+        final Theme theme = themeJdbcRepository.save(new Theme("이름", "설명", "썸네일"));
         reservationRepository.save(new Reservation("감자", LocalDate.parse("2025-05-13"), time, theme));
 
         // when & then

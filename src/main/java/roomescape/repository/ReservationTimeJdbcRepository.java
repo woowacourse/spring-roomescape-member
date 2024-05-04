@@ -9,7 +9,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.model.ReservationTime;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.ReservationTimeRepository;
 
 @Repository
 public class ReservationTimeJdbcRepository implements ReservationTimeRepository {

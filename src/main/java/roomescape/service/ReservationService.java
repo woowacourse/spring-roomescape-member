@@ -2,15 +2,15 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationRepository;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.ReservationTimeRepository;
+import roomescape.domain.Theme;
+import roomescape.domain.ThemeRepository;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationSaveRequest;
 import roomescape.exception.ReservationBusinessException;
-import roomescape.model.Reservation;
-import roomescape.model.ReservationTime;
-import roomescape.model.Theme;
-import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeRepository;
-import roomescape.repository.ThemeRepository;
 
 @Service
 public class ReservationService {

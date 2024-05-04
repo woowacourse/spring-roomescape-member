@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalTime;
-import roomescape.model.ReservationTime;
+import roomescape.domain.ReservationTime;
 
 public record ReservationTimeSaveRequest(
         @NotNull

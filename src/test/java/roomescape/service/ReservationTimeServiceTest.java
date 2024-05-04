@@ -18,12 +18,12 @@ import roomescape.dto.ReservationTimeBookedRequest;
 import roomescape.dto.ReservationTimeBookedResponse;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.ReservationTimeSaveRequest;
-import roomescape.model.Reservation;
-import roomescape.model.ReservationTime;
-import roomescape.model.Theme;
-import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeRepository;
-import roomescape.repository.ThemeRepository;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
+import roomescape.domain.ReservationRepository;
+import roomescape.domain.ReservationTimeRepository;
+import roomescape.repository.ThemeJdbcRepository;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
@@ -36,7 +36,7 @@ class ReservationTimeServiceTest {
     private ReservationTimeRepository reservationTimeRepository;
 
     @Autowired
-    private ThemeRepository themeRepository;
+    private ThemeJdbcRepository themeJdbcRepository;
 
     @Autowired
     private ReservationRepository reservationRepository;
@@ -45,7 +45,7 @@ class ReservationTimeServiceTest {
     void init() {
         reservationTimeRepository.save(new ReservationTime(LocalTime.parse("11:00")));
         final ReservationTime savedReservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("12:00")));
-        final Theme theme = themeRepository.save(new Theme("이름", "설명", "썸네일"));
+        final Theme theme = themeJdbcRepository.save(new Theme("이름", "설명", "썸네일"));
         reservationRepository.save(new Reservation(1L, "백호", LocalDate.parse("2024-12-12"), savedReservationTime, theme));
     }
 

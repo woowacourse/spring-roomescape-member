@@ -2,7 +2,7 @@ package roomescape.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import roomescape.model.Theme;
+import roomescape.domain.Theme;
 
 public record ThemeSaveRequest(
         @NotBlank
