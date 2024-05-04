@@ -36,7 +36,8 @@ public class ReservationTimeController {
 
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> addReservationTime(
-            @RequestBody ReservationTimeRequest reservationTimeRequest) {
+            @RequestBody ReservationTimeRequest reservationTimeRequest
+    ) {
         ReservationTimeResponse reservationTimeResponse = reservationTimeService.addReservationTime(
                 reservationTimeRequest);
 

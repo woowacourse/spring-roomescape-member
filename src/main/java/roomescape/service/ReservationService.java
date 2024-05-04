@@ -26,9 +26,12 @@ public class ReservationService {
     private final ThemeRepository themeRepository;
     private final Clock clock;
 
-    public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository,
-                              Clock clock) {
+    public ReservationService(
+            ReservationRepository reservationRepository,
+            ReservationTimeRepository reservationTimeRepository,
+            ThemeRepository themeRepository,
+            Clock clock
+    ) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
@@ -70,7 +73,8 @@ public class ReservationService {
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(
                 reservation.getDate(),
                 reservation.getTimeId(),
-                reservation.getThemeId())) {
+                reservation.getThemeId()
+        )) {
             throw new IllegalArgumentException("해당 날짜/시간에 이미 예약이 존재합니다.");
         }
     }
