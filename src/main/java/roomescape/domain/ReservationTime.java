@@ -10,13 +10,12 @@ public class ReservationTime {
 
     public ReservationTime(LocalTime startAt) {
         this.id = null;
-        this.startAt = Objects.requireNonNull(startAt, "인자 중 null 값이 존재합니다.");
+        this.startAt = Objects.requireNonNull(startAt);
     }
 
     public ReservationTime(Long id, LocalTime startAt) {
-        String errorMessage = "인자 중 null 값이 존재합니다.";
-        this.id = Objects.requireNonNull(id, errorMessage);
-        this.startAt = Objects.requireNonNull(startAt, errorMessage);
+        this.id = Objects.requireNonNull(id);
+        this.startAt = Objects.requireNonNull(startAt);
     }
 
     public ReservationTime withId(Long id) {

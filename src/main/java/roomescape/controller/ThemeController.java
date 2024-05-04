@@ -52,11 +52,5 @@ public class ThemeController {
         themeService.deleteTheme(id);
         return ResponseEntity.noContent().build();
     }
-
-    @ExceptionHandler({IllegalArgumentException.class, NullPointerException.class})
-    public ResponseEntity<ErrorResponse> handleException(RuntimeException e) {
-        return ResponseEntity.badRequest()
-                .body(new ErrorResponse(e.getMessage()));
-    }
 }
 

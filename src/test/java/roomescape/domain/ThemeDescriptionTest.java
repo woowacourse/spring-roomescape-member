@@ -10,8 +10,7 @@ class ThemeDescriptionTest {
     @Test
     void validateTest_whenValueIsNull() {
         assertThatThrownBy(() -> new ThemeDescription(null))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessage("인자 중 null 값이 존재합니다.");
+                .isInstanceOf(NullPointerException.class);
     }
 
     @DisplayName("테마 설명이 \"\"일 경우 예외를 던진다.")

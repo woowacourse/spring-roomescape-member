@@ -12,8 +12,7 @@ class ReservationTimeTest {
     @Test
     void validateTimeTest_whenTimeIsNull() {
         assertThatThrownBy(() -> new ReservationTime(1L, null))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessage("인자 중 null 값이 존재합니다.");
+                .isInstanceOf(NullPointerException.class);
     }
 
     @DisplayName("시간을 통해 특정 시간대 이전임을 알 수 있다.")

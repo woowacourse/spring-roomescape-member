@@ -9,7 +9,7 @@ public class Theme {
     private final ThemeThumbnail thumbnail;
 
     public Theme(Long id, String name, String description, String thumbnail) {
-        this(Objects.requireNonNull(id, "인자 중 null 값이 존재합니다."),
+        this(Objects.requireNonNull(id),
                 new ThemeName(name),
                 new ThemeDescription(description),
                 new ThemeThumbnail(thumbnail));
@@ -20,11 +20,10 @@ public class Theme {
     }
 
     private Theme(Long id, ThemeName name, ThemeDescription description, ThemeThumbnail thumbnail) {
-        String errorMessage = "인자 중 null 값이 존재합니다.";
         this.id = id;
-        this.name = Objects.requireNonNull(name, errorMessage);
-        this.description = Objects.requireNonNull(description, errorMessage);
-        this.thumbnail = Objects.requireNonNull(thumbnail, errorMessage);
+        this.name = Objects.requireNonNull(name);
+        this.description = Objects.requireNonNull(description);
+        this.thumbnail = Objects.requireNonNull(thumbnail);
     }
 
     public Theme withId(Long id) {

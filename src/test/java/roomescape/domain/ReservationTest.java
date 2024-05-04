@@ -22,8 +22,7 @@ class ReservationTest {
     void validateReservationTest_whenNameIsNull() {
         assertThatThrownBy(() ->
                 new Reservation(1L, null, date, time, theme))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessage("인자 중 null 값이 존재합니다.");
+                .isInstanceOf(NullPointerException.class);
     }
 
     @DisplayName("날짜 비어있을 때 예외를 던진다.")
@@ -31,8 +30,7 @@ class ReservationTest {
     void validateReservationTest_whenDateIsNull() {
         assertThatThrownBy(() ->
                 new Reservation(1L, "커찬", null, time, theme))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessage("인자 중 null 값이 존재합니다.");
+                .isInstanceOf(NullPointerException.class);
     }
 
     @DisplayName("시간 비어있을 때 예외를 던진다.")
@@ -40,8 +38,7 @@ class ReservationTest {
     void validateReservationTest_whenTimeIsNull() {
         assertThatThrownBy(() ->
                 new Reservation(1L, "커찬", date, null, theme))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessage("인자 중 null 값이 존재합니다.");
+                .isInstanceOf(NullPointerException.class);
     }
 
     @DisplayName("테마 비어있을 때 예외를 던진다.")
@@ -49,8 +46,7 @@ class ReservationTest {
     void validateReservationTest_whenThemeIsNull() {
         assertThatThrownBy(() ->
                 new Reservation(1L, "커찬", date, time, null))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessage("인자 중 null 값이 존재합니다.");
+                .isInstanceOf(NullPointerException.class);
     }
 
     @DisplayName("날짜를 통해 특정 시간대 이전임을 알 수 있다.")
