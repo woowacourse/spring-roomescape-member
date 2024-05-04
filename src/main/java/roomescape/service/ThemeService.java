@@ -56,6 +56,17 @@ public class ThemeService {
                 .toList();
     }
 
+    /*public List<ThemeResponse> findTopThemes2() {
+        LocalDate currentDate = LocalDate.now();
+        LocalDate startDate = currentDate.minusDays(START_DATE_DIFF);
+        LocalDate endDate = currentDate.minusDays(END_DATE_DIFF);
+        List<Theme> topThemesDurationOrderByCount = themeRepository.findTopThemesDurationOrderByCount(startDate, endDate, 10);
+
+        return topThemesDurationOrderByCount.stream()
+                .map(ThemeResponse::from)
+                .toList();
+    }*/
+
     private List<Reservation> findPastReservations(long startDateDiff, long endDateDiff) {
         LocalDate currentDate = LocalDate.now();
         LocalDate startDate = currentDate.minusDays(startDateDiff);

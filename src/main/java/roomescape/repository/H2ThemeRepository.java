@@ -1,17 +1,16 @@
 package roomescape.repository;
 
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.stereotype.Repository;
-import roomescape.domain.Theme;
-
-import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import javax.sql.DataSource;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.stereotype.Repository;
+import roomescape.domain.Theme;
 
 @Repository
 public class H2ThemeRepository implements ThemeRepository {
@@ -55,6 +54,25 @@ public class H2ThemeRepository implements ThemeRepository {
         String sql = "delete from theme where id = ?";
         jdbcTemplate.update(sql, id);
     }
+
+    /*public List<Theme> findTopThemesDurationOrderByCount(LocalDate startDate, LocalDate endDate, Integer limit) {
+        final String sql = """
+                SELECT 
+                    t.id as theme_id, 
+                    t.name as theme_name, 
+                    t.description, 
+                    t.thumbnail
+                FROM theme AS t
+                LEFT JOIN reservation AS r
+                ON t.id = r.theme_id
+                WHERE r.date BETWEEN ? AND ?
+                GROUP BY t.id
+                ORDER BY COUNT(r.id) DESC
+                LIMIT ?
+                """;
+
+        return jdbcTemplate.query(sql, rowMapper, startDate, endDate, limit);
+    }*/
 
     static class ThemeRowMapper implements RowMapper<Theme> {
         public Theme mapRow(ResultSet rs, int rowNum) throws SQLException {
