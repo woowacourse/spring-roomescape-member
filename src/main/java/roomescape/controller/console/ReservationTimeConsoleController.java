@@ -30,13 +30,13 @@ public class ReservationTimeConsoleController {
     }
 
     public void getAll() {
-        ReservationTimeView.printReservationTimes(reservationTimeService.getAll());
+        ReservationTimeView.printReservationTimes(reservationTimeService.findAll());
     }
 
     public void delete() {
         try {
             List<ReservationTimeResponse> reservationTimeResponses = reservationTimeService.findAll();
-            reservationTimeService.deleteById(
+            reservationTimeService.delete(
                     reservationTimeView.readIndexToDelete(reservationTimeResponses)
             );
             reservationTimeView.printSuccessfullyDeleted();
