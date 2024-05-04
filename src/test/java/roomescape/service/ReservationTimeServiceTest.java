@@ -17,8 +17,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.AvailableReservationTimeResponse;
 import roomescape.dto.ReservationTimeResponse;
-import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ReservationDao;
+import roomescape.repository.ReservationTimeDao;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -27,10 +27,10 @@ import java.util.Optional;
 @ExtendWith(MockitoExtension.class)
 class ReservationTimeServiceTest {
     @Mock
-    private ReservationTimeRepository reservationTimeRepository;
+    private ReservationTimeDao reservationTimeDao;
 
     @Mock
-     ReservationRepository reservationRepository;
+    ReservationDao reservationDao;
 
     @InjectMocks
     private ReservationTimeService reservationTimeService;
@@ -42,7 +42,7 @@ class ReservationTimeServiceTest {
         final ReservationTime reservationTime = new ReservationTime(MIA_RESERVATION_TIME);
         final ReservationTime expectedReservationTime = new ReservationTime(1L, reservationTime.getStartAt());
 
-        given(reservationTimeRepository.save(any()))
+        given(reservationTimeDao.save(any()))
                 .willReturn(expectedReservationTime);
 
         // when
@@ -61,7 +61,7 @@ class ReservationTimeServiceTest {
         // given
         ReservationTime reservationTime = new ReservationTime(MIA_RESERVATION_TIME);
 
-        given(reservationTimeRepository.findAll())
+        given(reservationTimeDao.findAll())
                 .willReturn(List.of(reservationTime));
 
         // when
@@ -79,7 +79,7 @@ class ReservationTimeServiceTest {
         // given
         ReservationTime reservationTime = new ReservationTime(MIA_RESERVATION_TIME);
 
-        given(reservationTimeRepository.findById(anyLong()))
+        given(reservationTimeDao.findById(anyLong()))
                 .willReturn(Optional.of(reservationTime));
 
         // when & then
@@ -93,9 +93,9 @@ class ReservationTimeServiceTest {
         // given
         ReservationTime reservationTime = new ReservationTime(1L, MIA_RESERVATION_TIME);
 
-        given(reservationTimeRepository.findById(anyLong()))
+        given(reservationTimeDao.findById(anyLong()))
                 .willReturn(Optional.of(reservationTime));
-        given(reservationRepository.countByTimeId(anyLong()))
+        given(reservationDao.countByTimeId(anyLong()))
                 .willReturn(1);
 
         // when & then
@@ -111,9 +111,9 @@ class ReservationTimeServiceTest {
         Long themeId = 1L;
         ReservationTime reservedTime = new ReservationTime(1L, MIA_RESERVATION_TIME);
 
-        given(reservationRepository.findAllTimeIdsByDateAndThemeId(date, themeId))
+        given(reservationDao.findAllTimeIdsByDateAndThemeId(date, themeId))
                 .willReturn(List.of(1L));
-        given(reservationTimeRepository.findAll())
+        given(reservationTimeDao.findAll())
                 .willReturn(List.of(reservedTime, new ReservationTime(2L, "16:00")));
 
         // when

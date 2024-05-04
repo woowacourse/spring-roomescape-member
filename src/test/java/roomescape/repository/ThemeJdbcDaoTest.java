@@ -17,9 +17,9 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
-class ThemeRepositoryTest extends RepositoryTest {
+class ThemeJdbcDaoTest extends RepositoryTest {
     @Autowired
-    private ThemeRepository themeRepository;
+    private ThemeDao themeDao;
 
     private SimpleJdbcInsert jdbcInsert;
 
@@ -37,7 +37,7 @@ class ThemeRepositoryTest extends RepositoryTest {
         Theme theme = new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
 
         // when
-        Theme savedTheme = themeRepository.save(theme);
+        Theme savedTheme = themeDao.save(theme);
 
         // then
         assertThat(savedTheme.getId()).isNotNull();
@@ -51,7 +51,7 @@ class ThemeRepositoryTest extends RepositoryTest {
         jdbcTemplate.update(insertSql, WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL);
 
         // when
-        List<Theme> themes = themeRepository.findAll();
+        List<Theme> themes = themeDao.findAll();
 
         // then
         assertThat(themes).hasSize(1);
@@ -66,7 +66,7 @@ class ThemeRepositoryTest extends RepositoryTest {
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
 
         // when
-        Optional<Theme> foundTheme = themeRepository.findById(id);
+        Optional<Theme> foundTheme = themeDao.findById(id);
 
         // then
         assertThat(foundTheme).isNotEmpty();
@@ -79,7 +79,7 @@ class ThemeRepositoryTest extends RepositoryTest {
         Long notExistingId = 1L;
 
         // when
-        Optional<Theme> foundTheme = themeRepository.findById(notExistingId);
+        Optional<Theme> foundTheme = themeDao.findById(notExistingId);
 
         // then
         assertThat(foundTheme).isEmpty();
@@ -94,7 +94,7 @@ class ThemeRepositoryTest extends RepositoryTest {
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
 
         // when
-        themeRepository.deleteById(id);
+        themeDao.deleteById(id);
 
         // then
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from theme where id = ?", Integer.class, id);
@@ -120,7 +120,7 @@ class ThemeRepositoryTest extends RepositoryTest {
                 "냥", "2030-05-03", 1L, 2L);
 
         // when
-        List<Theme> allOrderByReservationCountInLastWeek = themeRepository.findAllOrderByReservationCountInLastWeek();
+        List<Theme> allOrderByReservationCountInLastWeek = themeDao.findAllOrderByReservationCountInLastWeek();
 
         // then
         assertThat(allOrderByReservationCountInLastWeek).extracting(Theme::getName)

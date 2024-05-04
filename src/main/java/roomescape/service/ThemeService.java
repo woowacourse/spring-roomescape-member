@@ -5,27 +5,27 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeResponse;
 import roomescape.exception.NotFoundException;
-import roomescape.repository.ThemeRepository;
+import roomescape.repository.ThemeDao;
 
 import java.util.List;
 
 @Service
 @Transactional
 public class ThemeService {
-    private final ThemeRepository themeRepository;
+    private final ThemeDao themeDao;
 
-    public ThemeService(ThemeRepository themeRepository) {
-        this.themeRepository = themeRepository;
+    public ThemeService(ThemeDao themeDao) {
+        this.themeDao = themeDao;
     }
 
     public ThemeResponse create(Theme theme) {
-        Theme savedTheme = themeRepository.save(theme);
+        Theme savedTheme = themeDao.save(theme);
         return ThemeResponse.from(savedTheme);
     }
 
     @Transactional(readOnly = true)
     public List<ThemeResponse> findAll() {
-        List<Theme> themes = themeRepository.findAll();
+        List<Theme> themes = themeDao.findAll();
         return themes.stream()
                 .map(ThemeResponse::from)
                 .toList();
@@ -33,20 +33,20 @@ public class ThemeService {
 
     @Transactional(readOnly = true)
     public ThemeResponse findById(Long id) {
-        Theme theme = themeRepository.findById(id)
+        Theme theme = themeDao.findById(id)
                 .orElseThrow(() -> new NotFoundException(id + "에 해당하는 테마가 없습니다."));
         return ThemeResponse.from(theme);
     }
 
     public void deleteById(Long id) {
-        Theme theme = themeRepository.findById(id)
+        Theme theme = themeDao.findById(id)
                 .orElseThrow(() -> new NotFoundException(id + "에 해당하는 테마가 없습니다."));
-        themeRepository.deleteById(theme.getId());
+        themeDao.deleteById(theme.getId());
     }
 
     @Transactional(readOnly = true)
     public List<ThemeResponse> findAllPopular() {
-        List<Theme> allOrderByReservationCountInLastWeek = themeRepository.findAllOrderByReservationCountInLastWeek();
+        List<Theme> allOrderByReservationCountInLastWeek = themeDao.findAllOrderByReservationCountInLastWeek();
         return allOrderByReservationCountInLastWeek.stream()
                 .map(ThemeResponse::from)
                 .toList();

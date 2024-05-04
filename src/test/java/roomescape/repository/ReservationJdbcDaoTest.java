@@ -21,9 +21,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.TestFixture.*;
 
-class ReservationRepositoryTest extends RepositoryTest {
+class ReservationJdbcDaoTest extends RepositoryTest {
     @Autowired
-    private ReservationRepository reservationRepository;
+    private ReservationDao reservationDao;
 
     @BeforeEach
     void setUp() {
@@ -41,7 +41,7 @@ class ReservationRepositoryTest extends RepositoryTest {
         Reservation reservation = MIA_RESERVATION(new ReservationTime(timeId, MIA_RESERVATION_TIME), WOOTECO_THEME());
 
         // when
-        Reservation savedReservation = reservationRepository.save(reservation);
+        Reservation savedReservation = reservationDao.save(reservation);
 
         // then
         assertThat(savedReservation.getId()).isNotNull();
@@ -61,7 +61,7 @@ class ReservationRepositoryTest extends RepositoryTest {
         );
 
         // when
-        List<Reservation> reservations = reservationRepository.findAllByDateAndTimeAndThemeId(
+        List<Reservation> reservations = reservationDao.findAllByDateAndTimeAndThemeId(
                 LocalDate.parse(MIA_RESERVATION_DATE), new ReservationTime(MIA_RESERVATION_TIME), themeId);
 
         // then
@@ -80,7 +80,7 @@ class ReservationRepositoryTest extends RepositoryTest {
         jdbcTemplate.update(insertSql, USER_MIA, MIA_RESERVATION_DATE, timeId, themeId);
 
         // when
-        List<Reservation> reservations = reservationRepository.findAll();
+        List<Reservation> reservations = reservationDao.findAll();
 
         // then
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
@@ -114,7 +114,7 @@ class ReservationRepositoryTest extends RepositoryTest {
         Long id = keyHolder.getKey().longValue();
 
         // when
-        boolean isExist = reservationRepository.existById(id);
+        boolean isExist = reservationDao.existById(id);
 
         // then
         assertThat(isExist).isTrue();
@@ -127,7 +127,7 @@ class ReservationRepositoryTest extends RepositoryTest {
         Long id = 1L;
 
         // when
-        boolean isExist = reservationRepository.existById(id);
+        boolean isExist = reservationDao.existById(id);
 
         // then
         assertThat(isExist).isFalse();
@@ -150,7 +150,7 @@ class ReservationRepositoryTest extends RepositoryTest {
         Long id = keyHolder.getKey().longValue();
 
         // when
-        reservationRepository.deleteById(id);
+        reservationDao.deleteById(id);
 
         // then
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation where id = ?", Integer.class, id);
@@ -164,7 +164,7 @@ class ReservationRepositoryTest extends RepositoryTest {
         long timeId = 2L;
 
         // when
-        int count = reservationRepository.countByTimeId(timeId);
+        int count = reservationDao.countByTimeId(timeId);
 
         // then
         assertThat(count).isEqualTo(0);
@@ -184,7 +184,7 @@ class ReservationRepositoryTest extends RepositoryTest {
         );
 
         // when
-        List<Long> reservationsByDateAndThemeId = reservationRepository.findAllTimeIdsByDateAndThemeId(LocalDate.parse(MIA_RESERVATION_DATE), themeId);
+        List<Long> reservationsByDateAndThemeId = reservationDao.findAllTimeIdsByDateAndThemeId(LocalDate.parse(MIA_RESERVATION_DATE), themeId);
 
         // then
         assertThat(reservationsByDateAndThemeId).hasSize(2);

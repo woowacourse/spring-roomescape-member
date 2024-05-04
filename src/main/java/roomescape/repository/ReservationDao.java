@@ -6,7 +6,7 @@ import roomescape.domain.ReservationTime;
 import java.time.LocalDate;
 import java.util.List;
 
-public interface ReservationRepository {
+public interface ReservationDao {
 
     Reservation save(Reservation reservation);
 

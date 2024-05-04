@@ -16,9 +16,9 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static roomescape.TestFixture.MIA_RESERVATION_TIME;
 
-class ReservationTimeRepositoryTest extends RepositoryTest {
+class ReservationTimeJdbcDaoTest extends RepositoryTest {
     @Autowired
-    private ReservationTimeRepository reservationTimeRepository;
+    private ReservationTimeDao reservationTimeDao;
 
     @Test
     @DisplayName("예약 시간을 저장한다.")
@@ -27,7 +27,7 @@ class ReservationTimeRepositoryTest extends RepositoryTest {
         ReservationTime reservationTime = new ReservationTime(MIA_RESERVATION_TIME);
 
         // when
-        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
+        ReservationTime savedReservationTime = reservationTimeDao.save(reservationTime);
 
         // when
         assertThat(savedReservationTime.getId()).isNotNull();
@@ -41,7 +41,7 @@ class ReservationTimeRepositoryTest extends RepositoryTest {
         jdbcTemplate.update(insertSql, MIA_RESERVATION_TIME.toString());
 
         // when
-        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
+        List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
 
         // then
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation_time", Integer.class);
@@ -62,7 +62,7 @@ class ReservationTimeRepositoryTest extends RepositoryTest {
         Long id = keyHolder.getKey().longValue();
 
         // when
-        Optional<ReservationTime> reservationTime = reservationTimeRepository.findById(id);
+        Optional<ReservationTime> reservationTime = reservationTimeDao.findById(id);
 
         // then
         assertThat(reservationTime).isPresent();
@@ -75,7 +75,7 @@ class ReservationTimeRepositoryTest extends RepositoryTest {
         Long id = 1L;
 
         // when
-        Optional<ReservationTime> reservationTime = reservationTimeRepository.findById(id);
+        Optional<ReservationTime> reservationTime = reservationTimeDao.findById(id);
 
         // then
         assertThat(reservationTime).isEmpty();
@@ -95,7 +95,7 @@ class ReservationTimeRepositoryTest extends RepositoryTest {
         Long id = keyHolder.getKey().longValue();
 
         // when
-        reservationTimeRepository.deleteById(id);
+        reservationTimeDao.deleteById(id);
 
         // then
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation_time where id = ?", Integer.class, id);

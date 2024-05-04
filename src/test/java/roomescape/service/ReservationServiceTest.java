@@ -21,14 +21,14 @@ import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.ReservedThemeResponse;
 import roomescape.exception.NotFoundException;
-import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationDao;
 import java.util.List;
 
 
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
     @Mock
-    private ReservationRepository reservationRepository;
+    private ReservationDao reservationDao;
 
     @InjectMocks
     private ReservationService reservationService;
@@ -39,7 +39,7 @@ class ReservationServiceTest {
         // given
         Reservation reservation = MIA_RESERVATION();
 
-        given(reservationRepository.save(reservation))
+        given(reservationDao.save(reservation))
                 .willReturn(new Reservation(1L, reservation));
 
         // when
@@ -56,7 +56,7 @@ class ReservationServiceTest {
         ReservationTime miaReservationTime = new ReservationTime(1L, MIA_RESERVATION_TIME);
         Reservation miaReservation = MIA_RESERVATION(miaReservationTime, WOOTECO_THEME(1L));
 
-        given(reservationRepository.findAllByDateAndTimeAndThemeId(any(), any(), anyLong()))
+        given(reservationDao.findAllByDateAndTimeAndThemeId(any(), any(), anyLong()))
                 .willReturn(List.of(miaReservation));
 
         // when & then
@@ -71,7 +71,7 @@ class ReservationServiceTest {
         Reservation miaReservation = MIA_RESERVATION();
         Reservation tommyReservation = TOMMY_RESERVATION();
 
-        given(reservationRepository.findAll())
+        given(reservationDao.findAll())
                 .willReturn(List.of(miaReservation, tommyReservation));
 
         // when
@@ -97,7 +97,7 @@ class ReservationServiceTest {
         // given
         Long existingId = 1L;
 
-        given(reservationRepository.existById(existingId))
+        given(reservationDao.existById(existingId))
                 .willReturn(true);
 
         // when & then
@@ -111,7 +111,7 @@ class ReservationServiceTest {
         // given
         Long notExistingId = 1L;
 
-        given(reservationRepository.existById(notExistingId))
+        given(reservationDao.existById(notExistingId))
                 .willReturn(false);
 
         // when & then

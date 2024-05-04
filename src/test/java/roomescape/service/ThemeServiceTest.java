@@ -19,7 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeResponse;
 import roomescape.exception.NotFoundException;
-import roomescape.repository.ThemeRepository;
+import roomescape.repository.ThemeDao;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,7 +27,7 @@ import java.util.Optional;
 @ExtendWith(MockitoExtension.class)
 class ThemeServiceTest {
     @Mock
-    private ThemeRepository themeRepository;
+    private ThemeDao themeDao;
 
     @InjectMocks
     private ThemeService themeService;
@@ -38,7 +38,7 @@ class ThemeServiceTest {
         // given
         Theme expectedTheme = WOOTECO_THEME(1L);
 
-        given(themeRepository.save(any()))
+        given(themeDao.save(any()))
                 .willReturn(expectedTheme);
 
         // when
@@ -54,7 +54,7 @@ class ThemeServiceTest {
         // given
         List<Theme> expectedThemes = List.of(WOOTECO_THEME(1L));
 
-        given(themeRepository.findAll())
+        given(themeDao.findAll())
                 .willReturn(expectedThemes);
 
         // when
@@ -72,7 +72,7 @@ class ThemeServiceTest {
         // given
         Theme expectedTheme = WOOTECO_THEME(1L);
 
-        given(themeRepository.findById(anyLong()))
+        given(themeDao.findById(anyLong()))
                 .willReturn(Optional.of(expectedTheme));
 
         // when
@@ -89,7 +89,7 @@ class ThemeServiceTest {
     @DisplayName("조회하려는 테마가 존재하지 않는 경우 예외가 발생한다.")
     void findByNotExistId() {
         // given
-        given(themeRepository.findById(anyLong()))
+        given(themeDao.findById(anyLong()))
                 .willReturn(Optional.empty());
 
         // when & then
@@ -103,7 +103,7 @@ class ThemeServiceTest {
         // given
         Theme theme = WOOTECO_THEME(1L);
 
-        given(themeRepository.findById(anyLong()))
+        given(themeDao.findById(anyLong()))
                 .willReturn(Optional.of(theme));
 
         // when & then
@@ -115,7 +115,7 @@ class ThemeServiceTest {
     @DisplayName("삭제하려는 테마가 존재하지 않는 경우 예외가 발생한다.")
     void deleteByNotExistId() {
         // given
-        given(themeRepository.findById(anyLong()))
+        given(themeDao.findById(anyLong()))
                 .willReturn(Optional.empty());
 
         // when & then
@@ -129,7 +129,7 @@ class ThemeServiceTest {
         // given
         List<Theme> expectedThemes = List.of(WOOTECO_THEME(1L), HORROR_THEME(2L));
 
-        given(themeRepository.findAllOrderByReservationCountInLastWeek())
+        given(themeDao.findAllOrderByReservationCountInLastWeek())
                 .willReturn(expectedThemes);
 
         // when

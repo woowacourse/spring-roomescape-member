@@ -5,7 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
 import roomescape.dto.ReservationResponse;
 import roomescape.exception.NotFoundException;
-import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationDao;
 
 import java.util.List;
 
@@ -14,20 +14,20 @@ import java.util.List;
 public class ReservationService {
     private static final int MAX_RESERVATIONS_PER_TIME = 1;
 
-    private final ReservationRepository reservationRepository;
+    private final ReservationDao reservationDao;
 
-    public ReservationService(ReservationRepository reservationRepository) {
-        this.reservationRepository = reservationRepository;
+    public ReservationService(ReservationDao reservationDao) {
+        this.reservationDao = reservationDao;
     }
 
     @Transactional
     public ReservationResponse create(Reservation reservation) {
-        List<Reservation> reservationsInSameDateTime = reservationRepository.findAllByDateAndTimeAndThemeId(
+        List<Reservation> reservationsInSameDateTime = reservationDao.findAllByDateAndTimeAndThemeId(
                 reservation.getDate(), reservation.getTime(), reservation.getThemeId());
 
         validateDuplicatedReservation(reservationsInSameDateTime);
 
-        Reservation savedReservation = reservationRepository.save(reservation);
+        Reservation savedReservation = reservationDao.save(reservation);
         return ReservationResponse.from(savedReservation);
     }
 
@@ -38,7 +38,7 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> findAll() {
-        List<Reservation> reservations = reservationRepository.findAll();
+        List<Reservation> reservations = reservationDao.findAll();
         return reservations.stream()
                 .map(ReservationResponse::from)
                 .toList();
@@ -46,10 +46,10 @@ public class ReservationService {
 
     @Transactional
     public void delete(Long id) {
-        boolean isExist = reservationRepository.existById(id);
+        boolean isExist = reservationDao.existById(id);
         if (!isExist) {
             throw new NotFoundException("해당 ID의 예약이 없습니다.");
         }
-        reservationRepository.deleteById(id);
+        reservationDao.deleteById(id);
     }
 }
