@@ -6,7 +6,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,7 +27,7 @@ import roomescape.reservation.dto.request.CreateReservationRequest;
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
+@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 class ReservationControllerTest {
 
     @Autowired
@@ -31,14 +36,68 @@ class ReservationControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Test
-    void createReservation() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post("/reservations")
-                        .content(objectMapper.writeValueAsString(new CreateReservationRequest(
-                                LocalDate.of(3000, 1, 1), "포비", 1L, 1L)))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated())
-                .andExpect(header().stringValues("Location", "/reservations/14"));
+    @Nested
+    class createReservation {
+
+        @Test
+        @DisplayName("예약 생성 요청 시 201 상태와 Location 헤더에 생성된 리소스의 위치를 반환한다.")
+        void createReservation() throws Exception {
+            mockMvc.perform(MockMvcRequestBuilders.post("/reservations")
+                            .content(objectMapper.writeValueAsString(new CreateReservationRequest(
+                                    LocalDate.of(3000, 1, 1), "포비", 1L, 1L)))
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpectAll(
+                            status().isCreated(),
+                            header().stringValues("Location", "/reservations/14")
+                    );
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        @DisplayName("예약 생성 요청 시 예약자 명이 공백인 경우 경우 404를 반환한다.")
+        void createReservation_WhenUserNameInBlank(String name) throws Exception {
+            mockMvc.perform(MockMvcRequestBuilders.post("/reservations")
+                            .content(objectMapper.writeValueAsString(new CreateReservationRequest(
+                                    LocalDate.of(3000, 1, 1), name, 1L, 10L)))
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$").value("예약자 명은 공백 문자가 불가능합니다."));
+        }
+
+        @Test
+        @DisplayName("예약 생성 요청 시 예약자 명이 255자 초과인 경우 404를 반환한다.")
+        void createReservation_WhenUserNameOverLength() throws Exception {
+            mockMvc.perform(MockMvcRequestBuilders.post("/reservations")
+                            .content(objectMapper.writeValueAsString(new CreateReservationRequest(
+                                    LocalDate.of(3000, 1, 1), "a".repeat(256), 1L, 10L)))
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$").value("예약자 명은 최대 255자까지 입력이 가능합니다."));
+        }
+
+        @ParameterizedTest
+        @ValueSource(longs = {0, -1})
+        @DisplayName("예약 생성 요청 시 예약 시간 식별자가 음수인 경우 404를 반환한다.")
+        void createReservation_WhenTimeIdIsNegativeOrZero(Long timeId) throws Exception {
+            mockMvc.perform(MockMvcRequestBuilders.post("/reservations")
+                            .content(objectMapper.writeValueAsString(new CreateReservationRequest(
+                                    LocalDate.of(3000, 1, 1), "비밥", timeId, 10L)))
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$").value("예약 시간 식별자는 양수만 가능합니다."));
+        }
+
+        @ParameterizedTest
+        @ValueSource(longs = {0, -1})
+        @DisplayName("예약 생성 요청 시 테마 시간 식별자가 음수인 경우 404를 반환한다.")
+        void createReservation_WhenThemeIdIsNegativeOrZero(Long themeId) throws Exception {
+            mockMvc.perform(MockMvcRequestBuilders.post("/reservations")
+                            .content(objectMapper.writeValueAsString(new CreateReservationRequest(
+                                    LocalDate.of(3000, 1, 1), "비밥", 1L, themeId)))
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$").value("예약 테마 식별자는 양수만 가능합니다."));
+        }
     }
 
     @Test
