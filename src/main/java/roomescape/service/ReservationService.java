@@ -2,10 +2,10 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.dao.ReservationDao;
 import roomescape.domain.Reservation;
 import roomescape.dto.ReservationResponse;
 import roomescape.exception.NotFoundException;
-import roomescape.repository.ReservationDao;
 
 import java.util.List;
 

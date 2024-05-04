@@ -1,4 +1,4 @@
-package roomescape.repository;
+package roomescape.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -8,7 +8,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 @Sql("/test-schema.sql")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class RepositoryTest {
+class DaoTest {
 
     @LocalServerPort
     private int port;

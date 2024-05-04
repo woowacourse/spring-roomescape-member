@@ -16,10 +16,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeResponse;
 import roomescape.exception.NotFoundException;
-import roomescape.repository.ThemeDao;
 
 import java.util.List;
 import java.util.Optional;

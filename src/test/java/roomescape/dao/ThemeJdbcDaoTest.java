@@ -1,4 +1,4 @@
-package roomescape.repository;
+package roomescape.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static roomescape.TestFixture.*;
@@ -17,7 +17,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
-class ThemeJdbcDaoTest extends RepositoryTest {
+class ThemeJdbcDaoTest extends DaoTest {
 
     @Autowired
     private ThemeDao themeDao;

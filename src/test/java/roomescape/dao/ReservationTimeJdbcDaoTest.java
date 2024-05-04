@@ -1,4 +1,4 @@
-package roomescape.repository;
+package roomescape.dao;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,7 +16,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static roomescape.TestFixture.MIA_RESERVATION_TIME;
 
-class ReservationTimeJdbcDaoTest extends RepositoryTest {
+class ReservationTimeJdbcDaoTest extends DaoTest {
     @Autowired
     private ReservationTimeDao reservationTimeDao;
 

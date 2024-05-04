@@ -15,13 +15,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.dao.ReservationDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.ReservedThemeResponse;
 import roomescape.exception.NotFoundException;
-import roomescape.repository.ReservationDao;
+
 import java.util.List;
 
 

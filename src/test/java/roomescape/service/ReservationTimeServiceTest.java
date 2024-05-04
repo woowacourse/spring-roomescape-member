@@ -14,11 +14,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.dao.ReservationDao;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.AvailableReservationTimeResponse;
 import roomescape.dto.ReservationTimeResponse;
-import roomescape.repository.ReservationDao;
-import roomescape.repository.ReservationTimeDao;
+import roomescape.dao.ReservationTimeDao;
 
 import java.time.LocalDate;
 import java.util.List;
