@@ -40,7 +40,7 @@ class ThemeRepositoryTest {
                 .toList();
 
         // then
-        assertThat(actual).containsExactlyElementsOf(expected);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -49,10 +49,11 @@ class ThemeRepositoryTest {
         // given
         final Theme theme = sampleThemes.get(0);
         final Theme savedTheme = themeRepository.save(theme);
+        final Long saveId = savedTheme.getId();
 
         // when
-        final Optional<Theme> actual = themeRepository.findById(savedTheme.getId());
-        final Theme expected = theme.assignId(savedTheme.getId());
+        final Optional<Theme> actual = themeRepository.findById(saveId);
+        final Theme expected = theme.assignId(saveId);
 
         // then
         assertThat(actual).hasValue(expected);
