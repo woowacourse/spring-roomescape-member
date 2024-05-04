@@ -1,7 +1,5 @@
 package roomescape.reservationtime.model;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Objects;
 
@@ -10,8 +8,20 @@ public class ReservationTime {
     private final LocalTime time;
 
     public ReservationTime(final Long id, final LocalTime time) {
+        validateReservationTimeIsNull(time);
+
         this.id = id;
         this.time = time;
+    }
+
+    private void validateReservationTimeIsNull(final LocalTime time) {
+        if (time == null) {
+            throw new IllegalArgumentException("예약 시간 생성 시 시작 시간은 필수입니다.");
+        }
+    }
+
+    public boolean isBefore(final LocalTime time) {
+        return this.time.isBefore(time);
     }
 
     public Long getId() {
@@ -37,9 +47,5 @@ public class ReservationTime {
     @Override
     public int hashCode() {
         return Objects.hash(id);
-    }
-
-    public boolean isBefore(final LocalTime time) {
-        return this.time.isBefore(time);
     }
 }

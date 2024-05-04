@@ -18,11 +18,33 @@ public class Reservation {
                        final LocalDate date,
                        final ReservationTime reservationTime,
                        final Theme theme) {
+        validateReservationDateIsNull(date);
+        validateReservationTimeIsNull(reservationTime);
+        validateReservationThemeIsNull(theme);
+
         this.id = id;
         this.name = new ReservationName(name);
         this.date = date;
         this.reservationTime = reservationTime;
         this.theme = theme;
+    }
+
+    private void validateReservationDateIsNull(final LocalDate date) {
+        if (date == null) {
+            throw new IllegalArgumentException("예약 생성 시 예약 날짜는 필수입니다.");
+        }
+    }
+
+    private void validateReservationTimeIsNull(final ReservationTime reservationTime) {
+        if (reservationTime == null) {
+            throw new IllegalArgumentException("예약 생성 시 예약 시간은 필수입니다.");
+        }
+    }
+
+    private void validateReservationThemeIsNull(final Theme theme) {
+        if (theme == null) {
+            throw new IllegalArgumentException("예약 생성 시 예약 테마는 필수입니다.");
+        }
     }
 
     public boolean isSameTime(final ReservationTime reservationTime) {
