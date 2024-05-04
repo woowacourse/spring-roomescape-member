@@ -29,7 +29,7 @@ class ReservationIntegrationTest {
     @Test
     @DisplayName("정상적인 요청에 대하여 예약을 정상적으로 등록, 조회, 삭제한다.")
     void adminReservationPageWork() {
-        ReservationRequest reservationRequest = new ReservationRequest(LocalDate.now(), "polla", 1L, 1L);
+        ReservationRequest reservationRequest = new ReservationRequest(LocalDate.now().plusDays(1), "polla", 1L, 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -66,7 +66,7 @@ class ReservationIntegrationTest {
                 .body(reservationRequest)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(500);
+                .statusCode(400);
     }
 
     @Test
