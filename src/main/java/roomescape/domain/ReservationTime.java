@@ -2,7 +2,7 @@ package roomescape.domain;
 
 import java.time.LocalTime;
 
-import roomescape.domain.exception.Validate;
+import roomescape.domain.exception.Validator;
 
 public record ReservationTime(Long id, LocalTime startAt) {
     public ReservationTime(LocalTime startAt) {
@@ -10,7 +10,7 @@ public record ReservationTime(Long id, LocalTime startAt) {
     }
 
     public ReservationTime {
-        Validate.AllNonNull(startAt);
+        Validator.AllNonNull(startAt);
     }
 
     public ReservationTime createWithId(Long id) {

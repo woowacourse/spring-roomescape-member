@@ -1,6 +1,6 @@
 package roomescape.domain.exception;
 
-public class Validate {
+public class Validator {
     public static void AllNonNull(Object... objects) {
         for (Object object : objects) {
             requireNonNull(object);

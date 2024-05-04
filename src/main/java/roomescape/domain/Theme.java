@@ -1,6 +1,6 @@
 package roomescape.domain;
 
-import roomescape.domain.exception.Validate;
+import roomescape.domain.exception.Validator;
 
 public record Theme(Long id, String name, String description, String thumbnail) {
     public Theme(String name, String description, String thumbnail) {
@@ -8,7 +8,7 @@ public record Theme(Long id, String name, String description, String thumbnail) 
     }
 
     public Theme {
-        Validate.AllNonNull(name, description, thumbnail);
+        Validator.AllNonNull(name, description, thumbnail);
     }
 
     public Theme createWithId(Long id) {

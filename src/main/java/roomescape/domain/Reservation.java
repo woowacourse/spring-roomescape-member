@@ -3,7 +3,7 @@ package roomescape.domain;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import roomescape.domain.exception.Validate;
+import roomescape.domain.exception.Validator;
 
 public record Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
     public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
@@ -11,7 +11,7 @@ public record Reservation(Long id, String name, LocalDate date, ReservationTime 
     }
 
     public Reservation {
-        Validate.AllNonNull(name, date, time, theme);
+        Validator.AllNonNull(name, date, time, theme);
     }
 
     public boolean isBefore(LocalDateTime currentDateTime) {
