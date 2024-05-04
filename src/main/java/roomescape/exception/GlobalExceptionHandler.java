@@ -34,7 +34,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
     }
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler
     public ResponseEntity<ErrorResponse> handleInternalServerError(Exception e) {
         log.error("Internal Server Error 발생: {}", e.getMessage(), e);
         return ResponseEntity.internalServerError().body(new ErrorResponse("서버 관리자에게 문의하세요"));
