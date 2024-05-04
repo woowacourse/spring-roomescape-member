@@ -45,7 +45,7 @@ class TimeDaoTest {
 
     @DisplayName("id를 통해 예약 시간을 조회할 수 있다.")
     @Test
-    void readTimeById() {
+    void readTimeByIdTest() {
         jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00");
         Optional<ReservationTime> expected = Optional.of(new ReservationTime(1L, LocalTime.of(19, 0)));
 
@@ -56,7 +56,7 @@ class TimeDaoTest {
 
     @DisplayName("해당 id의 예약 시간이 없을 경우, 빈 값을 반환한다.")
     @Test
-    void readTimeById_whenTimeNotExist() {
+    void readTimeByIdTest_whenTimeNotExist() {
         Optional<ReservationTime> actual = timeDao.readTimeById(1L);
 
         assertThat(actual).isEmpty();

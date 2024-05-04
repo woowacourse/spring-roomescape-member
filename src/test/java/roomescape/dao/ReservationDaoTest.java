@@ -30,7 +30,7 @@ class ReservationDaoTest {
 
     @DisplayName("모든 예약을 읽을 수 있다.")
     @Test
-    void readReservations() {
+    void readReservationsTest() {
         jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00");
         jdbcTemplate.update(
                 "INSERT INTO theme (name, description, thumbnail) values (?, ?, ?)",

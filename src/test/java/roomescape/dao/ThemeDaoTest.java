@@ -115,7 +115,7 @@ class ThemeDaoTest {
 
     @DisplayName("테마를 삭제할 수 있다.")
     @Test
-    void deleteTheme() {
+    void deleteThemeTest() {
         jdbcTemplate.update(
                 "INSERT INTO theme (name, description, thumbnail) values (?, ?, ?)",
                 "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg");
@@ -127,7 +127,7 @@ class ThemeDaoTest {
 
     @DisplayName("해당 테마에 예약이 있다면, 예약 시간을 삭제할 수 없다.")
     @Test
-    void deleteTheme_whenReservationUsingThemeExist() {
+    void deleteThemeTest_whenReservationUsingThemeExist() {
         jdbcTemplate.update(
                 "INSERT INTO theme (name, description, thumbnail) values (?, ?, ?)",
                 "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg");
