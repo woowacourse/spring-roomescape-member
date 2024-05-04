@@ -31,7 +31,6 @@ public class ReservationService {
         this.themeDao = themeDao;
     }
 
-    // TODO ranking 구성의 경우도 Service 단으로 끌어올리기
     public ReservationResponse save(final ReservationRequest reservationRequest) {
         Reservation reservation = reservationRequest.toEntity(
                 findReservationTimeById(reservationRequest),
@@ -55,13 +54,7 @@ public class ReservationService {
         List<Long> usedTimeId = reservationDao.findTimeIdByDateAndThemeId(date, themeId);
         List<ReservationTime> reservationTimes = reservationTimeDao.getAll();
 
-        return reservationTimes.stream()
-                .map(time -> new SelectableTimeResponse(
-                        time.getId(),
-                        time.getStartAt(),
-                        isAlreadyBooked(time, usedTimeId)
-                ))
-                .toList();
+        return SelectableTimeResponse.listOf(reservationTimes, usedTimeId);
     }
 
     private ReservationTime findReservationTimeById(ReservationRequest reservationRequest) {
@@ -72,10 +65,6 @@ public class ReservationService {
     private Theme findThemeById(ReservationRequest reservationRequest) {
         return themeDao.findById(reservationRequest.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 잘못된 테마 번호를 입력하였습니다."));
-    }
-
-    private boolean isAlreadyBooked(ReservationTime reservationTime, List<Long> usedTimeId) {
-        return usedTimeId.contains(reservationTime.getId());
     }
 
     private void validateCreatedReservation(Reservation reservation) {

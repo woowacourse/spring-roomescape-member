@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import roomescape.domain.ReservationTime;
 
 import java.time.LocalTime;
+import java.util.List;
 
 public record ReservationTimeResponse(
         long timeId,
@@ -11,10 +12,13 @@ public record ReservationTimeResponse(
         @JsonFormat(pattern = "kk:mm")
         LocalTime startAt
 ) {
-    public static ReservationTimeResponse from(final ReservationTime reservationTime) {
-        return new ReservationTimeResponse(
-                reservationTime.getId(),
-                reservationTime.getStartAt()
-        );
+    public ReservationTimeResponse(final ReservationTime reservationTime) {
+        this(reservationTime.getId(), reservationTime.getStartAt());
+    }
+
+    public static List<ReservationTimeResponse> listOf(final List<ReservationTime> reservationTimes) {
+        return reservationTimes.stream()
+                .map(ReservationTimeResponse::new)
+                .toList();
     }
 }
