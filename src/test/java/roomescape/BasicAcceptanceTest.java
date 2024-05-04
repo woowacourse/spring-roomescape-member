@@ -1,4 +1,4 @@
-package roomescape.acceptance;
+package roomescape;
 
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,7 +9,7 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
-abstract class BasicAcceptanceTest {
+public abstract class BasicAcceptanceTest {
     @LocalServerPort
     private int port;
 

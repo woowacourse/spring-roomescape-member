@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.BasicAcceptanceTest;
 
 @Sql("/init-for-reservation.sql")
 class ReservationAcceptanceTest extends BasicAcceptanceTest {
