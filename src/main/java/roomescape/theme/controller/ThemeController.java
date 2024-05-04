@@ -29,25 +29,29 @@ public class ThemeController {
     public ResponseEntity<ThemeResponse> createTheme(@RequestBody ThemeRequest themeRequest) {
         ThemeResponse themeCreateRequestResult = themeService.addTheme(themeRequest);
         URI uri = URI.create("/themes/" + themeCreateRequestResult.id());
-        return ResponseEntity.created(uri).body(themeCreateRequestResult);
+        return ResponseEntity.created(uri)
+                .body(themeCreateRequestResult);
     }
 
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> themeList() {
         List<ThemeResponse> themeListRequestResult = themeService.findThemes();
-        return ResponseEntity.ok().body(themeListRequestResult);
+        return ResponseEntity.ok()
+                .body(themeListRequestResult);
     }
 
     @GetMapping("/rank")
     public ResponseEntity<List<ThemeRankResponse>> themeRankList() {
         List<ThemeRankResponse> rankedThemesListRequestResult = themeService.findRankedThemes();
-        return ResponseEntity.ok().body(rankedThemesListRequestResult);
+        return ResponseEntity.ok()
+                .body(rankedThemesListRequestResult);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable("id") long themeId) {
         themeService.removeTheme(themeId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent()
+                .build();
     }
 
 }

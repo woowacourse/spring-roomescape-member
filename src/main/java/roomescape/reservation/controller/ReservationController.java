@@ -31,7 +31,8 @@ public class ReservationController {
     public ResponseEntity<ReservationResponse> createReservation(@RequestBody ReservationRequest reservationRequest) {
         ReservationResponse reservationCreateResponse = reservationService.addReservation(reservationRequest);
         URI uri = URI.create("/reservations/" + reservationCreateResponse.id());
-        return ResponseEntity.created(uri).body(reservationCreateResponse);
+        return ResponseEntity.created(uri)
+                .body(reservationCreateResponse);
     }
 
     @GetMapping
@@ -42,15 +43,17 @@ public class ReservationController {
     @GetMapping("/times/{themeId}")
     public ResponseEntity<List<ReservationTimeAvailabilityResponse>> reservationTimeList(@PathVariable long themeId,
                                                                                          @RequestParam LocalDate date) {
-        List<ReservationTimeAvailabilityResponse> timeAvailabilityReadResponse = reservationService.findTimeAvailability(themeId,
-                                                                                                             date);
+        List<ReservationTimeAvailabilityResponse> timeAvailabilityReadResponse = reservationService.findTimeAvailability(
+                themeId,
+                date);
         return ResponseEntity.ok(timeAvailabilityReadResponse);
     }
 
     @DeleteMapping("/{reservationId}")
     public ResponseEntity<Void> deleteReservation(@PathVariable long reservationId) {
         reservationService.removeReservations(reservationId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent()
+                .build();
     }
 
 }

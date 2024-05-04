@@ -28,7 +28,8 @@ public class TimeController {
     public ResponseEntity<TimeResponse> createReservationTime(@RequestBody TimeRequest timeRequest) {
         TimeResponse timeCreateResponse = timeService.addReservationTime(timeRequest);
         URI uri = URI.create("/times/" + timeCreateResponse.id());
-        return ResponseEntity.created(uri).body(timeCreateResponse);
+        return ResponseEntity.created(uri)
+                .body(timeCreateResponse);
     }
 
     @GetMapping
@@ -40,7 +41,8 @@ public class TimeController {
     @DeleteMapping("/{reservationTimeId}")
     public ResponseEntity<Void> deleteReservationTime(@PathVariable long reservationTimeId) {
         timeService.removeReservationTime(reservationTimeId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent()
+                .build();
     }
 
 }
