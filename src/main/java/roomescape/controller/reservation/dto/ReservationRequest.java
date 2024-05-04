@@ -6,12 +6,13 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
-public record ReservationRequest(
+import java.time.LocalDate;
 
-        @NotBlank //TODO not blank에서 null 체크되나?
-        @NotNull
+public record ReservationRequest(
+        @NotBlank
         String name,
-        String date, //todo local date
+        @NotNull
+        LocalDate date,
         @NotNull
         Long timeId,
         @NotNull

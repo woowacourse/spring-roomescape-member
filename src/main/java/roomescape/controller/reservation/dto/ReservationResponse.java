@@ -6,6 +6,7 @@ import roomescape.domain.Reservation;
 
 import java.time.format.DateTimeFormatter;
 
+//TODO 여기 date는 string이여도 괜춘?
 public record ReservationResponse(Long id, String name, String date, AvailabilityTimeResponse time,
                                   ReservationThemeResponse theme) {
 

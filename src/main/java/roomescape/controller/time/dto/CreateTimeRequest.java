@@ -3,12 +3,13 @@ package roomescape.controller.time.dto;
 import jakarta.validation.constraints.NotNull;
 import roomescape.domain.ReservationTime;
 
-public record CreateTimeRequest(
+import java.time.LocalTime;
 
+public record CreateTimeRequest(
         @NotNull
-        String startAt) {
+        LocalTime startAt) {
 
     public ReservationTime toDomain() {
-        return new ReservationTime(startAt);
+        return new ReservationTime(null, startAt);
     }
 }

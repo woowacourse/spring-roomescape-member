@@ -19,4 +19,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(e.getMessage()));
     }
+
+    //todo HttpMessageNotReadableException
+
+    //TODo MethodArgumentNotValidException
+    // validated 인거 여기 잡힘
 }

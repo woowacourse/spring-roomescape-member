@@ -6,7 +6,6 @@ import roomescape.domain.Theme;
 
 public record CreateThemeRequest(
         @NotEmpty
-        @NotNull
         String name,
         @NotNull
         String description,

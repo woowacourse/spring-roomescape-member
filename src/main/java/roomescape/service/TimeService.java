@@ -3,15 +3,14 @@ package roomescape.service;
 import org.springframework.stereotype.Service;
 import roomescape.controller.time.dto.AvailabilityTimeRequest;
 import roomescape.controller.time.dto.AvailabilityTimeResponse;
-import roomescape.controller.time.dto.ReadTimeResponse;
 import roomescape.controller.time.dto.CreateTimeRequest;
+import roomescape.controller.time.dto.ReadTimeResponse;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.service.exception.TimeUsedException;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -36,7 +35,7 @@ public class TimeService {
     public List<AvailabilityTimeResponse> getTimeAvailable(final AvailabilityTimeRequest request) {
         final List<ReservationTime> times = timeRepository.findAll();
         final Set<ReservationTime> bookedTimes = reservationRepository
-                .findAllByDateAndThemeId(LocalDate.parse(request.date()), request.themeId())
+                .findAllByDateAndThemeId(request.date(), request.themeId())
                 .stream()
                 .map(Reservation::getTime)
                 .collect(Collectors.toSet());

@@ -17,6 +17,7 @@ import roomescape.service.exception.DuplicateReservation;
 import roomescape.service.exception.PreviousTimeException;
 import roomescape.service.exception.TimeNotFoundException;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -54,8 +55,9 @@ class ReservationServiceTest {
     @DisplayName("예약을 추가한다.")
     void addReservation() {
         // given
-        ReservationRequest request = new ReservationRequest("cha", "2025-03-18", 3L, 2L);
-        ReservationResponse expected = new ReservationResponse(3L, "cha", "2025-03-18", new AvailabilityTimeResponse(3L, "12:25", false)
+        ReservationRequest request = new ReservationRequest("cha", LocalDate.parse("2025-03-18"), 3L, 2L);
+        ReservationResponse expected = new ReservationResponse(3L, "cha", "2025-03-18",
+                new AvailabilityTimeResponse(3L, "12:25", false)
                 , new ReservationThemeResponse("summer"));
 
         // when
@@ -88,7 +90,7 @@ class ReservationServiceTest {
     @Test
     @DisplayName("존재하지 않는 시간(id)로 예약을 할 때 예외가 발생한다.")
     void addReservationNonExistTime() {
-        ReservationRequest request = new ReservationRequest("redddy", "2024-06-21", 100L, 2L);
+        ReservationRequest request = new ReservationRequest("redddy", LocalDate.parse("2024-06-21"), 100L, 2L);
         assertThatThrownBy(() -> reservationService.addReservation(request))
                 .isInstanceOf(TimeNotFoundException.class);
     }
@@ -96,7 +98,8 @@ class ReservationServiceTest {
     @Test
     @DisplayName("예약하려는 시간이 현재 시간보다 이전일 경우 예외가 발생한다.")
     void validateReservationTimeAfterThanNow() {
-        assertThatThrownBy(() -> reservationService.addReservation(new ReservationRequest("cha", "2024-04-30", 1L, 1L)))
+        assertThatThrownBy(() -> reservationService.addReservation(new ReservationRequest("cha", LocalDate.parse(
+                "2024-04-30"), 1L, 1L)))
                 .isInstanceOf(PreviousTimeException.class);
     }
 
@@ -104,7 +107,7 @@ class ReservationServiceTest {
     @DisplayName("중복된 시간으로 예약을 할 때 예외가 발생한다.")
     void duplicateDateTimeReservation() {
         //given
-        final ReservationRequest request = new ReservationRequest("레디", "2025-11-20", 1L, 1L);
+        final ReservationRequest request = new ReservationRequest("레디", LocalDate.parse("2025-11-20"), 1L, 1L);
 
         //when
         reservationService.addReservation(request);
@@ -118,8 +121,8 @@ class ReservationServiceTest {
     @DisplayName("같은 날짜 같은 시간이어도 테마가 다르다면 예약 가능하다.")
     void duplicateDateTimeDifferentThemeReservation() {
         //given
-        final ReservationRequest request1 = new ReservationRequest("레디", "2025-11-20", 1L, 1L);
-        final ReservationRequest request2 = new ReservationRequest("레디", "2025-11-20", 1L, 2L);
+        final ReservationRequest request1 = new ReservationRequest("레디", LocalDate.parse("2025-11-20"), 1L, 1L);
+        final ReservationRequest request2 = new ReservationRequest("레디", LocalDate.parse("2025-11-20"), 1L, 2L);
 
         //when
         reservationService.addReservation(request1);

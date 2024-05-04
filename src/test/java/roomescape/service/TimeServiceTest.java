@@ -13,6 +13,7 @@ import roomescape.repository.H2ReservationRepository;
 import roomescape.repository.H2ReservationTimeRepository;
 import roomescape.service.exception.TimeUsedException;
 
+import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,7 +49,7 @@ class TimeServiceTest {
     @DisplayName("예약 시간을 추가한다.")
     void addTIme() {
         // given
-        CreateTimeRequest request = new CreateTimeRequest("13:30");
+        CreateTimeRequest request = new CreateTimeRequest(LocalTime.parse("13:30"));
         AvailabilityTimeResponse expected = new AvailabilityTimeResponse(4L, "13:30", false);
 
         // when
