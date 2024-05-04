@@ -2,8 +2,6 @@ package roomescape.controller;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.BDDMockito;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -15,14 +13,12 @@ import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationSaveRequest;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.ThemeResponse;
-import roomescape.exception.BadRequestException;
 import roomescape.exception.NotFoundException;
 import roomescape.service.ReservationService;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.ThemeService;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -61,7 +57,7 @@ class ReservationControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$[0].time.id").value(1L))
                 .andExpect(jsonPath("$[0].time.startAt").value(MIA_RESERVATION_TIME))
                 .andExpect(jsonPath("$[0].theme.name").value(WOOTECO_THEME_NAME))
-                .andExpect(jsonPath("$[0].date").value(MIA_RESERVATION_DATE));
+                .andExpect(jsonPath("$[0].date").value(MIA_RESERVATION_DATE.toString()));
     }
 
     @Test
@@ -89,38 +85,22 @@ class ReservationControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.name").value(USER_MIA))
                 .andExpect(jsonPath("$.time.id").value(1L))
                 .andExpect(jsonPath("$.time.startAt").value(MIA_RESERVATION_TIME))
-                .andExpect(jsonPath("$.date").value(MIA_RESERVATION_DATE));
+                .andExpect(jsonPath("$.date").value(MIA_RESERVATION_DATE.toString()));
     }
 
-    @ParameterizedTest
-    @MethodSource(value = "invalidPostRequests")
-    @DisplayName("잘못된 형식의 예약 POST 요청 시 상태코드 400을 반환한다.")
-    void createReservationWithInvalidRequest(ReservationSaveRequest request) throws Exception {
+    @Test
+    @DisplayName("올바르지 않은 예약 날짜 형식으로 예약 POST 요청 시 상태코드 400을 반환한다.")
+    void createReservationWithInvalidDateFormat() throws Exception {
         // given
-        ReservationTimeResponse timeResponse = ReservationTimeResponse.from(new ReservationTime(1L, MIA_RESERVATION_TIME));
-        ThemeResponse themeResponse = ThemeResponse.from(WOOTECO_THEME(1L));
-
-        BDDMockito.given(reservationService.create(any()))
-                .willThrow(BadRequestException.class);
-        BDDMockito.given(reservationTimeService.findById(1L))
-                .willReturn(timeResponse);
-        BDDMockito.given(themeService.findById(1L))
-                .willReturn(themeResponse);
+        String invalidDateFormatRequest = "{'date': 'dfdf'}";
 
         // when & then
         mockMvc.perform(post("/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsBytes(request)))
+                        .content(invalidDateFormatRequest))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").exists());
-    }
-
-    private static Stream<ReservationSaveRequest> invalidPostRequests() {
-        return Stream.of(
-                new ReservationSaveRequest(null, MIA_RESERVATION_DATE, 1L, 1L),
-                new ReservationSaveRequest(USER_MIA, null, 1L, 1L)
-        );
     }
 
     @Test

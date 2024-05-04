@@ -3,7 +3,6 @@ package roomescape.domain;
 import roomescape.exception.BadRequestException;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,7 +16,7 @@ public class Reservation {
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(String name, String date, ReservationTime time, Theme theme) {
+    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
         this(null, name, date, time, theme);
     }
 
@@ -29,9 +28,8 @@ public class Reservation {
         this.theme = reservation.theme;
     }
 
-    public Reservation(Long id, String name, String dateInput, ReservationTime time, Theme theme) {
+    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         validateName(name);
-        LocalDate date = convertToLocalDate(dateInput);
         validateDate(date);
         this.id = id;
         this.name = name;
@@ -53,17 +51,6 @@ public class Reservation {
     private void validateDate(LocalDate date) {
         if (date.isBefore(LocalDate.now()) || date.equals(LocalDate.now())) {
             throw new BadRequestException("이전 날짜 혹은 당일은 예약할 수 없습니다.");
-        }
-    }
-
-    private LocalDate convertToLocalDate(String date) {
-        if (date == null || date.isEmpty()) {
-            throw new BadRequestException("예약 날짜가 비어있습니다.");
-        }
-        try {
-            return LocalDate.parse(date);
-        } catch (DateTimeParseException e) {
-            throw new BadRequestException("유효하지 않은 예약 날짜입니다.");
         }
     }
 

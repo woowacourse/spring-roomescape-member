@@ -108,7 +108,7 @@ class ReservationTimeServiceTest {
     @DisplayName("선택한 날짜와 테마로 예약 가능한 시간 목록을 조회한다.")
     void findAvailableReservationTimes() {
         // given
-        LocalDate date = LocalDate.parse(MIA_RESERVATION_DATE);
+        LocalDate date = MIA_RESERVATION_DATE;
         Long themeId = 1L;
         ReservationTime reservedTime = new ReservationTime(1L, MIA_RESERVATION_TIME);
 

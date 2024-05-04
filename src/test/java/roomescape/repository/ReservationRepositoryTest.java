@@ -62,7 +62,7 @@ class ReservationRepositoryTest extends RepositoryTest {
 
         // when
         List<Reservation> reservations = reservationRepository.findAllByDateAndTimeAndThemeId(
-                LocalDate.parse(MIA_RESERVATION_DATE), new ReservationTime(MIA_RESERVATION_TIME), themeId);
+                MIA_RESERVATION_DATE, new ReservationTime(MIA_RESERVATION_TIME), themeId);
 
         // then
         assertThat(reservations).hasSize(2)
@@ -184,7 +184,7 @@ class ReservationRepositoryTest extends RepositoryTest {
         );
 
         // when
-        List<Long> reservationsByDateAndThemeId = reservationRepository.findAllTimeIdsByDateAndThemeId(LocalDate.parse(MIA_RESERVATION_DATE), themeId);
+        List<Long> reservationsByDateAndThemeId = reservationRepository.findAllTimeIdsByDateAndThemeId(MIA_RESERVATION_DATE, themeId);
 
         // then
         assertThat(reservationsByDateAndThemeId).hasSize(2);

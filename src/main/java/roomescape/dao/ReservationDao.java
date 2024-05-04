@@ -156,7 +156,7 @@ public class ReservationDao implements ReservationRepository {
         return new Reservation(
                 resultSet.getLong("reservation_id"),
                 resultSet.getString("name"),
-                resultSet.getString("date"),
+                resultSet.getDate("date").toLocalDate(),
                 reservationTime,
                 theme
         );

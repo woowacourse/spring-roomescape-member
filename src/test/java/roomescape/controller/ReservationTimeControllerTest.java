@@ -118,15 +118,14 @@ class ReservationTimeControllerTest extends ControllerTest {
     @DisplayName("에약 가능 시간 목록 GET 요청 시 상태 코드를 200을 반환한다.")
     void findAllByDateAndThemeId() throws Exception {
         // given
-        LocalDate date = LocalDate.parse(MIA_RESERVATION_DATE);
         Long themeId = 1L;
-        BDDMockito.given(reservationTimeService.findAvailableReservationTimes(date, themeId))
+        BDDMockito.given(reservationTimeService.findAvailableReservationTimes(MIA_RESERVATION_DATE, themeId))
                 .willReturn(List.of(AvailableReservationTimeResponse.of(new ReservationTime(MIA_RESERVATION_TIME), true)));
 
         // when & then
         mockMvc.perform(get("/times/available")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .param("date", date.toString())
+                        .param("date", MIA_RESERVATION_DATE.toString())
                         .param("themeId", themeId.toString()))
                 .andDo(print())
                 .andExpect(status().isOk())

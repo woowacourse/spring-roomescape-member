@@ -29,7 +29,7 @@ class ReservationTest {
     @DisplayName("예약 날짜는 현재 날짜 이후이다.")
     void validateDate(LocalDate invalidDate) {
         // when & then
-        assertThatThrownBy(() -> new Reservation(USER_MIA, invalidDate.toString(), new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME()))
+        assertThatThrownBy(() -> new Reservation(USER_MIA, invalidDate, new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME()))
                 .isInstanceOf(BadRequestException.class);
     }
 
@@ -38,16 +38,6 @@ class ReservationTest {
                 LocalDate.now(),
                 LocalDate.now().minusDays(1L)
         );
-    }
-
-    @ParameterizedTest
-    @NullSource
-    @ValueSource(strings = {"", "22:00:00", "abc"})
-    @DisplayName("예약 날짜 입력 값이 유효하지 않으면 변환할 수 없다.")
-    void convertToLocalDate(String invalidDate) {
-        // when & then
-        assertThatThrownBy(() -> new Reservation(USER_MIA, invalidDate, new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME()))
-                .isInstanceOf(BadRequestException.class);
     }
 
     @ParameterizedTest
