@@ -72,11 +72,9 @@ public class ReservationTimeRepository {
     }
 
     private RowMapper<ReservationTime> createReservationTimeRowMapper() {
-        return (rs, rowNum) -> {
-            return new ReservationTime(
-                    rs.getLong("id"),
-                    rs.getTime("start_at").toLocalTime()
-            );
-        };
+        return (rs, rowNum) -> new ReservationTime(
+                rs.getLong("id"),
+                rs.getTime("start_at").toLocalTime()
+        );
     }
 }

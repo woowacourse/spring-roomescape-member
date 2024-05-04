@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import roomescape.reservation.domain.Description;
-import roomescape.reservation.domain.ReservationName;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationName;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.ThemeName;
@@ -68,7 +68,7 @@ class ReservationTimeRepositoryTest {
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId).get();
 
         Reservation reservation = new Reservation(new ReservationName("카키"), LocalDate.now(), theme, reservationTime);
-        Long reservationId = reservationRepository.save(reservation);
+        reservationRepository.save(reservation);
         boolean exist = reservationTimeRepository.findReservationInSameId(timeId).isPresent();
 
         assertThat(exist).isTrue();

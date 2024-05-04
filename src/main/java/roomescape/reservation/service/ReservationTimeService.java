@@ -19,6 +19,7 @@ public class ReservationTimeService {
 
     public Long save(TimeSaveRequest timeSaveRequest) {
         ReservationTime reservationTime = timeSaveRequest.toReservationTime();
+
         return reservationTimeRepository.save(reservationTime);
     }
 
@@ -37,8 +38,8 @@ public class ReservationTimeService {
 
     public void delete(Long id) {
         reservationTimeRepository.findReservationInSameId(id).ifPresent(empty -> {
-                    throw new IllegalArgumentException("해당 시간으로 예약된 내역이 있습니다.");
-                });
+            throw new IllegalArgumentException("해당 시간으로 예약된 내역이 있습니다.");
+        });
         reservationTimeRepository.delete(id);
     }
 }
