@@ -6,6 +6,7 @@ import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.service.dto.AvailabilityOfTimeRequestDto;
+import roomescape.service.dto.AvailabilityOfTimeResponseDto;
 import roomescape.service.dto.ReservationTimeRequestDto;
 import roomescape.service.dto.ReservationTimeResponseDto;
 
@@ -28,13 +29,14 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    public List<ReservationTimeResponseDto> findReservationTimesAvailability(AvailabilityOfTimeRequestDto requestDto) {
+    public List<AvailabilityOfTimeResponseDto> findReservationTimesAvailability(
+            AvailabilityOfTimeRequestDto requestDto) {
         List<ReservationTime> allTimes = reservationTimeRepository.findAllReservationTimes();
         List<ReservationTime> bookedTimes = reservationTimeRepository.findBookedTimeForThemeAtDate(
                 requestDto.getDate(), requestDto.getThemeId());
 
         return allTimes.stream()
-                .map(reservationTime -> new ReservationTimeResponseDto(
+                .map(reservationTime -> new AvailabilityOfTimeResponseDto(
                         reservationTime,
                         bookedTimes.contains(reservationTime)))
                 .toList();

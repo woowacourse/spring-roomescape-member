@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.dto.AvailabilityOfTimeRequestDto;
+import roomescape.service.dto.AvailabilityOfTimeResponseDto;
 import roomescape.service.dto.ReservationTimeRequestDto;
 import roomescape.service.dto.ReservationTimeResponseDto;
 
@@ -32,8 +33,8 @@ public class ReservationTimeApiController {
     }
 
     @GetMapping("/availability")
-    public List<ReservationTimeResponseDto> findReservationTimesAvailability(@RequestParam String date,
-                                                                             @RequestParam Long themeId) {
+    public List<AvailabilityOfTimeResponseDto> findReservationTimesAvailability(@RequestParam String date,
+                                                                                @RequestParam Long themeId) {
         return reservationTimeService.findReservationTimesAvailability(new AvailabilityOfTimeRequestDto(date, themeId));
     }
 
