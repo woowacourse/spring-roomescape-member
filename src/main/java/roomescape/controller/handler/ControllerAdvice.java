@@ -1,13 +1,15 @@
 package roomescape.controller.handler;
 
+import java.util.NoSuchElementException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.exception.PastReservationException;
 import roomescape.exception.ReservationExistsException;
 
-@RestControllerAdvice("roomescape.controller")
+@RestControllerAdvice
 public class ControllerAdvice {
+
     @ExceptionHandler(PastReservationException.class)
     public ResponseEntity<String> handlePastReservationException(PastReservationException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
@@ -20,6 +22,11 @@ public class ControllerAdvice {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<String> handleNoSuchElementException(NoSuchElementException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 }

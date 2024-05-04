@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalTime;
+import java.util.NoSuchElementException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,9 +82,19 @@ class ReservationControllerTest {
 
     @DisplayName("실패: 예약 추가에서 IllegalArgumentException 발생 시 -> 400")
     @Test
-    void reserve_BadRequest() throws Exception {
+    void reserve_Illegal() throws Exception {
         when(reservationService.save(any(ReservationAppRequest.class)))
             .thenThrow(IllegalArgumentException.class);
+
+        mvc.perform(post("/reservations"))
+            .andExpect(status().isBadRequest());
+    }
+
+    @DisplayName("실패: 예약 추가에서 NoSuchElementException 발생 시 -> 400")
+    @Test
+    void reserve_NoSuch() throws Exception {
+        when(reservationService.save(any(ReservationAppRequest.class)))
+            .thenThrow(NoSuchElementException.class);
 
         mvc.perform(post("/reservations"))
             .andExpect(status().isBadRequest());
