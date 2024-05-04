@@ -11,13 +11,12 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class TimeFormatterConfig {
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
     @Bean
     public Jackson2ObjectMapperBuilderCustomizer localTimeSerializerCustomizer() {
-        return builder -> builder.serializers(new LocalTimeSerializer(TIME_FORMATTER),
-                        new LocalDateSerializer(DATE_FORMATTER))
-                .deserializers(new LocalTimeDeserializer(TIME_FORMATTER), new LocalDateDeserializer(DATE_FORMATTER));
+        return builder -> builder
+                .serializers(new LocalTimeSerializer(TIME_FORMATTER))
+                .deserializers(new LocalTimeDeserializer(TIME_FORMATTER));
     }
 }
