@@ -1,14 +1,16 @@
 package roomescape.repository;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 
-import java.sql.PreparedStatement;
+import javax.sql.DataSource;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -17,39 +19,39 @@ import java.util.Optional;
 public class ReservationDao {
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
     private final RowMapper<Reservation> reservationRowMapper;
 
-    public ReservationDao(final JdbcTemplate jdbcTemplate, final RowMapper<Reservation> reservationRowMapper) {
+    public ReservationDao(
+            final JdbcTemplate jdbcTemplate,
+            final DataSource source,
+            final RowMapper<Reservation> reservationRowMapper
+    ) {
         this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(source)
+                .withTableName("reservation")
+                .usingGeneratedKeyColumns("id");
         this.reservationRowMapper = reservationRowMapper;
     }
 
     public Reservation save(final Reservation reservation) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-                    PreparedStatement ps = connection.prepareStatement(
-                            "insert into reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)",
-                            new String[]{"id"}
-                    );
-                    ps.setString(1, reservation.getName().getValue());
-                    ps.setString(2, reservation.getDate().toString());
-                    ps.setString(3, String.valueOf(reservation.getTimeId()));
-                    ps.setString(4, String.valueOf(reservation.getThemeId()));
-                    return ps;
-                }, keyHolder
-        );
-
         try {
-            long id = keyHolder.getKey().longValue();
-            return new Reservation(
-                    id,
-                    reservation.getName(),
-                    reservation.getDate(),
-                    reservation.getTime(),
-                    reservation.getTheme()
-            );
-        } catch (NullPointerException exception) {
-            throw new RuntimeException("[ERROR] 예약 요청이 정상적으로 이루어지지 않았습니다.");
+            SqlParameterSource params = new MapSqlParameterSource()
+                    .addValue("name", reservation.getName())
+                    .addValue("date", reservation.getDate().toString())
+                    .addValue("time_id", String.valueOf(reservation.getTimeId()))
+                    .addValue("theme_id", String.valueOf(reservation.getThemeId()));
+
+            long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
+            return Reservation.builder()
+                    .id(id)
+                    .name(reservation.getName())
+                    .date(reservation.getDate())
+                    .time(reservation.getTime())
+                    .theme(reservation.getTheme())
+                    .build();
+        } catch (DuplicateKeyException exception) {
+            throw new IllegalStateException("[ERROR] 키 값 에러 : 중복된 예약 키가 존재합니다");
         }
     }
 
