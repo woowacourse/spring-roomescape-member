@@ -30,9 +30,9 @@ public class ThemeService {
         if (themes.hasNameOf(themeRequest.name())) {
             throw new RoomescapeException(DUPLICATE_THEME);
         }
-        Theme saved = themeRepository.save(
+        Theme savedTheme = themeRepository.save(
                 new Theme(themeRequest.name(), themeRequest.description(), themeRequest.thumbnail()));
-        return toResponse(saved);
+        return toResponse(savedTheme);
     }
 
     private ThemeResponse toResponse(Theme theme) {
@@ -51,11 +51,11 @@ public class ThemeService {
                 .toList();
     }
 
-    public void delete(long id) {
-        if (isUsedTheme(id)) {
+    public void delete(long themeId) {
+        if (isUsedTheme(themeId)) {
             throw new RoomescapeException(DELETE_USED_THEME);
         }
-        themeRepository.delete(id);
+        themeRepository.delete(themeId);
     }
 
     //todo SQL로 구현

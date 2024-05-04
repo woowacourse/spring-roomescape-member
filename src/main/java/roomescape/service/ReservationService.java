@@ -41,21 +41,21 @@ public class ReservationService {
         Theme requestedTheme = themeRepository.findById(reservationRequest.themeId())
                 .orElseThrow(() -> new RoomescapeException(NOT_FOUND_THEME));
 
-        Reservation beforeSave = new Reservation(
+        Reservation beforeSaveReservation = new Reservation(
                 reservationRequest.name(),
                 reservationRequest.date(),
                 requestedTime,
                 requestedTheme
         );
         Reservations reservations = reservationRepository.findAll();
-        if (reservations.hasSameReservation(beforeSave)) {
+        if (reservations.hasSameReservation(beforeSaveReservation)) {
             throw new RoomescapeException(DUPLICATE_RESERVATION);
         }
-        if (beforeSave.isBefore(LocalDateTime.now())) {
+        if (beforeSaveReservation.isBefore(LocalDateTime.now())) {
             throw new RoomescapeException(PAST_TIME_RESERVATION);
         }
 
-        return toResponse(reservationRepository.save(beforeSave));
+        return toResponse(reservationRepository.save(beforeSaveReservation));
     }
 
     private ReservationResponse toResponse(Reservation reservation) {
@@ -76,7 +76,7 @@ public class ReservationService {
                 .toList();
     }
 
-    public void delete(long id) {
-        reservationRepository.delete(id);
+    public void delete(long reservationId) {
+        reservationRepository.delete(reservationId);
     }
 }
