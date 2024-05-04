@@ -34,7 +34,7 @@ public class Time {
         return startAt;
     }
 
-    public void setId(long id) {
+    public void setIdOnSave(long id) {
         this.id = id;
     }
 

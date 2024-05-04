@@ -31,7 +31,7 @@ public class TimeJdbcDao implements TimeDao {
     public Time save(Time time) {
         SqlParameterSource sqlParameterSource = new BeanPropertySqlParameterSource(time);
         long id = jdbcInsert.executeAndReturnKey(sqlParameterSource).longValue();
-        time.setId(id);
+        time.setIdOnSave(id);
         return time;
     }
 

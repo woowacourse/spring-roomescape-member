@@ -2,7 +2,9 @@ package roomescape.reservation.dao;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import javax.sql.DataSource;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -56,7 +58,7 @@ public class ReservationJdbcDao implements ReservationDao {
     }
 
     @Override
-    public Reservation findById(long reservationId) {
+    public Optional<Reservation> findById(long reservationId) {
         String findReservationSql = """
                 SELECT r.id, r.name, r.date, 
                 t.id AS time_id, t.start_at, 
@@ -67,7 +69,14 @@ public class ReservationJdbcDao implements ReservationDao {
                 WHERE r.id = ? 
                 """;
 
-        return jdbcTemplate.queryForObject(findReservationSql, RESERVATION_ROW_MAPPER, reservationId);
+        try {
+            Reservation reservation = jdbcTemplate.queryForObject(findReservationSql, RESERVATION_ROW_MAPPER,
+                    reservationId);
+
+            return Optional.of(reservation);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override

@@ -1,7 +1,9 @@
 package roomescape.theme.dao;
 
 import java.util.List;
+import java.util.Optional;
 import javax.sql.DataSource;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -34,19 +36,25 @@ public class ThemeJdbcDao implements ThemeDao{
     public Theme save(Theme theme) {
         SqlParameterSource sqlParameterSource = new BeanPropertySqlParameterSource(theme);
         long id = jdbcInsert.executeAndReturnKey(sqlParameterSource).longValue();
-        theme.setId(id);
+        theme.setIdOnSave(id);
         return theme;
     }
 
     @Override
-    public Theme findById(long themeId) {
+    public Optional<Theme> findById(long themeId) {
         String findThemeSql = """
                 SELECT id, name, description, thumbnail
                 FROM theme
                 WHERE theme.id = ?
                 """;
 
-        return jdbcTemplate.queryForObject(findThemeSql, THEME_ROW_MAPPER, themeId);
+        try {
+            Theme theme = jdbcTemplate.queryForObject(findThemeSql, THEME_ROW_MAPPER, themeId);
+
+            return Optional.of(theme);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override

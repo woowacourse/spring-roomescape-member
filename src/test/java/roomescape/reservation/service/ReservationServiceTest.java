@@ -48,7 +48,7 @@ class ReservationServiceTest {
                 .thenReturn(Optional.of(reservation.getReservationTime()));
 
         Mockito.when(themeJdbcDao.findById(1L))
-                .thenReturn(reservation.getTheme());
+                .thenReturn(Optional.of(reservation.getTheme()));
 
         ReservationRequest reservationRequest = new ReservationRequest(reservation.getDate(), reservation.getName(),
                 reservation.getReservationTime().getId(), reservation.getTheme().getId());

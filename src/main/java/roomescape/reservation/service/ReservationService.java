@@ -30,7 +30,8 @@ public class ReservationService {
         Reservation reservation = reservationRequest.fromRequest();
         Time time = timeDao.findById(reservation.getReservationTime().getId())
                 .orElseThrow(() -> new NullPointerException("존재하는 시간이 없습니다."));
-        Theme theme = themeDao.findById(reservation.getThemeId());
+        Theme theme = themeDao.findById(reservation.getThemeId())
+                .orElseThrow(() -> new NullPointerException("존재하는 테마가 없습니다."));
 
         reservation.setTimeOnSave(time);
         reservation.setThemeOnSave(theme);

@@ -37,7 +37,7 @@ public class Theme {
         return thumbnail;
     }
 
-    public void setId(long id) {
+    public void setIdOnSave(long id) {
         this.id = id;
     }
 
