@@ -76,7 +76,7 @@ public class ReservationDao {
                 .addValue("time_id", reservation.getTime().getId())
                 .addValue("theme_id", reservation.getTheme().getId());
         Long id = simpleJdbcInsert.executeAndReturnKey(parameterSource).longValue();
-        return reservation.withId(id);
+        return reservation.setId(id);
     }
 
     public boolean deleteById(Long id) {
