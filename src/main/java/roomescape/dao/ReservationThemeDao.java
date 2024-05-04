@@ -33,7 +33,7 @@ public class ReservationThemeDao {
         return Optional.ofNullable(DataAccessUtils.singleResult(reservationThemes));
     }
 
-    public List<ReservationTheme> findByIdsBetweenFromToDatesWithCount(String from, String to, int count) {
+    public List<ReservationTheme> findBestThemesBetweenDates(String from, String to, int count) {
         String sql = "SELECT theme.id, theme.name, theme.description, theme.thumbnail " +
                 "FROM theme INNER JOIN reservation ON theme.id = reservation.theme_id " +
                 "WHERE reservation.date BETWEEN ? AND ? GROUP BY reservation.theme_id ORDER BY count(*) DESC LIMIT ?";

@@ -108,7 +108,7 @@ public class ReservationThemeControllerTest {
     @Test
     void weeklyBestThemesTest() {
         RestAssured.given().log().all()
-                .when().get("/weeklyThemes")
+                .when().get("/best-themes")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));

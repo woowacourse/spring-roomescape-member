@@ -36,12 +36,12 @@ public class ReservationThemeService {
         reservationThemeDao.deleteById(id);
     }
 
-    public List<ReservationTheme> getWeeklyBestThemes() {
+    public List<ReservationTheme> getBestThemes() {
         ZoneId kst = ZoneId.of("Asia/Seoul");
         LocalDate now = LocalDate.now(kst);
         LocalDate from = now.minusWeeks(1);
         LocalDate to = now.minusDays(1);
 
-        return reservationThemeDao.findByIdsBetweenFromToDatesWithCount(from.toString(), to.toString(), 10);
+        return reservationThemeDao.findBestThemesBetweenDates(from.toString(), to.toString(), 10);
     }
 }

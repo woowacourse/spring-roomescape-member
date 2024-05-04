@@ -42,9 +42,9 @@ public class ReservationThemeController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/weeklyThemes")
-    public ResponseEntity<List<ReservationTheme>> weeklyTheme() {
-        List<ReservationTheme> reservationThemes = reservationThemeService.getWeeklyBestThemes();
+    @GetMapping("/best-themes")
+    public ResponseEntity<List<ReservationTheme>> getBestThemes() {
+        List<ReservationTheme> reservationThemes = reservationThemeService.getBestThemes();
         return ResponseEntity.ok().body(reservationThemes);
     }
 

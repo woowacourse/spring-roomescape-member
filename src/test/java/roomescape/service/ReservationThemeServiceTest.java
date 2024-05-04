@@ -64,8 +64,8 @@ public class ReservationThemeServiceTest {
 
     @DisplayName("지난 일주일간 가장 많이 예약된 테마를 조회한다.")
     @Test
-    void getWeeklyBestThemesTest() {
-        List<ReservationTheme> reservationThemes = reservationThemeService.getWeeklyBestThemes();
+    void getBestThemesTest() {
+        List<ReservationTheme> reservationThemes = reservationThemeService.getBestThemes();
 
         assertThat(reservationThemes.size()).isEqualTo(0);
     }

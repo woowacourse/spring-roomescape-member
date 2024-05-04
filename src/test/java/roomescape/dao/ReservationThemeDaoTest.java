@@ -83,8 +83,8 @@ public class ReservationThemeDaoTest {
 
     @DisplayName("최근 일주일간 가장 많이 예약된 테마를 조회한다.")
     @Test
-    void findByIdsBetweenFromToDatesWithCount() {
-        List<ReservationTheme> bestTheme = reservationThemeDao.findByIdsBetweenFromToDatesWithCount("2023-12-28", "2024-01-02", 10);
+    void findBestThemesBetweenDates() {
+        List<ReservationTheme> bestTheme = reservationThemeDao.findBestThemesBetweenDates("2023-12-28", "2024-01-02", 10);
 
         assertThat(bestTheme.size()).isEqualTo(1);
     }
