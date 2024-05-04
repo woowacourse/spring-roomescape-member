@@ -14,6 +14,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.Objects;
@@ -51,6 +52,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .map(Reference::getFieldName)
                 .collect(Collectors.joining(", "));
         return fieldNames + String.format("(type: %s) 필드의 값이 잘못되었습니다.", type);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        String errorMessage = getMethodArgumentTypeMismatchExceptionMessage(e);
+        return ResponseEntity.badRequest()
+                .body(new ErrorResponse("[REQUEST ERROR] " + errorMessage));
+    }
+
+    private String getMethodArgumentTypeMismatchExceptionMessage(MethodArgumentTypeMismatchException e) {
+        String type = e.getParameter().getParameterType().toString();
+        String parameterName = e.getParameter().getParameterName();
+        return parameterName + String.format("(type: %s) 파라미터의 타입이 올바르지 않습니다.", type);
     }
 
     @ExceptionHandler(BadRequestException.class)

@@ -144,7 +144,7 @@ class ReservationTimeControllerTest extends ControllerTest {
     @DisplayName("에약 가능 시간 목록 GET 요청 시 상태 코드를 200을 반환한다.")
     void findAllByDateAndThemeId() throws Exception {
         // given
-        Long themeId = 1L;
+        long themeId = 1L;
         BDDMockito.given(reservationTimeService.findAvailableReservationTimes(MIA_RESERVATION_DATE, themeId))
                 .willReturn(List.of(AvailableReservationTimeResponse.of(new ReservationTime(MIA_RESERVATION_TIME), true)));
 
@@ -152,10 +152,27 @@ class ReservationTimeControllerTest extends ControllerTest {
         mockMvc.perform(get("/times/available")
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("date", MIA_RESERVATION_DATE.toString())
-                        .param("themeId", themeId.toString()))
+                        .param("themeId", Long.toString(themeId)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].startAt").value(MIA_RESERVATION_TIME.toString()))
                 .andExpect(jsonPath("$[0].isReserved").value(true));
+    }
+
+    @Test
+    @DisplayName("올바르지 않은 예약 날짜 형식의 쿼리 스트링으로 예약 가능 시간 목록 GET 요청 시 상태 코드를 400을 반환한다.")
+    void findAllByDateAndThemeIdWithInvalidDateRequestParameter() throws Exception {
+        // given
+        long themeId = 1L;
+        String invalidDateRequestParameter = "invalid-date";
+
+        // when & then
+        mockMvc.perform(get("/times/available")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("date", invalidDateRequestParameter)
+                        .param("themeId", Long.toString(themeId)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").exists());
     }
 }
