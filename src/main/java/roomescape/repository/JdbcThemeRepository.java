@@ -49,10 +49,14 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public List<Theme> findTopOrderByReservationCount() {
         String sql = """
-                SELECT id, name, description, thumbnail
-                COUNT(id) AS reservation_count
+                SELECT 
+                    th.id,
+                    th.name, 
+                    th.description, 
+                    th.thumbnail, 
+                    COUNT(r.id) AS reservation_count
                 FROM theme AS th
-                INNER JOIN reservation AS r ON id = r.theme_id
+                INNER JOIN reservation AS r ON th.id = r.theme_id
                 WHERE r.date BETWEEN DATEADD('day', -7, CURRENT_DATE()) AND DATEADD('day', -1, CURRENT_DATE())
                 GROUP BY th.id
                 ORDER BY reservation_count DESC 
