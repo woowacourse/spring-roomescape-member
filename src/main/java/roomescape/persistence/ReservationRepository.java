@@ -33,13 +33,13 @@ public class ReservationRepository {
                 .addValue("date", reservation.getDate())
                 .addValue("time_id", reservation.getTime().getId())
                 .addValue("theme_id", reservation.getTheme().getId());
-        Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
+        long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
 
         return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
                 reservation.getTheme());
     }
 
-    public void removeById(Long id) {
+    public void removeById(long id) {
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
     }
 
@@ -60,7 +60,7 @@ public class ReservationRepository {
         return duplicatedCount > 0;
     }
 
-    public boolean hasByTimeId(Long id) {
+    public boolean hasByTimeId(long id) {
         String sql = """
                 SELECT count(*)
                 FROM reservation
@@ -72,7 +72,7 @@ public class ReservationRepository {
         return hasCount > 0;
     }
 
-    public boolean hasByThemeId(Long id) {
+    public boolean hasByThemeId(long id) {
         String sql = """
                 SELECT count(*)
                 FROM reservation
@@ -106,7 +106,7 @@ public class ReservationRepository {
         return jdbcTemplate.query(sql, reservationRowMapper());
     }
 
-    public Reservation findById(Long id) {
+    public Reservation findById(long id) {
         String sql = """
                 SELECT 
                     r.id AS reservation_id, 

@@ -1,7 +1,7 @@
 package roomescape.service.response;
 
 public record AvailableReservationTimeResponse(
-        Long id,
+        long id,
         String startAt,
         boolean alreadyBooked
 ) {

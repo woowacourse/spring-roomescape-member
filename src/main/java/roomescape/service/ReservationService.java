@@ -41,12 +41,12 @@ public class ReservationService {
         return ReservationResponse.from(createdReservation);
     }
 
-    private ReservationTime getReservationTime(Long id) {
+    private ReservationTime getReservationTime(long id) {
         return reservationTimeRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("해당되는 예약 시간이 없습니다."));
     }
 
-    private Theme getTheme(Long id) {
+    private Theme getTheme(long id) {
         return themeRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("해당되는 테마가 없습니다."));
     }
@@ -70,7 +70,7 @@ public class ReservationService {
         }
     }
 
-    public void deleteReservation(Long id) {
+    public void deleteReservation(long id) {
         reservationRepository.removeById(id);
     }
 

@@ -3,7 +3,7 @@ package roomescape.service.response;
 import roomescape.domain.Reservation;
 
 public record ReservationResponse(
-        Long id,
+        long id,
         String name,
         String date,
         ReservationTimeResponse time,

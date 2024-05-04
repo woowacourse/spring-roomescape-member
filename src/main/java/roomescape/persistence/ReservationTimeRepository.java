@@ -30,12 +30,12 @@ public class ReservationTimeRepository {
     public ReservationTime create(ReservationTime reservationTime) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("start_at", reservationTime.getStartAt());
-        Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
+        long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
 
         return new ReservationTime(id, reservationTime.getStartAt());
     }
 
-    public void removeById(Long id) {
+    public void removeById(long id) {
         jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
     }
 
@@ -55,7 +55,7 @@ public class ReservationTimeRepository {
         return jdbcTemplate.query("SELECT id, start_at FROM reservation_time", reservationTimeRowMapper());
     }
 
-    public Optional<ReservationTime> findById(Long id) {
+    public Optional<ReservationTime> findById(long id) {
         String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, reservationTimeRowMapper(), id));
