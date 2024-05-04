@@ -50,10 +50,6 @@ public class Reservation {
         return time;
     }
 
-    public LocalTime getLocalTime() {
-        return time.getStartAt();
-    }
-
     public Long getTimeId() {
         return time.getId();
     }
