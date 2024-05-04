@@ -53,17 +53,15 @@ public class ReservationService {
         Reservation reservation = reservationRequest.toReservation(reservationTime, theme);
 
         validateDuplicatedReservation(reservation);
-        validateDateTimeNotPassed(reservation.getDate(), reservationTime.getStartAt());
+        validateDateTimeNotPassed(reservation);
 
         Reservation savedReservation = reservationRepository.save(reservation);
 
         return ReservationResponse.from(savedReservation);
     }
 
-    private void validateDateTimeNotPassed(LocalDate date, LocalTime time) {
-        LocalDateTime reservationDateTime = LocalDateTime.of(date, time);
-
-        if (reservationDateTime.isBefore(LocalDateTime.now(clock))) {
+    private void validateDateTimeNotPassed(Reservation reservation) {
+        if (reservation.isBefore(LocalDateTime.now(clock))) {
             throw new IllegalArgumentException("지나간 날짜/시간에 대한 예약은 불가능합니다.");
         }
     }

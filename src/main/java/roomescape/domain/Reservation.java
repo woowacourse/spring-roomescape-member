@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Reservation {
@@ -51,6 +52,12 @@ public class Reservation {
         if (name.length() > NAME_MAX_LENGTH) {
             throw new IllegalArgumentException(String.format("이름은 %d자를 넘을 수 없습니다.", NAME_MAX_LENGTH));
         }
+    }
+
+    public boolean isBefore(LocalDateTime dateTime) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
+
+        return reservationDateTime.isBefore(dateTime);
     }
 
     @Override
