@@ -27,6 +27,9 @@ class ThemeRestControllerTest {
 
     @BeforeEach
     void setPort() {
+        jdbcTemplate.update("DELETE FROM reservation");
+        jdbcTemplate.update("DELETE FROM theme");
+        jdbcTemplate.update("DELETE FROM reservation_time");
         RestAssured.port = port;
     }
 
