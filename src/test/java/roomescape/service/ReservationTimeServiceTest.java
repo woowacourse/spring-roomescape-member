@@ -88,8 +88,8 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    @DisplayName("삭제하려는 예약 시간에 예약이 존재할 경우 예외가 발생한다.")
-    void validateHasReservation() {
+    @DisplayName("삭제하려는 예약 시간에 이미 예약이 존재할 경우 예외가 발생한다.")
+    void throwExceptionWhenHasReservation() {
         // given
         final ReservationTime reservationTime = new ReservationTime(1L, MIA_RESERVATION_TIME);
 

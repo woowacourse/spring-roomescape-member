@@ -87,7 +87,7 @@ class ThemeServiceTest {
 
     @Test
     @DisplayName("조회하려는 테마가 존재하지 않는 경우 예외가 발생한다.")
-    void findByNotExistId() {
+    void throwExceptionWhenNotExistTheme() {
         // given
         given(themeDao.findById(anyLong()))
                 .willReturn(Optional.empty());
@@ -113,7 +113,7 @@ class ThemeServiceTest {
 
     @Test
     @DisplayName("삭제하려는 테마가 존재하지 않는 경우 예외가 발생한다.")
-    void deleteByNotExistId() {
+    void throwExceptionWhenDeleteNotExistingTheme() {
         // given
         given(themeDao.findById(anyLong()))
                 .willReturn(Optional.empty());

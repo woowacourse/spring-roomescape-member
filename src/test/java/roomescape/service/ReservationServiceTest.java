@@ -53,8 +53,8 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("동일한 테마, 날짜, 시간에 한 팀만 예약할 수 있다.")
-    void createSameReservation() {
+    @DisplayName("동일한 테마, 날짜, 시간에 한 팀 이상 예약하려는 경우 예외가 발생한다.")
+    void throwExceptionWhenCreateDuplicatedReservation() {
         // given
         final ReservationTime miaReservationTime = new ReservationTime(1L, MIA_RESERVATION_TIME);
         final Reservation miaReservation = MIA_RESERVATION(miaReservationTime, WOOTECO_THEME(1L));
@@ -109,8 +109,8 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 예약 Id로 삭제할 수 없다.")
-    void deleteNotExistingId() {
+    @DisplayName("삭제하려는 예약이 존재하지 않는 경우 예외가 발생한다.")
+    void throwExceptionWhenDeleteNotExistingReservation() {
         // given
         final Long notExistingId = 1L;
 
