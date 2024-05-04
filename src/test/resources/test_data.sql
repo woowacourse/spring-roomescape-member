@@ -9,7 +9,10 @@ VALUES ('잠실 캠퍼스 탈출',
         'https://velog.velcdn.com/images/jangws/post/cfe0e548-1242-470d-bfa8-19eeb72debc5/image.jpg'),
        ('선릉 캠퍼스 탈출',
         '미션을 빨리 진행하고 선릉 캠퍼스를 탈출하자!',
-        'https://techblog.woowahan.com/wp-content/uploads/2022/06/iOS-%EC%9D%B4%EB%AF%B8%EC%A7%80.jpg');
+        'https://techblog.woowahan.com/wp-content/uploads/2022/06/iOS-%EC%9D%B4%EB%AF%B8%EC%A7%80.jpg'),
+        ('강박 탈출',
+        '잘해야 한다는 강박으로부터 탈출하자!',
+        'https://images.velog.io/images/jhy979/post/2e3aad39-3beb-47f9-849b-71b5cb426dc2/%EC%9A%B0%ED%85%8C%EC%BD%94.png');
 
 INSERT INTO reservation (name, date, time_id, theme_id)
 VALUES ('리비', TIMESTAMPADD(DAY,1, NOW()), 1, 1),
