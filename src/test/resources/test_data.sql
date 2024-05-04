@@ -1,3 +1,12 @@
+DELETE FROM reservation;
+ALTER TABLE reservation ALTER COLUMN id RESTART;
+
+DELETE  FROM reservation_time;
+ALTER TABLE reservation_time ALTER COLUMN id RESTART;
+
+DELETE  FROM theme;
+ALTER TABLE theme ALTER COLUMN id RESTART;
+
 INSERT INTO reservation_time (start_at)
 VALUES ('10:00'),
        ('11:00'),
