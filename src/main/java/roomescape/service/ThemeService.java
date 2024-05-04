@@ -20,7 +20,8 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> readThemes() {
-        return themeDao.readThemes().stream()
+        return themeDao.readThemes()
+                .stream()
                 .map(ThemeResponse::from)
                 .toList();
     }
@@ -29,7 +30,9 @@ public class ThemeService {
         LocalDate currentDate = LocalDate.now();
         LocalDate startDate = currentDate.minusDays(7);
         LocalDate endDate = currentDate.minusDays(1);
-        return themeDao.readThemesSortedByCountOfReservation(startDate.format(DATE_FORMATTER),
+
+        return themeDao.readThemesSortedByCountOfReservation(
+                        startDate.format(DATE_FORMATTER),
                         endDate.format(DATE_FORMATTER))
                 .stream()
                 .map(ThemeResponse::from)

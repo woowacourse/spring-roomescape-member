@@ -18,7 +18,8 @@ public class TimeService {
     }
 
     public List<TimeResponse> readTimes() {
-        return timeDao.readTimes().stream()
+        return timeDao.readTimes()
+                .stream()
                 .map(TimeResponse::from)
                 .toList();
     }
