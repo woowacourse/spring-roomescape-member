@@ -6,17 +6,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.service.ThemeService;
 import roomescape.service.dto.request.ThemeRequest;
 import roomescape.service.dto.response.ThemeResponse;
-import roomescape.service.ThemeService;
 
 import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/themes")
 public class ThemeController {
     private final ThemeService themeService;
 
@@ -24,7 +22,7 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
-    @PostMapping
+    @PostMapping("/themes")
     public ResponseEntity<ThemeResponse> save(@RequestBody ThemeRequest themeRequest) {
         ThemeResponse themeResponse = themeService.save(themeRequest);
 
@@ -32,21 +30,21 @@ public class ThemeController {
                 .body(themeResponse);
     }
 
-    @GetMapping
+    @GetMapping("/themes")
     public ResponseEntity<List<ThemeResponse>> findAll() {
         List<ThemeResponse> themeResponses = themeService.findAll();
 
         return ResponseEntity.ok(themeResponses);
     }
 
-    @GetMapping("/tops")
+    @GetMapping("/themes/tops")
     public ResponseEntity<List<ThemeResponse>> findTops() {
         List<ThemeResponse> themeResponses = themeService.findTopThemes();
 
         return ResponseEntity.ok(themeResponses);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/themes/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         themeService.deleteById(id);
 
