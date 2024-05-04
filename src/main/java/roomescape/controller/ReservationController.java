@@ -36,10 +36,8 @@ public class ReservationController {
 
     @GetMapping("/reservations/themes/{themeId}")
     public ResponseEntity<List<ReservationAvailableTimeResponse>> readAvailableTimeReservations(
-            @PathVariable
-            Long themeId,
-            @RequestParam
-            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
+            @PathVariable Long themeId,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
         return ResponseEntity.ok(reservationService.findReservationByDateAndThemeId(date, themeId));
     }
 
