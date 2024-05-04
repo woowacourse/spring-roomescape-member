@@ -36,7 +36,7 @@ public class ReservationService {
         }
 
         ReservationTime time = reservationTimeRepository.findReservationTimeById(requestDto.getTimeId());
-        if (LocalDateTime.of(reservation.getDate(), time.getStartAt()).isBefore(LocalDateTime.now())) {
+        if (isBeforeNow(reservation, time)) {
             throw new IllegalArgumentException("지나간 날짜와 시간에 대한 예약은 불가능합니다.");
         }
 
@@ -53,5 +53,10 @@ public class ReservationService {
             throw new IllegalArgumentException("존재하지 않는 아이디입니다.");
         }
         reservationRepository.deleteReservationById(id);
+    }
+
+    private boolean isBeforeNow(Reservation reservation, ReservationTime time) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(reservation.getDate(), time.getStartAt());
+        return reservationDateTime.isBefore(LocalDateTime.now());
     }
 }
