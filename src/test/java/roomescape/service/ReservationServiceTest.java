@@ -13,7 +13,7 @@ import roomescape.controller.time.dto.AvailabilityTimeResponse;
 import roomescape.repository.H2ReservationRepository;
 import roomescape.repository.H2ReservationTimeRepository;
 import roomescape.repository.H2ThemeRepository;
-import roomescape.service.exception.DuplicateReservation;
+import roomescape.service.exception.DuplicateReservationException;
 import roomescape.service.exception.PreviousTimeException;
 import roomescape.service.exception.TimeNotFoundException;
 
@@ -114,7 +114,7 @@ class ReservationServiceTest {
 
         //then
         assertThatThrownBy(() -> reservationService.addReservation(request))
-                .isInstanceOf(DuplicateReservation.class);
+                .isInstanceOf(DuplicateReservationException.class);
     }
 
     @Test
