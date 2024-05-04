@@ -4,12 +4,12 @@ public class UserName {
 
     private static final String NAME_FORMAT = "^[a-zA-Z가-힣ㄱ-ㅎ0-9]*$";
 
+    private final String userName;
+
     public UserName(String userName) {
         validate(userName);
         this.userName = userName;
     }
-
-    private final String userName;
 
     private void validate(String userName) {
         if (userName.isBlank() || userName.length() > 20) {
