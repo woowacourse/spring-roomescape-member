@@ -2,6 +2,8 @@ package roomescape.controller;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.BDDMockito;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -19,6 +21,7 @@ import roomescape.service.ReservationTimeService;
 import roomescape.service.ThemeService;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -86,6 +89,28 @@ class ReservationControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.time.id").value(1L))
                 .andExpect(jsonPath("$.time.startAt").value(MIA_RESERVATION_TIME))
                 .andExpect(jsonPath("$.date").value(MIA_RESERVATION_DATE.toString()));
+    }
+
+    @ParameterizedTest
+    @MethodSource(value = "invalidPostRequests")
+    @DisplayName("예약 POST 요청 시 하나의 필드라도 없다면 상태코드 400을 반환한다.")
+    void createReservationWithNullFieldRequest(ReservationSaveRequest request) throws Exception {
+        // when & then
+        mockMvc.perform(post("/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(request)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").exists());
+    }
+
+    private static Stream<ReservationSaveRequest> invalidPostRequests() {
+        return Stream.of(
+                new ReservationSaveRequest(null, MIA_RESERVATION_DATE, 1L, 1L),
+                new ReservationSaveRequest(USER_MIA, null, 1L, 1L),
+                new ReservationSaveRequest(USER_MIA, MIA_RESERVATION_DATE, null, 1L),
+                new ReservationSaveRequest(USER_MIA, MIA_RESERVATION_DATE, 1L, null)
+        );
     }
 
     @Test

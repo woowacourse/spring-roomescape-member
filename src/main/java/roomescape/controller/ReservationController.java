@@ -1,10 +1,14 @@
 package roomescape.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.domain.Reservation;
-import roomescape.dto.*;
+import roomescape.dto.ReservationResponse;
+import roomescape.dto.ReservationSaveRequest;
+import roomescape.dto.ReservationTimeResponse;
+import roomescape.dto.ThemeResponse;
 import roomescape.service.ReservationService;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.ThemeService;
@@ -27,7 +31,7 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> createReservation(@RequestBody ReservationSaveRequest request) {
+    public ResponseEntity<ReservationResponse> createReservation(@RequestBody @Valid ReservationSaveRequest request) {
         ReservationTimeResponse reservationTimeResponse = reservationTimeService.findById(request.timeId());
         ThemeResponse themeResponse = themeService.findById(request.themeId());
         Reservation reservation = request.toModel(themeResponse, reservationTimeResponse);
