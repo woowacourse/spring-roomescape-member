@@ -11,17 +11,12 @@ import java.net.URI;
 import java.util.List;
 
 @Controller
-public class ReservationThemeController {
+public class ReservationThemeResponseController {
 
     private final ReservationThemeService reservationThemeService;
 
-    public ReservationThemeController(ReservationThemeService reservationThemeService) {
+    public ReservationThemeResponseController(ReservationThemeService reservationThemeService) {
         this.reservationThemeService = reservationThemeService;
-    }
-
-    @GetMapping("/admin/theme")
-    public String getTheme() {
-        return "admin/theme";
     }
 
     @GetMapping("/themes")

@@ -12,17 +12,12 @@ import java.net.URI;
 import java.util.List;
 
 @Controller
-public class ReservationTimeController {
+public class ReservationTimeResponseController {
 
     private final ReservationTimeService reservationTimeService;
 
-    public ReservationTimeController(ReservationTimeService reservationTimeService) {
+    public ReservationTimeResponseController(ReservationTimeService reservationTimeService) {
         this.reservationTimeService = reservationTimeService;
-    }
-
-    @GetMapping("/admin/time")
-    public String time() {
-        return "admin/time";
     }
 
     @PostMapping("/times")

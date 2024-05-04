@@ -11,17 +11,12 @@ import java.net.URI;
 import java.util.List;
 
 @Controller
-public class ReservationController {
+public class ReservationResponseController {
 
     private final ReservationService reservationService;
 
-    public ReservationController(ReservationService reservationService) {
+    public ReservationResponseController(ReservationService reservationService) {
         this.reservationService = reservationService;
-    }
-
-    @GetMapping("/admin/reservation")
-    public String getReservation() {
-        return "admin/reservation-new";
     }
 
     @GetMapping("/reservations")

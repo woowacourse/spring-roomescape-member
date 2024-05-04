@@ -20,7 +20,7 @@ import static org.hamcrest.Matchers.is;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Sql(scripts = {"/test_schema.sql", "/test_data.sql"})
-public class ReservationThemeControllerTest {
+public class ReservationThemeResponseControllerTest {
 
     @LocalServerPort
     int port;
@@ -28,15 +28,6 @@ public class ReservationThemeControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-    }
-
-    @DisplayName("어드민 테마 페이지 요청 시 200으로 응답한다.")
-    @Test
-    void themePageTest() {
-        RestAssured.given().log().all()
-                .when().get("/admin/theme")
-                .then().log().all()
-                .statusCode(200);
     }
 
     @DisplayName("테마 조회 요청 시 200으로 응답한다.")

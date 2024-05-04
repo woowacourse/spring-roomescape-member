@@ -22,7 +22,7 @@ import static org.hamcrest.Matchers.is;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Sql(scripts = {"/test_schema.sql", "/test_data.sql"})
-public class ReservationControllerTest {
+public class ReservationResponseControllerTest {
 
     @LocalServerPort
     int port;
@@ -30,15 +30,6 @@ public class ReservationControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-    }
-
-    @DisplayName("어드민 예약 페이지 호출 시 200으로 응답한다.")
-    @Test
-    void reservationPageTest() {
-        RestAssured.given().log().all()
-                .when().get("/admin/reservation")
-                .then().log().all()
-                .statusCode(200);
     }
 
     @DisplayName("예약 목록 조회 시 200으로 응답한다.")

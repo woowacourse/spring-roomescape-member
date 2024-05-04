@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.controller.ReservationController;
+import roomescape.controller.ReservationResponseController;
 
 import java.lang.reflect.Field;
 
@@ -26,14 +26,14 @@ public class LayeredTest {
     }
 
     @Autowired
-    private ReservationController reservationController;
+    private ReservationResponseController reservationResponseController;
 
     @DisplayName("컨트롤러에서의 DB 분리를 확인한다.")
     @Test
     void layeredTest() {
         boolean isJdbcTemplateInjected = false;
 
-        for (Field field : reservationController.getClass().getDeclaredFields()) {
+        for (Field field : reservationResponseController.getClass().getDeclaredFields()) {
             if (field.getType().equals(JdbcTemplate.class)) {
                 isJdbcTemplateInjected = true;
                 break;

@@ -18,7 +18,7 @@ import static org.hamcrest.Matchers.is;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Sql(scripts = {"/test_schema.sql", "/test_data.sql"})
-public class ReservationTimeControllerTest {
+public class ReservationTimeResponseControllerTest {
 
     @LocalServerPort
     int port;
@@ -26,15 +26,6 @@ public class ReservationTimeControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-    }
-
-    @DisplayName("어드민 시간 페이지 요청 시 200으로 응답한다.")
-    @Test
-    void timeTest() {
-        RestAssured.given().log().all()
-                .when().get("/admin/time")
-                .then().log().all()
-                .statusCode(200);
     }
 
     @DisplayName("정상적인 시간 추가 요청 시 201으로 응답한다.")
