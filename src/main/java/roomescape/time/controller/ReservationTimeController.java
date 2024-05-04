@@ -22,7 +22,7 @@ public class ReservationTimeController {
 
     @PostMapping
     public ResponseEntity<ReservationTimeResponseDto> save(@RequestBody final ReservationTimeRequestDto request) {
-        ReservationTimeResponseDto timeResponseDto = reservationTimeService.save(request);
+        final ReservationTimeResponseDto timeResponseDto = reservationTimeService.save(request);
         return ResponseEntity.created(URI.create("/times/" + timeResponseDto.id())).body(timeResponseDto);
     }
 

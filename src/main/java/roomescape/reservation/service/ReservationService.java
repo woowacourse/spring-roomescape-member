@@ -46,7 +46,7 @@ public class ReservationService {
     }
 
     public void deleteById(final long id) {
-        int deleteCount = reservationDao.deleteById(id);
+        final int deleteCount = reservationDao.deleteById(id);
         if (deleteCount == 0) {
             throw new NoSuchElementException(id + "를 아이디로 갖는 예약이 존재하지 않습니다.");
         }

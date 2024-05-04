@@ -19,7 +19,7 @@ public class ThemeService {
     }
 
     public List<ThemeResponseDto> findAll() {
-        List<Theme> themes = themeDao.findAll();
+        final List<Theme> themes = themeDao.findAll();
         return themes.stream()
                 .map(ThemeResponseDto::new)
                 .toList();
@@ -31,16 +31,16 @@ public class ThemeService {
     }
 
     public void deleteById(final long id) {
-        int deleteCount = themeDao.deleteById(id);
+        final int deleteCount = themeDao.deleteById(id);
         if (deleteCount == 0) {
             throw new NoSuchElementException(id + "를 아이디로 갖는 테마가 존재하지 않습니다.");
         }
     }
 
     public List<ThemeResponseDto> findPopular() {
-        LocalDate today = LocalDate.now();
+        final LocalDate today = LocalDate.now();
 
-        List<Theme> themes = themeDao.findPopular(today.minusWeeks(1).toString(), today.minusDays(1).toString());
+        final List<Theme> themes = themeDao.findPopular(today.minusWeeks(1).toString(), today.minusDays(1).toString());
         return themes.stream()
                 .map(ThemeResponseDto::new)
                 .toList();
