@@ -30,24 +30,24 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         final String errorMessage = Objects.requireNonNull(e.getBindingResult().getFieldError())
                 .getDefaultMessage();
         return ResponseEntity.badRequest()
-                .body(new ErrorResponse("[REQUEST ERROR] " + errorMessage));
+                .body(new ErrorResponse(errorMessage));
     }
 
     @Override
-    public ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers,
+    public ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException e, HttpHeaders headers,
                                                                HttpStatusCode status, WebRequest request) {
-        if (ex.getCause() instanceof MismatchedInputException mismatchedInputException) {
+        if (e.getCause() instanceof MismatchedInputException mismatchedInputException) {
             String errorMessage = getMismatchedInputExceptionMessage(mismatchedInputException);
             return ResponseEntity.badRequest()
-                    .body(new ErrorResponse("[REQUEST ERROR] " + errorMessage));
+                    .body(new ErrorResponse(errorMessage));
         }
         return ResponseEntity.badRequest()
-                .body(new ErrorResponse("[REQUEST ERROR] " + ex.getMessage()));
+                .body(new ErrorResponse(e.getMessage()));
     }
 
-    private String getMismatchedInputExceptionMessage(MismatchedInputException mismatchedInputException) {
-        String type = mismatchedInputException.getTargetType().toString();
-        String fieldNames = mismatchedInputException.getPath()
+    private String getMismatchedInputExceptionMessage(MismatchedInputException e) {
+        String type = e.getTargetType().toString();
+        String fieldNames = e.getPath()
                 .stream()
                 .map(Reference::getFieldName)
                 .collect(Collectors.joining(", "));
@@ -58,7 +58,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
         String errorMessage = getMethodArgumentTypeMismatchExceptionMessage(e);
         return ResponseEntity.badRequest()
-                .body(new ErrorResponse("[REQUEST ERROR] " + errorMessage));
+                .body(new ErrorResponse(errorMessage));
     }
 
     private String getMethodArgumentTypeMismatchExceptionMessage(MethodArgumentTypeMismatchException e) {
@@ -70,26 +70,26 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ErrorResponse> handleBadRequestException(BadRequestException e) {
         return ResponseEntity.badRequest()
-                .body(new ErrorResponse("[REQUEST ERROR] " + e.getMessage()));
+                .body(new ErrorResponse(e.getMessage()));
     }
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse("[FOUND ERROR] " + e.getMessage()));
+                .body(new ErrorResponse(e.getMessage()));
     }
 
     @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<ErrorResponse> handleDataAccessException(DataAccessException e) {
         log.error(e.getMessage());
         return ResponseEntity.internalServerError()
-                .body(new ErrorResponse("[DATA ACCESS ERROR]"));
+                .body(new ErrorResponse("DATA ACCESS ERROR"));
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception e) {
         log.error(e.getMessage());
         return ResponseEntity.internalServerError()
-                .body(new ErrorResponse("[SERVER ERROR]"));
+                .body(new ErrorResponse("SERVER ERROR"));
     }
 }
