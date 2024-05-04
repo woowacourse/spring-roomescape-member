@@ -19,15 +19,18 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final ReservationFactory reservationFactory;
 
     public ReservationService(
             ReservationRepository reservationRepository,
             ReservationTimeRepository reservationTimeRepository,
-            ThemeRepository themeRepository
+            ThemeRepository themeRepository,
+            ReservationFactory reservationFactory
     ) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.reservationFactory = reservationFactory;
     }
 
     public ReservationResponse createReservation(ReservationRequest request) {
@@ -41,8 +44,6 @@ public class ReservationService {
     }
 
     private Reservation toDomain(ReservationRequest request) {
-        ReservationFactory reservationFactory = new ReservationFactory();
-
         return reservationFactory.create(
                 request.name(),
                 request.date(),
