@@ -3,6 +3,7 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,10 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.dto.ReservationTimeBookedRequest;
-import roomescape.dto.ReservationTimeBookedResponse;
-import roomescape.dto.ReservationTimeResponse;
-import roomescape.dto.ReservationTimeSaveRequest;
+import roomescape.dto.*;
+import roomescape.model.Reservation;
+import roomescape.model.ReservationTime;
+import roomescape.model.Theme;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -24,40 +28,61 @@ class ReservationTimeServiceTest {
     @Autowired
     private ReservationTimeService reservationTimeService;
 
+    @Autowired
+    private ReservationTimeRepository reservationTimeRepository;
+
+    @Autowired
+    private ReservationRepository reservationRepository;
+
+    @Autowired
+    private ThemeRepository themeRepository;
+
     @DisplayName("예약 시간 목록 조회")
     @Test
     void getTimes() {
+        reservationTimeRepository.save(new ReservationTime(LocalTime.parse("09:00")));
+        reservationTimeRepository.save(new ReservationTime(LocalTime.parse("10:00")));
         final List<ReservationTimeResponse> reservationTimeResponses = reservationTimeService.getTimes();
-        assertThat(reservationTimeResponses.size()).isEqualTo(7);
+
+        assertThat(reservationTimeResponses).hasSize(2)
+                .containsExactly(
+                        new ReservationTimeResponse(reservationTimeRepository.findById(1L).get()),
+                        new ReservationTimeResponse(reservationTimeRepository.findById(2L).get())
+                );
     }
 
     @DisplayName("중복된 시간 저장 시 예외 발생")
     @Test
     void saveExistTime() {
+        reservationTimeRepository.save(new ReservationTime(LocalTime.parse("09:00")));
+
         assertThatCode(() ->
                 reservationTimeService.saveTime(new ReservationTimeSaveRequest(LocalTime.parse("09:00")))
         ).isInstanceOf(IllegalArgumentException.class).hasMessage("이미 저장된 예약 시간입니다.");
     }
 
-    @DisplayName("예약 시간 추가")
+    @DisplayName("예약 시간 저장")
     @Test
     void saveTime() {
-        final ReservationTimeSaveRequest reservationTimeSaveRequest = new ReservationTimeSaveRequest(LocalTime.parse("01:10"));
+        final ReservationTimeSaveRequest reservationTimeSaveRequest = new ReservationTimeSaveRequest(LocalTime.parse("13:00"));
         final ReservationTimeResponse reservationTimeResponse = reservationTimeService.saveTime(reservationTimeSaveRequest);
-        assertThat(reservationTimeResponse).isEqualTo(new ReservationTimeResponse(8L, LocalTime.parse("01:10")));
+
+        assertThat(reservationTimeResponse).isEqualTo(new ReservationTimeResponse(reservationTimeRepository.findById(reservationTimeResponse.id()).get()));
     }
 
     @DisplayName("예약 시간 삭제")
     @Test
     void deleteTime() {
-        reservationTimeService.deleteTime(5L);
-        assertThat(reservationTimeService.getTimes().size()).isEqualTo(6);
+        final ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("09:00")));
+        reservationTimeService.deleteTime(reservationTime.getId());
+
+        assertThat(reservationTimeRepository.findById(reservationTime.getId())).isEmpty();
     }
 
     @DisplayName("존재하지 않는 예약 시간 삭제 시 예외 발생")
     @Test
     void deleteTimeNotFound() {
-        assertThatThrownBy(() -> reservationTimeService.deleteTime(8L))
+        assertThatThrownBy(() -> reservationTimeService.deleteTime(1L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("존재하지 않는 예약 시간입니다.");
     }
@@ -65,26 +90,34 @@ class ReservationTimeServiceTest {
     @DisplayName("예약이 존재하는 시간 삭제 시 예외 발생")
     @Test
     void deleteTimeExistReservation() {
-        assertThatThrownBy(() -> reservationTimeService.deleteTime(1L))
+        final ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("09:00")));
+        final Theme theme = themeRepository.save(new Theme("이름", "설명", "썸네일"));
+        reservationRepository.save(new Reservation("이름", LocalDate.now().plusMonths(1), reservationTime, theme));
+
+        assertThatThrownBy(() -> reservationTimeService.deleteTime(reservationTime.getId()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약이 존재하는 시간은 삭제할 수 없습니다.");
     }
 
-    @DisplayName("특정 날짜의 테마에 대한 전체 시간 예약 여부 조회")
+    @DisplayName("특정 날짜의 테마에 대한 전체 시간 예약 여부 오름차순 조회")
     @Test
     void getTimesWithBooked() {
+        final List<ReservationTime> reservationTimes = Stream.of("10:00", "09:00", "11:00")
+                .map((time) -> reservationTimeRepository.save(new ReservationTime(LocalTime.parse(time))))
+                .toList();
+        final Theme theme = themeRepository.save(new Theme("이름", "설명", "썸네일"));
+        final LocalDate localDate = LocalDate.now().plusWeeks(1);
+        reservationRepository.save(new Reservation("이름1", localDate, reservationTimes.get(0), theme));
+        reservationRepository.save(new Reservation("이름2", localDate, reservationTimes.get(1), theme));
         final List<ReservationTimeBookedResponse> reservationTimeBookedResponses = reservationTimeService.getTimesWithBooked(
-                new ReservationTimeBookedRequest(LocalDate.parse("2024-04-29"), 1L));
+                new ReservationTimeBookedRequest(localDate, theme.getId()));
+
         assertThat(reservationTimeBookedResponses)
-                .hasSize(7)
+                .hasSize(3)
                 .containsExactly(
-                        new ReservationTimeBookedResponse(1L, LocalTime.parse("09:00"), true),
-                        new ReservationTimeBookedResponse(2L, LocalTime.parse("10:00"), false),
-                        new ReservationTimeBookedResponse(3L, LocalTime.parse("11:00"), false),
-                        new ReservationTimeBookedResponse(4L, LocalTime.parse("12:00"), false),
-                        new ReservationTimeBookedResponse(5L, LocalTime.parse("13:00"), false),
-                        new ReservationTimeBookedResponse(6L, LocalTime.parse("14:00"), false),
-                        new ReservationTimeBookedResponse(7L, LocalTime.parse("15:00"), false)
+                        new ReservationTimeBookedResponse(reservationTimes.get(1), true),
+                        new ReservationTimeBookedResponse(reservationTimes.get(0), true),
+                        new ReservationTimeBookedResponse(reservationTimes.get(2), false)
                 );
     }
 }
