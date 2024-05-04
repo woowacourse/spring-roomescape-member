@@ -26,7 +26,8 @@ import roomescape.theme.service.ThemeService;
 @WebMvcTest(ThemeController.class)
 public class ThemeControllerTest {
 
-    private final Theme theme = new Theme(1L, "포레스트", "공포 테마", "https://zerogangnam.com/storage/AVISPw8N2JfMThKvnk3VJzeY9qywIaYd8pTy46Xx.jpg");
+    private final Theme theme = new Theme(1L, "포레스트", "공포 테마",
+                                          "https://zerogangnam.com/storage/AVISPw8N2JfMThKvnk3VJzeY9qywIaYd8pTy46Xx.jpg");
 
     @Autowired
     private MockMvc mockMvc;
@@ -44,10 +45,10 @@ public class ThemeControllerTest {
                 .writeValueAsString(new ThemeRequest(theme.getName(), theme.getDescription(), theme.getThumbnail()));
 
         mockMvc.perform(post("/themes")
-                .content(content)
-                .contentType("application/Json")
-                .accept(MediaType.APPLICATION_JSON)
-        )
+                                .content(content)
+                                .contentType("application/Json")
+                                .accept(MediaType.APPLICATION_JSON)
+                )
                 .andDo(print())
                 .andExpect(status().isCreated());
     }
@@ -81,4 +82,5 @@ public class ThemeControllerTest {
                 .andDo(print())
                 .andExpect(status().isNoContent());
     }
- }
+
+}

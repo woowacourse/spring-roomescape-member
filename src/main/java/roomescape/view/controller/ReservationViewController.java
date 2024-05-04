@@ -10,4 +10,5 @@ public class ReservationViewController {
     public String memberReservationPage() {
         return "/reservation";
     }
+
 }

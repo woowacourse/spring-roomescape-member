@@ -10,4 +10,5 @@ public interface ThemeDao {
     List<Theme> findAllThemes();
 
     void deleteById(long themeId);
+
 }

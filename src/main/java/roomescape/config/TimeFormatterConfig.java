@@ -8,10 +8,12 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class TimeFormatterConfig {
+
     private static final String TIME_FORMAT = "HH:mm";
 
     @Bean
     public Jackson2ObjectMapperBuilderCustomizer localTimeSerializerCustomizer() {
         return builder -> builder.serializers(new LocalTimeSerializer(DateTimeFormatter.ofPattern(TIME_FORMAT)));
     }
+
 }

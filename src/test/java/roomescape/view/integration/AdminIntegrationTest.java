@@ -9,6 +9,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AdminIntegrationTest {
+
     @LocalServerPort
     private int port;
 
@@ -20,9 +21,11 @@ public class AdminIntegrationTest {
     @Test
     @DisplayName("관리자 메인 페이지가 잘 접속된다.")
     void adminMainPageLoad() {
-        RestAssured.given().log().all()
-                .when().get("/admin")
-                .then().log().all()
+        RestAssured.given()
+                .when()
+                .get("/admin")
+                .then()
                 .statusCode(200);
     }
+
 }

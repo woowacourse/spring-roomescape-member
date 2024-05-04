@@ -28,7 +28,8 @@ public class ThemeDaoTest {
         Theme theme = new Theme("포레스트", "공포 테마", "thumbnail");
         themeJdbcDao.save(theme);
 
-        Assertions.assertThat(theme.getId()).isEqualTo(4);
+        Assertions.assertThat(theme.getId())
+                .isEqualTo(4);
     }
 
     @Test
@@ -36,7 +37,8 @@ public class ThemeDaoTest {
     void getThemes() {
         List<Theme> themes = themeJdbcDao.findAllThemes();
 
-        Assertions.assertThat(themes.size()).isEqualTo(3);
+        Assertions.assertThat(themes.size())
+                .isEqualTo(3);
     }
 
     @Test
@@ -44,6 +46,9 @@ public class ThemeDaoTest {
     void deleteThemes() {
         themeJdbcDao.deleteById(3L);
 
-        Assertions.assertThat(themeJdbcDao.findAllThemes().size()).isEqualTo(2);
+        Assertions.assertThat(themeJdbcDao.findAllThemes()
+                                      .size())
+                .isEqualTo(2);
     }
+
 }

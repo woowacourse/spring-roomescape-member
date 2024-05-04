@@ -12,6 +12,7 @@ import roomescape.time.dto.TimeResponse;
 
 @Service
 public class TimeService {
+
     private final TimeDao timeDao;
     private final ReservationDao reservationDao;
 
@@ -28,6 +29,17 @@ public class TimeService {
         return toResponse(savedReservationTime);
     }
 
+    public void validateDuplicateTime(LocalTime startAt) {
+        int duplicateTimeCount = timeDao.countByStartAt(startAt);
+        if (duplicateTimeCount > 0) {
+            throw new ConflictException("이미 존재하는 예약 시간입니다.");
+        }
+    }
+
+    public TimeResponse toResponse(Time time) {
+        return new TimeResponse(time.getId(), time.getStartAt());
+    }
+
     public List<TimeResponse> findReservationTimes() {
         List<Time> reservationTimes = timeDao.findAllReservationTimesInOrder();
 
@@ -41,21 +53,11 @@ public class TimeService {
         timeDao.deleteById(reservationTimeId);
     }
 
-    public TimeResponse toResponse(Time time) {
-        return new TimeResponse(time.getId(), time.getStartAt());
-    }
-
-    public void validateDuplicateTime(LocalTime startAt) {
-        int duplicateTimeCount = timeDao.countByStartAt(startAt);
-        if (duplicateTimeCount > 0) {
-            throw new ConflictException("이미 존재하는 예약 시간입니다.");
-        }
-    }
-
     public void validateReservationExistence(long timeId) {
         int reservationCount = reservationDao.countByTimeId(timeId);
         if (reservationCount > 0) {
             throw new ConflictException("삭제를 요청한 시간에 예약이 존재합니다.");
         }
     }
+
 }

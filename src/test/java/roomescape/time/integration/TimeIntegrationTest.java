@@ -17,6 +17,7 @@ import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "/data-test.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 public class TimeIntegrationTest {
+
     @LocalServerPort
     private int port;
 
@@ -31,22 +32,38 @@ public class TimeIntegrationTest {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
 
-        RestAssured.given().log().all()
+        RestAssured.given()
+                .log()
+                .all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/times")
-                .then().log().all()
+                .when()
+                .post("/times")
+                .then()
+                .log()
+                .all()
                 .statusCode(201);
 
-        RestAssured.given().log().all()
-                .when().get("/times")
-                .then().log().all()
+        RestAssured.given()
+                .log()
+                .all()
+                .when()
+                .get("/times")
+                .then()
+                .log()
+                .all()
                 .statusCode(200)
                 .body("size()", is(4));
 
-        RestAssured.given().log().all()
-                .when().delete("/times/3")
-                .then().log().all()
+        RestAssured.given()
+                .log()
+                .all()
+                .when()
+                .delete("/times/3")
+                .then()
+                .log()
+                .all()
                 .statusCode(204);
     }
+
 }

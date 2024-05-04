@@ -10,4 +10,5 @@ public class MainViewController {
     public String mainPage() {
         return "index";
     }
+
 }

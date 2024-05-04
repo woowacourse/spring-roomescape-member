@@ -18,4 +18,5 @@ public interface ReservationDao {
     void deleteById(long reservationId);
 
     int countByTimeId(long timeId);
+
 }

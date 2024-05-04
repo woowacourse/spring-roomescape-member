@@ -27,4 +27,5 @@ public class AdminViewController {
     public String themePage() {
         return "admin/theme";
     }
+
 }

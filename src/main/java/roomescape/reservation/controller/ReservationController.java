@@ -20,6 +20,7 @@ import roomescape.reservation.service.ReservationService;
 @RestController
 @RequestMapping("/reservations")
 public class ReservationController {
+
     private final ReservationService reservationService;
 
     public ReservationController(ReservationService reservationService) {
@@ -39,13 +40,16 @@ public class ReservationController {
     }
 
     @GetMapping("/{themeId}")
-    public List<ReservationTimeAvailabilityResponse> reservationTimeList(@PathVariable long themeId, @RequestParam LocalDate date) {
+    public List<ReservationTimeAvailabilityResponse> reservationTimeList(@PathVariable long themeId,
+                                                                         @RequestParam LocalDate date) {
         return reservationService.findTimeAvailability(themeId, date);
     }
 
     @DeleteMapping("/{reservationId}")
     public ResponseEntity<Void> reservationRemove(@PathVariable long reservationId) {
         reservationService.removeReservations(reservationId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent()
+                .build();
     }
+
 }

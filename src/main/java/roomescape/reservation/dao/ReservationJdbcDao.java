@@ -8,7 +8,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.theme.domain.Theme;
@@ -19,17 +18,17 @@ public class ReservationJdbcDao implements ReservationDao {
 
     public static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (resultSet, rowNum)
             -> new Reservation(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getDate("date")
-                        .toLocalDate(),
-                new Time(resultSet.getLong("time_id"),
-                        resultSet.getTime("start_at")
-                                .toLocalTime()),
-                new Theme(resultSet.getLong("theme_id"),
-                        resultSet.getString("themeName"),
-                        resultSet.getString("description"),
-                        resultSet.getString("thumbnail")
+            resultSet.getLong("id"),
+            resultSet.getString("name"),
+            resultSet.getDate("date")
+                    .toLocalDate(),
+            new Time(resultSet.getLong("time_id"),
+                     resultSet.getTime("start_at")
+                             .toLocalTime()),
+            new Theme(resultSet.getLong("theme_id"),
+                      resultSet.getString("themeName"),
+                      resultSet.getString("description"),
+                      resultSet.getString("thumbnail")
             )
     );
 
@@ -51,7 +50,8 @@ public class ReservationJdbcDao implements ReservationDao {
                 .addValue("time_id", reservation.getReservationTimeId())
                 .addValue("theme_id", reservation.getThemeId());
 
-        long id = jdbcInsert.executeAndReturnKey(sqlParameterSource).longValue();
+        long id = jdbcInsert.executeAndReturnKey(sqlParameterSource)
+                .longValue();
         reservation.setId(id);
         return reservation;
     }
@@ -105,13 +105,13 @@ public class ReservationJdbcDao implements ReservationDao {
                 """;
 
         return jdbcTemplate.query(findThemesInOrderSql, (resultSet, rowNum)
-                -> new Theme(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("description"),
-                        resultSet.getString("thumbnail")
-                        )
-                    ,startDate.toString(), endDate.toString());
+                                          -> new Theme(
+                                          resultSet.getLong("id"),
+                                          resultSet.getString("name"),
+                                          resultSet.getString("description"),
+                                          resultSet.getString("thumbnail")
+                                  )
+                , startDate.toString(), endDate.toString());
     }
 
     @Override
@@ -125,4 +125,5 @@ public class ReservationJdbcDao implements ReservationDao {
         String findByTimeIdSql = "SELECT COUNT(*) FROM reservation WHERE time_id = ?";
         return jdbcTemplate.queryForObject(findByTimeIdSql, Integer.class, timeId);
     }
+
 }

@@ -13,6 +13,7 @@ import roomescape.time.domain.Time;
 
 @Service
 public class ReservationService {
+
     private final ReservationDao reservationDao;
     private final TimeDao timeDao;
 
@@ -24,7 +25,7 @@ public class ReservationService {
     public ReservationResponse addReservation(ReservationRequest reservationRequest) {
         Reservation reservation = reservationRequest.fromRequest();
         Time time = timeDao.findById(reservation.getReservationTime()
-                .getId());
+                                             .getId());
         reservation.setTime(time);
         Reservation savedReservation = reservationDao.save(reservation);
         return ReservationResponse.fromReservation(savedReservation);
@@ -61,4 +62,5 @@ public class ReservationService {
     public void removeReservations(long reservationId) {
         reservationDao.deleteById(reservationId);
     }
+
 }

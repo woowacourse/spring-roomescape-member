@@ -12,18 +12,24 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class ConnectionTest {
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @Test
     @DisplayName("데이터베이스 Connection에 성공한다.")
     void isConnectionSuccess() {
-        try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
+        try (Connection connection = jdbcTemplate.getDataSource()
+                .getConnection()
+        ) {
             assertThat(connection).isNotNull();
             assertThat(connection.getCatalog()).isEqualTo("test");
-            assertThat(connection.getMetaData().getTables(null, null, "reservation", null).next()).isTrue();
+            assertThat(connection.getMetaData()
+                               .getTables(null, null, "reservation", null)
+                               .next()).isTrue();
         } catch (SQLException e) {
             throw new RuntimeException("데이터베이스 Connection에 실패했습니다. : " + e);
         }
     }
+
 }

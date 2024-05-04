@@ -29,30 +29,51 @@ public class ThemeIntegrationTest {
     @Test
     @DisplayName("요청한 테마를 정상적으로 등록, 확인, 삭제한다.")
     void themePageWork() {
-        ThemeRequest themeRequest = new ThemeRequest( "포레스트", "공포 테마", "thumbnail");
+        ThemeRequest themeRequest = new ThemeRequest("포레스트", "공포 테마", "thumbnail");
 
-        RestAssured.given().log().all()
+        RestAssured.given()
+                .log()
+                .all()
                 .contentType(ContentType.JSON)
                 .body(themeRequest)
-                .when().post("/themes")
-                .then().log().all()
+                .when()
+                .post("/themes")
+                .then()
+                .log()
+                .all()
                 .statusCode(201);
 
-        RestAssured.given().log().all()
-                .when().get("/themes")
-                .then().log().all()
+        RestAssured.given()
+                .log()
+                .all()
+                .when()
+                .get("/themes")
+                .then()
+                .log()
+                .all()
                 .statusCode(200)
                 .body("size()", is(4));
 
-        RestAssured.given().log().all()
-                .when().delete("/themes/3")
-                .then().log().all()
+        RestAssured.given()
+                .log()
+                .all()
+                .when()
+                .delete("/themes/3")
+                .then()
+                .log()
+                .all()
                 .statusCode(204);
 
-        RestAssured.given().log().all()
-                .when().get("/themes")
-                .then().log().all()
+        RestAssured.given()
+                .log()
+                .all()
+                .when()
+                .get("/themes")
+                .then()
+                .log()
+                .all()
                 .statusCode(200)
                 .body("size()", is(3));
     }
+
 }

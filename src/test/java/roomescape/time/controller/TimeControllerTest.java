@@ -26,6 +26,7 @@ import roomescape.time.service.TimeService;
 
 @WebMvcTest(TimeController.class)
 class TimeControllerTest {
+
     private final Time time = new Time(4L, LocalTime.now());
 
     @Autowired
@@ -45,12 +46,16 @@ class TimeControllerTest {
                 .writeValueAsString(new TimeRequest(time.getStartAt()));
 
         mockMvc.perform(post("/times")
-                        .content(content)
-                        .contentType("application/Json")
-                        .accept(MediaType.APPLICATION_JSON)
+                                .content(content)
+                                .contentType("application/Json")
+                                .accept(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
                 .andExpect(status().isCreated());
+    }
+
+    public TimeResponse toResponse(Time time) {
+        return new TimeResponse(time.getId(), time.getStartAt());
     }
 
     @Test
@@ -72,7 +77,4 @@ class TimeControllerTest {
                 .andExpect(status().isNoContent());
     }
 
-    public TimeResponse toResponse(Time time) {
-        return new TimeResponse(time.getId(), time.getStartAt());
-    }
 }

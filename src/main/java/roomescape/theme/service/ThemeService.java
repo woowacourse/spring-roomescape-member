@@ -55,4 +55,5 @@ public class ThemeService {
                 .map(ThemeRankResponse::fromTheme)
                 .toList();
     }
+
 }

@@ -15,4 +15,5 @@ public interface TimeDao {
     void deleteById(long reservationTimeId);
 
     int countByStartAt(LocalTime startAt);
+
 }

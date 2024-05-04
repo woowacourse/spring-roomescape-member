@@ -6,12 +6,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import roomescape.theme.domain.Theme;
 
 @Repository
-public class ThemeJdbcDao implements ThemeDao{
+public class ThemeJdbcDao implements ThemeDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
@@ -26,7 +25,8 @@ public class ThemeJdbcDao implements ThemeDao{
     @Override
     public Theme save(Theme theme) {
         SqlParameterSource sqlParameterSource = new BeanPropertySqlParameterSource(theme);
-        long id = jdbcInsert.executeAndReturnKey(sqlParameterSource).longValue();
+        long id = jdbcInsert.executeAndReturnKey(sqlParameterSource)
+                .longValue();
         theme.setId(id);
         return theme;
     }

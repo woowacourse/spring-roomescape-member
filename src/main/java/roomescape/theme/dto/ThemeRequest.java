@@ -7,7 +7,9 @@ public record ThemeRequest(
         String description,
         String thumbnail
 ) {
+
     public Theme toTheme() {
         return new Theme(name, description, thumbnail);
     }
+
 }

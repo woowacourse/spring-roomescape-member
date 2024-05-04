@@ -11,8 +11,12 @@ public record ReservationResponse(
         LocalTime startAt,
         String themeName
 ) {
+
     public static ReservationResponse fromReservation(Reservation reservation) {
         return new ReservationResponse(reservation.getId(), reservation.getName(), reservation.getDate(),
-                reservation.getReservationTime().getStartAt(), reservation.getTheme().getName());
+                                       reservation.getReservationTime()
+                                               .getStartAt(), reservation.getTheme()
+                                               .getName());
     }
+
 }

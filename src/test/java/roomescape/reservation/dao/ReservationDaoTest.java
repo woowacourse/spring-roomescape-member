@@ -44,7 +44,8 @@ class ReservationDaoTest {
     @Test
     @DisplayName("지난 7일 기준 예약이 많은 테마 순으로 조회한다.")
     void getTopReservationThemes() {
-        List<Theme> themes = reservationDao.findThemeByDateOrderByThemeIdCount(LocalDate.now().minusWeeks(1), LocalDate.now());
+        List<Theme> themes = reservationDao.findThemeByDateOrderByThemeIdCount(LocalDate.now().minusWeeks(1),
+                                                                               LocalDate.now());
 
         Assertions.assertThat(themes.get(0).getId()).isEqualTo(1);
     }
@@ -62,4 +63,5 @@ class ReservationDaoTest {
     void countReservationTime() {
         Assertions.assertThat(reservationDao.countByTimeId(1)).isEqualTo(1);
     }
+
 }

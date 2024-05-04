@@ -16,6 +16,7 @@ import roomescape.time.domain.Time;
 @JdbcTest
 @Sql(scripts = "/data-test.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 class TimeJdbcDaoTest {
+
     private final TimeJdbcDao timeJdbcDao;
 
     @Autowired
@@ -29,7 +30,8 @@ class TimeJdbcDaoTest {
         Time time = new Time(LocalTime.now());
         timeJdbcDao.save(time);
 
-        Assertions.assertThat(time.getId()).isNotEqualTo(0);
+        Assertions.assertThat(time.getId())
+                .isNotEqualTo(0);
         timeJdbcDao.deleteById(time.getId());
     }
 
@@ -38,7 +40,8 @@ class TimeJdbcDaoTest {
     void getTimes() {
         List<Time> times = timeJdbcDao.findAllReservationTimesInOrder();
 
-        Assertions.assertThat(times.size()).isEqualTo(3);
+        Assertions.assertThat(times.size())
+                .isEqualTo(3);
     }
 
     @Test
@@ -46,7 +49,9 @@ class TimeJdbcDaoTest {
     void deleteTime() {
         timeJdbcDao.deleteById(3L);
 
-        Assertions.assertThat(timeJdbcDao.findAllReservationTimesInOrder().size()).isEqualTo(2);
+        Assertions.assertThat(timeJdbcDao.findAllReservationTimesInOrder()
+                                      .size())
+                .isEqualTo(2);
     }
 
     @Test
@@ -55,4 +60,5 @@ class TimeJdbcDaoTest {
         Assertions.assertThatThrownBy(() -> timeJdbcDao.deleteById(1L))
                 .isInstanceOf(DataAccessException.class);
     }
+
 }
