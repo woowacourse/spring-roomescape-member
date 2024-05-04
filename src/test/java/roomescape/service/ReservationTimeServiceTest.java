@@ -15,6 +15,7 @@ import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -115,7 +116,7 @@ class ReservationTimeServiceTest {
         BDDMockito.given(reservationRepository.findAllTimeIdsByDateAndThemeId(date, themeId))
                 .willReturn(List.of(1L));
         BDDMockito.given(reservationTimeRepository.findAll())
-                .willReturn(List.of(reservedTime, new ReservationTime(2L, "16:00")));
+                .willReturn(List.of(reservedTime, new ReservationTime(2L, LocalTime.of(16, 0))));
 
         // when
         List<AvailableReservationTimeResponse> availableReservationTimes
@@ -124,11 +125,11 @@ class ReservationTimeServiceTest {
         // then
         assertAll(() -> {
             assertThat(isReserved(availableReservationTimes, MIA_RESERVATION_TIME)).isTrue();
-            assertThat(isReserved(availableReservationTimes, "16:00")).isFalse();
+            assertThat(isReserved(availableReservationTimes, LocalTime.of(16, 0))).isFalse();
         });
     }
 
-    private boolean isReserved(List<AvailableReservationTimeResponse> availableReservationTimes, String time) {
+    private boolean isReserved(List<AvailableReservationTimeResponse> availableReservationTimes, LocalTime time) {
         return availableReservationTimes.stream()
                 .filter(response -> response.startAt().equals(time))
                 .findFirst()

@@ -12,6 +12,7 @@ import roomescape.repository.ReservationTimeRepository;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -53,7 +54,9 @@ public class ReservationTimeDao implements ReservationTimeRepository {
     }
 
     private ReservationTime mapRowToObject(ResultSet resultSet, int rowNumber) throws SQLException {
-        ReservationTime reservationTime = new ReservationTime(resultSet.getString("start_at"));
+        LocalTime startAt = resultSet.getTime("start_at")
+                .toLocalTime();
+        ReservationTime reservationTime = new ReservationTime(startAt);
         return new ReservationTime(resultSet.getLong("id"), reservationTime);
     }
 

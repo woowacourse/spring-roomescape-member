@@ -5,15 +5,16 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 public class TestFixture {
     public static final String USER_MIA = "미아";
     public static final LocalDate MIA_RESERVATION_DATE = LocalDate.of(2030, 4, 18);
-    public static final String MIA_RESERVATION_TIME = "15:00";
+    public static final LocalTime MIA_RESERVATION_TIME = LocalTime.of(15, 0);
 
     public static final String USER_TOMMY = "토미";
     public static final LocalDate TOMMY_RESERVATION_DATE = LocalDate.of(2030, 5, 19);
-    public static final String TOMMY_RESERVATION_TIME = "15:00";
+    public static final LocalTime TOMMY_RESERVATION_TIME = LocalTime.of(15, 0);
 
     public static final String WOOTECO_THEME_NAME = "레벨2 탈출";
     public static final String WOOTECO_THEME_DESCRIPTION = "우테코 레벨2를 탈출하는 내용입니다.";

@@ -11,6 +11,7 @@ import org.junit.jupiter.api.TestFactory;
 import roomescape.dto.ThemeResponse;
 import roomescape.dto.ThemeSaveRequest;
 
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
@@ -84,8 +85,8 @@ class ThemeAcceptanceTest extends ApiAcceptanceTest {
     @DisplayName("[2 - Step3] 인기 테마 목록을 조회한다.")
     void findAllPopularThemes() {
         // given & when
-        Long threeOClockId = saveReservationTime("15:00");
-        Long fourOClockId = saveReservationTime("16:00");
+        Long threeOClockId = saveReservationTime(LocalTime.of(15, 0));
+        Long fourOClockId = saveReservationTime(LocalTime.of(16, 0));
         Long secondRankThemeId = saveTheme(WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION);
         Long firstRankThemeId = saveTheme(HORROR_THEME_NAME, HORROR_THEME_DESCRIPTION);
 

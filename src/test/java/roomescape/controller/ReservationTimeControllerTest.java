@@ -14,7 +14,7 @@ import roomescape.exception.BadRequestException;
 import roomescape.exception.NotFoundException;
 import roomescape.service.ReservationTimeService;
 
-import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -52,18 +52,30 @@ class ReservationTimeControllerTest extends ControllerTest {
     }
 
     @Test
-    @DisplayName("잘못된 형식의 예약 시간 POST 요청 시 상태코드 400을 반환한다.")
-    void createReservationTimeWithInvalidRequest() throws Exception {
+    @DisplayName("예약 시간 POST 요청 시 10분 단위가 아닐 경우 상태코드 400을 반환한다.")
+    void createReservationTimeWithInvalidTimeUnit() throws Exception {
         // given
-        ReservationTimeSaveRequest request = new ReservationTimeSaveRequest("15:03");
-
-        BDDMockito.given(reservationTimeService.create(any()))
-                .willThrow(BadRequestException.class);
+        ReservationTimeSaveRequest request = new ReservationTimeSaveRequest(LocalTime.of(15, 3));
 
         // when & then
         mockMvc.perform(post("/times")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(request)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").exists());
+    }
+
+    @Test
+    @DisplayName("예약 시간 POST 요청 시 시간 형식이 올바르지 않을 경우 상태코드 400을 반환한다.")
+    void createReservationTimeWithInvalidFormat() throws Exception {
+        // given
+        String invalidFormatRequest = "{'time': 'invalid-time'}";
+
+        // when & then
+        mockMvc.perform(post("/times")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(invalidFormatRequest))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").exists());
@@ -129,7 +141,7 @@ class ReservationTimeControllerTest extends ControllerTest {
                         .param("themeId", themeId.toString()))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].startAt").value(MIA_RESERVATION_TIME))
+                .andExpect(jsonPath("$[0].startAt").value(MIA_RESERVATION_TIME.toString()))
                 .andExpect(jsonPath("$[0].isReserved").value(true));
     }
 }

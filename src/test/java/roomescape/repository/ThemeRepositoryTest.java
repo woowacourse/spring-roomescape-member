@@ -107,8 +107,8 @@ class ThemeRepositoryTest extends RepositoryTest {
         // given
         String insertTimeSql = "INSERT INTO reservation_time (start_at) VALUES (?), (?)";
         jdbcTemplate.update(insertTimeSql,
-                Time.valueOf(LocalTime.parse(MIA_RESERVATION_TIME)),
-                Time.valueOf(LocalTime.parse(TOMMY_RESERVATION_TIME)));
+                Time.valueOf(MIA_RESERVATION_TIME),
+                Time.valueOf(TOMMY_RESERVATION_TIME));
         String insertThemeSql = "INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?), (?, ?, ?)";
         jdbcTemplate.update(insertThemeSql,
                 WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL,

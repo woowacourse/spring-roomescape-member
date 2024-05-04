@@ -141,7 +141,7 @@ public class ReservationDao implements ReservationRepository {
     private Reservation mapRowToObj(ResultSet resultSet, int rowNumber) throws SQLException {
         ReservationTime reservationTime = new ReservationTime(
                 resultSet.getLong("time_id"),
-                resultSet.getString("time_value")
+                resultSet.getTime("time_value").toLocalTime()
         );
         Theme theme = new Theme(
                 resultSet.getLong("theme_id"),

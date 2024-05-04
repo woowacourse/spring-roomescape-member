@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.*;
 
+import java.time.LocalTime;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static roomescape.TestFixture.*;
 
@@ -27,7 +29,7 @@ abstract class ApiAcceptanceTest {
     }
 
     protected Long saveTheme(String name, String description) {
-        ThemeSaveRequest request = new ThemeSaveRequest(WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL);
+        ThemeSaveRequest request = new ThemeSaveRequest(name, description, THEME_THUMBNAIL);
         return RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(request)
@@ -37,7 +39,7 @@ abstract class ApiAcceptanceTest {
                 .id();
     }
 
-    protected Long saveReservationTime(String time) {
+    protected Long saveReservationTime(LocalTime time) {
         ReservationTimeSaveRequest request = new ReservationTimeSaveRequest(time);
         return RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

@@ -12,6 +12,7 @@ import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.ReservationTimeSaveRequest;
 import roomescape.exception.ErrorResponse;
 
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
@@ -48,7 +49,7 @@ class ReservationTimeAcceptanceTest extends ApiAcceptanceTest {
     @DisplayName("[Step7] 잘못된 형식의 예약 시간을 추가한다.")
     void createReservationTime2() {
         // given & when
-        ReservationTimeSaveRequest request = new ReservationTimeSaveRequest("15:03");
+        ReservationTimeSaveRequest request = new ReservationTimeSaveRequest(LocalTime.of(15, 3));
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

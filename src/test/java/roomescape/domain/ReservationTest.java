@@ -6,6 +6,7 @@ import org.junit.jupiter.params.provider.*;
 import roomescape.exception.BadRequestException;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,7 +44,7 @@ class ReservationTest {
     @ParameterizedTest
     @MethodSource("reservationsAndExpectedResult")
     @DisplayName("예약이 동일한 예약 시간을 갖는지 확인한다.")
-    void hasSameDateTime(LocalDate date, String time, boolean expectedResult) {
+    void hasSameDateTime(LocalDate date, LocalTime time, boolean expectedResult) {
         // given
         Reservation reservation = MIA_RESERVATION(new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME());
 
