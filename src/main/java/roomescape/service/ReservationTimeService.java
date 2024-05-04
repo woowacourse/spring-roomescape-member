@@ -11,6 +11,7 @@ import roomescape.dto.ReservationTimeBookedRequest;
 import roomescape.dto.ReservationTimeBookedResponse;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.ReservationTimeSaveRequest;
+import roomescape.exception.ReservationBusinessException;
 
 @Service
 public class ReservationTimeService {
@@ -46,7 +47,7 @@ public class ReservationTimeService {
         boolean isTimeExist = reservationTimeRepository.existByStartAt(reservationTime.getStartAt());
 
         if (isTimeExist) {
-            throw new IllegalArgumentException("중복된 시간입니다.");
+            throw new ReservationBusinessException("중복된 시간입니다.");
         }
 
     }
@@ -58,11 +59,11 @@ public class ReservationTimeService {
 
     private void validateDeleteTime(final Long id) {
         if (reservationTimeRepository.findById(id).isEmpty()) {
-            throw new IllegalArgumentException("존재하지 않는 시간입니다.");
+            throw new ReservationBusinessException("존재하지 않는 시간입니다.");
         }
 
         if (reservationRepository.existByTimeId(id)) {
-            throw new IllegalArgumentException("예약이 존재하는 시간입니다.");
+            throw new ReservationBusinessException("예약이 존재하는 시간입니다.");
         }
     }
 

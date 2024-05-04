@@ -8,6 +8,7 @@ import roomescape.domain.ThemeRepository;
 import roomescape.dto.PopularThemeRequest;
 import roomescape.dto.ThemeResponse;
 import roomescape.dto.ThemeSaveRequest;
+import roomescape.exception.ReservationBusinessException;
 
 @Service
 public class ThemeService {
@@ -47,11 +48,11 @@ public class ThemeService {
 
     private void validateDeleteTheme(final Long id) {
         if (reservationRepository.existByThemeId(id)) {
-            throw new IllegalArgumentException("예약이 존재하는 테마입니다.");
+            throw new ReservationBusinessException("예약이 존재하는 테마입니다.");
         }
 
         if (themeRepository.findById(id).isEmpty()) {
-            throw new IllegalArgumentException("존재하지 않는 테마입니다.");
+            throw new ReservationBusinessException("존재하지 않는 테마입니다.");
         }
     }
 }
