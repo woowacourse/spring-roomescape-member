@@ -27,14 +27,14 @@ class ReservationTest extends DummyDataFixture {
     @Test
     @DisplayName("주어진 날짜와 시간보다 예약의 날짜가 이후인 경우 거짓을 반환한다.")
     void isBeforeDateTimeThanNow_WhenDataIsAfter() {
-        LocalTime sameTime = LocalTime.parse("10:00");
         Reservation reservation = new Reservation(
                 1L,
                 "아서",
                 LocalDate.parse("2024-04-23"),
-                new ReservationTime(null, sameTime),
+                new ReservationTime(null, LocalTime.parse("10:00")),
                 super.getThemeById(1L));
-        assertFalse(reservation.isBeforeDateTimeThanNow(LocalDateTime.of(LocalDate.parse("2024-01-23"), sameTime)));
+        assertFalse(
+                reservation.isBeforeDateTimeThanNow(LocalDateTime.of(LocalDate.parse("2024-01-23"), LocalTime.parse("09:00"))));
     }
 
     @Test
