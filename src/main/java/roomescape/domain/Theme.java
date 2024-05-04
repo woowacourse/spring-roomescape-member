@@ -24,7 +24,7 @@ public class Theme {
         this.thumbnail = Objects.requireNonNull(thumbnail, errorMessage);
     }
 
-    public Theme changeId(Long id) {
+    public Theme withId(Long id) {
         return new Theme(id, this.name.value(), this.description, this.thumbnail);
     }
 

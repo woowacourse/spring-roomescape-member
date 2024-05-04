@@ -19,7 +19,7 @@ public class ReservationTime {
         this.startAt = Objects.requireNonNull(startAt, errorMessage);
     }
 
-    public ReservationTime changeId(Long id) {
+    public ReservationTime withId(Long id) {
         return new ReservationTime(id, this.startAt);
     }
 
