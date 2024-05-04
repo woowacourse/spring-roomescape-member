@@ -27,8 +27,8 @@ public class ReservationTimeController {
     }
 
     @GetMapping
-    public List<ReservationTimeResponseDto> findAll() {
-        return reservationTimeService.findAll();
+    public ResponseEntity<List<ReservationTimeResponseDto>> findAll() {
+        return ResponseEntity.ok(reservationTimeService.findAll());
     }
 
     @DeleteMapping("/{id}")
@@ -38,7 +38,7 @@ public class ReservationTimeController {
     }
 
     @GetMapping("/available")
-    public List<ReservationUserTime> findAvailableTime(@RequestParam("date") final String date, @RequestParam("themeId") final long themeId) {
-        return reservationTimeService.findAvailableTime(date, themeId);
+    public ResponseEntity<List<ReservationUserTime>> findAvailableTime(@RequestParam("date") final String date, @RequestParam("themeId") final long themeId) {
+        return ResponseEntity.ok(reservationTimeService.findAvailableTime(date, themeId));
     }
 }

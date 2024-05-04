@@ -19,8 +19,8 @@ public class ThemeController {
     }
 
     @GetMapping
-    public List<ThemeResponseDto> findAll() {
-        return themeService.findAll();
+    public ResponseEntity<List<ThemeResponseDto>> findAll() {
+        return ResponseEntity.ok(themeService.findAll());
     }
 
     @PostMapping
@@ -36,7 +36,7 @@ public class ThemeController {
     }
 
     @GetMapping("/popular")
-    public List<ThemeResponseDto> findPopular() {
-        return themeService.findPopular();
+    public ResponseEntity<List<ThemeResponseDto>> findPopular() {
+        return ResponseEntity.ok(themeService.findPopular());
     }
 }
