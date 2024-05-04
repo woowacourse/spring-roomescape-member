@@ -120,6 +120,22 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
     }
 
     @Override
+    public boolean existByTimeId(long timeId) {
+        return jdbcTemplate.queryForObject(
+                "SELECT EXISTS(SELECT time_id FROM RESERVATION WHERE time_id = ?)",
+                Boolean.class, timeId
+        );
+    }
+
+    @Override
+    public boolean existByThemeId(long themeId) {
+        return jdbcTemplate.queryForObject(
+                "SELECT EXISTS(SELECT theme_id FROM RESERVATION WHERE theme_id = ?)",
+                Boolean.class, themeId
+        );
+    }
+
+    @Override
     public void delete(long id) {
         jdbcTemplate.update("delete from reservation where id = ?", id);
     }

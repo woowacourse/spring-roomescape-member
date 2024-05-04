@@ -43,6 +43,18 @@ public class CollectionReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public boolean existByTimeId(long timeId) {
+        return reservations.stream()
+                .anyMatch(reservation -> reservation.isReservationTimeOf(timeId));
+    }
+
+    @Override
+    public boolean existByThemeId(long themeId) {
+        return reservations.stream()
+                .anyMatch(reservation -> reservation.isThemeOf(themeId));
+    }
+
+    @Override
     public void delete(long id) {
         reservations.stream()
                 .filter(reservation -> reservation.hasSameId(id))

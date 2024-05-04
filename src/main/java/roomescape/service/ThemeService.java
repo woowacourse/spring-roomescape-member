@@ -54,8 +54,7 @@ public class ThemeService {
         themeRepository.delete(themeId);
     }
 
-    //todo SQL로 구현
     private boolean isUsedTheme(long themeId) {
-        return reservationRepository.findAll().hasThemeOf(themeId);
+        return reservationRepository.existByThemeId(themeId);
     }
 }

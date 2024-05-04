@@ -65,8 +65,7 @@ public class ReservationTimeService {
         reservationTimeRepository.delete(timeId);
     }
 
-    //todo SQL로 구현
     private boolean isUsedTime(long timeId) {
-        return reservationRepository.findAll().hasReservationTimeOf(timeId);
+        return reservationRepository.existByTimeId(timeId);
     }
 }

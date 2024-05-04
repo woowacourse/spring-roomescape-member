@@ -21,11 +21,6 @@ public class Reservations {
                 .anyMatch(reservation -> reservation.isReservationTimeOf(timeId));
     }
 
-    public boolean hasThemeOf(long themeId) {
-        return reservations.stream()
-                .anyMatch(reservation -> reservation.isThemeOf(themeId));
-    }
-
     public List<Reservation> getReservations() {
         return Collections.unmodifiableList(reservations);
     }
