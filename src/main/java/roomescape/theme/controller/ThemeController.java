@@ -25,6 +25,13 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
+    @PostMapping
+    public ResponseEntity<ThemeResponse> createTheme(@RequestBody ThemeRequest themeRequest) {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(themeService.addTheme(themeRequest));
+    }
+
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> themeList() {
         return ResponseEntity
@@ -37,13 +44,6 @@ public class ThemeController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(themeService.findRankedThemes());
-    }
-
-    @PostMapping
-    public ResponseEntity<ThemeResponse> createTheme(@RequestBody ThemeRequest themeRequest) {
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(themeService.addTheme(themeRequest));
     }
 
     @DeleteMapping("/{id}")
