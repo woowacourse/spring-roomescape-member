@@ -48,6 +48,7 @@ public class TimeService {
 
     public AvailabilityTimeResponse addTime(final CreateTimeRequest createTimeRequest) {
         final ReservationTime parsedTime = createTimeRequest.toDomain();
+        //TODO 중복 시간 저장 불가해야함
         final ReservationTime savedTime = timeRepository.save(parsedTime);
         return AvailabilityTimeResponse.from(savedTime, false);
     }

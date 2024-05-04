@@ -29,7 +29,7 @@ public class TimeController {
     }
 
     @GetMapping
-    public List<ReadTimeResponse> getTimes() { //TODO 시간순으로 정렬해서 보여주기
+    public List<ReadTimeResponse> getTimes() {
         return timeService.getTimes();
     }
 
