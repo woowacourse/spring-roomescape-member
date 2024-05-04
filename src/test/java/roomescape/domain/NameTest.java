@@ -1,9 +1,9 @@
 package roomescape.domain;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class NameTest {
     @DisplayName("이릉이 null일 경우 예외를 던진다.")
