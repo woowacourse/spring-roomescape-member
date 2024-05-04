@@ -1,4 +1,4 @@
-package roomescape.integrated;
+package roomescape.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -18,7 +18,7 @@ import roomescape.dto.ThemeResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "/truncate.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-class ThemeIntegratedTest {
+class ThemeControllerTest {
     @LocalServerPort
     private int port;
     @Autowired
