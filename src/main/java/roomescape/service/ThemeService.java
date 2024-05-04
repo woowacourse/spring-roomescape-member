@@ -7,6 +7,7 @@ import roomescape.controller.theme.dto.ThemeResponse;
 import roomescape.domain.Theme;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
+import roomescape.service.exception.ThemeNotFoundException;
 import roomescape.service.exception.ThemeUsedException;
 
 import java.time.LocalDate;
@@ -35,11 +36,13 @@ public class ThemeService {
         return ThemeResponse.from(savedTheme);
     }
 
-    public int deleteTheme(final Long id) {
+    public void deleteTheme(final Long id) {
         if (reservationRepository.existsByThemeId(id)) {
             throw new ThemeUsedException("예약된 테마는 삭제할 수 없습니다.");
         }
-        return themeRepository.delete(id);
+        final Theme findTheme = themeRepository.findById(id)
+                .orElseThrow(() -> new ThemeNotFoundException("존재하지 않는 테마입니다."));
+        themeRepository.delete(findTheme.getId());
     }
 
     public List<PopularThemeResponse> getPopularThemes(final LocalDate today) {

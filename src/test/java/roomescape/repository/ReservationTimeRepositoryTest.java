@@ -83,27 +83,4 @@ class ReservationTimeRepositoryTest {
         // then
         assertThat(actual).isEqualTo(expected);
     }
-
-    @Test
-    @DisplayName("등록된 예약 시간 번호로 삭제한다.")
-    void deleteByIdPresent() {
-        // given
-        Long id = 3L;
-
-        // when & then
-        assertThat(timeRepository.findById(id)).isPresent();
-        assertThat(timeRepository.deleteById(id)).isNotZero();
-        assertThat(timeRepository.findById(id)).isEmpty();
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 예약 시간 번호로 삭제할 경우 아무런 영향이 없다.")
-    void deleteByIdNotPresent() {
-        // given
-        Long id = 4L;
-
-        // when & then
-        assertThat(timeRepository.findById(id)).isEmpty();
-        assertThat(timeRepository.deleteById(id)).isZero();
-    }
 }

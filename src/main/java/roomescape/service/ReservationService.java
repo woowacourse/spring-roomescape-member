@@ -11,6 +11,7 @@ import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.service.exception.DuplicateReservationException;
 import roomescape.service.exception.PreviousTimeException;
+import roomescape.service.exception.ReservationNotFoundException;
 import roomescape.service.exception.ThemeNotFoundException;
 import roomescape.service.exception.TimeNotFoundException;
 
@@ -51,6 +52,12 @@ public class ReservationService {
         return ReservationResponse.from(savedReservation);
     }
 
+    public void deleteReservation(final Long id) {
+        final Reservation findReservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new ReservationNotFoundException("존재하지 않는 예약입니다."));
+        reservationRepository.deleteById(findReservation.getId());
+    }
+
     private void validateBeforeDay(final LocalDateTime reservationDateTime) {
         if (reservationDateTime.isBefore(LocalDateTime.now())) {
             throw new PreviousTimeException("지난 시간으로 예약할 수 없습니다.");
@@ -73,10 +80,6 @@ public class ReservationService {
 
     private ReservationTime findTime(final ReservationRequest reservationRequest) {
         return reservationTimeRepository.findById(reservationRequest.timeId())
-                .orElseThrow(() -> new TimeNotFoundException("존재하지 않은 시간입니다."));
-    }
-
-    public int deleteReservation(final Long id) {
-        return reservationRepository.deleteById(id);
+                .orElseThrow(() -> new TimeNotFoundException("존재하지 않는 시간입니다."));
     }
 }

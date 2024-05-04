@@ -13,5 +13,5 @@ public interface ThemeRepository {
 
     Theme save(Theme theme);
 
-    int delete(Long id);
+    void delete(Long id);
 }

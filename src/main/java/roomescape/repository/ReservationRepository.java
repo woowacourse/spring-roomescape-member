@@ -23,7 +23,7 @@ public interface ReservationRepository {
 
     Reservation save(Reservation reservation);
 
-    int deleteById(Long id);
+    void deleteById(Long id);
 
     List<Theme> findPopularThemes(LocalDate today);
 }

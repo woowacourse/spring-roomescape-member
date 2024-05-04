@@ -9,6 +9,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.service.exception.TimeNotFoundException;
 import roomescape.service.exception.TimeUsedException;
 
 import java.util.List;
@@ -52,10 +53,12 @@ public class TimeService {
         return AvailabilityTimeResponse.from(savedTime, false);
     }
 
-    public int deleteTime(final Long id) {
+    public void deleteTime(final Long id) {
         if (reservationRepository.existsByTimeId(id)) {
             throw new TimeUsedException("예약된 시간은 삭제할 수 없습니다.");
         }
-        return timeRepository.deleteById(id);
+        final ReservationTime findTime = timeRepository.findById(id)
+                .orElseThrow(() -> new TimeNotFoundException("존재하지 않는 시간입니다."));
+        timeRepository.deleteById(findTime.getId());
     }
 }

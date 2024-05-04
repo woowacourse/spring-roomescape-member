@@ -7,16 +7,18 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.controller.time.dto.AvailabilityTimeResponse;
-import roomescape.controller.time.dto.ReadTimeResponse;
 import roomescape.controller.time.dto.CreateTimeRequest;
+import roomescape.controller.time.dto.ReadTimeResponse;
 import roomescape.repository.H2ReservationRepository;
 import roomescape.repository.H2ReservationTimeRepository;
+import roomescape.service.exception.TimeNotFoundException;
 import roomescape.service.exception.TimeUsedException;
 
 import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Sql(scripts = {"/drop.sql", "/schema.sql", "/data.sql"},
@@ -66,7 +68,8 @@ class TimeServiceTest {
         Long id = 3L;
 
         // when & then
-        assertThat(timeService.deleteTime(id)).isEqualTo(1);
+        assertThatCode(() -> timeService.deleteTime(id))
+                .doesNotThrowAnyException();
     }
 
     @Test
@@ -76,7 +79,8 @@ class TimeServiceTest {
         Long id = 4L;
 
         // when & then
-        assertThat(timeService.deleteTime(id)).isEqualTo(0);
+        assertThatThrownBy(() -> timeService.deleteTime(id))
+                .isInstanceOf(TimeNotFoundException.class);
     }
 
     @Test

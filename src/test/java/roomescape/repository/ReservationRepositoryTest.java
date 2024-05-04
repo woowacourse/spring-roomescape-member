@@ -178,17 +178,7 @@ class ReservationRepositoryTest {
 
         // when & then
         assertThat(reservationRepository.findById(id)).isPresent();
-        assertThat(reservationRepository.deleteById(id)).isNotZero();
-    }
-
-    @Test
-    @DisplayName("없는 예약 번호로 삭제할 경우 아무런 영향이 없다.")
-    void deleteNotExistId() {
-        // given
-        Long id = 3L;
-
-        // when & then
-        assertThat(reservationRepository.findById(id)).isEmpty();
-        assertThat(reservationRepository.deleteById(id)).isZero();
+        assertThatCode(() -> reservationRepository.deleteById(id))
+                .doesNotThrowAnyException();
     }
 }

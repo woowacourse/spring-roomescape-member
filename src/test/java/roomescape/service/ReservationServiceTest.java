@@ -15,6 +15,7 @@ import roomescape.repository.H2ReservationTimeRepository;
 import roomescape.repository.H2ThemeRepository;
 import roomescape.service.exception.DuplicateReservationException;
 import roomescape.service.exception.PreviousTimeException;
+import roomescape.service.exception.ReservationNotFoundException;
 import roomescape.service.exception.TimeNotFoundException;
 
 import java.time.LocalDate;
@@ -74,7 +75,8 @@ class ReservationServiceTest {
         Long id = 2L;
 
         // when & then
-        assertThat(reservationService.deleteReservation(id)).isOne();
+        assertThatCode(() -> reservationService.deleteReservation(id))
+                .doesNotThrowAnyException();
     }
 
     @Test
@@ -84,7 +86,8 @@ class ReservationServiceTest {
         Long id = 3L;
 
         // when & then
-        assertThat(reservationService.deleteReservation(id)).isZero();
+        assertThatThrownBy(() -> reservationService.deleteReservation(id))
+                .isInstanceOf(ReservationNotFoundException.class);
     }
 
     @Test

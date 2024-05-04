@@ -60,9 +60,9 @@ public class H2ThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public int delete(final Long id) {
+    public void delete(final Long id) {
         final String sql = "DELETE FROM THEME WHERE ID = ?";
 
-        return jdbcTemplate.update(sql, id);
+        jdbcTemplate.update(sql, id);
     }
 }
