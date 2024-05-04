@@ -22,58 +22,47 @@ public class ThemeIntegrationTest {
     private int port;
 
     @BeforeEach
-    void init() {
+    void setPort() {
         RestAssured.port = port;
     }
 
     @Test
-    @DisplayName("요청한 테마를 정상적으로 등록, 확인, 삭제한다.")
-    void themePageWork() {
+    @DisplayName("theme 추가 요청을 처리하고 성공 시 201 상태 코드를 응답한다.")
+    void createReservationTheme_ShouldReturnCREATED_WhenCreateSuccessfully() {
         ThemeRequest themeRequest = new ThemeRequest("포레스트", "공포 테마", "thumbnail");
 
         RestAssured.given()
-                .log()
-                .all()
                 .contentType(ContentType.JSON)
                 .body(themeRequest)
                 .when()
                 .post("/themes")
                 .then()
-                .log()
-                .all()
                 .statusCode(201);
 
         RestAssured.given()
-                .log()
-                .all()
                 .when()
                 .get("/themes")
                 .then()
-                .log()
-                .all()
                 .statusCode(200)
                 .body("size()", is(4));
+    }
+
+    @Test
+    @DisplayName("theme 삭제 요청을 처리하고 성공 시 204 상태 코드를 응답한다.")
+    void deleteReservationTheme_ShouldReturnNOCONTENT_WhenDeleteSuccessfully() {
 
         RestAssured.given()
-                .log()
-                .all()
                 .when()
-                .delete("/themes/3")
+                .delete("/themes/2")
                 .then()
-                .log()
-                .all()
                 .statusCode(204);
 
         RestAssured.given()
-                .log()
-                .all()
                 .when()
                 .get("/themes")
                 .then()
-                .log()
-                .all()
                 .statusCode(200)
-                .body("size()", is(3));
+                .body("size()", is(2));
     }
 
 }
