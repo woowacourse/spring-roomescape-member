@@ -4,9 +4,9 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
+import roomescape.domain.ThemeRepository;
 import roomescape.dto.request.ThemeAddRequest;
 import roomescape.dto.response.ThemeResponse;
-import roomescape.repository.ThemeRepository;
 
 @Service
 public class ThemeService {

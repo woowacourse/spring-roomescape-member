@@ -1,9 +1,8 @@
-package roomescape.repository;
+package roomescape.domain;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import roomescape.domain.Theme;
 
 public interface ThemeRepository {
 

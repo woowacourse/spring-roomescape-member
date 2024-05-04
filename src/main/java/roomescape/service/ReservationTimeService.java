@@ -4,11 +4,11 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.ReservationTimeRepository;
 import roomescape.dto.request.ReservationTimeAddRequest;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.dto.response.ReservationTimeWithBookStatusResponse;
 import roomescape.exception.DuplicateSaveException;
-import roomescape.repository.ReservationTimeRepository;
 
 @Service
 public class ReservationTimeService {

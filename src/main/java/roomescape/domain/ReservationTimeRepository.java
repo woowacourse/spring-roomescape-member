@@ -1,10 +1,9 @@
-package roomescape.repository;
+package roomescape.domain;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
-import roomescape.domain.ReservationTime;
 import roomescape.dto.response.ReservationTimeWithBookStatusResponse;
 
 public interface ReservationTimeRepository {

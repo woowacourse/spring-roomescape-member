@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.domain.Theme;
+import roomescape.domain.ThemeRepository;
 
 // 테스트 초기 데이터
 // 테마1: 잠실 캠퍼스 탈출 - 예약 2
