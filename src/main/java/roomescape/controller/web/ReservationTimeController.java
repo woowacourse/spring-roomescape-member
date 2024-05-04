@@ -13,7 +13,6 @@ import java.util.List;
 @Controller
 @RequestMapping("/times")
 public class ReservationTimeController {
-
     private final ReservationTimeService reservationTimeService;
 
     public ReservationTimeController(final ReservationTimeService reservationTimeService) {
