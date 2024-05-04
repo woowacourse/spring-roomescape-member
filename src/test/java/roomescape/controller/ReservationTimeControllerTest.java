@@ -18,12 +18,12 @@ import org.springframework.http.HttpStatus;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.AvailableReservationTimeResponse;
-import roomescape.dto.ReservationTimeRequest;
-import roomescape.dto.ReservationTimeResponse;
 import roomescape.domain.repository.ReservationRepository;
 import roomescape.domain.repository.ReservationTimeRepository;
 import roomescape.domain.repository.ThemeRepository;
+import roomescape.dto.AvailableReservationTimeResponse;
+import roomescape.dto.ReservationTimeRequest;
+import roomescape.dto.ReservationTimeResponse;
 
 class ReservationTimeControllerTest extends BaseControllerTest {
 
@@ -98,7 +98,7 @@ class ReservationTimeControllerTest extends BaseControllerTest {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .param("date", "2024-04-09")
                 .param("themeId", 1L)
-                .when().get("/available-times")
+                .when().get("/times/available")
                 .then().log().all()
                 .extract();
 
