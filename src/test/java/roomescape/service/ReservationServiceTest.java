@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.ReservationAddRequest;
+import roomescape.dto.request.ReservationAddRequest;
 
 class ReservationServiceTest {
 

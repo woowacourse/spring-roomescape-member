@@ -5,7 +5,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.ReservationTimeWithBookStatusResponse;
+import roomescape.dto.response.ReservationTimeWithBookStatusResponse;
 
 public interface ReservationTimeRepository {
     List<ReservationTime> findAll();

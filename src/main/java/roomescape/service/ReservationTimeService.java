@@ -4,9 +4,9 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.ReservationTimeAddRequest;
-import roomescape.dto.ReservationTimeResponse;
-import roomescape.dto.ReservationTimeWithBookStatusResponse;
+import roomescape.dto.request.ReservationTimeAddRequest;
+import roomescape.dto.response.ReservationTimeResponse;
+import roomescape.dto.response.ReservationTimeWithBookStatusResponse;
 import roomescape.repository.ReservationTimeRepository;
 
 @Service
