@@ -65,7 +65,7 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
         }
     }
 
-    static class ReservationTimeRowMapper implements RowMapper<ReservationTime> {
+    private static class ReservationTimeRowMapper implements RowMapper<ReservationTime> {
         @Override
         public ReservationTime mapRow(final ResultSet rs, final int rowNum) throws SQLException {
             return new ReservationTime(
