@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.exception.ReservationBusinessException;
 
 @RestControllerAdvice
-public class GlobalControllerExceptionHandler {
+public class GlobalExceptionHandler {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
