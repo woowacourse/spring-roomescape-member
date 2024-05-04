@@ -18,6 +18,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @JdbcTest
@@ -55,6 +56,17 @@ class H2ReservationRepositoryTest {
                 () -> assertThat(savedReservation.getTime()).isEqualTo(savedReservationTime),
                 () -> assertThat(savedReservation.getTheme()).isEqualTo(savedTheme)
         );
+    }
+
+    @DisplayName("존재하지 않는 테마와 시간에 예약하면 예외가 발생한다")
+    @Test
+    void when_saveReservationWithNonExistentThemeAndTime_then_throwException() {
+        // when, then
+        assertThatThrownBy(() -> {
+            Reservation reservation = new Reservation("피케이", Fixture.tomorrow, Fixture.unkownReservationTime, Fixture.unkownTheme);
+            reservationRepository.save(reservation);
+        }).isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("예약 정보가 올바르지 않습니다.");
     }
 
     @DisplayName("모든 예약을 조회한다")
@@ -136,5 +148,8 @@ class H2ReservationRepositoryTest {
         public static final Theme theme = new Theme("테마", "테마 설명", "테마 썸네일");
         public static final ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
         public static final LocalDate tomorrow = LocalDate.now().plusDays(1);
+
+        public static final Theme unkownTheme = new Theme(100L, "테마", "테마 설명", "테마 썸네일");
+        public static final ReservationTime unkownReservationTime = new ReservationTime(100L, LocalTime.of(10, 0));
     }
 }

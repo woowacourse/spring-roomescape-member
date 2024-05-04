@@ -1,14 +1,15 @@
 package roomescape.dao;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Name;
 import roomescape.domain.Reservation;
-import roomescape.domain.repository.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.repository.ReservationRepository;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -32,19 +33,23 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     public Reservation save(Reservation reservation) {
-        long reservationId = jdbcInsert.executeAndReturnKey(Map.of(
-                        "name", reservation.getName().value(),
-                        "date", reservation.getDate(),
-                        "time_id", reservation.getTime().getId(),
-                        "theme_id", reservation.getTheme().getId()))
-                .longValue();
+        try {
+            long reservationId = jdbcInsert.executeAndReturnKey(Map.of(
+                            "name", reservation.getName().value(),
+                            "date", reservation.getDate(),
+                            "time_id", reservation.getTime().getId(),
+                            "theme_id", reservation.getTheme().getId()))
+                    .longValue();
 
-        return new Reservation(
-                reservationId,
-                reservation.getName(),
-                reservation.getDate(),
-                reservation.getTime(),
-                reservation.getTheme());
+            return new Reservation(
+                    reservationId,
+                    reservation.getName(),
+                    reservation.getDate(),
+                    reservation.getTime(),
+                    reservation.getTheme());
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException("예약 정보가 올바르지 않습니다.");
+        }
     }
 
     public List<Reservation> findAll() {
