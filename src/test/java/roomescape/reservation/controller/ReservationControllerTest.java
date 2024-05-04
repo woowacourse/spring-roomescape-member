@@ -52,6 +52,32 @@ class ReservationControllerTest {
                     );
         }
 
+        @Test
+        @DisplayName("예약 생성 요청 시 예약 날짜가 과거인 경우 경우 404를 반환한다.")
+        void createReservation_WhenDateInPast() throws Exception {
+            mockMvc.perform(MockMvcRequestBuilders.post("/reservations")
+                            .content(objectMapper.writeValueAsString(new CreateReservationRequest(
+                                    LocalDate.parse("2000-02-11"), "몰리", 1L, 10L)))
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpectAll(
+                            status().isBadRequest(),
+                            jsonPath("$").value("예약 날짜는 현재보다 과거일 수 없습니다.")
+                    );
+        }
+
+        @Test
+        @DisplayName("예약 생성 요청 시 예약 날짜가 공백인 경우 경우 404를 반환한다.")
+        void createReservation_WhenDateIsNull() throws Exception {
+            mockMvc.perform(MockMvcRequestBuilders.post("/reservations")
+                            .content(objectMapper.writeValueAsString(new CreateReservationRequest(
+                                    null, "몰리", 1L, 10L)))
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpectAll(
+                            status().isBadRequest(),
+                            jsonPath("$").value("예약 등록 시 예약 날짜는 필수입니다.")
+                    );
+        }
+
         @ParameterizedTest
         @NullAndEmptySource
         @DisplayName("예약 생성 요청 시 예약자 명이 공백인 경우 경우 404를 반환한다.")
@@ -93,6 +119,19 @@ class ReservationControllerTest {
                     );
         }
 
+        @Test
+        @DisplayName("예약 생성 요청 시 예약 시간이 공백인 경우 경우 404를 반환한다.")
+        void createReservation_WhenTimeIsNull() throws Exception {
+            mockMvc.perform(MockMvcRequestBuilders.post("/reservations")
+                            .content(objectMapper.writeValueAsString(new CreateReservationRequest(
+                                    LocalDate.of(3000, 1, 1), "몰리", null, 10L)))
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpectAll(
+                            status().isBadRequest(),
+                            jsonPath("$").value("예약 등록 시 시간은 필수입니다.")
+                    );
+        }
+
         @ParameterizedTest
         @ValueSource(longs = {0, -1})
         @DisplayName("예약 생성 요청 시 테마 시간 식별자가 음수인 경우 404를 반환한다.")
@@ -104,6 +143,19 @@ class ReservationControllerTest {
                     .andExpectAll(
                             status().isBadRequest(),
                             jsonPath("$").value("예약 테마 식별자는 양수만 가능합니다.")
+                    );
+        }
+
+        @Test
+        @DisplayName("예약 생성 요청 시 예약 테마가 공백인 경우 경우 404를 반환한다.")
+        void createReservation_WhenThemeIsNull() throws Exception {
+            mockMvc.perform(MockMvcRequestBuilders.post("/reservations")
+                            .content(objectMapper.writeValueAsString(new CreateReservationRequest(
+                                    LocalDate.of(3000, 1, 1), "몰리", 1L, null)))
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpectAll(
+                            status().isBadRequest(),
+                            jsonPath("$").value("예약 등록 시 테마는 필수입니다.")
                     );
         }
 
