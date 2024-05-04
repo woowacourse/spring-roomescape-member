@@ -9,6 +9,7 @@ public record Theme(Long id, String name, String description, String thumbnail) 
 
     public Theme {
         Validator.nonNull(name, description, thumbnail);
+        Validator.notEmpty(name, thumbnail);
     }
 
     public Theme createWithId(Long id) {

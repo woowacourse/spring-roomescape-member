@@ -12,6 +12,7 @@ public record Reservation(Long id, String name, LocalDate date, ReservationTime 
 
     public Reservation {
         Validator.nonNull(name, date, time, theme);
+        Validator.notEmpty(name);
     }
 
     public boolean isBefore(LocalDateTime currentDateTime) {
