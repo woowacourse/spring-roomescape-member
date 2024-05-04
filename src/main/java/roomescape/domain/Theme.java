@@ -17,6 +17,10 @@ public class Theme {
         this(id, theme.name, theme.description, theme.thumbnail);
     }
 
+    public Theme(String name, String description, String thumbnail) {
+        this(null, name, description, thumbnail);
+    }
+
     public Theme(Long id, String name, String description, String thumbnail) {
         validateName(name);
         validateDescription(description);
@@ -43,10 +47,6 @@ public class Theme {
         if (thumbnail == null || thumbnail.isBlank()) {
             throw new RoomescapeException(EMPTY_THUMBNAIL);
         }
-    }
-
-    public Theme(String name, String description, String thumbnail) {
-        this(null, name, description, thumbnail);
     }
 
     public boolean isIdOf(long id) {

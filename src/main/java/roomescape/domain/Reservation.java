@@ -18,6 +18,11 @@ public class Reservation implements Comparable<Reservation> {
     private final ReservationTime time;
     private final Theme theme;
 
+    public Reservation(long id, Reservation reservationBeforeSave) {
+        this(id, reservationBeforeSave.name, reservationBeforeSave.date, reservationBeforeSave.time,
+                reservationBeforeSave.theme);
+    }
+
     public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
         this(null, name, date, time, theme);
     }
@@ -58,18 +63,6 @@ public class Reservation implements Comparable<Reservation> {
         }
     }
 
-    public Reservation(long id, Reservation reservationBeforeSave) {
-        this(id, reservationBeforeSave.name, reservationBeforeSave.date, reservationBeforeSave.time,
-                reservationBeforeSave.theme);
-    }
-
-    @Override
-    public int compareTo(Reservation other) {
-        LocalDateTime dateTime = LocalDateTime.of(date, time.getStartAt());
-        LocalDateTime otherDateTime = LocalDateTime.of(other.date, other.time.getStartAt());
-        return dateTime.compareTo(otherDateTime);
-    }
-
     public boolean isBefore(LocalDateTime base) {
         return this.getLocalDateTime().isBefore(base);
     }
@@ -97,6 +90,13 @@ public class Reservation implements Comparable<Reservation> {
 
     public boolean isSameTheme(Reservation reservation) {
         return this.theme.equals(reservation.theme);
+    }
+
+    @Override
+    public int compareTo(Reservation other) {
+        LocalDateTime dateTime = LocalDateTime.of(date, time.getStartAt());
+        LocalDateTime otherDateTime = LocalDateTime.of(other.date, other.time.getStartAt());
+        return dateTime.compareTo(otherDateTime);
     }
 
     public long getId() {
