@@ -16,16 +16,21 @@ import java.util.List;
 public class ReservationTimeDao {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
-    private final RowMapper<ReservationTime> timeRowMapper;
-    private final RowMapper<ReservationUserTime> userTimeRowMapper;
+    private final RowMapper<ReservationTime> timeRowMapper = (resultSet, rowNum) ->
+            new ReservationTime(
+                    resultSet.getLong("id"),
+                    resultSet.getString("start_at"));
+    private final RowMapper<ReservationUserTime> userTimeRowMapper = (resultSet, rowNum) ->
+            new ReservationUserTime(
+                    resultSet.getLong("id"),
+                    resultSet.getString("start_at"),
+                    resultSet.getBoolean("already_booked"));
 
-    public ReservationTimeDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource, final RowMapper<ReservationTime> timeRowMapper, final RowMapper<ReservationUserTime> userTimeRowMapper) {
+    public ReservationTimeDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("RESERVATION_TIME")
                 .usingGeneratedKeyColumns("id");
-        this.timeRowMapper = timeRowMapper;
-        this.userTimeRowMapper = userTimeRowMapper;
     }
 
     public long save(final ReservationTime reservationTime) {

@@ -15,14 +15,18 @@ import java.util.List;
 public class ThemeDao {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
-    private final RowMapper<Theme> rowMapper;
+    private final RowMapper<Theme> rowMapper = (resultSet, rowNum) ->
+            new Theme(
+                    resultSet.getLong("id"),
+                    resultSet.getString("name"),
+                    resultSet.getString("description"),
+                    resultSet.getString("thumbnail"));
 
-    public ThemeDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource, final RowMapper<Theme> rowMapper) {
+    public ThemeDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("THEME")
                 .usingGeneratedKeyColumns("id");
-        this.rowMapper = rowMapper;
     }
 
     public List<Theme> findAll() {
