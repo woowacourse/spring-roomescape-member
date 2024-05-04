@@ -41,13 +41,13 @@ public class ThemeService {
         return new ThemesResponse(response);
     }
 
-    public ThemeResponse createTheme(ThemeRequest request) {
+    public ThemeResponse addTheme(ThemeRequest request) {
         Theme theme = themeRepository.insert(new Theme(request.name(), request.description(), request.thumbnail()));
 
         return ThemeResponse.from(theme);
     }
 
-    public void deleteTheme(Long id) {
+    public void removeThemeById(Long id) {
         themeRepository.deleteById(id);
     }
 }

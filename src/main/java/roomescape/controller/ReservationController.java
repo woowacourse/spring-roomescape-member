@@ -36,12 +36,12 @@ public class ReservationController {
     public ResponseEntity<ReservationTimeInfosResponse> getReservationTimeInfos(
             @PathVariable Long themeId,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
-        return ResponseEntity.ok(reservationService.findReservationByDateAndThemeId(date, themeId));
+        return ResponseEntity.ok(reservationService.findReservationsByDateAndThemeId(date, themeId));
     }
 
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> saveReservation(@RequestBody ReservationRequest reservationRequest) {
-        ReservationResponse reservationResponse = reservationService.createReservation(reservationRequest);
+        ReservationResponse reservationResponse = reservationService.addReservation(reservationRequest);
 
         return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.id()))
                 .body(reservationResponse);
@@ -49,7 +49,7 @@ public class ReservationController {
 
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity<Void> removeReservation(@PathVariable Long id) {
-        reservationService.deleteReservation(id);
+        reservationService.removeReservationById(id);
 
         return ResponseEntity.noContent().build();
     }

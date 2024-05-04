@@ -38,7 +38,7 @@ public class ThemeController {
 
     @PostMapping("/themes")
     public ResponseEntity<ThemeResponse> saveTheme(@RequestBody ThemeRequest request) {
-        ThemeResponse response = themeService.createTheme(request);
+        ThemeResponse response = themeService.addTheme(request);
 
         return ResponseEntity.created(URI.create("/themes/" + response.id()))
                 .body(response);
@@ -46,7 +46,7 @@ public class ThemeController {
 
     @DeleteMapping("/themes/{id}")
     public ResponseEntity<Void> removeTheme(@PathVariable Long id) {
-        themeService.deleteTheme(id);
+        themeService.removeThemeById(id);
 
         return ResponseEntity.noContent().build();
     }

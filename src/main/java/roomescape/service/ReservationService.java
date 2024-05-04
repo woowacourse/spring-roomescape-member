@@ -45,7 +45,7 @@ public class ReservationService {
         return new ReservationsResponse(response);
     }
 
-    public ReservationTimeInfosResponse findReservationByDateAndThemeId(LocalDate date, Long themeId) {
+    public ReservationTimeInfosResponse findReservationsByDateAndThemeId(LocalDate date, Long themeId) {
         List<Time> allTimes = timeRepository.findAll();
         Set<Long> reservedTimes = reservationRepository.findByDateAndThemeId(date, themeId).stream()
                 .map(Reservation::getTime)
@@ -61,7 +61,7 @@ public class ReservationService {
         return new ReservationTimeInfosResponse(response);
     }
 
-    public ReservationResponse createReservation(ReservationRequest reservationRequest) {
+    public ReservationResponse addReservation(ReservationRequest reservationRequest) {
         LocalDate today = LocalDate.now();
         LocalDate requestDate = reservationRequest.date();
         Time time = timeRepository.findById(reservationRequest.timeId());
@@ -91,7 +91,7 @@ public class ReservationService {
         }
     }
 
-    public void deleteReservation(Long id) {
+    public void removeReservationById(Long id) {
         reservationRepository.deleteById(id);
     }
 }

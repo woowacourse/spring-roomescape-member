@@ -53,7 +53,7 @@ class TimeServiceTest {
         timeRepository.insert(new Time(LocalTime.of(12, 30)));
 
         // when & then
-        assertThatThrownBy(() -> timeService.createTime(new TimeRequest(LocalTime.of(12, 30))))
+        assertThatThrownBy(() -> timeService.addTime(new TimeRequest(LocalTime.of(12, 30))))
                 .isInstanceOf(ConflictException.class);
     }
 
@@ -68,7 +68,7 @@ class TimeServiceTest {
         reservationRepository.insert(new Reservation("예약", LocalDate.now().plusDays(1L), time, theme));
 
         // then
-        assertThatThrownBy(() -> timeService.deleteTime(time.getId()))
+        assertThatThrownBy(() -> timeService.removeTimeById(time.getId()))
                 .isInstanceOf(ConflictException.class);
     }
 }

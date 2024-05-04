@@ -41,10 +41,10 @@ class ReservationServiceTest {
         Theme theme = themeRepository.insert(new Theme("테마명", "설명", "썸네일URL"));
 
         // when & then
-        reservationService.createReservation(
+        reservationService.addReservation(
                 new ReservationRequest("예약", LocalDate.now().plusDays(1L), time.getId(), theme.getId()));
 
-        assertThatThrownBy(() -> reservationService.createReservation(
+        assertThatThrownBy(() -> reservationService.addReservation(
                 new ReservationRequest("예약", LocalDate.now().plusDays(1L), time.getId(), theme.getId())))
                 .isInstanceOf(ConflictException.class);
     }
@@ -58,7 +58,7 @@ class ReservationServiceTest {
         LocalDate beforeDate = LocalDate.now().minusDays(1L);
 
         // when & then
-        assertThatThrownBy(() -> reservationService.createReservation(
+        assertThatThrownBy(() -> reservationService.addReservation(
                 new ReservationRequest("예약", beforeDate, time.getId(), theme.getId())))
                 .isInstanceOf(ConflictException.class);
     }
@@ -74,7 +74,7 @@ class ReservationServiceTest {
 
         // when & then
         // TODO: 00:30분 일때 1시간 전은 23:30분 이기 때문에 이전 시간으로 인식하지 않아 테스트코드 실패하는 문제 해결
-        assertThatThrownBy(() -> reservationService.createReservation(
+        assertThatThrownBy(() -> reservationService.addReservation(
                 new ReservationRequest("예약", LocalDate.now(), time.getId(), theme.getId())))
                 .isInstanceOf(ConflictException.class);
     }
