@@ -27,19 +27,19 @@ public class ReservationController {
     private final ReservationTimeService reservationTimeService;
     private final ThemeService themeService;
 
-    public ReservationController(ReservationService reservationService,
-                                 ReservationTimeService reservationTimeService,
-                                 ThemeService themeService) {
+    public ReservationController(final ReservationService reservationService,
+                                 final ReservationTimeService reservationTimeService,
+                                 final ThemeService themeService) {
         this.reservationService = reservationService;
         this.reservationTimeService = reservationTimeService;
         this.themeService = themeService;
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> createReservation(@RequestBody ReservationSaveRequest request) {
-        ReservationTimeResponse reservationTimeResponse = reservationTimeService.findById(request.timeId());
-        ThemeResponse themeResponse = themeService.findById(request.themeId());
-        Reservation reservation = request.toModel(themeResponse, reservationTimeResponse);
+    public ResponseEntity<ReservationResponse> createReservation(@RequestBody final ReservationSaveRequest request) {
+        final ReservationTimeResponse reservationTimeResponse = reservationTimeService.findById(request.timeId());
+        final ThemeResponse themeResponse = themeService.findById(request.themeId());
+        final Reservation reservation = request.toModel(themeResponse, reservationTimeResponse);
         return ResponseEntity.status(HttpStatus.CREATED).body(reservationService.create(reservation));
     }
 
@@ -49,7 +49,7 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteReservation(@PathVariable final Long id) {
         reservationService.delete(id);
         return ResponseEntity.noContent().build();
     }

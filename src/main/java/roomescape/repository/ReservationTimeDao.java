@@ -7,11 +7,11 @@ import java.util.Optional;
 
 public interface ReservationTimeDao {
 
-    ReservationTime save(ReservationTime reservationTime);
+    ReservationTime save(final ReservationTime reservationTime);
 
     List<ReservationTime> findAll();
 
     void deleteById(Long id);
 
-    Optional<ReservationTime> findById(Long id);
+    Optional<ReservationTime> findById(final Long id);
 }

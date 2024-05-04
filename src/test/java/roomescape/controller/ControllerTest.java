@@ -11,6 +11,7 @@ import roomescape.service.ThemeService;
 
 @WebMvcTest
 abstract class ControllerTest {
+
     @Autowired
     protected MockMvc mockMvc;
 

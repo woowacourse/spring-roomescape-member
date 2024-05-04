@@ -11,7 +11,7 @@ public record ReservationResponse(
         ReservedThemeResponse theme
 ) {
 
-    public static ReservationResponse from(Reservation reservation) {
+    public static ReservationResponse from(final Reservation reservation) {
         return new ReservationResponse(
                 reservation.getId(),
                 reservation.getName(),

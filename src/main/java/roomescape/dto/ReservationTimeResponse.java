@@ -10,8 +10,8 @@ public record ReservationTimeResponse(
 ) {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
-    public static ReservationTimeResponse from(ReservationTime reservationTime) {
-        String startAt = reservationTime.getStartAt().format(FORMATTER);
+    public static ReservationTimeResponse from(final ReservationTime reservationTime) {
+        final String startAt = reservationTime.getStartAt().format(FORMATTER);
         return new ReservationTimeResponse(reservationTime.getId(), startAt);
     }
 }

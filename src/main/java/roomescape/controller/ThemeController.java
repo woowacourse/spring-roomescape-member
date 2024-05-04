@@ -15,13 +15,13 @@ import java.util.List;
 public class ThemeController {
     private final ThemeService themeService;
 
-    public ThemeController(ThemeService themeService) {
+    public ThemeController(final ThemeService themeService) {
         this.themeService = themeService;
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponse> createTheme(@RequestBody ThemeSaveRequest request) {
-        Theme theme = request.toModel();
+    public ResponseEntity<ThemeResponse> createTheme(@RequestBody final ThemeSaveRequest request) {
+        final Theme theme = request.toModel();
         return ResponseEntity.status(HttpStatus.CREATED).body(themeService.create(theme));
     }
 
@@ -31,7 +31,7 @@ public class ThemeController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteById(@PathVariable final Long id) {
         themeService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

@@ -46,7 +46,7 @@ class ReservationTimeServiceTest {
                 .willReturn(expectedReservationTime);
 
         // when
-        ReservationTimeResponse response = reservationTimeService.create(reservationTime);
+        final ReservationTimeResponse response = reservationTimeService.create(reservationTime);
 
         // then
         assertAll(
@@ -59,13 +59,13 @@ class ReservationTimeServiceTest {
     @DisplayName("예약 시간 목록을 조회한다.")
     void getAll() {
         // given
-        ReservationTime reservationTime = new ReservationTime(MIA_RESERVATION_TIME);
+        final ReservationTime reservationTime = new ReservationTime(MIA_RESERVATION_TIME);
 
         given(reservationTimeDao.findAll())
                 .willReturn(List.of(reservationTime));
 
         // when
-        List<ReservationTimeResponse> responses = reservationTimeService.findAll();
+        final List<ReservationTimeResponse> responses = reservationTimeService.findAll();
 
         // then
         assertThat(responses).hasSize(1)
@@ -77,7 +77,7 @@ class ReservationTimeServiceTest {
     @DisplayName("예약 시간을 삭제한다.")
     void delete() {
         // given
-        ReservationTime reservationTime = new ReservationTime(MIA_RESERVATION_TIME);
+        final ReservationTime reservationTime = new ReservationTime(MIA_RESERVATION_TIME);
 
         given(reservationTimeDao.findById(anyLong()))
                 .willReturn(Optional.of(reservationTime));
@@ -91,7 +91,7 @@ class ReservationTimeServiceTest {
     @DisplayName("삭제하려는 예약 시간에 예약이 존재할 경우 예외가 발생한다.")
     void validateHasReservation() {
         // given
-        ReservationTime reservationTime = new ReservationTime(1L, MIA_RESERVATION_TIME);
+        final ReservationTime reservationTime = new ReservationTime(1L, MIA_RESERVATION_TIME);
 
         given(reservationTimeDao.findById(anyLong()))
                 .willReturn(Optional.of(reservationTime));
@@ -107,9 +107,9 @@ class ReservationTimeServiceTest {
     @DisplayName("선택한 날짜와 테마로 예약 가능한 시간 목록을 조회한다.")
     void findAvailableReservationTimes() {
         // given
-        LocalDate date = LocalDate.parse(MIA_RESERVATION_DATE);
-        Long themeId = 1L;
-        ReservationTime reservedTime = new ReservationTime(1L, MIA_RESERVATION_TIME);
+        final LocalDate date = LocalDate.parse(MIA_RESERVATION_DATE);
+        final Long themeId = 1L;
+        final ReservationTime reservedTime = new ReservationTime(1L, MIA_RESERVATION_TIME);
 
         given(reservationDao.findAllTimeIdsByDateAndThemeId(date, themeId))
                 .willReturn(List.of(1L));
@@ -117,7 +117,7 @@ class ReservationTimeServiceTest {
                 .willReturn(List.of(reservedTime, new ReservationTime(2L, "16:00")));
 
         // when
-        List<AvailableReservationTimeResponse> availableReservationTimes
+        final List<AvailableReservationTimeResponse> availableReservationTimes
                 = reservationTimeService.findAvailableReservationTimes(date, themeId);
 
         // then

@@ -22,14 +22,15 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.TestFixture.*;
 
 class ReservationJdbcDaoTest extends RepositoryTest {
+
     @Autowired
     private ReservationDao reservationDao;
 
     @BeforeEach
     void setUp() {
-        String insertTimeSql = "INSERT INTO reservation_time (start_at) VALUES (?)";
+        final String insertTimeSql = "INSERT INTO reservation_time (start_at) VALUES (?)";
         jdbcTemplate.update(insertTimeSql, Time.valueOf(LocalTime.parse(MIA_RESERVATION_TIME)));
-        String insertThemeSql = "INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)";
+        final String insertThemeSql = "INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)";
         jdbcTemplate.update(insertThemeSql, WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL);
     }
 
@@ -37,11 +38,11 @@ class ReservationJdbcDaoTest extends RepositoryTest {
     @DisplayName("예약을 저장한다.")
     void save() {
         // given
-        Long timeId = 1L;
-        Reservation reservation = MIA_RESERVATION(new ReservationTime(timeId, MIA_RESERVATION_TIME), WOOTECO_THEME());
+        final Long timeId = 1L;
+        final Reservation reservation = MIA_RESERVATION(new ReservationTime(timeId, MIA_RESERVATION_TIME), WOOTECO_THEME());
 
         // when
-        Reservation savedReservation = reservationDao.save(reservation);
+        final Reservation savedReservation = reservationDao.save(reservation);
 
         // then
         assertThat(savedReservation.getId()).isNotNull();
@@ -51,9 +52,9 @@ class ReservationJdbcDaoTest extends RepositoryTest {
     @DisplayName("동일 시간대의 예약 목록을 조회한다.")
     void findAllByDateAndTime() {
         // given
-        Long timeId = 1L;
-        Long themeId = 1L;
-        String insertSql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?), (?, ?, ?, ?)";
+        final Long timeId = 1L;
+        final Long themeId = 1L;
+        final String insertSql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?), (?, ?, ?, ?)";
         jdbcTemplate.update(
                 insertSql,
                 USER_MIA, Date.valueOf(MIA_RESERVATION_DATE), timeId, themeId,
@@ -61,7 +62,7 @@ class ReservationJdbcDaoTest extends RepositoryTest {
         );
 
         // when
-        List<Reservation> reservations = reservationDao.findAllByDateAndTimeAndThemeId(
+        final List<Reservation> reservations = reservationDao.findAllByDateAndTimeAndThemeId(
                 LocalDate.parse(MIA_RESERVATION_DATE), new ReservationTime(MIA_RESERVATION_TIME), themeId);
 
         // then
@@ -74,16 +75,16 @@ class ReservationJdbcDaoTest extends RepositoryTest {
     @DisplayName("모든 예약 목록을 조회한다.")
     void findAll() {
         // given
-        Long timeId = 1L;
-        Long themeId = 1L;
-        String insertSql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
+        final Long timeId = 1L;
+        final Long themeId = 1L;
+        final String insertSql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
         jdbcTemplate.update(insertSql, USER_MIA, MIA_RESERVATION_DATE, timeId, themeId);
 
         // when
-        List<Reservation> reservations = reservationDao.findAll();
+        final List<Reservation> reservations = reservationDao.findAll();
 
         // then
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
+        final Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
         assertAll(() -> {
             assertThat(reservations.size()).isEqualTo(count);
             assertThat(reservations).extracting(Reservation::getTheme)
@@ -101,8 +102,8 @@ class ReservationJdbcDaoTest extends RepositoryTest {
         // given
         long timeId = 1L;
         long themeId = 1L;
-        String insertSql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
+        final String insertSql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
+        final KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(insertSql, new String[]{"id"});
             ps.setString(1, USER_MIA);
@@ -111,10 +112,10 @@ class ReservationJdbcDaoTest extends RepositoryTest {
             ps.setLong(4, themeId);
             return ps;
         }, keyHolder);
-        Long id = keyHolder.getKey().longValue();
+        final Long id = keyHolder.getKey().longValue();
 
         // when
-        boolean isExist = reservationDao.existById(id);
+        final boolean isExist = reservationDao.existById(id);
 
         // then
         assertThat(isExist).isTrue();
@@ -124,10 +125,10 @@ class ReservationJdbcDaoTest extends RepositoryTest {
     @DisplayName("Id에 해당하는 예약이 없다면 false를 반환한다.")
     void findByNotExistingId() {
         // given
-        Long id = 1L;
+        final Long id = 1L;
 
         // when
-        boolean isExist = reservationDao.existById(id);
+        final boolean isExist = reservationDao.existById(id);
 
         // then
         assertThat(isExist).isFalse();
@@ -137,9 +138,9 @@ class ReservationJdbcDaoTest extends RepositoryTest {
     @DisplayName("Id로 예약을 삭제한다.")
     void deleteById() {
         // given
-        long timeId = 1L;
-        String insertSql = "INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
+        final long timeId = 1L;
+        final String insertSql = "INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)";
+        final KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(insertSql, new String[]{"id"});
             ps.setString(1, USER_MIA);
@@ -147,13 +148,13 @@ class ReservationJdbcDaoTest extends RepositoryTest {
             ps.setLong(3, timeId);
             return ps;
         }, keyHolder);
-        Long id = keyHolder.getKey().longValue();
+        final Long id = keyHolder.getKey().longValue();
 
         // when
         reservationDao.deleteById(id);
 
         // then
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation where id = ?", Integer.class, id);
+        final Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation where id = ?", Integer.class, id);
         assertThat(count).isEqualTo(0);
     }
 
@@ -161,10 +162,10 @@ class ReservationJdbcDaoTest extends RepositoryTest {
     @DisplayName("timeId에 해당하는 예약 건수를 조회한다.")
     void countByTimeId() {
         // given
-        long timeId = 2L;
+        final long timeId = 2L;
 
         // when
-        int count = reservationDao.countByTimeId(timeId);
+        final int count = reservationDao.countByTimeId(timeId);
 
         // then
         assertThat(count).isEqualTo(0);
@@ -174,9 +175,9 @@ class ReservationJdbcDaoTest extends RepositoryTest {
     @DisplayName("날짜와 themeId로 예약 목록을 조회한다.")
     void findAllByDateAndThemeId() {
         // given
-        Long timeId = 1L;
-        Long themeId = 1L;
-        String insertSql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?), (?, ?, ?, ?)";
+        final Long timeId = 1L;
+        final Long themeId = 1L;
+        final String insertSql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?), (?, ?, ?, ?)";
         jdbcTemplate.update(
                 insertSql,
                 USER_MIA, Date.valueOf(MIA_RESERVATION_DATE), timeId, themeId,
@@ -184,7 +185,7 @@ class ReservationJdbcDaoTest extends RepositoryTest {
         );
 
         // when
-        List<Long> reservationsByDateAndThemeId = reservationDao.findAllTimeIdsByDateAndThemeId(LocalDate.parse(MIA_RESERVATION_DATE), themeId);
+        final List<Long> reservationsByDateAndThemeId = reservationDao.findAllTimeIdsByDateAndThemeId(LocalDate.parse(MIA_RESERVATION_DATE), themeId);
 
         // then
         assertThat(reservationsByDateAndThemeId).hasSize(2);

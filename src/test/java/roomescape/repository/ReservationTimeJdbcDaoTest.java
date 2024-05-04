@@ -24,10 +24,10 @@ class ReservationTimeJdbcDaoTest extends RepositoryTest {
     @DisplayName("예약 시간을 저장한다.")
     void save() {
         // given
-        ReservationTime reservationTime = new ReservationTime(MIA_RESERVATION_TIME);
+        final ReservationTime reservationTime = new ReservationTime(MIA_RESERVATION_TIME);
 
         // when
-        ReservationTime savedReservationTime = reservationTimeDao.save(reservationTime);
+        final ReservationTime savedReservationTime = reservationTimeDao.save(reservationTime);
 
         // when
         assertThat(savedReservationTime.getId()).isNotNull();
@@ -37,14 +37,14 @@ class ReservationTimeJdbcDaoTest extends RepositoryTest {
     @DisplayName("예약 시간 목록을 조회한다.")
     void findAll() {
         // given
-        String insertSql = "INSERT INTO reservation_time (start_at) VALUES (?)";
+        final String insertSql = "INSERT INTO reservation_time (start_at) VALUES (?)";
         jdbcTemplate.update(insertSql, MIA_RESERVATION_TIME.toString());
 
         // when
-        List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
+        final List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
 
         // then
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation_time", Integer.class);
+        final Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation_time", Integer.class);
         assertThat(reservationTimes.size()).isEqualTo(count);
     }
 
@@ -52,17 +52,17 @@ class ReservationTimeJdbcDaoTest extends RepositoryTest {
     @DisplayName("Id로 예약 시간을 조회한다.")
     void findById() {
         // given
-        String insertSql = "INSERT INTO reservation_time (start_at) VALUES (?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
+        final String insertSql = "INSERT INTO reservation_time (start_at) VALUES (?)";
+        final KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(insertSql, new String[]{"id"});
             ps.setTime(1, Time.valueOf(LocalTime.parse(MIA_RESERVATION_TIME)));
             return ps;
         }, keyHolder);
-        Long id = keyHolder.getKey().longValue();
+        final Long id = keyHolder.getKey().longValue();
 
         // when
-        Optional<ReservationTime> reservationTime = reservationTimeDao.findById(id);
+        final Optional<ReservationTime> reservationTime = reservationTimeDao.findById(id);
 
         // then
         assertThat(reservationTime).isPresent();
@@ -72,10 +72,10 @@ class ReservationTimeJdbcDaoTest extends RepositoryTest {
     @DisplayName("Id에 해당하는 예약 시간이 없다면 빈 Optional을 반환한다.")
     void findByNotExistingId() {
         // given
-        Long id = 1L;
+        final Long id = 1L;
 
         // when
-        Optional<ReservationTime> reservationTime = reservationTimeDao.findById(id);
+        final Optional<ReservationTime> reservationTime = reservationTimeDao.findById(id);
 
         // then
         assertThat(reservationTime).isEmpty();
@@ -85,20 +85,20 @@ class ReservationTimeJdbcDaoTest extends RepositoryTest {
     @DisplayName("Id로 예약 시간을 삭제한다.")
     void deleteById() {
         // given
-        String insertSql = "INSERT INTO reservation_time (start_at) VALUES (?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
+        final String insertSql = "INSERT INTO reservation_time (start_at) VALUES (?)";
+        final KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(insertSql, new String[]{"id"});
             ps.setTime(1, Time.valueOf(LocalTime.parse(MIA_RESERVATION_TIME)));
             return ps;
         }, keyHolder);
-        Long id = keyHolder.getKey().longValue();
+        final Long id = keyHolder.getKey().longValue();
 
         // when
         reservationTimeDao.deleteById(id);
 
         // then
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation_time where id = ?", Integer.class, id);
+        final Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation_time where id = ?", Integer.class, id);
         assertThat(count).isEqualTo(0);
     }
 }

@@ -17,6 +17,7 @@ import static roomescape.TestFixture.*;
 @Sql("/test-schema.sql")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 abstract class ApiAcceptanceTest {
+
     @LocalServerPort
     private int port;
 
@@ -25,8 +26,8 @@ abstract class ApiAcceptanceTest {
         RestAssured.port = port;
     }
 
-    protected Long saveTheme(String name, String description) {
-        ThemeSaveRequest request = new ThemeSaveRequest(WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL);
+    protected Long saveTheme(final String name, final String description) {
+        final ThemeSaveRequest request = new ThemeSaveRequest(WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL);
         return RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(request)
@@ -36,8 +37,8 @@ abstract class ApiAcceptanceTest {
                 .id();
     }
 
-    protected Long saveReservationTime(String time) {
-        ReservationTimeSaveRequest request = new ReservationTimeSaveRequest(time);
+    protected Long saveReservationTime(final String time) {
+        final ReservationTimeSaveRequest request = new ReservationTimeSaveRequest(time);
         return RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(request)
@@ -47,8 +48,8 @@ abstract class ApiAcceptanceTest {
                 .id();
     }
 
-    protected Long saveReservation(Long timeId, Long themeId) {
-        ReservationSaveRequest request = new ReservationSaveRequest(USER_MIA, MIA_RESERVATION_DATE, timeId, themeId);
+    protected Long saveReservation(final Long timeId, final Long themeId) {
+        final ReservationSaveRequest request = new ReservationSaveRequest(USER_MIA, MIA_RESERVATION_DATE, timeId, themeId);
         return RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(request)
@@ -59,23 +60,23 @@ abstract class ApiAcceptanceTest {
                 .id();
     }
 
-    protected void checkHttpStatusOk(ExtractableResponse<Response> response) {
+    protected void checkHttpStatusOk(final ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    protected void checkHttpStatusCreated(ExtractableResponse<Response> response) {
+    protected void checkHttpStatusCreated(final ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
-    protected void checkHttpStatusNoContent(ExtractableResponse<Response> response) {
+    protected void checkHttpStatusNoContent(final ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    protected void checkHttpStatusBadRequest(ExtractableResponse<Response> response) {
+    protected void checkHttpStatusBadRequest(final ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    protected void checkHttpStatusNotFound(ExtractableResponse<Response> response) {
+    protected void checkHttpStatusNotFound(final ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 }

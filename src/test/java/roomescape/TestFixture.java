@@ -23,7 +23,7 @@ public class TestFixture {
         return MIA_RESERVATION(new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME());
     }
 
-    public static Reservation MIA_RESERVATION(ReservationTime time, Theme theme) {
+    public static Reservation MIA_RESERVATION(final ReservationTime time, final Theme theme) {
         return new Reservation(USER_MIA, MIA_RESERVATION_DATE, time, theme);
     }
 
@@ -38,7 +38,7 @@ public class TestFixture {
         return new Theme(WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL);
     }
 
-    public static Theme WOOTECO_THEME(Long id) {
+    public static Theme WOOTECO_THEME(final Long id) {
         return new Theme(id, WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL);
     }
 
@@ -46,7 +46,7 @@ public class TestFixture {
         return new Theme(HORROR_THEME_NAME, HORROR_THEME_DESCRIPTION, THEME_THUMBNAIL);
     }
 
-    public static Theme HORROR_THEME(Long id) {
+    public static Theme HORROR_THEME(final Long id) {
         return new Theme(id, HORROR_THEME_NAME, HORROR_THEME_DESCRIPTION, THEME_THUMBNAIL);
     }
 }

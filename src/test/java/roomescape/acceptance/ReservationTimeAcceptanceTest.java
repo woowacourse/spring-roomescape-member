@@ -27,15 +27,15 @@ class ReservationTimeAcceptanceTest extends ApiAcceptanceTest {
     @DisplayName("[Step7] 예약 시간을 추가한다.")
     void createReservationTime() {
         // given & when
-        ReservationTimeSaveRequest request = new ReservationTimeSaveRequest(MIA_RESERVATION_TIME);
+        final ReservationTimeSaveRequest request = new ReservationTimeSaveRequest(MIA_RESERVATION_TIME);
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when().post("/times")
                 .then().log().all()
                 .extract();
-        ReservationTimeResponse reservationTimeResponse = response.as(ReservationTimeResponse.class);
+        final ReservationTimeResponse reservationTimeResponse = response.as(ReservationTimeResponse.class);
 
         // then
         assertAll(() -> {
@@ -49,15 +49,15 @@ class ReservationTimeAcceptanceTest extends ApiAcceptanceTest {
     @DisplayName("[Step7] 잘못된 형식의 예약 시간을 추가한다.")
     void createReservationTime2() {
         // given & when
-        ReservationTimeSaveRequest request = new ReservationTimeSaveRequest("15:03");
+        final ReservationTimeSaveRequest request = new ReservationTimeSaveRequest("15:03");
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when().post("/times")
                 .then().log().all()
                 .extract();
-        ErrorResponse errorResponse = response.as(ErrorResponse.class);
+        final ErrorResponse errorResponse = response.as(ErrorResponse.class);
 
         // then
         assertAll(() -> {
@@ -70,11 +70,11 @@ class ReservationTimeAcceptanceTest extends ApiAcceptanceTest {
     @DisplayName("[Step7] 예약 시간 목록을 조회한다.")
     void findReservationTimes() {
         // given & when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when().get("/times")
                 .then().log().all()
                 .extract();
-        List<ReservationTimeResponse> reservationTimeResponse = Arrays.stream(
+        final List<ReservationTimeResponse> reservationTimeResponse = Arrays.stream(
                 response.as(ReservationTimeResponse[].class))
                 .toList();
 
@@ -100,11 +100,11 @@ class ReservationTimeAcceptanceTest extends ApiAcceptanceTest {
     @DisplayName("[Step7] 존재하지 않는 예약 시간을 삭제한다.")
     void deleteNotExistingReservationTime() {
         // given & when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when().delete("/times/10000")
                 .then().log().all()
                 .extract();
-        ErrorResponse errorResponse = response.as(ErrorResponse.class);
+        final ErrorResponse errorResponse = response.as(ErrorResponse.class);
 
         // then
         assertAll(() -> {
@@ -115,11 +115,11 @@ class ReservationTimeAcceptanceTest extends ApiAcceptanceTest {
 
     void findReservationTimesWithSizeOne() {
         // given & when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when().get("/times")
                 .then().log().all()
                 .extract();
-        List<ReservationTimeResponse> reservationTimeResponses = Arrays.stream(response.as(ReservationTimeResponse[].class))
+        final List<ReservationTimeResponse> reservationTimeResponses = Arrays.stream(response.as(ReservationTimeResponse[].class))
                 .toList();
 
         // then
@@ -133,7 +133,7 @@ class ReservationTimeAcceptanceTest extends ApiAcceptanceTest {
 
     void deleteOneReservationTime() {
         // given & when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when().delete("/times/1")
                 .then().log().all()
                 .extract();

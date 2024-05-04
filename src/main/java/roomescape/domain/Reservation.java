@@ -19,14 +19,6 @@ public class Reservation {
         this(null, name, date, time, theme);
     }
 
-    public Reservation(final Long id, Reservation reservation) {
-        this.id = id;
-        this.name = reservation.name;
-        this.date = reservation.date;
-        this.time = reservation.time;
-        this.theme = reservation.theme;
-    }
-
     public Reservation(final Long id, final String name, final String date,
                        final ReservationTime time, final Theme theme) {
         this(id, name, convertToLocalDate(date), time, theme);
@@ -43,7 +35,7 @@ public class Reservation {
         this.theme = theme;
     }
 
-    private static LocalDate convertToLocalDate(String date) {
+    private static LocalDate convertToLocalDate(final String date) {
         if (date == null || date.isEmpty()) {
             throw new IllegalArgumentException("예약 날짜가 비어있습니다.");
         }
@@ -54,7 +46,7 @@ public class Reservation {
         }
     }
 
-    private void validateName(String name) {
+    private void validateName(final String name) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("예약자 이름은 비어있을 수 없습니다.");
         }
@@ -64,13 +56,13 @@ public class Reservation {
         }
     }
 
-    private void validateDate(LocalDate date) {
+    private void validateDate(final LocalDate date) {
         if (date.isBefore(LocalDate.now()) || date.equals(LocalDate.now())) {
             throw new IllegalArgumentException("이전 날짜 혹은 당일은 예약할 수 없습니다.");
         }
     }
 
-    public boolean hasSameDateTime(LocalDate date, ReservationTime time) {
+    public boolean hasSameDateTime(final LocalDate date, final ReservationTime time) {
         return this.time.equals(time) && this.date.equals(date);
     }
 

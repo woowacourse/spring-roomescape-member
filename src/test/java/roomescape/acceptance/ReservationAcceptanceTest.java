@@ -22,16 +22,17 @@ import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 import static roomescape.TestFixture.*;
 
 class ReservationAcceptanceTest extends ApiAcceptanceTest {
+
     @Test
     @DisplayName("[Step2, Step5] 예약 목록을 조회한다.")
     void findReservations() {
         // given & when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
                 .extract();
-        List<ReservationResponse> reservationResponses = Arrays.stream(response.as(ReservationResponse[].class))
-                .toList();
+        final List<ReservationResponse> reservationResponses
+                = Arrays.stream(response.as(ReservationResponse[].class)).toList();
 
         // then
         assertAll(() -> {
@@ -44,17 +45,17 @@ class ReservationAcceptanceTest extends ApiAcceptanceTest {
     @DisplayName("[Step3, Step6, Step8] 예약을 추가한다.")
     void createOneReservation() {
         // given & when
-        Long themeId = saveTheme(WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION);
-        Long timeId = saveReservationTime(MIA_RESERVATION_TIME);
+        final Long themeId = saveTheme(WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION);
+        final Long timeId = saveReservationTime(MIA_RESERVATION_TIME);
 
-        ReservationSaveRequest request = new ReservationSaveRequest(USER_MIA, MIA_RESERVATION_DATE, timeId, themeId);
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        final ReservationSaveRequest request = new ReservationSaveRequest(USER_MIA, MIA_RESERVATION_DATE, timeId, themeId);
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when().post("/reservations")
                 .then().log().all()
                 .extract();
-        ReservationResponse reservationResponse = response.as(ReservationResponse.class);
+        final ReservationResponse reservationResponse = response.as(ReservationResponse.class);
 
         // then
         assertAll(() -> {
@@ -68,17 +69,17 @@ class ReservationAcceptanceTest extends ApiAcceptanceTest {
     @DisplayName("[Step3, Step6, Step8] 잘못된 형식의 예약을 추가한다.")
     void createInvalidReservation() {
         // given & when
-        Long themeId = saveTheme(WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION);
-        Long timeId = saveReservationTime(MIA_RESERVATION_TIME);
+        final Long themeId = saveTheme(WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION);
+        final Long timeId = saveReservationTime(MIA_RESERVATION_TIME);
 
-        ReservationSaveRequest request = new ReservationSaveRequest(null, MIA_RESERVATION_DATE, timeId, themeId);
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        final ReservationSaveRequest request = new ReservationSaveRequest(null, MIA_RESERVATION_DATE, timeId, themeId);
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when().post("/reservations")
                 .then().log().all()
                 .extract();
-        ErrorResponse errorResponse = response.as(ErrorResponse.class);
+        final ErrorResponse errorResponse = response.as(ErrorResponse.class);
 
         // then
         assertAll(() -> {
@@ -91,17 +92,17 @@ class ReservationAcceptanceTest extends ApiAcceptanceTest {
     @DisplayName("[Step3, Step6, Step8] 존재하지 않는 예약 시간에 예약을 추가한다.")
     void createReservationWithNotExistingTime() {
         // given & when
-        Long notExistingTimeId = 1L;
-        Long themeId = saveTheme(WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION);
+        final Long notExistingTimeId = 1L;
+        final Long themeId = saveTheme(WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION);
 
-        ReservationSaveRequest request = new ReservationSaveRequest(USER_MIA, MIA_RESERVATION_DATE, notExistingTimeId, themeId);
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        final ReservationSaveRequest request = new ReservationSaveRequest(USER_MIA, MIA_RESERVATION_DATE, notExistingTimeId, themeId);
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when().post("/reservations")
                 .then().log().all()
                 .extract();
-        ErrorResponse errorResponse = response.as(ErrorResponse.class);
+        final ErrorResponse errorResponse = response.as(ErrorResponse.class);
 
         // then
         assertAll(() -> {
@@ -123,7 +124,7 @@ class ReservationAcceptanceTest extends ApiAcceptanceTest {
 
     void deleteOneReservation() {
         // given & when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .extract();
@@ -132,13 +133,13 @@ class ReservationAcceptanceTest extends ApiAcceptanceTest {
         checkHttpStatusNoContent(response);
     }
 
-    void findReservationsWithSize(int size) {
+    void findReservationsWithSize(final int size) {
         // given & when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
                 .extract();
-        List<ReservationResponse> reservationResponses = Arrays.stream(response.as(ReservationResponse[].class))
+        final List<ReservationResponse> reservationResponses = Arrays.stream(response.as(ReservationResponse[].class))
                 .toList();
 
         // then
@@ -154,11 +155,11 @@ class ReservationAcceptanceTest extends ApiAcceptanceTest {
     @DisplayName("[Step3, Step6, Step8] 존재하지 않는 예약을 삭제한다.")
     void deleteNotExistingReservation() {
         // given & when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .extract();
-        ErrorResponse errorResponse = response.as(ErrorResponse.class);
+        final ErrorResponse errorResponse = response.as(ErrorResponse.class);
 
         // then
         assertAll(() -> {

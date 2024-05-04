@@ -36,13 +36,13 @@ class ThemeServiceTest {
     @DisplayName("테마를 생성한다.")
     void create() {
         // given
-        Theme expectedTheme = WOOTECO_THEME(1L);
+        final Theme expectedTheme = WOOTECO_THEME(1L);
 
         given(themeDao.save(any()))
                 .willReturn(expectedTheme);
 
         // when
-        ThemeResponse response = themeService.create(expectedTheme);
+        final ThemeResponse response = themeService.create(expectedTheme);
 
         // then
         assertThat(response.id()).isEqualTo(expectedTheme.getId());
@@ -52,16 +52,16 @@ class ThemeServiceTest {
     @DisplayName("테마 목록을 조회한다.")
     void findAll() {
         // given
-        List<Theme> expectedThemes = List.of(WOOTECO_THEME(1L));
+        final List<Theme> expectedThemes = List.of(WOOTECO_THEME(1L));
 
         given(themeDao.findAll())
                 .willReturn(expectedThemes);
 
         // when
-        List<ThemeResponse> responses = themeService.findAll();
+        final List<ThemeResponse> responses = themeService.findAll();
 
         // then
-        ThemeResponse expectedResponse = ThemeResponse.from(WOOTECO_THEME(1L));
+        final ThemeResponse expectedResponse = ThemeResponse.from(WOOTECO_THEME(1L));
         assertThat(responses).hasSize(1)
                 .containsExactly(expectedResponse);
     }
@@ -70,13 +70,13 @@ class ThemeServiceTest {
     @DisplayName("Id로 테마를 조회한다.")
     void findById() {
         // given
-        Theme expectedTheme = WOOTECO_THEME(1L);
+        final Theme expectedTheme = WOOTECO_THEME(1L);
 
         given(themeDao.findById(anyLong()))
                 .willReturn(Optional.of(expectedTheme));
 
         // when
-        ThemeResponse themeResponse = themeService.findById(1L);
+        final ThemeResponse themeResponse = themeService.findById(1L);
 
         // then
         assertAll(() -> {
@@ -101,7 +101,7 @@ class ThemeServiceTest {
     @DisplayName("테마를 삭제한다.")
     void deleteById() {
         // given
-        Theme theme = WOOTECO_THEME(1L);
+        final Theme theme = WOOTECO_THEME(1L);
 
         given(themeDao.findById(anyLong()))
                 .willReturn(Optional.of(theme));
@@ -127,17 +127,17 @@ class ThemeServiceTest {
     @DisplayName("최근 일주일을 기준으로 예약이 많은 순으로 테마 10개 목록을 조회한다.")
     void findAllPopular() {
         // given
-        List<Theme> expectedThemes = List.of(WOOTECO_THEME(1L), HORROR_THEME(2L));
+        final List<Theme> expectedThemes = List.of(WOOTECO_THEME(1L), HORROR_THEME(2L));
 
         given(themeDao.findAllOrderByReservationCountInLastWeek())
                 .willReturn(expectedThemes);
 
         // when
-        List<ThemeResponse> responses = themeService.findAllPopular();
+        final List<ThemeResponse> responses = themeService.findAllPopular();
 
         // then
-        ThemeResponse expectedWootecoTheme = ThemeResponse.from(WOOTECO_THEME(1L));
-        ThemeResponse expectedHorrorTheme = ThemeResponse.from(HORROR_THEME(2L));
+        final ThemeResponse expectedWootecoTheme = ThemeResponse.from(WOOTECO_THEME(1L));
+        final ThemeResponse expectedHorrorTheme = ThemeResponse.from(HORROR_THEME(2L));
         assertThat(responses).hasSize(2)
                 .containsExactly(expectedWootecoTheme, expectedHorrorTheme);
     }

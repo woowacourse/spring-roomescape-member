@@ -8,17 +8,17 @@ import java.util.List;
 
 public interface ReservationDao {
 
-    Reservation save(Reservation reservation);
+    Reservation save(final Reservation reservation);
 
-    List<Reservation> findAllByDateAndTimeAndThemeId(LocalDate date, ReservationTime time, Long themeId);
+    List<Reservation> findAllByDateAndTimeAndThemeId(final LocalDate date, final ReservationTime time, final Long themeId);
 
     List<Reservation> findAll();
 
-    boolean existById(Long id);
+    boolean existById(final Long id);
 
-    void deleteById(Long id);
+    void deleteById(final Long id);
 
-    int countByTimeId(Long timeId);
+    int countByTimeId(final Long timeId);
 
-    List<Long> findAllTimeIdsByDateAndThemeId(LocalDate date, Long themeId);
+    List<Long> findAllTimeIdsByDateAndThemeId(final LocalDate date, final Long themeId);
 }

@@ -2,7 +2,7 @@ package roomescape.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -13,7 +13,6 @@ import static roomescape.TestFixture.*;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.BDDMockito;
 import org.springframework.http.MediaType;
 import roomescape.dto.ThemeResponse;
 import roomescape.dto.ThemeSaveRequest;
@@ -27,8 +26,8 @@ class ThemeControllerTest extends ControllerTest {
     @DisplayName("테마 생성 POST 요청 시 상태코드 201을 반환한다.")
     void createTheme() throws Exception {
         // given
-        ThemeSaveRequest request = new ThemeSaveRequest(WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL);
-        ThemeResponse expectedResponse = new ThemeResponse(1L, WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL);
+        final ThemeSaveRequest request = new ThemeSaveRequest(WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL);
+        final ThemeResponse expectedResponse = new ThemeResponse(1L, WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL);
 
         given(themeService.create(any()))
                 .willReturn(expectedResponse);
@@ -49,7 +48,7 @@ class ThemeControllerTest extends ControllerTest {
     @DisplayName("테마 목록 GET 요청 시 상태코드 200을 반환한다.")
     void findAllThemes() throws Exception {
         // given
-        ThemeResponse expectedResponse = new ThemeResponse(1L, WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL);
+        final ThemeResponse expectedResponse = new ThemeResponse(1L, WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL);
 
         given(themeService.findAll())
                 .willReturn(List.of(expectedResponse));
@@ -69,7 +68,7 @@ class ThemeControllerTest extends ControllerTest {
     @DisplayName("테마 DELETE 요청 시 상태 코드 204를 반환한다.")
     void deleteTheme() throws Exception {
         // given
-        BDDMockito.willDoNothing()
+        willDoNothing()
                 .given(themeService)
                 .deleteById(anyLong());
 
@@ -83,7 +82,7 @@ class ThemeControllerTest extends ControllerTest {
     @DisplayName("존재하지 않는 테마 DELETE 요청 시 상태코드 404를 반환한다.")
     void deleteNotExistingTheme() throws Exception {
         // given
-        BDDMockito.willThrow(NotFoundException.class)
+        willThrow(NotFoundException.class)
                 .given(themeService)
                 .deleteById(anyLong());
 
@@ -98,8 +97,8 @@ class ThemeControllerTest extends ControllerTest {
     @DisplayName("최근 일주일 인기 테마 목록 GET 요청 시 상태코드 200을 반환한다.")
     void findAllPopular() throws Exception {
         // given
-        ThemeResponse expectedWootecoResponse = new ThemeResponse(1L, WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL);
-        ThemeResponse expectedHorrorResponse = new ThemeResponse(2L, HORROR_THEME_NAME, HORROR_THEME_DESCRIPTION, THEME_THUMBNAIL);
+        final ThemeResponse expectedWootecoResponse = new ThemeResponse(1L, WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL);
+        final ThemeResponse expectedHorrorResponse = new ThemeResponse(2L, HORROR_THEME_NAME, HORROR_THEME_DESCRIPTION, THEME_THUMBNAIL);
 
         given(themeService.findAllPopular())
                 .willReturn(List.of(expectedWootecoResponse, expectedHorrorResponse));

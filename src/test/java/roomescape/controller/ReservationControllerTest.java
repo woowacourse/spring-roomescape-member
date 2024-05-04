@@ -2,7 +2,7 @@ package roomescape.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -15,7 +15,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.BDDMockito;
 import org.springframework.http.MediaType;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -35,8 +34,8 @@ class ReservationControllerTest extends ControllerTest {
     @DisplayName("예약 목록 GET 요청 시 상태코드 200을 반환한다.")
     void findReservations() throws Exception {
         // given
-        ReservationTime expectedTime = new ReservationTime(1L, MIA_RESERVATION_TIME);
-        Reservation expectedReservation = MIA_RESERVATION(expectedTime, WOOTECO_THEME());
+        final ReservationTime expectedTime = new ReservationTime(1L, MIA_RESERVATION_TIME);
+        final Reservation expectedReservation = MIA_RESERVATION(expectedTime, WOOTECO_THEME());
 
         given(reservationService.findAll())
                 .willReturn(List.of(ReservationResponse.from(expectedReservation)));
@@ -56,10 +55,10 @@ class ReservationControllerTest extends ControllerTest {
     @DisplayName("예약 POST 요청 시 상태코드 201을 반환한다.")
     void createReservation() throws Exception {
         // given
-        ReservationSaveRequest request = new ReservationSaveRequest(USER_MIA, MIA_RESERVATION_DATE, 1L, 1L);
-        ReservationTime expectedTime = new ReservationTime(1L, MIA_RESERVATION_TIME);
-        Theme expectedTheme = WOOTECO_THEME(1L);
-        ReservationResponse expectedResponse = ReservationResponse.from(MIA_RESERVATION(expectedTime, expectedTheme));
+        final ReservationSaveRequest request = new ReservationSaveRequest(USER_MIA, MIA_RESERVATION_DATE, 1L, 1L);
+        final ReservationTime expectedTime = new ReservationTime(1L, MIA_RESERVATION_TIME);
+        final Theme expectedTheme = WOOTECO_THEME(1L);
+        final ReservationResponse expectedResponse = ReservationResponse.from(MIA_RESERVATION(expectedTime, expectedTheme));
 
         given(reservationService.create(any()))
                 .willReturn(expectedResponse);
@@ -85,8 +84,8 @@ class ReservationControllerTest extends ControllerTest {
     @DisplayName("잘못된 형식의 예약 POST 요청 시 상태코드 400을 반환한다.")
     void createReservationWithInvalidRequest(ReservationSaveRequest request) throws Exception {
         // given
-        ReservationTimeResponse timeResponse = ReservationTimeResponse.from(new ReservationTime(1L, MIA_RESERVATION_TIME));
-        ThemeResponse themeResponse = ThemeResponse.from(WOOTECO_THEME(1L));
+        final ReservationTimeResponse timeResponse = ReservationTimeResponse.from(new ReservationTime(1L, MIA_RESERVATION_TIME));
+        final ThemeResponse themeResponse = ThemeResponse.from(WOOTECO_THEME(1L));
 
         given(reservationService.create(any()))
                 .willThrow(IllegalArgumentException.class);
@@ -115,15 +114,15 @@ class ReservationControllerTest extends ControllerTest {
     @DisplayName("존재하지 않는 예약 시간의 예약 POST 요청 시 상태코드 404를 반환한다.")
     void createReservationWithNotExistTime() throws Exception {
         // given
-        Long notExistingTimeId = 1L;
-        Long themeId = 1L;
-        ThemeResponse themeResponse = ThemeResponse.from(WOOTECO_THEME(themeId));
-        ReservationSaveRequest request = new ReservationSaveRequest(USER_MIA, MIA_RESERVATION_DATE, notExistingTimeId, themeId);
+        final Long notExistingTimeId = 1L;
+        final Long themeId = 1L;
+        final ThemeResponse themeResponse = ThemeResponse.from(WOOTECO_THEME(themeId));
+        final ReservationSaveRequest request = new ReservationSaveRequest(USER_MIA, MIA_RESERVATION_DATE, notExistingTimeId, themeId);
 
         given(themeService.findById(themeId))
                 .willReturn(themeResponse);
 
-        BDDMockito.willThrow(NotFoundException.class)
+        willThrow(NotFoundException.class)
                 .given(reservationTimeService)
                 .findById(anyLong());
 
@@ -140,7 +139,7 @@ class ReservationControllerTest extends ControllerTest {
     @DisplayName("예약 DELETE 요청 시 상태코드 204를 반환한다.")
     void deleteReservation() throws Exception {
         // given
-        BDDMockito.willDoNothing()
+        willDoNothing()
                 .given(reservationService)
                 .delete(anyLong());
 
@@ -155,7 +154,7 @@ class ReservationControllerTest extends ControllerTest {
     @DisplayName("존재하지 않는 예약 DELETE 요청 시 상태코드 404를 반환한다.")
     void deleteNotExistingReservation() throws Exception {
         // given
-        BDDMockito.willThrow(NotFoundException.class)
+        willThrow(NotFoundException.class)
                 .given(reservationService)
                 .delete(anyLong());
 

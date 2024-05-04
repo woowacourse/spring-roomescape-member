@@ -18,13 +18,13 @@ import java.util.List;
 public class ReservationTimeController {
     private final ReservationTimeService reservationTimeService;
 
-    public ReservationTimeController(ReservationTimeService reservationTimeService) {
+    public ReservationTimeController(final ReservationTimeService reservationTimeService) {
         this.reservationTimeService = reservationTimeService;
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTimeResponse> createReservationTime(@RequestBody ReservationTimeSaveRequest request) {
-        ReservationTime reservationTime = request.toModel();
+    public ResponseEntity<ReservationTimeResponse> createReservationTime(@RequestBody final ReservationTimeSaveRequest request) {
+        final ReservationTime reservationTime = request.toModel();
         return ResponseEntity.status(HttpStatus.CREATED).body(reservationTimeService.create(reservationTime));
     }
 
@@ -34,14 +34,14 @@ public class ReservationTimeController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservationTime(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteReservationTime(@PathVariable final Long id) {
         reservationTimeService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/available")
     public ResponseEntity<List<AvailableReservationTimeResponse>> findAllByDateAndThemeId(
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date, @RequestParam Long themeId) {
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") final LocalDate date, @RequestParam final Long themeId) {
         return ResponseEntity.ok(reservationTimeService.findAvailableReservationTimes(date, themeId));
     }
 }

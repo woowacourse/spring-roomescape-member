@@ -7,13 +7,13 @@ import java.util.Optional;
 
 public interface ThemeDao {
 
-    Theme save(Theme theme);
+    Theme save(final Theme theme);
 
     List<Theme> findAll();
 
-    Optional<Theme> findById(Long id);
+    Optional<Theme> findById(final Long id);
 
-    void deleteById(Long id);
+    void deleteById(final Long id);
 
     List<Theme> findAllOrderByReservationCountInLastWeek();
 }

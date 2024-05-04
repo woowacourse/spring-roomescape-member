@@ -21,19 +21,20 @@ import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 import static roomescape.TestFixture.*;
 
 class ThemeAcceptanceTest extends ApiAcceptanceTest {
+
     @Test
     @DisplayName("[2 - Step2] 테마를 추가한다.")
     void createTheme() {
         // given & when
-        ThemeSaveRequest request = new ThemeSaveRequest(WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL);
+        final ThemeSaveRequest request = new ThemeSaveRequest(WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL);
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when().post("/themes")
                 .then().log().all()
                 .extract();
-        ThemeResponse themeResponse = response.as(ThemeResponse.class);
+        final ThemeResponse themeResponse = response.as(ThemeResponse.class);
 
         // then
         assertAll(() -> {
@@ -56,11 +57,11 @@ class ThemeAcceptanceTest extends ApiAcceptanceTest {
 
     void findAllThemesWithSize(int size) {
         // given & when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when().get("/themes")
                 .then().log().all()
                 .extract();
-        List<ThemeResponse> themeResponses = Arrays.stream(
+        final List<ThemeResponse> themeResponses = Arrays.stream(
                         response.as(ThemeResponse[].class))
                 .toList();
         // then
@@ -72,7 +73,7 @@ class ThemeAcceptanceTest extends ApiAcceptanceTest {
 
     void deleteOneTheme() {
         // given & when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when().delete("/themes/1")
                 .then().log().all()
                 .extract();
@@ -85,20 +86,20 @@ class ThemeAcceptanceTest extends ApiAcceptanceTest {
     @DisplayName("[2 - Step3] 인기 테마 목록을 조회한다.")
     void findAllPopularThemes() {
         // given & when
-        Long threeOClockId = saveReservationTime("15:00");
-        Long fourOClockId = saveReservationTime("16:00");
-        Long secondRankThemeId = saveTheme(WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION);
-        Long firstRankThemeId = saveTheme(HORROR_THEME_NAME, HORROR_THEME_DESCRIPTION);
+        final Long threeOClockId = saveReservationTime("15:00");
+        final Long fourOClockId = saveReservationTime("16:00");
+        final Long secondRankThemeId = saveTheme(WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION);
+        final Long firstRankThemeId = saveTheme(HORROR_THEME_NAME, HORROR_THEME_DESCRIPTION);
 
         saveReservation(threeOClockId, secondRankThemeId);
         saveReservation(threeOClockId, firstRankThemeId);
         saveReservation(fourOClockId, firstRankThemeId);
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        final ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when().get("/themes/popular")
                 .then().log().all()
                 .extract();
-        List<ThemeResponse> themeResponses = Arrays.stream(
+        final List<ThemeResponse> themeResponses = Arrays.stream(
                         response.as(ThemeResponse[].class))
                 .toList();
 

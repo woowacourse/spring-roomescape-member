@@ -17,7 +17,7 @@ class ReservationTest {
     @NullSource
     @ValueSource(strings = {"123", "", " "})
     @DisplayName("예약자 이름은 빈칸이거나 숫자로만 구성될 수 없다.")
-    void validateName(String invalidName) {
+    void validateName(final String invalidName) {
         // when & then
         assertThatThrownBy(() -> new Reservation(invalidName, MIA_RESERVATION_DATE, new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME()))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -26,7 +26,7 @@ class ReservationTest {
     @ParameterizedTest
     @MethodSource("invalidLocalDate")
     @DisplayName("예약 날짜는 현재 날짜 이후이다.")
-    void validateDate(LocalDate invalidDate) {
+    void validateDate(final LocalDate invalidDate) {
         // when & then
         assertThatThrownBy(() -> new Reservation(USER_MIA, invalidDate.toString(), new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME()))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -43,7 +43,7 @@ class ReservationTest {
     @NullSource
     @ValueSource(strings = {"", "22:00:00", "abc"})
     @DisplayName("예약 날짜 입력 값이 유효하지 않으면 변환할 수 없다.")
-    void convertToLocalDate(String invalidDate) {
+    void convertToLocalDate(final String invalidDate) {
         // when & then
         assertThatThrownBy(() -> new Reservation(USER_MIA, invalidDate, new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME()))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -52,12 +52,12 @@ class ReservationTest {
     @ParameterizedTest
     @MethodSource("reservationsAndExpectedResult")
     @DisplayName("예약이 동일한 예약 시간을 갖는지 확인한다.")
-    void hasSameDateTime(LocalDate date, String time, boolean expectedResult) {
+    void hasSameDateTime(final LocalDate date, final String time, final boolean expectedResult) {
         // given
-        Reservation reservation = MIA_RESERVATION(new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME());
+        final Reservation reservation = MIA_RESERVATION(new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME());
 
         // when
-        boolean actualResult = reservation.hasSameDateTime(date, new ReservationTime(time));
+        final boolean actualResult = reservation.hasSameDateTime(date, new ReservationTime(time));
 
         // then
         assertThat(actualResult).isEqualTo(expectedResult);

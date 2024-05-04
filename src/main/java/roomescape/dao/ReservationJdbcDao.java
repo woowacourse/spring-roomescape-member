@@ -79,7 +79,8 @@ public class ReservationJdbcDao implements ReservationDao {
                 .addValue("time_id", reservation.getReservationTimeId())
                 .addValue("theme_id", reservation.getThemeId());
         final Long id = jdbcInsert.executeAndReturnKey(params).longValue();
-        return new Reservation(Objects.requireNonNull(id), reservation);
+        return new Reservation(Objects.requireNonNull(id), reservation.getName(), reservation.getDate(),
+                reservation.getTime(), reservation.getTheme());
     }
 
     @Override
