@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalTime;
 
-public record ReservationAvailableTimeResponse(
+public record ReservationTimeInfoResponse(
 
         Long timeId,
 

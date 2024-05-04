@@ -1,17 +1,18 @@
 package roomescape.controller;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.is;
-
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
+
+import java.util.Map;
+
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
@@ -29,7 +30,7 @@ class ThemeControllerTest {
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("themes.size()", is(0));
     }
 
     @Test
@@ -95,7 +96,7 @@ class ThemeControllerTest {
                 .when().get("/themes/top?count=10")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(10))
-                .body("id", contains(1, 4, 2, 6, 3, 5, 7, 8, 9, 10));
+                .body("themes.size()", is(10))
+                .body("themes.id", contains(1, 4, 2, 6, 3, 5, 7, 8, 9, 10));
     }
 }

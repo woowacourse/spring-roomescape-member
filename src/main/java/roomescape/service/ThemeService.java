@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.theme.Theme;
 import roomescape.dto.theme.ThemeRequest;
 import roomescape.dto.theme.ThemeResponse;
+import roomescape.dto.theme.ThemesResponse;
 import roomescape.repository.ThemeRepository;
 
 import java.time.LocalDate;
@@ -18,22 +19,26 @@ public class ThemeService {
         this.themeRepository = themeRepository;
     }
 
-    public List<ThemeResponse> findAllThemes() {
-        return themeRepository.findAll()
+    public ThemesResponse findAllThemes() {
+        List<ThemeResponse> response = themeRepository.findAll()
                 .stream()
                 .map(ThemeResponse::from)
                 .toList();
+
+        return new ThemesResponse(response);
     }
 
-    public List<ThemeResponse> findTopNThemes(int count) {
+    public ThemesResponse findTopNThemes(int count) {
         LocalDate today = LocalDate.now();
         LocalDate startDate = today.minusDays(7);
         LocalDate endDate = today.minusDays(1);
 
-        return themeRepository.findTopNByReservationCount(startDate, endDate, count)
+        List<ThemeResponse> response = themeRepository.findTopNByReservationCount(startDate, endDate, count)
                 .stream()
                 .map(ThemeResponse::from)
                 .toList();
+
+        return new ThemesResponse(response);
     }
 
     public ThemeResponse createTheme(ThemeRequest request) {

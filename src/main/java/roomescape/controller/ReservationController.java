@@ -9,14 +9,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.dto.reservation.ReservationAvailableTimeResponse;
 import roomescape.dto.reservation.ReservationRequest;
 import roomescape.dto.reservation.ReservationResponse;
+import roomescape.dto.reservation.ReservationTimeInfosResponse;
+import roomescape.dto.reservation.ReservationsResponse;
 import roomescape.service.ReservationService;
 
 import java.net.URI;
 import java.time.LocalDate;
-import java.util.List;
 
 @RestController
 public class ReservationController {
@@ -27,15 +27,13 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<ReservationResponse>> readReservations() {
-        List<ReservationResponse> reservationResponses = reservationService.findAllReservations();
-
-        return ResponseEntity.ok(reservationResponses);
+    @GetMapping("/reservations")
+    public ResponseEntity<ReservationsResponse> readReservations() {
+        return ResponseEntity.ok(reservationService.findAllReservations());
     }
 
     @GetMapping("/reservations/themes/{themeId}")
-    public ResponseEntity<List<ReservationAvailableTimeResponse>> readAvailableTimeReservations(
+    public ResponseEntity<ReservationTimeInfosResponse> readAvailableTimeReservations(
             @PathVariable Long themeId,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
         return ResponseEntity.ok(reservationService.findReservationByDateAndThemeId(date, themeId));

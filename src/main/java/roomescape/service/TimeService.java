@@ -5,6 +5,7 @@ import roomescape.domain.reservation.Reservation;
 import roomescape.domain.time.Time;
 import roomescape.dto.time.TimeRequest;
 import roomescape.dto.time.TimeResponse;
+import roomescape.dto.time.TimesResponse;
 import roomescape.global.exception.model.ConflictException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.TimeRepository;
@@ -22,11 +23,13 @@ public class TimeService {
         this.reservationRepository = reservationRepository;
     }
 
-    public List<TimeResponse> findAllTimes() {
-        return timeRepository.findAll()
+    public TimesResponse findAllTimes() {
+        List<TimeResponse> response = timeRepository.findAll()
                 .stream()
                 .map(TimeResponse::from)
                 .toList();
+
+        return new TimesResponse(response);
     }
 
     public TimeResponse createTime(TimeRequest timeRequest) {

@@ -4,9 +4,11 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.Time;
-import roomescape.dto.reservation.ReservationAvailableTimeResponse;
 import roomescape.dto.reservation.ReservationRequest;
 import roomescape.dto.reservation.ReservationResponse;
+import roomescape.dto.reservation.ReservationTimeInfoResponse;
+import roomescape.dto.reservation.ReservationTimeInfosResponse;
+import roomescape.dto.reservation.ReservationsResponse;
 import roomescape.global.exception.model.ConflictException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
@@ -34,27 +36,29 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public List<ReservationResponse> findAllReservations() {
-        return reservationRepository.findAll()
+    public ReservationsResponse findAllReservations() {
+        List<ReservationResponse> response = reservationRepository.findAll()
                 .stream()
                 .map(ReservationResponse::from)
                 .toList();
+
+        return new ReservationsResponse(response);
     }
 
-    public List<ReservationAvailableTimeResponse> findReservationByDateAndThemeId(LocalDate date, Long themeId) {
+    public ReservationTimeInfosResponse findReservationByDateAndThemeId(LocalDate date, Long themeId) {
         List<Time> allTimes = timeRepository.findAll();
         Set<Long> reservedTimes = reservationRepository.findByDateAndThemeId(date, themeId).stream()
                 .map(Reservation::getTime)
                 .map(Time::getId)
                 .collect(Collectors.toSet());
 
-        List<ReservationAvailableTimeResponse> response = new ArrayList<>();
+        List<ReservationTimeInfoResponse> response = new ArrayList<>();
         for (Time time : allTimes) {
-            response.add(new ReservationAvailableTimeResponse(time.getId(), time.getStartAt(),
+            response.add(new ReservationTimeInfoResponse(time.getId(), time.getStartAt(),
                     reservedTimes.contains(time.getId())));
         }
 
-        return response;
+        return new ReservationTimeInfosResponse(response);
     }
 
     public ReservationResponse createReservation(ReservationRequest reservationRequest) {

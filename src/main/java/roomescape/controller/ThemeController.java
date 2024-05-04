@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.theme.ThemeRequest;
 import roomescape.dto.theme.ThemeResponse;
+import roomescape.dto.theme.ThemesResponse;
 import roomescape.service.ThemeService;
 
 import java.net.URI;
-import java.util.List;
 
 @RestController
 public class ThemeController {
@@ -25,17 +25,15 @@ public class ThemeController {
     }
 
     @GetMapping("/themes")
-    public ResponseEntity<List<ThemeResponse>> readThemes() {
-        List<ThemeResponse> themeResponses = themeService.findAllThemes();
+    public ResponseEntity<ThemesResponse> readThemes() {
 
-        return ResponseEntity.ok(themeResponses);
+        return ResponseEntity.ok(themeService.findAllThemes());
     }
 
     @GetMapping("/themes/top")
-    public ResponseEntity<List<ThemeResponse>> readTopNThemes(@RequestParam int count) {
-        List<ThemeResponse> themeResponses = themeService.findTopNThemes(count);
+    public ResponseEntity<ThemesResponse> readTopNThemes(@RequestParam int count) {
 
-        return ResponseEntity.ok(themeResponses);
+        return ResponseEntity.ok(themeService.findTopNThemes(count));
     }
 
     @PostMapping("/themes")
