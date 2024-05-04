@@ -25,6 +25,10 @@ public class Reservation {
         this(null, name, date, time, theme);
     }
 
+    public boolean isBeforeNow() {
+        return time.isBeforeNow(date);
+    }
+
     public Long getId() {
         return id;
     }

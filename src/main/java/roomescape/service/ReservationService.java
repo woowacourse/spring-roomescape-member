@@ -36,7 +36,22 @@ public class ReservationService {
                 themeResponse.toTheme()
         );
 
+        validateIsBeforeNow(reservation);
+        validateIsDuplicated(reservation);
+
         return ReservationResponse.from(reservationRepository.save(reservation));
+    }
+
+    private void validateIsBeforeNow(Reservation reservation) {
+        if (reservation.isBeforeNow()) {
+            throw new IllegalArgumentException("과거 시간은 예약할 수 없습니다.");
+        }
+    }
+
+    private void validateIsDuplicated(Reservation reservation) {
+        if (reservationRepository.isAlreadyBooked(reservation)) {
+            throw new IllegalArgumentException("중복 예약을 할 수 없습니다.");
+        }
     }
 
     public void deleteReservation(Long id) {

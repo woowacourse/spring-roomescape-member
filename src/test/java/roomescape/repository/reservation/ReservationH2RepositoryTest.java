@@ -2,7 +2,6 @@ package roomescape.repository.reservation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static roomescape.InitialDataFixture.RESERVATION_1;
 import static roomescape.InitialDataFixture.RESERVATION_2;
 import static roomescape.InitialDataFixture.THEME_2;
@@ -41,32 +40,6 @@ class ReservationH2RepositoryTest {
         Reservation save = reservationH2Repository.save(reservation);
 
         assertThat(save.getId()).isNotNull();
-    }
-
-    @Test
-    @DisplayName("과거 시간을 예약하려는 경우 예외를 발생시킨다.")
-    void savePastGetTime() {
-        Reservation reservation = new Reservation(
-                new Name("네오"),
-                RESERVATION_1.getDate(),
-                RESERVATION_1.getTime(),
-                THEME_2
-        );
-        assertThatThrownBy(() -> reservationH2Repository.save(reservation))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
-    @DisplayName("같은 날짜, 시간, 테마에 예약을 하는 경우 예외를 발생시킨다.")
-    void saveSameReservation() {
-        Reservation reservation = new Reservation(
-                new Name("네오"),
-                RESERVATION_2.getDate(),
-                RESERVATION_2.getTime(),
-                RESERVATION_2.getTheme()
-        );
-        assertThatThrownBy(() -> reservationH2Repository.save(reservation))
-                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test

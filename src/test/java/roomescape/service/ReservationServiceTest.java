@@ -2,6 +2,9 @@ package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.InitialDataFixture.RESERVATION_1;
+import static roomescape.InitialDataFixture.RESERVATION_2;
+import static roomescape.InitialDataFixture.THEME_2;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -25,6 +28,34 @@ class ReservationServiceTest {
     private ReservationService reservationService;
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Test
+    @DisplayName("과거 시간을 예약하려는 경우 예외를 발생시킨다.")
+    void savePastGetTime() {
+        ReservationAddRequest reservationAddRequest = new ReservationAddRequest(
+                new Name("네오"),
+                RESERVATION_1.getDate(),
+                RESERVATION_1.getTime().getId(),
+                THEME_2.getId()
+        );
+
+        assertThatThrownBy(() -> reservationService.addReservation(reservationAddRequest))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("같은 날짜, 시간, 테마에 예약을 하는 경우 예외를 발생시킨다.")
+    void saveSameReservation() {
+        ReservationAddRequest reservationAddRequest = new ReservationAddRequest(
+                new Name("네오"),
+                RESERVATION_2.getDate(),
+                RESERVATION_2.getTime().getId(),
+                RESERVATION_2.getTheme().getId()
+        );
+
+        assertThatThrownBy(() -> reservationService.addReservation(reservationAddRequest))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 
     @Test
     @DisplayName("예약을 추가하고 id값을 붙여서 응답 DTO를 생성한다.")

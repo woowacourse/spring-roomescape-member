@@ -1,5 +1,7 @@
 package roomescape.domain;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
@@ -29,6 +31,13 @@ public class ReservationTime {
         if (startAt == null) {
             throw new IllegalArgumentException("시작 시간이 null입니다.");
         }
+    }
+
+    public boolean isBeforeNow(LocalDate date) {
+        LocalDateTime dateTimeToReserve = LocalDateTime.of(date, startAt);
+        LocalDateTime now = LocalDateTime.now();
+
+        return dateTimeToReserve.isBefore(now);
     }
 
     public Long getId() {

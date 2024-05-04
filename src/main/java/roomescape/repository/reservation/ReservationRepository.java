@@ -10,4 +10,6 @@ public interface ReservationRepository {
     void delete(Long id);
 
     List<Reservation> findAll();
+
+    boolean isAlreadyBooked(Reservation reservation);
 }

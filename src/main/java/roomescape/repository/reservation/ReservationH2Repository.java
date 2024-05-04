@@ -1,7 +1,6 @@
 package roomescape.repository.reservation;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -35,7 +34,6 @@ public class ReservationH2Repository implements ReservationRepository {
 
     @Override
     public Reservation save(Reservation reservation) {
-        validateDateTime(reservation);
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.getName().getName())
                 .addValue("date", reservation.getDate(DateTimeFormatter.ISO_DATE))
@@ -46,19 +44,8 @@ public class ReservationH2Repository implements ReservationRepository {
         return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
     }
 
-    private void validateDateTime(Reservation reservation) {
-        LocalDateTime localDateTime = LocalDateTime.of(reservation.getDate(), reservation.getTime().getStartAt());
-        LocalDateTime now = LocalDateTime.now();
-
-        if (localDateTime.isBefore(now)) {
-            throw new IllegalArgumentException("과거 시간은 예약할 수 없습니다.");
-        }
-        if (isDuplicatedReservation(reservation)) {
-            throw new IllegalArgumentException("중복 예약을 할 수 없습니다.");
-        }
-    }
-
-    private boolean isDuplicatedReservation(Reservation reservation) {
+    @Override
+    public boolean isAlreadyBooked(Reservation reservation) {
         String sql = "SELECT * FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?";
         return !jdbcTemplate.query(sql, (rs, rowNum) -> 0, reservation.getDate(), reservation.getTime().getId(), reservation.getTheme().getId()).isEmpty();
     }
