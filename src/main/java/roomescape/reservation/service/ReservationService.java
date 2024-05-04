@@ -42,19 +42,14 @@ public class ReservationService {
         return CreateReservationResponse.of(reservationRepository.save(reservation));
     }
 
-    private Reservation findReservation(final Long id) {
-        return reservationRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("해당하는 예약이 존재하지 않습니다."));
-    }
-
     private ReservationTime findReservationTime(final Long id) {
         return reservationTimeRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("해당하는 예약 시간이 존재하지 않습니다."));
+                .orElseThrow(() -> new NoSuchElementException("생성하려는 예약의 예약 시간이 존재하지 않습니다."));
     }
 
     private Theme findTheme(final Long id) {
         return themeRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("해당하는 테마가 존재하지 않습니다."));
+                .orElseThrow(() -> new NoSuchElementException("생성하려는 테마가 존재하지 않습니다."));
     }
 
     private void validateReservationIsPast(final Reservation reservation) {
@@ -82,6 +77,11 @@ public class ReservationService {
         return FindReservationResponse.of(reservation);
     }
 
+    private Reservation findReservation(final Long id) {
+        return reservationRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("조회하려는 예약이 존재하지 않습니다."));
+    }
+
     public List<FindAvailableTimesResponse> getAvailableTimes(final LocalDate date, final Long themeId) {
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
         List<Reservation> reservations = reservationRepository.findAllByDateAndThemeId(date, themeId);
@@ -105,7 +105,7 @@ public class ReservationService {
 
     private void validateExistReservation(final Long id) {
         if (!reservationRepository.existsById(id)) {
-            throw new NoSuchElementException("해당하는 예약이 존재하지 않습니다.");
+            throw new NoSuchElementException("삭제하려는 예약이 존재하지 않습니다.");
         }
     }
 }

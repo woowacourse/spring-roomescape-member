@@ -116,7 +116,7 @@ class ReservationControllerTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpectAll(
                             status().isNotFound(),
-                            jsonPath("$").value("해당하는 예약 시간이 존재하지 않습니다.")
+                            jsonPath("$").value("생성하려는 예약의 예약 시간이 존재하지 않습니다.")
                     );
         }
 
@@ -129,7 +129,7 @@ class ReservationControllerTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpectAll(
                             status().isNotFound(),
-                            jsonPath("$").value("해당하는 테마가 존재하지 않습니다.")
+                            jsonPath("$").value("생성하려는 테마가 존재하지 않습니다.")
                     );
         }
     }
@@ -180,7 +180,7 @@ class ReservationControllerTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpectAll(
                             status().isNotFound(),
-                            jsonPath("$").value("해당하는 예약이 존재하지 않습니다.")
+                            jsonPath("$").value("조회하려는 예약이 존재하지 않습니다.")
                     );
         }
     }
@@ -217,7 +217,7 @@ class ReservationControllerTest {
             mockMvc.perform(MockMvcRequestBuilders.delete("/reservations/100"))
                     .andExpectAll(
                             status().isNotFound(),
-                            jsonPath("$").value("해당하는 예약이 존재하지 않습니다.")
+                            jsonPath("$").value("삭제하려는 예약이 존재하지 않습니다.")
                     );
         }
     }

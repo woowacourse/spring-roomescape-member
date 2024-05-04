@@ -101,7 +101,7 @@ class ReservationTimeControllerTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpectAll(
                             status().isNotFound(),
-                            jsonPath("$").value("해당하는 예약 시간이 존재하지 않습니다.")
+                            jsonPath("$").value("조회하려는 예약 시간이 존재하지 않습니다.")
                     );
         }
     }
@@ -122,7 +122,7 @@ class ReservationTimeControllerTest {
             mockMvc.perform(MockMvcRequestBuilders.delete("/times/500"))
                     .andExpectAll(
                             status().isNotFound(),
-                            jsonPath("$").value("해당하는 예약 시간이 존재하지 않습니다.")
+                            jsonPath("$").value("삭제하려는 예약 시간이 존재하지 않습니다.")
                     );
         }
 
@@ -132,7 +132,7 @@ class ReservationTimeControllerTest {
             mockMvc.perform(MockMvcRequestBuilders.delete("/times/3"))
                     .andExpectAll(
                             status().isConflict(),
-                            jsonPath("$").value("시간을 사용 중인 예약이 존재합니다.")
+                            jsonPath("$").value("삭제하려는 시간을 사용 중인 예약이 존재합니다.")
                     );
         }
     }

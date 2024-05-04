@@ -124,7 +124,7 @@ class ThemeServiceTest extends DummyDataFixture {
         // when & then
         assertThatThrownBy(() -> themeService.deleteById(timeId))
                 .isInstanceOf(NoSuchElementException.class)
-                .hasMessage("해당하는 테마가 존재하지 않습니다.");
+                .hasMessage("삭제하려는 테마가 존재하지 않습니다.");
     }
 
     @Test
@@ -140,6 +140,6 @@ class ThemeServiceTest extends DummyDataFixture {
         // when & then
         assertThatThrownBy(() -> themeService.deleteById(themedId))
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessage("테마를 사용 중인 예약이 존재합니다.");
+                .hasMessage("삭제하려는 테마를 사용 중인 예약이 존재합니다.");
     }
 }

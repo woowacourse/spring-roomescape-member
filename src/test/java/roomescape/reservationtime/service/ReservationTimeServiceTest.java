@@ -94,7 +94,7 @@ class ReservationTimeServiceTest extends DummyDataFixture {
         // when & then
         assertThatThrownBy(() -> reservationTimeService.deleteById(timeId))
                 .isInstanceOf(NoSuchElementException.class)
-                .hasMessage("해당하는 예약 시간이 존재하지 않습니다.");
+                .hasMessage("삭제하려는 예약 시간이 존재하지 않습니다.");
     }
 
     @Test
@@ -127,7 +127,7 @@ class ReservationTimeServiceTest extends DummyDataFixture {
         // when & then
         assertThatThrownBy(() -> reservationTimeService.deleteById(timeId))
                 .isInstanceOf(NoSuchElementException.class)
-                .hasMessage("해당하는 예약 시간이 존재하지 않습니다.");
+                .hasMessage("삭제하려는 예약 시간이 존재하지 않습니다.");
     }
 
     @Test
@@ -146,6 +146,6 @@ class ReservationTimeServiceTest extends DummyDataFixture {
         // when & then
         assertThatThrownBy(() -> reservationTimeService.deleteById(timeId))
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessage("시간을 사용 중인 예약이 존재합니다.");
+                .hasMessage("삭제하려는 시간을 사용 중인 예약이 존재합니다.");
     }
 }
