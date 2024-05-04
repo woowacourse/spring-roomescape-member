@@ -83,7 +83,7 @@ public class ThemeDao {
         }, keyHolder);
 
         Long id = keyHolder.getKey().longValue();
-        return theme.changeId(id);
+        return theme.withId(id);
     }
 
     public void deleteTheme(Long id) {

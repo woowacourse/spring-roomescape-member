@@ -12,18 +12,17 @@ public class Reservation {
     private final Theme theme;
 
     public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        final String errorMessage = "인자 중 null 값이 존재합니다.";
-        this.id = null;
-        this.name = new ReservationName(name);
-        this.date = Objects.requireNonNull(date, errorMessage);
-        this.time = Objects.requireNonNull(time, errorMessage);
-        this.theme = Objects.requireNonNull(theme, errorMessage);
+        this(null, new ReservationName(name), date, time, theme);
     }
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        final String errorMessage = "인자 중 null 값이 존재합니다.";
-        this.id = Objects.requireNonNull(id);
-        this.name = new ReservationName(name);
+        this(Objects.requireNonNull(id, "인자 중 null 값이 존재합니다."), new ReservationName(name), date, time, theme);
+    }
+
+    private Reservation(Long id, ReservationName name, LocalDate date, ReservationTime time, Theme theme) {
+        String errorMessage = "인자 중 null 값이 존재합니다.";
+        this.id = id;
+        this.name = Objects.requireNonNull(name);
         this.date = Objects.requireNonNull(date, errorMessage);
         this.time = Objects.requireNonNull(time, errorMessage);
         this.theme = Objects.requireNonNull(theme, errorMessage);
