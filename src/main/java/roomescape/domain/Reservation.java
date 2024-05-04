@@ -25,11 +25,11 @@ public record Reservation(Long id, String name, LocalDate date, ReservationTime 
         return time.isBefore(currentDateTime.toLocalTime());
     }
 
-    public Long getTimeId() {
+    public Long findTimeId() {
         return time.id();
     }
 
-    public Long getThemeId() {
+    public Long findThemeId() {
         return theme.id();
     }
 }

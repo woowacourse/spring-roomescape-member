@@ -109,8 +109,8 @@ public class ReservationDao {
             PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
             preparedStatement.setString(1, reservation.name());
             preparedStatement.setObject(2, reservation.date());
-            preparedStatement.setLong(3, reservation.getTimeId());
-            preparedStatement.setLong(4, reservation.getThemeId());
+            preparedStatement.setLong(3, reservation.findTimeId());
+            preparedStatement.setLong(4, reservation.findThemeId());
             return preparedStatement;
         }, keyHolder);
 
