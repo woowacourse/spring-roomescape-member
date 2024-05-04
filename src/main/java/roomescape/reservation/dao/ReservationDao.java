@@ -70,4 +70,10 @@ public class ReservationDao {
         Boolean result = jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
         return Boolean.TRUE.equals(result);
     }
+
+    public boolean checkExistReservationByTheme(final long themeId) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE theme_id = ?)";
+        Boolean result = jdbcTemplate.queryForObject(sql, Boolean.class, themeId);
+        return Boolean.TRUE.equals(result);
+    }
 }

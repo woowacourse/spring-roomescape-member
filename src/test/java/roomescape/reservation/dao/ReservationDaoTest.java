@@ -72,4 +72,13 @@ class ReservationDaoTest {
                 theme.getId())
         ).isTrue();
     }
+
+    @Test
+    @DisplayName("특정 테마 예약이 존재하는지 알 수 있다.")
+    void checkExistReservationByTheme() {
+        save();
+        assertThat(reservationDao.checkExistReservationByTheme(
+                theme.getId())
+        ).isTrue();
+    }
 }
