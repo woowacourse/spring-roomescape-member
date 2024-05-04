@@ -58,12 +58,11 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                     SELECT
                         rt.id,
                         rt.start_at,
-                        EXISTS(
-                            SELECT 1
-                            FROM reservation AS r
-                            WHERE r.date = ? AND r.theme_id = ? AND r.time_id = rt.id
-                        ) AS already_booked
+                        COUNT(r.id) > 0 AS already_booked
                     FROM reservation_time AS rt
+                    LEFT JOIN reservation AS r
+                    ON r.time_id = rt.id AND r.date = ? AND r.theme_id = ?
+                    GROUP BY r.id
                 """;
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
