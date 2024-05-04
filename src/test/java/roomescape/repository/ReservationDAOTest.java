@@ -107,8 +107,8 @@ class ReservationDAOTest {
     @DisplayName("예약을 추가한다")
     @Test
     void should_add_reservation() {
-        ReservationTime reservationTime = new ReservationTime(1, LocalTime.of(10, 0));
-        Theme theme = new Theme(1, "에버", "공포", "공포.jpg");
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
+        Theme theme = new Theme(1L, "에버", "공포", "공포.jpg");
         Reservation reservation = new Reservation("네오", LocalDate.of(2024, 9, 1), reservationTime, theme);
 
         reservationRepository.addReservation(reservation);
@@ -145,6 +145,6 @@ class ReservationDAOTest {
         LocalDate date = LocalDate.of(2023, 8, 5);
         List<ReservationTime> times = reservationRepository.findReservationTimeByDateAndTheme(date, 1);
         assertThat(times).hasSize(1);
-        assertThat(times).containsExactly(new ReservationTime(1, LocalTime.of(10, 0)));
+        assertThat(times).containsExactly(new ReservationTime(1L, LocalTime.of(10, 0)));
     }
 }

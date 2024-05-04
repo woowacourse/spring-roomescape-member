@@ -5,17 +5,17 @@ import java.util.Objects;
 
 public class ReservationTime {
 
-    private long id;
+    private Long id;
     private LocalTime startAt;
 
     private ReservationTime() {
     }
 
     public ReservationTime(LocalTime startAt) {
-        this.startAt = startAt;
+        this(null, startAt);
     }
 
-    public ReservationTime(long id, LocalTime startAt) {
+    public ReservationTime(Long id, LocalTime startAt) {
         this.id = id;
         this.startAt = startAt;
     }
@@ -37,7 +37,7 @@ public class ReservationTime {
             return false;
         }
         ReservationTime that = (ReservationTime) o;
-        return id == that.id && Objects.equals(startAt, that.startAt);
+        return id.equals(that.id) && Objects.equals(startAt, that.startAt);
     }
 
     @Override

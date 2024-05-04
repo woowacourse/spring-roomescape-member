@@ -17,7 +17,7 @@ import roomescape.model.Theme;
 public class ThemeDAO implements ThemeRepository {
 
     private final JdbcTemplate jdbcTemplate;
-    private SimpleJdbcInsert insertActor;
+    private final SimpleJdbcInsert insertActor;
 
     public ThemeDAO(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;

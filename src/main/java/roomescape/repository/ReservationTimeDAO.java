@@ -18,7 +18,7 @@ public class ReservationTimeDAO implements ReservationTimeRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private SimpleJdbcInsert insertActor;
+    private final SimpleJdbcInsert insertActor;
 
     public ReservationTimeDAO(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;

@@ -79,7 +79,7 @@ class ReservationServiceTest {
     @DisplayName("현재로 예약하면 예외가 발생하지 않는다.")
     @Test
     void should_not_throw_exception_when_current_date() {
-        reservationTimeRepository.add(new ReservationTime(3, LocalTime.now()));
+        reservationTimeRepository.add(new ReservationTime(3L, LocalTime.now()));
         ReservationRequest request = new ReservationRequest("에버", LocalDate.now(), 3L, 1L);
         assertThatCode(() -> reservationService.addReservation(request))
                 .doesNotThrowAnyException();

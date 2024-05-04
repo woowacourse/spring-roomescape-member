@@ -20,7 +20,7 @@ public class ReservationDAO implements ReservationRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private SimpleJdbcInsert insertActor;
+    private final SimpleJdbcInsert insertActor;
 
     public ReservationDAO(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;

@@ -15,10 +15,6 @@ public class MemberReservationTimeResponse {
         this.alreadyBooked = alreadyBooked;
     }
 
-    public void setAlreadyBooked(boolean alreadyBooked) {
-        this.alreadyBooked = alreadyBooked;
-    }
-
     public long getTimeId() {
         return timeId;
     }

@@ -10,9 +10,9 @@ import roomescape.repository.ReservationTimeRepository;
 
 class FakeReservationTimeRepository implements ReservationTimeRepository {
 
-    private List<ReservationTime> reservationTimes = new ArrayList<>(List.of(
-            new ReservationTime(1, LocalTime.of(10, 0)),
-            new ReservationTime(2, LocalTime.of(11, 0))
+    private final List<ReservationTime> reservationTimes = new ArrayList<>(List.of(
+            new ReservationTime(1L, LocalTime.of(10, 0)),
+            new ReservationTime(2L, LocalTime.of(11, 0))
     ));
 
     public void add(ReservationTime reservationTime) {
@@ -35,7 +35,7 @@ class FakeReservationTimeRepository implements ReservationTimeRepository {
     @Override
     public ReservationTime addReservationTime(ReservationTime reservationTime) {
         reservationTimes.add(reservationTime);
-        return new ReservationTime(3, reservationTime.getStartAt());
+        return new ReservationTime(3L, reservationTime.getStartAt());
     }
 
     @Override

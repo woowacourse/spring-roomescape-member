@@ -11,13 +11,13 @@ import roomescape.repository.ThemeRepository;
 
 public class FakeThemeRepository implements ThemeRepository {
 
-    private List<Theme> themes = new ArrayList<>(List.of(
-            new Theme(1, "에버", "공포", "공포.jpg"),
-            new Theme(2, "배키", "미스터리", "미스터리.jpg"),
-            new Theme(3, "포비", "스릴러", "스릴러.jpg")
+    private final List<Theme> themes = new ArrayList<>(List.of(
+            new Theme(1L, "에버", "공포", "공포.jpg"),
+            new Theme(2L, "배키", "미스터리", "미스터리.jpg"),
+            new Theme(3L, "포비", "스릴러", "스릴러.jpg")
     ));
 
-    private AtomicLong index = new AtomicLong(1L);
+    private final AtomicLong index = new AtomicLong(1L);
 
     @Override
     public List<Theme> findAllThemes() {
@@ -52,16 +52,16 @@ public class FakeThemeRepository implements ThemeRepository {
     @Override
     public List<Theme> findThemeRankingByDate(LocalDate before, LocalDate after, int limit) {
         return List.of(
-                new Theme(10, "name10", "description10", "thumbnail10"),
-                new Theme(9, "name9", "description9", "thumbnail9"),
-                new Theme(1, "name1", "description1", "thumbnail1"),
-                new Theme(2, "name2", "description2", "thumbnail2"),
-                new Theme(3, "name3", "description3", "thumbnail3"),
-                new Theme(4, "name4", "description4", "thumbnail4"),
-                new Theme(5, "name5", "description5", "thumbnail5"),
-                new Theme(6, "name6", "description6", "thumbnail6"),
-                new Theme(7, "name7", "description7", "thumbnail7"),
-                new Theme(8, "name8", "description8", "thumbnail8")
+                new Theme(10L, "name10", "description10", "thumbnail10"),
+                new Theme(9L, "name9", "description9", "thumbnail9"),
+                new Theme(1L, "name1", "description1", "thumbnail1"),
+                new Theme(2L, "name2", "description2", "thumbnail2"),
+                new Theme(3L, "name3", "description3", "thumbnail3"),
+                new Theme(4L, "name4", "description4", "thumbnail4"),
+                new Theme(5L, "name5", "description5", "thumbnail5"),
+                new Theme(6L, "name6", "description6", "thumbnail6"),
+                new Theme(7L, "name7", "description7", "thumbnail7"),
+                new Theme(8L, "name8", "description8", "thumbnail8")
         );
     }
 }

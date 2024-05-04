@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public class Theme {
 
-    private long themeId;
+    private Long themeId;
     private String name;
     private String description;
     private String thumbnail;
@@ -12,7 +12,7 @@ public class Theme {
     private Theme() {
     }
 
-    public Theme(long themeId, String name, String description, String thumbnail) {
+    public Theme(Long themeId, String name, String description, String thumbnail) {
         this.themeId = themeId;
         this.name = name;
         this.description = description;
@@ -20,9 +20,7 @@ public class Theme {
     }
 
     public Theme(String name, String description, String thumbnail) {
-        this.name = name;
-        this.description = description;
-        this.thumbnail = thumbnail;
+        this(null, name, description, thumbnail);
     }
 
     public long getThemeId() {
@@ -50,22 +48,14 @@ public class Theme {
             return false;
         }
         Theme theme = (Theme) o;
-        return themeId == theme.themeId && Objects.equals(name, theme.name) && Objects.equals(description,
-                theme.description) && Objects.equals(thumbnail, theme.thumbnail);
+        return themeId.equals(theme.themeId)
+                && Objects.equals(name, theme.name)
+                && Objects.equals(description, theme.description)
+                && Objects.equals(thumbnail, theme.thumbnail);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(themeId, name, description, thumbnail);
-    }
-
-    @Override
-    public String toString() {
-        return "Theme{" +
-                "themeId=" + themeId +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", thumbnail='" + thumbnail + '\'' +
-                '}';
     }
 }
