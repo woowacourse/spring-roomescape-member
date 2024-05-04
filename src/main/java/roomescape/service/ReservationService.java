@@ -32,25 +32,37 @@ public class ReservationService {
     }
 
     public ReservationResponse createReservation(ReservationCreateRequest dto) {
-        ReservationTime time = timeDao.readTimeById(dto.timeId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 예약 시간이 존재하지 않습니다."));
-        Theme theme = themeDao.readThemeById(dto.themeId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 테마가 존재하지 않습니다."));
+        ReservationTime time = readTimeByTimeId(dto.timeId());
+        Theme theme = readThemeByThemeId(dto.themeId());
         Reservation reservation = dto.createReservation(time, theme);
 
-        validate(reservation);
+        validateIsAvailable(reservation);
         Reservation createdReservation = reservationDao.createReservation(reservation);
         return ReservationResponse.from(createdReservation);
     }
 
-    private void validate(Reservation reservation) {
+    private ReservationTime readTimeByTimeId(Long timeId) {
+        return timeDao.readTimeById(timeId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 예약 시간이 존재하지 않습니다."));
+    }
+
+    private Theme readThemeByThemeId(Long themeId) {
+        return themeDao.readThemeById(themeId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 테마가 존재하지 않습니다."));
+    }
+
+    private void validateIsAvailable(Reservation reservation) {
         if (reservation.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("예약은 현재 시간 이후여야 합니다.");
         }
-        if (reservationDao.isExistReservationByDateAndTimeIdAndThemeId(
-                reservation.getDate(), reservation.getTimeId(), reservation.getThemeId())) {
+        if (isAlreadyReserved(reservation)) {
             throw new IllegalArgumentException("해당 시간대 해당 테마 예약은 이미 존재합니다.");
         }
+    }
+
+    private boolean isAlreadyReserved(Reservation reservation) {
+        return reservationDao.isExistReservationByDateAndTimeIdAndThemeId(
+                reservation.getDate(), reservation.getTimeId(), reservation.getThemeId());
     }
 
     public void deleteReservation(Long id) {
