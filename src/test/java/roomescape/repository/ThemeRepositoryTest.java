@@ -1,8 +1,5 @@
 package roomescape.repository;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static roomescape.TestFixture.*;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,6 +12,9 @@ import roomescape.domain.Theme;
 import java.sql.Time;
 import java.util.List;
 import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static roomescape.TestFixture.*;
 
 class ThemeRepositoryTest extends RepositoryTest {
     @Autowired

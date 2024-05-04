@@ -13,8 +13,6 @@ import roomescape.domain.Theme;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Time;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;

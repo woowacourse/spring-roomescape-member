@@ -9,7 +9,6 @@ import roomescape.domain.ReservationTime;
 
 import java.sql.PreparedStatement;
 import java.sql.Time;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 

@@ -32,7 +32,7 @@ class ReservationTimeServiceTest {
     private ReservationTimeRepository reservationTimeRepository;
 
     @Mock
-     ReservationRepository reservationRepository;
+    ReservationRepository reservationRepository;
 
     @InjectMocks
     private ReservationTimeService reservationTimeService;
