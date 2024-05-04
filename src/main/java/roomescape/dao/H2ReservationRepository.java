@@ -31,10 +31,6 @@ public class H2ReservationRepository implements ReservationRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public List<Reservation> findAll() {
-        return jdbcTemplate.query(getBasicSelectQuery(), rowMapper);
-    }
-
     public Reservation save(Reservation reservation) {
         long reservationId = jdbcInsert.executeAndReturnKey(Map.of(
                         "name", reservation.getName().value(),
@@ -51,9 +47,8 @@ public class H2ReservationRepository implements ReservationRepository {
                 reservation.getTheme());
     }
 
-    public void deleteById(long id) {
-        String sql = "delete from reservation where id = ?";
-        jdbcTemplate.update(sql, id);
+    public List<Reservation> findAll() {
+        return jdbcTemplate.query(getBasicSelectQuery(), rowMapper);
     }
 
     public List<Reservation> findByDateAndThemeId(LocalDate date, long themeId) {
@@ -68,6 +63,11 @@ public class H2ReservationRepository implements ReservationRepository {
         String sql = getBasicSelectQuery() + conditionQuery;
 
         return jdbcTemplate.query(sql, rowMapper, startDate, endDate);
+    }
+
+    public void deleteById(long id) {
+        String sql = "delete from reservation where id = ?";
+        jdbcTemplate.update(sql, id);
     }
 
     private String getBasicSelectQuery() {
