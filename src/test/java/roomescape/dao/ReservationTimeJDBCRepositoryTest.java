@@ -103,7 +103,7 @@ class ReservationTimeJDBCRepositoryTest {
         reservationTimeRepository.save(reservationTime);
 
         //when
-        boolean result = reservationTimeRepository.existsByTime(startAt);
+        boolean result = reservationTimeRepository.existsByStartAt(startAt);
 
         //then
         assertThat(result).isTrue();
@@ -119,7 +119,7 @@ class ReservationTimeJDBCRepositoryTest {
 
         //when
         String newStartAt = "10:01";
-        boolean result = reservationTimeRepository.existsByTime(newStartAt);
+        boolean result = reservationTimeRepository.existsByStartAt(newStartAt);
 
         //then
         assertThat(result).isFalse();
