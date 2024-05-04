@@ -1,5 +1,8 @@
 package roomescape.theme.dao;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 import javax.sql.DataSource;
 import org.assertj.core.api.Assertions;
@@ -26,10 +29,13 @@ public class ThemeDaoTest {
     @DisplayName("테마 정보가 DB에 정상적으로 저장되는지 확인한다.")
     void saveTheme() {
         Theme theme = new Theme("포레스트", "공포 테마", "thumbnail");
-        themeJdbcDao.save(theme);
+        Theme result = themeJdbcDao.save(theme);
 
-        Assertions.assertThat(theme.getId())
-                .isEqualTo(4);
+        assertAll( () -> {
+            assertEquals(result.getName(), theme.getName());
+            assertEquals(result.getDescription(), theme.getDescription());
+            assertEquals(result.getThumbnail(), theme.getThumbnail());
+        });
     }
 
     @Test
