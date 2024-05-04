@@ -18,7 +18,7 @@ import roomescape.dto.ReservationTimeSaveRequest;
 import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
-@Sql(scripts = {"/test.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = {"/reset.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class ReservationTimeServiceTest {
 
     @Autowired

@@ -15,7 +15,7 @@ import roomescape.dto.ThemeResponse;
 import roomescape.dto.ThemeSaveRequest;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
-@Sql(scripts = {"/test.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = {"/reset.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class ThemeServiceTest {
 
     @Autowired
