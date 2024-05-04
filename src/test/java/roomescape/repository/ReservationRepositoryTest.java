@@ -157,13 +157,6 @@ class ReservationRepositoryTest {
                 new ReservationTime(4L, LocalTime.parse("00:00")),
                 new Theme(2L, null, null, null)
         );
-        Reservation expected = new Reservation(
-                3L,
-                "cha",
-                LocalDate.of(2025, 3, 1),
-                new ReservationTime(4L, LocalTime.parse("00:00")),
-                new Theme(2L, null, null, null)
-        );
 
         // when & then
         assertThatCode(() -> reservationRepository.save(reservation))
