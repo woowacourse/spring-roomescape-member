@@ -9,6 +9,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.service.exception.DuplicateTimeException;
 import roomescape.service.exception.TimeNotFoundException;
 import roomescape.service.exception.TimeUsedException;
 
@@ -47,9 +48,11 @@ public class TimeService {
     }
 
     public AvailabilityTimeResponse addTime(final CreateTimeRequest createTimeRequest) {
-        final ReservationTime parsedTime = createTimeRequest.toDomain();
-        //TODO 중복 시간 저장 불가해야함
-        final ReservationTime savedTime = timeRepository.save(parsedTime);
+        final ReservationTime time = createTimeRequest.toDomain();
+        final List<ReservationTime> times = timeRepository.findAll();
+        validateDuplicate(times, time);
+
+        final ReservationTime savedTime = timeRepository.save(time);
         return AvailabilityTimeResponse.from(savedTime, false);
     }
 
@@ -60,5 +63,13 @@ public class TimeService {
         final ReservationTime findTime = timeRepository.findById(id)
                 .orElseThrow(() -> new TimeNotFoundException("존재하지 않는 시간입니다."));
         timeRepository.deleteById(findTime.getId());
+    }
+
+    private void validateDuplicate(final List<ReservationTime> times, final ReservationTime parsedTime) {
+        final boolean hasSameTime = times.stream()
+                .anyMatch(time -> time.isSameTime(parsedTime));
+        if (hasSameTime) {
+            throw new DuplicateTimeException("중복된 시간은 생성이 불가합니다.");
+        }
     }
 }
