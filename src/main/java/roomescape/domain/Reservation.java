@@ -6,6 +6,9 @@ import java.time.LocalDateTime;
 import roomescape.domain.exception.Validator;
 
 public record Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+
+    public static final int MAX_STRING_LENGTH = 255;
+
     public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
         this(null, name, date, time, theme);
     }
@@ -13,6 +16,7 @@ public record Reservation(Long id, String name, LocalDate date, ReservationTime 
     public Reservation {
         Validator.nonNull(name, date, time, theme);
         Validator.notEmpty(name);
+        Validator.overSize(MAX_STRING_LENGTH, name);
     }
 
     public boolean isBefore(LocalDateTime currentDateTime) {

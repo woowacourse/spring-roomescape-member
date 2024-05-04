@@ -23,4 +23,16 @@ public class Validator {
             throw new IllegalArgumentException("비어있는 값이 존재합니다.");
         }
     }
+
+    public static void overSize(int maxLength, String... values) {
+        for (String value : values) {
+            validateOverSize(maxLength, value);
+        }
+    }
+
+    private static void validateOverSize(int maxLength, String value) {
+        if (value.length() > maxLength) {
+            throw new IllegalArgumentException("문자열(%s) 최대 길이인 %d를 초과했습니다.".formatted(value, maxLength));
+        }
+    }
 }
