@@ -25,15 +25,15 @@ public class H2ReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findAll() {
-        final String sql = "SELECT "
-                + "r.id as reservation_id, r.name as reservation_name, r.date as reservation_date, "
-                + "rt.id as time_id, rt.start_at as reservation_time, "
-                + "th.id as theme_id, th.name as theme_name, th.description as theme_description, th.thumbnail as theme_thumbnail "
-                + "FROM reservation as r "
-                + "inner join reservation_time as rt "
-                + "on r.time_id = rt.id "
-                + "inner join theme as th "
-                + "on r.theme_id = th.id";
+        final String sql = """
+                        SELECT
+                            r.id AS reservation_id, r.name AS reservation_name, r.date AS reservation_date, 
+                            rt.id AS time_id, rt.start_at AS reservation_time, 
+                            th.id AS theme_id, th.name AS theme_name, th.description AS theme_description, th.thumbnail AS theme_thumbnail 
+                        FROM reservation AS r 
+                        INNER JOIN reservation_time AS rt on r.time_id = rt.id 
+                        INNER JOIN theme AS th ON r.theme_id = th.id
+                """;
 
         return template.query(sql, itemRowMapper());
     }
@@ -54,16 +54,16 @@ public class H2ReservationRepository implements ReservationRepository {
 
     @Override
     public Optional<Reservation> findById(final Long reservationId) {
-        final String sql = "SELECT "
-                + "r.id as reservation_id, r.name as reservation_name, r.date as reservation_date, "
-                + "rt.id as time_id, rt.start_at as reservation_time, "
-                + "th.id as theme_id, th.name as theme_name, th.description as theme_description, th.thumbnail as theme_thumbnail "
-                + "FROM reservation as r "
-                + "inner join reservation_time as rt "
-                + "on r.time_id = rt.id "
-                + "inner join theme as th "
-                + "on r.theme_id = th.id "
-                + "WHERE r.id = :reservationId";
+        final String sql = """
+                    SELECT
+                        r.id AS reservation_id, r.name AS reservation_name, r.date AS reservation_date, 
+                        rt.id AS time_id, rt.start_at AS reservation_time, 
+                        th.id AS theme_id, th.name AS theme_name, th.description AS theme_description, th.thumbnail AS theme_thumbnail 
+                    FROM reservation AS r 
+                    INNER JOIN reservation_time AS rt on r.time_id = rt.id 
+                    INNER JOIN theme AS th ON r.theme_id = th.id 
+                    WHERE r.id = :reservationId
+                """;
 
         try {
             final MapSqlParameterSource param = new MapSqlParameterSource()
@@ -122,16 +122,16 @@ public class H2ReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findAllByDateAndThemeId(final LocalDate date, final Long themeId) {
-        final String sql = "SELECT "
-                + "r.id as reservation_id, r.name as reservation_name, r.date as reservation_date, "
-                + "rt.id as time_id, rt.start_at as reservation_time, "
-                + "th.id as theme_id, th.name as theme_name, th.description as theme_description, th.thumbnail as theme_thumbnail "
-                + "FROM reservation as r "
-                + "inner join reservation_time as rt "
-                + "on r.time_id = rt.id "
-                + "inner join theme as th "
-                + "on r.theme_id = th.id "
-                + "WHERE date = :date and theme_id = :themeId";
+        final String sql = """
+                    SELECT
+                        r.id AS reservation_id, r.name AS reservation_name, r.date AS reservation_date, 
+                        rt.id AS time_id, rt.start_at AS reservation_time, 
+                        th.id AS theme_id, th.name AS theme_name, th.description AS theme_description, th.thumbnail AS theme_thumbnail 
+                    FROM reservation AS r 
+                    INNER JOIN reservation_time AS rt ON r.time_id = rt.id 
+                    INNER JOIN theme AS th ON r.theme_id = th.id 
+                    WHERE date = :date AND theme_id = :themeId
+                """;
 
         final MapSqlParameterSource param = new MapSqlParameterSource()
                 .addValue("date", date)
