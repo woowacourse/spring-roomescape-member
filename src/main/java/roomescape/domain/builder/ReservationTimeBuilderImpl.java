@@ -15,8 +15,14 @@ public class ReservationTimeBuilderImpl implements ReservationTimeBuilder {
     }
 
     @Override
-    public ReservationTimeBuilder startAt(final String startAt) {
-        this.time = LocalTime.parse(startAt);
+    public ReservationTimeBuilder startAt(final String time) {
+        this.time = LocalTime.parse(time);
+        return this;
+    }
+
+    @Override
+    public ReservationTimeBuilder startAt(final LocalTime time) {
+        this.time = time;
         return this;
     }
 
