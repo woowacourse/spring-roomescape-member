@@ -1,6 +1,8 @@
 package roomescape.controller;
 
 import java.net.URI;
+import java.time.Clock;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
@@ -20,7 +23,7 @@ public class ThemeController {
 
     private final ThemeService themeService;
 
-    public ThemeController(ThemeService themeService) {
+    public ThemeController(ThemeService themeService, Clock clock) {
         this.themeService = themeService;
     }
 
@@ -47,8 +50,12 @@ public class ThemeController {
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<ThemeResponse>> getPopularThemes() {
-        List<ThemeResponse> themeResponses = themeService.getPopularThemes();
+    public ResponseEntity<List<ThemeResponse>> getPopularThemes(
+            @RequestParam LocalDate startDate,
+            @RequestParam LocalDate endDate,
+            @RequestParam(required = false, defaultValue = "10") int limit
+    ) {
+        List<ThemeResponse> themeResponses = themeService.getPopularThemes(startDate, endDate, limit);
 
         return ResponseEntity.ok(themeResponses);
     }

@@ -1,20 +1,21 @@
 ## 예외 처리 목록
+
 - 도메인 필드에 null, blank 를 검즘한다.
-  - [x] Reservation
-  - [x] Reservation Time
-  - [x] Theme
+    - [x] Reservation
+    - [x] Reservation Time
+    - [x] Theme
 - ReservationService
-  - [x] 지나간 날짜/시간에 대한 예악은 불가능하다.
-  - [x] 해당 날짜/시간에 이미 예약이 존재한다면 예약을 생성할 수 없다.
-  - [x] 존재하지 않는 id의 예약 삭제는 불가능하다.
+    - [x] 지나간 날짜/시간에 대한 예악은 불가능하다.
+    - [x] 해당 날짜/시간에 이미 예약이 존재한다면 예약을 생성할 수 없다.
+    - [x] 존재하지 않는 id의 예약 삭제는 불가능하다.
 - ReservationTimeService
-  - [x] 이미 존재하는 예약 시간이 있다면 생성할 수 없다.
-  - [x] 존재하지 않는 id의 예약 시간 삭제는 불가능하다.
-  - [x] 예약 시간 삭제 시 해당 시간을 사용하는 예약이 존재한다면 삭제할 수 없다.
+    - [x] 이미 존재하는 예약 시간이 있다면 생성할 수 없다.
+    - [x] 존재하지 않는 id의 예약 시간 삭제는 불가능하다.
+    - [x] 예약 시간 삭제 시 해당 시간을 사용하는 예약이 존재한다면 삭제할 수 없다.
 - ThemeService
-  - [x] 존재하지 않는 id의 테마 삭제는 불가능하다.
-  - [x] 동일한 이름의 테마는 생성할 수 없다.
-  - [x] 테마 삭제 시 해당 테마를 사용하는 예약이 존재한다면 삭제할 수 없다.
+    - [x] 존재하지 않는 id의 테마 삭제는 불가능하다.
+    - [x] 동일한 이름의 테마는 생성할 수 없다.
+    - [x] 테마 삭제 시 해당 테마를 사용하는 예약이 존재한다면 삭제할 수 없다.
 
 ## API 명세서
 
@@ -190,12 +191,12 @@ HTTP/1.1 204
 </details>
 
 <details>
-<summary>GET <code>/available-times</code> 이용 가능한 시간 조회 API</summary>
+<summary>GET <code>/times/available</code> 이용 가능한 시간 조회 API</summary>
 
 #### Request
 
 ```http
-GET /available-times?date={date}&themeId={themeId} HTTP/1.1
+GET /times/available?date={date}&themeId={themeId} HTTP/1.1
 
 date: (필수) 예약 가능한 시간을 조회할 날짜 (형식: YYYY-MM-DD)
 themeId: (필수) 조회할 테마의 ID
@@ -307,16 +308,17 @@ HTTP/1.1 204
 </details>
 
 <details>
-<summary>GET <code>/popular-themes</code> 인기 테마 조회 API</summary>
+<summary>GET <code>/themes/popular</code> 인기 테마 조회 API</summary>
 
 #### Request
 
 ```http
-GET /popular-themes HTTP/1.1
+GET /themes/popular?startDate={startDate}&endDate={endDate}&limit={limit} HTTP/1.1
 ```
 
-최근 일주일을 기준으로 하여 해당 기간 내에 방문하는 예약이 많은 테마 10개를 조회한다.  
-예를 들어, 오늘이 4월 8일인 경우, 게임 날짜가 4월 1일부터 4월 7일까지인 예약 건수가 많은 순서대로 10개의 테마를 조회한다.
+startDate: (필수) 예약 가능한 시간을 조회할 날짜 시작 (형식: YYYY-MM-DD)
+endDate: (필수) 예약 가능한 시간을 조회할 날짜 마지막  (형식: YYYY-MM-DD)
+limit: (필수X, 기본 10) 조회할 갯수
 
 #### Response
 

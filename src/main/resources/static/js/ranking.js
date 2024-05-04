@@ -2,10 +2,27 @@ document.addEventListener('DOMContentLoaded', () => {
     /*
     TODO: [3단계] 인기 테마 - 인기 테마 목록 조회 API 호출
     */
-    requestRead('/popular-themes') // 인기 테마 목록 조회 API endpoint
+    const nowDate = new Date();
+    const endDate = new Date(nowDate - 1)
+    const startDate = new Date(endDate - 7);
+
+    const endDateParam = convertDate(endDate);
+    const startDateParam = convertDate(startDate);
+
+    console.log(endDateParam)
+    console.log(startDateParam)
+
+    requestRead('/themes/popular?startDate=' + startDateParam + "&endDate=" + endDateParam) // 인기 테마 목록 조회 API endpoint
         .then(render)
         .catch(error => console.error('Error fetching times:', error));
 });
+
+function convertDate(date) {
+    const year = date.getFullYear();
+    const month = ('0' + (date.getMonth() + 1)).slice(-2);
+    const day = ('0' + date.getDate()).slice(-2);
+    return year + '-' + month + '-' + day;
+}
 
 function render(data) {
     const container = document.getElementById('theme-ranking');
