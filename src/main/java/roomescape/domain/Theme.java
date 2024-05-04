@@ -11,6 +11,7 @@ public class Theme {
 
     public Theme(Long id, String name, String description, String thumbnail) {
         validateNotBlank(name, description, thumbnail);
+        validateThumbnailFormat(thumbnail);
         this.id = id;
         this.name = name;
         this.description = description;
@@ -20,6 +21,12 @@ public class Theme {
     private void validateNotBlank(String name, String description, String thumbnail) {
         if (name.isBlank() || description.isBlank() || thumbnail.isBlank()) {
             throw new BadRequestException("테마의 정보는 비어있을 수 없습니다.");
+        }
+    }
+
+    private void validateThumbnailFormat(String thumbnail) {
+        if (!thumbnail.matches("(http|https).*")) {
+            throw new BadRequestException("썸네일은 url 링크여야합니다.");
         }
     }
 

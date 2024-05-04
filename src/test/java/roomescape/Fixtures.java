@@ -28,17 +28,17 @@ public class Fixtures {
     );
 
     public static final List<Theme> themeFixtures = List.of(
-            new Theme(1L, "테마 이름 1", "테마 설명 1", "1"),
-            new Theme(2L, "테마 이름 2", "테마 설명 2", "2"),
-            new Theme(3L, "테마 이름 3", "테마 설명 3", "3"),
-            new Theme(4L, "테마 이름 4", "테마 설명 4", "4"),
-            new Theme(5L, "테마 이름 5", "테마 설명 5", "5"),
-            new Theme(6L, "테마 이름 6", "테마 설명 6", "6"),
-            new Theme(7L, "테마 이름 7", "테마 설명 7", "7"),
-            new Theme(8L, "테마 이름 8", "테마 설명 8", "8"),
-            new Theme(9L, "테마 이름 9", "테마 설명 9", "9"),
-            new Theme(10L, "테마 이름 10", "테마 설명 10", "10"),
-            new Theme(11L, "테마 이름 11", "테마 설명 11", "11")
+            new Theme(1L, "테마 이름 1", "테마 설명 1", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"),
+            new Theme(2L, "테마 이름 2", "테마 설명 2", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"),
+            new Theme(3L, "테마 이름 3", "테마 설명 3", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"),
+            new Theme(4L, "테마 이름 4", "테마 설명 4", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"),
+            new Theme(5L, "테마 이름 5", "테마 설명 5", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"),
+            new Theme(6L, "테마 이름 6", "테마 설명 6", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"),
+            new Theme(7L, "테마 이름 7", "테마 설명 7", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"),
+            new Theme(8L, "테마 이름 8", "테마 설명 8", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"),
+            new Theme(9L, "테마 이름 9", "테마 설명 9", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"),
+            new Theme(10L, "테마 이름 10", "테마 설명 10", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"),
+            new Theme(11L, "테마 이름 11", "테마 설명 11", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg1")
     );
 
     public static final List<Reservation> reservationFixturesForPopularTheme = List.of(
