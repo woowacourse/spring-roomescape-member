@@ -83,12 +83,15 @@ public class ReservationTimeDao implements ReservationTimeRepository {
 
     @Override
     public Set<ReservationTime> findReservedTime(LocalDate date, long themeId) {
-        String sql = "SELECT * FROM reservation_time " +
-                "INNER JOIN reservation as re " +
-                "ON re.time_id = reservation_time.id " +
-                "INNER JOIN reservation_list as rl " +
-                "ON re.id = rl.reservation_id " +
-                "WHERE re.date = ? AND re.theme_id = ?";
+        String sql = """
+                    SELECT * FROM reservation_time
+                    INNER JOIN reservation as re
+                    ON re.time_id = reservation_time.id
+                    INNER JOIN reservation_list as rl
+                    ON re.id = rl.reservation_id
+                    WHERE re.date = ? AND re.theme_id = ?
+                    """;
+
         return new HashSet<>(jdbcTemplate.query(sql, rowMapper, date, themeId));
     }
 }
