@@ -28,8 +28,10 @@ public class ThemeService {
     }
 
     public List<ThemeResponseDto> findTopBookedThemes() {
-        List<Theme> topBookedThemes = themeRepository.findTopBookedThemes(LocalDate.now().minusDays(7),
-                LocalDate.now().minusDays(1), 10);
+        List<Theme> topBookedThemes = themeRepository.findTopBookedThemes(
+                LocalDate.now().minusDays(7),
+                LocalDate.now().minusDays(1),
+                10);
 
         return topBookedThemes.stream()
                 .map(ThemeResponseDto::new)
