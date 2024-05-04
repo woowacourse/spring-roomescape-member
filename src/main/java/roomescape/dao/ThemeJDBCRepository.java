@@ -46,7 +46,7 @@ public class ThemeJDBCRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findAll() {
-        String sql = "SELECT * FROM theme";
+        String sql = "SELECT id, name, description, thumbnail FROM theme";
         return jdbcTemplate.query(sql, rowMapper);
     }
 
@@ -64,7 +64,7 @@ public class ThemeJDBCRepository implements ThemeRepository {
 
     @Override
     public Optional<Theme> findById(long id) {
-        String sql = "SELECT * FROM theme WHERE id = ?";
+        String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
         } catch (DataAccessException e) {

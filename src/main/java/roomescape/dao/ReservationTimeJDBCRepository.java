@@ -41,7 +41,7 @@ public class ReservationTimeJDBCRepository implements ReservationTimeRepository 
 
     @Override
     public List<ReservationTime> findAll() {
-        String sql = "SELECT * FROM reservation_time";
+        String sql = "SELECT id, start_at FROM reservation_time";
         List<ReservationTime> reservationTimes = jdbcTemplate.query(sql, rowMapper);
         return reservationTimes;
     }
@@ -54,7 +54,7 @@ public class ReservationTimeJDBCRepository implements ReservationTimeRepository 
 
     @Override
     public Optional<ReservationTime> findById(final long id) {
-        String sql = "SELECT * FROM reservation_time WHERE id = ?";
+        String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
         } catch (EmptyResultDataAccessException e) {
@@ -71,7 +71,7 @@ public class ReservationTimeJDBCRepository implements ReservationTimeRepository 
 
     @Override
     public List<ReservationTime> findByDateAndTheme(String date, long themeId) {
-        String sql = "SELECT * FROM reservation_time WHERE id NOT IN (SELECT time_id FROM reservation WHERE date =? AND theme_id=?)";
+        String sql = "SELECT id, start_at FROM reservation_time WHERE id NOT IN (SELECT time_id FROM reservation WHERE date =? AND theme_id=?)";
         return jdbcTemplate.query(sql, rowMapper, date, themeId);
     }
 }
