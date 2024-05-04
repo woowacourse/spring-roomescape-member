@@ -18,10 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.service.dto.ReservationRequest;
-import roomescape.service.dto.ReservationResponse;
-import roomescape.service.dto.ReservationTimeResponse;
-import roomescape.service.dto.ThemeResponse;
+import roomescape.service.dto.request.ReservationRequest;
+import roomescape.service.dto.response.ReservationResponse;
+import roomescape.service.dto.response.ReservationTimeResponse;
+import roomescape.service.dto.response.ThemeResponse;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.ThemeRepository;
 
@@ -61,7 +61,7 @@ class ReservationControllerTest extends BaseControllerTest {
     @Test
     @DisplayName("지나간 날짜/시간에 대한 예약은 실패한다.")
     void failWhenDateTimePassed() {
-        ReservationRequest request = new ReservationRequest("구름", LocalDate.of(2024, 4, 7), 1L, 1L);
+        ReservationRequest request = new ReservationRequest("구름", "2024-04-07", 1L, 1L);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -92,7 +92,7 @@ class ReservationControllerTest extends BaseControllerTest {
 
 
     private void addReservation() {
-        ReservationRequest request = new ReservationRequest("구름", LocalDate.of(2024, 4, 9), 1L, 1L);
+        ReservationRequest request = new ReservationRequest("구름", "2024-04-09", 1L, 1L);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -147,7 +147,7 @@ class ReservationControllerTest extends BaseControllerTest {
     }
 
     private void addReservationFailWhenDuplicatedReservation() {
-        ReservationRequest request = new ReservationRequest("구름", LocalDate.of(2024, 4, 9), 1L, 1L);
+        ReservationRequest request = new ReservationRequest("구름", "2024-04-09", 1L, 1L);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

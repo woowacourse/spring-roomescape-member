@@ -16,14 +16,14 @@ import org.junit.jupiter.api.TestFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
-import roomescape.service.dto.AvailableReservationTimeResponse;
-import roomescape.service.dto.ReservationTimeRequest;
-import roomescape.service.dto.ReservationTimeResponse;
 import roomescape.domain.ReservationRepository;
+import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
+import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
+import roomescape.service.dto.request.ReservationTimeRequest;
+import roomescape.service.dto.response.AvailableReservationTimeResponse;
+import roomescape.service.dto.response.ReservationTimeResponse;
 
 class ReservationTimeControllerTest extends BaseControllerTest {
 
@@ -122,7 +122,7 @@ class ReservationTimeControllerTest extends BaseControllerTest {
     }
 
     private void addReservationTime() {
-        ReservationTimeRequest request = new ReservationTimeRequest(LocalTime.of(10, 30));
+        ReservationTimeRequest request = new ReservationTimeRequest("10:30");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -141,7 +141,7 @@ class ReservationTimeControllerTest extends BaseControllerTest {
     }
 
     private void addReservationTimeFailWhenDuplicatedTime() {
-        ReservationTimeRequest request = new ReservationTimeRequest(LocalTime.of(10, 30));
+        ReservationTimeRequest request = new ReservationTimeRequest("10:30");
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

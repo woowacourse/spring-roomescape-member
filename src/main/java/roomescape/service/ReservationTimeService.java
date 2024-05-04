@@ -9,9 +9,9 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
-import roomescape.service.dto.AvailableReservationTimeResponse;
-import roomescape.service.dto.ReservationTimeRequest;
-import roomescape.service.dto.ReservationTimeResponse;
+import roomescape.service.dto.request.ReservationTimeRequest;
+import roomescape.service.dto.response.AvailableReservationTimeResponse;
+import roomescape.service.dto.response.ReservationTimeResponse;
 
 @Service
 @Transactional(readOnly = true)

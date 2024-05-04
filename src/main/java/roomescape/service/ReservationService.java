@@ -12,8 +12,8 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
-import roomescape.service.dto.ReservationRequest;
-import roomescape.service.dto.ReservationResponse;
+import roomescape.service.dto.request.ReservationRequest;
+import roomescape.service.dto.response.ReservationResponse;
 
 @Service
 @Transactional(readOnly = true)

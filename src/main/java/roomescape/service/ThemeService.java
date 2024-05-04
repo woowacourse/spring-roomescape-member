@@ -1,6 +1,5 @@
 package roomescape.service;
 
-import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -9,8 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
-import roomescape.service.dto.ThemeRequest;
-import roomescape.service.dto.ThemeResponse;
+import roomescape.service.dto.request.ThemeRequest;
+import roomescape.service.dto.response.ThemeResponse;
 
 @Service
 @Transactional(readOnly = true)
@@ -18,13 +17,10 @@ public class ThemeService {
 
     private final ReservationRepository reservationRepository;
     private final ThemeRepository themeRepository;
-    private final Clock clock;
 
-    public ThemeService(ReservationRepository reservationRepository,
-                        ThemeRepository themeRepository, Clock clock) {
+    public ThemeService(ReservationRepository reservationRepository, ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.themeRepository = themeRepository;
-        this.clock = clock;
     }
 
     public List<ThemeResponse> getAllThemes() {
