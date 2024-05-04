@@ -72,13 +72,13 @@ public class ReservationTimeService {
             throw new IllegalArgumentException("존재하지 않는 테마입니다.");
         }
 
-        final List<ReservationTime> reservationTimes = reservationRepository.findTimeByDateAndThemeId(reservationTimeBookedRequest.date(),
+        final List<ReservationTime> bookedTimes = reservationRepository.findTimeByDateAndThemeId(reservationTimeBookedRequest.date(),
                 reservationTimeBookedRequest.themeId());
         final List<ReservationTime> times = reservationTimeRepository.findAll();
 
         return times.stream()
                 .sorted(Comparator.comparing(ReservationTime::getStartAt))
-                .map(time -> ReservationTimeBookedResponse.of(time, reservationTimes.contains(time)))
+                .map(time -> ReservationTimeBookedResponse.of(time, bookedTimes.contains(time)))
                 .toList();
     }
 }
