@@ -7,8 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationRepository;
@@ -17,20 +17,24 @@ import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 
-@SpringBootTest
-@Transactional
+@JdbcTest
 class JdbcReservationRepositoryImplTest {
-    @Autowired
-    private ReservationRepository reservationRepository;
-    @Autowired
-    private ReservationTimeRepository reservationTimeRepository;
-    @Autowired
-    private ThemeRepository themeRepository;
+
+    private final ReservationRepository reservationRepository;
+    private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
 
 
     private ReservationDate reservationDate = new ReservationDate("2040-01-01");
     private ReservationTime reservationTime;
     private Theme theme;
+
+    @Autowired
+    JdbcReservationRepositoryImplTest(JdbcTemplate jdbcTemplate) {
+        this.reservationRepository = new JdbcReservationRepositoryImpl(jdbcTemplate);
+        this.reservationTimeRepository = new JdbcReservationTimeRepositoryImpl(jdbcTemplate);
+        this.themeRepository = new JdbcThemeRepositoryImpl(jdbcTemplate);
+    }
 
     @BeforeEach
     void setUp() {

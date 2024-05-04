@@ -8,17 +8,20 @@ import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 
-@SpringBootTest
-@Transactional
+@JdbcTest
 class JdbcReservationTimeRepositoryImplTest {
 
-    @Autowired
     private ReservationTimeRepository reservationTimeRepository;
+
+    @Autowired
+    public JdbcReservationTimeRepositoryImplTest(JdbcTemplate jdbcTemplate) {
+        this.reservationTimeRepository = new JdbcReservationTimeRepositoryImpl(jdbcTemplate);
+    }
 
     @DisplayName("예약 시간 정보를 DB에 저장한다.")
     @Test
