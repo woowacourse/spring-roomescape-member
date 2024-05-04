@@ -34,4 +34,8 @@ public class FakeThemeRepository implements ThemeRepository {
     public void deleteById(Long id) {
         fakeThemeDB.remove(id);
     }
+
+    public void deleteAll() {
+        fakeThemeDB.clear();
+    }
 }

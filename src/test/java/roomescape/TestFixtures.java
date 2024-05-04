@@ -3,7 +3,9 @@ package roomescape;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import roomescape.controller.request.ReservationRequest;
 import roomescape.controller.request.ReservationTimeRequest;
+import roomescape.controller.response.ReservationResponse;
 import roomescape.controller.response.ReservationTimeResponse;
 import roomescape.controller.response.ThemeResponse;
 import roomescape.domain.Name;
@@ -89,4 +91,10 @@ public class TestFixtures {
     public static final Reservation RESERVATION_5 = new Reservation(
             5L, new Name("fifth"), LocalDate.of(2024, 5, 13), TIME_3, THEME_2
     );
+    public static final ReservationRequest PAST_RESERVATION_REQUEST = new ReservationRequest("past", "2023-05-11", 2L, 3L);
+    public static final ReservationRequest RESERVATION_REQUEST_2 = new ReservationRequest("second", "2024-05-10", 2L, 2L);
+    public static final ReservationRequest RESERVATION_REQUEST_3 = new ReservationRequest("third", "2024-05-11", 2L, 3L);
+    public static final ReservationResponse RESERVATION_RESPONSE_1 = ReservationResponse.from(RESERVATION_1);
+    public static final ReservationResponse RESERVATION_RESPONSE_2 = ReservationResponse.from(RESERVATION_2);
+    public static final ReservationResponse RESERVATION_RESPONSE_3 = ReservationResponse.from(RESERVATION_3);
 }
