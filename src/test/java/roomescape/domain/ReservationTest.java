@@ -1,5 +1,6 @@
 package roomescape.domain;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.exception.ExceptionType.EMPTY_DATE;
@@ -53,5 +54,20 @@ class ReservationTest {
         int compareTo = first.compareTo(second);
         Assertions.assertThat(compareTo)
                 .isGreaterThan(0);
+    }
+
+    @DisplayName("동일한 테마와 시간을 가지는 예약은 같은 예약으로 판단한다.")
+    @Test
+    void isSameReservationTest() {
+        String name = "sameName";
+        LocalDate date = LocalDate.now();
+        Theme theme = new Theme(1L, "name", "description", "thumbnail");
+        ReservationTime time = new ReservationTime(1L, LocalTime.now());
+
+        Reservation savedReservation = new Reservation(1L, name, date, time, theme);
+        Reservation nonSavedReservation = new Reservation(name, date, time, theme);
+
+        assertThat(savedReservation.isSameReservation(nonSavedReservation))
+                .isTrue();
     }
 }

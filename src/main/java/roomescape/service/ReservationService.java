@@ -48,7 +48,8 @@ public class ReservationService {
         );
         boolean isDuplicate = reservationRepository.findAll()
                 .stream()
-                .anyMatch(reservation -> validateDuplicateReservation(beforeSave, reservation));
+                .anyMatch(reservation -> reservation.isSameReservation(beforeSave));
+
         if (isDuplicate) {
             throw new RoomescapeException(DUPLICATE_RESERVATION);
         }
@@ -59,11 +60,6 @@ public class ReservationService {
 
         Reservation saved = reservationRepository.save(beforeSave);
         return toResponse(saved);
-    }
-
-    private boolean validateDuplicateReservation(Reservation beforeSave, Reservation reservation) {
-        return reservation.isSameDateTime(beforeSave)
-               && beforeSave.isSameTheme(reservation);
     }
 
     private ReservationResponse toResponse(Reservation reservation) {

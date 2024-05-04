@@ -71,11 +71,7 @@ public class Reservation implements Comparable<Reservation> {
     }
 
     public boolean isBefore(LocalDateTime base) {
-        return LocalDateTime.of(date, getTime()).isBefore(base);
-    }
-
-    public LocalTime getTime() {
-        return time.getStartAt();
+        return this.getLocalDateTime().isBefore(base);
     }
 
     public boolean hasSameId(long id) {
@@ -94,9 +90,9 @@ public class Reservation implements Comparable<Reservation> {
         return this.theme.isIdOf(id);
     }
 
-    public boolean isSameDateTime(Reservation beforeSave) {
-        return LocalDateTime.of(this.date, this.getTime())
-                .equals(LocalDateTime.of(beforeSave.date, beforeSave.getTime()));
+    public boolean isSameReservation(Reservation beforeSave) {
+        return this.getLocalDateTime().equals(beforeSave.getLocalDateTime())
+                && this.isSameTheme(beforeSave);
     }
 
     public boolean isSameTheme(Reservation reservation) {
@@ -115,8 +111,16 @@ public class Reservation implements Comparable<Reservation> {
         return date;
     }
 
+    public LocalDateTime getLocalDateTime() {
+        return LocalDateTime.of(this.date, this.getTime());
+    }
+
     public ReservationTime getReservationTime() {
         return time;
+    }
+
+    public LocalTime getTime() {
+        return time.getStartAt();
     }
 
     public Theme getTheme() {
@@ -149,10 +153,10 @@ public class Reservation implements Comparable<Reservation> {
     @Override
     public String toString() {
         return "Reservation{" +
-               "id=" + id +
-               ", name='" + name + '\'' +
-               ", date=" + date +
-               ", time=" + time +
-               '}';
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", date=" + date +
+                ", time=" + time +
+                '}';
     }
 }
