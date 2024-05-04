@@ -19,6 +19,7 @@ import java.time.LocalTime;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
@@ -96,5 +97,56 @@ class ThemeControllerTest {
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
+    }
+
+    @DisplayName("이름이 비어 있는 테마 추가 시 BadRequest 반환")
+    @Test
+    void blankThemeName() {
+        final Map<String, String> params = Map.of(
+                "name", "",
+                "description", "설명",
+                "thumbnail", "썸네일");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(400)
+                .body("name", equalTo("테마 이름이 비어 있습니다."));
+    }
+
+    @DisplayName("설명이 비어 있는 테마 추가 시 BadRequest 반환")
+    @Test
+    void blankDescription() {
+        final Map<String, String> params = Map.of(
+                "name", "이름",
+                "description", "",
+                "thumbnail", "썸네일");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(400)
+                .body("description", equalTo("테마 설명이 비어 있습니다."));
+    }
+
+    @DisplayName("썸네일이 비어 있는 테마 추가 시 BadRequest 반환")
+    @Test
+    void blankThumbnail() {
+        final Map<String, String> params = Map.of(
+                "name", "이름",
+                "description", "설명",
+                "thumbnail", "");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(400)
+                .body("thumbnail", equalTo("테마 썸네일이 비어 있습니다."));
     }
 }

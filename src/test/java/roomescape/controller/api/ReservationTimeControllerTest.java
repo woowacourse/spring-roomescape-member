@@ -74,6 +74,22 @@ class ReservationTimeControllerTest {
                 .body("size()", is(1));
     }
 
+    @DisplayName("startAt이 비어 있는 예약 시간 추가 시 BadRequest 반환")
+    @Test
+    void blankStartAt() {
+        final Map<String, Object> params = Map.of(
+                "startAt", ""
+        );
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(400)
+                .body("startAt", equalTo("예약 시간이 비어 있습니다."));
+    }
+
     @DisplayName("예약 시간 추가 및 삭제")
     @TestFactory
     Stream<DynamicTest> saveAndDeleteReservationTime() {
@@ -100,7 +116,7 @@ class ReservationTimeControllerTest {
 
     @DisplayName("유효하지 않은 시간 형식 입력 시 BadRequest 반환")
     @ParameterizedTest
-    @ValueSource(strings = {"11:11:11", "25:10"})
+    @ValueSource(strings = {"11:11:11", "25-10"})
     void invalidTimeFormat(final String time) {
         final Map<String, String> params = Map.of("startAt", time);
 
@@ -110,6 +126,6 @@ class ReservationTimeControllerTest {
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(400)
-                .body(equalTo("잘못된 입력 형식입니다."));
+                .body(equalTo(String.format("잘못된 날짜 혹은 시간 입력 형식입니다. (%s)", time)));
     }
 }

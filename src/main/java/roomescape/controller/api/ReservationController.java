@@ -1,5 +1,6 @@
 package roomescape.controller.api;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.dto.ReservationResponse;
@@ -27,7 +28,7 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> saveReservation(
-            @RequestBody final ReservationSaveRequest reservationSaveRequest) {
+            @RequestBody @Valid final ReservationSaveRequest reservationSaveRequest) {
         final ReservationResponse reservationResponse = reservationService.saveReservation(reservationSaveRequest);
         return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.id()))
                 .body(reservationResponse);

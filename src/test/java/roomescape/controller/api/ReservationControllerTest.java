@@ -92,6 +92,88 @@ class ReservationControllerTest {
         );
     }
 
+    @DisplayName("예약자 이름이 비어 있는 예약 추가 시 BadRequest 반환")
+    @Test
+    void blankReservationName() {
+        final ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("09:00")));
+        final Theme theme = themeRepository.save(new Theme("이름1", "설명1", "썸네일1"));
+
+        final Map<String, Object> params = Map.of(
+                "name", "",
+                "date", LocalDate.now().plusMonths(1),
+                "timeId", reservationTime.getId(),
+                "themeId", theme.getId());
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("name", equalTo("예약자 이름이 비어 있습니다."));
+    }
+
+    @DisplayName("예약 날짜가 비어 있는 예약 추가 시 BadRequest 반환")
+    @Test
+    void blankReservationDate() {
+        final ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("09:00")));
+        final Theme theme = themeRepository.save(new Theme("이름1", "설명1", "썸네일1"));
+
+        final Map<String, Object> params = Map.of(
+                "name", "감자",
+                "date", "",
+                "timeId", reservationTime.getId(),
+                "themeId", theme.getId());
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("date", equalTo("예약 날짜가 비어 있습니다."));
+    }
+
+    @DisplayName("예약 테마 아아디가 비어 있는 예약 추가 시 BadRequest 반환")
+    @Test
+    void blankReservationThemeId() {
+        final ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("09:00")));
+
+        final Map<String, Object> params = Map.of(
+                "name", "감자",
+                "date", LocalDate.now().plusMonths(1),
+                "timeId", reservationTime.getId(),
+                "themeId", "");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("themeId", equalTo("예약 테마 아이디가 비어 있습니다."));
+    }
+
+    @DisplayName("예약 시간 아아디가 비어 있는 예약 추가 시 BadRequest 반환")
+    @Test
+    void blankReservationTimeId() {
+        final Theme theme = themeRepository.save(new Theme("이름1", "설명1", "썸네일1"));
+
+        final Map<String, Object> params = Map.of(
+                "name", "",
+                "date", LocalDate.now().plusMonths(1),
+                "timeId", "",
+                "themeId", theme.getId());
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body("timeId", equalTo("예약 시간 아이디가 비어 있습니다."));
+    }
+
     @DisplayName("유효하지 않은 날짜 형식 입력 시 BadRequest 반환")
     @ParameterizedTest
     @ValueSource(strings = {"2099.22.11", "2022", "abc"})
@@ -110,6 +192,6 @@ class ReservationControllerTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400)
-                .body(equalTo("잘못된 입력 형식입니다."));
+                .body(equalTo(String.format("잘못된 날짜 혹은 시간 입력 형식입니다. (%s)", date)));
     }
 }
