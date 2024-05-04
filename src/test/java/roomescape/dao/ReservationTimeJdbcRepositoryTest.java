@@ -127,9 +127,9 @@ class ReservationTimeJdbcRepositoryTest {
         assertThat(result).isFalse();
     }
 
-    @DisplayName("예약이 가능한 시간이 없다.")
+    @DisplayName("예약이 있는 시간을 찾는다.")
     @Test
-    void findNoAvailableTimesByThemeAndDate() {
+    void findBookedTimesByThemeAndDate() {
         //given
         ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime("10:00"));
         Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
@@ -137,23 +137,23 @@ class ReservationTimeJdbcRepositoryTest {
         reservationRepository.save(reservation);
 
         //when
-        List<ReservationTime> result = reservationTimeRepository.findByDateAndTheme(
+        List<ReservationTime> result = reservationTimeRepository.findBookedTimesByDateAndTheme(
                 reservation.getDate(), theme.getId());
 
         //then
-        assertThat(result).hasSize(0);
+        assertThat(result).hasSize(1);
     }
 
-    @DisplayName("예약이 가능한 시간이 있다.")
+    @DisplayName("예약이 있는 시간이 있다.")
     @Test
-    void findAvailableTimesByThemeAndDate() {
+    void findNoBookedTimesByThemeAndDate() {
         //given
         reservationTimeRepository.save(new ReservationTime("10:00"));
 
         //when
-        List<ReservationTime> result = reservationTimeRepository.findByDateAndTheme("2222-05-01", 0);
+        List<ReservationTime> result = reservationTimeRepository.findBookedTimesByDateAndTheme("2222-05-01", 0);
 
         //then
-        assertThat(result).hasSize(1);
+        assertThat(result).hasSize(0);
     }
 }

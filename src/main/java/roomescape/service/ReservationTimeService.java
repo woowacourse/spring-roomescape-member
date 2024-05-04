@@ -6,9 +6,10 @@ import roomescape.dao.ReservationRepository;
 import roomescape.dao.ReservationTimeRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.InvalidReservationException;
+import roomescape.service.dto.AvailableReservationTimeResponse;
 import roomescape.service.dto.ReservationTimeCreateRequest;
 import roomescape.service.dto.ReservationTimeReadRequest;
-import roomescape.service.dto.ReservationTimeResponse;
+import roomescape.service.dto.AllReservationTimeResponse;
 
 import java.util.List;
 
@@ -24,11 +25,11 @@ public class ReservationTimeService {
         this.reservationRepository = reservationRepository;
     }
 
-    public ReservationTimeResponse create(final ReservationTimeCreateRequest reservationTimeCreateRequest) {
+    public AllReservationTimeResponse create(final ReservationTimeCreateRequest reservationTimeCreateRequest) {
         validateDuplicated(reservationTimeCreateRequest);
         ReservationTime reservationTime = reservationTimeRepository.save(
                 new ReservationTime(reservationTimeCreateRequest.startAt()));
-        return new ReservationTimeResponse(reservationTime);
+        return new AllReservationTimeResponse(reservationTime);
     }
 
     private void validateDuplicated(ReservationTimeCreateRequest reservationTimeCreateRequest) {
@@ -37,9 +38,9 @@ public class ReservationTimeService {
         }
     }
 
-    public List<ReservationTimeResponse> findAll() {
+    public List<AllReservationTimeResponse> findAll() {
         return reservationTimeRepository.findAll().stream()
-                .map(ReservationTimeResponse::new)
+                .map(AllReservationTimeResponse::new)
                 .toList();
     }
 
@@ -54,10 +55,15 @@ public class ReservationTimeService {
         }
     }
 
-    public List<ReservationTimeResponse> findAvailableTimes(ReservationTimeReadRequest reservationTimeReadRequest) {
-        return reservationTimeRepository.findByDateAndTheme(reservationTimeReadRequest.date(),
-                        reservationTimeReadRequest.themeId()).stream()
-                .map(ReservationTimeResponse::new)
+    public List<AvailableReservationTimeResponse> findAvailableTimes(ReservationTimeReadRequest reservationTimeReadRequest) {
+        List<ReservationTime> bookedReservationTimes = reservationTimeRepository.findBookedTimesByDateAndTheme(reservationTimeReadRequest.date(),
+                reservationTimeReadRequest.themeId());
+        return reservationTimeRepository.findAll().stream()
+                .map(time -> new AvailableReservationTimeResponse(time.getId(), time.getStartAt(), isBooked(bookedReservationTimes, time)))
                 .toList();
+    }
+
+    private boolean isBooked(final List<ReservationTime> bookedReservationTimes, final ReservationTime time) {
+        return bookedReservationTimes.contains(time);
     }
 }

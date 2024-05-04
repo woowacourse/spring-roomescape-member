@@ -118,7 +118,7 @@ class ReservationTimeControllerTest {
                 .assertThat().statusCode(400).body("message", is("해당 시간에 예약이 존재해서 삭제할 수 없습니다."));
     }
 
-    @DisplayName("예약 가능한 시간 조회 테스트 - 3개 시간 중 2개에 예약이 가능하다.")
+    @DisplayName("예약 가능한 시간 조회 테스트 - 10:00: 예약 존재, (11:00,12:00): 예약 미존재.")
     @Test
     @Sql(scripts = {"classpath:insert-time-with-reservation.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void findAvailableTime() {
@@ -128,10 +128,7 @@ class ReservationTimeControllerTest {
 
         //when&then
         RestAssured.given().log().all()
-                .when().get("/times")
-                .then().log().all();
-        RestAssured.given().log().all()
                 .when().get("/times/available?date=" + date + "&themeId=" + themeId)
-                .then().log().all().statusCode(200).body("size()", is(2));
+                .then().log().all().statusCode(200).body("size()", is(3));
     }
 }

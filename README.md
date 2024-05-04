@@ -228,6 +228,12 @@
    {
         "id": 1,
         "startAt": "10:00"
+        "isBooked": true
+    },
+   {
+        "id": 2,
+        "startAt": "11:00"
+        "isBooked": false
     }
   ]
   ```

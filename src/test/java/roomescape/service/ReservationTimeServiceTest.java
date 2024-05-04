@@ -14,15 +14,17 @@ import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.InvalidReservationException;
+import roomescape.service.dto.AvailableReservationTimeResponse;
 import roomescape.service.dto.ReservationTimeCreateRequest;
 import roomescape.service.dto.ReservationTimeReadRequest;
-import roomescape.service.dto.ReservationTimeResponse;
+import roomescape.service.dto.AllReservationTimeResponse;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertTimeout;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 @Sql(scripts = {"classpath:truncate.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -44,7 +46,7 @@ class ReservationTimeServiceTest {
         ReservationTimeCreateRequest reservationTimeCreateRequest = new ReservationTimeCreateRequest(startAt);
 
         //when
-        ReservationTimeResponse result = reservationTimeService.create(reservationTimeCreateRequest);
+        AllReservationTimeResponse result = reservationTimeService.create(reservationTimeCreateRequest);
 
         //then
         assertAll(
@@ -60,7 +62,7 @@ class ReservationTimeServiceTest {
         reservationTimeRepository.save(new ReservationTime("10:00"));
 
         //when
-        List<ReservationTimeResponse> reservationTimes = reservationTimeService.findAll();
+        List<AllReservationTimeResponse> reservationTimes = reservationTimeService.findAll();
 
         //then
         assertThat(reservationTimes).hasSize(1);
@@ -98,18 +100,21 @@ class ReservationTimeServiceTest {
     @Test
     void findAvailableTimes() {
         //given
-        ReservationTime unavailableReservationTime = reservationTimeRepository.save(new ReservationTime("10:00"));
-        ReservationTime availableReservation = reservationTimeRepository.save(new ReservationTime("11:00"));
+        ReservationTime bookedReservationTime = reservationTimeRepository.save(new ReservationTime("10:00"));
+        ReservationTime notBookedReservationTime = reservationTimeRepository.save(new ReservationTime("11:00"));
         Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
-        Reservation reservation = reservationRepository.save(new Reservation("lily", new ReservationDate("2222-10-04"), unavailableReservationTime, theme));
+        Reservation reservation = reservationRepository.save(new Reservation("lily", new ReservationDate("2222-10-04"), bookedReservationTime, theme));
 
         //when
-        List<ReservationTimeResponse> result = reservationTimeService.findAvailableTimes(new ReservationTimeReadRequest(reservation.getDate(), theme.getId()));
+        List<AvailableReservationTimeResponse> result = reservationTimeService.findAvailableTimes(new ReservationTimeReadRequest(reservation.getDate(), theme.getId()));
 
         //then
+        boolean isBookedOfBookedTime = result.stream().filter(time -> time.id() == bookedReservationTime.getId()).findFirst().get().isBooked();
+        boolean isBookedOfUnBookedTime = result.stream().filter(time -> time.id() == notBookedReservationTime.getId()).findFirst().get().isBooked();
         assertAll(
-                () -> assertThat(result).hasSize(1),
-                () -> assertThat(result.get(0).startAt()).contains(availableReservation.getStartAt())
+                () -> assertThat(result).hasSize(2),
+                () -> assertThat(isBookedOfUnBookedTime).isFalse(),
+                () -> assertThat(isBookedOfBookedTime).isTrue()
         );
     }
 }

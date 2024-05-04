@@ -71,8 +71,8 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public List<ReservationTime> findByDateAndTheme(String date, long themeId) {
-        String sql = "SELECT * FROM reservation_time WHERE id NOT IN (SELECT time_id FROM reservation WHERE date =? AND theme_id=?)";
+    public List<ReservationTime> findBookedTimesByDateAndTheme(String date, long themeId) {
+        String sql = "SELECT * FROM reservation_time WHERE id IN (SELECT time_id FROM reservation WHERE date =? AND theme_id=?)";
         return jdbcTemplate.query(sql, rowMapper, date, themeId);
     }
 }

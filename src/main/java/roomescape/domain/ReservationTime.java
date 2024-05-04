@@ -5,6 +5,7 @@ import roomescape.exception.InvalidReservationException;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Objects;
 
 public class ReservationTime {
     private final static String TIME_FORMAT = "HH:mm";
@@ -40,6 +41,19 @@ public class ReservationTime {
         } catch (DateTimeParseException e) {
             throw new InvalidReservationException("올바르지 않은 시간입니다.");
         }
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final ReservationTime that = (ReservationTime) o;
+        return id == that.id && Objects.equals(startAt, that.startAt);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, startAt);
     }
 
     public long getId() {
