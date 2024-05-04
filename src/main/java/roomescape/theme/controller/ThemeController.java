@@ -1,7 +1,7 @@
 package roomescape.theme.controller;
 
+import java.net.URI;
 import java.util.List;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,31 +27,27 @@ public class ThemeController {
 
     @PostMapping
     public ResponseEntity<ThemeResponse> createTheme(@RequestBody ThemeRequest themeRequest) {
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(themeService.addTheme(themeRequest));
+        ThemeResponse themeCreateRequestResult = themeService.addTheme(themeRequest);
+        URI uri = URI.create("/themes/" + themeCreateRequestResult.id());
+        return ResponseEntity.created(uri).body(themeCreateRequestResult);
     }
 
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> themeList() {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(themeService.findThemes());
+        List<ThemeResponse> themeListRequestResult = themeService.findThemes();
+        return ResponseEntity.ok().body(themeListRequestResult);
     }
 
     @GetMapping("/rank")
     public ResponseEntity<List<ThemeRankResponse>> themeRankList() {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(themeService.findRankedThemes());
+        List<ThemeRankResponse> rankedThemesListRequestResult = themeService.findRankedThemes();
+        return ResponseEntity.ok().body(rankedThemesListRequestResult);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable("id") long themeId) {
         themeService.removeTheme(themeId);
-        return ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
-                .build();
+        return ResponseEntity.noContent().build();
     }
 
 }

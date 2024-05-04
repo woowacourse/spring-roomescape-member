@@ -43,7 +43,7 @@ class ReservationControllerTest {
 
     @Test
     @DisplayName("예약 정보를 잘 저장하는지 확인한다.")
-    void saveReservation() throws Exception {
+    void createReservation() throws Exception {
         Mockito.when(reservationService.addReservation(any()))
                 .thenReturn(ReservationResponse.fromReservation(reservation));
 
