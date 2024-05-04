@@ -13,6 +13,13 @@ public class Theme {
     private final String description;
     private final String thumbnail;
 
+    public Theme(final Long id) {
+        this.id = id;
+        this.name = null;
+        this.description = null;
+        this.thumbnail = null;
+    }
+
     public Theme(final Long id, final String name, final String description, final String thumbnail) {
         validateNull(name);
 

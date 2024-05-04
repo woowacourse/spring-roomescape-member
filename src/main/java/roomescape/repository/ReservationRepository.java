@@ -16,11 +16,11 @@ public interface ReservationRepository {
 
     boolean existsByTimeId(Long timeId);
 
-    boolean existsByDateAndTimeId(Long timeId, LocalDate date);
-
     boolean existsByThemeId(Long themeId);
+
+    boolean existsByDateAndTimeId(Long timeId, LocalDate date);
 
     Reservation save(Reservation reservation);
 
-    int deleteById(Long id);
+    int delete(Long id);
 }

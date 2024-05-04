@@ -19,10 +19,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ReservationTimeRepositoryTest {
 
     final List<ReservationTime> sampleTimes = List.of(
-            new ReservationTime(null, LocalTime.of(8, 0)),
-            new ReservationTime(null, LocalTime.of(9, 10)),
-            new ReservationTime(null, LocalTime.of(10, 20)),
-            new ReservationTime(null, LocalTime.of(11, 30))
+            new ReservationTime(null, "08:00"),
+            new ReservationTime(null, "09:10"),
+            new ReservationTime(null, "10:20"),
+            new ReservationTime(null, "11:30")
     );
 
     @Autowired
@@ -62,7 +62,7 @@ class ReservationTimeRepositoryTest {
 
     @Test
     @DisplayName("존재하지 않는 예약 시간 데이터를 조회할 경우 빈 값을 반환한다.")
-    void findByIdNotPresent() {
+    void findByIdNotExist() {
         // given
         final long notExistId = 1L;
 
@@ -102,7 +102,7 @@ class ReservationTimeRepositoryTest {
 
     @Test
     @DisplayName("존재하지 않는 예약 시간 번호로 삭제할 경우 아무런 영향이 없다.")
-    void deleteNotPresent() {
+    void deleteNotExist() {
         // given
         final Long notExistId = 1L;
 

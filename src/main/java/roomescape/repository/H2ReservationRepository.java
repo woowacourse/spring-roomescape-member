@@ -13,7 +13,6 @@ import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -36,8 +35,8 @@ public class H2ReservationRepository implements ReservationRepository {
                 rs.getLong("ID"),
                 rs.getString("NAME"),
                 rs.getString("DATE"),
-                new ReservationTime(rs.getLong("TIME_ID"), LocalTime.MIN),
-                new Theme(rs.getLong("THEME_ID"), "", "", "")
+                new ReservationTime(rs.getLong("TIME_ID")),
+                new Theme(rs.getLong("THEME_ID"))
         );
     }
 
@@ -106,6 +105,13 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public boolean existsByDateAndTimeId(final Long timeId, final LocalDate date) {
+        final String sql = "SELECT * FROM RESERVATION WHERE TIME_ID = ? AND DATE = ? LIMIT 1";
+
+        return !jdbcTemplate.query(sql, this::mapRowLazy, timeId, date).isEmpty();
+    }
+
+    @Override
     public Reservation save(final Reservation reservation) {
         final SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("NAME", reservation.getName())
@@ -118,14 +124,7 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByDateAndTimeId(final Long timeId, final LocalDate date) {
-        final String sql = "SELECT * FROM RESERVATION WHERE TIME_ID = ? AND DATE = ? LIMIT 1";
-
-        return !jdbcTemplate.query(sql, this::mapRowLazy, timeId, date).isEmpty();
-    }
-
-    @Override
-    public int deleteById(final Long id) {
+    public int delete(final Long id) {
         final String sql = "DELETE FROM RESERVATION WHERE ID = ?";
 
         return jdbcTemplate.update(sql, id);

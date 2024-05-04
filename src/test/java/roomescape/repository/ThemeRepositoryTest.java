@@ -61,7 +61,7 @@ class ThemeRepositoryTest {
 
     @Test
     @DisplayName("존재하지 않는 테마를 조회할 경우 빈 값을 반환한다.")
-    void findByIdNotPresent() {
+    void findByIdNotExist() {
         // given
         final long notExistId = 1L;
 
@@ -88,7 +88,7 @@ class ThemeRepositoryTest {
 
     @Test
     @DisplayName("등록된 테마 번호로 삭제한다.")
-    void deleteByIdPresent() {
+    void deletePresent() {
         // given
         final Theme theme = sampleThemes.get(0);
         final Theme savedTheme = themeRepository.save(theme);
@@ -102,7 +102,7 @@ class ThemeRepositoryTest {
 
     @Test
     @DisplayName("존재하지 않는 테마를 삭제할 경우 아무런 영향이 없다.")
-    void deleteByNotPresent() {
+    void deleteNotExist() {
         // given
         final Long notExistId = 1L;
 
