@@ -120,7 +120,7 @@ public class ReservationDao {
                 ),
                 new ReservationTheme(
                         resultSet.getLong("theme_id"),
-                        resultSet.getString("name"),
+                        resultSet.getString("theme_name"),
                         resultSet.getString("description"),
                         resultSet.getString("thumbnail")
                 )
