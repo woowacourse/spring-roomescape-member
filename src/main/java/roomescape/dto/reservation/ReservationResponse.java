@@ -11,7 +11,7 @@ public record ReservationResponse(Long id, String name, LocalDate date,
                                   @JsonProperty("time") TimeResponse timeResponse,
                                   @JsonProperty("theme") ThemeResponse themeResponse) {
 
-    public static ReservationResponse from(Reservation reservation) {
+    public static ReservationResponse from(final Reservation reservation) {
         return new ReservationResponse(
                 reservation.getId(),
                 reservation.getName(),

@@ -23,14 +23,14 @@ public class TimeRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
-    public TimeRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+    public TimeRepository(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation_time")
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Time findById(Long timeId) {
+    public Time findById(final Long timeId) {
         String sql = "SELECT * FROM reservation_time WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, ROW_MAPPER, timeId);
     }
@@ -41,13 +41,13 @@ public class TimeRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
-    public List<Time> findByStartAt(LocalTime startAt) {
+    public List<Time> findByStartAt(final LocalTime startAt) {
         String sql = "SELECT * FROM reservation_time WHERE start_at = ?";
 
         return jdbcTemplate.query(sql, ROW_MAPPER, startAt);
     }
 
-    public Time insert(Time requestTime) {
+    public Time insert(final Time requestTime) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("start_at", requestTime.getStartAt());
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
@@ -55,7 +55,7 @@ public class TimeRepository {
         return new Time(id, requestTime.getStartAt());
     }
 
-    public int deleteById(Long id) {
+    public int deleteById(final Long id) {
         String sql = "DELETE FROM reservation_time WHERE id = ?";
         return jdbcTemplate.update(sql, id);
     }

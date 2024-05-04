@@ -19,7 +19,7 @@ public class TimeController {
 
     private final TimeService timeService;
 
-    public TimeController(TimeService timeService) {
+    public TimeController(final TimeService timeService) {
         this.timeService = timeService;
     }
 
@@ -30,7 +30,7 @@ public class TimeController {
     }
 
     @PostMapping("/times")
-    public ResponseEntity<TimeResponse> saveTime(@RequestBody TimeRequest timeRequest) {
+    public ResponseEntity<TimeResponse> saveTime(@RequestBody final TimeRequest timeRequest) {
         TimeResponse timeResponse = timeService.addTime(timeRequest);
 
         return ResponseEntity.created(URI.create("/times/" + timeResponse.id()))
@@ -38,7 +38,7 @@ public class TimeController {
     }
 
     @DeleteMapping("/times/{id}")
-    public ResponseEntity<Void> removeTime(@PathVariable Long id) {
+    public ResponseEntity<Void> removeTime(@PathVariable final Long id) {
         timeService.removeTimeById(id);
 
         return ResponseEntity.noContent().build();

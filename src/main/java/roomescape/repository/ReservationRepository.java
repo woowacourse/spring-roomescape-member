@@ -36,7 +36,7 @@ public class ReservationRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
-    public ReservationRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+    public ReservationRepository(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation")
@@ -53,7 +53,7 @@ public class ReservationRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
-    public Reservation insert(Reservation requestReservation) {
+    public Reservation insert(final Reservation requestReservation) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", requestReservation.getName())
                 .addValue("date", requestReservation.getDate())
@@ -70,7 +70,7 @@ public class ReservationRepository {
         );
     }
 
-    public List<Reservation> findByTimeId(Long timeId) {
+    public List<Reservation> findByTimeId(final Long timeId) {
         String sql = """
                 SELECT * FROM reservation r 
                 JOIN reservation_time rt ON r.time_id = rt.id 
@@ -80,7 +80,7 @@ public class ReservationRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER, timeId);
     }
 
-    public List<Reservation> findByTimeIdAndDateAndThemeId(Long timeId, LocalDate date, Long themeId) {
+    public List<Reservation> findByTimeIdAndDateAndThemeId(final Long timeId, final LocalDate date, final Long themeId) {
         String sql = """
                 SELECT * FROM reservation r 
                 JOIN reservation_time rt ON r.time_id = rt.id
@@ -90,7 +90,7 @@ public class ReservationRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER, timeId, date, themeId);
     }
 
-    public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
+    public List<Reservation> findByDateAndThemeId(final LocalDate date, final Long themeId) {
         String sql = """
                 SELECT * FROM reservation r
                 JOIN reservation_time rt ON r.time_id = rt.id
@@ -100,7 +100,7 @@ public class ReservationRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER, date, themeId);
     }
 
-    public int deleteById(Long id) {
+    public int deleteById(final Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
         return jdbcTemplate.update(sql, id);
     }

@@ -23,7 +23,7 @@ public record ReservationRequest(
         Long themeId
 ) {
 
-    public Reservation toReservation(Time time, Theme theme) {
+    public Reservation toReservation(final Time time, final Theme theme) {
         return new Reservation(this.name, this.date, time, theme);
     }
 }

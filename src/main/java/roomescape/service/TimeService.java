@@ -18,7 +18,7 @@ public class TimeService {
     private final TimeRepository timeRepository;
     private final ReservationRepository reservationRepository;
 
-    public TimeService(TimeRepository timeRepository, ReservationRepository reservationRepository) {
+    public TimeService(final TimeRepository timeRepository, final ReservationRepository reservationRepository) {
         this.timeRepository = timeRepository;
         this.reservationRepository = reservationRepository;
     }
@@ -32,7 +32,7 @@ public class TimeService {
         return new TimesResponse(response);
     }
 
-    public TimeResponse addTime(TimeRequest timeRequest) {
+    public TimeResponse addTime(final TimeRequest timeRequest) {
         List<Time> duplicateTimes = timeRepository.findByStartAt(timeRequest.startAt());
         if (duplicateTimes.size() > 0) {
             throw new ConflictException("이미 존재하는 예약 시간입니다.");
@@ -44,7 +44,7 @@ public class TimeService {
         return TimeResponse.from(savedTime);
     }
 
-    public void removeTimeById(Long id) {
+    public void removeTimeById(final Long id) {
         List<Reservation> usingTimeReservations = reservationRepository.findByTimeId(id);
         if (usingTimeReservations.size() > 0) {
             throw new ConflictException(String.format("[TimeId - %d] 해당 시간에 예약이 존재하여 시간을 삭제할 수 없습니다.", id));

@@ -20,7 +20,7 @@ public class ThemeController {
 
     private final ThemeService themeService;
 
-    public ThemeController(ThemeService themeService) {
+    public ThemeController(final ThemeService themeService) {
         this.themeService = themeService;
     }
 
@@ -31,13 +31,13 @@ public class ThemeController {
     }
 
     @GetMapping("/themes/top")
-    public ResponseEntity<ThemesResponse> getTopNThemes(@RequestParam int count) {
+    public ResponseEntity<ThemesResponse> getTopNThemes(@RequestParam final int count) {
 
         return ResponseEntity.ok(themeService.findTopNThemes(count));
     }
 
     @PostMapping("/themes")
-    public ResponseEntity<ThemeResponse> saveTheme(@RequestBody ThemeRequest request) {
+    public ResponseEntity<ThemeResponse> saveTheme(@RequestBody final ThemeRequest request) {
         ThemeResponse response = themeService.addTheme(request);
 
         return ResponseEntity.created(URI.create("/themes/" + response.id()))
@@ -45,7 +45,7 @@ public class ThemeController {
     }
 
     @DeleteMapping("/themes/{id}")
-    public ResponseEntity<Void> removeTheme(@PathVariable Long id) {
+    public ResponseEntity<Void> removeTheme(@PathVariable final Long id) {
         themeService.removeThemeById(id);
 
         return ResponseEntity.noContent().build();

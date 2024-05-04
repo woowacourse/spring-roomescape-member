@@ -7,7 +7,7 @@ import java.time.LocalTime;
 
 public record TimeResponse(Long id, @JsonFormat(pattern = "HH:mm") LocalTime startAt) {
 
-    public static TimeResponse from(Time time) {
+    public static TimeResponse from(final Time time) {
         return new TimeResponse(time.getId(), time.getStartAt());
     }
 }

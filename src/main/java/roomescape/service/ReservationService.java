@@ -28,9 +28,9 @@ public class ReservationService {
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository,
-                              TimeRepository timeRepository,
-                              ThemeRepository themeRepository) {
+    public ReservationService(final ReservationRepository reservationRepository,
+                              final TimeRepository timeRepository,
+                              final ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
@@ -45,7 +45,7 @@ public class ReservationService {
         return new ReservationsResponse(response);
     }
 
-    public ReservationTimeInfosResponse findReservationsByDateAndThemeId(LocalDate date, Long themeId) {
+    public ReservationTimeInfosResponse findReservationsByDateAndThemeId(final LocalDate date, final Long themeId) {
         List<Time> allTimes = timeRepository.findAll();
         Set<Long> reservedTimes = reservationRepository.findByDateAndThemeId(date, themeId).stream()
                 .map(Reservation::getTime)
@@ -61,7 +61,7 @@ public class ReservationService {
         return new ReservationTimeInfosResponse(response);
     }
 
-    public ReservationResponse addReservation(ReservationRequest reservationRequest) {
+    public ReservationResponse addReservation(final ReservationRequest reservationRequest) {
         LocalDate today = LocalDate.now();
         LocalDate requestDate = reservationRequest.date();
         Time time = timeRepository.findById(reservationRequest.timeId());
@@ -75,14 +75,14 @@ public class ReservationService {
         return ReservationResponse.from(savedReservation);
     }
 
-    private void validateDateAndTime(LocalDate requestDate, LocalDate today, Time time) {
+    private void validateDateAndTime(final LocalDate requestDate, final LocalDate today, final Time time) {
         if (requestDate.isBefore(today) || (requestDate.isEqual(today) && time.getStartAt()
                 .isBefore(LocalTime.now()))) {
             throw new ConflictException("지난 날짜나 시간은 예약이 불가능합니다.");
         }
     }
 
-    private void validateReservationDuplicate(ReservationRequest reservationRequest, Theme theme) {
+    private void validateReservationDuplicate(final ReservationRequest reservationRequest, final Theme theme) {
         List<Reservation> duplicateTimeReservation = reservationRepository.findByTimeIdAndDateAndThemeId(
                 reservationRequest.timeId(), reservationRequest.date(), theme.getId());
 
@@ -91,7 +91,7 @@ public class ReservationService {
         }
     }
 
-    public void removeReservationById(Long id) {
+    public void removeReservationById(final Long id) {
         reservationRepository.deleteById(id);
     }
 }

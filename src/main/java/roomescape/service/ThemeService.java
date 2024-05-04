@@ -15,7 +15,7 @@ public class ThemeService {
 
     private final ThemeRepository themeRepository;
 
-    public ThemeService(ThemeRepository themeRepository) {
+    public ThemeService(final ThemeRepository themeRepository) {
         this.themeRepository = themeRepository;
     }
 
@@ -28,7 +28,7 @@ public class ThemeService {
         return new ThemesResponse(response);
     }
 
-    public ThemesResponse findTopNThemes(int count) {
+    public ThemesResponse findTopNThemes(final int count) {
         LocalDate today = LocalDate.now();
         LocalDate startDate = today.minusDays(7);
         LocalDate endDate = today.minusDays(1);
@@ -41,13 +41,13 @@ public class ThemeService {
         return new ThemesResponse(response);
     }
 
-    public ThemeResponse addTheme(ThemeRequest request) {
+    public ThemeResponse addTheme(final ThemeRequest request) {
         Theme theme = themeRepository.insert(new Theme(request.name(), request.description(), request.thumbnail()));
 
         return ThemeResponse.from(theme);
     }
 
-    public void removeThemeById(Long id) {
+    public void removeThemeById(final Long id) {
         themeRepository.deleteById(id);
     }
 }

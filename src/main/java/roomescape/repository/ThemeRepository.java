@@ -25,14 +25,14 @@ public class ThemeRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
-    public ThemeRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+    public ThemeRepository(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("theme")
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Theme findById(Long id) {
+    public Theme findById(final Long id) {
         String sql = "SELECT * FROM theme WHERE id = ?";
 
         return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
@@ -44,7 +44,7 @@ public class ThemeRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
-    public List<Theme> findByStartDateAndEndDateWithLimit(LocalDate startDate, LocalDate endDate, int limit) {
+    public List<Theme> findByStartDateAndEndDateWithLimit(final LocalDate startDate, final LocalDate endDate, final int limit) {
         String sql = """
                 SELECT t.*
                 FROM theme t
@@ -58,7 +58,7 @@ public class ThemeRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER, startDate, endDate, limit);
     }
 
-    public Theme insert(Theme theme) {
+    public Theme insert(final Theme theme) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", theme.getName())
                 .addValue("description", theme.getDescription())
@@ -68,7 +68,7 @@ public class ThemeRepository {
         return new Theme(id, theme);
     }
 
-    public int deleteById(Long id) {
+    public int deleteById(final Long id) {
         String sql = "DELETE FROM theme WHERE id = ?";
         int deleteCount = jdbcTemplate.update(sql, id);
 

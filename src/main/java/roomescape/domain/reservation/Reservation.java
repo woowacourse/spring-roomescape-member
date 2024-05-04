@@ -13,11 +13,11 @@ public class Reservation {
     private final Time time;
     private final Theme theme;
 
-    public Reservation(String name, LocalDate date, Time time, Theme theme) {
+    public Reservation(final String name, final LocalDate date, final Time time, final Theme theme) {
         this(null, name, date, time, theme);
     }
 
-    public Reservation(Long id, String name, LocalDate date, Time time, Theme theme) {
+    public Reservation(final Long id, final String name, final LocalDate date, final Time time, final Theme theme) {
         this.id = id;
         this.name = name;
         this.date = date;
