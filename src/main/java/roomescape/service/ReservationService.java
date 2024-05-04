@@ -31,7 +31,7 @@ public class ReservationService {
 
     public ReservationResponseDto createReservation(ReservationRequestDto requestDto) {
         Reservation reservation = requestDto.toReservation();
-        if (!reservationTimeRepository.isExistTimeOf(reservation.getTimeId())) {
+        if (!reservationTimeRepository.isTimeExistsByTimeId(reservation.getTimeId())) {
             throw new IllegalArgumentException("예약 하려는 시간이 저장되어 있지 않습니다.");
         }
 
@@ -49,7 +49,7 @@ public class ReservationService {
     }
 
     public void deleteReservation(long id) {
-        if (!reservationRepository.isExistReservationOf(id)) {
+        if (!reservationRepository.isReservationExistsById(id)) {
             throw new IllegalArgumentException("존재하지 않는 아이디입니다.");
         }
         reservationRepository.deleteReservationById(id);

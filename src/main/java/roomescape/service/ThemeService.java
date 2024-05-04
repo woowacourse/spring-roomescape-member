@@ -27,8 +27,8 @@ public class ThemeService {
                 .toList();
     }
 
-    public List<ThemeResponseDto> findTopBookedThemes() {
-        List<Theme> topBookedThemes = themeRepository.findTopBookedThemes(LocalDate.now().minusDays(7),
+    public List<ThemeResponseDto> findTopPopularThemes() {
+        List<Theme> topBookedThemes = themeRepository.findTopPopularThemes(LocalDate.now().minusDays(7),
                 LocalDate.now().minusDays(1), 10);
 
         return topBookedThemes.stream()
@@ -42,10 +42,10 @@ public class ThemeService {
     }
 
     public void deleteTheme(long id) {
-        if (!themeRepository.isExistThemeOf(id)) {
+        if (!themeRepository.isThemeExistsById(id)) {
             throw new IllegalArgumentException("존재하지 않는 아이디입니다.");
         }
-        if (reservationRepository.hasReservationOfThemeId(id)) {
+        if (reservationRepository.isReservationExistsByThemeId(id)) {
             throw new IllegalArgumentException("해당 테마에 예약이 있어 삭제할 수 없습니다.");
         }
         themeRepository.deleteThemeById(id);

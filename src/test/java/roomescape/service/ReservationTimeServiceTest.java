@@ -46,7 +46,7 @@ class ReservationTimeServiceTest {
     void create_reservation_time_test() {
         ReservationTimeRequestDto requestDto = new ReservationTimeRequestDto("11:30");
         ReservationTime reservationTime = new ReservationTime(1L, "11:30");
-        given(reservationTimeRepository.isExistTimeOf(requestDto.getStartAt())).willReturn(false);
+        given(reservationTimeRepository.isTimeExistsByStartTime(requestDto.getStartAt())).willReturn(false);
         given(reservationTimeRepository.insertReservationTime(requestDto.toReservationTime())).willReturn(
                 reservationTime);
 
@@ -58,7 +58,7 @@ class ReservationTimeServiceTest {
     @Test
     void throw_exception_when_duplicate_time_create() {
         ReservationTimeRequestDto requestDto = new ReservationTimeRequestDto("11:30");
-        given(reservationTimeRepository.isExistTimeOf(requestDto.getStartAt())).willReturn(true);
+        given(reservationTimeRepository.isTimeExistsByStartTime(requestDto.getStartAt())).willReturn(true);
 
         assertThatThrownBy(() -> reservationTimeService.createReservationTime(requestDto))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -69,8 +69,8 @@ class ReservationTimeServiceTest {
     @Test
     void throw_exception_when_exist_reservation_delete() {
         long timeId = 1L;
-        given(reservationTimeRepository.isExistTimeOf(timeId)).willReturn(true);
-        given(reservationRepository.hasReservationOfTimeId(timeId)).willReturn(true);
+        given(reservationTimeRepository.isTimeExistsByTimeId(timeId)).willReturn(true);
+        given(reservationRepository.isReservationExistsByTimeId(timeId)).willReturn(true);
 
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(timeId))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -81,7 +81,7 @@ class ReservationTimeServiceTest {
     @Test
     void throw_exception_when_not_exist_id_delete() {
         long timeId = 1L;
-        given(reservationTimeRepository.isExistTimeOf(timeId)).willReturn(false);
+        given(reservationTimeRepository.isTimeExistsByTimeId(timeId)).willReturn(false);
 
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(timeId))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -92,8 +92,8 @@ class ReservationTimeServiceTest {
     @Test
     void delete_reservation_time() {
         long timeId = 1L;
-        given(reservationTimeRepository.isExistTimeOf(timeId)).willReturn(true);
-        given(reservationRepository.hasReservationOfTimeId(timeId)).willReturn(false);
+        given(reservationTimeRepository.isTimeExistsByTimeId(timeId)).willReturn(true);
+        given(reservationRepository.isReservationExistsByTimeId(timeId)).willReturn(false);
 
         reservationTimeService.deleteReservationTime(timeId);
         verify(reservationTimeRepository, times(1)).deleteReservationTimeById(timeId);

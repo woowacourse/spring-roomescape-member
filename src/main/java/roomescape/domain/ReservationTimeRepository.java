@@ -10,11 +10,11 @@ public interface ReservationTimeRepository {
 
     void deleteReservationTimeById(long id);
 
-    boolean isExistTimeOf(String startAt);
+    boolean isTimeExistsByStartTime(String startAt);
 
-    boolean isExistTimeOf(long timeId);
+    boolean isTimeExistsByTimeId(long timeId);
 
     ReservationTime findReservationTimeById(long savedId);
 
-    List<ReservationTime> findBookedTimeForThemeAtDate(String date, long themeId);
+    List<ReservationTime> findReservedTimeByThemeAndDate(String date, long themeId);
 }

@@ -66,7 +66,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean hasReservationOfTimeId(long timeId) {
+    public boolean isReservationExistsByTimeId(long timeId) {
         String sql = "SELECT 1 FROM reservation WHERE time_id = :timeId";
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("timeId", timeId);
@@ -75,7 +75,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean hasReservationOfThemeId(long themeId) {
+    public boolean isReservationExistsByThemeId(long themeId) {
         String sql = "SELECT 1 FROM reservation WHERE theme_id = :themeId";
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("themeId", themeId);
@@ -84,7 +84,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean isExistReservationOf(long id) {
+    public boolean isReservationExistsById(long id) {
         String sql = "SELECT 1 FROM reservation WHERE id = :id";
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("id", id);

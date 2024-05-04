@@ -57,8 +57,8 @@ class ThemeServiceTest {
     @Test
     void throw_exception_when_exist_reservation_delete() {
         long themeId = 1L;
-        given(themeRepository.isExistThemeOf(themeId)).willReturn(true);
-        given(reservationRepository.hasReservationOfThemeId(themeId)).willReturn(true);
+        given(themeRepository.isThemeExistsById(themeId)).willReturn(true);
+        given(reservationRepository.isReservationExistsByThemeId(themeId)).willReturn(true);
 
         assertThatThrownBy(() -> themeService.deleteTheme(themeId))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -71,7 +71,7 @@ class ThemeServiceTest {
     @Test
     void throw_exception_when_not_exist_id_delete() {
         long themeId = 1L;
-        given(themeRepository.isExistThemeOf(themeId)).willReturn(false);
+        given(themeRepository.isThemeExistsById(themeId)).willReturn(false);
 
         assertThatThrownBy(() -> themeService.deleteTheme(themeId))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -84,8 +84,8 @@ class ThemeServiceTest {
     @Test
     void delete_reservation_time() {
         long themeId = 1L;
-        given(themeRepository.isExistThemeOf(themeId)).willReturn(true);
-        given(reservationRepository.hasReservationOfThemeId(themeId)).willReturn(false);
+        given(themeRepository.isThemeExistsById(themeId)).willReturn(true);
+        given(reservationRepository.isReservationExistsByThemeId(themeId)).willReturn(false);
 
         themeService.deleteTheme(themeId);
         verify(themeRepository, times(1)).deleteThemeById(themeId);

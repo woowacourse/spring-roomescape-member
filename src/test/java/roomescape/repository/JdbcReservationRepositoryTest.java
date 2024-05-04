@@ -117,8 +117,8 @@ class JdbcReservationRepositoryTest {
     void is_exist_reservation() {
         reservationRepository.insertReservation(reservation1);
 
-        boolean exist = reservationRepository.isExistReservationOf(1L);
-        boolean notExist = reservationRepository.isExistReservationOf(2L);
+        boolean exist = reservationRepository.isReservationExistsById(1L);
+        boolean notExist = reservationRepository.isReservationExistsById(2L);
 
         assertAll(
                 () -> assertThat(exist).isTrue(),

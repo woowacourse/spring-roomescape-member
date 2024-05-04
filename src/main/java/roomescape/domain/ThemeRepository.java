@@ -11,7 +11,7 @@ public interface ThemeRepository {
 
     void deleteThemeById(long id);
 
-    boolean isExistThemeOf(long themeId);
+    boolean isThemeExistsById(long themeId);
 
-    List<Theme> findTopBookedThemes(LocalDate startDate, LocalDate endDate, int themeount);
+    List<Theme> findTopPopularThemes(LocalDate startDate, LocalDate endDate, int themeount);
 }

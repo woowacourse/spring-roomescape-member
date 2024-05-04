@@ -53,7 +53,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public boolean isExistThemeOf(long themeId) {
+    public boolean isThemeExistsById(long themeId) {
         String sql = "SELECT 1 FROM theme WHERE id = :themeId";
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("themeId", themeId);
@@ -62,7 +62,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findTopBookedThemes(LocalDate startDate, LocalDate endDate, int themeCount) {
+    public List<Theme> findTopPopularThemes(LocalDate startDate, LocalDate endDate, int themeCount) {
         String sql = """
                     SELECT th.id, th.name, th.description, th.thumbnail
                     FROM theme AS th

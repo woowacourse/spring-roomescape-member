@@ -29,7 +29,7 @@ public class ThemeApiController {
 
     @GetMapping("/themes/rank")
     public List<ThemeResponseDto> findTopBookedThemes() {
-        return themeService.findTopBookedThemes();
+        return themeService.findTopPopularThemes();
     }
 
     @ResponseStatus(HttpStatus.CREATED)

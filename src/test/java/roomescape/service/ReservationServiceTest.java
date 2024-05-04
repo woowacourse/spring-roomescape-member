@@ -59,7 +59,7 @@ class ReservationServiceTest {
     @DisplayName("예약 저장 및 의존 객체 상호작용 테스트")
     @Test
     void create_reservation_test() {
-        given(reservationTimeRepository.isExistTimeOf(requestDto.getTimeId())).willReturn(true);
+        given(reservationTimeRepository.isTimeExistsByTimeId(requestDto.getTimeId())).willReturn(true);
         given(reservationRepository.hasSameReservationForThemeAtDateTime(requestDto.toReservation())).willReturn(false);
         given(reservationTimeRepository.findReservationTimeById(requestDto.getTimeId())).willReturn(time);
 
@@ -77,7 +77,7 @@ class ReservationServiceTest {
     @DisplayName("존재하지 않는 시간의 예약을 생성하려고 하면 예외가 발생한다.")
     @Test
     void throw_exception_when_not_exist_time_id_create() {
-        given(reservationTimeRepository.isExistTimeOf(requestDto.getTimeId())).willReturn(false);
+        given(reservationTimeRepository.isTimeExistsByTimeId(requestDto.getTimeId())).willReturn(false);
 
         assertThatThrownBy(() -> reservationService.createReservation(requestDto))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -91,7 +91,7 @@ class ReservationServiceTest {
     void throw_exception_when_past_datetime_create() {
         LocalDate pastDate = LocalDate.now().minusDays(10);
         ReservationRequestDto invalidDateRequest = new ReservationRequestDto("재즈", 1L, pastDate.toString(), 1L);
-        given(reservationTimeRepository.isExistTimeOf(invalidDateRequest.getTimeId())).willReturn(true);
+        given(reservationTimeRepository.isTimeExistsByTimeId(invalidDateRequest.getTimeId())).willReturn(true);
         given(reservationTimeRepository.findReservationTimeById(requestDto.getTimeId())).willReturn(time);
 
         assertThatThrownBy(() -> reservationService.createReservation(invalidDateRequest))
@@ -104,7 +104,7 @@ class ReservationServiceTest {
     @DisplayName("이미 예약된 날짜와 시간에 예약을 생성하려고 하면 예외가 발생한다.")
     @Test
     void throw_exception_when_duplicate_datetime_create() {
-        given(reservationTimeRepository.isExistTimeOf(requestDto.getTimeId())).willReturn(true);
+        given(reservationTimeRepository.isTimeExistsByTimeId(requestDto.getTimeId())).willReturn(true);
         given(reservationTimeRepository.findReservationTimeById(requestDto.getTimeId())).willReturn(time);
         given(reservationRepository.hasSameReservationForThemeAtDateTime(requestDto.toReservation())).willReturn(true);
 
@@ -119,7 +119,7 @@ class ReservationServiceTest {
     @Test
     void throw_exception_when_not_exist_id_delete() {
         long id = 1L;
-        given(reservationRepository.isExistReservationOf(id)).willReturn(false);
+        given(reservationRepository.isReservationExistsById(id)).willReturn(false);
 
         assertThatThrownBy(() -> reservationService.deleteReservation(id))
                 .isInstanceOf(IllegalArgumentException.class)

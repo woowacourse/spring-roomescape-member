@@ -82,8 +82,8 @@ class JdbcThemeRepositoryTest {
     void is_Exist_reservation_time() {
         themeRepository.insertTheme(theme1);
 
-        boolean exist = themeRepository.isExistThemeOf(1L);
-        boolean notExist = themeRepository.isExistThemeOf(2L);
+        boolean exist = themeRepository.isThemeExistsById(1L);
+        boolean notExist = themeRepository.isThemeExistsById(2L);
 
         assertAll(
                 () -> assertThat(exist).isTrue(),

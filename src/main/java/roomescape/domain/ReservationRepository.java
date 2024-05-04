@@ -10,11 +10,11 @@ public interface ReservationRepository {
 
     void deleteReservationById(long id);
 
-    boolean hasReservationOfTimeId(long timeId);
+    boolean isReservationExistsByTimeId(long timeId);
 
-    boolean hasReservationOfThemeId(long themeId);
+    boolean isReservationExistsByThemeId(long themeId);
 
-    boolean isExistReservationOf(long id);
+    boolean isReservationExistsById(long id);
 
     boolean hasSameReservationForThemeAtDateTime(Reservation reservation);
 }

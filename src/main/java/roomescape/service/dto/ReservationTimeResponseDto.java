@@ -6,12 +6,12 @@ public class ReservationTimeResponseDto {
 
     private final long id;
     private final String startAt;
-    private final Boolean alreadyBooked;
+    private final Boolean isReserved;
 
-    public ReservationTimeResponseDto(ReservationTime reservationTime, Boolean alreadyBooked) {
+    public ReservationTimeResponseDto(ReservationTime reservationTime, Boolean isReserved) {
         this.id = reservationTime.getId();
         this.startAt = reservationTime.getStartAt().toString();
-        this.alreadyBooked = alreadyBooked;
+        this.isReserved = isReserved;
     }
 
     public ReservationTimeResponseDto(ReservationTime reservationTime) {
@@ -26,7 +26,7 @@ public class ReservationTimeResponseDto {
         return startAt;
     }
 
-    public Boolean getAlreadyBooked() {
-        return alreadyBooked;
+    public Boolean getReserved() {
+        return isReserved;
     }
 }

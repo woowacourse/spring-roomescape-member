@@ -49,7 +49,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public boolean isExistTimeOf(String startAt) {
+    public boolean isTimeExistsByStartTime(String startAt) {
         String sql = "SELECT 1 FROM reservation_time WHERE start_at = :startAt";
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("startAt", startAt);
@@ -58,7 +58,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public boolean isExistTimeOf(long timeId) {
+    public boolean isTimeExistsByTimeId(long timeId) {
         String sql = "SELECT 1 FROM reservation_time WHERE id = :timeId";
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("timeId", timeId);
@@ -80,7 +80,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public List<ReservationTime> findBookedTimeForThemeAtDate(String date, long themeId) {
+    public List<ReservationTime> findReservedTimeByThemeAndDate(String date, long themeId) {
         String sql = """
                 SELECT 
                 t.id AS time_id, 

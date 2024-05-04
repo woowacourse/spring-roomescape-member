@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
-import roomescape.service.dto.AvailabilityOfTimeRequestDto;
+import roomescape.service.dto.AvailableTimeRequestDto;
 import roomescape.service.dto.ReservationTimeRequestDto;
 import roomescape.service.dto.ReservationTimeResponseDto;
 
@@ -28,21 +28,22 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    public List<ReservationTimeResponseDto> findReservationTimesAvailability(AvailabilityOfTimeRequestDto requestDto) {
+    public List<ReservationTimeResponseDto> findAvailableReservationTimes(AvailableTimeRequestDto requestDto) {
         List<ReservationTime> allTimes = reservationTimeRepository.findAllReservationTimes();
-        List<ReservationTime> bookedTimes = reservationTimeRepository.findBookedTimeForThemeAtDate(
+        List<ReservationTime> reservedTimes = reservationTimeRepository.findReservedTimeByThemeAndDate(
                 requestDto.getDate(), requestDto.getThemeId());
 
         return allTimes.stream()
-                .map(reservationTime -> new ReservationTimeResponseDto(
-                        reservationTime,
-                        bookedTimes.contains(reservationTime)))
+                .map(time -> new ReservationTimeResponseDto(
+                        time,
+                        reservedTimes.contains(time))
+                )
                 .toList();
     }
 
     public ReservationTimeResponseDto createReservationTime(ReservationTimeRequestDto requestDto) {
         ReservationTime reservationTime = requestDto.toReservationTime();
-        if (reservationTimeRepository.isExistTimeOf(reservationTime.getStartAt().toString())) {
+        if (reservationTimeRepository.isTimeExistsByStartTime(reservationTime.getStartAt().toString())) {
             throw new IllegalArgumentException("중복된 시간을 입력할 수 없습니다.");
         }
         ReservationTime savedTime = reservationTimeRepository.insertReservationTime(reservationTime);
@@ -50,10 +51,10 @@ public class ReservationTimeService {
     }
 
     public void deleteReservationTime(long id) {
-        if (!reservationTimeRepository.isExistTimeOf(id)) {
+        if (!reservationTimeRepository.isTimeExistsByTimeId(id)) {
             throw new IllegalArgumentException("존재하지 않는 아이디입니다.");
         }
-        if (reservationRepository.hasReservationOfTimeId(id)) {
+        if (reservationRepository.isReservationExistsByTimeId(id)) {
             throw new IllegalArgumentException("해당 시간에 예약이 있어 삭제할 수 없습니다.");
         }
         reservationTimeRepository.deleteReservationTimeById(id);
