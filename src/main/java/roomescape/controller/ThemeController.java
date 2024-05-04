@@ -31,7 +31,7 @@ public class ThemeController {
     @PostMapping("/themes")
     public ResponseEntity<ThemeResponse> addTheme(@Valid @RequestBody ThemeAddRequest themeAddRequest) {
         ThemeResponse saveResponse = themeService.saveTheme(themeAddRequest);
-        return ResponseEntity.created(URI.create("/themes" + saveResponse.id())).body(saveResponse);
+        return ResponseEntity.created(URI.create("/themes/" + saveResponse.id())).body(saveResponse);
     }
 
     @GetMapping("/themes/popular")
