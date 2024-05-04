@@ -1,11 +1,11 @@
 package roomescape.dao;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -22,18 +22,24 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@AutoConfigureTestDatabase
-@Transactional
-@SpringBootTest
-public class ReservationTimeRepositoryTest {
+@JdbcTest
+public class H2ReservationTimeRepositoryTest {
     @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     private ReservationTimeRepository reservationTimeRepository;
-
-    @Autowired
     private ReservationRepository reservationRepository;
-
-    @Autowired
     private ThemeRepository themeRepository;
+
+    private final ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
+    private final Theme theme = new Theme("테마", "테마 설명", "테마 썸네일");
+
+    @BeforeEach
+    void setUp() {
+        reservationTimeRepository = new H2ReservationTimeRepository(jdbcTemplate, jdbcTemplate.getDataSource());
+        reservationRepository = new H2ReservationRepository(jdbcTemplate, jdbcTemplate.getDataSource());
+        themeRepository = new H2ThemeRepository(jdbcTemplate, jdbcTemplate.getDataSource());
+    }
 
     @DisplayName("예약 시간을 저장한다")
     @Test
@@ -62,7 +68,6 @@ public class ReservationTimeRepositoryTest {
     @DisplayName("예약 시간을 조회한다")
     @Test
     void findByIdTest() {
-        ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
         ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
 
         assertThat(reservationTimeRepository.findById(savedReservationTime.getId()))
@@ -72,18 +77,18 @@ public class ReservationTimeRepositoryTest {
     @DisplayName("예약 시간이 없는 경우에 조회하면 빈 값을 반환한다")
     @Test
     void findByIdExceptionTest() {
-        Optional<ReservationTime> reservationTime = reservationTimeRepository.findById(1L);
+        Optional<ReservationTime> savedReservationTime = reservationTimeRepository.findById(1L);
 
-        assertThat(reservationTime)
+        assertThat(savedReservationTime)
                 .isEmpty();
     }
 
     @DisplayName("예약 시간을 삭제한다")
     @Test
     void deleteByIdTest() {
-        ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.of(10, 0)));
+        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
 
-        reservationTimeRepository.deleteById(reservationTime.getId());
+        reservationTimeRepository.deleteById(savedReservationTime.getId());
 
         assertThat(reservationTimeRepository.findAll())
                 .isEmpty();
@@ -99,12 +104,8 @@ public class ReservationTimeRepositoryTest {
     @DisplayName("예약 시간을 삭제할 경우, 참조된 예약이 있으면 예외를 발생한다")
     @Test
     void deleteByIdExceptionTest() {
-        ReservationTime savedReservationTime = reservationTimeRepository.save(
-                new ReservationTime(LocalTime.of(10, 0)));
-        Theme savedTheme = themeRepository.save(
-                new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
-                        "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
-
+        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
+        Theme savedTheme = themeRepository.save(theme);
         Reservation reservation = new Reservation("피케이", LocalDate.now(), savedReservationTime, savedTheme);
         Reservation savedReservation = reservationRepository.save(reservation);
 
