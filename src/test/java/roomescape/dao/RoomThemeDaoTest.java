@@ -2,7 +2,7 @@ package roomescape.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static roomescape.TestFixture.ROOM_THEME_FIXTURE;
+import static roomescape.TestFixture.ROOM_THEME1;
 
 import io.restassured.RestAssured;
 import java.util.List;
@@ -35,7 +35,7 @@ class RoomThemeDaoTest {
     @Test
     void save() {
         // given
-        RoomTheme roomTheme = ROOM_THEME_FIXTURE;
+        RoomTheme roomTheme = ROOM_THEME1;
         // when
         RoomTheme savedRoomTheme = roomThemeDao.save(roomTheme);
         // then
@@ -60,7 +60,7 @@ class RoomThemeDaoTest {
     @Test
     void deleteTheme() {
         // given
-        RoomTheme roomTheme = ROOM_THEME_FIXTURE;
+        RoomTheme roomTheme = ROOM_THEME1;
         RoomTheme savedRoomTheme = roomThemeDao.save(roomTheme);
         // when
         roomThemeDao.deleteById(savedRoomTheme.getId());
@@ -72,7 +72,7 @@ class RoomThemeDaoTest {
     @Test
     void findById() {
         // given
-        RoomTheme roomTheme = ROOM_THEME_FIXTURE;
+        RoomTheme roomTheme = ROOM_THEME1;
         RoomTheme savedRoomTheme = roomThemeDao.save(roomTheme);
         // when
         RoomTheme findRoomTheme = roomThemeDao.findById(savedRoomTheme.getId());

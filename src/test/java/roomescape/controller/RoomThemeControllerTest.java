@@ -1,6 +1,6 @@
 package roomescape.controller;
 
-import static roomescape.TestFixture.ROOM_THEME_FIXTURE;
+import static roomescape.TestFixture.ROOM_THEME1;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -56,7 +56,7 @@ class RoomThemeControllerTest {
     @Test
     void deleteTheme() {
         // given
-        RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);
+        RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME1);
         // when & then
         RestAssured.given().log().all()
                 .when().delete("/themes/" + savedRoomTheme.getId())

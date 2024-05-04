@@ -8,7 +8,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
@@ -18,6 +17,22 @@ public class ReservationDao {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
+    private final RowMapper<Reservation> reservationMapper = (rs, rowNum) -> new Reservation(
+            rs.getLong("reservation_id"),
+            rs.getString("reservation_name"),
+            rs.getDate("reservation_date").toLocalDate(),
+            new ReservationTime(
+                    rs.getLong("time_id"),
+                    rs.getTime("time_value").toLocalTime()
+            ),
+            new RoomTheme(
+                    rs.getLong("theme_id"),
+                    rs.getString("theme_name"),
+                    rs.getString("theme_description"),
+                    rs.getString("theme_thumbnail")
+            )
+    );
+
     public ReservationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
@@ -26,41 +41,46 @@ public class ReservationDao {
     }
 
     public List<Reservation> findAll() {
-        String selectSQL = """
+        String selectSql = """
                 SELECT
-                    r.id AS reservation_id,
-                    r.name AS reservation_name,
-                    r.date AS reservation_date,
-                    t.id AS time_id,
-                    t.start_at AS time_value,
-                    th.id AS theme_id,
-                    th.name AS theme_name,
-                    th.description AS theme_description,
-                    th.thumbnail AS theme_thumbnail
+                    r.ID AS reservation_id,
+                    r.NAME AS reservation_name,
+                    r.DATE AS reservation_date,
+                    t.ID AS time_id,
+                    t.START_AT AS time_value,
+                    th.ID AS theme_id,
+                    th.NAME AS theme_name,
+                    th.DESCRIPTION AS theme_description,
+                    th.THUMBNAIL AS theme_thumbnail
                 FROM reservation AS r
                 INNER JOIN reservation_time AS t
                 ON r.time_id = t.id
                 INNER JOIN theme AS th
                 ON r.theme_id = th.id
                 """;
+        return jdbcTemplate.query(selectSql, reservationMapper);
+    }
 
-        RowMapper<Reservation> rowMapper = (rs, rowNum) -> new Reservation(
-                rs.getLong("reservation_id"),
-                new Name(rs.getString("reservation_name")),
-                rs.getDate("reservation_date").toLocalDate(),
-                new ReservationTime(
-                        rs.getLong("time_id"),
-                        rs.getTime("time_value").toLocalTime()
-                ),
-                new RoomTheme(
-                        rs.getLong("theme_id"),
-                        rs.getString("theme_name"),
-                        rs.getString("theme_description"),
-                        rs.getString("theme_thumbnail")
-                )
-        );
-
-        return jdbcTemplate.query(selectSQL, rowMapper);
+    public List<Reservation> findByTheme(Long themeId) {
+        String SELECT_SQL = """
+                SELECT
+                    r.ID AS reservation_id,
+                    r.NAME AS reservation_name,
+                    r.DATE AS reservation_date,
+                    t.ID AS time_id,
+                    t.START_AT AS time_value,
+                    th.ID AS theme_id,
+                    th.NAME AS theme_name,
+                    th.DESCRIPTION AS theme_description,
+                    th.THUMBNAIL AS theme_thumbnail
+                FROM reservation AS r
+                INNER JOIN reservation_time AS t
+                ON r.time_id = t.id
+                INNER JOIN theme AS th
+                ON r.theme_id = th.id
+                WHERE r.THEME_ID = ?
+                """;
+        return jdbcTemplate.query(SELECT_SQL, reservationMapper, themeId);
     }
 
     public boolean existsByDateTime(LocalDate date, Long timeId, Long themeId) {

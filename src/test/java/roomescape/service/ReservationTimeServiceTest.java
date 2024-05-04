@@ -3,11 +3,13 @@ package roomescape.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static roomescape.TestFixture.DATE_FIXTURE;
-import static roomescape.TestFixture.RESERVATION_TIME_FIXTURE;
-import static roomescape.TestFixture.ROOM_THEME_FIXTURE;
-import static roomescape.TestFixture.TIME_FIXTURE;
-import static roomescape.TestFixture.VALID_STRING_TIME_FIXTURE;
+import static roomescape.TestFixture.DATE;
+import static roomescape.TestFixture.RESERVATION_TIME_10AM;
+import static roomescape.TestFixture.RESERVATION_TIME_11AM;
+import static roomescape.TestFixture.ROOM_THEME1;
+import static roomescape.TestFixture.ROOM_THEME2;
+import static roomescape.TestFixture.TIME;
+import static roomescape.TestFixture.VALID_STRING_TIME;
 
 import io.restassured.RestAssured;
 import java.util.List;
@@ -20,7 +22,6 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.RoomThemeDao;
-import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
@@ -67,26 +68,72 @@ class ReservationTimeServiceTest {
         assertThat(reservationTimeService.findAll()).isEmpty();
     }
 
-    @DisplayName("날짜와 테마에 따른 예약 가능한 시간을 반환한다.")
+    @DisplayName("선택한 테마에 대한 예약시간이 존재하는 경우 예약 가능한 시간을 반환한다.")
     @Test
-    void findReservationTimesWithBookStatus() {
+    void findReservationAvailabilityTimesWhenReservationTimeExist() {
         // given
-        ReservationTime savedReservationTime = reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
-        RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);
-        reservationDao.save(new Reservation(new Name("brown"), DATE_FIXTURE,
-                savedReservationTime, savedRoomTheme));
+        // 시간 저장
+        ReservationTime savedReservationTime10AM = reservationTimeDao.save(RESERVATION_TIME_10AM);
+        ReservationTime savedReservationTime11AM = reservationTimeDao.save(RESERVATION_TIME_11AM);
+
+        // 테마 저장
+        RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME1);
+
+        // 예약 저장
+        reservationDao.save(new Reservation("브라운", DATE, savedReservationTime10AM, savedRoomTheme));
+
         ReservationAvailabilityTimeRequest timeRequest = new ReservationAvailabilityTimeRequest(
-                DATE_FIXTURE, savedRoomTheme.getId());
+                DATE, savedRoomTheme.getId());
+
         // when
         List<ReservationAvailabilityTimeResponse> timeResponses =
                 reservationTimeService.findReservationAvailabilityTimes(timeRequest);
+
         // then
-        ReservationAvailabilityTimeResponse timeResponse = timeResponses.get(0);
+        ReservationAvailabilityTimeResponse response1 = timeResponses.get(0);
+        ReservationAvailabilityTimeResponse response2 = timeResponses.get(1);
+
         assertAll(
-                () -> assertThat(timeResponse.id()).isEqualTo(savedReservationTime.getId()),
-                () -> assertThat(timeResponse.startAt()).isEqualTo(
-                        savedReservationTime.getStartAt()),
-                () -> assertThat(timeResponse.booked()).isTrue()
+                () -> assertThat(timeResponses).hasSize(2),
+                () -> assertThat(response1.id()).isEqualTo(savedReservationTime10AM.getId()),
+                () -> assertThat(response1.booked()).isTrue(),
+                () -> assertThat(response2.id()).isEqualTo(savedReservationTime11AM.getId()),
+                () -> assertThat(response2.booked()).isFalse()
+        );
+    }
+
+    @DisplayName("선택한 테마에 대한 예약시간이 존재하지 않는 경우 예약 가능한 시간을 반환한다.")
+    @Test
+    void findReservationTimesWithBookStatus() {
+        // given
+        // 시간 저장
+        ReservationTime savedReservationTime10AM = reservationTimeDao.save(RESERVATION_TIME_10AM);
+        ReservationTime savedReservationTime11AM = reservationTimeDao.save(RESERVATION_TIME_11AM);
+
+        // 테마 저장
+        RoomTheme savedRoomTheme1 = roomThemeDao.save(ROOM_THEME1);
+        RoomTheme savedRoomTheme2 = roomThemeDao.save(ROOM_THEME2);
+
+        // 예약 저장
+        reservationDao.save(new Reservation("브라운", DATE, savedReservationTime10AM, savedRoomTheme1));
+
+        ReservationAvailabilityTimeRequest timeRequest = new ReservationAvailabilityTimeRequest(
+                DATE, savedRoomTheme2.getId());
+
+        // when
+        List<ReservationAvailabilityTimeResponse> timeResponses =
+                reservationTimeService.findReservationAvailabilityTimes(timeRequest);
+
+        // then
+        ReservationAvailabilityTimeResponse response1 = timeResponses.get(0);
+        ReservationAvailabilityTimeResponse response2 = timeResponses.get(1);
+
+        assertAll(
+                () -> assertThat(timeResponses).hasSize(2),
+                () -> assertThat(response1.id()).isEqualTo(savedReservationTime10AM.getId()),
+                () -> assertThat(response1.booked()).isFalse(),
+                () -> assertThat(response2.id()).isEqualTo(savedReservationTime11AM.getId()),
+                () -> assertThat(response2.booked()).isFalse()
         );
     }
 
@@ -94,13 +141,13 @@ class ReservationTimeServiceTest {
     @Test
     void save() {
         // given
-        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(TIME_FIXTURE);
+        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(TIME);
         // when
         ReservationTimeResponse response = reservationTimeService.save(reservationTimeRequest);
         // then
         assertAll(
                 () -> assertThat(reservationTimeService.findAll()).hasSize(1),
-                () -> assertThat(response.startAt()).isEqualTo(VALID_STRING_TIME_FIXTURE)
+                () -> assertThat(response.startAt()).isEqualTo(VALID_STRING_TIME)
         );
     }
 
@@ -108,7 +155,7 @@ class ReservationTimeServiceTest {
     @Test
     void duplicatedTimeSaveThrowsException() {
         // given
-        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(TIME_FIXTURE);
+        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(TIME);
         reservationTimeService.save(reservationTimeRequest);
         // when & then
         assertThatThrownBy(() -> reservationTimeService.save(reservationTimeRequest))
@@ -121,7 +168,7 @@ class ReservationTimeServiceTest {
     void deleteById() {
         // given
         ReservationTimeResponse response = reservationTimeService
-                .save(new ReservationTimeRequest(TIME_FIXTURE));
+                .save(new ReservationTimeRequest(TIME));
         // when
         reservationTimeService.deleteById(response.id());
         // then

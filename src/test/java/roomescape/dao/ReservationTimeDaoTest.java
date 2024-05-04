@@ -3,10 +3,10 @@ package roomescape.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static roomescape.TestFixture.DATE_FIXTURE;
-import static roomescape.TestFixture.RESERVATION_TIME_FIXTURE;
-import static roomescape.TestFixture.ROOM_THEME_FIXTURE;
-import static roomescape.TestFixture.TIME_FIXTURE;
+import static roomescape.TestFixture.DATE;
+import static roomescape.TestFixture.RESERVATION_TIME_10AM;
+import static roomescape.TestFixture.ROOM_THEME1;
+import static roomescape.TestFixture.TIME;
 
 import io.restassured.RestAssured;
 import java.util.List;
@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.dao.EmptyResultDataAccessException;
-import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
@@ -61,7 +60,7 @@ class ReservationTimeDaoTest {
     @Test
     void save() {
         // given & when
-        reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
+        reservationTimeDao.save(RESERVATION_TIME_10AM);
         // then
         assertThat(reservationTimeDao.findAll()).hasSize(1);
     }
@@ -70,10 +69,10 @@ class ReservationTimeDaoTest {
     @Test
     void findById() {
         // given & when
-        ReservationTime reservationTime = reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
+        ReservationTime reservationTime = reservationTimeDao.save(RESERVATION_TIME_10AM);
         Long id = reservationTime.getId();
         // then
-        assertThat(reservationTimeDao.findById(id).getStartAt()).isEqualTo(TIME_FIXTURE);
+        assertThat(reservationTimeDao.findById(id).getStartAt()).isEqualTo(TIME);
     }
 
     @DisplayName("해당 id의 예약 시간이 없는 경우, 예외가 발생한다.")
@@ -87,10 +86,10 @@ class ReservationTimeDaoTest {
     @Test
     void existsByStartAt() {
         // given
-        boolean existsFalse = reservationTimeDao.existByStartAt(TIME_FIXTURE);
-        reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
+        boolean existsFalse = reservationTimeDao.existByStartAt(TIME);
+        reservationTimeDao.save(RESERVATION_TIME_10AM);
         // when
-        boolean existsTrue = reservationTimeDao.existByStartAt(TIME_FIXTURE);
+        boolean existsTrue = reservationTimeDao.existByStartAt(TIME);
         // then
         assertAll(
                 () -> assertThat(existsFalse).isFalse(),
@@ -102,7 +101,7 @@ class ReservationTimeDaoTest {
     @Test
     void deleteById() {
         // given
-        ReservationTime reservationTime = reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
+        ReservationTime reservationTime = reservationTimeDao.save(RESERVATION_TIME_10AM);
         // when
         reservationTimeDao.deleteById(reservationTime.getId());
         // then
@@ -113,9 +112,9 @@ class ReservationTimeDaoTest {
     @Test
     void deleteByIdDeletesReservationAlso() {
         // given
-        ReservationTime reservationTime = reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
-        RoomTheme roomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);
-        reservationDao.save(new Reservation(new Name("aa"), DATE_FIXTURE,
+        ReservationTime reservationTime = reservationTimeDao.save(RESERVATION_TIME_10AM);
+        RoomTheme roomTheme = roomThemeDao.save(ROOM_THEME1);
+        reservationDao.save(new Reservation("브라운", DATE,
                 reservationTime, roomTheme));
         // when
         reservationTimeDao.deleteById(reservationTime.getId());
@@ -127,7 +126,7 @@ class ReservationTimeDaoTest {
     @Test
     void returnTrueWhenDeleted() {
         // given
-        ReservationTime reservationTime = reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
+        ReservationTime reservationTime = reservationTimeDao.save(RESERVATION_TIME_10AM);
         // when
         boolean deleted = reservationTimeDao.deleteById(reservationTime.getId());
         // then

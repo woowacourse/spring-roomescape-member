@@ -2,10 +2,10 @@ package roomescape.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static roomescape.TestFixture.DATE_FIXTURE;
-import static roomescape.TestFixture.RESERVATION_TIME_FIXTURE;
-import static roomescape.TestFixture.ROOM_THEME_FIXTURE;
-import static roomescape.TestFixture.TIME_FIXTURE;
+import static roomescape.TestFixture.DATE;
+import static roomescape.TestFixture.RESERVATION_TIME_10AM;
+import static roomescape.TestFixture.ROOM_THEME1;
+import static roomescape.TestFixture.TIME;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -24,7 +24,6 @@ import org.springframework.http.HttpStatus;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.RoomThemeDao;
-import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
@@ -72,7 +71,7 @@ class ReservationTimeControllerTest {
     void createReservationTime() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new ReservationTimeRequest(TIME_FIXTURE))
+                .body(new ReservationTimeRequest(TIME))
                 .when().post("/times")
                 .then().log().all().assertThat().statusCode(HttpStatus.CREATED.value());
     }
@@ -96,7 +95,7 @@ class ReservationTimeControllerTest {
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new ReservationTimeRequest(TIME_FIXTURE))
+                .body(new ReservationTimeRequest(TIME))
                 .when().post("/times")
                 .then().log().all().assertThat().statusCode(HttpStatus.BAD_REQUEST.value());
     }
@@ -105,7 +104,7 @@ class ReservationTimeControllerTest {
     @Test
     void deleteReservationTImeSuccess() {
         // given
-        ReservationTime reservationTime = reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
+        ReservationTime reservationTime = reservationTimeDao.save(RESERVATION_TIME_10AM);
         Long id = reservationTime.getId();
         // when & then
         RestAssured.given().log().all()
@@ -128,10 +127,10 @@ class ReservationTimeControllerTest {
     @Test
     void deleteReservationTimeDeletesReservationAlso() {
         // given
-        ReservationTime reservationTime = reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
-        RoomTheme roomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);
+        ReservationTime reservationTime = reservationTimeDao.save(RESERVATION_TIME_10AM);
+        RoomTheme roomTheme = roomThemeDao.save(ROOM_THEME1);
         reservationDao.save(
-                new Reservation(new Name("brown"), DATE_FIXTURE, reservationTime, roomTheme));
+                new Reservation("브라운", DATE, reservationTime, roomTheme));
         Long timeId = reservationTime.getId();
         // when
         Response deleteResponse = RestAssured.given().log().all()

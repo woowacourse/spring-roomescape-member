@@ -3,10 +3,10 @@ package roomescape.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static roomescape.TestFixture.RESERVATION_TIME_FIXTURE;
-import static roomescape.TestFixture.ROOM_THEME_FIXTURE;
-import static roomescape.TestFixture.VALID_STRING_DATE_FIXTURE;
-import static roomescape.TestFixture.VALID_STRING_TIME_FIXTURE;
+import static roomescape.TestFixture.RESERVATION_TIME_10AM;
+import static roomescape.TestFixture.ROOM_THEME1;
+import static roomescape.TestFixture.VALID_STRING_DATE;
+import static roomescape.TestFixture.VALID_STRING_TIME;
 
 import io.restassured.RestAssured;
 import java.time.LocalDate;
@@ -68,15 +68,15 @@ class ReservationServiceTest {
     @Test
     void save() {
         // given
-        ReservationRequest reservationRequest = createReservationRequest(VALID_STRING_DATE_FIXTURE);
+        ReservationRequest reservationRequest = createReservationRequest(VALID_STRING_DATE);
         // when
         ReservationResponse response = reservationService.save(reservationRequest);
         // then
         assertAll(
                 () -> assertThat(reservationService.findAll()).hasSize(1),
                 () -> assertThat(response.name()).isEqualTo("aa"),
-                () -> assertThat(response.date()).isEqualTo(VALID_STRING_DATE_FIXTURE),
-                () -> assertThat(response.time().startAt()).isEqualTo(VALID_STRING_TIME_FIXTURE)
+                () -> assertThat(response.date()).isEqualTo(VALID_STRING_DATE),
+                () -> assertThat(response.time().startAt()).isEqualTo(VALID_STRING_TIME)
         );
     }
 
@@ -95,7 +95,7 @@ class ReservationServiceTest {
     @Test
     void deleteById() {
         // given
-        createReservationRequest(VALID_STRING_DATE_FIXTURE);
+        createReservationRequest(VALID_STRING_DATE);
         // when
         reservationService.deleteById(1);
         // then
@@ -104,8 +104,8 @@ class ReservationServiceTest {
 
     private ReservationRequest createReservationRequest(String date) {
         ReservationTime savedReservationTime = reservationTimeDao.save(
-                RESERVATION_TIME_FIXTURE);
-        RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);
+                RESERVATION_TIME_10AM);
+        RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME1);
         return new ReservationRequest("aa", LocalDate.parse(date),
                 savedReservationTime.getId(), savedRoomTheme.getId());
     }

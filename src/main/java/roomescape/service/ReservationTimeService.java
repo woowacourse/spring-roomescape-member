@@ -56,27 +56,22 @@ public class ReservationTimeService {
             ReservationAvailabilityTimeRequest timeRequest)
     {
         List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
-        List<Reservation> reservations = reservationDao.findAll();
+        List<Reservation> reservations = reservationDao.findByTheme(timeRequest.themeId());
 
         return reservationTimes.stream()
                 .map(reservationTime -> {
-                    boolean isBooked = isReservationTimeBooked(reservations, timeRequest,
-                            reservationTime);
-                    return ReservationAvailabilityTimeResponse.fromReservationTime(
-                            reservationTime, isBooked);
+                    boolean isBooked = isReservationBooked(reservations, timeRequest.date(), reservationTime);
+                    return ReservationAvailabilityTimeResponse.fromReservationTime(reservationTime, isBooked);
                 })
                 .toList();
     }
 
-    private boolean isReservationTimeBooked(
+    private boolean isReservationBooked(
             List<Reservation> reservations,
-            ReservationAvailabilityTimeRequest timeRequest,
+            LocalDate date,
             ReservationTime reservationTime)
     {
-        LocalDate date = timeRequest.date();
-        Long themeId = timeRequest.themeId();
-
         return reservations.stream()
-                .anyMatch(reservation -> reservation.hasSameDateTimeAndTheme(date, reservationTime, themeId));
+                .anyMatch(reservation -> reservation.hasDateTime(date, reservationTime));
     }
 }

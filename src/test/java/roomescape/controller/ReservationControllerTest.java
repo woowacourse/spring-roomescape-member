@@ -1,10 +1,10 @@
 package roomescape.controller;
 
-import static roomescape.TestFixture.DATE_FIXTURE;
-import static roomescape.TestFixture.RESERVATION_TIME_FIXTURE;
-import static roomescape.TestFixture.ROOM_THEME_FIXTURE;
-import static roomescape.TestFixture.TIME_FIXTURE;
-import static roomescape.TestFixture.VALID_STRING_DATE_FIXTURE;
+import static roomescape.TestFixture.DATE;
+import static roomescape.TestFixture.RESERVATION_TIME_10AM;
+import static roomescape.TestFixture.ROOM_THEME1;
+import static roomescape.TestFixture.TIME;
+import static roomescape.TestFixture.VALID_STRING_DATE;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -22,7 +22,6 @@ import org.springframework.http.HttpStatus;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.RoomThemeDao;
-import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
@@ -70,7 +69,7 @@ class ReservationControllerTest {
     void createReservation() {
         // given
         Map reservationRequest = createReservationRequest("브라운",
-                VALID_STRING_DATE_FIXTURE);
+                VALID_STRING_DATE);
         // then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -85,7 +84,7 @@ class ReservationControllerTest {
     void invalidNameReservation(String value) {
         // given
         Map reservationRequest = createReservationRequest(value,
-                VALID_STRING_DATE_FIXTURE);
+                VALID_STRING_DATE);
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -126,7 +125,7 @@ class ReservationControllerTest {
     void duplicateReservation() {
         // given
         Map reservationRequest = createReservationRequest("브라운",
-                VALID_STRING_DATE_FIXTURE);
+                VALID_STRING_DATE);
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservationRequest)
@@ -145,7 +144,7 @@ class ReservationControllerTest {
     void noPrimaryKeyReservation() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new ReservationRequest("브라운", DATE_FIXTURE, 1L, 1L))
+                .body(new ReservationRequest("브라운", DATE, 1L, 1L))
                 .when().post("/reservations")
                 .then().log().all().assertThat().statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
@@ -155,10 +154,10 @@ class ReservationControllerTest {
     void deleteReservationSuccess() {
         // given
         ReservationTime savedReservationTime = reservationTimeDao.save(
-                new ReservationTime(TIME_FIXTURE));
-        RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);
+                new ReservationTime(TIME));
+        RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME1);
         Reservation savedReservation = reservationDao.save(
-                new Reservation(new Name("brown"), DATE_FIXTURE, savedReservationTime,
+                new Reservation("브라운", DATE, savedReservationTime,
                         savedRoomTheme));
         // when & then
         Long id = savedReservation.getId();
@@ -179,8 +178,8 @@ class ReservationControllerTest {
     }
 
     private Map createReservationRequest(String name, String date) {
-        ReservationTime savedReservationTime = reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
-        RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);
+        ReservationTime savedReservationTime = reservationTimeDao.save(RESERVATION_TIME_10AM);
+        RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME1);
 
         return Map.of(
                 "name", name,
