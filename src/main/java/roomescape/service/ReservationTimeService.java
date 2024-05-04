@@ -5,7 +5,9 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
+import roomescape.domain.ReservationTimeStatus;
 import roomescape.service.dto.AvailableTimeRequestDto;
+import roomescape.service.dto.AvailableTimeResponseDtos;
 import roomescape.service.dto.ReservationTimeRequestDto;
 import roomescape.service.dto.ReservationTimeResponseDto;
 
@@ -28,17 +30,13 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    public List<ReservationTimeResponseDto> findAvailableReservationTimes(AvailableTimeRequestDto requestDto) {
+    public AvailableTimeResponseDtos findAvailableReservationTimes(AvailableTimeRequestDto requestDto) {
         List<ReservationTime> allTimes = reservationTimeRepository.findAllReservationTimes();
-        List<ReservationTime> reservedTimes = reservationTimeRepository.findReservedTimeByThemeAndDate(
+        List<ReservationTime> bookedTimes = reservationTimeRepository.findReservedTimeByThemeAndDate(
                 requestDto.getDate(), requestDto.getThemeId());
 
-        return allTimes.stream()
-                .map(time -> new ReservationTimeResponseDto(
-                        time,
-                        reservedTimes.contains(time))
-                )
-                .toList();
+        ReservationTimeStatus reservationStatus = ReservationTimeStatus.create(allTimes, bookedTimes);
+        return new AvailableTimeResponseDtos(reservationStatus);
     }
 
     public ReservationTimeResponseDto createReservationTime(ReservationTimeRequestDto requestDto) {

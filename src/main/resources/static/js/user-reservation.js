@@ -84,7 +84,7 @@ function checkDateAndTheme() {
 }
 
 function fetchAvailableTimes(date, themeId) {
-    fetch(`/times/availability?date=${date}&themeId=${themeId}`, { // 예약 가능 시간 조회 API endpoint
+    fetch(`/times/available?date=${date}&theme-id=${themeId}`, { // 예약 가능 시간 조회 API endpoint
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -108,12 +108,13 @@ function renderAvailableTimes(times) {
         timeSlots.innerHTML = '<div class="no-times">선택할 수 있는 시간이 없습니다.</div>';
         return;
     }
-    times.forEach(time => {
-        const startAt = time.startAt;
-        const timeId = time.id;
-        const alreadyBooked = time.alreadyBooked;
 
-        const div = createSlot('time', startAt, timeId, alreadyBooked); // createSlot('time', 시작 시간, time id, 예약 여부)
+    times.availableTimeResponses.forEach(time => {
+        const startAt = time.timeResponseDto.startAt;
+        const timeId = time.timeResponseDto.id;
+        const isBooked = time.booked;
+
+        const div = createSlot('time', startAt, timeId, isBooked); // createSlot('time', 시작 시간, time id, 예약 여부)
         timeSlots.appendChild(div);
     });
 }

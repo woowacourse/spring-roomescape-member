@@ -13,4 +13,4 @@ Content-Type: application/json
 DELETE http://localhost:8080/times/1
 
 ### 예약 가능한 시간 조회 API
-GET http://localhost:8080/times/availability?date=2024-05-04&themeId=1
+GET http://localhost:8080/times/available?date=2024-05-04&theme-id=1
