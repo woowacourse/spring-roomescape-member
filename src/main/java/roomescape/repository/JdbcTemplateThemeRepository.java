@@ -15,13 +15,13 @@ import roomescape.domain.Themes;
 @Repository
 public class JdbcTemplateThemeRepository implements ThemeRepository {
     private final JdbcTemplate jdbcTemplate;
-    private final RowMapper<Theme> themeRowMapper = (rs, rowNum) -> {
-        long id = rs.getLong("id");
-        String name = rs.getString("name");
-        String description = rs.getString("description");
-        String thumbnail = rs.getString("thumbnail");
-        return new Theme(id, name, description, thumbnail);
-    };
+    private static final RowMapper<Theme> THEME_ROW_MAPPER = (rs, rowNum) ->
+            new Theme(
+                    rs.getLong("id"),
+                    rs.getString("name"),
+                    rs.getString("description"),
+                    rs.getString("thumbnail")
+            );
 
     public JdbcTemplateThemeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -30,7 +30,7 @@ public class JdbcTemplateThemeRepository implements ThemeRepository {
     @Override
     public Themes findAll() {
         List<Theme> findThemes = jdbcTemplate.query(
-                "SELECT id, name, description, thumbnail FROM THEME", themeRowMapper
+                "SELECT id, name, description, thumbnail FROM THEME", THEME_ROW_MAPPER
         );
         return new Themes(findThemes);
     }
@@ -42,14 +42,13 @@ public class JdbcTemplateThemeRepository implements ThemeRepository {
                         SELECT TH.*, COUNT(*) AS count FROM THEME TH
                             JOIN RESERVATION R
                             ON R.theme_id = TH.id
-                        WHERE PARSEDATETIME(R.date,'yyyy-MM-dd') >= PARSEDATETIME(?,'yyyy-MM-dd') 
-                            AND PARSEDATETIME(R.date,'yyyy-MM-dd') <= PARSEDATETIME(?,'yyyy-MM-dd') 
-                        GROUP BY TH.id 
-                        ORDER BY count 
-                        DESC 
+                        WHERE R.date >= ? AND R.date <= ?
+                        GROUP BY TH.id
+                        ORDER BY count
+                        DESC
                         LIMIT ?
                         """,
-                themeRowMapper, start, end, count);
+                THEME_ROW_MAPPER, start, end, count);
         return new Themes(findThemes);
     }
 
@@ -57,7 +56,7 @@ public class JdbcTemplateThemeRepository implements ThemeRepository {
     public Optional<Theme> findById(long id) {
         List<Theme> themes = jdbcTemplate.query(
                 "SELECT id, name, description, thumbnail FROM THEME WHERE id = ?",
-                themeRowMapper, id);
+                THEME_ROW_MAPPER, id);
         return themes.stream().findFirst();
     }
 

@@ -6,6 +6,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -15,6 +16,11 @@ import roomescape.domain.ReservationTimes;
 @Repository
 public class JdbcTemplateReservationTimeRepository implements ReservationTimeRepository {
     private final JdbcTemplate jdbcTemplate;
+    private static final RowMapper<ReservationTime> RESERVATION_TIME_ROW_MAPPER = (rs, rowNum) ->
+            new ReservationTime(
+                    rs.getLong("id"),
+                    rs.getTime("start_at").toLocalTime()
+            );
 
     public JdbcTemplateReservationTimeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -37,22 +43,15 @@ public class JdbcTemplateReservationTimeRepository implements ReservationTimeRep
     @Override
     public Optional<ReservationTime> findById(long id) {
         List<ReservationTime> times = jdbcTemplate.query(
-                "SELECT start_at FROM RESERVATION_TIME WHERE id = ?",
-                (rs, rowNum) -> {
-                    LocalTime time = rs.getTime(1).toLocalTime();
-                    return new ReservationTime(id, time);
-                }, id);
+                "SELECT * FROM RESERVATION_TIME WHERE id = ?",
+                RESERVATION_TIME_ROW_MAPPER, id);
         return times.stream().findFirst();
     }
 
     @Override
     public ReservationTimes findAll() {
         List<ReservationTime> findReservationTimes = jdbcTemplate.query(
-                "SELECT * FROM RESERVATION_TIME", (rs, rowNum) -> {
-                    long id = rs.getLong(1);
-                    LocalTime time = rs.getTime(2).toLocalTime();
-                    return new ReservationTime(id, time);
-                });
+                "SELECT * FROM RESERVATION_TIME", RESERVATION_TIME_ROW_MAPPER);
         return new ReservationTimes(findReservationTimes);
     }
 
