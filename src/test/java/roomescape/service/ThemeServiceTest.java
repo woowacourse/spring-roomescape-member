@@ -75,4 +75,19 @@ class ThemeServiceTest {
                 () -> assertThat(popularThemeIds).doesNotContain(12L)
         );
     }
+
+    @Test
+    void 최근_일주일을_기준으로_하여_해당_기간_내에_방문하는_예약이_많은_테마_10개를_확인_예약이_없는_경우() {
+        //given, when
+        deleteAllReservation();
+        List<ThemeResponse> popularThemes = themeService.getPopularThemes();
+
+        //then
+        assertThat(popularThemes).hasSize(0);
+    }
+
+    void deleteAllReservation() {
+        List<ReservationResponse> reservationResponses = reservationService.getAllReservations();
+        reservationResponses.forEach(reservation -> reservationService.deleteReservation(reservation.id()));
+    }
 }
