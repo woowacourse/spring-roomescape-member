@@ -28,7 +28,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleJsonParseException(HttpMessageNotReadableException ex) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse("옳바르지 않은 JSON 형식입니다."));
+                .body(new ErrorResponse("올바르지 않은 JSON 형식입니다."));
     }
 
     @ExceptionHandler(Exception.class)
