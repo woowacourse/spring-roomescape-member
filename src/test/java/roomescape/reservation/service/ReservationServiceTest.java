@@ -1,52 +1,43 @@
 package roomescape.reservation.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.domain.Description;
-import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.ThemeName;
 import roomescape.reservation.dto.ReservationSaveRequest;
-import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.repository.ReservationTimeRepository;
 import roomescape.reservation.repository.ThemeRepository;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
+@Transactional
 class ReservationServiceTest {
 
-    @Mock
-    private ReservationRepository reservationRepository;
-
-    @Mock
+    @Autowired
     private ThemeRepository themeRepository;
 
-    @Mock
+    @Autowired
     private ReservationTimeRepository reservationTimeRepository;
 
-    @InjectMocks
+    @Autowired
     private ReservationService reservationService;
 
     @Test
-    @DisplayName("존재하지 않는 시간에 예약을 하면 예외가 발생한다.")
-    void emptyIdExceptionTest() {
-        Long timeId = 1L;
+    @DisplayName("존재하지 않는 예약 시간에 예약을 하면 예외가 발생한다.")
+    void notExistReservationTimeIdExceptionTest() {
+        Theme theme = new Theme(new ThemeName("공포"), new Description("호러 방탈출"), "http://asdf.jpg");
+        Long themeId = themeRepository.save(theme);
 
-        doReturn(Optional.empty()).when(reservationTimeRepository)
-                .findById(timeId);
+        ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest("호기", LocalDate.now(), themeId, 1L);
 
-        ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest("호기", LocalDate.now(), 1L, timeId);
         assertThatThrownBy(() -> reservationService.save(reservationSaveRequest))
                 .isInstanceOf(IllegalArgumentException.class);
     }
@@ -54,33 +45,25 @@ class ReservationServiceTest {
     @Test
     @DisplayName("중복된 예약이 있다면 예외가 발생한다.")
     void duplicateReservationExceptionTest() {
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
-        Theme theme = new Theme(new ThemeName("공포"), new Description("무서운 테마"), "https://i.pinimg.com/236x.jpg");
+        Theme theme = new Theme(new ThemeName("공포"), new Description("호러 방탈출"), "http://asdf.jpg");
+        Long themeId = themeRepository.save(theme);
 
-        doReturn(Optional.of(reservationTime)).when(reservationTimeRepository)
-                .findById(1L);
+        ReservationTime reservationTime = new ReservationTime(LocalTime.parse("12:00"));
+        Long timeId = reservationTimeRepository.save(reservationTime);
 
-        doReturn(Optional.of(theme)).when(themeRepository)
-                .findById(1L);
-
-        doReturn(true).when(reservationRepository)
-                .existReservation(any(Reservation.class));
-
-        ReservationSaveRequest request = new ReservationSaveRequest("카키", LocalDate.now(), 1L, 1L);
+        ReservationSaveRequest request = new ReservationSaveRequest("카키", LocalDate.parse("2024-05-05"), themeId,
+                timeId);
+        reservationService.save(request);
 
         assertThatThrownBy(() -> reservationService.save(request))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
-    @DisplayName("존재하지 않는 시간에 예약 아이디일 경우 예외가 발생한다.")
+    @DisplayName("예약 아이디로 조회 시 존재하지 않는 아이디면 예외가 발생한다.")
     void findByIdExceptionTest() {
-        Long reservationId = 1L;
-
-        doReturn(Optional.empty()).when(reservationRepository)
-                .findById(reservationId);
-
-        assertThatThrownBy(() -> reservationService.findById(reservationId))
+        assertThatThrownBy(() -> reservationService.findById(1L))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }
+
