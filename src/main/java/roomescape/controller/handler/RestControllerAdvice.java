@@ -2,11 +2,10 @@ package roomescape.controller.handler;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.exception.DuplicatedDomainException;
 
-@RestControllerAdvice
-public class ControllerAdvice {
+@org.springframework.web.bind.annotation.RestControllerAdvice
+public class RestControllerAdvice {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
