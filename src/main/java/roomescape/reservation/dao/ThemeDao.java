@@ -28,20 +28,6 @@ public class ThemeDao implements ThemeRepository {
         );
     };
 
-    private final ResultSetExtractor<Optional<Theme>> optionalResultSetExtractor = (ResultSet resultSet) -> {
-        if (resultSet.next()) {
-            Theme theme = new Theme(
-                    resultSet.getLong("id"),
-                    resultSet.getString("name"),
-                    resultSet.getString("description"),
-                    resultSet.getString("thumbnail")
-            );
-            return Optional.of(theme);
-        } else {
-            return Optional.empty();
-        }
-    };
-
     public ThemeDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
@@ -70,9 +56,9 @@ public class ThemeDao implements ThemeRepository {
     }
 
     @Override
-    public Optional<Theme> findById(long themeId) {
+    public Theme findById(long themeId) {
         String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
-        return jdbcTemplate.query(sql, optionalResultSetExtractor, themeId);
+        return jdbcTemplate.query(sql, rowMapper, themeId);
     }
 
     @Override

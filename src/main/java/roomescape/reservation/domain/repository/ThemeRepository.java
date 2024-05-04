@@ -11,7 +11,7 @@ public interface ThemeRepository {
 
     boolean deleteById(long themeId);
 
-    Optional<Theme> findById(long themeId);
+   Theme findById(long themeId);
 
     List<Theme> findPopularThemes();
 }
