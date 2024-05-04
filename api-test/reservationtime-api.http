@@ -1,0 +1,16 @@
+### 예약 시간 조회 API
+
+GET http://localhost:8080/times
+
+### 예약 시간 추가 API
+
+POST http://localhost:8080/times
+Content-Type: application/json
+
+{
+  "startAt": "10:00"
+}
+
+### 예약 시간 삭제 API
+
+DELETE http://localhost:8080/times/1
