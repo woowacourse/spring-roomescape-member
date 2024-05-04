@@ -6,12 +6,12 @@ import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.ReservationTimeRepository;
 import roomescape.service.dto.AvailableReservationTimeResponse;
 import roomescape.service.dto.ReservationTimeRequest;
 import roomescape.service.dto.ReservationTimeResponse;
-import roomescape.domain.ReservationRepository;
-import roomescape.domain.ReservationTimeRepository;
 
 @Service
 @Transactional(readOnly = true)
@@ -70,8 +70,13 @@ public class ReservationTimeService {
                 .map(reservationTime -> new AvailableReservationTimeResponse(
                         reservationTime.getId(),
                         reservationTime.getStartAt(),
-                        reservations.stream()
-                                .anyMatch(reservation -> reservationTime.equals(reservation.getTime())))
-                ).toList();
+                        isAlreadyBooked(reservationTime, reservations)
+                ))
+                .toList();
+    }
+
+    private boolean isAlreadyBooked(ReservationTime reservationTime, List<Reservation> reservations) {
+        return reservations.stream()
+                .anyMatch(reservation -> reservationTime.equals(reservation.getTime()));
     }
 }
