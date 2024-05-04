@@ -34,8 +34,7 @@ public class ReservationService {
     public Long addReservation(ReservationRequest reservationRequest) {
         ReservationTime reservationTime = findReservationTime(reservationRequest);
         Theme theme = findTheme(reservationRequest);
-        validateReservationNotDuplicate(reservationRequest);
-        validateUnPassedDate(reservationRequest.date(), reservationTime.getStartAt());
+        validateAddable(reservationRequest, reservationTime);
         Reservation reservationToSave = reservationRequest.toEntity(reservationTime, theme);
         return reservationRepository.save(reservationToSave);
     }
@@ -72,6 +71,11 @@ public class ReservationService {
             throw new IllegalArgumentException("[ERROR] theme_id가 존재하지 않습니다 : " + themeId);
         }
         return themeRepository.findById(themeId);
+    }
+
+    private void validateAddable(ReservationRequest reservationRequest, ReservationTime reservationTime) {
+        validateReservationNotDuplicate(reservationRequest);
+        validateUnPassedDate(reservationRequest.date(), reservationTime.getStartAt());
     }
 
     private void validateReservationNotDuplicate(ReservationRequest reservationRequest) {
