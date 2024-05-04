@@ -1,5 +1,6 @@
 package roomescape.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalTime;
 
 public class ReservationTime {
@@ -19,7 +20,8 @@ public class ReservationTime {
         }
     }
 
-    public boolean inPast() {
+    @JsonIgnore
+    public boolean isPast() {
         return startAt.isBefore(LocalTime.now());
     }
 

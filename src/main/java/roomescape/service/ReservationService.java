@@ -35,7 +35,7 @@ public class ReservationService {
     public ReservationResponse saveReservation(ReservationRequest request) {
         ReservationTime time = timeDao.findById(request.timeId());
 
-        if (request.date().isEqual(LocalDate.now()) && time.inPast()) {
+        if (request.date().isEqual(LocalDate.now()) && time.isPast()) {
             throw new IllegalReservationException("[ERROR] 과거 시간은 예약할 수 없습니다.");
         }
 
