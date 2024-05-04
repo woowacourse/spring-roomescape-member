@@ -19,11 +19,11 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.ThemeRequest;
-import roomescape.dto.ThemeResponse;
 import roomescape.domain.repository.ReservationRepository;
 import roomescape.domain.repository.ReservationTimeRepository;
 import roomescape.domain.repository.ThemeRepository;
+import roomescape.dto.ThemeRequest;
+import roomescape.dto.ThemeResponse;
 
 class ThemeControllerTest extends BaseControllerTest {
 
@@ -92,7 +92,7 @@ class ThemeControllerTest extends BaseControllerTest {
     @Sql("/reservations.sql")
     void getPopularThemes() {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when().get("/popular-themes")
+                .when().get("/themes/popular")
                 .then().log().all()
                 .extract();
 
