@@ -1,6 +1,5 @@
 package roomescape.controller.advice;
 
-import java.time.format.DateTimeParseException;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,12 +18,7 @@ public class GlobalControllerExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<String> handleHttpMessageNotReadableException(final HttpMessageNotReadableException e) {
         logger.error(e.getMessage(), e);
-        final Throwable rootCause = e.getRootCause();
-        if (rootCause instanceof DateTimeParseException dateTimeParseException) {
-            final String parsedString = dateTimeParseException.getParsedString();
-            return ResponseEntity.badRequest().body(parsedString + " 의 형식이 잘못됐습니다.");
-        }
-        return ResponseEntity.badRequest().body("json의 형식이 잘못됐습니다.");
+        return ResponseEntity.badRequest().body("잘못된 형식의 Request Body 입니다.");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
