@@ -62,22 +62,23 @@ public class ThemeDao {
         jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id);
     }
 
-    public List<Theme> findThemesByDescOrder() {
-        String nowDate = LocalDate.now().toString();
-        String weekBeforeDate = LocalDate.now().minusDays(7).toString();
+    public List<Theme> findThemesOrderByReservationThemeCountDesc() {
+        LocalDate today = LocalDate.now();
+        String sevenDaysBefore = today.minusDays(7).toString();
+        String oneDayBefore = today.minusDays(1).toString();
         return jdbcTemplate.query("""
                 SELECT
-                th.id as theme_id,
+                th.id,
                 th.name,
                 th.description,
                 th.thumbnail,
-                COUNT(r.theme_id) AS reservation_count
+                COUNT(r.theme_id) AS reservation_theme_count
                 FROM theme AS th
                 INNER JOIN reservation AS r ON r.theme_id = th.id
-                WHERE r.date < ? AND r.date > ?
-                GROUP BY th.id, th.name, th.description, th.thumbnail
-                ORDER BY reservation_count DESC
+                WHERE r.date >= ? AND r.date <= ?
+                GROUP BY th.id
+                ORDER BY reservation_theme_count DESC
                 LIMIT 10
-                """, themeRowMapper, nowDate, weekBeforeDate);
+                """, themeRowMapper, sevenDaysBefore, oneDayBefore);
     }
 }

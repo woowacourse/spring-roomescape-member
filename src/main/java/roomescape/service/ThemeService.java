@@ -32,7 +32,7 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> findBestThemes() {
-        List<Theme> themesByDescOrder = themeDao.findThemesByDescOrder();
+        List<Theme> themesByDescOrder = themeDao.findThemesOrderByReservationThemeCountDesc();
         return themesByDescOrder.stream()
                 .map(themeMapper::mapToResponse)
                 .toList();

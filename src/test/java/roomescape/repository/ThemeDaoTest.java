@@ -55,7 +55,7 @@ class ThemeDaoTest {
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "이름13", "설명", "썸네일");
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "테니", yesterday, 1, 13);
 
-        List<Theme> themesByDescOrder = themeDao.findThemesByDescOrder();
+        List<Theme> themesByDescOrder = themeDao.findThemesOrderByReservationThemeCountDesc();
         assertThat(themesByDescOrder).doesNotContain(new Theme(13L, "이름13", "설명", "썸네일"));
     }
 }
