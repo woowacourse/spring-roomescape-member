@@ -13,7 +13,7 @@ public class ThemeName {
         this.name = name;
     }
 
-    public String asText() {
+    public String getName() {
         return name;
     }
 

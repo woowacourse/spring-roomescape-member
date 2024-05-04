@@ -46,7 +46,7 @@ public class Theme {
     }
 
     public String getName() {
-        return name.asText();
+        return name.getName();
     }
 
     public String getDescription() {
