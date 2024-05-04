@@ -1,9 +1,9 @@
 package roomescape.web.exception;
 
-import jakarta.validation.ConstraintValidator;
-import jakarta.validation.ConstraintValidatorContext;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 public class TimeValidator implements ConstraintValidator<TimeValid, String> {
 

@@ -1,7 +1,7 @@
 package roomescape.service.request;
 
-import jakarta.validation.constraints.NotBlank;
 import java.time.LocalTime;
+import jakarta.validation.constraints.NotBlank;
 import roomescape.domain.ReservationTime;
 import roomescape.web.exception.TimeValid;
 
