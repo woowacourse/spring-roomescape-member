@@ -40,22 +40,10 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
 
     @Override
     public Reservation save(Reservation reservation) {
-        ReservationTime reservationTime = findReservationTime(reservation.getReservationTime().getId());
-        Reservation beforeSaved = new Reservation(null, reservation.getName(), reservation.getDate(),
-                reservationTime, reservation.getTheme());
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        save(beforeSaved, keyHolder);
+        save(reservation, keyHolder);
         long id = keyHolder.getKey().longValue();
         return new Reservation(id, reservation);
-    }
-
-    private ReservationTime findReservationTime(long timeId) {
-        String reservationTimeSelectSql = "SELECT * FROM RESERVATION_TIME WHERE id = ?";
-        return jdbcTemplate.queryForObject(reservationTimeSelectSql, (rs, rowNum) -> {
-            long id = rs.getLong(1);
-            LocalTime startAt = rs.getTime(2).toLocalTime();
-            return new ReservationTime(id, startAt);
-        }, timeId);
     }
 
     private void save(Reservation reservation, KeyHolder keyHolder) {
