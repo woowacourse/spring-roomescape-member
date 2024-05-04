@@ -19,7 +19,7 @@ public class ThemeRequest {
 
     private void validateNull(String value) {
         if (value == null || value.isEmpty()) {
-            throw new BadRequestException("[ERROR] 유효하지 않은 요청입니다.");
+            throw new BadRequestException("값이 null이 될 수 없습니다.");
         }
     }
 

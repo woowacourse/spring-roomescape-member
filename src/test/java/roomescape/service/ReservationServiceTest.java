@@ -57,7 +57,7 @@ class ReservationServiceTest {
     void should_throw_exception_when_not_exist_reservation_time() {
         assertThatThrownBy(() -> reservationService.deleteReservation(100000000))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("[ERROR] 존재하지 않는 예약입니다.");
+                .hasMessage("[ERROR] 해당 id:[100000000] 값으로 예약된 내역이 존재하지 않습니다.");
     }
 
     @DisplayName("존재하는 예약을 삭제하면 예외가 발생하지 않는다.")
@@ -73,7 +73,7 @@ class ReservationServiceTest {
         ReservationRequest request = new ReservationRequest("에버", LocalDate.of(2000, 1, 11), 1L, 1L);
         assertThatThrownBy(() -> reservationService.addReservation(request))
                 .isInstanceOf(BadRequestException.class)
-                .hasMessage("[ERROR] 현재 이전 예약은 할 수 없습니다.");
+                .hasMessageContaining("[ERROR] 현재(",") 이전 시간으로 예약할 수 없습니다.");
     }
 
     @DisplayName("현재로 예약하면 예외가 발생하지 않는다.")
@@ -99,7 +99,7 @@ class ReservationServiceTest {
         ReservationRequest request = new ReservationRequest("배키", LocalDate.of(2030, 8, 5), 2L, 2L);
         assertThatThrownBy(() -> reservationService.addReservation(request))
                 .isInstanceOf(DuplicatedException.class)
-                .hasMessage("[ERROR] 중복되는 예약은 추가할 수 없습니다.");
+                .hasMessage("[ERROR] 이미 해당 시간(2030-08-05T11:00)에 예약이 존재합니다.");
     }
 
     @DisplayName("예약 가능 상태를 담은 시간 정보를 반환한다.")

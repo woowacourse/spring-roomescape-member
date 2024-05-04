@@ -19,7 +19,7 @@ class ReservationTimeRequestTest {
     void should_throw_exception_when_startAt_is_null() {
         assertThatThrownBy(() -> new ReservationTimeRequest(null))
                 .isInstanceOf(BadRequestException.class)
-                .hasMessage("[ERROR] 유효하지 않은 요청입니다.");
+                .hasMessage("[ERROR] 시작 시간이 [null]일 수 없습니다.");
     }
 
     @DisplayName("유효한 시간이면 예외가 발생하지 않는다.")

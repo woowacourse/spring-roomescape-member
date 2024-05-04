@@ -27,6 +27,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = DateTimeParseException.class)
     public ResponseEntity<String> handleDateTimeParseException(DateTimeParseException exception) {
-        return new ResponseEntity<>("[ERROR] 유효하지 않은 요청입니다.", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>("[ERROR] 날짜와 시간 형식이 맞지 않습니다.", HttpStatus.BAD_REQUEST);
     }
 }

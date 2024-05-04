@@ -13,7 +13,9 @@ public class ReservationRequest {
 
     public ReservationRequest(String name, LocalDate date, Long timeId, Long themeId) {
         validateName(name);
-        validateNull(date, timeId, themeId);
+        validateNull(date);
+        validateTimeIdNull(themeId);
+        validateThemeIdNull(themeId);
         this.name = name;
         this.date = date;
         this.timeId = timeId;
@@ -22,13 +24,26 @@ public class ReservationRequest {
 
     private void validateName(String name) {
         if (name == null || name.isEmpty()) {
-            throw new BadRequestException("[ERROR] 유효하지 않은 요청입니다.");
+            throw new BadRequestException("이름(name)이 [%s]일 수 없습니다.".formatted(name));
         }
     }
 
-    private void validateNull(LocalDate date, Long timeId, Long themeId) {
-        if (date == null || timeId == null || themeId == null) {
-            throw new BadRequestException("[ERROR] 유효하지 않은 요청입니다.");
+    private void validateNull(LocalDate date) {
+        if (date == null) {
+            throw new BadRequestException("날짜(date)가 [%s]일 수 없습니다.".formatted(date));
+        }
+    }
+
+    // todo numberFormatException 예외 처리
+    private void validateTimeIdNull(Long timeId) {
+        if (timeId == null) {
+            throw new BadRequestException("아이디(timeId)가 [%s]일 수 없습니다.".formatted(timeId));
+        }
+    }
+
+    private void validateThemeIdNull(Long themeId) {
+        if (themeId == null) {
+            throw new BadRequestException("아이디(themeId)가 [%s]일 수 없습니다.".formatted(themeId));
         }
     }
 

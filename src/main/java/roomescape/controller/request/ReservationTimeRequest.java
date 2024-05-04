@@ -18,7 +18,7 @@ public class ReservationTimeRequest {
 
     private void validateTime(LocalTime startAt) {
         if (startAt == null) {
-            throw new BadRequestException("[ERROR] 유효하지 않은 요청입니다.");
+            throw new BadRequestException("시작 시간이 [%s]일 수 없습니다.".formatted(startAt));
         }
     }
 

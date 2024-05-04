@@ -33,7 +33,7 @@ public class ReservationTimeService {
         LocalTime startAt = request.getStartAt();
         Long countReservationTimeByStartAt = reservationTimeRepository.countReservationTimeByStartAt(startAt);
         if (countReservationTimeByStartAt == null || countReservationTimeByStartAt > 0) {
-            throw new DuplicatedException("[ERROR] 중복되는 시간은 추가할 수 없습니다.");
+            throw new DuplicatedException("이미 존재하는 시간입니다.");
         }
         ReservationTime reservationTime = new ReservationTime(startAt);
         return reservationTimeRepository.addReservationTime(reservationTime);
@@ -44,13 +44,13 @@ public class ReservationTimeService {
     }
 
     public void deleteReservationTime(long id) {
-        Long count = reservationTimeRepository.countReservationTimeById(id);
-        if (count == null || count <= 0) {
-            throw new NotFoundException("[ERROR] 존재하지 않는 시간입니다.");
+        Long countedReservationTime = reservationTimeRepository.countReservationTimeById(id);
+        if (countedReservationTime == null || countedReservationTime <= 0) {
+            throw new NotFoundException("id(%s)에 해당하는 예약 시간이 존재하지 않습니다.".formatted(id));
         }
-        Long countOfReservationUsingTime = reservationRepository.countReservationByTimeId(id);
-        if (countOfReservationUsingTime == null || countOfReservationUsingTime > 0) {
-            throw new BadRequestException("[ERROR] 해당 시간을 사용하고 있는 예약이 있습니다.");
+        Long countedReservationByTime = reservationRepository.countReservationByTimeId(id);
+        if (countedReservationByTime == null || countedReservationByTime > 0) {
+            throw new BadRequestException("해당 시간에 예약이 존재하여 삭제할 수 없습니다.");
         }
         reservationTimeRepository.deleteReservationTime(id);
     }

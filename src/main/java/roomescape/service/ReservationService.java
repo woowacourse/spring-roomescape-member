@@ -39,6 +39,7 @@ public class ReservationService {
         return reservationRepository.getAllReservations();
     }
 
+    //todo : 메소드로 묶기
     public Reservation addReservation(ReservationRequest request) {
         ReservationTime reservationTime = reservationTimeRepository.findReservationById(request.getTimeId());
         Theme theme = themeRepository.findThemeById(request.getThemeId());
@@ -48,12 +49,12 @@ public class ReservationService {
         LocalDateTime requestDateTime = reservationDateTime.truncatedTo(ChronoUnit.SECONDS);
         LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
         if (requestDateTime.isBefore(now)) {
-            throw new BadRequestException("[ERROR] 현재 이전 예약은 할 수 없습니다.");
+            throw new BadRequestException("현재(%s) 이전 시간으로 예약할 수 없습니다.".formatted(now));
         }
-        Long countReservation = reservationRepository.countReservationByDateAndTimeId(request.getDate(),
-                request.getTimeId());
+        Long countReservation =
+                reservationRepository.countReservationByDateAndTimeId(request.getDate(), request.getTimeId());
         if (countReservation == null || countReservation > 0) {
-            throw new DuplicatedException("[ERROR] 중복되는 예약은 추가할 수 없습니다.");
+            throw new DuplicatedException("이미 해당 시간(%s)에 예약이 존재합니다.".formatted(requestDateTime.toString()));
         }
         Reservation reservation = new Reservation(request.getName(), request.getDate(), reservationTime, theme);
         return reservationRepository.addReservation(reservation);
@@ -62,7 +63,7 @@ public class ReservationService {
     public void deleteReservation(long id) {
         Long count = reservationRepository.countReservationById(id);
         if (count == null || count <= 0) {
-            throw new NotFoundException("[ERROR] 존재하지 않는 예약입니다.");
+            throw new NotFoundException("해당 id:[%s] 값으로 예약된 내역이 존재하지 않습니다.".formatted(id));
         }
         reservationRepository.deleteReservation(id);
     }
