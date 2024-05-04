@@ -10,21 +10,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 class DescriptionTest {
 
     @Test
-    @DisplayName("설명에 null을 입력받으면 예외가 발생한다.")
-    void createDescriptionByNullTest() {
-        assertThatThrownBy(() -> new Description(null))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @ParameterizedTest
-    @DisplayName("설명에 빈 문자열, 공백 입력시 예외가 발생한다.")
-    @ValueSource(strings = {"", " "})
-    void createDescriptionByBlankTest(String input) {
-        assertThatThrownBy(() -> new Description(input))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
     @DisplayName("설명에 공백을 포함할 수 있고 한글 또는 숫자가 아닌 값을 입력시 예외가 발생한다.")
     void createDescriptionByInvalidFormat() {
         assertThatThrownBy(() -> new Description("scare 이야기"))
