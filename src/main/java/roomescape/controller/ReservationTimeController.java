@@ -34,7 +34,8 @@ public class ReservationTimeController {
     public ResponseEntity<ReservationTimeResponse> saveReservationTime(
             @Valid @RequestBody ReservationTimeAddRequest reservationTimeAddRequest) {
         ReservationTimeResponse saveResponse = reservationTimeService.saveReservationTime(reservationTimeAddRequest);
-        return ResponseEntity.created(URI.create("/times/" + saveResponse.id())).body(saveResponse);
+        URI createdUri = URI.create("/times/" + saveResponse.id());
+        return ResponseEntity.created(createdUri).body(saveResponse);
     }
 
     @GetMapping("/times/{date}/{themeId}")
