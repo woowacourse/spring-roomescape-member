@@ -59,7 +59,7 @@ public class ThemeDao implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findAllOrderByReservationCountInLastWeek() {
+    public List<Theme> findAllOrderByReservationCountDaysAgo(int days) {
         String sql = """
                 SELECT
                     th.id AS id, 
@@ -72,7 +72,7 @@ public class ThemeDao implements ThemeRepository {
                 LEFT OUTER JOIN
                     reservation r
                 ON
-                    r.theme_id = th.id  AND  r.date >= CURRENT_DATE() - 7
+                    r.theme_id = th.id  AND  r.date - CURRENT_DATE() >= ?
                 GROUP BY
                     th.id, th.name, th.description, th.thumbnail
                 ORDER BY
@@ -80,7 +80,7 @@ public class ThemeDao implements ThemeRepository {
                 LIMIT
                     10
                 """;
-        return jdbcTemplate.query(sql, this::rowMapper);
+        return jdbcTemplate.query(sql, this::rowMapper, days);
     }
 
     private Theme rowMapper(ResultSet resultSet, int rowNumber) throws SQLException {

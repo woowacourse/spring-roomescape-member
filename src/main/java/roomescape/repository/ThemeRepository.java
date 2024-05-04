@@ -15,5 +15,5 @@ public interface ThemeRepository {
 
     void deleteById(Long id);
 
-    List<Theme> findAllOrderByReservationCountInLastWeek();
+    List<Theme> findAllOrderByReservationCountDaysAgo(int days);
 }

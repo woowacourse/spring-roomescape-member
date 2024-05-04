@@ -127,7 +127,7 @@ class ThemeServiceTest {
         // given
         List<Theme> expectedThemes = List.of(WOOTECO_THEME(1L), HORROR_THEME(2L));
 
-        BDDMockito.given(themeRepository.findAllOrderByReservationCountInLastWeek())
+        BDDMockito.given(themeRepository.findAllOrderByReservationCountDaysAgo(7))
                 .willReturn(expectedThemes);
 
         // when

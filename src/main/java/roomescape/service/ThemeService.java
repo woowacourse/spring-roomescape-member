@@ -34,19 +34,19 @@ public class ThemeService {
     @Transactional(readOnly = true)
     public ThemeResponse findById(Long id) {
         Theme theme = themeRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(id + "에 해당하는 테마가 없습니다."));
+                .orElseThrow(() -> new NotFoundException("id 에 해당하는 테마가 없습니다."));
         return ThemeResponse.from(theme);
     }
 
     public void deleteById(Long id) {
         Theme theme = themeRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(id + "에 해당하는 테마가 없습니다."));
+                .orElseThrow(() -> new NotFoundException("id 에 해당하는 테마가 없습니다."));
         themeRepository.deleteById(theme.getId());
     }
 
     @Transactional(readOnly = true)
     public List<ThemeResponse> findAllPopular() {
-        List<Theme> allOrderByReservationCountInLastWeek = themeRepository.findAllOrderByReservationCountInLastWeek();
+        List<Theme> allOrderByReservationCountInLastWeek = themeRepository.findAllOrderByReservationCountDaysAgo(7);
         return allOrderByReservationCountInLastWeek.stream()
                 .map(ThemeResponse::from)
                 .toList();

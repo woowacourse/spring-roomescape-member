@@ -13,7 +13,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.domain.Theme;
 
 import java.sql.Time;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -120,7 +119,7 @@ class ThemeRepositoryTest extends RepositoryTest {
                 "냥", "2030-05-03", 1L, 2L);
 
         // when
-        List<Theme> allOrderByReservationCountInLastWeek = themeRepository.findAllOrderByReservationCountInLastWeek();
+        List<Theme> allOrderByReservationCountInLastWeek = themeRepository.findAllOrderByReservationCountDaysAgo(7);
 
         // then
         assertThat(allOrderByReservationCountInLastWeek).extracting(Theme::getName)
