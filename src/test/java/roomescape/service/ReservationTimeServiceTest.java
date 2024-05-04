@@ -1,9 +1,16 @@
 package roomescape.service;
 
+import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
+import static roomescape.TestFixture.MIA_RESERVATION_DATE;
+import static roomescape.TestFixture.MIA_RESERVATION_TIME;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -16,13 +23,6 @@ import roomescape.repository.ReservationTimeRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static roomescape.TestFixture.MIA_RESERVATION_DATE;
-import static roomescape.TestFixture.MIA_RESERVATION_TIME;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationTimeServiceTest {
@@ -42,7 +42,7 @@ class ReservationTimeServiceTest {
         final ReservationTime reservationTime = new ReservationTime(MIA_RESERVATION_TIME);
         final ReservationTime expectedReservationTime = new ReservationTime(1L, reservationTime.getStartAt());
 
-        BDDMockito.given(reservationTimeRepository.save(any()))
+        given(reservationTimeRepository.save(any()))
                 .willReturn(expectedReservationTime);
 
         // when
@@ -61,7 +61,7 @@ class ReservationTimeServiceTest {
         // given
         ReservationTime reservationTime = new ReservationTime(MIA_RESERVATION_TIME);
 
-        BDDMockito.given(reservationTimeRepository.findAll())
+        given(reservationTimeRepository.findAll())
                 .willReturn(List.of(reservationTime));
 
         // when
@@ -79,7 +79,7 @@ class ReservationTimeServiceTest {
         // given
         ReservationTime reservationTime = new ReservationTime(MIA_RESERVATION_TIME);
 
-        BDDMockito.given(reservationTimeRepository.findById(anyLong()))
+        given(reservationTimeRepository.findById(anyLong()))
                 .willReturn(Optional.of(reservationTime));
 
         // when & then
@@ -93,9 +93,9 @@ class ReservationTimeServiceTest {
         // given
         ReservationTime reservationTime = new ReservationTime(1L, MIA_RESERVATION_TIME);
 
-        BDDMockito.given(reservationTimeRepository.findById(anyLong()))
+        given(reservationTimeRepository.findById(anyLong()))
                 .willReturn(Optional.of(reservationTime));
-        BDDMockito.given(reservationRepository.countByTimeId(anyLong()))
+        given(reservationRepository.countByTimeId(anyLong()))
                 .willReturn(1);
 
         // when & then
@@ -111,9 +111,9 @@ class ReservationTimeServiceTest {
         Long themeId = 1L;
         ReservationTime reservedTime = new ReservationTime(1L, MIA_RESERVATION_TIME);
 
-        BDDMockito.given(reservationRepository.findAllTimeIdsByDateAndThemeId(date, themeId))
+        given(reservationRepository.findAllTimeIdsByDateAndThemeId(date, themeId))
                 .willReturn(List.of(1L));
-        BDDMockito.given(reservationTimeRepository.findAll())
+        given(reservationTimeRepository.findAll())
                 .willReturn(List.of(reservedTime, new ReservationTime(2L, "16:00")));
 
         // when

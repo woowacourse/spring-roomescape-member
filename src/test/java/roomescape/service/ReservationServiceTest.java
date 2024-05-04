@@ -1,9 +1,17 @@
 package roomescape.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
+import static roomescape.TestFixture.*;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -14,14 +22,8 @@ import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.ReservedThemeResponse;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
-
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static roomescape.TestFixture.*;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
@@ -37,7 +39,7 @@ class ReservationServiceTest {
         // given
         Reservation reservation = MIA_RESERVATION();
 
-        BDDMockito.given(reservationRepository.save(reservation))
+        given(reservationRepository.save(reservation))
                 .willReturn(new Reservation(1L, reservation));
 
         // when
@@ -54,7 +56,7 @@ class ReservationServiceTest {
         ReservationTime miaReservationTime = new ReservationTime(1L, MIA_RESERVATION_TIME);
         Reservation miaReservation = MIA_RESERVATION(miaReservationTime, WOOTECO_THEME(1L));
 
-        BDDMockito.given(reservationRepository.findAllByDateAndTimeAndThemeId(any(), any(), anyLong()))
+        given(reservationRepository.findAllByDateAndTimeAndThemeId(any(), any(), anyLong()))
                 .willReturn(List.of(miaReservation));
 
         // when & then
@@ -69,7 +71,7 @@ class ReservationServiceTest {
         Reservation miaReservation = MIA_RESERVATION();
         Reservation tommyReservation = TOMMY_RESERVATION();
 
-        BDDMockito.given(reservationRepository.findAll())
+        given(reservationRepository.findAll())
                 .willReturn(List.of(miaReservation, tommyReservation));
 
         // when
@@ -95,7 +97,7 @@ class ReservationServiceTest {
         // given
         Long existingId = 1L;
 
-        BDDMockito.given(reservationRepository.existById(existingId))
+        given(reservationRepository.existById(existingId))
                 .willReturn(true);
 
         // when & then
@@ -109,7 +111,7 @@ class ReservationServiceTest {
         // given
         Long notExistingId = 1L;
 
-        BDDMockito.given(reservationRepository.existById(notExistingId))
+        given(reservationRepository.existById(notExistingId))
                 .willReturn(false);
 
         // when & then

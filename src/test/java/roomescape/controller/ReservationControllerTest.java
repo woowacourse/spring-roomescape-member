@@ -1,5 +1,16 @@
 package roomescape.controller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static roomescape.TestFixture.*;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -14,17 +25,9 @@ import roomescape.dto.ReservationSaveRequest;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.ThemeResponse;
 import roomescape.exception.NotFoundException;
-
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static roomescape.TestFixture.*;
 
 class ReservationControllerTest extends ControllerTest {
 
@@ -35,7 +38,7 @@ class ReservationControllerTest extends ControllerTest {
         ReservationTime expectedTime = new ReservationTime(1L, MIA_RESERVATION_TIME);
         Reservation expectedReservation = MIA_RESERVATION(expectedTime, WOOTECO_THEME());
 
-        BDDMockito.given(reservationService.findAll())
+        given(reservationService.findAll())
                 .willReturn(List.of(ReservationResponse.from(expectedReservation)));
 
         // when & then
@@ -58,11 +61,11 @@ class ReservationControllerTest extends ControllerTest {
         Theme expectedTheme = WOOTECO_THEME(1L);
         ReservationResponse expectedResponse = ReservationResponse.from(MIA_RESERVATION(expectedTime, expectedTheme));
 
-        BDDMockito.given(reservationService.create(any()))
+        given(reservationService.create(any()))
                 .willReturn(expectedResponse);
-        BDDMockito.given(reservationTimeService.findById(anyLong()))
+        given(reservationTimeService.findById(anyLong()))
                 .willReturn(ReservationTimeResponse.from(expectedTime));
-        BDDMockito.given(themeService.findById(anyLong()))
+        given(themeService.findById(anyLong()))
                 .willReturn(ThemeResponse.from(expectedTheme));
 
         // when & then
@@ -85,11 +88,11 @@ class ReservationControllerTest extends ControllerTest {
         ReservationTimeResponse timeResponse = ReservationTimeResponse.from(new ReservationTime(1L, MIA_RESERVATION_TIME));
         ThemeResponse themeResponse = ThemeResponse.from(WOOTECO_THEME(1L));
 
-        BDDMockito.given(reservationService.create(any()))
+        given(reservationService.create(any()))
                 .willThrow(IllegalArgumentException.class);
-        BDDMockito.given(reservationTimeService.findById(1L))
+        given(reservationTimeService.findById(1L))
                 .willReturn(timeResponse);
-        BDDMockito.given(themeService.findById(1L))
+        given(themeService.findById(1L))
                 .willReturn(themeResponse);
 
         // when & then
@@ -117,7 +120,7 @@ class ReservationControllerTest extends ControllerTest {
         ThemeResponse themeResponse = ThemeResponse.from(WOOTECO_THEME(themeId));
         ReservationSaveRequest request = new ReservationSaveRequest(USER_MIA, MIA_RESERVATION_DATE, notExistingTimeId, themeId);
 
-        BDDMockito.given(themeService.findById(themeId))
+        given(themeService.findById(themeId))
                 .willReturn(themeResponse);
 
         BDDMockito.willThrow(NotFoundException.class)

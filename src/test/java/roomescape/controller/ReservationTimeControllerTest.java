@@ -2,6 +2,7 @@ package roomescape.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -32,7 +33,7 @@ class ReservationTimeControllerTest extends ControllerTest {
         final ReservationTimeSaveRequest request = new ReservationTimeSaveRequest(MIA_RESERVATION_TIME);
         final ReservationTimeResponse expectedResponse = ReservationTimeResponse.from(new ReservationTime(1L, request.startAt()));
 
-        BDDMockito.given(reservationTimeService.create(any()))
+        given(reservationTimeService.create(any()))
                 .willReturn(expectedResponse);
 
         // when & then
@@ -51,7 +52,7 @@ class ReservationTimeControllerTest extends ControllerTest {
         // given
         ReservationTimeSaveRequest request = new ReservationTimeSaveRequest("15:03");
 
-        BDDMockito.given(reservationTimeService.create(any()))
+        given(reservationTimeService.create(any()))
                 .willThrow(IllegalArgumentException.class);
 
         // when & then
@@ -67,7 +68,7 @@ class ReservationTimeControllerTest extends ControllerTest {
     @DisplayName("예약 시간 목록 GET 요청 시 상태코드 200을 반환한다.")
     void findReservationTimes() throws Exception {
         // given
-        BDDMockito.given(reservationTimeService.findAll())
+        given(reservationTimeService.findAll())
                 .willReturn(List.of(ReservationTimeResponse.from(new ReservationTime(MIA_RESERVATION_TIME))));
 
         // when & then
@@ -114,7 +115,7 @@ class ReservationTimeControllerTest extends ControllerTest {
         // given
         LocalDate date = LocalDate.parse(MIA_RESERVATION_DATE);
         Long themeId = 1L;
-        BDDMockito.given(reservationTimeService.findAvailableReservationTimes(date, themeId))
+        given(reservationTimeService.findAvailableReservationTimes(date, themeId))
                 .willReturn(List.of(AvailableReservationTimeResponse.of(new ReservationTime(MIA_RESERVATION_TIME), true)));
 
         // when & then
