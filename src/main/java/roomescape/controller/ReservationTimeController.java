@@ -58,7 +58,7 @@ public class ReservationTimeController {
     }
 
     @ExceptionHandler(value = IllegalStateException.class)
-    public ResponseEntity<String> handleIllegalStateException() {
-        return ResponseEntity.badRequest().body("예약이 존재하는 시간은 삭제할 수 없습니다.");
+    public ResponseEntity<String> handleIllegalStateException(IllegalStateException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
 }

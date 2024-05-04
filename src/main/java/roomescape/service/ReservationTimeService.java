@@ -33,7 +33,7 @@ public class ReservationTimeService {
 
     public void deleteReservationTime(Long id) {
         if (reservationDao.countByTimeId(id) != 0) {
-            throw new IllegalStateException();
+            throw new IllegalStateException("예약이 존재하는 시간은 삭제할 수 없습니다.");
         }
         reservationTimeDao.deleteById(id);
     }
