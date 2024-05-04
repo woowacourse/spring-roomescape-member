@@ -8,12 +8,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.service.dto.ThemeRequest;
 import roomescape.service.dto.ThemeResponse;
 import roomescape.service.ThemeService;
 
 @RestController
+@RequestMapping("/themes")
 public class ThemeController {
 
     private final ThemeService themeService;
@@ -22,14 +24,14 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
-    @GetMapping("/themes")
+    @GetMapping
     public ResponseEntity<List<ThemeResponse>> getAllThemes() {
         List<ThemeResponse> themeResponses = themeService.getAllThemes();
 
         return ResponseEntity.ok(themeResponses);
     }
 
-    @PostMapping("/themes")
+    @PostMapping
     public ResponseEntity<ThemeResponse> addTheme(@RequestBody ThemeRequest themeRequest) {
         ThemeResponse themeResponse = themeService.addTheme(themeRequest);
 
@@ -37,14 +39,14 @@ public class ThemeController {
                 .body(themeResponse);
     }
 
-    @DeleteMapping("/themes/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteThemeById(@PathVariable Long id) {
         themeService.deleteThemeById(id);
 
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/popular-themes")
+    @GetMapping("/popular")
     public ResponseEntity<List<ThemeResponse>> getPopularThemes() {
         List<ThemeResponse> themeResponses = themeService.getPopularThemes();
 
