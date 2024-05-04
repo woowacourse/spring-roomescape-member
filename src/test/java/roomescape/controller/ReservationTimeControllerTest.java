@@ -22,8 +22,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static roomescape.TestFixture.MIA_RESERVATION_DATE;
-import static roomescape.TestFixture.MIA_RESERVATION_TIME;
+import static roomescape.TestFixture.*;
 
 @WebMvcTest(ReservationTimeController.class)
 class ReservationTimeControllerTest extends ControllerTest {
@@ -128,7 +127,7 @@ class ReservationTimeControllerTest extends ControllerTest {
     @DisplayName("존재하지 않는 예약 시간 DELETE 요청 시 상태코드 404를 반환한다.")
     void deleteNotExistingReservationTime() throws Exception {
         // given
-        BDDMockito.willThrow(NotFoundException.class)
+        BDDMockito.willThrow(new NotFoundException(TEST_ERROR_MESSAGE))
                 .given(reservationTimeService)
                 .delete(anyLong());
 

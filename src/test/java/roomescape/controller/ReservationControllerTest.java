@@ -140,7 +140,7 @@ class ReservationControllerTest extends ControllerTest {
         BDDMockito.given(themeService.findById(themeId))
                 .willReturn(themeResponse);
 
-        BDDMockito.willThrow(NotFoundException.class)
+        BDDMockito.willThrow(new NotFoundException(TEST_ERROR_MESSAGE))
                 .given(reservationTimeService)
                 .findById(anyLong());
 
@@ -172,7 +172,7 @@ class ReservationControllerTest extends ControllerTest {
     @DisplayName("존재하지 않는 예약 DELETE 요청 시 상태코드 404를 반환한다.")
     void deleteNotExistingReservation() throws Exception {
         // given
-        BDDMockito.willThrow(NotFoundException.class)
+        BDDMockito.willThrow(new NotFoundException(TEST_ERROR_MESSAGE))
                 .given(reservationService)
                 .delete(anyLong());
 

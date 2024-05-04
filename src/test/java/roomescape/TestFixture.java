@@ -22,6 +22,8 @@ public class TestFixture {
     public static final String HORROR_THEME_NAME = "호러";
     public static final String HORROR_THEME_DESCRIPTION = "매우 무섭습니다.";
 
+    public static final String TEST_ERROR_MESSAGE = "ERROR MESSAGE";
+
     public static Reservation MIA_RESERVATION() {
         return MIA_RESERVATION(new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME());
     }

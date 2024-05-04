@@ -86,7 +86,7 @@ class ThemeControllerTest extends ControllerTest {
     @DisplayName("존재하지 않는 테마 DELETE 요청 시 상태코드 404를 반환한다.")
     void deleteNotExistingTheme() throws Exception {
         // given
-        BDDMockito.willThrow(NotFoundException.class)
+        BDDMockito.willThrow(new NotFoundException(TEST_ERROR_MESSAGE))
                 .given(themeService)
                 .deleteById(anyLong());
 
