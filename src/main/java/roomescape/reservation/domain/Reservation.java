@@ -87,16 +87,16 @@ public class Reservation {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof Reservation that)) {
             return false;
         }
-        Reservation that = (Reservation) o;
-        return id == that.id;
+        return id == that.id && Objects.equals(name, that.name) && Objects.equals(date, that.date)
+                && Objects.equals(theme, that.theme) && Objects.equals(time, that.time);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(name, date, theme, id, time);
     }
 
 }
