@@ -4,7 +4,8 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.theme.dto.ThemeResponseDto;
 import roomescape.time.dto.ReservationTimeResponseDto;
 
-public record ReservationResponseDto(long id, String name, String date, ReservationTimeResponseDto time,
+public record ReservationResponseDto(long id, String name, String date,
+                                     ReservationTimeResponseDto time,
                                      ThemeResponseDto theme) {
 
     public ReservationResponseDto(final Reservation reservation) {

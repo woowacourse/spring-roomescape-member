@@ -1,20 +1,21 @@
 package roomescape.reservation.dao.mapper;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
+
 import roomescape.reservation.domain.Reservation;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 @Component
 public class ReservationRowMapper implements RowMapper<Reservation> {
 
     @Override
     public Reservation mapRow(final ResultSet resultSet, final int rowNum) throws SQLException {
-        return new Reservation(
+        return Reservation.of(
                 resultSet.getLong("reservation_id"),
                 resultSet.getString("reservation_name"),
                 resultSet.getString("date"),

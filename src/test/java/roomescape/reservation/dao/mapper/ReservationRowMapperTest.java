@@ -1,16 +1,17 @@
 package roomescape.reservation.dao.mapper;
 
-import org.h2.tools.SimpleResultSet;
-import org.junit.jupiter.api.Test;
-import roomescape.reservation.domain.Reservation;
-import roomescape.theme.domain.Theme;
-import roomescape.time.domain.ReservationTime;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.sql.SQLException;
 import java.sql.Types;
 import java.time.LocalDate;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.h2.tools.SimpleResultSet;
+import org.junit.jupiter.api.Test;
+
+import roomescape.reservation.domain.Reservation;
+import roomescape.theme.domain.Theme;
+import roomescape.time.domain.ReservationTime;
 
 class ReservationRowMapperTest {
 
@@ -31,7 +32,7 @@ class ReservationRowMapperTest {
         rs.addRow(1, "hotea", LocalDate.MAX.toString(), 1, "10:00", 1, "정글 모험", "열대 정글의 심연을 탐험하세요.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         rs.next();
 
-        Reservation reservation = new Reservation(1L, "hotea", LocalDate.MAX.toString(),
+        Reservation reservation = Reservation.of(1L, "hotea", LocalDate.MAX.toString(),
                 new ReservationTime(1L, "10:00"),
                 new Theme(1L, "정글 모험", "열대 정글의 심연을 탐험하세요.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg")
         );
