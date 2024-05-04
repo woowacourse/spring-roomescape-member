@@ -57,12 +57,12 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     public List<TimeWithBookStatusResponse> findAllWithBookStatus(LocalDate date, Long themeId) {
         String sql = """
                 SELECT 
-                t.id,
-                t.start_at,
-                CASE
-                    WHEN r.id IS NULL THEN FALSE
-                    ELSE TRUE
-                END AS already_booked
+                    t.id,
+                    t.start_at,
+                    CASE
+                        WHEN r.id IS NULL THEN FALSE
+                        ELSE TRUE
+                    END AS already_booked
                 FROM reservation_time AS t
                 LEFT JOIN reservation AS r ON t.id = r.time_id AND r.date = ? AND r.theme_id = ?
                 """;
