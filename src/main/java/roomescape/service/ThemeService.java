@@ -31,8 +31,9 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> findTrendingThemes(Long limit) {
-        LocalDate trendingStatsStart = LocalDate.now().minusDays(7);
-        LocalDate trendingStatsEnd = LocalDate.now().minusDays(1);
+        LocalDate now = LocalDate.now();
+        LocalDate trendingStatsStart = now.minusDays(7);
+        LocalDate trendingStatsEnd = now.minusDays(1);
 
         return themeRepository.findTrendings(trendingStatsStart, trendingStatsEnd, limit)
                 .stream()
