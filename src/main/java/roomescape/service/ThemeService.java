@@ -22,7 +22,7 @@ public class ThemeService {
 
     public ThemeResponse create(ThemeRequest request) {
         Theme theme = request.toDomain();
-        Theme createdTheme = themeRepository.create(theme);
+        Theme createdTheme = themeRepository.save(theme);
 
         return ThemeResponse.from(createdTheme);
     }

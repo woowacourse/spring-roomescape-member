@@ -67,7 +67,7 @@ class ReservationTimeRepositoryTest {
         ReservationTime inputData = new ReservationTime(null, startAt);
 
         // when
-        ReservationTime createdTime = reservationTimeRepository.create(inputData);
+        ReservationTime createdTime = reservationTimeRepository.save(inputData);
 
         // then
         assertThat(createdTime.getStartAt()).isEqualTo(startAt);

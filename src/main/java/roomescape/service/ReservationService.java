@@ -37,7 +37,7 @@ public class ReservationService {
         Reservation reservation = request.toDomain(reservationTime, theme);
         validate(reservation, reservationTime);
 
-        Reservation createdReservation = reservationRepository.create(reservation);
+        Reservation createdReservation = reservationRepository.save(reservation);
         return ReservationResponse.from(createdReservation);
     }
 

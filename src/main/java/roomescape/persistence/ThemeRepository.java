@@ -24,7 +24,7 @@ public class ThemeRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Theme create(Theme theme) {
+    public Theme save(Theme theme) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", theme.getName())
                 .addValue("description", theme.getDescription())

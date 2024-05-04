@@ -27,7 +27,7 @@ public class ReservationTimeRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public ReservationTime create(ReservationTime reservationTime) {
+    public ReservationTime save(ReservationTime reservationTime) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("start_at", reservationTime.getStartAt());
         long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();

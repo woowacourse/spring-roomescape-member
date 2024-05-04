@@ -27,7 +27,7 @@ public class ReservationRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Reservation create(Reservation reservation) {
+    public Reservation save(Reservation reservation) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.getName().value())
                 .addValue("date", reservation.getDate())

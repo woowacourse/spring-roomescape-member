@@ -76,7 +76,7 @@ class ReservationRepositoryTest {
         Reservation createReservation = new Reservation(name, date, reservationTime, theme);
 
         // when
-        reservationRepository.create(createReservation);
+        reservationRepository.save(createReservation);
         List<Reservation> reservations = reservationRepository.findAll();
 
         // then

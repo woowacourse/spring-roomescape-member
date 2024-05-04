@@ -40,7 +40,7 @@ class ReservationServiceTest {
     @DisplayName("당일이지만, 이전 시간이면 예약을 생성할 수 없다.")
     void cantCreateReservationWithPreviousTime() {
         // given
-        ReservationTime reservationTime = reservationTimeRepository.create(
+        ReservationTime reservationTime = reservationTimeRepository.save(
                 new ReservationTime(LocalTime.now().minusHours(1)));
         LocalDate date = LocalDate.now();
         ReservationRequest request = new ReservationRequest("엘라", date.toString(), reservationTime.getId(), 1L);

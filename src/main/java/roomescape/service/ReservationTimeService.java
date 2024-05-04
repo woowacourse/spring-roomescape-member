@@ -30,7 +30,7 @@ public class ReservationTimeService {
             throw new IllegalStateException("해당 예약 시간이 존재합니다.");
         }
 
-        ReservationTime createdReservationTime = reservationTimeRepository.create(reservationTime);
+        ReservationTime createdReservationTime = reservationTimeRepository.save(reservationTime);
         return ReservationTimeResponse.from(createdReservationTime);
     }
 
