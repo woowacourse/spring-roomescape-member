@@ -16,6 +16,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.ReservationTime;
+import roomescape.exceptions.UserException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -41,7 +42,7 @@ class ReservationTimeH2RepositoryTest {
     @DisplayName("중복된 시간을 저장하려고 하면 예외가 발생한다.")
     void saveDuplicatedGetTime() {
         assertThatThrownBy(() -> reservationTimeH2Repository.save(RESERVATION_TIME_1))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(UserException.class);
     }
 
     @Test
@@ -58,7 +59,7 @@ class ReservationTimeH2RepositoryTest {
     @DisplayName("참조되어 있는 시간을 삭제하는 경우 예외가 발생한다.")
     void deleteReferencedGetTime() {
         assertThatThrownBy(() -> reservationTimeH2Repository.delete(RESERVATION_TIME_1.getId()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(UserException.class);
     }
 
     @Test

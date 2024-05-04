@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ThemeAddRequest;
 import roomescape.dto.response.ThemeResponse;
+import roomescape.exceptions.UserException;
 import roomescape.repository.theme.ThemeRepository;
 
 import java.util.List;
@@ -47,7 +48,7 @@ public class ThemeService {
 
     private Theme getValidTheme(Long id) {
         return themeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다. id = " + id));
+                .orElseThrow(() -> new UserException("존재하지 않는 테마 id입니다. theme_id = " + id));
     }
 
     public void deleteTheme(Long id) {

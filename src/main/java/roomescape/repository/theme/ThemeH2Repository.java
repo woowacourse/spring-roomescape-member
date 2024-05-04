@@ -15,6 +15,7 @@ import roomescape.domain.Theme;
 import javax.sql.DataSource;
 import java.util.List;
 import java.util.Optional;
+import roomescape.exceptions.UserException;
 
 @Repository
 public class ThemeH2Repository implements ThemeRepository {
@@ -33,8 +34,9 @@ public class ThemeH2Repository implements ThemeRepository {
 
     @Override
     public Theme save(Theme theme) {
+        // TODO: 서비스 단에서 예외 처리
         if (isDuplicatedTheme(theme)) {
-            throw new IllegalArgumentException("이미 존재하는 테마입니다.");
+            throw new UserException("이미 존재하는 테마입니다.");
         }
 
         SqlParameterSource params = new MapSqlParameterSource()
@@ -56,7 +58,7 @@ public class ThemeH2Repository implements ThemeRepository {
         try {
             jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id);
         } catch (DataIntegrityViolationException e) {
-            throw new IllegalArgumentException("참조되고 있는 테마를 삭제할 수 없습니다. id = " + id);
+            throw new UserException("참조되고 있는 테마를 삭제할 수 없습니다. id = " + id);
         }
     }
 

@@ -16,6 +16,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Name;
 import roomescape.domain.Theme;
+import roomescape.exceptions.UserException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -43,7 +44,7 @@ class ThemeH2RepositoryTest {
         Theme theme = new Theme(null, THEME_1.getName(), "레벨2 설명", "레벨2 썸네일");
 
         assertThatThrownBy(() -> themeH2Repository.save(theme))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(UserException.class);
     }
 
     @Test
@@ -60,7 +61,7 @@ class ThemeH2RepositoryTest {
     @DisplayName("참조되어 있는 테마를 삭제하는 경우 예외가 발생한다.")
     void deleteReferencedTime() {
         assertThatThrownBy(() -> themeH2Repository.delete(THEME_1.getId()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(UserException.class);
     }
 
     @Test

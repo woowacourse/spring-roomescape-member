@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
+import roomescape.exceptions.UserException;
 
 public class ReservationTime {
 
@@ -29,7 +30,7 @@ public class ReservationTime {
 
     private void validate(LocalTime startAt) {
         if (startAt == null) {
-            throw new IllegalArgumentException("시작 시간이 null입니다.");
+            throw new UserException("시작 시간은 필수 값입니다.");
         }
     }
 

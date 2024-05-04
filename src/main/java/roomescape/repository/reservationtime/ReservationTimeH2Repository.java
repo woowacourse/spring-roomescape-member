@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
+import roomescape.exceptions.UserException;
 
 @Repository
 public class ReservationTimeH2Repository implements ReservationTimeRepository {
@@ -32,8 +33,9 @@ public class ReservationTimeH2Repository implements ReservationTimeRepository {
 
     @Override
     public ReservationTime save(ReservationTime reservationTime) {
+        // TODO: 서비스 단에서 예외처리
         if (isDuplicatedTime(reservationTime.getStartAt())) {
-            throw new IllegalArgumentException("이미 존재하는 시간입니다.");
+            throw new UserException("이미 존재하는 시간입니다.");
         }
 
         SqlParameterSource params = new MapSqlParameterSource()
@@ -53,7 +55,7 @@ public class ReservationTimeH2Repository implements ReservationTimeRepository {
         try {
             jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
         } catch (DataIntegrityViolationException e) {
-            throw new IllegalArgumentException("참조되고 있는 시간을 삭제할 수 없습니다. id = " + id);
+            throw new UserException("참조되고 있는 시간을 삭제할 수 없습니다. id = " + id);
         }
     }
 

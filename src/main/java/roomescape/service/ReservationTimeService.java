@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.request.ReservationTimeAddRequest;
 import roomescape.dto.response.ReservationTimeResponse;
+import roomescape.exceptions.UserException;
 import roomescape.repository.reservationtime.ReservationTimeRepository;
 
 @Service
@@ -42,7 +43,7 @@ public class ReservationTimeService {
 
     private ReservationTime getValidReservationTime(Long id) {
         return reservationTimeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다. time_id = " + id));
+                .orElseThrow(() -> new UserException("존재하지 않는 예약 시간 id입니다. time_id = " + id));
     }
 
     public void deleteTime(Long id) {
