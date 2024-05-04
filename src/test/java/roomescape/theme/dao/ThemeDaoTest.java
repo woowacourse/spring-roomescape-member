@@ -61,7 +61,7 @@ public class ThemeDaoTest {
     @Test
     @DisplayName("지난 7일 기준 예약이 많은 테마 순으로 조회한다.")
     void getTopReservationThemes() {
-        List<Theme> themes = themeJdbcDao.findThemeByDateOrderByThemeIdCount(LocalDate.now()
+        List<Theme> themes = themeJdbcDao.findByDateOrderByCount(LocalDate.now()
                 .minusWeeks(1), LocalDate.now());
 
         Assertions.assertThat(themes.get(0)

@@ -28,10 +28,6 @@ public class ThemeService {
         return ThemeResponse.fromTheme(savedTheme);
     }
 
-    public void removeTheme(long id) {
-        themeDao.deleteById(id);
-    }
-
     public List<ThemeResponse> findThemes() {
         List<Theme> themes = themeDao.findAll();
         return themes.stream()
@@ -44,11 +40,15 @@ public class ThemeService {
                 .minusDays(NUMBER_OF_ONE_DAY);
         LocalDate beforeOneWeek = yesterday.minusDays(NUMBER_OF_ONE_WEEK);
 
-        List<Theme> rankedThemes = themeDao.findThemeByDateOrderByThemeIdCount(beforeOneWeek, yesterday);
+        List<Theme> rankedThemes = themeDao.findByDateOrderByCount(beforeOneWeek, yesterday);
         return rankedThemes.stream()
                 .limit(TOP_THEMES_LIMIT)
                 .map(ThemeRankResponse::fromTheme)
                 .toList();
+    }
+
+    public void removeTheme(long id) {
+        themeDao.deleteById(id);
     }
 
 }

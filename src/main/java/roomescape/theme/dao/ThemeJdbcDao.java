@@ -45,7 +45,7 @@ public class ThemeJdbcDao implements ThemeDao {
     }
 
     @Override
-    public List<Theme> findThemeByDateOrderByThemeIdCount(LocalDate startDate, LocalDate endDate) {
+    public List<Theme> findByDateOrderByCount(LocalDate startDate, LocalDate endDate) {
         String findThemesInOrderSql =
                 """
                 SELECT th.id, th.name, th.thumbnail, th.description

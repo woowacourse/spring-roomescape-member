@@ -10,7 +10,7 @@ public interface ThemeDao {
 
     List<Theme> findAll();
 
-    List<Theme> findThemeByDateOrderByThemeIdCount(LocalDate startDate, LocalDate endDate);
+    List<Theme> findByDateOrderByCount(LocalDate startDate, LocalDate endDate);
 
     void deleteById(long themeId);
 
