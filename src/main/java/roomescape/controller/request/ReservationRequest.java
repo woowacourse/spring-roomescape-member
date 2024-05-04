@@ -1,28 +1,30 @@
 package roomescape.controller.request;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
-import java.util.Objects;
-
 public record ReservationRequest(
+        @NotBlank
         String name,
         String date,
+        @NotNull
         Long timeId,
+        @NotNull
         Long themeId
 ) {
     public ReservationRequest {
-        Objects.requireNonNull(name);
-        Objects.requireNonNull(date);
-        Objects.requireNonNull(timeId);
-        Objects.requireNonNull(themeId);
         validateDate(date);
     }
 
     private void validateDate(String date) {
+        if (date == null) {
+            throw new IllegalArgumentException("날짜는 null 값 일 수 없습니다.");
+        }
         try {
             LocalDate.parse(date);
         } catch (DateTimeParseException e) {
