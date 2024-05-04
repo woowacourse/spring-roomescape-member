@@ -1,7 +1,6 @@
 package roomescape.service;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ThemeDao;
@@ -11,8 +10,6 @@ import roomescape.dto.ThemeResponse;
 
 @Service
 public class ThemeService {
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
     private final ThemeDao themeDao;
 
     public ThemeService(ThemeDao themeDao) {
@@ -31,9 +28,7 @@ public class ThemeService {
         LocalDate startDate = currentDate.minusDays(7);
         LocalDate endDate = currentDate.minusDays(1);
 
-        return themeDao.readThemesSortedByCountOfReservation(
-                        startDate.format(DATE_FORMATTER),
-                        endDate.format(DATE_FORMATTER))
+        return themeDao.readThemesSortedByCountOfReservation(startDate, endDate)
                 .stream()
                 .map(ThemeResponse::from)
                 .toList();

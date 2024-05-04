@@ -1,6 +1,6 @@
 package roomescape.service;
 
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.TimeDao;
@@ -24,7 +24,7 @@ public class TimeService {
                 .toList();
     }
 
-    public List<AvailableTimeResponse> readAvailableTimes(String date, Long themeId) {
+    public List<AvailableTimeResponse> readAvailableTimes(LocalDate date, Long themeId) {
         List<ReservationTime> allTime = timeDao.readTimes();
         List<ReservationTime> alreadyBookedTime = timeDao.readTimesExistsReservationDateAndThemeId(date, themeId);
 
@@ -34,7 +34,7 @@ public class TimeService {
     }
 
     public TimeResponse createTime(TimeCreateRequest dto) {
-        if (timeDao.isExistTimeByStartAt(DateTimeFormatter.ofPattern("HH:mm").format(dto.startAt()))) {
+        if (timeDao.isExistTimeByStartAt(dto.startAt())) {
             throw new IllegalArgumentException("해당 시간은 이미 존재합니다.");
         }
         ReservationTime createdTime = timeDao.createTime(dto.createReservationTime());

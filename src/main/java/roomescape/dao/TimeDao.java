@@ -1,6 +1,7 @@
 package roomescape.dao;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -31,7 +32,7 @@ public class TimeDao {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public List<ReservationTime> readTimesExistsReservationDateAndThemeId(String date, Long themeId) {
+    public List<ReservationTime> readTimesExistsReservationDateAndThemeId(LocalDate date, Long themeId) {
         String sql = """
                 SELECT id, start_at 
                 FROM reservation_time
@@ -53,7 +54,7 @@ public class TimeDao {
         }
     }
 
-    public boolean isExistTimeByStartAt(String startAt) {
+    public boolean isExistTimeByStartAt(LocalTime startAt) {
         String sql = """
                 SELECT EXISTS (
                     SELECT 1

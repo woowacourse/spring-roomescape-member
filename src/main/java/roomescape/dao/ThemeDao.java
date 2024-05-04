@@ -1,6 +1,7 @@
 package roomescape.dao;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -44,7 +45,7 @@ public class ThemeDao {
         }
     }
 
-    public List<Theme> readThemesSortedByCountOfReservation(String startDate, String endDate) {
+    public List<Theme> readThemesSortedByCountOfReservation(LocalDate startDate, LocalDate endDate) {
         String sql = """
                 SELECT theme.id, theme.name, theme.description, theme.thumbnail, COUNT(reservation.theme_id) AS reservation_count
                 FROM theme
