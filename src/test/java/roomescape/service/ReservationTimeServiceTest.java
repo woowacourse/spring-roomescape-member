@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.dto.AvailableTimeResponse;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.exception.RoomescapeException;
@@ -106,5 +107,32 @@ class ReservationTimeServiceTest {
                     .isInstanceOf(RoomescapeException.class)
                     .hasMessage(DELETE_USED_TIME.getMessage());
         }
+    }
+
+    @DisplayName("날짜와 테마, 시간에 대한 예약 내역을 확인할 수 있다.")
+    @Test
+    void findAvailableTimeTest() {
+        //given
+        Theme DEFUALT_THEME = new Theme(1L, "name", "description", "thumbnail");
+        ReservationTime reservationTime1 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(11, 0)));
+        ReservationTime reservationTime2 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 0)));
+        ReservationTime reservationTime3 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(13, 0)));
+        ReservationTime reservationTime4 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(14, 0)));
+
+        LocalDate selectedDate = LocalDate.of(2024, 1, 1);
+        reservationRepository.save(new Reservation("name", selectedDate, reservationTime1, DEFUALT_THEME));
+        reservationRepository.save(new Reservation("name", selectedDate, reservationTime3, DEFUALT_THEME));
+
+        //when
+        List<AvailableTimeResponse> availableTimeResponses = reservationTimeService.findByThemeAndDate(selectedDate,
+                DEFUALT_THEME.getId());
+
+        //then
+        assertThat(availableTimeResponses).containsExactlyInAnyOrder(
+                new AvailableTimeResponse(1L, reservationTime1.getStartAt(), true),
+                new AvailableTimeResponse(2L, reservationTime2.getStartAt(), false),
+                new AvailableTimeResponse(3L, reservationTime3.getStartAt(), true),
+                new AvailableTimeResponse(4L, reservationTime4.getStartAt(), false)
+        );
     }
 }

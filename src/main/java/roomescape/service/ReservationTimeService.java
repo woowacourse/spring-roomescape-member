@@ -3,10 +3,14 @@ package roomescape.service;
 import static roomescape.exception.ExceptionType.DELETE_USED_TIME;
 import static roomescape.exception.ExceptionType.DUPLICATE_RESERVATION_TIME;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.AvailableTimeResponse;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.exception.RoomescapeException;
@@ -40,6 +44,24 @@ public class ReservationTimeService {
     public List<ReservationTimeResponse> findAll() {
         return reservationTimeRepository.findAll().stream()
                 .map(this::toResponse)
+                .toList();
+    }
+
+    //todo : 메서드 개선
+    public List<AvailableTimeResponse> findByThemeAndDate(LocalDate date, long themeId) {
+        Set<Long> alreadyReservedTimeIds = reservationRepository.findAll().stream()
+                .filter(reservation -> reservation.isDateOf(date))
+                .filter(reservation -> reservation.isThemeOf(themeId))
+                .map(Reservation::getReservationTime)
+                .map(ReservationTime::getId)
+                .collect(Collectors.toSet());
+
+        return reservationTimeRepository.findAll().stream()
+                .map(reservationTime -> {
+                    long id = reservationTime.getId();
+                    boolean isBooked = alreadyReservedTimeIds.contains(id);
+                    return new AvailableTimeResponse(id, reservationTime.getStartAt(), isBooked);
+                })
                 .toList();
     }
 
