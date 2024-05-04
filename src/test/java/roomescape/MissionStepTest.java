@@ -39,17 +39,17 @@ class MissionStepTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(4));
+                .body("size()", is(8));
 
         RestAssured.given().log().all()
-                .when().delete("/times/4")
+                .when().delete("/times/8")
                 .then().log().all()
                 .statusCode(204);
 
         RestAssured.given().log().all()
-                .when().delete("/times/4")
+                .when().delete("/times/8")
                 .then().log().all()
-                .statusCode(404);
+                .statusCode(400);
     }
 
     @Test
@@ -68,17 +68,17 @@ class MissionStepTest {
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(3));
+                .body("size()", is(7));
 
         RestAssured.given().log().all()
-                .when().delete("/themes/3")
+                .when().delete("/themes/7")
                 .then().log().all()
                 .statusCode(204);
 
         RestAssured.given().log().all()
-                .when().delete("/themes/3")
+                .when().delete("/themes/7")
                 .then().log().all()
-                .statusCode(404);
+                .statusCode(400);
     }
 
     @Test
@@ -97,16 +97,16 @@ class MissionStepTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(3));
+                .body("size()", is(9));
 
         RestAssured.given().log().all()
-                .when().delete("/reservations/3")
+                .when().delete("/reservations/9")
                 .then().log().all()
                 .statusCode(204);
 
         RestAssured.given().log().all()
-                .when().delete("/reservations/3")
+                .when().delete("/reservations/9")
                 .then().log().all()
-                .statusCode(404);
+                .statusCode(400);
     }
 }
