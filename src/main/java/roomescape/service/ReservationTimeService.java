@@ -12,6 +12,7 @@ import roomescape.repository.ReservationTimeRepository;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -62,7 +63,7 @@ public class ReservationTimeService {
 
     public List<AvailableReservationTimeResponse> findAvailableReservationTimes(LocalDate date, Long themeId) {
         List<Long> reservations = reservationRepository.findAllTimeIdsByDateAndThemeId(date, themeId);
-        HashSet<Long> reservedTimeIds = new HashSet<>(reservations);
+        Set<Long> reservedTimeIds = new HashSet<>(reservations);
         List<ReservationTime> times = reservationTimeRepository.findAll();
 
         return times.stream()
