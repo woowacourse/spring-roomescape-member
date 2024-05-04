@@ -1,7 +1,7 @@
 package roomescape.reservation.domain;
 
+import roomescape.exception.InvalidDateException;
 import roomescape.exception.InvalidNameException;
-import roomescape.exception.NullPointDateException;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
@@ -20,7 +20,7 @@ public class Reservation {
 
     public Reservation(final Long id, final String name, final String date, final ReservationTime time, final Theme theme) {
         validateNameExist(name);
-        validateDateIsNotNull(date);
+        validateDateExist(date);
         this.id = id;
         this.name = name;
         this.date = LocalDate.parse(date, DATE_FORMAT);
@@ -34,9 +34,9 @@ public class Reservation {
         }
     }
 
-    private void validateDateIsNotNull(final String date) {
-        if (Objects.isNull(date)) {
-            throw new NullPointDateException("날짜가 비어있습니다.");
+    private void validateDateExist(final String date) {
+        if (Objects.isNull(date) || date.isBlank()) {
+            throw new InvalidDateException("날짜가 비어있습니다.");
         }
     }
 

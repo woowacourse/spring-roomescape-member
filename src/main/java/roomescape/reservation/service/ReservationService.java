@@ -2,8 +2,8 @@ package roomescape.reservation.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.exception.DuplicateReservationException;
-import roomescape.exception.PastDateReservationException;
-import roomescape.exception.PastTimeReservationException;
+import roomescape.exception.InvalidDateException;
+import roomescape.exception.InvalidTimeException;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationRequestDto;
@@ -54,10 +54,10 @@ public class ReservationService {
 
     private void validateNoReservationsForPastDates(final LocalDate localDate, final ReservationTime time) {
         if (localDate.isBefore(LocalDate.now())) {
-            throw new PastDateReservationException("지난 날짜에 대한 예약은 할 수 없습니다.");
+            throw new InvalidDateException("지난 날짜에 대한 예약은 할 수 없습니다.");
         }
         if (localDate.equals(LocalDate.now()) && time.checkPastTime()) {
-            throw new PastTimeReservationException("지난 시간에 대한 예약은 할 수 없습니다.");
+            throw new InvalidTimeException("지난 시간에 대한 예약은 할 수 없습니다.");
         }
     }
 

@@ -2,8 +2,8 @@ package roomescape.reservation.domain;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.exception.InvalidDateException;
 import roomescape.exception.InvalidNameException;
-import roomescape.exception.NullPointDateException;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
@@ -36,7 +36,7 @@ class ReservationTest {
 
         assertAll(
                 () -> assertThatThrownBy(() -> new Reservation(1L, "hotea", null, reservationTime, theme))
-                        .isInstanceOf(NullPointDateException.class),
+                        .isInstanceOf(InvalidDateException.class),
                 () -> assertThatThrownBy(() -> new Reservation(1L, "hotea", "2024-14-30", reservationTime, theme))
                         .isInstanceOf(DateTimeParseException.class),
                 () -> assertThatThrownBy(() -> new Reservation(1L, "hotea", "2024-04-50", reservationTime, theme))

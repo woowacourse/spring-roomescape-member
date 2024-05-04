@@ -5,7 +5,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import roomescape.exception.*;
+import roomescape.exception.DuplicateReservationException;
+import roomescape.exception.InvalidDateException;
+import roomescape.exception.InvalidNameException;
+import roomescape.exception.InvalidTimeException;
 
 import java.util.NoSuchElementException;
 
@@ -27,23 +30,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(ex.getMessage());
     }
 
-    @ExceptionHandler(value = NullPointDateException.class)
-    public ResponseEntity<String> handleNullPointDate(NullPointDateException ex) {
+    @ExceptionHandler(value = InvalidDateException.class)
+    public ResponseEntity<String> handleInvalidDate(InvalidDateException ex) {
         return ResponseEntity.badRequest().body(ex.getMessage());
     }
 
-    @ExceptionHandler(value = NullPointTimeException.class)
-    public ResponseEntity<String> handleNullPointTime(NullPointTimeException ex) {
-        return ResponseEntity.badRequest().body(ex.getMessage());
-    }
-
-    @ExceptionHandler(value = PastDateReservationException.class)
-    public ResponseEntity<String> handlePastDateReservation(PastDateReservationException ex) {
-        return ResponseEntity.badRequest().body(ex.getMessage());
-    }
-
-    @ExceptionHandler(value = PastTimeReservationException.class)
-    public ResponseEntity<String> handlePastTimeReservation(PastTimeReservationException ex) {
+    @ExceptionHandler(value = InvalidTimeException.class)
+    public ResponseEntity<String> handleInvalidTime(InvalidTimeException ex) {
         return ResponseEntity.badRequest().body(ex.getMessage());
     }
 

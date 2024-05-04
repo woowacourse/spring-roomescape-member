@@ -1,6 +1,6 @@
 package roomescape.time.domain;
 
-import roomescape.exception.NullPointTimeException;
+import roomescape.exception.InvalidTimeException;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -20,7 +20,7 @@ public class ReservationTime {
 
     private void validateTimeIsNotNull(final String time) {
         if (Objects.isNull(time)) {
-            throw new NullPointTimeException("시간이 비어있습니다.");
+            throw new InvalidTimeException("시간이 비어있습니다.");
         }
     }
 
