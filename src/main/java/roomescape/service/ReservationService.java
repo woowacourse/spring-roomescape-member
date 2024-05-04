@@ -1,5 +1,7 @@
 package roomescape.service;
 
+import java.time.LocalDate;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -10,9 +12,6 @@ import roomescape.dto.response.SelectableTimeResponse;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ReservationTimeDao;
 import roomescape.repository.ThemeDao;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @Service
 public class ReservationService {
@@ -34,7 +33,8 @@ public class ReservationService {
         ReservationTime reservationTime = findReservationTimeById(reservationRequest);
         Theme theme = findThemeById(reservationRequest);
 
-        if (hasDuplicateReservation(reservationRequest.date(), reservationRequest.timeId(), reservationRequest.themeId())) {
+        if (hasDuplicateReservation(reservationRequest.date(), reservationRequest.timeId(),
+                reservationRequest.themeId())) {
             throw new IllegalArgumentException("[ERROR] 중복된 예약이 존재합니다.");
         }
         Reservation reservation = reservationRequest.toEntity(reservationTime, theme);
@@ -51,17 +51,13 @@ public class ReservationService {
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 잘못된 테마 번호를 입력하였습니다."));
     }
 
-    public List<ReservationResponse> findAll() {
-        List<Reservation> reservations = getAll();
-        return reservations.stream()
+    public List<ReservationResponse> getAll() {
+        List<ReservationResponse> reservations = reservationDao.getAll()
+                .stream()
                 .map(ReservationResponse::from)
                 .toList();
-    }
-
-    private List<Reservation> getAll() {
-        List<Reservation> reservations = reservationDao.getAll();
         if (reservations.isEmpty()) {
-            throw new IllegalStateException("[ERROR] 방탈출 예약 내역이 없습니다.");
+            throw new IllegalArgumentException("[ERROR] 방탈출 예약 내역이 없습니다.");
         }
         return reservations;
     }

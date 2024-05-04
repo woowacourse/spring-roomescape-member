@@ -25,7 +25,7 @@ public class ReservationTimeController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTimeResponse> saveTime(
+    public ResponseEntity<ReservationTimeResponse> save(
             @RequestBody ReservationTimeRequest reservationTimeRequest
     ) {
         ReservationTimeResponse reservationTimeResponse = reservationTimeService.save(reservationTimeRequest);
@@ -34,13 +34,13 @@ public class ReservationTimeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationTimeResponse>> getTimes() {
+    public ResponseEntity<List<ReservationTimeResponse>> getAll() {
         return ResponseEntity.ok(reservationTimeService.getAll());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTime(@PathVariable("id") long id) {
-        reservationTimeService.deleteById(id);
+    public ResponseEntity<Void> delete(@PathVariable("id") long id) {
+        reservationTimeService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }
