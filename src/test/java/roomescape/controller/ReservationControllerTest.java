@@ -22,9 +22,7 @@ import roomescape.repository.CollectionThemeRepository;
 import roomescape.service.ReservationService;
 
 class ReservationControllerTest {
-    private static final long TIME_ID = 1L;
-    private static final LocalTime TIME = LocalTime.now();
-    private ReservationTime defaultTime = new ReservationTime(TIME_ID, TIME);
+    private ReservationTime defaultTime = new ReservationTime(1L, LocalTime.now());
     private Theme defualtTheme = new Theme("name", "description", "thumbnail");
 
     private CollectionReservationRepository collectionReservationRepository;
@@ -51,14 +49,14 @@ class ReservationControllerTest {
 
         //when
         ReservationResponse saveResponse = reservationController.saveReservation(
-                        new ReservationRequest(date, "폴라", TIME_ID, defualtTheme.getId()))
+                        new ReservationRequest(date, "폴라", 1L, defualtTheme.getId()))
                 .getBody();
 
         long id = Objects.requireNonNull(saveResponse).id();
 
         //then
         ReservationResponse expected = new ReservationResponse(id, "폴라", date,
-                new ReservationTimeResponse(TIME_ID, TIME),
+                new ReservationTimeResponse(1L, LocalTime.now()),
                 new ThemeResponse(defualtTheme.getId(), defualtTheme.getName(), defualtTheme.getDescription(),
                         defualtTheme.getThumbnail()));
 
