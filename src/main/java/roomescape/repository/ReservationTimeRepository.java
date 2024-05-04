@@ -12,6 +12,8 @@ public interface ReservationTimeRepository {
 
     ReservationTime findById(Long id);
 
+   List<ReservationTime> findByIdsNotIn(List<Long> ids);
+
     void delete(Long id);
 
     Boolean existId(Long id);

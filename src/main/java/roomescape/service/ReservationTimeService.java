@@ -43,12 +43,9 @@ public class ReservationTimeService {
     }
 
     public List<ReservationTimeResponse> getAvailableTimes(LocalDate date, Long themeId) {
-        List<Reservation> reservations = reservationRepository.findByDateAndThemeId(date, themeId);
-        List<ReservationTime> allTimes = reservationTimeRepository.findAll();
-        List<ReservationTime> bookedTimes = reservations.stream().map(Reservation::getTime).toList();
-
-        return allTimes.stream()
-                .filter(time -> !bookedTimes.contains(time))
+        List<Long> bookedTimeIds = getTimeIdForDateAndTheme(date, themeId);
+        List<ReservationTime> availableTimes = reservationTimeRepository.findByIdsNotIn(bookedTimeIds);
+        return availableTimes.stream()
                 .map(ReservationTimeResponse::from)
                 .toList();
     }
@@ -59,13 +56,20 @@ public class ReservationTimeService {
         reservationRepository.delete(id);
     }
 
-    public void validateIdExist(Long id) {
+    private List<Long> getTimeIdForDateAndTheme(LocalDate date, Long themeId) {
+        List<Reservation> reservations = reservationRepository.findByDateAndThemeId(date, themeId);
+        return reservations.stream()
+                .map(reservation -> reservation.getTime().getId())
+                .toList();
+    }
+
+    private void validateIdExist(Long id) {
         if (!reservationTimeRepository.existId(id)) {
             throw new IllegalArgumentException("[ERROR] id가 존재하지 않습니다 : " + id);
         }
     }
 
-    public void validateTimeDuplicate(LocalTime time) {
+    private void validateTimeDuplicate(LocalTime time) {
         if (reservationTimeRepository.existTime(time)) {
             throw new IllegalArgumentException("[ERROR] 이미 등록된 시간 입니다. : " + time);
         }

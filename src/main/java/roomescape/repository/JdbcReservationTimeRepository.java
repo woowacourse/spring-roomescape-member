@@ -2,6 +2,7 @@ package roomescape.repository;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -46,6 +47,15 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     public ReservationTime findById(Long id) {
         String sql = "SELECT * FROM reservation_time WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
+    }
+
+    @Override
+    public List<ReservationTime> findByIdsNotIn(List<Long> ids) {
+        String notInIds = ids.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(", "));
+        String sql = String.format("SELECT * FROM reservation_time WHERE id NOT IN (%s)", notInIds);
+        return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
     @Override
