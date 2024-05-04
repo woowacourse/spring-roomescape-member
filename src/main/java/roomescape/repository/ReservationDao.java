@@ -20,10 +20,10 @@ public class ReservationDao {
 
     private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> new Reservation(
             resultSet.getLong("id"),
-            resultSet.getString("name"),
+            resultSet.getString("reservation_name"),
             resultSet.getObject("date", LocalDate.class),
             new ReservationTime(resultSet.getLong("time_id"), resultSet.getObject("start_at", LocalTime.class)),
-            new Theme(resultSet.getLong("theme_id"), resultSet.getString("name"), resultSet.getString("description"), resultSet.getString("thumbnail"))
+            new Theme(resultSet.getLong("theme_id"), resultSet.getString("theme_name"), resultSet.getString("description"), resultSet.getString("thumbnail"))
     );
 
     private final JdbcTemplate jdbcTemplate;
@@ -51,13 +51,13 @@ public class ReservationDao {
     public List<Reservation> findAll() {
         List<Reservation> reservations = jdbcTemplate.query("""
                 SELECT
-                r.id as reservation_id,
-                r.name,
+                r.id,
+                r.name as reservation_name,
                 r.date,
                 t.id as time_id,
-                t.start_at as time_value,
+                t.start_at,
                 th.id as theme_id,
-                th.name,
+                th.name as theme_name,
                 th.description,
                 th.thumbnail
                 FROM reservation as r
