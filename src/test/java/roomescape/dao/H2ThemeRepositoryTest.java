@@ -30,12 +30,6 @@ class H2ThemeRepositoryTest {
     private ReservationTimeRepository reservationTimeRepository;
     private ReservationRepository reservationRepository;
 
-    private Theme theme = new Theme("테마", "테마 설명", "테마 썸네일");
-    private Theme theme1 = new Theme("테마1", "테마1 설명", "테마1 썸네일");
-    private Theme theme2 = new Theme("테마1", "테마1 설명", "테마1 썸네일");
-    private Theme theme3 = new Theme("테마1", "테마1 설명", "테마1 썸네일");
-    private ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
-
     @BeforeEach
     void setUp() {
         themeRepository = new H2ThemeRepository(jdbcTemplate, jdbcTemplate.getDataSource());
@@ -46,9 +40,11 @@ class H2ThemeRepositoryTest {
     @DisplayName("모든 테마를 조회한다")
     @Test
     void when_findAllThemes_then_returnAllThemes() {
-        List<Theme> themes = List.of(theme1, theme2, theme3);
+        // given
+        List<Theme> themes = List.of(Fixture.theme1, Fixture.theme2, Fixture.theme3);
         themes.forEach(theme -> themeRepository.save(theme));
 
+        // when, then
         assertThat(themeRepository.findAll())
                 .hasSize(3);
     }
@@ -56,8 +52,10 @@ class H2ThemeRepositoryTest {
     @DisplayName("테마를 id로 조회한다")
     @Test
     void when_findThemeById_then_return() {
-        Theme savedTheme = themeRepository.save(theme);
+        // given
+        Theme savedTheme = themeRepository.save(Fixture.theme);
 
+        // when, then
         assertThat(themeRepository.findById(savedTheme.getId()))
                 .isPresent();
     }
@@ -65,14 +63,18 @@ class H2ThemeRepositoryTest {
     @DisplayName("테마를 저장한다")
     @Test
     void when_saveTheme_then_saved() {
-        Theme savedTheme = themeRepository.save(theme);
+        // when
+        Theme savedTheme = themeRepository.save(Fixture.theme);
 
-        assertThat(savedTheme.getId()).isNotNull();
+        // then
+        assertThat(savedTheme.getId())
+                .isNotNull();
     }
 
     @DisplayName("존재하지 않는 테마를 삭제할 경우, 예외가 발생하지 않는다")
     @Test
     void when_deleteThemeDoesNotExist_then_doesNotThrowsException() {
+        // when, then
         assertThatCode(() -> themeRepository.deleteById(1000L))
                 .doesNotThrowAnyException();
     }
@@ -80,10 +82,12 @@ class H2ThemeRepositoryTest {
     @DisplayName("테마를 삭제할 경우, 참조된 예약이 있으면 예외를 발생한다")
     @Test
     void when_deleteReferencedTheme_then_throwsException() {
-        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
-        Theme savedTheme = themeRepository.save(theme);
+        // given
+        ReservationTime savedReservationTime = reservationTimeRepository.save(Fixture.reservationTime);
+        Theme savedTheme = themeRepository.save(Fixture.theme);
         reservationRepository.save(new Reservation("피케이", LocalDate.now(), savedReservationTime, savedTheme));
 
+        // when, then
         assertThatThrownBy(() -> themeRepository.deleteById(savedTheme.getId()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 테마를 참조하는 예약이 존재합니다.");
@@ -92,11 +96,22 @@ class H2ThemeRepositoryTest {
     @DisplayName("테마를 삭제한다")
     @Test
     void when_deleteThemeById_then_deleted() {
-        Theme savedTheme = themeRepository.save(theme);
+        // given
+        Theme savedTheme = themeRepository.save(Fixture.theme);
 
+        // when
         themeRepository.deleteById(savedTheme.getId());
 
+        // then
         assertThat(themeRepository.findAll())
                 .isEmpty();
+    }
+
+    private class Fixture {
+        private static final Theme theme = new Theme("테마", "테마 설명", "테마 썸네일");
+        private static final Theme theme1 = new Theme("테마1", "테마1 설명", "테마1 썸네일");
+        private static final Theme theme2 = new Theme("테마1", "테마1 설명", "테마1 썸네일");
+        private static final Theme theme3 = new Theme("테마1", "테마1 설명", "테마1 썸네일");
+        private static final ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
     }
 }

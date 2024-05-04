@@ -31,9 +31,6 @@ public class H2ReservationTimeRepositoryTest {
     private ReservationRepository reservationRepository;
     private ThemeRepository themeRepository;
 
-    private final ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
-    private final Theme theme = new Theme("테마", "테마 설명", "테마 썸네일");
-
     @BeforeEach
     void setUp() {
         reservationTimeRepository = new H2ReservationTimeRepository(jdbcTemplate, jdbcTemplate.getDataSource());
@@ -43,11 +40,11 @@ public class H2ReservationTimeRepositoryTest {
 
     @DisplayName("예약 시간을 저장한다")
     @Test
-    void saveTest() {
-        ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
+    void when_saveReservationTime_then_saved() {
+        // when
+        ReservationTime savedReservationTime = reservationTimeRepository.save(Fixture.reservationTime);
 
-        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
-
+        // then
         assertAll(
                 () -> assertThat(savedReservationTime.getId()).isNotNull(),
                 () -> assertThat(savedReservationTime.getStartAt()).isEqualTo("10:00")
@@ -56,61 +53,79 @@ public class H2ReservationTimeRepositoryTest {
 
     @DisplayName("예약 시간을 모두 조회한다")
     @Test
-    void findAllTest() {
+    void when_findAllReservationTimes_then_returnAllReservationTimes() {
+        // given
         for (int time = 10; time < 20; time++) {
-            reservationTimeRepository.save(new ReservationTime(LocalTime.of(time, 0)));
+            ReservationTime reservationTime = new ReservationTime(LocalTime.of(time, 0));
+            reservationTimeRepository.save(reservationTime);
         }
 
+        // when, then
         assertThat(reservationTimeRepository.findAll())
                 .hasSize(10);
     }
 
     @DisplayName("예약 시간을 조회한다")
     @Test
-    void findByIdTest() {
-        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
+    void when_findById_then_returnCorrespondReservationTime() {
+        // given
+        ReservationTime savedReservationTime = reservationTimeRepository.save(Fixture.reservationTime);
 
+        // when, then
         assertThat(reservationTimeRepository.findById(savedReservationTime.getId()))
                 .isPresent();
     }
 
     @DisplayName("예약 시간이 없는 경우에 조회하면 빈 값을 반환한다")
     @Test
-    void findByIdExceptionTest() {
-        Optional<ReservationTime> savedReservationTime = reservationTimeRepository.findById(1L);
+    void when_findById_then_returnEmpty() {
+        // when
+        Optional<ReservationTime> savedReservationTime = reservationTimeRepository.findById(100L);
 
+        // then
         assertThat(savedReservationTime)
                 .isEmpty();
     }
 
     @DisplayName("예약 시간을 삭제한다")
     @Test
-    void deleteByIdTest() {
-        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
+    void when_deleteById_then_deleted() {
+        // given
+        ReservationTime savedReservationTime = reservationTimeRepository.save(Fixture.reservationTime);
 
+        // when
         reservationTimeRepository.deleteById(savedReservationTime.getId());
 
+        // then
         assertThat(reservationTimeRepository.findAll())
                 .isEmpty();
     }
 
     @DisplayName("존재하지 않는 예약 시간을 삭제할 경우, 예외가 발생하지 않는다")
     @Test
-    void deleteByIdNotExistTest() {
+    void when_deleteNotExistReservationTime_then_throwsNothing() {
+        // when, then
         assertThatCode(() -> reservationTimeRepository.deleteById(100L))
                 .doesNotThrowAnyException();
     }
 
     @DisplayName("예약 시간을 삭제할 경우, 참조된 예약이 있으면 예외를 발생한다")
     @Test
-    void deleteByIdExceptionTest() {
-        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
-        Theme savedTheme = themeRepository.save(theme);
-        Reservation reservation = new Reservation("피케이", LocalDate.now(), savedReservationTime, savedTheme);
+    void when_deleteReferencedReservationTime_throw_exception() {
+        // given
+        ReservationTime savedReservationTime = reservationTimeRepository.save(Fixture.reservationTime);
+        Theme savedTheme = themeRepository.save(Fixture.theme);
+        Reservation reservation = new Reservation("피케이", LocalDate.now().plusDays(1), savedReservationTime, savedTheme);
         Reservation savedReservation = reservationRepository.save(reservation);
 
+        // when, then
         assertThatThrownBy(() -> reservationTimeRepository.deleteById(savedReservationTime.getId()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 시간은 예약이 존재하여 삭제할 수 없습니다. ");
+    }
+
+    private static class Fixture {
+        private static final ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
+        private static final Theme theme = new Theme("테마", "테마 설명", "테마 썸네일");
     }
 }
