@@ -10,7 +10,6 @@ import roomescape.domain.ReservationTime;
 import roomescape.dto.AvailableReservationTimeResponse;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.ReservationTimeSaveRequest;
-import roomescape.exception.BadRequestException;
 import roomescape.exception.NotFoundException;
 import roomescape.service.ReservationTimeService;
 
@@ -56,6 +55,21 @@ class ReservationTimeControllerTest extends ControllerTest {
     void createReservationTimeWithInvalidTimeUnit() throws Exception {
         // given
         ReservationTimeSaveRequest request = new ReservationTimeSaveRequest(LocalTime.of(15, 3));
+
+        // when & then
+        mockMvc.perform(post("/times")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(request)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").exists());
+    }
+
+    @Test
+    @DisplayName("예약 시간 POST 요청 시 필드가 없다면 상태코드 400을 반환한다.")
+    void createReservationTimeWithNullFieldRequest() throws Exception {
+        // given
+        ReservationTimeSaveRequest request = new ReservationTimeSaveRequest(null);
 
         // when & then
         mockMvc.perform(post("/times")

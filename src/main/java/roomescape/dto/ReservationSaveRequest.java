@@ -11,7 +11,7 @@ import java.time.LocalDate;
 public record ReservationSaveRequest(
         @NotBlank(message = "예약자 이름은 비어있을 수 없습니다.")
         String name,
-        @NotNull(message = "날짜 형식에 맞게 예약 날짜를 입력해주세요.")
+        @NotNull(message = "예약 날짜는 비어있을 수 없습니다.")
         LocalDate date,
         @NotNull(message = "예약 시간 Id는 비어있을 수 없습니다.")
         Long timeId,
