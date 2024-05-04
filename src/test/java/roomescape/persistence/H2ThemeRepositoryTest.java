@@ -1,4 +1,4 @@
-package roomescape.dao;
+package roomescape.persistence;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

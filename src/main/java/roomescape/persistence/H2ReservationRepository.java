@@ -1,4 +1,4 @@
-package roomescape.dao;
+package roomescape.persistence;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
