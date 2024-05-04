@@ -45,7 +45,7 @@ public class ThemeDao {
         }
     }
 
-    public List<Theme> readThemesSortedByCountOfReservation(LocalDate startDate, LocalDate endDate) {
+    public List<Theme> readThemesSortedByCountOfReservation(LocalDate startDate, LocalDate endDate, int count) {
         String sql = """
                 SELECT theme.id, theme.name, theme.description, theme.thumbnail, COUNT(reservation.theme_id) AS reservation_count
                 FROM theme
@@ -54,10 +54,10 @@ public class ThemeDao {
                 WHERE reservation.date >= ? AND reservation.date <= ?
                 GROUP BY theme.id, theme.name, theme.description, theme.thumbnail
                 ORDER BY reservation_count DESC
-                LIMIT 10
+                LIMIT ?
                 """;
 
-        return jdbcTemplate.query(sql, rowMapper, startDate, endDate);
+        return jdbcTemplate.query(sql, rowMapper, startDate, endDate, count);
     }
 
     public boolean isExistThemeByName(String name) {

@@ -10,6 +10,10 @@ import roomescape.dto.ThemeResponse;
 
 @Service
 public class ThemeService {
+    private static final int POPULAR_THEME_START_DATE_BOUNDARY = 7;
+    private static final int POPULAR_THEME_END_DATE_BOUNDARY = 1;
+    private static final int COUNT_OF_POPULAR_THEME = 10;
+
     private final ThemeDao themeDao;
 
     public ThemeService(ThemeDao themeDao) {
@@ -25,10 +29,10 @@ public class ThemeService {
 
     public List<ThemeResponse> readPopularThemes() {
         LocalDate currentDate = LocalDate.now();
-        LocalDate startDate = currentDate.minusDays(7);
-        LocalDate endDate = currentDate.minusDays(1);
+        LocalDate startDate = currentDate.minusDays(POPULAR_THEME_START_DATE_BOUNDARY);
+        LocalDate endDate = currentDate.minusDays(POPULAR_THEME_END_DATE_BOUNDARY);
 
-        return themeDao.readThemesSortedByCountOfReservation(startDate, endDate)
+        return themeDao.readThemesSortedByCountOfReservation(startDate, endDate, COUNT_OF_POPULAR_THEME)
                 .stream()
                 .map(ThemeResponse::from)
                 .toList();
