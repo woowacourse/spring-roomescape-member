@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.BookableTimeResponse;
 import roomescape.dto.ReservationTimeAddRequest;
+import roomescape.dto.TimeWithBookStatusResponse;
 import roomescape.service.ReservationTimeService;
 
 @RestController
@@ -32,7 +32,7 @@ public class ReservationTimeController {
     @PostMapping("/times")
     public ResponseEntity<ReservationTime> addReservationTime(
             @RequestBody ReservationTimeAddRequest reservationTimeAddRequest) {
-        ReservationTime reservationTime = reservationTimeService.addReservationTime(reservationTimeAddRequest);
+        ReservationTime reservationTime = reservationTimeService.saveReservationTime(reservationTimeAddRequest);
         return ResponseEntity.created(URI.create("/times/" + reservationTime.getId())).body(reservationTime);
     }
 
@@ -43,7 +43,7 @@ public class ReservationTimeController {
     }
 
     @GetMapping("/times/{date}/{themeId}")
-    public ResponseEntity<List<BookableTimeResponse>> readTimesStatus(
+    public ResponseEntity<List<TimeWithBookStatusResponse>> readTimesStatus(
             @PathVariable("date") LocalDate date,
             @PathVariable("themeId") Long themeId) {
         return ResponseEntity.ok(reservationTimeService.findReservationTimesWithReservationStatus(date, themeId));

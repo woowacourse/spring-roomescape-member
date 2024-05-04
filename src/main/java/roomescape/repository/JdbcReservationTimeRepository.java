@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.TimeWithBookStatusResponse;
 
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
@@ -19,6 +20,12 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     private static final RowMapper<ReservationTime> ROW_MAPPER = ((rs, rowNum) -> new ReservationTime(
             rs.getLong("id"),
             rs.getTime("start_at").toLocalTime()
+    ));
+
+    private static final RowMapper<TimeWithBookStatusResponse> WITH_BOOK_STATUS_ROW_MAPPER = ((rs, rowNum) -> new TimeWithBookStatusResponse(
+            rs.getLong("id"),
+            rs.getTime("start_at").toLocalTime(),
+            rs.getBoolean("already_booked")
     ));
 
     private final JdbcTemplate jdbcTemplate;
@@ -47,14 +54,19 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public List<ReservationTime> findByReserved(LocalDate date, Long themeId) {
+    public List<TimeWithBookStatusResponse> findAllWithBookStatus(LocalDate date, Long themeId) {
         String sql = """
-                SELECT t.id, t.start_at
+                SELECT 
+                t.id,
+                t.start_at,
+                CASE
+                    WHEN r.id IS NULL THEN FALSE
+                    ELSE TRUE
+                END AS already_booked
                 FROM reservation_time AS t
-                INNER JOIN reservation AS r ON t.id = r.time_id
-                WHERE r.date = ? AND r.theme_id = ?;  
+                LEFT JOIN reservation AS r ON t.id = r.time_id AND r.date = ? AND r.theme_id = ?
                 """;
-        return jdbcTemplate.query(sql, ROW_MAPPER, date, themeId);
+        return jdbcTemplate.query(sql, WITH_BOOK_STATUS_ROW_MAPPER, date, themeId);
     }
 
     @Override

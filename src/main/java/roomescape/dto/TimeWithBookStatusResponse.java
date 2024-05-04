@@ -2,13 +2,13 @@ package roomescape.dto;
 
 import java.time.LocalTime;
 
-public class BookableTimeResponse {
+public class TimeWithBookStatusResponse {
 
-    private final LocalTime startAt;
     private final Long timeId;
+    private final LocalTime startAt;
     private final boolean alreadyBooked;
 
-    public BookableTimeResponse(LocalTime startAt, Long timeId, boolean alreadyBooked) {
+    public TimeWithBookStatusResponse(Long timeId, LocalTime startAt, boolean alreadyBooked) {
         this.startAt = startAt;
         this.timeId = timeId;
         this.alreadyBooked = alreadyBooked;

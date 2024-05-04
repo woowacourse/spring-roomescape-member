@@ -20,13 +20,13 @@ public class ThemeService {
         return themeRepository.findAll();
     }
 
-    public List<ThemeResponse> readPopularThemes() {
+    public List<ThemeResponse> findPopularTheme() {
         return themeRepository.findTopOrderByReservationCount().stream()
                 .map(ThemeResponse::new)
                 .toList();
     }
 
-    public Theme addTheme(ThemeAddRequest themeAddRequest) {
+    public Theme saveTheme(ThemeAddRequest themeAddRequest) {
         Theme theme = themeAddRequest.toEntity();
         return themeRepository.save(theme);
     }

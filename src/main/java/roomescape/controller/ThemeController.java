@@ -29,7 +29,7 @@ public class ThemeController {
 
     @PostMapping("/themes")
     public ResponseEntity<Theme> addTheme(@RequestBody ThemeAddRequest themeAddRequest) {
-        Theme theme = themeService.addTheme(themeAddRequest);
+        Theme theme = themeService.saveTheme(themeAddRequest);
         return ResponseEntity.created(URI.create("/themes" + theme.getId())).body(theme);
     }
 
@@ -41,6 +41,6 @@ public class ThemeController {
 
     @GetMapping("/themes/popular")
     public ResponseEntity<List<ThemeResponse>> getPopularTheme() {
-        return ResponseEntity.ok(themeService.readPopularThemes());
+        return ResponseEntity.ok(themeService.findPopularTheme());
     }
 }

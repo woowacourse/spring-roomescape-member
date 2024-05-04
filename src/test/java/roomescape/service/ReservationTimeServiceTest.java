@@ -31,9 +31,10 @@ class ReservationTimeServiceTest {
         ReservationTimeService reservationTimeService = new ReservationTimeService(new FakeReservationTimeRepository());
         ReservationTime expectedReservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
 
-        ReservationTime actualReservationTime = reservationTimeService.addReservationTime(new ReservationTimeAddRequest(
-                LocalTime.of(10, 0)
-        ));
+        ReservationTime actualReservationTime = reservationTimeService.saveReservationTime(
+                new ReservationTimeAddRequest(
+                        LocalTime.of(10, 0)
+                ));
 
         assertThat(actualReservationTime).isEqualTo(expectedReservationTime);
     }
@@ -47,7 +48,7 @@ class ReservationTimeServiceTest {
 
         ReservationTimeAddRequest reservationTimeAddRequest = new ReservationTimeAddRequest(LocalTime.of(10, 0));
 
-        assertThatThrownBy(() -> reservationTimeService.addReservationTime(reservationTimeAddRequest))
+        assertThatThrownBy(() -> reservationTimeService.saveReservationTime(reservationTimeAddRequest))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 존재하는 예약시간은 추가할 수 없습니다.");
     }
