@@ -19,8 +19,8 @@ public class Theme {
     }
 
     private String getDefaultThumbnailIfNotExists(final String thumbnail) {
-        if (thumbnail == null || thumbnail.isBlank()) { //TODO 테스트땜시 null 확인...ㅜ
-            return DEFAULT_THUMBNAIL; //TODO 그냥 디비에 default로 박을까
+        if (thumbnail == null || thumbnail.isBlank()) {
+            return DEFAULT_THUMBNAIL;
         }
         return thumbnail;
     }

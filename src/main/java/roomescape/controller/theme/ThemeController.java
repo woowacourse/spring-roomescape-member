@@ -57,7 +57,6 @@ public class ThemeController {
                 .build();
     }
 
-    //TODO rest 한가?
     @GetMapping("/popular")
     public List<PopularThemeResponse> getPopularThemes() {
         return themeService.getPopularThemes(LocalDate.now());

@@ -34,7 +34,7 @@ public class TimeController {
         return timeService.getTimes();
     }
 
-    @GetMapping(value = "/availability", params = {"date", "themeId"}) //TODO api 명세 수정
+    @GetMapping(value = "/availability", params = {"date", "themeId"})
     public List<AvailabilityTimeResponse> getAvailableTimes(
             @Validated final AvailabilityTimeRequest availabilityTimeRequest) {
         return timeService.getTimeAvailable(availabilityTimeRequest);
