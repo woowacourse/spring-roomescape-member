@@ -16,6 +16,7 @@ import org.junit.jupiter.api.TestFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.TestFixtures;
 import roomescape.controller.response.ThemeResponse;
 
 class ThemeAcceptanceTest extends BasicAcceptanceTest {
@@ -54,12 +55,12 @@ class ThemeAcceptanceTest extends BasicAcceptanceTest {
     @DisplayName("예약 횟수 상위 10개의 테마를 조회한다")
     Stream<DynamicTest> top10Theme() {
         return Stream.of(
-                dynamicTest("인기 테마를 조회한다", () -> getTopTheme(200, TestFixture.themeResponses1)),
+                dynamicTest("인기 테마를 조회한다", () -> getTopTheme(200, TestFixtures.themeResponses1)),
                 dynamicTest("과거 예약을 추가한다", () -> postPastReservation("2024-04-29", "1", "10")),
-                dynamicTest("인기 테마를 조회한다", () -> getTopTheme(200, TestFixture.themeResponses2)),
+                dynamicTest("인기 테마를 조회한다", () -> getTopTheme(200, TestFixtures.themeResponses2)),
                 dynamicTest("과거 예약을 추가한다", () -> postPastReservation("2024-04-30", "1", "11")),
                 dynamicTest("과거 예약을 추가한다", () -> postPastReservation("2024-04-30", "2", "11")),
-                dynamicTest("인기 테마를 조회한다", () -> getTopTheme(200, TestFixture.themeResponses3))
+                dynamicTest("인기 테마를 조회한다", () -> getTopTheme(200, TestFixtures.themeResponses3))
         );
     }
 

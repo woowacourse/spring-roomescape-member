@@ -1,9 +1,9 @@
-package roomescape.acceptance;
+package roomescape;
 
 import java.util.List;
 import roomescape.controller.response.ThemeResponse;
 
-public class TestFixture {
+public class TestFixtures {
     public static ThemeResponse theme1 = new ThemeResponse(1L, "name1", "description1", "thumbnail1");
     public static ThemeResponse theme2 = new ThemeResponse(2L, "name2", "description2", "thumbnail2");
     public static ThemeResponse theme3 = new ThemeResponse(3L, "name3", "description3", "thumbnail3");
