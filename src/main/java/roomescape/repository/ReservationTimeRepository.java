@@ -1,9 +1,9 @@
 package roomescape.repository;
 
-import roomescape.model.ReservationTime;
-
 import java.time.LocalTime;
 import java.util.List;
+
+import roomescape.model.ReservationTime;
 
 public interface ReservationTimeRepository {
     List<ReservationTime> findAllReservationTimes();

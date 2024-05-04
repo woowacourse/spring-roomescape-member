@@ -1,13 +1,13 @@
 package roomescape.service;
 
-import roomescape.model.Theme;
-import roomescape.repository.ThemeRepository;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicLong;
+
+import roomescape.model.Theme;
+import roomescape.repository.ThemeRepository;
 
 public class FakeThemeRepository implements ThemeRepository {
 
@@ -26,7 +26,8 @@ public class FakeThemeRepository implements ThemeRepository {
 
     @Override
     public Theme addTheme(Theme theme) {
-        Theme newTheme = new Theme(index.getAndIncrement(), theme.getName(), theme.getDescription(), theme.getThumbnail());
+        Theme newTheme = new Theme(index.getAndIncrement(), theme.getName(), theme.getDescription(),
+                theme.getThumbnail());
         themes.add(newTheme);
         return newTheme;
     }

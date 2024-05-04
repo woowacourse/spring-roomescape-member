@@ -1,6 +1,10 @@
 package roomescape.service;
 
+import java.time.LocalTime;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
+
 import roomescape.controller.request.ReservationTimeRequest;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.DuplicatedException;
@@ -9,16 +13,14 @@ import roomescape.model.ReservationTime;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
-import java.time.LocalTime;
-import java.util.List;
-
 @Service
 public class ReservationTimeService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
 
-    public ReservationTimeService(ReservationRepository reservationRepository, ReservationTimeRepository reservationTimeRepository) {
+    public ReservationTimeService(ReservationRepository reservationRepository,
+                                  ReservationTimeRepository reservationTimeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
     }

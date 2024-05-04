@@ -1,7 +1,15 @@
 package roomescape.controller;
 
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.sql.DataSource;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,17 +18,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.test.annotation.DirtiesContext;
+
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import roomescape.controller.request.ThemeRequest;
 import roomescape.model.Theme;
-
-import javax.sql.DataSource;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -53,8 +55,10 @@ class ThemeControllerTest {
     @Test
     void should_get_themes() {
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "에버", "공포", "공포.jpg");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "배키", "미스터리", "미스터리.jpg");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "포비", "스릴러", "스릴러.jpg");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "배키", "미스터리",
+                "미스터리.jpg");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "포비", "스릴러",
+                "스릴러.jpg");
 
         List<Theme> themes = RestAssured.given().log().all()
                 .when().get("/themes")
@@ -88,7 +92,8 @@ class ThemeControllerTest {
     @Test
     void should_remove_theme() {
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "에버", "공포", "공포.jpg");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "배키", "미스터리", "미스터리.jpg");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "배키", "미스터리",
+                "미스터리.jpg");
 
         RestAssured.given().log().all()
                 .when().delete("/themes/1")

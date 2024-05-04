@@ -1,12 +1,12 @@
 package roomescape.service;
 
-import roomescape.model.ReservationTime;
-import roomescape.repository.ReservationTimeRepository;
-
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+
+import roomescape.model.ReservationTime;
+import roomescape.repository.ReservationTimeRepository;
 
 class FakeReservationTimeRepository implements ReservationTimeRepository {
 

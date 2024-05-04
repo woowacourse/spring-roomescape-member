@@ -1,7 +1,12 @@
 package roomescape.controller;
 
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.lang.reflect.Field;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,16 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import roomescape.controller.request.ReservationRequest;
 import roomescape.controller.response.MemberReservationTimeResponse;
 import roomescape.model.Reservation;
-
-import java.lang.reflect.Field;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -36,7 +37,8 @@ class ReservationControllerTest {
     void should_get_reservations() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "에버", "공포", "공포.jpg");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2030-08-05", "1", "1");
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운",
+                "2030-08-05", "1", "1");
 
         List<Reservation> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -110,7 +112,8 @@ class ReservationControllerTest {
     @DisplayName("특정 날짜와 테마에 따른 모든 시간의 예약 가능 여부를 확인한다.")
     @Test
     void should_get_reservations_with_book_state_by_date_and_theme() {
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2030-08-05", "1", "1");
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운",
+                "2030-08-05", "1", "1");
 
         List<MemberReservationTimeResponse> responses = RestAssured.given().log().all()
                 .when().get("/reservations/times?date=2030-08-05&themeId=1")

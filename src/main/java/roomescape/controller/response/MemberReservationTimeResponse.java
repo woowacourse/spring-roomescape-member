@@ -33,8 +33,12 @@ public class MemberReservationTimeResponse {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         MemberReservationTimeResponse that = (MemberReservationTimeResponse) o;
         return timeId == that.timeId && alreadyBooked == that.alreadyBooked && Objects.equals(startAt, that.startAt);
     }

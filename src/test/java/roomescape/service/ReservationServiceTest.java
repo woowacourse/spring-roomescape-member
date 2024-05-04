@@ -1,7 +1,16 @@
 package roomescape.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
 import roomescape.controller.request.ReservationRequest;
 import roomescape.controller.response.MemberReservationTimeResponse;
 import roomescape.exception.BadRequestException;
@@ -9,12 +18,6 @@ import roomescape.exception.DuplicatedException;
 import roomescape.exception.NotFoundException;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.*;
 
 class ReservationServiceTest {
 
@@ -102,7 +105,8 @@ class ReservationServiceTest {
     @DisplayName("예약 가능 상태를 담은 시간 정보를 반환한다.")
     @Test
     void should_return_times_with_book_state() {
-        List<MemberReservationTimeResponse> times = reservationService.getMemberReservationTimes(LocalDate.of(2030, 8, 5), 1);
+        List<MemberReservationTimeResponse> times = reservationService.getMemberReservationTimes(
+                LocalDate.of(2030, 8, 5), 1);
         assertThat(times).hasSize(2);
         assertThat(times).containsOnly(
                 new MemberReservationTimeResponse(1, LocalTime.of(10, 0), false),

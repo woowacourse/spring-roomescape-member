@@ -1,15 +1,15 @@
 package roomescape.service;
 
-import roomescape.model.Reservation;
-import roomescape.model.ReservationTime;
-import roomescape.model.Theme;
-import roomescape.repository.ReservationRepository;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+
+import roomescape.model.Reservation;
+import roomescape.model.ReservationTime;
+import roomescape.model.Theme;
+import roomescape.repository.ReservationRepository;
 
 class FakeReservationRepository implements ReservationRepository {
 
@@ -66,8 +66,10 @@ class FakeReservationRepository implements ReservationRepository {
     @Override
     public List<ReservationTime> findReservationTimeByDateAndTheme(LocalDate date, long themeId) {
         return reservations.stream()
-                .filter(reservation -> reservation.getDate().equals(date) && reservation.getTheme().getThemeId() == themeId)
-                .map(reservation -> new ReservationTime(reservation.getTime().getId(), reservation.getTime().getStartAt()))
+                .filter(reservation -> reservation.getDate().equals(date)
+                        && reservation.getTheme().getThemeId() == themeId)
+                .map(reservation -> new ReservationTime(reservation.getTime().getId(),
+                        reservation.getTime().getStartAt()))
                 .toList();
     }
 }

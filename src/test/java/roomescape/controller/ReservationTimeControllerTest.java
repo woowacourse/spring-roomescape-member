@@ -1,7 +1,10 @@
 package roomescape.controller;
 
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
+import java.time.LocalTime;
+import java.util.List;
+
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,13 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import roomescape.controller.request.ReservationTimeRequest;
 import roomescape.model.ReservationTime;
-
-import java.time.LocalTime;
-import java.util.List;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)

@@ -1,17 +1,20 @@
 package roomescape.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.time.LocalTime;
+import java.util.List;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
 import roomescape.controller.request.ReservationTimeRequest;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.DuplicatedException;
 import roomescape.exception.NotFoundException;
 import roomescape.model.ReservationTime;
-
-import java.time.LocalTime;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.*;
 
 class ReservationTimeServiceTest {
 

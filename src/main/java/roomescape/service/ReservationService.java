@@ -1,6 +1,13 @@
 package roomescape.service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.stream.Stream;
+
 import org.springframework.stereotype.Service;
+
 import roomescape.controller.request.ReservationRequest;
 import roomescape.controller.response.MemberReservationTimeResponse;
 import roomescape.exception.BadRequestException;
@@ -12,12 +19,6 @@ import roomescape.model.Theme;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.stream.Stream;
 
 @Service
 public class ReservationService {
@@ -49,7 +50,8 @@ public class ReservationService {
         if (requestDateTime.isBefore(now)) {
             throw new BadRequestException("[ERROR] 현재 이전 예약은 할 수 없습니다.");
         }
-        Long countReservation = reservationRepository.countReservationByDateAndTimeId(request.getDate(), request.getTimeId());
+        Long countReservation = reservationRepository.countReservationByDateAndTimeId(request.getDate(),
+                request.getTimeId());
         if (countReservation == null || countReservation > 0) {
             throw new DuplicatedException("[ERROR] 중복되는 예약은 추가할 수 없습니다.");
         }
@@ -74,7 +76,8 @@ public class ReservationService {
         return concat(notBookedResponse, bookedResponse);
     }
 
-    private List<ReservationTime> filterNotBookedTimes(List<ReservationTime> allTimes, List<ReservationTime> bookedTimes) {
+    private List<ReservationTime> filterNotBookedTimes(List<ReservationTime> allTimes,
+                                                       List<ReservationTime> bookedTimes) {
         return allTimes.stream()
                 .filter(time -> !bookedTimes.contains(time))
                 .toList();
