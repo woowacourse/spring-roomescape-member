@@ -31,14 +31,33 @@ class ReservationIntegrationTest {
     void adminReservationPageWork() {
         ReservationRequest reservationRequest = new ReservationRequest(LocalDate.now(), "polla", 1L, 1L);
 
-        RestAssured.given().contentType(ContentType.JSON).body(reservationRequest).when().post("/reservations").then()
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(reservationRequest)
+                .when()
+                .post("/reservations")
+                .then()
                 .statusCode(201);
 
-        RestAssured.given().when().get("/reservations").then().statusCode(200).body("size()", is(3));
+        RestAssured.given()
+                .when()
+                .get("/reservations")
+                .then()
+                .statusCode(200)
+                .body("size()", is(3));
 
-        RestAssured.given().when().delete("/reservations/3").then().statusCode(204);
+        RestAssured.given()
+                .when()
+                .delete("/reservations/3")
+                .then()
+                .statusCode(204);
 
-        RestAssured.given().when().get("/reservations").then().statusCode(200).body("size()", is(2));
+        RestAssured.given()
+                .when()
+                .get("/reservations")
+                .then()
+                .statusCode(200)
+                .body("size()", is(2));
     }
 
     @Test
@@ -46,14 +65,23 @@ class ReservationIntegrationTest {
     void notExistTime() {
         ReservationRequest reservationRequest = new ReservationRequest(LocalDate.now(), "polla", 99L, 1L);
 
-        RestAssured.given().contentType(ContentType.JSON).body(reservationRequest).when().post("/reservations").then()
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(reservationRequest)
+                .when()
+                .post("/reservations")
+                .then()
                 .statusCode(500);
     }
 
     @Test
     @DisplayName("모든 예약 시간 정보를 조회한다.")
     void findReservationTimeList() {
-        RestAssured.given().contentType(ContentType.JSON).when().get("/reservations/1?date=" + LocalDate.now()).then()
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .when()
+                .get("/reservations/times/1?date=" + LocalDate.now())
+                .then()
                 .statusCode(200);
     }
 

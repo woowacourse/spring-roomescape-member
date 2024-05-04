@@ -23,12 +23,12 @@ public class ReservationJdbcDao implements ReservationDao {
             resultSet.getDate("date")
                     .toLocalDate(),
             new Time(resultSet.getLong("time_id"),
-                     resultSet.getTime("start_at")
-                             .toLocalTime()),
+                    resultSet.getTime("start_at")
+                            .toLocalTime()),
             new Theme(resultSet.getLong("theme_id"),
-                      resultSet.getString("themeName"),
-                      resultSet.getString("description"),
-                      resultSet.getString("thumbnail")
+                    resultSet.getString("themeName"),
+                    resultSet.getString("description"),
+                    resultSet.getString("thumbnail")
             )
     );
 
@@ -57,7 +57,7 @@ public class ReservationJdbcDao implements ReservationDao {
     }
 
     @Override
-    public List<Reservation> findAllReservationOrderByDateAndTimeStartAt() {
+    public List<Reservation> findAllOrderByDateAndTime() {
         String findAllReservationSql =
                 """
                 SELECT r.id, r.name, r.date, 
@@ -87,31 +87,6 @@ public class ReservationJdbcDao implements ReservationDao {
                 """;
 
         return jdbcTemplate.query(findAllByThemeIdAndDateSql, RESERVATION_ROW_MAPPER, date, themeId);
-    }
-
-    @Override
-    public List<Theme> findThemeByDateOrderByThemeIdCount(LocalDate startDate, LocalDate endDate) {
-        String findThemesInOrderSql =
-                """
-                SELECT th.id, th.name, th.thumbnail, th.description
-                FROM theme th
-                INNER JOIN (
-                    SELECT theme_id
-                    FROM reservation
-                    WHERE date BETWEEN ? AND ?
-                    GROUP BY theme_id
-                    ORDER BY COUNT(theme_id) DESC
-                ) r ON th.id = r.theme_id;
-                """;
-
-        return jdbcTemplate.query(findThemesInOrderSql, (resultSet, rowNum)
-                                          -> new Theme(
-                                          resultSet.getLong("id"),
-                                          resultSet.getString("name"),
-                                          resultSet.getString("description"),
-                                          resultSet.getString("thumbnail")
-                                  )
-                , startDate.toString(), endDate.toString());
     }
 
     @Override

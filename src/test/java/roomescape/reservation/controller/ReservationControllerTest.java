@@ -32,8 +32,8 @@ import roomescape.time.domain.Time;
 class ReservationControllerTest {
 
     private final Reservation reservation = new Reservation(1L, "polla", LocalDate.now(),
-                                                            new Time(1L, LocalTime.now()),
-                                                            new Theme(1L, "polla", "폴라 방탈출", "이미지~"));
+            new Time(1L, LocalTime.now()),
+            new Theme(1L, "polla", "폴라 방탈출", "이미지~"));
 
     @Autowired
     private MockMvc mockMvc;
@@ -52,9 +52,9 @@ class ReservationControllerTest {
                 .writeValueAsString(new ReservationRequest(reservation.getDate(), "polla", 1L, 1L));
 
         mockMvc.perform(post("/reservations")
-                                .content(content)
-                                .contentType("application/Json")
-                                .accept(MediaType.APPLICATION_JSON)
+                        .content(content)
+                        .contentType("application/Json")
+                        .accept(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
                 .andExpect(status().isCreated());
@@ -78,7 +78,7 @@ class ReservationControllerTest {
                 .thenReturn(
                         List.of(ReservationTimeAvailabilityResponse.fromTime(reservation.getReservationTime(), true)));
 
-        mockMvc.perform(get("/reservations/1?date=" + LocalDate.now()))
+        mockMvc.perform(get("/reservations/times/1?date=" + LocalDate.now()))
                 .andDo(print())
                 .andExpect(status().isOk());
     }

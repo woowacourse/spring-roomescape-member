@@ -26,8 +26,8 @@ import roomescape.time.domain.Time;
 class ReservationServiceTest {
 
     private final Reservation reservation = new Reservation(1L, "polla", LocalDate.now(),
-                                                            new Time(1L, LocalTime.now()),
-                                                            new Theme(1L, "pollaBang", "폴라 방탈출", "thumbnail"));
+            new Time(1L, LocalTime.now()),
+            new Theme(1L, "pollaBang", "폴라 방탈출", "thumbnail"));
 
     @InjectMocks
     private ReservationService reservationService;
@@ -46,9 +46,9 @@ class ReservationServiceTest {
                 .thenReturn(reservation.getReservationTime());
 
         ReservationRequest reservationRequest = new ReservationRequest(reservation.getDate(), reservation.getName(),
-                                                                       reservation.getReservationTime()
-                                                                               .getId(), reservation.getTheme()
-                                                                               .getId());
+                reservation.getReservationTime()
+                        .getId(), reservation.getTheme()
+                .getId());
         ReservationResponse reservationResponse = reservationService.addReservation(reservationRequest);
 
         Assertions.assertThat(reservationResponse.id())
@@ -58,7 +58,7 @@ class ReservationServiceTest {
     @Test
     @DisplayName("예약을 찾는다.")
     void findReservations() {
-        Mockito.when(reservationJdbcDao.findAllReservationOrderByDateAndTimeStartAt())
+        Mockito.when(reservationJdbcDao.findAllOrderByDateAndTime())
                 .thenReturn(List.of(reservation));
 
         List<ReservationResponse> reservationResponses = reservationService.findReservations();

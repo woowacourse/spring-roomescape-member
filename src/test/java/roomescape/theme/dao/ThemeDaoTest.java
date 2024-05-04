@@ -3,6 +3,7 @@ package roomescape.theme.dao;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.time.LocalDate;
 import java.util.List;
 import javax.sql.DataSource;
 import org.assertj.core.api.Assertions;
@@ -31,7 +32,7 @@ public class ThemeDaoTest {
         Theme theme = new Theme("포레스트", "공포 테마", "thumbnail");
         Theme result = themeJdbcDao.save(theme);
 
-        assertAll( () -> {
+        assertAll(() -> {
             assertEquals(result.getName(), theme.getName());
             assertEquals(result.getDescription(), theme.getDescription());
             assertEquals(result.getThumbnail(), theme.getThumbnail());
@@ -41,7 +42,7 @@ public class ThemeDaoTest {
     @Test
     @DisplayName("테마 정보들을 정상적으로 가져오는지 확인한다.")
     void getThemes() {
-        List<Theme> themes = themeJdbcDao.findAllThemes();
+        List<Theme> themes = themeJdbcDao.findAll();
 
         Assertions.assertThat(themes.size())
                 .isEqualTo(3);
@@ -52,9 +53,20 @@ public class ThemeDaoTest {
     void deleteThemes() {
         themeJdbcDao.deleteById(3L);
 
-        Assertions.assertThat(themeJdbcDao.findAllThemes()
-                                      .size())
+        Assertions.assertThat(themeJdbcDao.findAll()
+                        .size())
                 .isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("지난 7일 기준 예약이 많은 테마 순으로 조회한다.")
+    void getTopReservationThemes() {
+        List<Theme> themes = themeJdbcDao.findThemeByDateOrderByThemeIdCount(LocalDate.now()
+                .minusWeeks(1), LocalDate.now());
+
+        Assertions.assertThat(themes.get(0)
+                        .getId())
+                .isEqualTo(1);
     }
 
 }

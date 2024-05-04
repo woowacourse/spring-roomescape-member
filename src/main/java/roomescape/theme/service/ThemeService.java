@@ -3,7 +3,6 @@ package roomescape.theme.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.reservation.dao.ReservationDao;
 import roomescape.theme.dao.ThemeDao;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.dto.ThemeRankResponse;
@@ -18,11 +17,9 @@ public class ThemeService {
     public static final int TOP_THEMES_LIMIT = 10;
 
     private final ThemeDao themeDao;
-    private final ReservationDao reservationDao;
 
-    public ThemeService(ThemeDao themeDao, ReservationDao reservationDao) {
+    public ThemeService(ThemeDao themeDao) {
         this.themeDao = themeDao;
-        this.reservationDao = reservationDao;
     }
 
     public ThemeResponse addTheme(ThemeRequest themeRequest) {
@@ -36,7 +33,7 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> findThemes() {
-        List<Theme> themes = themeDao.findAllThemes();
+        List<Theme> themes = themeDao.findAll();
         return themes.stream()
                 .map(ThemeResponse::fromTheme)
                 .toList();
@@ -47,7 +44,7 @@ public class ThemeService {
                 .minusDays(NUMBER_OF_ONE_DAY);
         LocalDate beforeOneWeek = yesterday.minusDays(NUMBER_OF_ONE_WEEK);
 
-        List<Theme> rankedThemes = reservationDao.findThemeByDateOrderByThemeIdCount(beforeOneWeek, yesterday);
+        List<Theme> rankedThemes = themeDao.findThemeByDateOrderByThemeIdCount(beforeOneWeek, yesterday);
         return rankedThemes.stream()
                 .limit(TOP_THEMES_LIMIT)
                 .map(ThemeRankResponse::fromTheme)

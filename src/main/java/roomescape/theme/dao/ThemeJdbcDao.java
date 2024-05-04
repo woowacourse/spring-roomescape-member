@@ -1,5 +1,6 @@
 package roomescape.theme.dao;
 
+import java.time.LocalDate;
 import java.util.List;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -32,7 +33,7 @@ public class ThemeJdbcDao implements ThemeDao {
     }
 
     @Override
-    public List<Theme> findAllThemes() {
+    public List<Theme> findAll() {
         String findAllThemesSql = "SELECT id, name, description, thumbnail FROM theme";
 
         return jdbcTemplate.query(findAllThemesSql, (resultSet, rowNum) -> new Theme(
@@ -41,6 +42,31 @@ public class ThemeJdbcDao implements ThemeDao {
                 resultSet.getString("description"),
                 resultSet.getString("thumbnail")
         ));
+    }
+
+    @Override
+    public List<Theme> findThemeByDateOrderByThemeIdCount(LocalDate startDate, LocalDate endDate) {
+        String findThemesInOrderSql =
+                """
+                SELECT th.id, th.name, th.thumbnail, th.description
+                FROM theme th
+                INNER JOIN (
+                    SELECT theme_id
+                    FROM reservation
+                    WHERE date BETWEEN ? AND ?
+                    GROUP BY theme_id
+                    ORDER BY COUNT(theme_id) DESC
+                ) r ON th.id = r.theme_id;
+                """;
+
+        return jdbcTemplate.query(findThemesInOrderSql, (resultSet, rowNum)
+                        -> new Theme(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("description"),
+                        resultSet.getString("thumbnail")
+                )
+                , startDate.toString(), endDate.toString());
     }
 
     @Override

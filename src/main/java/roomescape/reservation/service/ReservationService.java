@@ -24,14 +24,15 @@ public class ReservationService {
 
     public ReservationResponse addReservation(ReservationRequest reservationRequest) {
         Reservation reservation = reservationRequest.toReservation();
-        Time time = timeDao.findById(reservation.getReservationTime().getId());
+        Time time = timeDao.findById(reservation.getReservationTime()
+                .getId());
         reservation.setTime(time);
         Reservation savedReservation = reservationDao.save(reservation);
         return ReservationResponse.fromReservation(savedReservation);
     }
 
     public List<ReservationResponse> findReservations() {
-        List<Reservation> reservations = reservationDao.findAllReservationOrderByDateAndTimeStartAt();
+        List<Reservation> reservations = reservationDao.findAllOrderByDateAndTime();
 
         return reservations.stream()
                 .map(ReservationResponse::fromReservation)
