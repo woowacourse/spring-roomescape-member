@@ -1,15 +1,15 @@
 package roomescape.repository.reservationtime;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
-
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -36,8 +36,9 @@ public class ReservationTimeH2Repository implements ReservationTimeRepository {
             throw new IllegalArgumentException("이미 존재하는 시간입니다.");
         }
 
-        SqlParameterSource params = new BeanPropertySqlParameterSource(reservationTime);
-        long id = jdbcInsert.executeAndReturnKey(params).longValue();
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("start_at", reservationTime.getStartAt());
+        Long id = jdbcInsert.executeAndReturnKey(params).longValue();
 
         return new ReservationTime(id, reservationTime.getStartAt());
     }
@@ -82,6 +83,24 @@ public class ReservationTimeH2Repository implements ReservationTimeRepository {
         return jdbcTemplate.query(
                 "SELECT * FROM reservation_time",
                 getReservationTimeRowMapper()
+        );
+    }
+
+    @Override
+    public List<ReservationTime> findAllWithAlreadyBooked(LocalDate date, Long themeId) {
+        String sql = "SELECT rt.id AS time_id, rt.start_at, " +
+                "CASE WHEN r.time_id IS NOT NULL THEN true ELSE false END AS already_booked " +
+                "FROM reservation_time rt " +
+                "LEFT JOIN reservation r ON rt.id = r.time_id AND r.date = ? AND r.theme_id = ? ";
+
+        return jdbcTemplate.query(sql, new Object[]{date, themeId}, getReservationTimeRowMapperWithAlreadyBooked());
+    }
+
+    private RowMapper<ReservationTime> getReservationTimeRowMapperWithAlreadyBooked() {
+        return (resultSet, rowNum) -> new ReservationTime(
+                resultSet.getLong("id"),
+                LocalTime.parse(resultSet.getString("start_at")),
+                resultSet.getBoolean("already_booked")
         );
     }
 }

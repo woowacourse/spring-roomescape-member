@@ -1,6 +1,7 @@
 package roomescape.controller.reservation;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.request.ReservationTimeAddRequest;
 import roomescape.dto.response.ReservationTimeResponse;
@@ -36,6 +38,12 @@ public class ReservationTimeController {
     public List<ReservationTimeResponse> findTimes() {
         return reservationTimeService.findTimes();
     }
+
+    @GetMapping("/available")
+    public List<ReservationTimeResponse> findTimesWithAlreadyBooked(@RequestParam LocalDate date, @RequestParam Long themeId) {
+        return reservationTimeService.findTimesWithAlreadyBooked(date, themeId);
+    }
+
 
     @GetMapping("/{id}")
     public ReservationTimeResponse getTime(@PathVariable Long id) {
