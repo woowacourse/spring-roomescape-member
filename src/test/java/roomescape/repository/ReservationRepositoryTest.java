@@ -186,7 +186,7 @@ class ReservationRepositoryTest {
         final long existThemeId = reservation.getTheme().getId();
 
         // when & then
-        assertThat(reservationRepository.existsByTimeId(existThemeId)).isTrue();
+        assertThat(reservationRepository.existsByThemeId(existThemeId)).isTrue();
     }
 
     @Test
@@ -196,7 +196,7 @@ class ReservationRepositoryTest {
         final long notExistThemeId = 0L;
 
         // when & then
-        assertThat(reservationRepository.existsByTimeId(notExistThemeId)).isFalse();
+        assertThat(reservationRepository.existsByThemeId(notExistThemeId)).isFalse();
     }
 
     @Test

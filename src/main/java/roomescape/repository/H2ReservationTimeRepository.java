@@ -42,7 +42,7 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
     }
 
     @Override
-    public Optional<ReservationTime> findById(final Long id) {
+    public Optional<ReservationTime> findById(final long id) {
         final String sql = "SELECT * FROM RESERVATION_TIME WHERE ID = ?";
 
         return jdbcTemplate.query(sql, this::mapRowTime, id)
@@ -60,7 +60,7 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
     }
 
     @Override
-    public int delete(final Long id) {
+    public int delete(final long id) {
         final String sql = "DELETE FROM RESERVATION_TIME WHERE ID = ?";
 
         return jdbcTemplate.update(sql, id);

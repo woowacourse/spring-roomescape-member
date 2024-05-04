@@ -9,9 +9,9 @@ public interface ReservationTimeRepository {
 
     List<ReservationTime> findAll();
 
-    Optional<ReservationTime> findById(Long id);
+    Optional<ReservationTime> findById(long id);
 
     ReservationTime save(ReservationTime reservationTime);
 
-    int delete(Long id);
+    int delete(long id);
 }

@@ -10,17 +10,17 @@ public interface ReservationRepository {
 
     List<Reservation> findAll();
 
-    List<Reservation> findAllByDateAndThemeId(LocalDate date, Long themeId);
+    List<Reservation> findAllByDateAndThemeId(LocalDate date, long themeId);
 
-    Optional<Reservation> findById(Long id);
+    Optional<Reservation> findById(long id);
 
-    boolean existsByTimeId(Long timeId);
+    boolean existsByTimeId(long timeId);
 
-    boolean existsByThemeId(Long themeId);
+    boolean existsByThemeId(long themeId);
 
-    boolean existsByDateAndTimeId(Long timeId, LocalDate date);
+    boolean existsByDateAndTimeId(long timeId, LocalDate date);
 
     Reservation save(Reservation reservation);
 
-    int delete(Long id);
+    int delete(long id);
 }

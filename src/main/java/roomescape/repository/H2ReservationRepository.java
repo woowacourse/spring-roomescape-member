@@ -68,7 +68,7 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAllByDateAndThemeId(final LocalDate date, final Long themeId) {
+    public List<Reservation> findAllByDateAndThemeId(final LocalDate date, final long themeId) {
         final String sql = """
                 SELECT * FROM RESERVATION AS R
                 INNER JOIN RESERVATION_TIME RT ON RT.ID = R.TIME_ID
@@ -80,7 +80,7 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Optional<Reservation> findById(final Long id) {
+    public Optional<Reservation> findById(final long id) {
         final String sql = "SELECT * FROM reservation WHERE id = ?";
 
         return jdbcTemplate.query(sql, this::mapRowLazy, id)
@@ -89,7 +89,7 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByTimeId(final Long timeId) {
+    public boolean existsByTimeId(final long timeId) {
         final String sql = "SELECT * FROM RESERVATION WHERE TIME_ID = ? LIMIT 1";
 
         return !jdbcTemplate.query(sql, this::mapRowLazy, timeId)
@@ -97,7 +97,7 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByThemeId(final Long themeId) {
+    public boolean existsByThemeId(final long themeId) {
         final String sql = "SELECT * FROM RESERVATION WHERE THEME_ID = ? LIMIT 1";
 
         return !jdbcTemplate.query(sql, this::mapRowLazy, themeId)
@@ -105,7 +105,7 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByDateAndTimeId(final Long timeId, final LocalDate date) {
+    public boolean existsByDateAndTimeId(final long timeId, final LocalDate date) {
         final String sql = "SELECT * FROM RESERVATION WHERE TIME_ID = ? AND DATE = ? LIMIT 1";
 
         return !jdbcTemplate.query(sql, this::mapRowLazy, timeId, date).isEmpty();
@@ -124,7 +124,7 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public int delete(final Long id) {
+    public int delete(final long id) {
         final String sql = "DELETE FROM RESERVATION WHERE ID = ?";
 
         return jdbcTemplate.update(sql, id);

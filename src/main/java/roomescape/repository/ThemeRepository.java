@@ -11,11 +11,11 @@ public interface ThemeRepository {
     List<Theme> findAll();
 
     // TODO: Convert to primitive type
-    Optional<Theme> findById(Long id);
+    Optional<Theme> findById(long id);
 
     List<Theme> findPopularThemes(LocalDate start, LocalDate end, int count);
 
     Theme save(Theme theme);
 
-    int delete(Long id);
+    int delete(long id);
 }
