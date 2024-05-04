@@ -43,10 +43,10 @@ class JdbcTemplateReservationRepositoryTest {
     @Test
     @DisplayName("Reservation 을 잘 저장하는지 확인한다.")
     void save() {
-        var beforeSave = reservationRepository.findAll();
+        var beforeSave = reservationRepository.findAll().getReservations();
         Reservation saved = reservationRepository.save(
                 new Reservation("test", LocalDate.now(), DEFAULT_TIME, DEFAULT_THEME));
-        var afterSave = reservationRepository.findAll();
+        var afterSave = reservationRepository.findAll().getReservations();
 
         Assertions.assertThat(afterSave)
                 .containsAll(beforeSave)
@@ -56,11 +56,11 @@ class JdbcTemplateReservationRepositoryTest {
     @Test
     @DisplayName("Reservation 을 잘 조회하는지 확인한다.")
     void findAll() {
-        List<Reservation> beforeSave = reservationRepository.findAll();
+        List<Reservation> beforeSave = reservationRepository.findAll().getReservations();
         reservationRepository.save(new Reservation("test", LocalDate.now(), DEFAULT_TIME, DEFAULT_THEME));
         reservationRepository.save(new Reservation("test2", LocalDate.now(), DEFAULT_TIME, DEFAULT_THEME));
 
-        List<Reservation> afterSave = reservationRepository.findAll();
+        List<Reservation> afterSave = reservationRepository.findAll().getReservations();
         Assertions.assertThat(afterSave.size())
                 .isEqualTo(beforeSave.size() + 2);
     }
@@ -68,12 +68,12 @@ class JdbcTemplateReservationRepositoryTest {
     @Test
     @DisplayName("Reservation 을 잘 지우는지 확인한다.")
     void delete() {
-        List<Reservation> beforeSaveAndDelete = reservationRepository.findAll();
+        List<Reservation> beforeSaveAndDelete = reservationRepository.findAll().getReservations();
         reservationRepository.save(new Reservation("test", LocalDate.now(), DEFAULT_TIME, DEFAULT_THEME));
 
         reservationRepository.delete(1L);
 
-        List<Reservation> afterSaveAndDelete = reservationRepository.findAll();
+        List<Reservation> afterSaveAndDelete = reservationRepository.findAll().getReservations();
 
         Assertions.assertThat(beforeSaveAndDelete)
                 .containsExactlyElementsOf(afterSaveAndDelete);

@@ -58,8 +58,8 @@ public class ThemeService {
         themeRepository.delete(id);
     }
 
-    private boolean isUsedTheme(long id) {
-        return reservationRepository.findAll().stream()
-                .anyMatch(reservation -> reservation.isThemeOf(id));
+    //todo SQL로 구현
+    private boolean isUsedTheme(long themeId) {
+        return reservationRepository.findAll().hasThemeOf(themeId);
     }
 }

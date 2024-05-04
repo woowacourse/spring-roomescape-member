@@ -12,6 +12,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Reservations;
 import roomescape.domain.Theme;
 
 @Repository
@@ -70,7 +71,7 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
     }
 
     @Override
-    public List<Reservation> findAll() {
+    public Reservations findAll() {
         String query = """
                    SELECT 
                    r.id as reservation_id,
@@ -88,11 +89,12 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
                 inner join theme t2  
                 on t2.id = r.theme_id""";
 
-        return jdbcTemplate.query(query, RESERVATION_ROW_MAPPER);
+        List<Reservation> findReservations = jdbcTemplate.query(query, RESERVATION_ROW_MAPPER);
+        return new Reservations(findReservations);
     }
 
     @Override
-    public List<Reservation> findByThemeAndDate(Theme theme, LocalDate date) {
+    public Reservations findByThemeAndDate(Theme theme, LocalDate date) {
         String query = """
                    SELECT 
                    r.id as reservation_id,
@@ -112,7 +114,9 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
                 WHERE theme_id = ? AND r.date = ?; 
                 """;
 
-        return jdbcTemplate.query(query, RESERVATION_ROW_MAPPER, theme.getId(), Date.valueOf(date));
+        List<Reservation> findReservations = jdbcTemplate.query(query, RESERVATION_ROW_MAPPER, theme.getId(),
+                Date.valueOf(date));
+        return new Reservations(findReservations);
     }
 
     @Override

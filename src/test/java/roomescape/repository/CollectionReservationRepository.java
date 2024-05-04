@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.Reservation;
+import roomescape.domain.Reservations;
 import roomescape.domain.Theme;
 
 public class CollectionReservationRepository implements ReservationRepository {
@@ -25,18 +26,20 @@ public class CollectionReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAll() {
-        return reservations.stream()
+    public Reservations findAll() {
+        List<Reservation> findReservations = this.reservations.stream()
                 .sorted()
                 .toList();
+        return new Reservations(findReservations);
     }
 
     @Override
-    public List<Reservation> findByThemeAndDate(Theme theme, LocalDate date) {
-        return reservations.stream()
+    public Reservations findByThemeAndDate(Theme theme, LocalDate date) {
+        List<Reservation> findReservations = reservations.stream()
                 .filter(reservation -> reservation.isThemeOf(theme.getId()))
                 .filter(reservation -> reservation.isDateOf(date))
                 .toList();
+        return new Reservations(findReservations);
     }
 
     @Override

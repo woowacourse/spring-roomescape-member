@@ -10,6 +10,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Reservations;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
@@ -46,20 +47,15 @@ public class ReservationService {
                 requestedTime,
                 requestedTheme
         );
-        boolean isDuplicate = reservationRepository.findAll()
-                .stream()
-                .anyMatch(reservation -> reservation.isSameReservation(beforeSave));
-
-        if (isDuplicate) {
+        Reservations reservations = reservationRepository.findAll();
+        if (reservations.hasSameReservation(beforeSave)) {
             throw new RoomescapeException(DUPLICATE_RESERVATION);
         }
-
         if (beforeSave.isBefore(LocalDateTime.now())) {
             throw new RoomescapeException(PAST_TIME_RESERVATION);
         }
 
-        Reservation saved = reservationRepository.save(beforeSave);
-        return toResponse(saved);
+        return toResponse(reservationRepository.save(beforeSave));
     }
 
     private ReservationResponse toResponse(Reservation reservation) {
@@ -74,7 +70,8 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> findAll() {
-        return reservationRepository.findAll().stream()
+        Reservations reservations = reservationRepository.findAll();
+        return reservations.getReservations().stream()
                 .map(this::toResponse)
                 .toList();
     }
