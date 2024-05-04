@@ -9,6 +9,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
+import roomescape.domain.dto.AvailableReservationTimeDto;
 import roomescape.service.dto.request.ReservationTimeRequest;
 import roomescape.service.dto.response.AvailableReservationTimeResponse;
 import roomescape.service.dto.response.ReservationTimeResponse;
@@ -63,20 +64,11 @@ public class ReservationTimeService {
     }
 
     public List<AvailableReservationTimeResponse> getAvailableReservationTimes(LocalDate date, Long themeId) {
-        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
-        List<Reservation> reservations = reservationRepository.findByDateAndThemeId(date, themeId);
+        List<AvailableReservationTimeDto> availableReservationTimeDtos = reservationTimeRepository
+                .findAvailableReservationTimes(date, themeId);
 
-        return reservationTimes.stream()
-                .map(reservationTime -> new AvailableReservationTimeResponse(
-                        reservationTime.getId(),
-                        reservationTime.getStartAt(),
-                        isAlreadyBooked(reservationTime, reservations)
-                ))
+        return availableReservationTimeDtos.stream()
+                .map(AvailableReservationTimeResponse::from)
                 .toList();
-    }
-
-    private boolean isAlreadyBooked(ReservationTime reservationTime, List<Reservation> reservations) {
-        return reservations.stream()
-                .anyMatch(reservation -> reservationTime.equals(reservation.getTime()));
     }
 }

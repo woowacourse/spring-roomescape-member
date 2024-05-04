@@ -18,6 +18,4 @@ public interface ReservationRepository {
     boolean existsByThemeId(Long id);
 
     boolean existsByReservation(LocalDate date, Long timeId, Long themeId);
-
-    List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId);
 }

@@ -16,11 +16,10 @@ import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
-import roomescape.domain.Theme;
+import roomescape.domain.dto.AvailableReservationTimeDto;
 import roomescape.service.dto.request.ReservationTimeRequest;
 import roomescape.service.dto.response.AvailableReservationTimeResponse;
 import roomescape.service.dto.response.ReservationTimeResponse;
@@ -120,15 +119,12 @@ class ReservationTimeServiceTest {
     @Test
     @DisplayName("특정 날짜에 사용 가능한 예약 시간을 조회한다.")
     void getAvailableReservationTimes() {
-        ReservationTime reservationTime1 = new ReservationTime(1L, LocalTime.of(10, 0));
-        ReservationTime reservationTime2 = new ReservationTime(2L, LocalTime.of(12, 0));
-        Theme theme = new Theme(1L, "테마", "테마 설명", "https://example.com");
-        Reservation reservation = new Reservation(1L, "name", LocalDate.of(2024, 5, 1),
-                reservationTime1, theme);
-        BDDMockito.given(reservationTimeRepository.findAll())
-                .willReturn(List.of(reservationTime1, reservationTime2));
-        BDDMockito.given(reservationRepository.findByDateAndThemeId(any(), anyLong()))
-                .willReturn(List.of(reservation));
+        AvailableReservationTimeDto availableReservationTimeDto1 = new AvailableReservationTimeDto(1L,
+                LocalTime.of(10, 0), true);
+        AvailableReservationTimeDto availableReservationTimeDto2 = new AvailableReservationTimeDto(2L,
+                LocalTime.of(12, 0), false);
+        BDDMockito.given(reservationTimeRepository.findAvailableReservationTimes(any(), anyLong()))
+                .willReturn(List.of(availableReservationTimeDto1, availableReservationTimeDto2));
 
         List<AvailableReservationTimeResponse> availableTimes = reservationTimeService.getAvailableReservationTimes(
                 LocalDate.of(2024, 5, 1), 1L);

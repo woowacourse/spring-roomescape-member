@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -11,6 +12,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
+import roomescape.domain.dto.AvailableReservationTimeDto;
 
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
@@ -33,7 +35,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public List<ReservationTime> findAll() {
-        String sql = "SELECT * FROM reservation_time";
+        String sql = "SELECT * FROM reservation_time ORDER BY start_at ASC";
 
         return jdbcTemplate.query(sql, rowMapper);
     }
@@ -48,6 +50,34 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<AvailableReservationTimeDto> findAvailableReservationTimes(LocalDate date, Long themeId) {
+        String sql = """
+                    SELECT
+                        rt.id AS id,
+                        rt.start_at AS start_at,
+                        r.id IS NOT NULL AS already_booked
+                    FROM reservation_time AS rt
+                    LEFT JOIN (
+                        SELECT
+                            id,
+                            time_id
+                        FROM reservation
+                        WHERE date = ? AND theme_id = ?
+                    ) AS r
+                    ON rt.id = r.time_id
+                    ORDER BY rt.start_at ASC
+                """;
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            Long id = rs.getLong("id");
+            LocalTime startAt = rs.getObject("start_at", LocalTime.class);
+            boolean alreadyBooked = rs.getBoolean("already_booked");
+
+            return new AvailableReservationTimeDto(id, startAt, alreadyBooked);
+        }, date, themeId);
     }
 
     @Override
@@ -80,4 +110,6 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
         return jdbcTemplate.queryForObject(sql, Boolean.class, startAt);
     }
+
+
 }
