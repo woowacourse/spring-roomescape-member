@@ -78,11 +78,13 @@ public class JdbcReservationRepository implements ReservationRepository {
 
         Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
 
-        return new Reservation(id,
+        return new Reservation(
+                id,
                 reservation.getName(),
                 reservation.getDate(),
                 reservation.getTime(),
-                reservation.getTheme());
+                reservation.getTheme()
+        );
     }
 
     @Override
@@ -114,7 +116,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+    public boolean existsByReservation(LocalDate date, Long timeId, Long themeId) {
         String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?)";
 
         return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
