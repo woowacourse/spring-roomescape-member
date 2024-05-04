@@ -1,5 +1,10 @@
 package roomescape.dao;
 
+import java.sql.PreparedStatement;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -7,11 +12,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
-
-import java.sql.PreparedStatement;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class TimeDao {
@@ -79,7 +79,11 @@ public class TimeDao {
     }
 
     public void deleteTime(Long id) {
-        String sql = "DELETE FROM reservation_time WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        try {
+            String sql = "DELETE FROM reservation_time WHERE id = ?";
+            jdbcTemplate.update(sql, id);
+        } catch (DataIntegrityViolationException exception) {
+            throw new IllegalArgumentException("해당 시간대는 이미 예약되어 있어 삭제할 수 없습니다.", exception);
+        }
     }
 }
