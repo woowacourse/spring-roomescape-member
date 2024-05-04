@@ -5,7 +5,7 @@ import java.time.format.DateTimeFormatter;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-public class DateValidator implements ConstraintValidator<DateValid, String> {
+class DateValidator implements ConstraintValidator<DateValid, String> {
 
     private DateTimeFormatter formatter;
 

@@ -19,7 +19,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 import roomescape.web.exception.response.ErrorResponse;
 
 @ControllerAdvice
-public class GlobalExceptionHandler {
+class GlobalExceptionHandler {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 

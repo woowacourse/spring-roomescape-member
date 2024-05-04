@@ -21,7 +21,7 @@ import roomescape.web.exception.DateValid;
 
 @RestController
 @RequestMapping("/times")
-public class ReservationTimeController {
+class ReservationTimeController {
 
     private final ReservationTimeService reservationTimeService;
 

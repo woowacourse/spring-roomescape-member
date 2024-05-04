@@ -17,7 +17,7 @@ import roomescape.service.response.ReservationResponse;
 
 @RestController
 @RequestMapping("/reservations")
-public class ReservationController {
+class ReservationController {
 
     private final ReservationService reservationService;
 
