@@ -8,4 +8,5 @@ public record AvailableReservationTimeResponse(
         @JsonFormat(pattern = "HH:mm")
         LocalTime startAt,
         boolean alreadyBooked
-) {}
+) {
+}
