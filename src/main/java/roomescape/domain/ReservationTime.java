@@ -27,6 +27,10 @@ public class ReservationTime {
         return new ReservationTime(id, LocalTime.parse(start_at));
     }
 
+    public ReservationTime assignId(final long id) {
+        return new ReservationTime(id, startAt);
+    }
+
     public long getId() {
         return id;
     }

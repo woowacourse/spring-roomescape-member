@@ -1,51 +1,40 @@
 package roomescape.repository;
 
+import java.util.List;
+import java.util.Optional;
+import javax.sql.DataSource;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
-
-import java.sql.PreparedStatement;
-import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class ReservationTimeDao {
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
     private final RowMapper<ReservationTime> reservationTimeRowMapper;
 
     public ReservationTimeDao(
-            final JdbcTemplate jdbcTemplate,
+            final DataSource dataSource,
             final RowMapper<ReservationTime> reservationTimeRowMapper
     ) {
-        this.jdbcTemplate = jdbcTemplate;
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
+        this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName("RESERVATION_TIME")
+                .usingGeneratedKeyColumns("ID");
         this.reservationTimeRowMapper = reservationTimeRowMapper;
     }
 
     public ReservationTime save(final ReservationTime reservationTime) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-                    PreparedStatement ps = connection.prepareStatement(
-                            "INSERT INTO reservation_time (start_at) VALUES (?)",
-                            new String[]{"id"}
-                    );
-                    ps.setString(1, reservationTime.getStartAt().toString());
-                    return ps;
-                }, keyHolder
-        );
+        final SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("START_AT", reservationTime.getStartAt());
 
-        try {
-            long id = keyHolder.getKey().longValue();
-            return new ReservationTime(
-                    id,
-                    reservationTime.getStartAt()
-            );
-        } catch (NullPointerException exception) {
-            throw new RuntimeException("[ERROR] 예약 시간 추가 요청이 정상적으로 이루어지지 않았습니다.");
-        }
+        final long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
+        return reservationTime.assignId(id);
     }
 
     public List<ReservationTime> getAll() {

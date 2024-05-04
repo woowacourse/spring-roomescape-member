@@ -1,52 +1,41 @@
 package roomescape.repository;
 
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Repository;
-import roomescape.domain.Theme;
-
-import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
+import javax.sql.DataSource;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.stereotype.Repository;
+import roomescape.domain.Theme;
 
 @Repository
 public class ThemeDao {
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
     private final RowMapper<Theme> themeRowMapper;
 
-    public ThemeDao(final JdbcTemplate jdbcTemplate, final RowMapper<Theme> themeRowMapper) {
-        this.jdbcTemplate = jdbcTemplate;
+    public ThemeDao(
+            final DataSource dataSource,
+            final RowMapper<Theme> themeRowMapper
+    ) {
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
+        this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName("THEME")
+                .usingGeneratedKeyColumns("ID");
         this.themeRowMapper = themeRowMapper;
     }
 
     public Theme save(final Theme theme) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        String sql = "INSERT INTO theme(name, description, thumbnail) VALUES (?, ?, ?)";
-        jdbcTemplate.update(connection -> {
-                    PreparedStatement ps = connection.prepareStatement(
-                            sql,
-                            new String[]{"id"}
-                    );
-                    ps.setString(1, theme.getName());
-                    ps.setString(2, theme.getDescription());
-                    ps.setString(3, theme.getThumbnail());
-                    return ps;
-                }, keyHolder
-        );
+        final SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("NAME", theme.getName())
+                .addValue("DESCRIPTION", theme.getDescription())
+                .addValue("THUMBNAIL", theme.getThumbnail());
 
-        try {
-            long id = keyHolder.getKey().longValue();
-            return new Theme(
-                    id,
-                    theme.getName(),
-                    theme.getDescription(),
-                    theme.getThumbnail()
-            );
-        } catch (NullPointerException exception) {
-            throw new RuntimeException("[ERROR] 테마 추가 요청이 정상적으로 이루어지지 않았습니다.");
-        }
+        final long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
+        return theme.assignId(id);
     }
 
     public List<Theme> getAll() {

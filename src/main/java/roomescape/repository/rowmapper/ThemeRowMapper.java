@@ -1,11 +1,11 @@
 package roomescape.repository.rowmapper;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import roomescape.domain.Theme;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import roomescape.domain.ThemeName;
 
 @Component
 public class ThemeRowMapper implements RowMapper<Theme> {
@@ -14,7 +14,7 @@ public class ThemeRowMapper implements RowMapper<Theme> {
         try {
             return new Theme(
                     resultSet.getLong("id"),
-                    resultSet.getString("name"),
+                    new ThemeName(resultSet.getString("name")),
                     resultSet.getString("description"),
                     resultSet.getString("thumbnail")
             );

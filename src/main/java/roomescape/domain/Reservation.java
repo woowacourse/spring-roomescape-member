@@ -41,16 +41,20 @@ public class Reservation {
 
     public static Reservation of(
             final long id, final String name, final String date,
-            final ReservationTime reservationTime, final Theme theme
+            final ReservationTime time, final Theme theme
     ) {
         LocalDate parsedDate = LocalDate.parse(date);
-        return new Reservation(id, new UserName(name), parsedDate, reservationTime, theme);
+        return new Reservation(id, new UserName(name), parsedDate, time, theme);
     }
 
     public static Reservation of(
             final String name, final LocalDate date,
-            final ReservationTime reservationTime, final Theme theme) {
-        return new Reservation(null, new UserName(name), date, reservationTime, theme);
+            final ReservationTime time, final Theme theme) {
+        return new Reservation(null, new UserName(name), date, time, theme);
+    }
+
+    public Reservation assignId(final long id) {
+        return new Reservation(id, userName, date, time, theme);
     }
 
     public long getId() {
