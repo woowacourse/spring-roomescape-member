@@ -8,7 +8,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.theme.domain.Theme;
@@ -52,8 +51,23 @@ public class ReservationJdbcDao implements ReservationDao {
                 .addValue("theme_id", reservation.getThemeId());
 
         long id = jdbcInsert.executeAndReturnKey(sqlParameterSource).longValue();
-        reservation.setId(id);
+        reservation.setIdOnSave(id);
         return reservation;
+    }
+
+    @Override
+    public Reservation findById(long reservationId) {
+        String findReservationSql = """
+                SELECT r.id, r.name, r.date, 
+                t.id AS time_id, t.start_at, 
+                th.id AS theme_id, th.name AS themeName, th.description, th.thumbnail 
+                FROM reservation r 
+                INNER JOIN reservation_time t ON r.time_id = t.id 
+                INNER JOIN theme th ON r.theme_id = th.id
+                WHERE r.id = ? 
+                """;
+
+        return jdbcTemplate.queryForObject(findReservationSql, RESERVATION_ROW_MAPPER, reservationId);
     }
 
     @Override
