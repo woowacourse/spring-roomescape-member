@@ -32,6 +32,15 @@ public class TimeDao {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
+    public Optional<ReservationTime> readTimeById(Long id) {
+        String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
+    }
+
     public List<ReservationTime> readTimesExistsReservationDateAndThemeId(LocalDate date, Long themeId) {
         String sql = """
                 SELECT id, start_at 
@@ -43,15 +52,6 @@ public class TimeDao {
                 )
                 """;
         return jdbcTemplate.query(sql, rowMapper, date, themeId);
-    }
-
-    public Optional<ReservationTime> readTimeById(Long id) {
-        String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
-        try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
-        } catch (EmptyResultDataAccessException exception) {
-            return Optional.empty();
-        }
     }
 
     public boolean isExistTimeByStartAt(LocalTime startAt) {
