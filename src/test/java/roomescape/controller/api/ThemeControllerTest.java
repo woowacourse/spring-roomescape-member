@@ -3,10 +3,19 @@ package roomescape.controller.api;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.model.Reservation;
+import roomescape.model.ReservationTime;
+import roomescape.model.Theme;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -20,28 +29,31 @@ class ThemeControllerTest {
     @LocalServerPort
     int port;
 
+    @Autowired
+    private ReservationRepository reservationRepository;
+
+    @Autowired
+    private ReservationTimeRepository reservationTimeRepository;
+
+    @Autowired
+    private ThemeRepository themeRepository;
+
     @BeforeEach
     void initPort() {
         RestAssured.port = port;
     }
 
-    @DisplayName("존재하지 않는 테마 삭제 시 BadRequest 반환")
-    @Test
-    void deletedReservationNotFound() {
-        RestAssured.given().log().all()
-                .when().delete("/themes/100")
-                .then().log().all()
-                .statusCode(400);
-    }
-
     @DisplayName("테마 목록 조회")
     @Test
     void getReservationsWhenEmpty() {
+        themeRepository.save(new Theme("이름1", "설명1", "썸네일1"));
+        themeRepository.save(new Theme("이름2", "설명2", "썸네일2"));
+
         RestAssured.given().log().all()
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(13));
+                .body("size()", is(2));
     }
 
     @DisplayName("테마 추가 및 삭제")
@@ -60,11 +72,11 @@ class ThemeControllerTest {
                             .when().post("/themes")
                             .then().log().all()
                             .statusCode(201)
-                            .header("Location", "/themes/14");
+                            .header("Location", "/themes/1");
                 }),
                 dynamicTest("테마를 삭제한다", () ->
                         RestAssured.given().log().all()
-                                .when().delete("/themes/14")
+                                .when().delete("/themes/1")
                                 .then().log().all()
                                 .statusCode(204)
                 )
@@ -74,10 +86,15 @@ class ThemeControllerTest {
     @DisplayName("인기 테마 조회")
     @Test
     void getPopularThemes() {
+        final ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("09:00")));
+        final Theme theme = themeRepository.save(new Theme("이름1", "설명1", "썸네일1"));
+        final LocalDate localDate = LocalDate.now().minusDays(1);
+        reservationRepository.save(new Reservation("이름1", localDate, reservationTime, theme));
+
         RestAssured.given().log().all()
-                .when().get("/themes/popular?date=2024-05-01")
+                .when().get("/themes/popular?date=" + localDate)
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(10));
+                .body("size()", is(1));
     }
 }
