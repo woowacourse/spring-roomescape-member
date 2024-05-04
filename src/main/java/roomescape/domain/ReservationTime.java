@@ -3,20 +3,23 @@ package roomescape.domain;
 import java.time.LocalTime;
 import java.util.Objects;
 
-public class ReservationTime {
+import roomescape.domain.exception.Validate;
 
+public class ReservationTime {
+    private final Validate validate = new Validate();
     private final Long id;
     private final LocalTime startAt;
 
     public ReservationTime(LocalTime startAt) {
+        validate.AllNonNull(startAt);
         this.id = null;
-        this.startAt = Objects.requireNonNull(startAt, "인자 중 null 값이 존재합니다.");
+        this.startAt = startAt;
     }
 
     public ReservationTime(Long id, LocalTime startAt) {
-        String errorMessage = "인자 중 null 값이 존재합니다.";
-        this.id = Objects.requireNonNull(id, errorMessage);
-        this.startAt = Objects.requireNonNull(startAt, errorMessage);
+        validate.AllNonNull(id, startAt);
+        this.id = id;
+        this.startAt = startAt;
     }
 
     public ReservationTime withId(Long id) {

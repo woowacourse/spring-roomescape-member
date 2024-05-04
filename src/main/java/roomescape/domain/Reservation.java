@@ -2,31 +2,33 @@ package roomescape.domain;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Objects;
+
+import roomescape.domain.exception.Validate;
 
 public class Reservation {
+    private final Validate validate = new Validate();
     private final Long id;
-    private final Name name;
+    private final String name;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
     public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        String errorMessage = "인자 중 null 값이 존재합니다.";
+        validate.AllNonNull(name, date, time, theme);
         this.id = null;
-        this.name = new Name(name);
-        this.date = Objects.requireNonNull(date, errorMessage);
-        this.time = Objects.requireNonNull(time, errorMessage);
-        this.theme = Objects.requireNonNull(theme, errorMessage);
+        this.name = name;
+        this.date = date;
+        this.time = time;
+        this.theme = theme;
     }
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        String errorMessage = "인자 중 null 값이 존재합니다.";
-        this.id = Objects.requireNonNull(id);
-        this.name = new Name(name);
-        this.date = Objects.requireNonNull(date, errorMessage);
-        this.time = Objects.requireNonNull(time, errorMessage);
-        this.theme = Objects.requireNonNull(theme, errorMessage);
+        validate.AllNonNull(name, date, time, theme, id);
+        this.id = id;
+        this.name = name;
+        this.date = date;
+        this.time = time;
+        this.theme = theme;
     }
 
     public boolean isBefore(LocalDateTime currentDateTime) {
@@ -53,7 +55,7 @@ public class Reservation {
     }
 
     public String getName() {
-        return name.value();
+        return name;
     }
 
     public LocalDate getDate() {
