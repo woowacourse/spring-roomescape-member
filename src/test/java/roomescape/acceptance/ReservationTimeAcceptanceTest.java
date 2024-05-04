@@ -16,8 +16,8 @@ import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 
 public class ReservationTimeAcceptanceTest extends BasicAcceptanceTest {
-    @TestFactory
     @DisplayName("동일한 예약 시간을 두번 추가하면, 예외가 발생한다")
+    @TestFactory
     Stream<DynamicTest> duplicateReservationTest() {
         return Stream.of(
                 dynamicTest("예약 시간을 추가한다 (10:00)", () -> postReservation("10:00", 201)),
@@ -25,8 +25,8 @@ public class ReservationTimeAcceptanceTest extends BasicAcceptanceTest {
         );
     }
 
-    @TestFactory
     @DisplayName("3개의 예약 시간을 추가한다")
+    @TestFactory
     Stream<DynamicTest> reservationPostTest() {
         return Stream.of(
                 dynamicTest("예약 시간을 추가한다 (10:00)", () -> postReservation("10:00", 201)),
@@ -36,8 +36,8 @@ public class ReservationTimeAcceptanceTest extends BasicAcceptanceTest {
         );
     }
 
-    @TestFactory
     @DisplayName("예약 시간을 추가하고 삭제한다")
+    @TestFactory
     Stream<DynamicTest> reservationPostAndDeleteTest() {
         AtomicLong reservationId = new AtomicLong();
 

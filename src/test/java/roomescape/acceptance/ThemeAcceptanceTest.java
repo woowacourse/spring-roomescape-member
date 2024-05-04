@@ -8,7 +8,6 @@ import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 import org.springframework.test.context.jdbc.Sql;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
@@ -18,8 +17,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 public class ThemeAcceptanceTest extends BasicAcceptanceTest {
-    @TestFactory
     @DisplayName("2개의 테마를 추가한다")
+    @TestFactory
     Stream<DynamicTest> themePostTest() {
         return Stream.of(
                 dynamicTest("테마를 추가한다", () -> postTheme(201)),
@@ -28,8 +27,8 @@ public class ThemeAcceptanceTest extends BasicAcceptanceTest {
         );
     }
 
-    @TestFactory
     @DisplayName("테마를 추가하고 삭제한다")
+    @TestFactory
     Stream<DynamicTest> themePostAndDeleteTest() {
         AtomicLong themeId = new AtomicLong();
 
@@ -44,12 +43,12 @@ public class ThemeAcceptanceTest extends BasicAcceptanceTest {
         );
     }
 
-    @TestFactory
-    @Sql("/test-data/theme-tops.sql")
     @DisplayName("상위 10개 테마를 조회한다")
+    @Sql("/test-data/theme-tops.sql")
+    @TestFactory
     Stream<DynamicTest> themeGetTop10Test() {
         return Stream.of(
-                DynamicTest.dynamicTest("상위 10개 테마를 조회한다", () -> getTopThemes(200, 10))
+                dynamicTest("상위 10개 테마를 조회한다", () -> getTopThemes(200, 10))
         );
     }
 
