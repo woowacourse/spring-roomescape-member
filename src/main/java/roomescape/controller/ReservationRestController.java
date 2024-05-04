@@ -10,7 +10,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/reservations")
+@RequestMapping("/reservations")
 public class ReservationRestController {
 
     private final ReservationService reservationService;
