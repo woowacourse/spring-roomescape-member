@@ -5,11 +5,13 @@ import roomescape.controller.time.TimeRequest;
 import roomescape.controller.time.TimeResponse;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.exception.InvalidDateException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.service.exception.TimeUsedException;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -31,12 +33,14 @@ public class TimeService {
                 .toList();
     }
 
-    public List<TimeResponse> getTimeAvailable(final String date, final String themeId) {
+    public List<TimeResponse> getTimesWithBooked(final String date, final Long themeId) {
         final List<ReservationTime> times = timeRepository.findAll()
                 .stream()
                 .toList();
+
+        validateDateFormat(date);
         final Set<ReservationTime> bookedTimes = reservationRepository
-                .findAllByDateAndThemeId(LocalDate.parse(date), Long.valueOf(themeId))
+                .findAllByDateAndThemeId(LocalDate.parse(date), themeId)
                 .stream()
                 .map(Reservation::getTime)
                 .collect(Collectors.toSet());
@@ -44,6 +48,14 @@ public class TimeService {
         return times.stream()
                 .map(time -> TimeResponse.from(time, bookedTimes.contains(time)))
                 .toList();
+    }
+
+    private void validateDateFormat(String date) {
+        try {
+            LocalDate.parse(date);
+        } catch (DateTimeParseException e) {
+            throw new InvalidDateException("날짜 형식이 올바르지 않습니다.");
+        }
     }
 
     public TimeResponse addTime(final TimeRequest timeRequest) {

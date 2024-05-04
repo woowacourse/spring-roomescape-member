@@ -5,50 +5,107 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.jdbc.Sql;
 import roomescape.controller.time.TimeRequest;
 import roomescape.controller.time.TimeResponse;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.ReserveName;
+import roomescape.domain.Theme;
 import roomescape.repository.H2ReservationRepository;
 import roomescape.repository.H2ReservationTimeRepository;
+import roomescape.repository.H2ThemeRepository;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 import roomescape.service.exception.TimeUsedException;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@Sql(scripts = {"/drop.sql", "/schema.sql", "/data.sql"},
-        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Import({
+        TimeService.class,
+        H2ReservationRepository.class,
+        H2ReservationTimeRepository.class,
+        H2ThemeRepository.class
+})
 @JdbcTest
-@Import({TimeService.class, H2ReservationTimeRepository.class, H2ReservationRepository.class})
 class TimeServiceTest {
 
-    final long LAST_ID = 4;
-    final TimeResponse exampleFirstTime = new TimeResponse(1L, "10:15", false);
+    final List<TimeRequest> sampleRequests = List.of(
+            new TimeRequest("08:00"),
+            new TimeRequest("09:00"),
+            new TimeRequest("10:00"),
+            new TimeRequest("11:00")
+    );
 
     @Autowired
-    private TimeService timeService;
+    TimeService timeService;
+    @Autowired
+    ReservationRepository reservationRepository;
+    @Autowired
+    ReservationTimeRepository reservationTimeRepository;
+    @Autowired
+    ThemeRepository themeRepository;
 
     @Test
     @DisplayName("예약 시간 목록을 조회한다.")
     void getTimes() {
-        // given & when
-        List<TimeResponse> actual = timeService.getTimes();
+        // given
+        final List<TimeResponse> expected = sampleRequests.stream()
+                .map(timeService::addTime)
+                .toList();
+
+        // when
+        final List<TimeResponse> actual = timeService.getTimes();
 
         // then
-        assertThat(actual).hasSize((int) LAST_ID);
-        assertThat(actual.get(0)).isEqualTo(exampleFirstTime);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("해당 날짜와 테마에 해당하는 시간 목록을 예약 여부가 포함 되도록 조회한다.")
+    void getTimesWithBooked() {
+        // given
+        final TimeResponse timeResponse = timeService.addTime(sampleRequests.get(0));
+        final Theme theme = new Theme(null, "Theme 1", "Description 1", "Thumbnail 1");
+        final LocalDate tomorrow = LocalDate.now().plusDays(1);
+        final Reservation reservation = new Reservation(
+                null,
+                new ReserveName("User 1"),
+                tomorrow,
+                new ReservationTime(timeResponse.id()),
+                null
+        );
+
+        final Theme savedTheme = themeRepository.save(theme);
+        final Reservation assignedReservation = reservation.assignTheme(savedTheme);
+        reservationRepository.save(assignedReservation);
+
+
+        // when
+        final List<TimeResponse> timesWithBooked = timeService.getTimesWithBooked(
+                tomorrow.format(DateTimeFormatter.ISO_LOCAL_DATE),
+                savedTheme.getId()
+        );
+
+        // then
+        assertThat(timesWithBooked).hasSize(1);
+        assertThat(timesWithBooked.get(0).booked()).isTrue();
     }
 
     @Test
     @DisplayName("예약 시간을 추가한다.")
     void addTIme() {
         // given
-        TimeRequest request = new TimeRequest("14:35");
+        TimeRequest request = sampleRequests.get(0);
 
         // when
         TimeResponse actual = timeService.addTime(request);
-        TimeResponse expected = new TimeResponse(actual.id(), "14:35", false);
+        TimeResponse expected = new TimeResponse(actual.id(), request.startAt(), false);
 
         // then
         assertThat(actual).isEqualTo(expected);
@@ -57,15 +114,36 @@ class TimeServiceTest {
     @Test
     @DisplayName("예약 시간을 삭제한다.")
     void deleteTime() {
-        // given & when & then
-        assertThat(timeService.deleteTime(LAST_ID)).isOne();
-        assertThat(timeService.deleteTime(LAST_ID)).isZero();
+        // given
+        final TimeRequest request = sampleRequests.get(0);
+        final Long id = timeService.addTime(request).id();
+
+        // when & then
+        assertThat(timeService.deleteTime(id)).isPositive();
+        assertThat(timeService.deleteTime(id)).isZero();
     }
 
     @Test
     @DisplayName("예약이 된 시간을 삭제할 경우 예외가 발생한다.")
-    void invalidDelete() {
-        assertThatThrownBy(() -> timeService.deleteTime(2L))
+    void exceptionOnDeletingTimeAlreadyReserved() {
+        // given
+        final TimeResponse timeResponse = timeService.addTime(sampleRequests.get(0));
+        final Theme theme = new Theme(null, "Theme 1", "Description 1", "Thumbnail 1");
+        final Long timeId = timeResponse.id();
+        final Reservation reservation = new Reservation(
+                null,
+                new ReserveName("User 1"),
+                LocalDate.now().minusDays(1),
+                new ReservationTime(timeId),
+                null
+        );
+
+        final Theme savedTheme = themeRepository.save(theme);
+        final Reservation assignedTheme = reservation.assignTheme(savedTheme);
+        reservationRepository.save(assignedTheme);
+
+        // when & then
+        assertThatThrownBy(() -> timeService.deleteTime(timeId))
                 .isInstanceOf(TimeUsedException.class);
     }
 }

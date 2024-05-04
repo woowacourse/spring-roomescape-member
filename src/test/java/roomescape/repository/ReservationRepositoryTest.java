@@ -50,7 +50,7 @@ class ReservationRepositoryTest {
             new ReservationTime(null, "08:00"),
             new ReservationTime(null, "09:10")
     );
-    List<Theme> sampleThemes = java.util.List.of(
+    List<Theme> sampleThemes = List.of(
             new Theme(null, "Theme 1", "Description 1", "Thumbnail 1"),
             new Theme(null, "Theme 2", "Description 2", "Thumbnail 2")
     );

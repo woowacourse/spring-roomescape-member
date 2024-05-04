@@ -2,8 +2,8 @@ package roomescape.domain;
 
 import roomescape.domain.exception.InvalidTimeException;
 
-import java.time.DateTimeException;
 import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.util.Objects;
 
 public class ReservationTime {
@@ -37,7 +37,7 @@ public class ReservationTime {
     private static void validateTimeFormat(final String startAt) {
         try {
             LocalTime.parse(startAt);
-        } catch (DateTimeException e) {
+        } catch (DateTimeParseException e) {
             throw new InvalidTimeException("시간 형식이 올바르지 않습니다.");
         }
     }

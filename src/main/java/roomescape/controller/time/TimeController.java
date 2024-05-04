@@ -29,11 +29,11 @@ public class TimeController {
     @GetMapping
     public List<TimeResponse> getTimes(
             @RequestParam(value = "date", required = false) final String date,
-            @RequestParam(value = "themeId", required = false) final String themeId) {
+            @RequestParam(value = "themeId", required = false) final Long themeId) {
         if (Objects.isNull(date) || Objects.isNull(themeId)) {
             return timeService.getTimes();
         }
-        return timeService.getTimeAvailable(date, themeId);
+        return timeService.getTimesWithBooked(date, themeId);
     }
 
     @PostMapping
