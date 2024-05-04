@@ -70,7 +70,6 @@ public class H2ThemeRepository implements ThemeRepository {
             final LocalDate end,
             final int count
     ) {
-        // TODO: change JOIN keyword to INNER JOIN for others
         final String sql = """
                 SELECT T.ID, T.NAME, T.THUMBNAIL, T.DESCRIPTION, COUNT(T.ID) AS FREQUENCY
                 FROM THEME AS T

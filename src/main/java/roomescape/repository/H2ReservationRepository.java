@@ -71,8 +71,8 @@ public class H2ReservationRepository implements ReservationRepository {
     public List<Reservation> findAllByDateAndThemeId(final LocalDate date, final Long themeId) {
         final String sql = """
                 SELECT * FROM RESERVATION AS R
-                JOIN RESERVATION_TIME RT ON RT.ID = R.TIME_ID
-                JOIN THEME T ON T.ID = R.THEME_ID
+                INNER JOIN RESERVATION_TIME RT ON RT.ID = R.TIME_ID
+                INNER JOIN THEME T ON T.ID = R.THEME_ID
                 WHERE R.DATE = ? AND T.ID = ?
                 """;
 
