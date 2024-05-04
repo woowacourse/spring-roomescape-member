@@ -55,7 +55,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public List<AvailableReservationTimeDto> findAvailableReservationTimes(LocalDate date, Long themeId) {
         String sql = """
-                    SELECT
+                    SELECT DISTINCT
                         rt.id AS id,
                         rt.start_at AS start_at,
                         r.id IS NOT NULL AS already_booked
