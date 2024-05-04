@@ -55,33 +55,6 @@ class JdbcReservationRepositoryTest extends DummyDataFixture {
     }
 
     @Test
-    @DisplayName("Reservation 테이블의 주어진 time_id와 동일한 데이터를 조회한다.")
-    void findAllByTimeId() {
-        List<Reservation> reservationsBySameTime = List.of(getReservationById(1L), getReservationById(6L),
-                getReservationById(11L));
-        assertThat(jdbcReservationRepository.findAllByTimeId(1L)).isEqualTo(reservationsBySameTime);
-    }
-
-    @Test
-    @DisplayName("Reservation 테이블에 주어진 time_id와 없는 경우 빈 리스트를 반환한다.")
-    void findAllByTimeId_Return_EmptyCollection() {
-        assertThat(jdbcReservationRepository.findAllByTimeId(20L)).isEmpty();
-    }
-
-    @Test
-    @DisplayName("Reservation 테이블의 주어진 theme_id와 동일한 데이터를 조회한다.")
-    void findAllByThemeId() {
-        List<Reservation> reservationsBySameTime = List.of(getReservationById(10L), getReservationById(11L));
-        assertThat(jdbcReservationRepository.findAllByThemeId(4L)).isEqualTo(reservationsBySameTime);
-    }
-
-    @Test
-    @DisplayName("Reservation 테이블에 주어진 theme_id와 없는 경우 빈 리스트를 반환한다.")
-    void findAllByThemeId_Return_EmptyCollection() {
-        assertThat(jdbcReservationRepository.findAllByThemeId(20L)).isEmpty();
-    }
-
-    @Test
     @DisplayName("Reservation 테이블의 주어진 date, theme_id와 동일한 데이터를 조회한다.")
     void findAllByDateAndThemeId() {
         Reservation reservation = getReservationById(1L);
