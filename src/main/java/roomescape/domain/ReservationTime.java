@@ -38,7 +38,7 @@ public class ReservationTime {
 
     private void validateTimeUnit(final LocalTime time) {
         if (time.getMinute() % AVAILABLE_TIME_UNIT != 0) {
-            throw new IllegalArgumentException("예약 시간은 10분 단위로 등록할 수 있습니다.");
+            throw new IllegalArgumentException("예약 시간은 " + AVAILABLE_TIME_UNIT + "분 단위로 등록할 수 있습니다.");
         }
     }
 
