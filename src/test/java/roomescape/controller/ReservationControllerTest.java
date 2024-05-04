@@ -50,8 +50,8 @@ public class ReservationControllerTest {
     @Test
     void should_add_reservation_when_post_request_reservations() {
         ReservationAddRequest reservationAddRequest = new ReservationAddRequest(
-                LocalDate.now().plusDays(3L),
                 "브라운",
+                LocalDate.now().plusDays(3L),
                 1L
                 , 1L);
         RestAssured.given().log().all()
@@ -66,8 +66,8 @@ public class ReservationControllerTest {
     @Test
     void should_response_bad_request_when_post_request_reservations_with_null_name() {
         ReservationAddRequest reservationAddRequest = new ReservationAddRequest(
-                LocalDate.now().plusDays(3L),
                 null,
+                LocalDate.now().plusDays(3L),
                 1L
                 , 1L);
         RestAssured.given().log().all()

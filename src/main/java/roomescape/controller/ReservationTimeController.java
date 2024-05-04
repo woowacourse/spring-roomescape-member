@@ -46,6 +46,6 @@ public class ReservationTimeController {
     public ResponseEntity<List<TimeWithBookStatusResponse>> readTimesStatus(
             @PathVariable("date") LocalDate date,
             @PathVariable("themeId") Long themeId) {
-        return ResponseEntity.ok(reservationTimeService.findReservationTimesWithReservationStatus(date, themeId));
+        return ResponseEntity.ok(reservationTimeService.findWithBookStatus(date, themeId));
     }
 }

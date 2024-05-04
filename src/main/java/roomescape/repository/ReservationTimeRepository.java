@@ -12,7 +12,7 @@ public interface ReservationTimeRepository {
 
     Optional<ReservationTime> findById(Long id);
 
-    List<TimeWithBookStatusResponse> findAllWithBookStatus(LocalDate date, Long themeId);
+    List<TimeWithBookStatusResponse> findByDateAndThemeIdWithBookStatus(LocalDate date, Long themeId);
 
     ReservationTime save(ReservationTime reservationTime);
 

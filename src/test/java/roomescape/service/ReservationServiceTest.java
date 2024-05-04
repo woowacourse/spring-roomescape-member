@@ -31,7 +31,7 @@ class ReservationServiceTest {
     @Test
     void should_throw_IllegalArgumentException_when_reserve_non_exist_time() {
         LocalDate reservationDate = LocalDate.now().plusDays(2L);
-        ReservationAddRequest reservationAddRequest = new ReservationAddRequest(reservationDate, "dodo", 1L, 1L);
+        ReservationAddRequest reservationAddRequest = new ReservationAddRequest("dodo", reservationDate, 1L, 1L);
 
         assertThatThrownBy(() -> reservationService.saveReservation(reservationAddRequest))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -48,7 +48,7 @@ class ReservationServiceTest {
         Theme savedTheme = fakeThemeDao.save(theme);
         Reservation savedReservation = fakeReservationDao.save(reservation);
 
-        ReservationAddRequest conflictRequest = new ReservationAddRequest(LocalDate.now().plusDays(1), "dodo",
+        ReservationAddRequest conflictRequest = new ReservationAddRequest("dodo", LocalDate.now().plusDays(1),
                 savedTime.getId(), savedTheme.getId());
 
         assertThatThrownBy(() -> reservationService.saveReservation(conflictRequest))

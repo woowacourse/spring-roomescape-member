@@ -54,7 +54,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public List<TimeWithBookStatusResponse> findAllWithBookStatus(LocalDate date, Long themeId) {
+    public List<TimeWithBookStatusResponse> findByDateAndThemeIdWithBookStatus(LocalDate date, Long themeId) {
         String sql = """
                 SELECT 
                     t.id,

@@ -60,7 +60,7 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public List<TimeWithBookStatusResponse> findAllWithBookStatus(LocalDate date, Long themeId) {
+    public List<TimeWithBookStatusResponse> findByDateAndThemeIdWithBookStatus(LocalDate date, Long themeId) {
         return null;
     }
 }

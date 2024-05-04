@@ -29,13 +29,13 @@ public class ReservationService {
     }
 
     public Reservation saveReservation(ReservationAddRequest request) {
-        if (reservationRepository.existByDateAndTimeIdAndThemeId(request.getDate(), request.getTimeId(),
-                request.getThemeId())) {
+        if (reservationRepository.existByDateAndTimeIdAndThemeId(request.date(), request.timeId(),
+                request.themeId())) {
             throw new IllegalArgumentException("중복되는 예약이 존재합니다");
         }
 
-        ReservationTime reservationTime = getReservationTime(request.getTimeId());
-        Theme theme = getTheme(request.getThemeId());
+        ReservationTime reservationTime = getReservationTime(request.timeId());
+        Theme theme = getTheme(request.themeId());
 
         Reservation reservation = request.toEntity(reservationTime, theme);
         return reservationRepository.save(reservation);

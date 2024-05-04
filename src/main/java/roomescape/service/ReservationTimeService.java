@@ -21,12 +21,12 @@ public class ReservationTimeService {
         return reservationTimeRepository.findAll();
     }
 
-    public List<TimeWithBookStatusResponse> findReservationTimesWithReservationStatus(LocalDate date, Long themeId) {
-        return reservationTimeRepository.findAllWithBookStatus(date, themeId);
+    public List<TimeWithBookStatusResponse> findWithBookStatus(LocalDate date, Long themeId) {
+        return reservationTimeRepository.findByDateAndThemeIdWithBookStatus(date, themeId);
     }
 
     public ReservationTime saveReservationTime(ReservationTimeAddRequest reservationTimeAddRequest) {
-        if (reservationTimeRepository.existByStartAt(reservationTimeAddRequest.getStartAt())) {
+        if (reservationTimeRepository.existByStartAt(reservationTimeAddRequest.startAt())) {
             throw new IllegalArgumentException("이미 존재하는 예약시간은 추가할 수 없습니다.");
         }
         return reservationTimeRepository.save(reservationTimeAddRequest.toEntity());
