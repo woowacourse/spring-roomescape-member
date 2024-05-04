@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.controller.time.dto.AvailabilityTimeResponse;
 import roomescape.controller.time.dto.ReadTimeResponse;
-import roomescape.controller.time.dto.TimeRequest;
+import roomescape.controller.time.dto.CreateTimeRequest;
 import roomescape.repository.H2ReservationRepository;
 import roomescape.repository.H2ReservationTimeRepository;
 import roomescape.service.exception.TimeUsedException;
@@ -48,7 +48,7 @@ class TimeServiceTest {
     @DisplayName("예약 시간을 추가한다.")
     void addTIme() {
         // given
-        TimeRequest request = new TimeRequest("13:30");
+        CreateTimeRequest request = new CreateTimeRequest("13:30");
         AvailabilityTimeResponse expected = new AvailabilityTimeResponse(4L, "13:30", false);
 
         // when
