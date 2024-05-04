@@ -61,7 +61,7 @@ class ThemeAcceptanceTest extends BasicAcceptanceTest {
                 dynamicTest("인기 테마를 조회한다", () -> getTopTheme(200, TestFixtures.THEME_RESPONSES_2)),
                 dynamicTest("과거 예약을 추가한다", () -> postPastReservation("2024-04-30", "1", "11")),
                 dynamicTest("과거 예약을 추가한다", () -> postPastReservation("2024-04-30", "2", "11")),
-                dynamicTest("인기 테마를 조회한다", () -> getTopTheme(200, TestFixtures.themeResponses3))
+                dynamicTest("인기 테마를 조회한다", () -> getTopTheme(200, TestFixtures.THEME_RESPONSES_3))
         );
     }
 
