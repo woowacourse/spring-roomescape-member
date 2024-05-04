@@ -14,15 +14,12 @@ public class Theme {
     private final String thumbnail;
 
     public Theme(final Long id, final String name, final String description, final String thumbnail) {
+        validateNull(name);
+
         this.id = id;
         this.name = name;
         this.description = description;
-        this.thumbnail = thumbnail;
-    }
-
-    public static Theme from(final String name, final String description, final String thumbnail) {
-        validateNull(name);
-        return new Theme(null, name, description, getDefaultThumbnailIfNotExists(thumbnail));
+        this.thumbnail = getDefaultThumbnailIfNotExists(thumbnail);
     }
 
     private static String getDefaultThumbnailIfNotExists(final String thumbnail) {

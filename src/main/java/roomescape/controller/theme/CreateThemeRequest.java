@@ -5,6 +5,6 @@ import roomescape.domain.Theme;
 public record CreateThemeRequest(String name, String description, String thumbnail) {
 
     public Theme toDomain() {
-        return Theme.from(name, description, thumbnail);
+        return new Theme(null, name, description, thumbnail);
     }
 }
