@@ -33,8 +33,8 @@ public class FakeReservationTimeDao implements ReservationTimeRepository {
     }
 
     @Override
-    public Optional<ReservationTime> findById(final long timeId) {
-        return Optional.of(reservationTimes.get(timeId));
+    public ReservationTime findById(final long timeId) {
+        return reservationTimes.get(timeId);
     }
 
     @Override

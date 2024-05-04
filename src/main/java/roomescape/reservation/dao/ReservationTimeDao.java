@@ -29,18 +29,6 @@ public class ReservationTimeDao implements ReservationTimeRepository {
         );
     };
 
-    private final ResultSetExtractor<Optional<ReservationTime>> optionalResultSetExtractor = (ResultSet resultSet) -> {
-        if (resultSet.next()) {
-            ReservationTime reservationTime = new ReservationTime(
-                    resultSet.getLong("id"),
-                    resultSet.getTime("start_at").toLocalTime()
-            );
-            return Optional.of(reservationTime);
-        } else {
-            return Optional.empty();
-        }
-    };
-
     public ReservationTimeDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
@@ -62,9 +50,9 @@ public class ReservationTimeDao implements ReservationTimeRepository {
     }
 
     @Override
-    public Optional<ReservationTime> findById(long timeId) {
+    public ReservationTime findById(long timeId) {
         String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
-        return jdbcTemplate.query(sql, optionalResultSetExtractor, timeId);
+        return jdbcTemplate.queryForObject(sql, rowMapper, timeId);
     }
 
     @Override
