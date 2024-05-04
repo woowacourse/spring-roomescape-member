@@ -55,9 +55,7 @@ public class ReservationService {
 
     public List<ReservationResponse> findAll() {
         Reservations reservations = reservationRepository.findAll();
-        return reservations.getReservations().stream()
-                .map(ReservationResponse::from)
-                .toList();
+        return reservations.mapTo(ReservationResponse::from);
     }
 
     public void delete(long reservationId) {

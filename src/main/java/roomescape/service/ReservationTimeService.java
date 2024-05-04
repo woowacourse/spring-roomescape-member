@@ -42,9 +42,8 @@ public class ReservationTimeService {
     }
 
     public List<ReservationTimeResponse> findAll() {
-        return reservationTimeRepository.findAll().getReservationTimes().stream()
-                .map(ReservationTimeResponse::from)
-                .toList();
+        return reservationTimeRepository.findAll()
+                .mapTo(ReservationTimeResponse::from);
     }
 
     //todo : 메서드 개선
@@ -53,9 +52,8 @@ public class ReservationTimeService {
                 .orElseThrow(() -> new RoomescapeException(NOT_FOUND_THEME));
         Reservations findReservations = reservationRepository.findByThemeAndDate(requestedTheme, date);
 
-        return reservationTimeRepository.findAll().getReservationTimes().stream()
-                .map(reservationTime -> AvailableTimeResponse.of(reservationTime, findReservations))
-                .toList();
+        return reservationTimeRepository.findAll()
+                .mapTo(reservationTime -> AvailableTimeResponse.of(reservationTime, findReservations));
     }
 
     public void delete(long timeId) {

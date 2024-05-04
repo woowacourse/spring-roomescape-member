@@ -2,6 +2,7 @@ package roomescape.domain;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 public class Reservations {
     private final List<Reservation> reservations;
@@ -19,6 +20,12 @@ public class Reservations {
     public boolean hasReservationTimeOf(long timeId) {
         return reservations.stream()
                 .anyMatch(reservation -> reservation.isReservationTimeOf(timeId));
+    }
+
+    public <T> List<T> mapTo(Function<Reservation, T> mapper) {
+        return reservations.stream()
+                .map(mapper)
+                .toList();
     }
 
     public List<Reservation> getReservations() {
