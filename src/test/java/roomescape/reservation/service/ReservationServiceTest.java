@@ -16,7 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import roomescape.exception.DuplicateReservationException;
+import roomescape.exception.DuplicatedDataException;
 import roomescape.exception.PastDateReservationException;
 import roomescape.exception.PastTimeReservationException;
 import roomescape.reservation.dao.ReservationDao;
@@ -51,7 +51,7 @@ class ReservationServiceTest {
         assertAll(
                 () -> assertThatThrownBy(() -> reservationService.save(
                         new ReservationRequestDto("hotea", LocalDate.MAX.toString(), id, id)))
-                        .isInstanceOf(DuplicateReservationException.class),
+                        .isInstanceOf(DuplicatedDataException.class),
                 () -> assertThatThrownBy(() -> reservationService.save(
                         new ReservationRequestDto("hotea", LocalDate.now().minusDays(1).toString(), id, id)))
                         .isInstanceOf(PastDateReservationException.class),

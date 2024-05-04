@@ -5,17 +5,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import roomescape.exception.DuplicateReservationException;
+import roomescape.exception.DuplicatedDataException;
 import roomescape.exception.EmptyDataAccessException;
 import roomescape.exception.InvalidNameException;
 import roomescape.exception.PastDateReservationException;
 import roomescape.exception.PastTimeReservationException;
+import roomescape.exception.UnableDeleteDataException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(value = DuplicateReservationException.class)
-    public ResponseEntity<String> handleDuplicateReservation(DuplicateReservationException ex) {
+    @ExceptionHandler(value = DuplicatedDataException.class)
+    public ResponseEntity<String> handleDuplicateReservation(DuplicatedDataException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
     }
 
@@ -37,5 +38,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = EmptyDataAccessException.class)
     public ResponseEntity<String> handleEmptyResultDataAccess(EmptyDataAccessException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NO_CONTENT);
+    }
+
+    @ExceptionHandler(value = UnableDeleteDataException.class)
+    public ResponseEntity<String> handleUnableDeleteData(UnableDeleteDataException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
     }
 }

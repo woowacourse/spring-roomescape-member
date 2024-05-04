@@ -1,11 +1,12 @@
 package roomescape.theme.dao.mapper;
 
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Component;
-import roomescape.theme.domain.Theme;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
+
+import roomescape.theme.domain.Theme;
 
 @Component
 public class ThemeRowMapper implements RowMapper<Theme> {

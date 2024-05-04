@@ -1,13 +1,14 @@
 package roomescape.theme.dao.mapper;
 
-import org.h2.tools.SimpleResultSet;
-import org.junit.jupiter.api.Test;
-import roomescape.theme.domain.Theme;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.sql.SQLException;
 import java.sql.Types;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.h2.tools.SimpleResultSet;
+import org.junit.jupiter.api.Test;
+
+import roomescape.theme.domain.Theme;
 
 class ThemeRowMapperTest {
     private final ThemeRowMapper themeRowMapper = new ThemeRowMapper();

@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import roomescape.exception.DuplicateReservationException;
+import roomescape.exception.DuplicatedDataException;
 import roomescape.exception.EmptyDataAccessException;
 import roomescape.exception.PastDateReservationException;
 import roomescape.exception.PastTimeReservationException;
@@ -69,7 +69,7 @@ public class ReservationService {
         }
         boolean isExist = reservationDao.checkExistReservationOf(date, time.getId(), theme.getId());
         if (isExist) {
-            throw new DuplicateReservationException("이미 해당 날짜, 시간에 예약이 존재합니다.");
+            throw new DuplicatedDataException("이미 해당 날짜, 시간에 예약이 존재합니다.");
         }
     }
 

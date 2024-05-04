@@ -8,11 +8,15 @@ public class Theme {
     private final String description;
     private final String thumbnail;
 
-    public Theme(Long id, String name, String description, String thumbnail) {
+    public Theme(final Long id, final String name, final String description, final String thumbnail) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
+    }
+
+    public Theme(final Long id, final Theme theme) {
+        this(id, theme.name, theme.description, theme.thumbnail);
     }
 
     public Long getId() {
