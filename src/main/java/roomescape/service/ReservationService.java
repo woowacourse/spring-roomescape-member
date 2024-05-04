@@ -14,8 +14,6 @@ import roomescape.domain.Reservations;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
-import roomescape.dto.ReservationTimeResponse;
-import roomescape.dto.ThemeResponse;
 import roomescape.exception.RoomescapeException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;

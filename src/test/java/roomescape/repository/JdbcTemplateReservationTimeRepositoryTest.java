@@ -29,9 +29,11 @@ class JdbcTemplateReservationTimeRepositoryTest {
     @Test
     @DisplayName("ReservationTime 을 잘 저장하는지 확인한다.")
     void save() {
-        var beforeSave = reservationTimeRepository.findAll().getReservationTimes().stream().map(ReservationTime::getId).toList();
+        var beforeSave = reservationTimeRepository.findAll().getReservationTimes().stream().map(ReservationTime::getId)
+                .toList();
         ReservationTime saved = reservationTimeRepository.save(new ReservationTime(LocalTime.now()));
-        var afterSave = reservationTimeRepository.findAll().getReservationTimes().stream().map(ReservationTime::getId).toList();
+        var afterSave = reservationTimeRepository.findAll().getReservationTimes().stream().map(ReservationTime::getId)
+                .toList();
 
         Assertions.assertThat(afterSave)
                 .containsAll(beforeSave)
