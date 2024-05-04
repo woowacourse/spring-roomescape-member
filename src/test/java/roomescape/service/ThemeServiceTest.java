@@ -40,20 +40,65 @@ class ThemeServiceTest {
         themeService = new ThemeService(themeRepository, reservationRepository);
     }
 
-    @DisplayName("테마가 여러개 있으면 테마를 모두 조회할 수 있다.")
-    @Test
-    void findAllTest() {
-        //given
-        themeRepository.save(new Theme("name1", "description1", "thumbnail1"));
-        themeRepository.save(new Theme("name2", "description2", "thumbnail2"));
-        themeRepository.save(new Theme("name3", "description3", "thumbnail3"));
-        themeRepository.save(new Theme("name4", "description4", "thumbnail4"));
+    @DisplayName("테마가 여러개 있으면 ")
+    @Nested
+    class MultipleTheme {
+        private Theme theme1 = new Theme("name1", "description1", "thumbnail1");
+        private Theme theme2 = new Theme("name2", "description2", "thumbnail2");
+        private Theme theme3 = new Theme("name3", "description3", "thumbnail3");
+        private Theme theme4 = new Theme("name4", "description4", "thumbnail4");
 
-        //when
-        List<ThemeResponse> themeResponses = themeService.findAll();
+        @BeforeEach
+        void init() {
+            theme1 = themeRepository.save(theme1);
+            theme2 = themeRepository.save(theme2);
+            theme3 = themeRepository.save(theme3);
+            theme4 = themeRepository.save(theme4);
+        }
 
-        //then
-        assertThat(themeResponses).hasSize(4);
+        @DisplayName("테마를 모두 조회할 수 있다.")
+        @Test
+        void findAllTest() {
+            //when
+            List<ThemeResponse> themeResponses = themeService.findAll();
+
+            //then
+            assertThat(themeResponses).hasSize(4);
+        }
+
+        @DisplayName("예약 개수에 따라 인기 테마를 조회할 수 있다.")
+        @Test
+        void findPopularTest() {
+            //when
+            ReservationTime reservationTime = new ReservationTime(LocalTime.of(11, 30));
+            reservationTime = reservationTimeRepository.save(reservationTime);
+
+            reservationRepository.save(new Reservation("name", LocalDate.now().minusDays(1), reservationTime, theme1));
+            reservationRepository.save(new Reservation("name", LocalDate.now().minusDays(2), reservationTime, theme1));
+            reservationRepository.save(new Reservation("name", LocalDate.now().minusDays(3), reservationTime, theme1));
+            reservationRepository.save(new Reservation("name", LocalDate.now().minusDays(4), reservationTime, theme1));
+            reservationRepository.save(new Reservation("name", LocalDate.now().minusDays(5), reservationTime, theme1));
+
+            reservationRepository.save(new Reservation("name", LocalDate.now().minusDays(1), reservationTime, theme3));
+            reservationRepository.save(new Reservation("name", LocalDate.now().minusDays(2), reservationTime, theme3));
+            reservationRepository.save(new Reservation("name", LocalDate.now().minusDays(3), reservationTime, theme3));
+
+            reservationRepository.save(new Reservation("name", LocalDate.now().minusDays(1), reservationTime, theme2));
+            reservationRepository.save(new Reservation("name", LocalDate.now().minusDays(3), reservationTime, theme2));
+
+            reservationRepository.save(new Reservation("name", LocalDate.now().minusDays(3), reservationTime, theme4));
+
+            //when
+            List<ThemeResponse> popularThemes = themeService.findAndOrderByPopularity(
+                    LocalDate.now().minusDays(7), LocalDate.now().minusDays(1), 5);
+
+            assertThat(popularThemes).contains(
+                    ThemeResponse.from(theme1),
+                    ThemeResponse.from(theme3),
+                    ThemeResponse.from(theme2),
+                    ThemeResponse.from(theme4)
+            );
+        }
     }
 
     @DisplayName("테마, 시간이 하나 존재할 때")

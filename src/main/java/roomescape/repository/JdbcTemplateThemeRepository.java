@@ -1,7 +1,6 @@
 package roomescape.repository;
 
 import java.sql.PreparedStatement;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.DataAccessException;
@@ -33,23 +32,6 @@ public class JdbcTemplateThemeRepository implements ThemeRepository {
         List<Theme> findThemes = jdbcTemplate.query(
                 "SELECT id, name, description, thumbnail FROM THEME", THEME_ROW_MAPPER
         );
-        return new Themes(findThemes);
-    }
-
-    @Override
-    public Themes findAndOrderByPopularity(LocalDate start, LocalDate end, int count) {
-        List<Theme> findThemes = jdbcTemplate.query(
-                """
-                        SELECT TH.*, COUNT(*) AS count FROM THEME TH
-                            JOIN RESERVATION R
-                            ON R.theme_id = TH.id
-                        WHERE R.date >= ? AND R.date <= ?
-                        GROUP BY TH.id
-                        ORDER BY count
-                        DESC
-                        LIMIT ?
-                        """,
-                THEME_ROW_MAPPER, start, end, count);
         return new Themes(findThemes);
     }
 

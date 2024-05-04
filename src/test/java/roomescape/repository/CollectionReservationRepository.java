@@ -3,10 +3,14 @@ package roomescape.repository;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 import roomescape.domain.Reservation;
 import roomescape.domain.Reservations;
 import roomescape.domain.Theme;
+import roomescape.domain.Themes;
 
 public class CollectionReservationRepository implements ReservationRepository {
     private final List<Reservation> reservations;
@@ -40,6 +44,21 @@ public class CollectionReservationRepository implements ReservationRepository {
                 .filter(reservation -> reservation.isDateOf(date))
                 .toList();
         return new Reservations(findReservations);
+    }
+
+    @Override
+    public Themes findAndOrderByPopularity(LocalDate start, LocalDate end, int count) {
+        Map<Theme, Long> collect = reservations.stream()
+                .filter(reservation -> reservation.getDate().isAfter(start) || reservation.getDate().isEqual(start))
+                .filter(reservation -> reservation.getDate().isBefore(end))
+                .map(Reservation::getTheme)
+                .collect(Collectors.groupingBy(theme -> theme, Collectors.counting()));
+        List<Theme> themes = collect.entrySet().stream()
+                .sorted(Entry.comparingByValue())
+                .limit(count)
+                .map(Entry::getKey)
+                .toList();
+        return new Themes(themes);
     }
 
     @Override

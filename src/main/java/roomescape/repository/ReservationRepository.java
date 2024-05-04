@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import roomescape.domain.Reservation;
 import roomescape.domain.Reservations;
 import roomescape.domain.Theme;
+import roomescape.domain.Themes;
 
 public interface ReservationRepository {
     Reservation save(Reservation reservation);
@@ -11,6 +12,8 @@ public interface ReservationRepository {
     Reservations findAll();
 
     Reservations findByThemeAndDate(Theme theme, LocalDate date);
+
+    Themes findAndOrderByPopularity(LocalDate start, LocalDate end, int count);
 
     boolean existByTimeId(long timeId);
 

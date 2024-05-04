@@ -3,7 +3,6 @@ package roomescape.repository;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -14,6 +13,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Reservations;
 import roomescape.domain.Theme;
+import roomescape.domain.Themes;
 
 @Repository
 public class JdbcTemplateReservationRepository implements ReservationRepository {
@@ -33,6 +33,13 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
                     rs.getString("thumbnail")
             )
     );
+    private static final RowMapper<Theme> THEME_ROW_MAPPER = (rs, rowNum) ->
+            new Theme(
+                    rs.getLong("id"),
+                    rs.getString("name"),
+                    rs.getString("description"),
+                    rs.getString("thumbnail")
+            );
 
     public JdbcTemplateReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -101,6 +108,23 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
         List<Reservation> findReservations = jdbcTemplate.query(query, RESERVATION_ROW_MAPPER, theme.getId(),
                 Date.valueOf(date));
         return new Reservations(findReservations);
+    }
+
+    @Override
+    public Themes findAndOrderByPopularity(LocalDate start, LocalDate end, int count) {
+        List<Theme> findThemes = jdbcTemplate.query(
+                """
+                        SELECT TH.*, COUNT(*) AS count FROM THEME TH
+                            JOIN RESERVATION R
+                            ON R.theme_id = TH.id
+                        WHERE R.date >= ? AND R.date <= ?
+                        GROUP BY TH.id
+                        ORDER BY count
+                        DESC
+                        LIMIT ?
+                        """,
+                THEME_ROW_MAPPER, start, end, count);
+        return new Themes(findThemes);
     }
 
     @Override

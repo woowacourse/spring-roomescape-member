@@ -41,7 +41,7 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> findAndOrderByPopularity(LocalDate start, LocalDate end, int count) {
-        return themeRepository.findAndOrderByPopularity(start, end, count)
+        return reservationRepository.findAndOrderByPopularity(start, end, count)
                 .mapTo(ThemeResponse::from);
     }
 
