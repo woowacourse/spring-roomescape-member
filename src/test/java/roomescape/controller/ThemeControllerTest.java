@@ -100,7 +100,7 @@ class ThemeControllerTest extends ControllerTest {
         final ThemeResponse expectedWootecoResponse = new ThemeResponse(1L, WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL);
         final ThemeResponse expectedHorrorResponse = new ThemeResponse(2L, HORROR_THEME_NAME, HORROR_THEME_DESCRIPTION, THEME_THUMBNAIL);
 
-        given(themeService.findAllPopular())
+        given(themeService.findPopularThemes())
                 .willReturn(List.of(expectedWootecoResponse, expectedHorrorResponse));
 
         // when & then

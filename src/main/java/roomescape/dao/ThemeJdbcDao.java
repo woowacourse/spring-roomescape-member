@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
 
 import javax.sql.DataSource;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -62,17 +63,16 @@ public class ThemeJdbcDao implements ThemeDao {
     }
 
     @Override
-    public List<Theme> findAllOrderByReservationCountInLastWeek() {
+    public List<Theme> findTopThemesByReservationCountDuringPeriod(final int period, final int limit) {
         final String sql = """
-                SELECT th.id AS id, th.name AS name, th.description AS description, th.thumbnail AS thumbnail, 
-                    COUNT(r.id) AS reservation_count
+                SELECT th.id AS id, th.name AS name, th.description AS description, th.thumbnail AS thumbnail
                 FROM theme th
                 LEFT OUTER JOIN reservation r
-                ON r.theme_id = th.id  AND  r.date >= CURRENT_DATE() - 7
-                GROUP BY th.id, th.name, th.description, th.thumbnail
-                ORDER BY reservation_count DESC
-                LIMIT 10
+                ON r.theme_id = th.id  AND  r.date >= ?
+                GROUP BY th.id
+                ORDER BY COUNT(r.id) DESC
+                LIMIT ?
                 """;
-        return jdbcTemplate.query(sql, rowMapper);
+        return jdbcTemplate.query(sql, rowMapper, LocalDate.now().minusDays(period), limit);
     }
 }

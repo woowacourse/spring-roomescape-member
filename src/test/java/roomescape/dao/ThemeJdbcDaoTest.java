@@ -121,7 +121,7 @@ class ThemeJdbcDaoTest extends DaoTest {
                 "냥", "2030-05-03", 1L, 2L);
 
         // when
-        final List<Theme> allOrderByReservationCountInLastWeek = themeDao.findAllOrderByReservationCountInLastWeek();
+        final List<Theme> allOrderByReservationCountInLastWeek = themeDao.findTopThemesByReservationCountDuringPeriod(7, 10);
 
         // then
         assertThat(allOrderByReservationCountInLastWeek).extracting(Theme::getName)

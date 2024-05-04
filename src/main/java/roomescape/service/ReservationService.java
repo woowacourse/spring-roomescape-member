@@ -12,6 +12,7 @@ import java.util.List;
 @Service
 @Transactional
 public class ReservationService {
+
     private static final int MAX_RESERVATIONS_PER_TIME = 1;
 
     private final ReservationDao reservationDao;

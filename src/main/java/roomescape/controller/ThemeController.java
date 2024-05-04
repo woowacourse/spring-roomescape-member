@@ -38,6 +38,6 @@ public class ThemeController {
 
     @GetMapping("/popular")
     public ResponseEntity<List<ThemeResponse>> findAllPopular() {
-        return ResponseEntity.ok(themeService.findAllPopular());
+        return ResponseEntity.ok(themeService.findPopularThemes());
     }
 }

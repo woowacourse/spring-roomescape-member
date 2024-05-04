@@ -129,11 +129,11 @@ class ThemeServiceTest {
         // given
         final List<Theme> expectedThemes = List.of(WOOTECO_THEME(1L), HORROR_THEME(2L));
 
-        given(themeDao.findAllOrderByReservationCountInLastWeek())
+        given(themeDao.findTopThemesByReservationCountDuringPeriod(7, 10))
                 .willReturn(expectedThemes);
 
         // when
-        final List<ThemeResponse> responses = themeService.findAllPopular();
+        final List<ThemeResponse> responses = themeService.findPopularThemes();
 
         // then
         final ThemeResponse expectedWootecoTheme = ThemeResponse.from(WOOTECO_THEME(1L));

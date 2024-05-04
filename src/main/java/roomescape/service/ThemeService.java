@@ -12,6 +12,10 @@ import java.util.List;
 @Service
 @Transactional
 public class ThemeService {
+
+    private static final int POPULARITY_AGGREGATION_PERIOD = 7;
+    private static final int POPULARITY_LIMIT = 10;
+
     private final ThemeDao themeDao;
 
     public ThemeService(final ThemeDao themeDao) {
@@ -44,8 +48,9 @@ public class ThemeService {
     }
 
     @Transactional(readOnly = true)
-    public List<ThemeResponse> findAllPopular() {
-        final List<Theme> allOrderByReservationCountInLastWeek = themeDao.findAllOrderByReservationCountInLastWeek();
+    public List<ThemeResponse> findPopularThemes() {
+        final List<Theme> allOrderByReservationCountInLastWeek
+                = themeDao.findTopThemesByReservationCountDuringPeriod(POPULARITY_AGGREGATION_PERIOD, POPULARITY_LIMIT);
         return allOrderByReservationCountInLastWeek.stream()
                 .map(ThemeResponse::from)
                 .toList();
