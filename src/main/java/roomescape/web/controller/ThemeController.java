@@ -45,8 +45,10 @@ public class ThemeController {
     public ResponseEntity<List<ThemeResponse>> readThemes(
             @RequestParam(required = false, defaultValue = "false") boolean showRanking
     ) {
-        List<ThemeResponse> responses = themeService.findAll(showRanking);
+        if (showRanking) {
+            return ResponseEntity.ok(themeService.findPopularThemes());
+        }
 
-        return ResponseEntity.ok(responses);
+        return ResponseEntity.ok(themeService.findAll());
     }
 }

@@ -39,17 +39,17 @@ public class ThemeService {
         themeRepository.removeById(id);
     }
 
-    public List<ThemeResponse> findAll(boolean showRanking) {
-        if (showRanking) {
-            LocalDate startDate = LocalDate.now().minusDays(POPULAR_THEMES_START_DAYS_OF_SUBTRACT);
-            LocalDate endDate = LocalDate.now().minusDays(POPULAR_THEMES_END_DAYS_OF_SUBTRACT);
-
-            return themeRepository.findPopularThemes(startDate, endDate, POPULAR_THEMES_LIMIT_COUNT).stream()
-                    .map(ThemeResponse::from)
-                    .toList();
-        }
-
+    public List<ThemeResponse> findAll() {
         return themeRepository.findAll().stream()
+                .map(ThemeResponse::from)
+                .toList();
+    }
+
+    public List<ThemeResponse> findPopularThemes() {
+        LocalDate startDate = LocalDate.now().minusDays(POPULAR_THEMES_START_DAYS_OF_SUBTRACT);
+        LocalDate endDate = LocalDate.now().minusDays(POPULAR_THEMES_END_DAYS_OF_SUBTRACT);
+
+        return themeRepository.findPopularThemes(startDate, endDate, POPULAR_THEMES_LIMIT_COUNT).stream()
                 .map(ThemeResponse::from)
                 .toList();
     }
