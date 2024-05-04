@@ -2,6 +2,7 @@ package roomescape.time.dao;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import roomescape.time.domain.Time;
 
 public interface TimeDao {
@@ -10,7 +11,7 @@ public interface TimeDao {
 
     List<Time> findAllReservationTimesInOrder();
 
-    Time findById(long reservationTimeId);
+    Optional<Time> findById(long reservationTimeId);
 
     void deleteById(long reservationTimeId);
 

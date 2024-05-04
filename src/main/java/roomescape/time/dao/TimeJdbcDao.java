@@ -2,12 +2,13 @@ package roomescape.time.dao;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import javax.sql.DataSource;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import roomescape.time.domain.Time;
 
@@ -45,11 +46,18 @@ public class TimeJdbcDao implements TimeDao {
     }
 
     @Override
-    public Time findById(long reservationTimeId) {
+    public Optional<Time> findById(long reservationTimeId) {
         String findReservationTimeSql = "SELECT start_at FROM reservation_time WHERE id = ?";
-        return jdbcTemplate.queryForObject(findReservationTimeSql, (resultSet, rowNum) -> new Time(
-                reservationTimeId,
-                resultSet.getTime(TIME_START_ATTRIBUTE).toLocalTime()), reservationTimeId);
+
+        try {
+            Time time = jdbcTemplate.queryForObject(findReservationTimeSql, (resultSet, rowNum) -> new Time(
+                    reservationTimeId,
+                    resultSet.getTime(TIME_START_ATTRIBUTE).toLocalTime()), reservationTimeId);
+
+            return Optional.of(time);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
