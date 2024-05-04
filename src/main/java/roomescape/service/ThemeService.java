@@ -3,11 +3,14 @@ package roomescape.service;
 import org.springframework.stereotype.Service;
 import roomescape.controller.theme.CreateThemeRequest;
 import roomescape.controller.theme.CreateThemeResponse;
+import roomescape.controller.theme.PopularThemeRequest;
+import roomescape.controller.theme.PopularThemeResponse;
 import roomescape.domain.Theme;
-import roomescape.service.exception.ThemeUsedException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
+import roomescape.service.exception.ThemeUsedException;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -38,5 +41,20 @@ public class ThemeService {
             throw new ThemeUsedException("예약된 테마는 삭제할 수 없습니다.");
         }
         return themeRepository.delete(id);
+    }
+
+    public List<PopularThemeResponse> getPopularThemes(PopularThemeRequest popularThemeRequest) {
+        // TODO: validate days limit
+        final LocalDate startFilterDate = LocalDate.now().minusDays(popularThemeRequest.days());
+        final LocalDate endFilterDate = LocalDate.now().minusDays(-1);
+
+        final List<Theme> popularThemes = themeRepository.findPopularThemes(
+                startFilterDate,
+                endFilterDate,
+                popularThemeRequest.count()
+        );
+        return popularThemes.stream()
+                .map(PopularThemeResponse::from)
+                .toList();
     }
 }

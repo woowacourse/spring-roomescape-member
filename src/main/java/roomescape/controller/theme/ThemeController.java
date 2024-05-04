@@ -7,11 +7,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 import roomescape.service.ThemeService;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -49,5 +51,13 @@ public class ThemeController {
         }
         return ResponseEntity.noContent()
                 .build();
+    }
+
+    @GetMapping("/popular")
+    public List<PopularThemeResponse> getPopularThemes(
+            @RequestParam final int days,
+            @RequestParam final int count
+    ) {
+        return themeService.getPopularThemes(new PopularThemeRequest(days, count));
     }
 }

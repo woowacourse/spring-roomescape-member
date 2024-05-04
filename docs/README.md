@@ -243,7 +243,7 @@ HTTP/1.1 204
 **request**
 
 ```http request
-GET /reservations/popular-themes HTTP/1.1
+GET /themes/popular HTTP/1.1
 ```
 
 **response**

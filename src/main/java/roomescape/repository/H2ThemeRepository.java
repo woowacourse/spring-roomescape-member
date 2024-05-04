@@ -10,11 +10,14 @@ import roomescape.domain.Theme;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public class H2ThemeRepository implements ThemeRepository {
+
+    private final String TABLE_NAME = "THEME";
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -22,7 +25,7 @@ public class H2ThemeRepository implements ThemeRepository {
     public H2ThemeRepository(final DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName("THEME")
+                .withTableName(TABLE_NAME)
                 .usingGeneratedKeyColumns("ID");
     }
 
@@ -32,6 +35,15 @@ public class H2ThemeRepository implements ThemeRepository {
                 rs.getString("NAME"),
                 rs.getString("DESCRIPTION"),
                 rs.getString("THUMBNAIL")
+        );
+    }
+
+    private Theme mapRowThemeWithTableName(ResultSet rs, int rowNum) throws SQLException {
+        return new Theme(
+                rs.getLong(TABLE_NAME + ".ID"),
+                rs.getString(TABLE_NAME + ".NAME"),
+                rs.getString(TABLE_NAME + ".DESCRIPTION"),
+                rs.getString(TABLE_NAME + ".THUMBNAIL")
         );
     }
 
@@ -49,6 +61,26 @@ public class H2ThemeRepository implements ThemeRepository {
         return jdbcTemplate.query(sql, this::mapRowTheme, id)
                 .stream()
                 .findAny();
+    }
+
+    @Override
+    public List<Theme> findPopularThemes(
+            final LocalDate start,
+            final LocalDate end,
+            final int count
+    ) {
+        // TODO: change JOIN keyword to INNER JOIN for others
+        final String sql = """
+                SELECT T.ID, T.NAME, T.THUMBNAIL, T.DESCRIPTION, COUNT(T.ID) AS FREQUENCY
+                FROM THEME AS T
+                INNER JOIN RESERVATION R ON R.THEME_ID = T.ID
+                WHERE R.DATE BETWEEN ? AND ?
+                GROUP BY (T.ID)
+                ORDER BY FREQUENCY DESC
+                LIMIT ?
+                """;
+
+        return jdbcTemplate.query(sql, this::mapRowThemeWithTableName, start, end, count);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package roomescape.controller.reservation;
+package roomescape.controller.theme;
 
 import roomescape.domain.Theme;
 

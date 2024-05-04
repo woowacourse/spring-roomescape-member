@@ -130,27 +130,4 @@ public class H2ReservationRepository implements ReservationRepository {
 
         return jdbcTemplate.update(sql, id);
     }
-
-    @Override
-    public List<Theme> findPopularThemes(final LocalDate today) {
-        final LocalDate popularRangeStart = today.minusDays(7);
-        final LocalDate popularRangeEnd = today.minusDays(1);
-
-        final String sql = """
-                SELECT R.THEME_ID, T.NAME, T.THUMBNAIL, T.DESCRIPTION, COUNT(T.ID) AS COUNT FROM RESERVATION AS R
-                JOIN RESERVATION_TIME RT ON RT.ID = R.TIME_ID
-                JOIN THEME T ON T.ID = R.THEME_ID
-                WHERE R.DATE BETWEEN  ? AND ?
-                GROUP BY (R.THEME_ID)
-                ORDER BY COUNT DESC
-                LIMIT 10
-                """;
-
-        return jdbcTemplate.query(sql, ((rs, rowNum) -> new Theme(
-                rs.getLong("RESERVATION.THEME_ID"),
-                rs.getString("THEME.NAME"),
-                rs.getString("THEME.DESCRIPTION"),
-                rs.getString("THEME.THUMBNAIL")
-        )), popularRangeStart, popularRangeEnd);
-    }
 }
