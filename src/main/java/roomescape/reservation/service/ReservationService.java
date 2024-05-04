@@ -23,9 +23,8 @@ public class ReservationService {
     }
 
     public ReservationResponse addReservation(ReservationRequest reservationRequest) {
-        Reservation reservation = reservationRequest.fromRequest();
-        Time time = timeDao.findById(reservation.getReservationTime()
-                                             .getId());
+        Reservation reservation = reservationRequest.toReservation();
+        Time time = timeDao.findById(reservation.getReservationTime().getId());
         reservation.setTime(time);
         Reservation savedReservation = reservationDao.save(reservation);
         return ReservationResponse.fromReservation(savedReservation);
