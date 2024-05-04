@@ -3,7 +3,6 @@ package roomescape.domain;
 import roomescape.exception.BadRequestException;
 
 import java.time.LocalDate;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -77,18 +76,5 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Reservation that = (Reservation) o;
-        return Objects.equals(id, that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
     }
 }
