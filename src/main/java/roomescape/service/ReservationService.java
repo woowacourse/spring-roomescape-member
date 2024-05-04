@@ -70,7 +70,7 @@ public class ReservationService {
     }
 
     private void validateDuplicatedReservation(Reservation reservation) {
-        if (reservationRepository.existsByDateAndTimeIdAndThemeId(
+        if (reservationRepository.existsByReservation(
                 reservation.getDate(),
                 reservation.getTimeId(),
                 reservation.getThemeId()
