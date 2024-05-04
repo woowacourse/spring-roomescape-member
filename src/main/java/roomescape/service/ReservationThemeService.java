@@ -7,6 +7,7 @@ import roomescape.domain.ReservationTheme;
 import roomescape.dto.ReservationThemeRequestDto;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 @Service
@@ -36,7 +37,8 @@ public class ReservationThemeService {
     }
 
     public List<ReservationTheme> getWeeklyBestThemes() {
-        LocalDate now = LocalDate.now();
+        ZoneId kst = ZoneId.of("Asia/Seoul");
+        LocalDate now = LocalDate.now(kst);
         LocalDate from = now.minusWeeks(1);
         LocalDate to = now.minusDays(1);
 

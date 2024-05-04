@@ -13,6 +13,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,9 +53,10 @@ public class ReservationControllerTest {
     @DisplayName("정상적인 예약 추가 요청 시 201으로 응답한다.")
     @Test
     void insertTest() throws JsonProcessingException {
+        ZoneId kst = ZoneId.of("Asia/Seoul");
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", LocalDate.now().plusDays(2).toString());
+        params.put("date", LocalDate.now(kst).plusDays(2).toString());
         params.put("timeId", 1);
         params.put("themeId", 1);
 

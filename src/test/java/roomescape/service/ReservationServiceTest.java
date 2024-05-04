@@ -10,6 +10,7 @@ import roomescape.domain.Reservation;
 import roomescape.dto.ReservationRequestDto;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
@@ -38,7 +39,8 @@ public class ReservationServiceTest {
     @DisplayName("예약을 추가한다.")
     @Test
     void insertReservationTest() {
-        ReservationRequestDto reservationRequestDto = new ReservationRequestDto("test", LocalDate.now().plusDays(1), 1L, 1L);
+        ZoneId kst = ZoneId.of("Asia/Seoul");
+        ReservationRequestDto reservationRequestDto = new ReservationRequestDto("test", LocalDate.now(kst).plusDays(1), 1L, 1L);
         Reservation reservation = reservationService.insertReservation(reservationRequestDto);
 
         assertThat(reservation.getId()).isEqualTo(2L);
@@ -57,7 +59,8 @@ public class ReservationServiceTest {
     @DisplayName("현재 시간 이전의 시간으로 예약할 수 없다.")
     @Test
     void invalidDateTimeTest() {
-        LocalDate localDate = LocalDate.now().minusDays(2);
+        ZoneId kst = ZoneId.of("Asia/Seoul");
+        LocalDate localDate = LocalDate.now(kst).minusDays(2);
 
         ReservationRequestDto reservationRequestDto = new ReservationRequestDto("test", localDate, 1L, 1L);
 
@@ -69,7 +72,8 @@ public class ReservationServiceTest {
     @DisplayName("같은 날짜, 시간, 테마에 대한 중복 예약은 불가능하다.")
     @Test
     void duplicatedReservationTest() {
-        ReservationRequestDto reservationRequestDto = new ReservationRequestDto("test", LocalDate.now().plusDays(2), 1L, 1L);
+        ZoneId kst = ZoneId.of("Asia/Seoul");
+        ReservationRequestDto reservationRequestDto = new ReservationRequestDto("test", LocalDate.now(kst).plusDays(2), 1L, 1L);
 
         reservationService.insertReservation(reservationRequestDto);
 

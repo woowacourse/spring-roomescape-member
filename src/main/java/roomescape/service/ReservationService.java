@@ -13,6 +13,7 @@ import roomescape.dto.ReservationRequestDto;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 
 @Service
@@ -48,7 +49,8 @@ public class ReservationService {
 
     private void validatePast(LocalDate localDate, LocalTime localTime) {
         LocalDateTime inputDateTime = LocalDateTime.of(localDate, localTime);
-        if (LocalDateTime.now().isAfter(inputDateTime)) {
+        ZoneId kst = ZoneId.of("Asia/Seoul");
+        if (LocalDateTime.now(kst).isAfter(inputDateTime)) {
             throw new IllegalArgumentException("지나간 날짜와 시간에 대한 예약 생성은 불가능합니다.");
         }
     }
