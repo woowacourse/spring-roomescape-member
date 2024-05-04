@@ -131,7 +131,7 @@ public class ReservationAcceptanceTest {
                 .then()
                 .log()
                 .all()
-                .statusCode(500);
+                .statusCode(400);
     }
 
     @Test
