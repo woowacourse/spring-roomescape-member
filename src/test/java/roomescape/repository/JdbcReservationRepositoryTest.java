@@ -17,11 +17,10 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
-/**
- * 테스트 초기 데이터 {ID=1, NAME=리비, DATE=내일, TIME={ID=1, START_AT=10:00}, THEME={ID=1, NAME=잠실 캠퍼스 탈출}} {ID=2, NAME=도도,
- * DATE=내일, TIME={ID=2, START_AT=11:00}, THEME={ID=1, NAME=잠실 캠퍼스 탈출}} {ID=3, NAME=썬, DATE=내일, TIME={ID=2,
- * START_AT=10:00}, THEME={ID=2, NAME=선릉 캠퍼스 탈출}}
- */
+// 테스트 초기 데이터
+// 예약1: {ID=1, NAME=리비, DATE=내일, TIME={ID=1, START_AT=10:00}, THEME={ID=1, NAME=잠실 캠퍼스 탈출}}
+// 예약2: {ID=2, NAME=도도, DATE=내일, TIME={ID=2, START_AT=11:00}, THEME={ID=1, NAME=잠실 캠퍼스 탈출}}
+// 예약3: {ID=3, NAME=썬 , DATE=내일, TIME={ID=2, START_AT=10:00}, THEME={ID=2, NAME=선릉 캠퍼스 탈출}}
 @JdbcTest
 @Sql(scripts = "/test_data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_CLASS)
 class JdbcReservationRepositoryTest {
