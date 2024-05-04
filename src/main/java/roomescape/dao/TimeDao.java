@@ -76,7 +76,7 @@ public class TimeDao {
         }, keyHolder);
 
         Long id = keyHolder.getKey().longValue();
-        return time.withId(id);
+        return time.createWithId(id);
     }
 
     public void deleteTime(Long id) {

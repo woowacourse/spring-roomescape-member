@@ -84,7 +84,7 @@ public class ThemeDao {
         }, keyHolder);
 
         Long id = keyHolder.getKey().longValue();
-        return theme.withId(id);
+        return theme.createWithId(id);
     }
 
     public void deleteTheme(Long id) {
