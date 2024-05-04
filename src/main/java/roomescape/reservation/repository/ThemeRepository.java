@@ -54,7 +54,7 @@ public class ThemeRepository {
         return jdbcTemplate.query(sql, createThemeRowMapper());
     }
 
-    public List<Theme> findPopularThemeLimitTen() {
+    public List<Theme> findTopTenPopularThemesOfWeek() {
         String sql = """
                 select t.id, t.name, t.description, t.thumbnail, count(*) as cnt
                 from theme t
