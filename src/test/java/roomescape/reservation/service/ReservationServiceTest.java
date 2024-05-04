@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.reservation.domain.Description;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
@@ -54,7 +55,7 @@ class ReservationServiceTest {
     @DisplayName("중복된 예약이 있다면 예외가 발생한다.")
     void duplicateReservationExceptionTest() {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
-        Theme theme = new Theme(new ThemeName("공포"), "무서운 테마", "https://i.pinimg.com/236x.jpg");
+        Theme theme = new Theme(new ThemeName("공포"), new Description("무서운 테마"), "https://i.pinimg.com/236x.jpg");
 
         doReturn(Optional.of(reservationTime)).when(reservationTimeRepository)
                 .findById(1L);

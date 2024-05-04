@@ -4,8 +4,8 @@ import java.util.regex.Pattern;
 
 public class ReservationName {
 
-    private static final int NAME_LENGTH = 4;
     private static final Pattern RESERVATION_NAME_FORMAT = Pattern.compile("^[가-힣]+$");
+    private static final int NAME_LENGTH = 4;
     private final String name;
 
     public ReservationName(String name) {

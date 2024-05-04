@@ -4,16 +4,16 @@ public class Theme {
 
     private Long id;
     private final ThemeName themeName;
-    private final String description;
+    private final Description description;
     private final String thumbnail;
 
-    public Theme(ThemeName themeName, String description, String thumbnail) {
+    public Theme(ThemeName themeName, Description description, String thumbnail) {
         this.themeName = themeName;
         this.description = description;
         this.thumbnail = thumbnail;
     }
 
-    public Theme(Long id, ThemeName themeName, String description, String thumbnail) {
+    public Theme(Long id, ThemeName themeName, Description description, String thumbnail) {
         this.id = id;
         this.themeName = themeName;
         this.description = description;
@@ -29,7 +29,7 @@ public class Theme {
     }
 
     public String getDescription() {
-        return description;
+        return description.getText();
     }
 
     public String getThumbnail() {

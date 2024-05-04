@@ -5,8 +5,8 @@ import java.util.regex.Pattern;
 public class ThemeName {
 
 
-    private static final int NAME_LENGTH = 10;
     private static final Pattern THEME_NAME_FORMAT = Pattern.compile("^[가-힣0-9a-zA-Z\\s]+$");
+    private static final int NAME_LENGTH = 10;
     private final String name;
 
     public ThemeName(String name) {

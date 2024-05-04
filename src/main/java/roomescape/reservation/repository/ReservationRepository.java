@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.reservation.domain.Description;
 import roomescape.reservation.domain.ReservationName;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
@@ -116,7 +117,7 @@ public class ReservationRepository {
                     new Theme(
                             rs.getLong("theme_id"),
                             new ThemeName(rs.getString("theme_name")),
-                            rs.getString("description"),
+                            new Description(rs.getString("description")),
                             rs.getString("thumbnail")
                     ),
                     new ReservationTime(
