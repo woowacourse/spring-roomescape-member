@@ -23,7 +23,8 @@ import roomescape.exceptions.UserException;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Sql("/initial_test_data.sql")
-class ReservationServiceTest {
+class
+ReservationServiceTest {
 
     @Autowired
     private ReservationService reservationService;

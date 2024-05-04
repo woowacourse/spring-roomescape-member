@@ -1,6 +1,8 @@
 package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.InitialDataFixture.RESERVATION_TIME_1;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -13,6 +15,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.request.ReservationTimeAddRequest;
 import roomescape.dto.response.ReservationTimeResponse;
+import roomescape.exceptions.UserException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -23,6 +26,14 @@ class ReservationTimeServiceTest {
     private ReservationTimeService reservationTimeService;
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Test
+    @DisplayName("중복된 시간을 저장하려고 하면 예외가 발생한다.")
+    void saveDuplicatedGetTime() {
+        assertThatThrownBy(
+                () -> reservationTimeService.addTime(new ReservationTimeAddRequest(RESERVATION_TIME_1.getStartAt()))
+        ).isInstanceOf(UserException.class);
+    }
 
     @Test
     @DisplayName("예약 가능 시간을 추가하고 id값을 붙여서 응답 DTO를 생성한다.")
