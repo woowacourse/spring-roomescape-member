@@ -45,7 +45,7 @@ public class ThemeRepository {
 
     public List<Theme> findTopNByReservationCount(LocalDate startDate, LocalDate endDate, int count) {
         String sql = """
-                SELECT t.*, COUNT(r.theme_id)
+                SELECT t.*
                 FROM theme t
                 RIGHT JOIN reservation r ON t.id = r.theme_id
                 WHERE r.date BETWEEN ? AND ?

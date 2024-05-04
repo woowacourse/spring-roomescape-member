@@ -15,7 +15,6 @@ import roomescape.dto.time.TimeResponse;
 import roomescape.service.TimeService;
 
 @RestController
-@RequestMapping("/times")
 public class TimeController {
 
     private final TimeService timeService;
@@ -24,14 +23,14 @@ public class TimeController {
         this.timeService = timeService;
     }
 
-    @GetMapping
+    @GetMapping("/times")
     public ResponseEntity<List<TimeResponse>> readTimes() {
         List<TimeResponse> timeResponses = timeService.findAllTimes();
 
         return ResponseEntity.ok(timeResponses);
     }
 
-    @PostMapping
+    @PostMapping("/times")
     public ResponseEntity<TimeResponse> createTime(@RequestBody TimeRequest timeRequest) {
         TimeResponse timeResponse = timeService.createTime(timeRequest);
 
@@ -39,7 +38,7 @@ public class TimeController {
                 .body(timeResponse);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/times/{id}")
     public ResponseEntity<Void> deleteTime(@PathVariable Long id) {
         timeService.deleteTime(id);
 
