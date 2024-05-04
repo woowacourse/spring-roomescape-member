@@ -42,7 +42,7 @@ public class H2ReservationRepository implements ReservationRepository {
         return jdbcTemplate.query(sql, ((rs, rowNum) -> new Reservation(
                 rs.getLong("ID"),
                 rs.getString("NAME"),
-                rs.getString("DATE"),
+                rs.getDate("DATE").toLocalDate(),
                 new ReservationTime(
                         rs.getLong("RESERVATION.ID"),
                         rs.getTime("RESERVATION_TIME.START_AT").toLocalTime()
@@ -69,11 +69,15 @@ public class H2ReservationRepository implements ReservationRepository {
         return jdbcTemplate.query(sql, ((rs, rowNum) -> new Reservation(
                         rs.getLong("ID"),
                         rs.getString("NAME"),
-                        rs.getString("DATE"),
+                        rs.getDate("DATE").toLocalDate(),
                         new ReservationTime(
                                 rs.getLong("TIME_ID"),
                                 rs.getTime("START_AT").toLocalTime()),
-                        new Theme(rs.getLong("RESERVATION.THEME_ID")))),
+                        new Theme(
+                                rs.getLong("RESERVATION.THEME_ID"),
+                                null,
+                                null,
+                                null))),
                 date, themeId);
     }
 
@@ -106,9 +110,9 @@ public class H2ReservationRepository implements ReservationRepository {
         return new Reservation(
                 rs.getLong("ID"),
                 rs.getString("NAME"),
-                rs.getString("DATE"),
+                rs.getDate("DATE").toLocalDate(),
                 new ReservationTime(rs.getLong("RESERVATION.TIME_ID"), null),
-                new Theme(rs.getLong("RESERVATION.THEME_ID"))
+                new Theme(rs.getLong("RESERVATION.THEME_ID"), null, null, null)
         );
     }
 

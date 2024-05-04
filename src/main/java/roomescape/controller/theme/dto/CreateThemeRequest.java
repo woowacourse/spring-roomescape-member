@@ -13,6 +13,6 @@ public record CreateThemeRequest(
         String thumbnail) {
 
     public Theme toDomain() {
-        return new Theme(name, description, thumbnail);
+        return new Theme(null, name, description, thumbnail);
     }
 }

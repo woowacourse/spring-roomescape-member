@@ -1,9 +1,6 @@
 package roomescape.domain;
 
-import roomescape.domain.exception.InvalidDateException;
-
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.Objects;
 
 public class Reservation {
@@ -20,23 +17,6 @@ public class Reservation {
         this.date = date;
         this.time = time;
         this.theme = theme;
-    }
-
-    public Reservation(final Long id, final String name, final String date,
-                       final ReservationTime time, final Theme theme) {
-        this.id = id;
-        this.name = name;
-        this.date = validateFormatAndConvert(date);
-        this.time = time;
-        this.theme = theme;
-    }
-
-    private LocalDate validateFormatAndConvert(final String date) {
-        try {
-            return LocalDate.parse(date);
-        } catch (DateTimeParseException exception) {
-            throw new InvalidDateException("유효하지 않은 날짜입니다.");
-        }
     }
 
     public Long getId() {

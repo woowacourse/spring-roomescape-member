@@ -15,22 +15,11 @@ public class Theme {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.thumbnail = thumbnail;
-    }
-
-    public Theme(final Long id) {
-        this(id, null, null, null);
-    }
-
-    public Theme(final String name, final String description, final String thumbnail) { //todo 이생성자 지워보기
-        this.id = null;
-        this.name = name;
-        this.description = description;
         this.thumbnail = getDefaultThumbnailIfNotExists(thumbnail);
     }
 
     private String getDefaultThumbnailIfNotExists(final String thumbnail) {
-        if (thumbnail.isBlank()) {
+        if (thumbnail == null || thumbnail.isBlank()) { //TODO 테스트땜시 null 확인...ㅜ
             return DEFAULT_THUMBNAIL; //TODO 그냥 디비에 default로 박을까
         }
         return thumbnail;
