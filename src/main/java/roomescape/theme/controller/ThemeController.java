@@ -26,7 +26,9 @@ public class ThemeController {
     @PostMapping
     public ResponseEntity<ThemeResponseDto> save(@RequestBody final ThemeRequestDto request) {
         final ThemeResponseDto responseDto = themeService.save(request);
-        return ResponseEntity.created(URI.create("/themes/" + responseDto.id())).body(responseDto);
+        final String url = "/themes/" + responseDto.id();
+        
+        return ResponseEntity.created(URI.create(url)).body(responseDto);
     }
 
     @DeleteMapping("/{id}")

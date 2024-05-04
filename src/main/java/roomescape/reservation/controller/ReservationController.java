@@ -26,7 +26,9 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<ReservationResponseDto> save(@RequestBody final ReservationRequestDto request) {
         final ReservationResponseDto responseDto = reservationService.save(request);
-        return ResponseEntity.created(URI.create("/reservations/" + responseDto.id())).body(responseDto);
+        final String url = "/reservations/" + responseDto.id();
+        
+        return ResponseEntity.created(URI.create(url)).body(responseDto);
     }
 
     @DeleteMapping("/{id}")
