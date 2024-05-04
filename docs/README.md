@@ -147,6 +147,37 @@ Content-Type: application/json
 
 <br>
 
+### 가능 시간 조회 API
+
+**Request**
+
+```http request
+GET /times/availability?date={}&themeId={}
+```
+
+**Response**
+
+```
+HTTP/1.1 200 
+Content-Type: application/json
+
+[
+    {
+        "id": 1,
+        "startAt": "15:00",
+        "booked": false
+    },
+    {
+        "id": 2,
+        "startAt": "16:00",
+        "booked": false
+    }
+]
+```
+
+
+<br>
+
 ### 시간 삭제 API
 
 **Request**
@@ -243,7 +274,7 @@ HTTP/1.1 204
 **request**
 
 ```http request
-GET /reservations/popular-themes HTTP/1.1
+GET /themes/popular HTTP/1.1
 ```
 
 **response**
