@@ -33,6 +33,14 @@ public class ReservationThemeDao {
         return Optional.ofNullable(DataAccessUtils.singleResult(reservationThemes));
     }
 
+    public List<ReservationTheme> findByIdsBetweenFromToDatesWithCount(String from, String to, int count) {
+        String sql = "SELECT theme.id, theme.name, theme.description, theme.thumbnail " +
+                "FROM theme INNER JOIN reservation ON theme.id = reservation.theme_id " +
+                "WHERE reservation.date BETWEEN ? AND ? GROUP BY reservation.theme_id ORDER BY count(*) DESC LIMIT ?";
+        return jdbcTemplate.query(sql, getReservationThemeRowMapper(), from, to, count);
+    }
+
+
     public Long insert(String name, String description, String thumbnail) {
         String insertSql = "INSERT INTO theme(name, description, thumbnail) VALUES (?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
