@@ -112,7 +112,7 @@ class TimeDaoTest {
         assertThat(countSavedReservationTime()).isZero();
     }
 
-    @DisplayName("예약 시간을 삭제할 수 있다.")
+    @DisplayName("해당 시간에 예약이 있다면, 예약 시간을 삭제할 수 없다.")
     @Test
     void deleteTimeTest_whenReservationUsingTimeExist() {
         jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00");

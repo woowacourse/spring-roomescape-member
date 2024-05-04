@@ -4,7 +4,6 @@ import java.time.LocalTime;
 import java.util.Objects;
 
 public class ReservationTime {
-
     private final Long id;
     private final LocalTime startAt;
 
