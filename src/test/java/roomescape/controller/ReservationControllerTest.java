@@ -1,89 +1,70 @@
 package roomescape.controller;
 
-import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static roomescape.fixture.DateTimeFixture.DAY_AFTER_TOMORROW;
 
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
-import java.time.LocalDate;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Collections;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 import roomescape.dto.request.ReservationAddRequest;
+import roomescape.dto.response.ReservationResponse;
+import roomescape.service.ReservationService;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class ReservationControllerTest {
+@WebMvcTest(ReservationController.class)
+class ReservationControllerTest {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private MockMvc mockMvc;
 
-    @BeforeEach
-    void setUp() {
-        jdbcTemplate.update("insert into reservation_time values(1,'10:00')");
-        jdbcTemplate.update("insert into theme values(1,'리비', '리비 설명', 'url')");
-        LocalDate reservationDate = LocalDate.now().plusDays(2);
-        jdbcTemplate.update("insert into reservation (name, date, time_id, theme_id) values(?,?,?,?)", "브라운",
-                reservationDate, 1, 1);
-    }
+    @Autowired
+    private ObjectMapper objectMapper;
 
-    @AfterEach
-    void setDown() {
-        jdbcTemplate.update("delete from reservation");
-    }
+    @MockBean
+    private ReservationService reservationService;
 
-    @DisplayName("예약 목록을 불러올 수 있다.")
+    @DisplayName("전체 예약 목록을 읽는 요청을 처리할 수 있다")
     @Test
-    void should_response_reservation_list_when_request_reservations() {
-        RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
+    void should_response_all_reservations_when_requested() throws Exception {
+        when(reservationService.findAllReservation()).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/reservations"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$").isArray());
     }
 
-    @DisplayName("예약을 추가를 성공할 시, 201 ok를 응답한다,")
+    @DisplayName("예약 추가 요청을 처리할 수 있다")
     @Test
-    void should_add_reservation_when_post_request_reservations() {
-        ReservationAddRequest reservationAddRequest = new ReservationAddRequest(
-                "브라운",
-                LocalDate.now().plusDays(3L),
-                1L
-                , 1L);
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservationAddRequest)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(201);
+    void should_add_reservation_when_post_request_reservations() throws Exception {
+        ReservationAddRequest reservationAddRequest = new ReservationAddRequest("썬", DAY_AFTER_TOMORROW, 1L, 1L);
+        ReservationResponse mockResponse = new ReservationResponse(1L, "썬", DAY_AFTER_TOMORROW, 1L, 1L);
+
+        when(reservationService.saveReservation(reservationAddRequest)).thenReturn(mockResponse);
+
+        mockMvc.perform(post("/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(reservationAddRequest)))
+                .andExpect(status().isCreated())
+                .andExpect(header().string("Location", "/reservations/" + mockResponse.id()));
     }
 
-    @DisplayName("이름이 null인 예약을 추가할 시, 400 bad request를 응답한다,")
+    @DisplayName("예약 삭제 요청을 처리할 수 있다")
     @Test
-    void should_response_bad_request_when_post_request_reservations_with_null_name() {
-        ReservationAddRequest reservationAddRequest = new ReservationAddRequest(
-                null,
-                LocalDate.now().plusDays(3L),
-                1L
-                , 1L);
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservationAddRequest)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(400);
-    }
-
-    @DisplayName("존재하는 리소스에 대한 삭제 요청시, 204 no content를 응답한다.")
-    @Test
-    void should_remove_reservation_when_delete_request_reservations_id() {
-        RestAssured.given().log().all()
-                .when().delete("/reservations/1")
-                .then().log().all()
-                .statusCode(204);
+    void should_remove_reservation_when_delete_request_reservations_id() throws Exception {
+        mockMvc.perform(delete("/reservations/{id}", 1))
+                .andExpect(status().isNoContent());
     }
 }
