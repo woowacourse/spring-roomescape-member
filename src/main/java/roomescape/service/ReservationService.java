@@ -41,12 +41,12 @@ public class ReservationService {
         return ReservationResponse.from(reservationDao.save(reservation));
     }
 
-    private ReservationTime findReservationTimeById(ReservationRequest reservationRequest) {
+    private ReservationTime findReservationTimeById(final ReservationRequest reservationRequest) {
         return reservationTimeDao.findById(reservationRequest.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 잘못된 예약 가능 시간 번호를 입력하였습니다."));
     }
 
-    private Theme findThemeById(ReservationRequest reservationRequest) {
+    private Theme findThemeById(final ReservationRequest reservationRequest) {
         return themeDao.findById(reservationRequest.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 잘못된 테마 번호를 입력하였습니다."));
     }
@@ -62,21 +62,21 @@ public class ReservationService {
         return reservations;
     }
 
-    public List<SelectableTimeResponse> findSelectableTime(final LocalDate date, final long themeId) {
-        List<Long> usedTimeId = reservationDao.findTimeIdByDateAndThemeId(date, themeId);
+    public List<SelectableTimeResponse> findSelectableTimes(final LocalDate date, final long themeId) {
+        List<Long> usedTimeIds = reservationDao.findTimeIdsByDateAndThemeId(date, themeId);
         List<ReservationTime> reservationTimes = reservationTimeDao.getAll();
 
         return reservationTimes.stream()
                 .map(time -> new SelectableTimeResponse(
                         time.getId(),
                         time.getStartAt(),
-                        isAlreadyBooked(time, usedTimeId)
+                        isAlreadyBooked(time, usedTimeIds)
                 ))
                 .toList();
     }
 
-    private boolean isAlreadyBooked(ReservationTime reservationTime, List<Long> usedTimeId) {
-        return usedTimeId.contains(reservationTime.getId());
+    private boolean isAlreadyBooked(final ReservationTime reservationTime, final List<Long> usedTimeIds) {
+        return usedTimeIds.contains(reservationTime.getId());
     }
 
     private boolean hasDuplicateReservation(final LocalDate date, final long timeId, final long themeId) {
@@ -88,7 +88,7 @@ public class ReservationService {
         reservationDao.delete(id);
     }
 
-    private Reservation findReservationById(long id) {
+    private Reservation findReservationById(final long id) {
         return reservationDao.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 삭제할 예약 데이터가 없습니다."));
     }

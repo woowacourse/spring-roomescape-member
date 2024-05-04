@@ -1,5 +1,9 @@
 package roomescape.repository;
 
+import java.sql.PreparedStatement;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -7,11 +11,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
-
-import java.sql.PreparedStatement;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class ReservationDao {
@@ -121,7 +120,7 @@ public class ReservationDao {
         );
     }
 
-    public List<Long> findTimeIdByDateAndThemeId(LocalDate date, long themeId) {
+    public List<Long> findTimeIdsByDateAndThemeId(LocalDate date, long themeId) {
         String sql = "SELECT time_id FROM reservation WHERE date = ? AND theme_id = ?";
         return jdbcTemplate.query(
                 sql, (resultSet, rowNum) -> resultSet.getLong("time_id"),

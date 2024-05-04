@@ -43,7 +43,7 @@ public class ReservationController {
             @RequestParam(name = "date") LocalDate date,
             @RequestParam(name = "themeId") long themeId
     ) {
-        return ResponseEntity.ok(reservationService.findSelectableTime(date, themeId));
+        return ResponseEntity.ok(reservationService.findSelectableTimes(date, themeId));
     }
 
     @DeleteMapping("/{id}")
