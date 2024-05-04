@@ -1,5 +1,7 @@
 package roomescape.dao;
 
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -35,7 +37,11 @@ public class H2ThemeRepository implements ThemeRepository {
     public Optional<Theme> findById(long id) {
         String sql = "select * from theme where id = ?";
 
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public Theme save(Theme theme) {
@@ -53,8 +59,12 @@ public class H2ThemeRepository implements ThemeRepository {
     }
 
     public void deleteById(long id) {
-        String sql = "delete from theme where id = ?";
-        jdbcTemplate.update(sql, id);
+        try {
+            String sql = "delete from theme where id = ?";
+            jdbcTemplate.update(sql, id);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException("해당 테마를 참조하는 예약이 존재합니다.");
+        }
     }
 
     private static class ThemeRowMapper implements RowMapper<Theme> {
