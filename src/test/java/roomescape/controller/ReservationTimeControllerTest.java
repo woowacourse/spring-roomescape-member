@@ -37,10 +37,8 @@ class ReservationTimeControllerTest {
                 .then().log().all().statusCode(201).body("id", is(greaterThan(0)));
     }
 
-    //TODO: 왜 삭제가 안될까?
     @DisplayName("시간 추가 실패 테스트 - 중복 시간 오류")
     @Test
-    @Sql(scripts = {"classpath:truncate.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void createDuplicateTime() {
         //given
         RestAssured.given().log().all()
