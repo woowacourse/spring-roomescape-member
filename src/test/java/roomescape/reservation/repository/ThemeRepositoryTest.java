@@ -32,11 +32,21 @@ class ThemeRepositoryTest {
     private ThemeRepository themeRepository;
 
     @Test
-    @DisplayName("id 로 엔티티를 찾는다.")
+    @DisplayName("id로 엔티티를 찾는다.")
     void findByIdTest() {
         Theme theme = new Theme(new ThemeName("공포"), new Description("무서운 테마"), "https://i.pinimg.com/236x.jpg");
         Long themeId = themeRepository.save(theme);
         Theme findTheme = themeRepository.findById(themeId).get();
+
+        assertThat(findTheme.getId()).isEqualTo(themeId);
+    }
+
+    @Test
+    @DisplayName("이름으로 엔티티를 찾는다.")
+    void findByIdNameTest() {
+        Theme theme = new Theme(new ThemeName("공포"), new Description("무서운 테마"), "https://i.pinimg.com/236x.jpg");
+        Long themeId = themeRepository.save(theme);
+        Theme findTheme = themeRepository.findByName(theme.getName()).get();
 
         assertThat(findTheme.getId()).isEqualTo(themeId);
     }

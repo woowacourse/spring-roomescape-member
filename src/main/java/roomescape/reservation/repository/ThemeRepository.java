@@ -49,6 +49,15 @@ public class ThemeRepository {
         }
     }
 
+    public Optional<Theme> findByName(String name) {
+        String sql = "select * from theme where name = ?";
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(sql, createThemeRowMapper(), name));
+        } catch (DataAccessException exception) {
+            return Optional.empty();
+        }
+    }
+
     public List<Theme> findAll() {
         String sql = "select * from theme";
 
