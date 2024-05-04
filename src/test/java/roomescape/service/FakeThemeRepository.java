@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +41,7 @@ public class FakeThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findTopOrderByReservationCount() {
+    public List<Theme> findByPeriodOrderByReservationCount(LocalDate start, LocalDate end, int count) {
         return null;
     }
 }
