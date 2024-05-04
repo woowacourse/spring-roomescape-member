@@ -27,7 +27,7 @@ public class ThemeApiController {
         return themeService.findAllThemes();
     }
 
-    @GetMapping("/themes/rank")
+    @GetMapping("/themes/popular")
     public List<ThemeResponseDto> findTopBookedThemes() {
         return themeService.findTopPopularThemes();
     }
