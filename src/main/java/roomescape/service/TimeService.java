@@ -1,6 +1,5 @@
 package roomescape.service;
 
-import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.time.Time;
@@ -9,6 +8,8 @@ import roomescape.dto.time.TimeResponse;
 import roomescape.global.exception.model.ConflictException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.TimeRepository;
+
+import java.util.List;
 
 @Service
 public class TimeService {

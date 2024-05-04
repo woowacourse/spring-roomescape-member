@@ -1,9 +1,10 @@
 package roomescape.dto.time;
 
-import java.time.LocalTime;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.lang.NonNull;
 import roomescape.domain.time.Time;
+
+import java.time.LocalTime;
 
 public record TimeRequest(
         @DateTimeFormat(pattern = "kk:mm")
