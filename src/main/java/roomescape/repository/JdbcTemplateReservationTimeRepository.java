@@ -36,7 +36,7 @@ public class JdbcTemplateReservationTimeRepository implements ReservationTimeRep
     @Override
     public boolean existsByStartAt(LocalTime startAt) {
         return jdbcTemplate.queryForObject(
-                "SELECT EXISTS(SELECT 1 FROM RESERVATION_TIME WHERE start_at = ?)",
+                "SELECT EXISTS(SELECT id FROM RESERVATION_TIME WHERE start_at = ?)",
                 Boolean.class, startAt);
     }
 
