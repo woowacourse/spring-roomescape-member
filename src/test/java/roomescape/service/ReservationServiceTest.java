@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,9 +28,9 @@ import roomescape.domain.theme.Theme;
 import roomescape.dto.reservation.AvailableReservationResponse;
 import roomescape.dto.reservation.ReservationCreateRequest;
 import roomescape.dto.reservation.ReservationResponse;
-import roomescape.service.fixture.ReservationFixtures;
-import roomescape.service.fixture.ReservationTimeFixtures;
-import roomescape.service.fixture.ThemeFixtures;
+import roomescape.fixture.ReservationFixtures;
+import roomescape.fixture.ReservationTimeFixtures;
+import roomescape.fixture.ThemeFixtures;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class ReservationServiceTest {
@@ -44,7 +45,6 @@ class ReservationServiceTest {
     private JdbcThemeDao themeDao;
     @Autowired
     private ReservationService reservationService;
-    private final String tomorrow = LocalDate.now().plusDays(1).toString();
 
     @BeforeEach
     void setUp() {
@@ -80,15 +80,19 @@ class ReservationServiceTest {
     @DisplayName("이용 가능한 예약 시간을 조회한다.")
     void findTimeByDateAndThemeId() {
         //given
+        LocalDateTime now = LocalDateTime.of(2024, 5, 2, 12, 2);
+        LocalDate today = LocalDate.of(now.getYear(), now.getMonth(), now.getDayOfMonth());
+        ReservationTime reservationTime1 = ReservationTimeFixtures.createReservationTime("12:02");
+        ReservationTime reservationTime2 = ReservationTimeFixtures.createReservationTime("12:20");
+
         Theme theme = themeDao.create(ThemeFixtures.createDefaultTheme());
-        ReservationTime time1 = reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:02"));
-        ReservationTime time2 = reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:20"));
-        Reservation reservation = ReservationFixtures.createReservation(tomorrow, time1, theme);
-        reservationDao.create(reservation);
+        ReservationTime time1 = reservationTimeDao.create(reservationTime1);
+        reservationTimeDao.create(reservationTime2);
+        reservationDao.create(ReservationFixtures.createReservation(today.toString(), time1, theme));
 
         //when
         List<AvailableReservationResponse> responses
-                = reservationService.findTimeByDateAndThemeID(tomorrow, 1L);
+                = reservationService.findTimeByDateAndThemeID(today.toString(), theme.getId(), now);
         AvailableReservationResponse alreadyBooked = responses.get(0);
         AvailableReservationResponse notBooked = responses.get(1);
 
@@ -106,8 +110,11 @@ class ReservationServiceTest {
         @DisplayName("예약을 추가한다.")
         void add() {
             //given
+            LocalDateTime now = LocalDateTime.of(2024, 5, 2, 12, 2);
+            LocalDate today = LocalDate.of(now.getYear(), now.getMonth(), now.getDayOfMonth());
+            LocalDate tomorrow = today.plusDays(1);
             String givenName = "wooteco";
-            String givenDate = tomorrow;
+            String givenDate = tomorrow.toString();
             ReservationTime reservationTime =
                     reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
             Theme theme = themeDao.create(ThemeFixtures.createDefaultTheme());
@@ -117,7 +124,7 @@ class ReservationServiceTest {
                     );
 
             //when
-            ReservationResponse result = reservationService.add(givenRequest);
+            ReservationResponse result = reservationService.add(givenRequest, now);
 
             //then
             assertAll(
@@ -131,12 +138,13 @@ class ReservationServiceTest {
         @DisplayName("존재하지 않는 시간 아이디로 예약 추가시 에외가 발생한다.")
         void addNotExistTimeId() {
             //given
+            LocalDateTime now = LocalDateTime.of(2024, 5, 2, 12, 2);
             themeDao.create(ThemeFixtures.createDefaultTheme());
             Long given = -1L;
             ReservationCreateRequest givenRequest = ReservationFixtures.createReservationCreateRequest(given, 1L);
 
             //when //then
-            assertThatThrownBy(() -> reservationService.add(givenRequest))
+            assertThatThrownBy(() -> reservationService.add(givenRequest, now))
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
@@ -145,13 +153,16 @@ class ReservationServiceTest {
         @DisplayName("예약자명에 null이나 공백 문자열이 입력되면 예외가 발생한다.")
         void createReservationByNullOrEmptyName(String given) {
             //given
+            LocalDateTime now = LocalDateTime.of(2024, 5, 2, 12, 2);
+            LocalDate today = LocalDate.of(now.getYear(), now.getMonth(), now.getDayOfMonth());
+            LocalDate tomorrow = today.plusDays(1);
             reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
             themeDao.create(ThemeFixtures.createDefaultTheme());
             ReservationCreateRequest request =
-                    ReservationFixtures.createReservationCreateRequest(given, tomorrow, 1L, 1L);
+                    ReservationFixtures.createReservationCreateRequest(given, tomorrow.toString(), 1L, 1L);
 
             //when //then
-            assertThatThrownBy(() -> reservationService.add(request))
+            assertThatThrownBy(() -> reservationService.add(request, now))
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
@@ -160,13 +171,14 @@ class ReservationServiceTest {
         @DisplayName("예약 날짜에 null이나 공백 문자열이 입력되면 예외가 발생한다.")
         void createReservationByNullOrEmptyDate(String given) {
             //given
+            LocalDateTime now = LocalDateTime.of(2024, 5, 2, 12, 2);
             reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
             themeDao.create(ThemeFixtures.createDefaultTheme());
             ReservationCreateRequest request =
                     ReservationFixtures.createReservationCreateRequest("다온", given, 1L, 1L);
 
             //when //then
-            assertThatThrownBy(() -> reservationService.add(request))
+            assertThatThrownBy(() -> reservationService.add(request, now))
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
@@ -175,13 +187,14 @@ class ReservationServiceTest {
         @DisplayName("예약 날짜가 yyyy-MM-dd 형식이 아닌 경우 예외가 발생한다.")
         void createReservationByInvalidDate(String given) {
             //given
+            LocalDateTime now = LocalDateTime.of(2024, 5, 2, 12, 2);
             reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
             themeDao.create(ThemeFixtures.createDefaultTheme());
             ReservationCreateRequest request =
                     ReservationFixtures.createReservationCreateRequest("다온", given, 1L, 1L);
 
             //when //then
-            assertThatThrownBy(() -> reservationService.add(request))
+            assertThatThrownBy(() -> reservationService.add(request, now))
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
@@ -189,13 +202,16 @@ class ReservationServiceTest {
         @DisplayName("지나간 날짜에 대한 예약을 추가하면 예외가 발생한다.")
         void createReservationByPastDate() {
             //given
+            LocalDateTime now = LocalDateTime.of(2024, 5, 2, 12, 2);
+            LocalDate today = LocalDate.of(now.getYear(), now.getMonth(), now.getDayOfMonth());
+            LocalDate pastDay = today.minusDays(1);
             reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
             themeDao.create(ThemeFixtures.createDefaultTheme());
             ReservationCreateRequest request =
-                    ReservationFixtures.createReservationCreateRequest("다온", "2024-04-29", 1L, 1L);
+                    ReservationFixtures.createReservationCreateRequest("다온", pastDay.toString(), 1L, 1L);
 
             //when //then
-            assertThatThrownBy(() -> reservationService.add(request))
+            assertThatThrownBy(() -> reservationService.add(request, now))
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
@@ -203,14 +219,17 @@ class ReservationServiceTest {
         @DisplayName("지나간 시간에 대한 예약을 추가하면 예외가 발생한다.")
         void createReservationByPastTime() {
             //given
-            String pastTime = LocalTime.now().minusHours(1).toString();
-            reservationTimeDao.create(ReservationTimeFixtures.createReservationTime(pastTime));
+            LocalDateTime now = LocalDateTime.of(2024, 5, 2, 12, 2);
+            LocalDate today = LocalDate.of(now.getYear(), now.getMonth(), now.getDayOfMonth());
+            LocalTime currentTime = LocalTime.of(now.getHour(), now.getMinute());
+            LocalTime pastTime = currentTime.minusHours(1);
+            reservationTimeDao.create(ReservationTimeFixtures.createReservationTime(pastTime.toString()));
             themeDao.create(ThemeFixtures.createDefaultTheme());
             ReservationCreateRequest request =
-                    ReservationFixtures.createReservationCreateRequest("다온", LocalDate.now().toString(), 1L, 1L);
+                    ReservationFixtures.createReservationCreateRequest("다온", today.toString(), 1L, 1L);
 
             //when //then
-            assertThatThrownBy(() -> reservationService.add(request))
+            assertThatThrownBy(() -> reservationService.add(request, now))
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
@@ -218,13 +237,16 @@ class ReservationServiceTest {
         @DisplayName("동일한 테마, 날짜, 시간에 대한 예약을 추가하면 예외가 발생한다.")
         void createReservationByDuplicated() {
             //given
+            LocalDateTime now = LocalDateTime.of(2024, 5, 2, 12, 2);
+            LocalDate today = LocalDate.of(now.getYear(), now.getMonth(), now.getDayOfMonth());
+            LocalDate tomorrow = today.plusDays(1);
             reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
             themeDao.create(ThemeFixtures.createDefaultTheme());
-            ReservationCreateRequest request = ReservationCreateRequest.of("다온", tomorrow, 1L, 1L);
-            reservationService.add(request);
+            ReservationCreateRequest request = ReservationCreateRequest.of("다온", tomorrow.toString(), 1L, 1L);
+            reservationService.add(request, now);
 
             //when //then
-            assertThatThrownBy(() -> reservationService.add(request))
+            assertThatThrownBy(() -> reservationService.add(request, now))
                     .isInstanceOf(IllegalArgumentException.class);
         }
     }
@@ -236,9 +258,13 @@ class ReservationServiceTest {
         @DisplayName("예약을 삭제한다.")
         void deleteReservation() {
             //given
+            LocalDateTime now = LocalDateTime.of(2024, 5, 2, 12, 2);
+            LocalDate today = LocalDate.of(now.getYear(), now.getMonth(), now.getDayOfMonth());
+            LocalDate tomorrow = today.plusDays(1);
             reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
             themeDao.create(ThemeFixtures.createDefaultTheme());
-            reservationService.add(ReservationCreateRequest.of("다온", tomorrow, 1L, 1L));
+            ReservationCreateRequest request = ReservationCreateRequest.of("다온", tomorrow.toString(), 1L, 1L);
+            reservationService.add(request, now);
             long givenId = 1L;
 
             //when
@@ -253,9 +279,13 @@ class ReservationServiceTest {
         @DisplayName("예약 삭제시 아이디가 비어있으면 예외가 발생한다.")
         void deleteNullId() {
             //given
+            LocalDateTime now = LocalDateTime.of(2024, 5, 2, 12, 2);
+            LocalDate today = LocalDate.of(now.getYear(), now.getMonth(), now.getDayOfMonth());
+            LocalDate tomorrow = today.plusDays(1);
             reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
             themeDao.create(ThemeFixtures.createDefaultTheme());
-            reservationService.add(ReservationCreateRequest.of("다온", tomorrow, 1L, 1L));
+            ReservationCreateRequest request = ReservationCreateRequest.of("다온", tomorrow.toString(), 1L, 1L);
+            reservationService.add(request, now);
             Long givenId = null;
 
             //when //then
@@ -267,9 +297,13 @@ class ReservationServiceTest {
         @DisplayName("예약 삭제시 아이디가 존재하지 않는다면 예외가 발생한다.")
         void deleteNotExistId() {
             //given
+            LocalDateTime now = LocalDateTime.of(2024, 5, 2, 12, 2);
+            LocalDate today = LocalDate.of(now.getYear(), now.getMonth(), now.getDayOfMonth());
+            LocalDate tomorrow = today.plusDays(1);
             reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
             themeDao.create(ThemeFixtures.createDefaultTheme());
-            reservationService.add(ReservationCreateRequest.of("다온", tomorrow, 1L, 1L));
+            ReservationCreateRequest request = ReservationCreateRequest.of("다온", tomorrow.toString(), 1L, 1L);
+            reservationService.add(request, now);
             long givenId = -1L;
 
             //when //then

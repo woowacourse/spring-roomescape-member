@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -53,7 +54,7 @@ class ThemeControllerTest {
         //given
         ThemeCreateRequest givenRequest = ThemeCreateRequest.of("방탈출1", "1번 방탈출", "썸네일 1");
         ThemeResponse response = ThemeResponse.of(1L, "방탈출1", "1번 방탈출", "썸네일 1");
-        given(themeService.add(givenRequest)).willReturn(response);
+        given(themeService.add(any(ThemeCreateRequest.class))).willReturn(response);
         String requestBody = objectMapper.writeValueAsString(givenRequest);
 
         //when //then
@@ -81,7 +82,7 @@ class ThemeControllerTest {
         //given
         ThemeCreateRequest givenRequest
                 = ThemeCreateRequest.of("InvalidName", "InvalidDescription", "InvalidThumbnail");
-        given(themeService.add(givenRequest))
+        given(themeService.add(any(ThemeCreateRequest.class)))
                 .willThrow(IllegalArgumentException.class);
         String requestBody = objectMapper.writeValueAsString(givenRequest);
 

@@ -33,8 +33,8 @@ public class ReservationStartAt {
         }
     }
 
-    public boolean isBeforeNow() {
-        return value.isBefore(LocalTime.now());
+    public boolean isBefore(LocalTime time) {
+        return value.isBefore(time);
     }
 
     public String toStringTime() {

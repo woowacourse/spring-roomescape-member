@@ -2,6 +2,7 @@ package roomescape.controller;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -11,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -61,8 +63,8 @@ class ReservationControllerTest {
     void addReservationTest() throws Exception {
         //given
         String expectedName = "daon";
-        String expectedDate = "2024-11-29";
-        String expectedStartAt = "00:01";
+        String expectedDate = "2024-05-05";
+        String expectedStartAt = "19:01";
         ReservationCreateRequest givenRequest = ReservationCreateRequest.of(expectedName, expectedDate, 1L, 1L);
         ReservationResponse response = ReservationResponse.of(
                 1L,
@@ -71,7 +73,8 @@ class ReservationControllerTest {
                 ReservationTimeResponse.of(1L, expectedStartAt),
                 ThemeResponse.of(1L, "방탈출1", "1번 방탈출", "썸네일1")
         );
-        given(reservationService.add(givenRequest)).willReturn(response);
+        given(reservationService.add(any(ReservationCreateRequest.class), any(LocalDateTime.class)))
+                .willReturn(response);
         String givenJsonRequest = objectMapper.writeValueAsString(givenRequest);
 
         //when //then
@@ -100,7 +103,7 @@ class ReservationControllerTest {
         //given
         ReservationCreateRequest givenRequest
                 = ReservationCreateRequest.of("InvalidName", "InvalidDate", -1L, 1L);
-        given(reservationService.add(givenRequest))
+        given(reservationService.add(any(ReservationCreateRequest.class), any(LocalDateTime.class)))
                 .willThrow(IllegalArgumentException.class);
         String requestBody = objectMapper.writeValueAsString(givenRequest);
 

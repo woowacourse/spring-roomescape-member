@@ -1,6 +1,8 @@
 package roomescape.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
@@ -34,12 +36,11 @@ public class ReservationService {
                 .toList();
     }
 
-    public List<AvailableReservationResponse> findTimeByDateAndThemeID(String date, Long themeId) {
-        LocalDate today = LocalDate.now();
+    public List<AvailableReservationResponse> findTimeByDateAndThemeID(String date, Long themeId, LocalDateTime now) {
         ReservationDate reservationDate = ReservationDate.from(date);
         List<ReservationTime> reservationTimes = reservationTimeDao.readAll();
         List<Long> ids = reservationDao.readTimeIdsByDateAndThemeId(reservationDate, themeId);
-        List<ReservationTime> filteredTimes = filterByDate(reservationDate, reservationTimes, today);
+        List<ReservationTime> filteredTimes = filterByDate(reservationDate, reservationTimes, now);
         return filteredTimes.stream()
                 .map(time ->
                         AvailableReservationResponse.of(
@@ -50,16 +51,15 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse add(ReservationCreateRequest request) {
-        LocalDate today = LocalDate.now();
+    public ReservationResponse add(ReservationCreateRequest request, LocalDateTime now) {
         validateNotExistReservationTime(request.getTimeId());
         ReservationTime reservationTime = reservationTimeDao.readById(request.getTimeId());
         Theme theme = themeDao.readById(request.getThemeId());
         Reservation reservation = request.toDomain(reservationTime, theme);
-        validateDate(reservation.getDate(), today);
+        validateDate(reservation.getDate(), now);
         validateDuplicate(reservation.getDate(), reservation.getReservationTime(), reservation.getTheme());
         Reservation result = reservationDao.create(reservation);
-        validatePastTimeWhenToday(reservation, reservationTime, today);
+        validatePastTimeWhenToday(reservation, reservationTime, now);
         return ReservationResponse.from(result);
     }
 
@@ -80,23 +80,30 @@ public class ReservationService {
 
     private List<ReservationTime> filterByDate(ReservationDate reservationDate,
                                                List<ReservationTime> reservationTimes,
-                                               LocalDate date) {
-        if (reservationDate.isSameDate(date)) {
+                                               LocalDateTime now) {
+        LocalDate today = LocalDate.of(now.getYear(), now.getMonthValue(), now.getDayOfMonth());
+        LocalTime currentTime = LocalTime.of(now.getHour(), now.getMinute());
+        if (reservationDate.isSame(today)) {
             return reservationTimes.stream()
-                    .filter(time -> !time.isBeforeNow())
+                    .filter(time -> !time.isBefore(currentTime))
                     .toList();
         }
         return reservationTimes;
     }
 
-    private void validateDate(ReservationDate reservationDate, LocalDate date) {
-        if (reservationDate.isBeforeDate(date)) {
+    private void validateDate(ReservationDate reservationDate, LocalDateTime dateTime) {
+        LocalDate date = LocalDate.of(dateTime.getYear(), dateTime.getMonthValue(), dateTime.getDayOfMonth());
+        if (reservationDate.isBefore(date)) {
             throw new IllegalArgumentException("예약일은 오늘보다 과거일 수 없습니다.");
         }
     }
 
-    private void validatePastTimeWhenToday(Reservation reservation, ReservationTime reservationTime, LocalDate date) {
-        if (reservation.isSameDate(date) && reservationTime.isBeforeNow()) {
+    private void validatePastTimeWhenToday(Reservation reservation,
+                                           ReservationTime reservationTime,
+                                           LocalDateTime now) {
+        LocalDate today = LocalDate.of(now.getYear(), now.getMonthValue(), now.getDayOfMonth());
+        LocalTime currentTime = LocalTime.of(now.getHour(), now.getMinute());
+        if (reservation.isSameDate(today) && reservationTime.isBefore(currentTime)) {
             throw new IllegalArgumentException("현재보다 이전 시간을 예약할 수 없습니다.");
         }
     }

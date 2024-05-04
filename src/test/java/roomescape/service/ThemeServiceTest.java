@@ -19,7 +19,7 @@ import roomescape.dao.JdbcThemeDao;
 import roomescape.domain.theme.Theme;
 import roomescape.dto.theme.ThemeCreateRequest;
 import roomescape.dto.theme.ThemeResponse;
-import roomescape.service.fixture.ThemeFixtures;
+import roomescape.fixture.ThemeFixtures;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class ThemeServiceTest {

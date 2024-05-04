@@ -2,6 +2,7 @@ package roomescape.controller;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -66,7 +67,7 @@ class ReservationTimeControllerTest {
         String startAt = "22:04";
         ReservationTimeCreateRequest givenRequest = ReservationTimeCreateRequest.from(startAt);
         ReservationTimeResponse expectedResponse = ReservationTimeResponse.of(2L, startAt);
-        given(reservationTimeService.add(givenRequest))
+        given(reservationTimeService.add(any(ReservationTimeCreateRequest.class)))
                 .willReturn(expectedResponse);
         String requestBody = objectMapper.writeValueAsString(givenRequest);
 
@@ -98,7 +99,7 @@ class ReservationTimeControllerTest {
     void createReservationTimeByInvalidStartAt(String given) throws Exception {
         //given
         ReservationTimeCreateRequest givenRequest = ReservationTimeCreateRequest.from(given);
-        given(reservationTimeService.add(givenRequest))
+        given(reservationTimeService.add(any(ReservationTimeCreateRequest.class)))
                 .willThrow(IllegalArgumentException.class);
         String requestBody = objectMapper.writeValueAsString(givenRequest);
 

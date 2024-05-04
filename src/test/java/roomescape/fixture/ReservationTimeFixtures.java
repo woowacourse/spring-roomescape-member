@@ -1,4 +1,4 @@
-package roomescape.service.fixture;
+package roomescape.fixture;
 
 import roomescape.domain.reservationtime.ReservationStartAt;
 import roomescape.domain.reservationtime.ReservationTime;

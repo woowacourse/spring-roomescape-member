@@ -15,7 +15,8 @@ public class Reservation {
     public Reservation(Long id,
                        ReservationName reservationName,
                        ReservationDate reservationDate,
-                       ReservationTime reservationTime, Theme theme) {
+                       ReservationTime reservationTime,
+                       Theme theme) {
         this.id = id;
         this.reservationName = reservationName;
         this.reservationDate = reservationDate;
@@ -24,7 +25,7 @@ public class Reservation {
     }
 
     public boolean isSameDate(LocalDate date) {
-        return reservationDate.isSameDate(date);
+        return reservationDate.isSame(date);
     }
 
     public Long getId() {

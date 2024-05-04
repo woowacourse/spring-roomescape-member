@@ -31,11 +31,11 @@ public class ReservationDate {
         }
     }
 
-    public boolean isSameDate(LocalDate date) {
+    public boolean isSame(LocalDate date) {
         return value.equals(date);
     }
 
-    public boolean isBeforeDate(LocalDate date) {
+    public boolean isBefore(LocalDate date) {
         return value.isBefore(date);
     }
 

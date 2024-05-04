@@ -1,4 +1,4 @@
-package roomescape.service.fixture;
+package roomescape.fixture;
 
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationDate;
@@ -24,7 +24,8 @@ public class ReservationFixtures {
         return new Reservation(null, new ReservationName("default"), ReservationDate.from(date), time, theme);
     }
 
-    public static ReservationCreateRequest createReservationCreateRequest(String name, String date, long timeId, long themeId) {
+    public static ReservationCreateRequest createReservationCreateRequest(String name, String date, long timeId,
+                                                                          long themeId) {
         return ReservationCreateRequest.of(name, date, timeId, themeId);
     }
 
