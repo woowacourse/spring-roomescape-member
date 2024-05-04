@@ -31,8 +31,16 @@ public class ThemeService {
         return ThemeResponse.fromTheme(savedTheme);
     }
 
-    public void removeTheme(long id) {
-        themeDao.deleteById(id);
+    public List<ThemeRankResponse> findRankedThemes() {
+        LocalDate today = LocalDate.now()
+                .minusDays(NUMBER_OF_ONE_DAY);
+        LocalDate beforeOneWeek = today.minusDays(NUMEBER_OF_ONE_WEEK);
+
+        List<Theme> rankedThemes = reservationDao.findThemeByDateOrderByThemeIdCount(beforeOneWeek, today);
+        return rankedThemes.stream()
+                .limit(TOP_THEMES_LIMIT)
+                .map(ThemeRankResponse::fromTheme)
+                .toList();
     }
 
     public List<ThemeResponse> findThemes() {
@@ -42,17 +50,7 @@ public class ThemeService {
                 .toList();
     }
 
-    public List<ThemeRankResponse> findRankedThemes() {
-        LocalDate today = LocalDate.now()
-                .minusDays(NUMBER_OF_ONE_DAY);
-        LocalDate beforeOneWeek = today.minusDays(NUMEBER_OF_ONE_WEEK);
-
-        List<Theme> rankedThemes = reservationDao.findThemeByDateOrderByThemeIdCount(beforeOneWeek, today);
-        System.out.println(rankedThemes);
-        return rankedThemes.stream()
-                .sequential()
-                .limit(TOP_THEMES_LIMIT)
-                .map(ThemeRankResponse::fromTheme)
-                .toList();
+    public void removeTheme(long id) {
+        themeDao.deleteById(id);
     }
 }
