@@ -2,12 +2,15 @@ package roomescape.reservation.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.dto.ReservationTimeAvailabilityResponse;
+import roomescape.theme.dao.ThemeDao;
+import roomescape.theme.domain.Theme;
 import roomescape.time.dao.TimeDao;
 import roomescape.time.domain.Time;
 
@@ -15,19 +18,24 @@ import roomescape.time.domain.Time;
 public class ReservationService {
     private final ReservationDao reservationDao;
     private final TimeDao timeDao;
+    private final ThemeDao themeDao;
 
-    public ReservationService(ReservationDao reservationDao, TimeDao timeDao) {
+    public ReservationService(ReservationDao reservationDao, TimeDao timeDao, ThemeDao themeDao) {
         this.reservationDao = reservationDao;
         this.timeDao = timeDao;
+        this.themeDao = themeDao;
     }
 
     public ReservationResponse addReservation(ReservationRequest reservationRequest) {
         Reservation reservation = reservationRequest.fromRequest();
-        Time time = timeDao.findById(reservation.getReservationTime()
-                .getId());
-        reservation.setTime(time);
-        Reservation savedReservation = reservationDao.save(reservation);
-        return ReservationResponse.fromReservation(savedReservation);
+        Time time = timeDao.findById(reservation.getReservationTime().getId())
+                .orElseThrow(() -> new NullPointerException("존재하는 시간이 없습니다."));
+        Theme theme = themeDao.findById(reservation.getThemeId());
+
+        reservation.setTimeOnSave(time);
+        reservation.setThemeOnSave(theme);
+
+        return ReservationResponse.fromReservation(reservationDao.save(reservation));
     }
 
     public List<ReservationResponse> findReservations() {

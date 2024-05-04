@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,13 +19,14 @@ import roomescape.reservation.dao.ReservationJdbcDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
+import roomescape.theme.dao.ThemeJdbcDao;
 import roomescape.theme.domain.Theme;
 import roomescape.time.dao.TimeJdbcDao;
 import roomescape.time.domain.Time;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
-    private final Reservation reservation = new Reservation(1L, "polla", LocalDate.now(),
+    private final Reservation reservation = new Reservation(1L, "polla", LocalDate.now().plusDays(1),
             new Time(1L, LocalTime.now()), new Theme(1L, "pollaBang", "폴라 방탈출", "thumbnail"));
 
     @InjectMocks
@@ -33,6 +35,8 @@ class ReservationServiceTest {
     private ReservationJdbcDao reservationJdbcDao;
     @Mock
     private TimeJdbcDao timeJdbcDao;
+    @Mock
+    private ThemeJdbcDao themeJdbcDao;
 
     @Test
     @DisplayName("예약을 추가한다.")
@@ -41,7 +45,10 @@ class ReservationServiceTest {
                 .thenReturn(reservation);
 
         Mockito.when(timeJdbcDao.findById(1L))
-                .thenReturn(reservation.getReservationTime());
+                .thenReturn(Optional.of(reservation.getReservationTime()));
+
+        Mockito.when(themeJdbcDao.findById(1L))
+                .thenReturn(reservation.getTheme());
 
         ReservationRequest reservationRequest = new ReservationRequest(reservation.getDate(), reservation.getName(),
                 reservation.getReservationTime().getId(), reservation.getTheme().getId());
