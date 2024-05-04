@@ -45,4 +45,24 @@ public class Theme {
     public String getThumbnail() {
         return thumbnail.value();
     }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+        if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        Theme theme = (Theme) object;
+        return Objects.equals(id, theme.id)
+                && Objects.equals(name, theme.name)
+                && Objects.equals(description, theme.description)
+                && Objects.equals(thumbnail, theme.thumbnail);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, description, thumbnail);
+    }
 }
