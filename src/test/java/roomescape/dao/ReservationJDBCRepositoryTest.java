@@ -18,7 +18,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 @JdbcTest
-@Sql(scripts = "/test_data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_CLASS)
+@Sql(scripts = "/test_data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 class ReservationJDBCRepositoryTest {
     private ReservationRepository reservationRepository;
 
@@ -37,7 +37,7 @@ class ReservationJDBCRepositoryTest {
         date = LocalDate.now().plusDays(1).toString();
         String startAt = LocalTime.now().toString();
         reservationTime = reservationTimeRepository.save(new ReservationTime(startAt));
-        theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
+        theme = themeRepository.save(new Theme("레벨5 탈출", "우테코 레벨5를 탈출하는 내용입니다.",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
     }
 
@@ -52,7 +52,6 @@ class ReservationJDBCRepositoryTest {
 
         //then
         assertThat(result.getId()).isNotZero();
-        reservationRepository.deleteById(2);
     }
 
     @DisplayName("모든 예약 내역을 조회한다.")
@@ -72,12 +71,10 @@ class ReservationJDBCRepositoryTest {
     @Test
     void deleteReservationByIdTest() {
         //given
-        Reservation reservation = new Reservation("브라운", date, reservationTime, theme);
-        Reservation target = reservationRepository.save(reservation);
-        int expectedSize = 1;
+        int expectedSize = 0;
 
         //when
-        reservationRepository.deleteById(target.getId());
+        reservationRepository.deleteById(1);
 
         //then
         assertThat(reservationRepository.findAll().size()).isEqualTo(expectedSize);
@@ -96,7 +93,6 @@ class ReservationJDBCRepositoryTest {
 
         //then
         assertThat(result).isTrue();
-        reservationRepository.deleteById(2);
     }
 
     @DisplayName("주어진 일정, 테마가 동일한 예약이 존재하지 않는다.")

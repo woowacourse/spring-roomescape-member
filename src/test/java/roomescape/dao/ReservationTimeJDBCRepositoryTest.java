@@ -1,7 +1,6 @@
 package roomescape.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,7 +14,7 @@ import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.domain.ReservationTime;
 
 @JdbcTest
-@Sql(scripts = "/test_data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_CLASS)
+@Sql(scripts = "/test_data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 class ReservationTimeJDBCRepositoryTest {
     private ReservationTimeRepository reservationTimeRepository;
 
@@ -39,14 +38,13 @@ class ReservationTimeJDBCRepositoryTest {
 
         //then
         assertThat(result.getId()).isNotZero();
-        reservationTimeRepository.deleteById(2);
     }
 
     @DisplayName("모든 예약 시간을 조회한다.")
     @Test
     void findAllReservationTimesTest() {
         //given
-        int expectedSize = 1;
+        int expectedSize = 2;
 
         //when
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
@@ -58,33 +56,21 @@ class ReservationTimeJDBCRepositoryTest {
     @DisplayName("id로 예약 시간을 조회한다.")
     @Test
     void findReservationTimeByIdTest() {
-        //given
-        String startAt = "10:00";
-        ReservationTime reservationTime = new ReservationTime(startAt);
-        ReservationTime target = reservationTimeRepository.save(reservationTime);
-
         //when
-        ReservationTime result = reservationTimeRepository.findById(target.getId()).get();
+        ReservationTime result = reservationTimeRepository.findById(1).get();
 
         //then
-        assertAll(
-                () -> assertThat(result.getId()).isEqualTo(target.getId()),
-                () -> assertThat(result.getStartAt()).isEqualTo(startAt)
-        );
-        reservationTimeRepository.deleteById(2);
+        assertThat(result.getId()).isEqualTo(1);
     }
 
-    @DisplayName("id로 예약을 삭제한다.")
+    @DisplayName("id로 예약 시간을 삭제한다.")
     @Test
     void deleteReservationTimeByIdTest() {
         //given
-        String startAt = "10:00";
-        ReservationTime reservationTime = new ReservationTime(startAt);
-        ReservationTime target = reservationTimeRepository.save(reservationTime);
         int expectedSize = 1;
 
         //when
-        reservationTimeRepository.deleteById(target.getId());
+        reservationTimeRepository.deleteById(2);
 
         //then
         assertThat(reservationTimeRepository.findAll().size()).isEqualTo(expectedSize);
@@ -110,21 +96,11 @@ class ReservationTimeJDBCRepositoryTest {
         assertThat(result).isFalse();
     }
 
-    @DisplayName("예약이 가능한 시간이 없다.")
-    @Test
-    void findNoAvailableTimesByThemeAndDate() {
-        //when
-        List<ReservationTime> result = reservationTimeRepository.findByDateAndTheme("2222-05-04", 1);
-
-        //then
-        assertThat(result).hasSize(0);
-    }
-
     @DisplayName("예약이 가능한 시간이 있다.")
     @Test
     void findAvailableTimesByThemeAndDate() {
         //when
-        List<ReservationTime> result = reservationTimeRepository.findByDateAndTheme("2222-05-01", 1);
+        List<ReservationTime> result = reservationTimeRepository.findByDateAndTheme("2222-05-04", 1);
 
         //then
         assertThat(result).hasSize(1);

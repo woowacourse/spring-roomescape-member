@@ -15,7 +15,7 @@ import roomescape.service.dto.ReservationRequest;
 import roomescape.service.dto.ReservationResponse;
 
 @SpringBootTest
-@Sql(scripts = "/test_data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_CLASS)
+@Sql(scripts = "/test_data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 class ReservationServiceTest {
     @Autowired
     private ReservationService reservationService;
@@ -33,7 +33,6 @@ class ReservationServiceTest {
 
         //then
         assertThat(result.id()).isNotZero();
-        reservationService.deleteById(2);
     }
 
     @DisplayName("모든 예약 내역을 조회한다.")

@@ -17,7 +17,7 @@ import roomescape.service.dto.ReservationTimeReadRequest;
 import roomescape.service.dto.ReservationTimeResponse;
 
 @SpringBootTest
-@Sql(scripts = "/test_data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_CLASS)
+@Sql(scripts = "/test_data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 class ReservationTimeServiceTest {
     @Autowired
     private ReservationTimeService reservationTimeService;
@@ -37,7 +37,6 @@ class ReservationTimeServiceTest {
                 () -> assertThat(result.id()).isNotZero(),
                 () -> assertThat(result.startAt()).isEqualTo(startAt)
         );
-        reservationTimeService.deleteById(2);
     }
 
     @DisplayName("모든 예약 시간 내역을 조회한다.")
@@ -47,7 +46,7 @@ class ReservationTimeServiceTest {
         List<ReservationTimeResponse> reservationTimes = reservationTimeService.findAll();
 
         //then
-        assertThat(reservationTimes).hasSize(1);
+        assertThat(reservationTimes).hasSize(2);
     }
 
     @DisplayName("시간이 이미 존재하면 예외를 발생시킨다.")
@@ -78,6 +77,6 @@ class ReservationTimeServiceTest {
                 new ReservationTimeReadRequest("2222-10-04", 1));
 
         //then
-        assertThat(result).hasSize(1);
+        assertThat(result).hasSize(2);
     }
 }
