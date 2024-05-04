@@ -11,7 +11,7 @@ public record Reservation(Long id, String name, LocalDate date, ReservationTime 
     }
 
     public Reservation {
-        Validator.AllNonNull(name, date, time, theme);
+        Validator.allNonNull(name, date, time, theme);
     }
 
     public boolean isBefore(LocalDateTime currentDateTime) {

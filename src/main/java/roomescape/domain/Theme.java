@@ -8,7 +8,7 @@ public record Theme(Long id, String name, String description, String thumbnail) 
     }
 
     public Theme {
-        Validator.AllNonNull(name, description, thumbnail);
+        Validator.allNonNull(name, description, thumbnail);
     }
 
     public Theme createWithId(Long id) {
