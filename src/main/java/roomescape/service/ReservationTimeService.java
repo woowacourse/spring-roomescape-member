@@ -46,7 +46,6 @@ public class ReservationTimeService {
                 .mapTo(ReservationTimeResponse::from);
     }
 
-    //todo : 메서드 개선
     public List<AvailableTimeResponse> findByThemeAndDate(LocalDate date, long themeId) {
         Theme requestedTheme = themeRepository.findById(themeId)
                 .orElseThrow(() -> new RoomescapeException(NOT_FOUND_THEME));
