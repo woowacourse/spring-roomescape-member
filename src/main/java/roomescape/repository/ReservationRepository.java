@@ -53,7 +53,7 @@ public class ReservationRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
-    public Reservation save(Reservation requestReservation) {
+    public Reservation insert(Reservation requestReservation) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", requestReservation.getName())
                 .addValue("date", requestReservation.getDate())
@@ -80,7 +80,7 @@ public class ReservationRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER, timeId);
     }
 
-    public List<Reservation> findByTimeIdAndDateThemeId(Long timeId, LocalDate date, Long themeId) {
+    public List<Reservation> findByTimeIdAndDateAndThemeId(Long timeId, LocalDate date, Long themeId) {
         String sql = """
                 SELECT * FROM reservation r 
                 JOIN reservation_time rt ON r.time_id = rt.id
@@ -100,7 +100,7 @@ public class ReservationRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER, date, themeId);
     }
 
-    public int delete(Long id) {
+    public int deleteById(Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
         return jdbcTemplate.update(sql, id);
     }

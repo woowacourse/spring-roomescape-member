@@ -1,11 +1,5 @@
 package roomescape.repository;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
-
-import java.time.LocalDate;
-import java.util.List;
-import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,6 +9,13 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.domain.theme.Theme;
+
+import javax.sql.DataSource;
+import java.time.LocalDate;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @JdbcTest
 @Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
@@ -47,7 +48,7 @@ class ThemeRepositoryTest {
     @DisplayName("데이터베이스에 테마 정보를 추가한다.")
     void saveTheme() {
         // given
-        Theme theme = themeRepository.save(new Theme("name", "description", "thumbnail"));
+        Theme theme = themeRepository.insert(new Theme("name", "description", "thumbnail"));
 
         // when & then
         assertThat(theme.getId()).isEqualTo(1);
@@ -57,10 +58,10 @@ class ThemeRepositoryTest {
     @DisplayName("테마 id를 통해 데이터베이스에서 테마를 삭제한다.")
     void deleteTheme() {
         // given
-        Theme theme = themeRepository.save(new Theme("name", "description", "thumbnail"));
+        Theme theme = themeRepository.insert(new Theme("name", "description", "thumbnail"));
 
         // when
-        int deleteCount = themeRepository.delete(theme.getId());
+        int deleteCount = themeRepository.deleteById(theme.getId());
 
         // then
         assertThat(deleteCount).isEqualTo(1);
@@ -81,7 +82,7 @@ class ThemeRepositoryTest {
         LocalDate endDate = LocalDate.now().minusDays(1);
 
         // when
-        List<Theme> top10Reservations = themeRepository.findTopNByReservationCount(startDate, endDate, 10);
+        List<Theme> top10Reservations = themeRepository.findByStartDateAndEndDateWithLimit(startDate, endDate, 10);
 
         // then
         assertAll(

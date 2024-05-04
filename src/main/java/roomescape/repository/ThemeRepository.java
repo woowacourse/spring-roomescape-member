@@ -44,7 +44,7 @@ public class ThemeRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
-    public List<Theme> findTopNByReservationCount(LocalDate startDate, LocalDate endDate, int count) {
+    public List<Theme> findByStartDateAndEndDateWithLimit(LocalDate startDate, LocalDate endDate, int limit) {
         String sql = """
                 SELECT t.*
                 FROM theme t
@@ -55,10 +55,10 @@ public class ThemeRepository {
                 LIMIT ?
                 """;
 
-        return jdbcTemplate.query(sql, ROW_MAPPER, startDate, endDate, count);
+        return jdbcTemplate.query(sql, ROW_MAPPER, startDate, endDate, limit);
     }
 
-    public Theme save(Theme theme) {
+    public Theme insert(Theme theme) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", theme.getName())
                 .addValue("description", theme.getDescription())
@@ -68,7 +68,7 @@ public class ThemeRepository {
         return new Theme(id, theme);
     }
 
-    public int delete(Long id) {
+    public int deleteById(Long id) {
         String sql = "DELETE FROM theme WHERE id = ?";
         int deleteCount = jdbcTemplate.update(sql, id);
 

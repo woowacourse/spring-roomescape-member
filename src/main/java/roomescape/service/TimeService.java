@@ -39,7 +39,7 @@ public class TimeService {
         }
 
         Time time = timeRequest.toTime();
-        Time savedTime = timeRepository.save(time);
+        Time savedTime = timeRepository.insert(time);
 
         return TimeResponse.from(savedTime);
     }
@@ -49,6 +49,6 @@ public class TimeService {
         if (usingTimeReservations.size() > 0) {
             throw new ConflictException(String.format("[TimeId - %d] 해당 시간에 예약이 존재하여 시간을 삭제할 수 없습니다.", id));
         }
-        timeRepository.delete(id);
+        timeRepository.deleteById(id);
     }
 }

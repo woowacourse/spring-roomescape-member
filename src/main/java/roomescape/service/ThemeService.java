@@ -33,7 +33,7 @@ public class ThemeService {
         LocalDate startDate = today.minusDays(7);
         LocalDate endDate = today.minusDays(1);
 
-        List<ThemeResponse> response = themeRepository.findTopNByReservationCount(startDate, endDate, count)
+        List<ThemeResponse> response = themeRepository.findByStartDateAndEndDateWithLimit(startDate, endDate, count)
                 .stream()
                 .map(ThemeResponse::from)
                 .toList();
@@ -42,12 +42,12 @@ public class ThemeService {
     }
 
     public ThemeResponse createTheme(ThemeRequest request) {
-        Theme theme = themeRepository.save(new Theme(request.name(), request.description(), request.thumbnail()));
+        Theme theme = themeRepository.insert(new Theme(request.name(), request.description(), request.thumbnail()));
 
         return ThemeResponse.from(theme);
     }
 
     public void deleteTheme(Long id) {
-        themeRepository.delete(id);
+        themeRepository.deleteById(id);
     }
 }

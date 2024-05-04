@@ -47,7 +47,7 @@ public class TimeRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER, startAt);
     }
 
-    public Time save(Time requestTime) {
+    public Time insert(Time requestTime) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("start_at", requestTime.getStartAt());
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
@@ -55,7 +55,7 @@ public class TimeRepository {
         return new Time(id, requestTime.getStartAt());
     }
 
-    public int delete(Long id) {
+    public int deleteById(Long id) {
         String sql = "DELETE FROM reservation_time WHERE id = ?";
         return jdbcTemplate.update(sql, id);
     }

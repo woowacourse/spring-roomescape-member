@@ -70,7 +70,7 @@ public class ReservationService {
         validateDateAndTime(requestDate, today, time);
         validateReservationDuplicate(reservationRequest, theme);
 
-        Reservation savedReservation = reservationRepository.save(reservationRequest.toReservation(time, theme));
+        Reservation savedReservation = reservationRepository.insert(reservationRequest.toReservation(time, theme));
 
         return ReservationResponse.from(savedReservation);
     }
@@ -83,7 +83,7 @@ public class ReservationService {
     }
 
     private void validateReservationDuplicate(ReservationRequest reservationRequest, Theme theme) {
-        List<Reservation> duplicateTimeReservation = reservationRepository.findByTimeIdAndDateThemeId(
+        List<Reservation> duplicateTimeReservation = reservationRepository.findByTimeIdAndDateAndThemeId(
                 reservationRequest.timeId(), reservationRequest.date(), theme.getId());
 
         if (duplicateTimeReservation.size() > 0) {
@@ -92,6 +92,6 @@ public class ReservationService {
     }
 
     public void deleteReservation(Long id) {
-        reservationRepository.delete(id);
+        reservationRepository.deleteById(id);
     }
 }

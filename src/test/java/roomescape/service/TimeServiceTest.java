@@ -1,10 +1,5 @@
 package roomescape.service;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,6 +16,12 @@ import roomescape.global.exception.model.ConflictException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.TimeRepository;
+
+import javax.sql.DataSource;
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
 @Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
@@ -49,7 +50,7 @@ class TimeServiceTest {
     @DisplayName("중복된 예약 시간을 등록하는 경우 예외가 발생한다.")
     void duplicateTimeFail() {
         // given
-        timeRepository.save(new Time(LocalTime.of(12, 30)));
+        timeRepository.insert(new Time(LocalTime.of(12, 30)));
 
         // when & then
         assertThatThrownBy(() -> timeService.createTime(new TimeRequest(LocalTime.of(12, 30))))
@@ -60,11 +61,11 @@ class TimeServiceTest {
     @DisplayName("삭제하려는 시간에 예약이 존재하면 예외를 발생한다.")
     void usingTimeDeleteFail() {
         // given
-        Time time = timeRepository.save(new Time(LocalTime.now()));
-        Theme theme = themeRepository.save(new Theme("테마명", "설명", "썸네일URL"));
+        Time time = timeRepository.insert(new Time(LocalTime.now()));
+        Theme theme = themeRepository.insert(new Theme("테마명", "설명", "썸네일URL"));
 
         // when
-        reservationRepository.save(new Reservation("예약", LocalDate.now().plusDays(1L), time, theme));
+        reservationRepository.insert(new Reservation("예약", LocalDate.now().plusDays(1L), time, theme));
 
         // then
         assertThatThrownBy(() -> timeService.deleteTime(time.getId()))
