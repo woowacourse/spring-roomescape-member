@@ -1,6 +1,7 @@
 package roomescape.repository;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -10,8 +11,6 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 import javax.sql.DataSource;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -39,21 +38,7 @@ public class H2ReservationRepository implements ReservationRepository {
                 LEFT JOIN THEME T ON T.ID = R.THEME_ID
                 """;
 
-        return jdbcTemplate.query(sql, ((rs, rowNum) -> new Reservation(
-                rs.getLong("ID"),
-                rs.getString("NAME"),
-                rs.getDate("DATE").toLocalDate(),
-                new ReservationTime(
-                        rs.getLong("RESERVATION.ID"),
-                        rs.getTime("RESERVATION_TIME.START_AT").toLocalTime()
-                ),
-                new Theme(
-                        rs.getLong("RESERVATION.ID"),
-                        rs.getString("THEME.NAME"),
-                        rs.getString("THEME.DESCRIPTION"),
-                        rs.getString("THEME.THUMBNAIL")
-                )))
-        );
+        return jdbcTemplate.query(sql, getReservationRowMapper());
     }
 
     @Override
@@ -65,27 +50,14 @@ public class H2ReservationRepository implements ReservationRepository {
                 WHERE R.DATE = ? AND T.ID = ?
                 """;
 
-        //TODO 메서드 분리
-        return jdbcTemplate.query(sql, ((rs, rowNum) -> new Reservation(
-                        rs.getLong("ID"),
-                        rs.getString("NAME"),
-                        rs.getDate("DATE").toLocalDate(),
-                        new ReservationTime(
-                                rs.getLong("TIME_ID"),
-                                rs.getTime("START_AT").toLocalTime()),
-                        new Theme(
-                                rs.getLong("RESERVATION.THEME_ID"),
-                                null,
-                                null,
-                                null))),
-                date, themeId);
+        return jdbcTemplate.query(sql, getReservationRowMapper(), date, themeId);
     }
 
     @Override
     public Optional<Reservation> findById(final Long id) {
         final String sql = "SELECT * FROM reservation WHERE ID = ?";
 
-        return jdbcTemplate.query(sql, this::mapRowReservation, id)
+        return jdbcTemplate.query(sql, getReservationExceptTimeAndTheme(), id)
                 .stream()
                 .findAny();
     }
@@ -94,7 +66,7 @@ public class H2ReservationRepository implements ReservationRepository {
     public boolean existsByTimeId(final Long timeId) {
         final String sql = "SELECT * FROM RESERVATION WHERE TIME_ID = ? LIMIT 1";
 
-        return !jdbcTemplate.query(sql, this::mapRowReservation, timeId)
+        return !jdbcTemplate.query(sql, getReservationExceptTimeAndTheme(), timeId)
                 .isEmpty();
     }
 
@@ -102,18 +74,8 @@ public class H2ReservationRepository implements ReservationRepository {
     public boolean existsByThemeId(final Long themeId) {
         final String sql = "SELECT * FROM RESERVATION WHERE THEME_ID = ? LIMIT 1";
 
-        return !jdbcTemplate.query(sql, this::mapRowReservation, themeId)
+        return !jdbcTemplate.query(sql, getReservationExceptTimeAndTheme(), themeId)
                 .isEmpty();
-    }
-
-    private Reservation mapRowReservation(final ResultSet rs, final int rowNum) throws SQLException {
-        return new Reservation(
-                rs.getLong("ID"),
-                rs.getString("NAME"),
-                rs.getDate("DATE").toLocalDate(),
-                new ReservationTime(rs.getLong("RESERVATION.TIME_ID"), null),
-                new Theme(rs.getLong("RESERVATION.THEME_ID"), null, null, null)
-        );
     }
 
     @Override
@@ -132,7 +94,8 @@ public class H2ReservationRepository implements ReservationRepository {
     @Override
     public boolean existsByThemesAndDateAndTimeId(final Long themeId, final Long timeId, final LocalDate date) {
         final String sql = "SELECT * FROM RESERVATION WHERE THEME_ID = ? AND TIME_ID = ? AND DATE = ? LIMIT 1";
-        return !jdbcTemplate.query(sql, this::mapRowReservation, themeId, timeId, date).isEmpty();
+
+        return !jdbcTemplate.query(sql, getReservationExceptTimeAndTheme(), themeId, timeId, date).isEmpty();
     }
 
     @Override
@@ -163,5 +126,32 @@ public class H2ReservationRepository implements ReservationRepository {
                 rs.getString("THEME.DESCRIPTION"),
                 rs.getString("THEME.THUMBNAIL")
         )), popularRangeStart, popularRangeEnd);
+    }
+
+    private RowMapper<Reservation> getReservationRowMapper() {
+        return (rs, rowNum) -> new Reservation(
+                rs.getLong("ID"),
+                rs.getString("NAME"),
+                rs.getDate("DATE").toLocalDate(),
+                new ReservationTime(
+                        rs.getLong("RESERVATION.ID"),
+                        rs.getTime("RESERVATION_TIME.START_AT").toLocalTime()
+                ),
+                new Theme(
+                        rs.getLong("RESERVATION.ID"),
+                        rs.getString("THEME.NAME"),
+                        rs.getString("THEME.DESCRIPTION"),
+                        rs.getString("THEME.THUMBNAIL")
+                ));
+    }
+
+    private RowMapper<Reservation> getReservationExceptTimeAndTheme() {
+        return (rs, rowNum) -> new Reservation(
+                rs.getLong("ID"),
+                rs.getString("NAME"),
+                rs.getDate("DATE").toLocalDate(),
+                new ReservationTime(rs.getLong("RESERVATION.TIME_ID"), null),
+                new Theme(rs.getLong("RESERVATION.THEME_ID"), null, null, null)
+        );
     }
 }
