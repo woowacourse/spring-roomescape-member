@@ -1,6 +1,7 @@
 package roomescape.reservation.service;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 
 import java.time.LocalDate;
@@ -14,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.exception.ConflictException;
 import roomescape.reservation.dao.ReservationJdbcDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationRequest;
@@ -25,8 +27,8 @@ import roomescape.time.domain.Time;
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
 
-    private final Reservation reservation = new Reservation(1L, "polla", LocalDate.now(),
-            new Time(1L, LocalTime.now()),
+    private final Reservation reservation = new Reservation(1L, "polla", LocalDate.MAX,
+            new Time(1L, LocalTime.of(12,0)),
             new Theme(1L, "pollaBang", "폴라 방탈출", "thumbnail"));
 
     @InjectMocks
@@ -75,6 +77,27 @@ class ReservationServiceTest {
                 .deleteById(reservation.getId());
 
         assertDoesNotThrow(() -> reservationService.removeReservations(reservation.getId()));
+    }
+
+    @Test
+    @DisplayName("특정 테마의 예약이 존재하는 시간에 예약을 요청할 때 예외를 던진다.")
+    void addReservation_ShouldThrowException_WhenDuplicatedReservationRequestOccurs() {
+        Mockito.when(reservationJdbcDao.findAllByThemeIdAndDate(1L, LocalDate.MAX))
+                .thenReturn(List.of(reservation));
+
+        Mockito.when(timeJdbcDao.findById(1L))
+                .thenReturn(reservation.getReservationTime());
+
+        ReservationRequest reservationRequest = new ReservationRequest(
+                reservation.getDate(),
+                reservation.getName(),
+                reservation.getReservationTimeId(),
+                reservation.getThemeId()
+        );
+
+        assertThrows(ConflictException.class, () ->
+                reservationService.addReservation(reservationRequest)
+        );
     }
 
 }
