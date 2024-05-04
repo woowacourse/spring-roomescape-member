@@ -8,7 +8,7 @@ import roomescape.theme.model.Theme;
 
 public class Reservation {
     private final Long id;
-    private final String name;
+    private final ReservationName name;
     private final LocalDate date;
     private final ReservationTime reservationTime;
     private final Theme theme;
@@ -19,7 +19,7 @@ public class Reservation {
                        final ReservationTime reservationTime,
                        final Theme theme) {
         this.id = id;
-        this.name = name;
+        this.name = new ReservationName(name);
         this.date = date;
         this.reservationTime = reservationTime;
         this.theme = theme;
@@ -29,11 +29,22 @@ public class Reservation {
         return this.reservationTime.equals(reservationTime);
     }
 
+    public boolean isBeforeDateTimeThanNow(final LocalDateTime now) {
+        if (date.isBefore(now.toLocalDate())) {
+            return true;
+        }
+
+        if (date.isAfter(now.toLocalDate())) {
+            return false;
+        }
+        return reservationTime.isBefore(now.toLocalTime());
+    }
+
     public Long getId() {
         return id;
     }
 
-    public String getName() {
+    public ReservationName getName() {
         return name;
     }
 
@@ -64,16 +75,5 @@ public class Reservation {
     @Override
     public int hashCode() {
         return Objects.hash(id);
-    }
-
-    public boolean isBeforeDateTimeThanNow(final LocalDateTime now) {
-        if (date.isBefore(now.toLocalDate())) {
-            return true;
-        }
-
-        if (date.isAfter(now.toLocalDate())) {
-            return false;
-        }
-        return reservationTime.isBefore(now.toLocalTime());
     }
 }

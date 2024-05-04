@@ -13,7 +13,7 @@ public record FindReservationResponse(
     public static FindReservationResponse of(final Reservation reservation) {
         return new FindReservationResponse(
                 reservation.getId(),
-                reservation.getName(),
+                reservation.getName().getValue(),
                 reservation.getDate(),
                 FindTimeOfReservationsResponse.of(reservation.getReservationTime()),
                 FindThemeOfReservationResponse.of(reservation.getTheme())

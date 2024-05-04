@@ -47,7 +47,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public Reservation save(final Reservation reservation) {
         SqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
-                .addValue("name", reservation.getName())
+                .addValue("name", reservation.getName().getValue())
                 .addValue("date", Date.valueOf(reservation.getDate()))
                 .addValue("time_id", reservation.getReservationTime().getId())
                 .addValue("theme_id", reservation.getTheme().getId());
@@ -56,7 +56,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
         return new Reservation(
                 id,
-                reservation.getName(),
+                reservation.getName().getValue(),
                 reservation.getDate(),
                 reservation.getReservationTime(),
                 reservation.getTheme()
