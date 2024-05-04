@@ -32,19 +32,16 @@ public class ReservationTimeH2Repository implements ReservationTimeRepository {
 
     @Override
     public ReservationTime save(ReservationTime reservationTime) {
-        if (isDuplicatedTime(reservationTime.getStartAt())) {
-            throw new IllegalArgumentException("이미 존재하는 시간입니다.");
-        }
-
         SqlParameterSource params = new BeanPropertySqlParameterSource(reservationTime);
         long id = jdbcInsert.executeAndReturnKey(params).longValue();
 
         return new ReservationTime(id, reservationTime.getStartAt());
     }
 
-    private boolean isDuplicatedTime(LocalTime localTime) {
+    @Override
+    public boolean hasSameTime(ReservationTime reservationTime) {
         String sql = "SELECT * FROM reservation_time WHERE start_at = ?";
-        return !jdbcTemplate.query(sql, (rs, rowNum) -> 0, localTime).isEmpty();
+        return !jdbcTemplate.query(sql, (rs, rowNum) -> 0, reservationTime.getStartAt()).isEmpty();
     }
 
     @Override

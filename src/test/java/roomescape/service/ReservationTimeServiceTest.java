@@ -1,6 +1,8 @@
 package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.InitialDataFixture.*;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -11,6 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.domain.Name;
+import roomescape.domain.Reservation;
 import roomescape.dto.request.ReservationTimeAddRequest;
 import roomescape.dto.response.ReservationTimeResponse;
 
@@ -58,5 +62,14 @@ class ReservationTimeServiceTest {
         Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reservation_time", Integer.class);
 
         assertThat(count).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("존재하는 시간을 추가하려는 경우 예외가 발생한다.")
+    void saveSameTime() {
+        ReservationTimeAddRequest timeAddRequest = new ReservationTimeAddRequest(RESERVATION_TIME_1.getStartAt());
+
+        assertThatThrownBy(() -> reservationTimeService.addTime(timeAddRequest))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }

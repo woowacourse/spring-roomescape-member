@@ -32,10 +32,6 @@ public class ThemeH2Repository implements ThemeRepository{
 
     @Override
     public Theme save(Theme theme) {
-        if (isDuplicatedTheme(theme)) {
-            throw new IllegalArgumentException("이미 존재하는 테마입니다.");
-        }
-
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", theme.getName().getName())
                 .addValue("description", theme.getDescription())
@@ -45,7 +41,8 @@ public class ThemeH2Repository implements ThemeRepository{
         return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 
-    private boolean isDuplicatedTheme(Theme theme) {
+    @Override
+    public boolean hasSameTheme(Theme theme) {
         String sql = "SELECT * FROM theme WHERE name = ?";
         return !jdbcTemplate.query(sql, (rs, rowNum) -> 0, theme.getName().getName()).isEmpty();
     }

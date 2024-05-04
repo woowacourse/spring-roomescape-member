@@ -9,6 +9,8 @@ public interface ThemeRepository {
 
     Theme save(Theme theme);
 
+    boolean hasSameTheme(Theme theme);
+
     void delete(Long id);
 
     Optional<Theme> findById(Long id);

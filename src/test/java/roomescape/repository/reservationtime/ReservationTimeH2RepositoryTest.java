@@ -37,14 +37,6 @@ class ReservationTimeH2RepositoryTest {
     }
 
     @Test
-    @DisplayName("중복된 시간을 저장하려고 하면 예외가 발생한다.")
-    void saveDuplicatedGetTime() {
-        assertThatThrownBy(() -> reservationTimeH2Repository.save(RESERVATION_TIME_1))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-
-    @Test
     @DisplayName("id에 맞는 ReservationTime을 제거한다.")
     void delete() {
         reservationTimeH2Repository.delete(RESERVATION_TIME_2.getId());
@@ -60,7 +52,6 @@ class ReservationTimeH2RepositoryTest {
         assertThatThrownBy(() -> reservationTimeH2Repository.delete(RESERVATION_TIME_1.getId()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
-
 
     @Test
     @DisplayName("모든 ReservationTime을 찾는다.")

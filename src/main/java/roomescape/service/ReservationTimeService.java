@@ -22,8 +22,12 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponse addTime(ReservationTimeAddRequest reservationTimeAddRequest) {
-        ReservationTime reservationTime = reservationTimeRepository.save(reservationTimeAddRequest.toReservationTime());
-        return ReservationTimeResponse.from(reservationTime);
+        ReservationTime reservationTime = reservationTimeAddRequest.toReservationTime();
+        if (reservationTimeRepository.hasSameTime(reservationTime)) {
+            throw new IllegalArgumentException("이미 존재하는 시간입니다.");
+        }
+        ReservationTime addedReservationTime = reservationTimeRepository.save(reservationTime);
+        return ReservationTimeResponse.from(addedReservationTime);
     }
 
     public List<ReservationTimeResponse> findTimes() {

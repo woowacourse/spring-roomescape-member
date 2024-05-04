@@ -7,6 +7,8 @@ public interface ReservationRepository {
 
     Reservation save(Reservation reservation);
 
+    boolean hasSameReservation(Reservation reservation);
+
     void delete(Long id);
 
     List<Reservation> findAll();

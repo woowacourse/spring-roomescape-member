@@ -17,18 +17,15 @@ public class ThemeService {
     }
 
     public ThemeResponse addTheme(ThemeAddRequest themeAddRequest) {
-        Theme theme = themeRepository.save(themeAddRequest.toTheme());
+        Theme addRequestTheme = themeAddRequest.toTheme();
+        if (themeRepository.hasSameTheme(addRequestTheme)) {
+            throw new IllegalArgumentException("이미 존재하는 테마입니다.");
+        }
+        Theme theme = themeRepository.save(addRequestTheme);
         return ThemeResponse.from(theme);
     }
 
     public List<ThemeResponse> findThemes() {
-        return themeRepository.findAll()
-                .stream()
-                .map(ThemeResponse::from)
-                .toList();
-    }
-
-    public List<ThemeResponse> findThemes(Long limit) {
         return themeRepository.findAll()
                 .stream()
                 .map(ThemeResponse::from)

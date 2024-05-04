@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -42,8 +43,20 @@ public class ReservationService {
                 timeResponse.toReservationTime(),
                 themeResponse.toTheme()
         );
-
+        validateDateTime(reservation);
         return ReservationResponse.from(reservationRepository.save(reservation));
+    }
+
+    private void validateDateTime(Reservation reservation) {
+        LocalDateTime localDateTime = LocalDateTime.of(reservation.getDate(), reservation.getTime().getStartAt());
+        LocalDateTime now = LocalDateTime.now();
+
+        if (localDateTime.isBefore(now)) {
+            throw new IllegalArgumentException("과거 시간은 예약할 수 없습니다.");
+        }
+        if (reservationRepository.hasSameReservation(reservation)) {
+            throw new IllegalArgumentException("중복 예약을 할 수 없습니다.");
+        }
     }
 
     public void deleteReservation(Long id) {
