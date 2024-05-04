@@ -1,4 +1,4 @@
-package roomescape.time.dao;
+package roomescape.time.repository;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,29 +17,29 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Sql(scripts = {"/data.sql", "/sample.sql"})
-class ReservationTimeDaoTest {
+class ReservationTimeRepositoryTest {
 
     @Autowired
-    private ReservationTimeDao reservationTimeDao;
+    private ReservationTimeRepository reservationTimeRepository;
 
     @Test
     @DisplayName("예약 시간을 생성할 수 있다.")
     void save() {
         ReservationTime reservationTime = new ReservationTime(null, "23:59");
-        assertThat(reservationTimeDao.save(reservationTime)).isEqualTo(11L);
+        assertThat(reservationTimeRepository.save(reservationTime)).isEqualTo(11L);
     }
 
     @Test
     @DisplayName("특정 예약 시간을 조회할 수 있다.")
     void findById() {
-        assertThat(reservationTimeDao.findById(1L)).isEqualTo(new ReservationTime(1L, "09:00"));
+        assertThat(reservationTimeRepository.findById(1L)).isEqualTo(new ReservationTime(1L, "09:00"));
     }
 
     @Test
     @DisplayName("모든 예약 시간을 조회할 수 있다.")
     void findAll() {
         assertAll(
-                () -> assertThat(reservationTimeDao.findAll()
+                () -> assertThat(reservationTimeRepository.findAll()
                         .size()).isEqualTo(10)
         );
     }
@@ -47,7 +47,7 @@ class ReservationTimeDaoTest {
     @Test
     @DisplayName("특정 예약 시간을 삭제할 수 있다.")
     void deleteById() {
-        assertThat(reservationTimeDao.deleteById(10L)).isEqualTo(1);
+        assertThat(reservationTimeRepository.deleteById(10L)).isEqualTo(1);
     }
 
     @Test
@@ -65,6 +65,6 @@ class ReservationTimeDaoTest {
                 new ReservationUserTime(9, "17:00", false),
                 new ReservationUserTime(10, "18:00", false)
         );
-        assertThat(reservationTimeDao.findAvailableTime("2024-04-24", 2)).isEqualTo(userTimes);
+        assertThat(reservationTimeRepository.findAvailableTime("2024-04-24", 2)).isEqualTo(userTimes);
     }
 }

@@ -1,4 +1,4 @@
-package roomescape.theme.dao;
+package roomescape.theme.repository;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,14 +14,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Sql(scripts = {"/data.sql", "/sample.sql"})
-class ThemeDaoTest {
+class ThemeRepositoryTest {
 
     @Autowired
-    private ThemeDao themeDao;
+    private ThemeRepository themeRepository;
 
     @Test
     void findPopular() {
-        List<Theme> themeList = themeDao.findPopular("2024-04-24", "2024-04-30");
+        List<Theme> themeList = themeRepository.findPopular("2024-04-24", "2024-04-30");
         List<Long> actual = themeList.stream().map(Theme::getId).toList();
         List<Long> expected = List.of(2L, 1L, 3L);
 

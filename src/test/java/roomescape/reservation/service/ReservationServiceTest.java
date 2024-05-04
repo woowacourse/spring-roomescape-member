@@ -9,10 +9,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.InvalidDateException;
 import roomescape.exception.InvalidTimeException;
-import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.dto.ReservationRequestDto;
-import roomescape.time.dao.ReservationTimeDao;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.domain.ReservationTime;
+import roomescape.time.repository.ReservationTimeRepository;
 
 import java.time.LocalDate;
 
@@ -26,9 +26,9 @@ import static org.mockito.Mockito.when;
 class ReservationServiceTest {
 
     @Mock
-    private ReservationDao reservationDao;
+    private ReservationRepository reservationRepository;
     @Mock
-    private ReservationTimeDao reservationTimeDao;
+    private ReservationTimeRepository reservationTimeRepository;
 
     @InjectMocks
     private ReservationService reservationService;
@@ -38,8 +38,8 @@ class ReservationServiceTest {
     void save() {
         Long id = 1L;
         ReservationTime reservationTime = new ReservationTime(id, "00:00");
-        when(reservationTimeDao.findById(id)).thenReturn(reservationTime);
-        when(reservationDao.checkReservationExists(anyString(), anyLong(), anyLong())).thenReturn(true);
+        when(reservationTimeRepository.findById(id)).thenReturn(reservationTime);
+        when(reservationRepository.checkReservationExists(anyString(), anyLong(), anyLong())).thenReturn(true);
         assertAll(
                 () -> assertThatThrownBy(() -> reservationService.save(
                         new ReservationRequestDto("hotea", LocalDate.MAX.toString(), id, id)))

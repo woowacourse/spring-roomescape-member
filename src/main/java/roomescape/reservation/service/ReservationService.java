@@ -4,12 +4,12 @@ import org.springframework.stereotype.Service;
 import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.InvalidDateException;
 import roomescape.exception.InvalidTimeException;
-import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationRequestDto;
 import roomescape.reservation.dto.ReservationResponseDto;
-import roomescape.time.dao.ReservationTimeDao;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.domain.ReservationTime;
+import roomescape.time.repository.ReservationTimeRepository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -18,35 +18,35 @@ import java.util.NoSuchElementException;
 @Service
 public class ReservationService {
 
-    private final ReservationDao reservationDao;
-    private final ReservationTimeDao reservationTimeDao;
+    private final ReservationRepository reservationRepository;
+    private final ReservationTimeRepository reservationTimeRepository;
 
-    public ReservationService(final ReservationDao reservationDao, final ReservationTimeDao reservationTimeDao) {
-        this.reservationDao = reservationDao;
-        this.reservationTimeDao = reservationTimeDao;
+    public ReservationService(final ReservationRepository reservationRepository, final ReservationTimeRepository reservationTimeRepository) {
+        this.reservationRepository = reservationRepository;
+        this.reservationTimeRepository = reservationTimeRepository;
     }
 
     public List<ReservationResponseDto> findAll() {
-        final List<Reservation> reservations = reservationDao.findAll();
+        final List<Reservation> reservations = reservationRepository.findAll();
         return reservations.stream()
                 .map(ReservationResponseDto::new)
                 .toList();
     }
 
     public ReservationResponseDto save(final ReservationRequestDto requestDto) {
-        final ReservationTime reservationTime = reservationTimeDao.findById(requestDto.timeId());
+        final ReservationTime reservationTime = reservationTimeRepository.findById(requestDto.timeId());
         final Reservation reservation = requestDto.toReservation();
         validateNoReservationsForPastDates(reservation.getDate(), reservationTime);
-        boolean isExist = reservationDao.checkReservationExists(reservation.getDate().toString(), requestDto.timeId(), requestDto.themeId());
+        boolean isExist = reservationRepository.checkReservationExists(reservation.getDate().toString(), requestDto.timeId(), requestDto.themeId());
         validateDuplicationReservation(isExist);
 
-        final long reservationId = reservationDao.save(reservation);
-        final Reservation findReservation = reservationDao.findById(reservationId);
+        final long reservationId = reservationRepository.save(reservation);
+        final Reservation findReservation = reservationRepository.findById(reservationId);
         return new ReservationResponseDto(findReservation);
     }
 
     public void deleteById(final long id) {
-        final int deleteCount = reservationDao.deleteById(id);
+        final int deleteCount = reservationRepository.deleteById(id);
         if (deleteCount == 0) {
             throw new NoSuchElementException("해당하는 예약이 없습니다.");
         }
