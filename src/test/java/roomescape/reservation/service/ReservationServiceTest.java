@@ -1,6 +1,7 @@
 package roomescape.reservation.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
 import java.time.LocalDate;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.ThemeName;
@@ -60,10 +62,12 @@ class ReservationServiceTest {
         doReturn(Optional.of(theme)).when(themeRepository)
                 .findById(1L);
 
-        ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest("호기",
-                LocalDate.parse("2025-03-14"), 1L, 1L);
+        doReturn(true).when(reservationRepository)
+                .existReservation(any(Reservation.class));
 
-        assertThatThrownBy(() -> reservationService.save(reservationSaveRequest))
+        ReservationSaveRequest request = new ReservationSaveRequest("카키", LocalDate.now(), 1L, 1L);
+
+        assertThatThrownBy(() -> reservationService.save(request))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
