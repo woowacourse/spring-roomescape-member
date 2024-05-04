@@ -1,4 +1,4 @@
-package roomescape.repository;
+package roomescape.repository.implementation;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation.Reservation;
 import roomescape.domain.ReservationTime.ReservationTime;
 import roomescape.domain.Theme.Theme;
+import roomescape.repository.ReservationRepository;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
