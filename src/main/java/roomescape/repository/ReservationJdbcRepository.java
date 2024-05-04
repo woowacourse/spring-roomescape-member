@@ -1,5 +1,7 @@
 package roomescape.repository;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -19,16 +21,8 @@ import roomescape.domain.Theme;
 public class ReservationJdbcRepository implements ReservationRepository {
 
     private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (selectedReservation, rowNum) -> {
-        final ReservationTime time = new ReservationTime(
-                selectedReservation.getLong("time_id"),
-                LocalTime.parse(selectedReservation.getString("start_at"))
-        );
-        final Theme theme = new Theme(
-                selectedReservation.getLong("theme_id"),
-                selectedReservation.getString("theme_name"),
-                selectedReservation.getString("description"),
-                selectedReservation.getString("thumbnail")
-        );
+        final ReservationTime time = mapReservationTime(selectedReservation);
+        final Theme theme = mapTheme(selectedReservation);
 
         return new Reservation(
                 selectedReservation.getLong("id"),
@@ -39,11 +33,24 @@ public class ReservationJdbcRepository implements ReservationRepository {
         );
     };
 
-    private static final RowMapper<Theme> THEME_ROW_MAPPER = (rs, rowNum) -> new Theme(
-            rs.getLong("id"),
-            rs.getString("name"),
-            rs.getString("description"),
-            rs.getString("thumbnail"));
+    private static final RowMapper<Theme> THEME_ROW_MAPPER = (rs, rowNum) -> mapTheme(rs);
+    private static final RowMapper<ReservationTime> RESERVATION_TIME_ROW_MAPPER = (rs, rowNum) -> mapReservationTime(rs);
+
+    private static ReservationTime mapReservationTime(final ResultSet resultSet) throws SQLException {
+        return new ReservationTime(
+                resultSet.getLong("time_id"),
+                LocalTime.parse(resultSet.getString("start_at"))
+        );
+    }
+
+    private static Theme mapTheme(final ResultSet resultSet) throws SQLException {
+        return new Theme(
+                resultSet.getLong("theme_id"),
+                resultSet.getString("theme_name"),
+                resultSet.getString("description"),
+                resultSet.getString("thumbnail")
+        );
+    }
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert reservationInsert;
@@ -120,27 +127,20 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findByDateAndThemeId(final LocalDate date, final Long themeId) {
+    public List<ReservationTime> findTimeByDateAndThemeId(final LocalDate date, final Long themeId) {
         final String selectQuery = """
             SELECT
-                r.id as reservation_id,
-                r.name,
-                r.date,
                 rt.id as time_id,
-                rt.start_at,
-                t.id as theme_id,
-                t.name as theme_name,
-                t.description,
-                t.thumbnail
-            FROM reservation as r
-            INNER JOIN reservation_time as rt
+                rt.start_at
+            FROM reservation_time as rt
+            LEFT JOIN reservation as r
             ON r.time_id = rt.id
-            INNER JOIN theme as t
+            LEFT JOIN theme as t
             ON r.theme_id = t.id
             WHERE r.date = ? AND r.theme_id = ?
         """;
 
-        return jdbcTemplate.query(selectQuery, RESERVATION_ROW_MAPPER, date, themeId);
+        return jdbcTemplate.query(selectQuery, RESERVATION_TIME_ROW_MAPPER, date, themeId);
     }
 
     @Override
@@ -199,7 +199,11 @@ public class ReservationJdbcRepository implements ReservationRepository {
     @Override
     public List<Theme> findTopThemesDurationOrderByCount(final LocalDate startDate, final LocalDate endDate, final Integer limit) {
         final String sql = """
-                SELECT t.id, t.name, t.description, t.thumbnail
+                SELECT 
+                    t.id as theme_id, 
+                    t.name as theme_name, 
+                    t.description, 
+                    t.thumbnail
                 FROM theme AS t
                 LEFT JOIN reservation AS r
                 ON t.id = r.theme_id

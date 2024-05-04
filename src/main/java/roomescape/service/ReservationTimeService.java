@@ -3,7 +3,6 @@ package roomescape.service;
 import java.util.Comparator;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
@@ -73,18 +72,13 @@ public class ReservationTimeService {
             throw new IllegalArgumentException("존재하지 않는 테마입니다.");
         }
 
-        final List<Reservation> reservations = reservationRepository.findByDateAndThemeId(reservationTimeBookedRequest.date(),
+        final List<ReservationTime> reservationTimes = reservationRepository.findTimeByDateAndThemeId(reservationTimeBookedRequest.date(),
                 reservationTimeBookedRequest.themeId());
         final List<ReservationTime> times = reservationTimeRepository.findAll();
 
         return times.stream()
                 .sorted(Comparator.comparing(ReservationTime::getStartAt))
-                .map(time -> ReservationTimeBookedResponse.of(time, isAlreadyBooked(reservations, time)))
+                .map(time -> ReservationTimeBookedResponse.of(time, reservationTimes.contains(time)))
                 .toList();
-    }
-
-    public boolean isAlreadyBooked(final List<Reservation> reservations, final ReservationTime time) {
-        return reservations.stream()
-                .anyMatch(reservation -> reservation.isTime(time));
     }
 }

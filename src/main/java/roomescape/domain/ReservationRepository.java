@@ -12,7 +12,7 @@ public interface ReservationRepository {
 
     Optional<Reservation> findById(final Long id);
 
-    List<Reservation> findByDateAndThemeId(final LocalDate date, final Long aLong);
+    List<ReservationTime> findTimeByDateAndThemeId(final LocalDate date, final Long aLong);
 
     boolean existByTimeId(final Long timeId);
 
