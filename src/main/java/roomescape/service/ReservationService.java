@@ -44,7 +44,7 @@ public class ReservationService {
         ReservationTime reservationTime = getReservationTime(request.timeId());
         Theme theme = getTheme(request.themeId());
 
-        Reservation reservation = request.toEntity(reservationTime, theme);
+        Reservation reservation = request.toReservation(reservationTime, theme);
         if (reservation.isDateBefore(LocalDate.now())) {
             throw new IllegalReservationDateException(reservation.getDate() + ": 예약 날짜는 현재 보다 이전일 수 없습니다");
         }

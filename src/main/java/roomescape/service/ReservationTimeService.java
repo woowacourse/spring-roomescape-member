@@ -33,7 +33,7 @@ public class ReservationTimeService {
         if (reservationTimeRepository.existByStartAt(reservationTimeAddRequest.startAt())) {
             throw new DuplicateSaveException("이미 존재하는 예약시간은 추가할 수 없습니다.");
         }
-        ReservationTime saved = reservationTimeRepository.save(reservationTimeAddRequest.toEntity());
+        ReservationTime saved = reservationTimeRepository.save(reservationTimeAddRequest.toReservationTime());
         return new ReservationTimeResponse(saved);
     }
 

@@ -7,7 +7,7 @@ import roomescape.domain.ReservationTime;
 public record ReservationTimeAddRequest(
         @NotNull(message = "예약 시간은 필수입니다.") LocalTime startAt) {
 
-    public ReservationTime toEntity() {
+    public ReservationTime toReservationTime() {
         return new ReservationTime(null, startAt);
     }
 }
