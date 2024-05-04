@@ -35,7 +35,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public List<ReservationTime> findAll() {
-        String sql = "SELECT * FROM reservation_time ORDER BY start_at ASC";
+        String sql = "SELECT * FROM reservation_time";
 
         return jdbcTemplate.query(sql, rowMapper);
     }
@@ -55,20 +55,15 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public List<AvailableReservationTimeDto> findAvailableReservationTimes(LocalDate date, Long themeId) {
         String sql = """
-                    SELECT DISTINCT
-                        rt.id AS id,
-                        rt.start_at AS start_at,
-                        r.id IS NOT NULL AS already_booked
+                    SELECT
+                        rt.id,
+                        rt.start_at,
+                        EXISTS(
+                            SELECT 1
+                            FROM reservation AS r
+                            WHERE r.date = ? AND r.theme_id = ? AND r.time_id = rt.id
+                        ) AS already_booked
                     FROM reservation_time AS rt
-                    LEFT JOIN (
-                        SELECT
-                            id,
-                            time_id
-                        FROM reservation
-                        WHERE date = ? AND theme_id = ?
-                    ) AS r
-                    ON rt.id = r.time_id
-                    ORDER BY rt.start_at ASC
                 """;
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
