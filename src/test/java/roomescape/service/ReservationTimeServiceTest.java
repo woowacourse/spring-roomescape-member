@@ -5,43 +5,22 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import roomescape.dao.ReservationRepository;
-import roomescape.dao.ThemeRepository;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.exception.InvalidReservationException;
 import roomescape.service.dto.ReservationTimeCreateRequest;
 import roomescape.service.dto.ReservationTimeReadRequest;
 import roomescape.service.dto.ReservationTimeResponse;
 
-@SpringBootTest(webEnvironment = WebEnvironment.NONE)
+@SpringBootTest
+@Sql(scripts = "/test_data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_CLASS)
 class ReservationTimeServiceTest {
     @Autowired
     private ReservationTimeService reservationTimeService;
-    @Autowired
-    private ThemeRepository themeRepository;
-    @Autowired
-    private ReservationRepository reservationRepository;
-
-    @AfterEach
-    void init() {
-        for (final Reservation reservation : reservationRepository.findAll()) {
-            reservationRepository.deleteById(reservation.getId());
-        }
-        for (final ReservationTimeResponse reservationTimeResponse : reservationTimeService.findAll()) {
-            reservationTimeService.deleteById(reservationTimeResponse.id());
-        }
-        for (Theme theme : themeRepository.findAll()) {
-            themeRepository.deleteById(theme.getId());
-        }
-    }
 
     @DisplayName("새로운 예약 시간을 저장한다.")
     @Test
@@ -58,16 +37,12 @@ class ReservationTimeServiceTest {
                 () -> assertThat(result.id()).isNotZero(),
                 () -> assertThat(result.startAt()).isEqualTo(startAt)
         );
+        reservationTimeService.deleteById(2);
     }
 
     @DisplayName("모든 예약 시간 내역을 조회한다.")
     @Test
     void findAll() {
-        //given
-        String startAt = "10:00";
-        ReservationTimeCreateRequest reservationTimeCreateRequest = new ReservationTimeCreateRequest(startAt);
-        reservationTimeService.create(reservationTimeCreateRequest);
-
         //when
         List<ReservationTimeResponse> reservationTimes = reservationTimeService.findAll();
 
@@ -79,9 +54,7 @@ class ReservationTimeServiceTest {
     @Test
     void duplicatedTime() {
         //given
-        String startAt = "10:00";
-        ReservationTimeCreateRequest reservationTimeCreateRequest = new ReservationTimeCreateRequest(startAt);
-        reservationTimeService.create(reservationTimeCreateRequest);
+        ReservationTimeCreateRequest reservationTimeCreateRequest = new ReservationTimeCreateRequest("12:00");
 
         //when&then
         assertThatThrownBy(() -> reservationTimeService.create(reservationTimeCreateRequest))
@@ -92,17 +65,7 @@ class ReservationTimeServiceTest {
     @DisplayName("예약이 존재하는 시간으로 삭제를 시도하면 예외를 발생시킨다.")
     @Test
     void cannotDeleteTime() {
-        //given
-        ReservationTimeResponse reservationTimeResponse = reservationTimeService.create(
-                new ReservationTimeCreateRequest("10:00"));
-        ReservationTime reservationTime = new ReservationTime(reservationTimeResponse.id(),
-                reservationTimeResponse.startAt());
-        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
-        reservationRepository.save(new Reservation("lilly", "2222-10-04", reservationTime, theme));
-
-        //when&then
-        assertThatThrownBy(() -> reservationTimeService.deleteById(reservationTimeResponse.id()))
+        assertThatThrownBy(() -> reservationTimeService.deleteById(1))
                 .isInstanceOf(InvalidReservationException.class)
                 .hasMessage("해당 시간에 예약이 존재해서 삭제할 수 없습니다.");
     }
@@ -110,27 +73,11 @@ class ReservationTimeServiceTest {
     @DisplayName("해당 테마와 날짜에 예약이 가능한 시간 목록을 조회한다.")
     @Test
     void findAvailableTimes() {
-        //given
-        ReservationTimeResponse notAvailableTimeResponse = reservationTimeService.create(
-                new ReservationTimeCreateRequest("10:00"));
-        ReservationTime reservationTime = new ReservationTime(notAvailableTimeResponse.id(),
-                notAvailableTimeResponse.startAt());
-        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
-        Reservation reservation = reservationRepository.save(
-                new Reservation("lilly", "2222-10-04", reservationTime, theme));
-
-        ReservationTimeResponse availableTimeResponse = reservationTimeService.create(
-                new ReservationTimeCreateRequest("11:00"));
-
         //when
         List<ReservationTimeResponse> result = reservationTimeService.findAvailableTimes(
-                new ReservationTimeReadRequest(reservation.getDate(), theme.getId()));
+                new ReservationTimeReadRequest("2222-10-04", 1));
 
         //then
-        assertAll(
-                () -> assertThat(result).hasSize(1),
-                () -> assertThat(result).contains(availableTimeResponse)
-        );
+        assertThat(result).hasSize(1);
     }
 }

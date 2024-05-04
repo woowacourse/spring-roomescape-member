@@ -11,22 +11,22 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 @JdbcTest
+@Sql(scripts = "/test_data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_CLASS)
 class ReservationJDBCRepositoryTest {
-    private final JdbcTemplate jdbcTemplate;
     private ReservationRepository reservationRepository;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
     private String date;
     private ReservationTime reservationTime;
     private Theme theme;
-
-    @Autowired
-    ReservationJDBCRepositoryTest(final JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @BeforeEach
     void setUp() {
@@ -52,14 +52,13 @@ class ReservationJDBCRepositoryTest {
 
         //then
         assertThat(result.getId()).isNotZero();
+        reservationRepository.deleteById(2);
     }
 
     @DisplayName("모든 예약 내역을 조회한다.")
     @Test
     void findAllReservationTest() {
         //given
-        Reservation reservation = new Reservation("브라운", date, reservationTime, theme);
-        reservationRepository.save(reservation);
         int expectedSize = 1;
 
         //when
@@ -75,7 +74,7 @@ class ReservationJDBCRepositoryTest {
         //given
         Reservation reservation = new Reservation("브라운", date, reservationTime, theme);
         Reservation target = reservationRepository.save(reservation);
-        int expectedSize = 0;
+        int expectedSize = 1;
 
         //when
         reservationRepository.deleteById(target.getId());
@@ -97,18 +96,14 @@ class ReservationJDBCRepositoryTest {
 
         //then
         assertThat(result).isTrue();
+        reservationRepository.deleteById(2);
     }
 
     @DisplayName("주어진 일정, 테마가 동일한 예약이 존재하지 않는다.")
     @Test
     void notExistsByDateAndTimeAndThemeTest() {
-        //given
-        String newDate = LocalDate.now().plusDays(2).toString();
-        Reservation reservation = new Reservation("브라운", date, reservationTime, theme);
-        reservationRepository.save(reservation);
-
         //when
-        boolean result = reservationRepository.existsByDateAndTimeAndTheme(newDate, reservationTime.getId(),
+        boolean result = reservationRepository.existsByDateAndTimeAndTheme(date, reservationTime.getId(),
                 theme.getId());
 
         //then
@@ -118,12 +113,8 @@ class ReservationJDBCRepositoryTest {
     @DisplayName("주어진 시간에 대한 예약이 존재한다.")
     @Test
     void existsByTimeIdTest() {
-        //given
-        Reservation reservation = new Reservation("브라운", date, reservationTime, theme);
-        reservationRepository.save(reservation);
-
         //when
-        boolean result = reservationRepository.existsByTimeId(reservationTime.getId());
+        boolean result = reservationRepository.existsByTimeId(1);
 
         //then
         assertThat(result).isTrue();
@@ -142,12 +133,8 @@ class ReservationJDBCRepositoryTest {
     @DisplayName("주어진 테마에 대한 예약이 존재한다.")
     @Test
     void existsByThemeIdTest() {
-        //given
-        Reservation reservation = new Reservation("브라운", date, reservationTime, theme);
-        reservationRepository.save(reservation);
-
         //when
-        boolean result = reservationRepository.existsByThemeId(theme.getId());
+        boolean result = reservationRepository.existsByThemeId(1);
 
         //then
         assertThat(result).isTrue();

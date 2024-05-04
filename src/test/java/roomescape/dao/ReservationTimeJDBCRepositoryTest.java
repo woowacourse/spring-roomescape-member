@@ -10,15 +10,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.domain.Reservation;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
 
 @JdbcTest
+@Sql(scripts = "/test_data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_CLASS)
 class ReservationTimeJDBCRepositoryTest {
     private ReservationTimeRepository reservationTimeRepository;
-    private ReservationRepository reservationRepository;
-    private ThemeRepository themeRepository;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -26,8 +25,6 @@ class ReservationTimeJDBCRepositoryTest {
     @BeforeEach
     void setUp() {
         reservationTimeRepository = new ReservationTimeJDBCRepository(jdbcTemplate);
-        reservationRepository = new ReservationJDBCRepository(jdbcTemplate);
-        themeRepository = new ThemeJDBCRepository(jdbcTemplate);
     }
 
     @DisplayName("새로운 예약 시간을 저장한다.")
@@ -42,15 +39,13 @@ class ReservationTimeJDBCRepositoryTest {
 
         //then
         assertThat(result.getId()).isNotZero();
+        reservationTimeRepository.deleteById(2);
     }
 
     @DisplayName("모든 예약 시간을 조회한다.")
     @Test
     void findAllReservationTimesTest() {
         //given
-        String startAt = "10:00";
-        ReservationTime reservationTime = new ReservationTime(startAt);
-        reservationTimeRepository.save(reservationTime);
         int expectedSize = 1;
 
         //when
@@ -76,6 +71,7 @@ class ReservationTimeJDBCRepositoryTest {
                 () -> assertThat(result.getId()).isEqualTo(target.getId()),
                 () -> assertThat(result.getStartAt()).isEqualTo(startAt)
         );
+        reservationTimeRepository.deleteById(2);
     }
 
     @DisplayName("id로 예약을 삭제한다.")
@@ -85,7 +81,7 @@ class ReservationTimeJDBCRepositoryTest {
         String startAt = "10:00";
         ReservationTime reservationTime = new ReservationTime(startAt);
         ReservationTime target = reservationTimeRepository.save(reservationTime);
-        int expectedSize = 0;
+        int expectedSize = 1;
 
         //when
         reservationTimeRepository.deleteById(target.getId());
@@ -97,13 +93,8 @@ class ReservationTimeJDBCRepositoryTest {
     @DisplayName("주어진 시간이 이미 존재한다.")
     @Test
     void existsTime() {
-        //given
-        String startAt = "10:00";
-        ReservationTime reservationTime = new ReservationTime(startAt);
-        reservationTimeRepository.save(reservationTime);
-
         //when
-        boolean result = reservationTimeRepository.existsByStartAt(startAt);
+        boolean result = reservationTimeRepository.existsByStartAt("12:00");
 
         //then
         assertThat(result).isTrue();
@@ -112,14 +103,8 @@ class ReservationTimeJDBCRepositoryTest {
     @DisplayName("주어진 시간이 존재하지 않는다.")
     @Test
     void notExistsTime() {
-        //given
-        String startAt = "10:00";
-        ReservationTime reservationTime = new ReservationTime(startAt);
-        reservationTimeRepository.save(reservationTime);
-
         //when
-        String newStartAt = "10:01";
-        boolean result = reservationTimeRepository.existsByStartAt(newStartAt);
+        boolean result = reservationTimeRepository.existsByStartAt("10:00");
 
         //then
         assertThat(result).isFalse();
@@ -128,16 +113,8 @@ class ReservationTimeJDBCRepositoryTest {
     @DisplayName("예약이 가능한 시간이 없다.")
     @Test
     void findNoAvailableTimesByThemeAndDate() {
-        //given
-        ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime("10:00"));
-        Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
-        Reservation reservation = new Reservation("브라운", "2222-05-01", reservationTime, theme);
-        reservationRepository.save(reservation);
-
         //when
-        List<ReservationTime> result = reservationTimeRepository.findByDateAndTheme(
-                reservation.getDate(), theme.getId());
+        List<ReservationTime> result = reservationTimeRepository.findByDateAndTheme("2222-05-04", 1);
 
         //then
         assertThat(result).hasSize(0);
@@ -146,11 +123,8 @@ class ReservationTimeJDBCRepositoryTest {
     @DisplayName("예약이 가능한 시간이 있다.")
     @Test
     void findAvailableTimesByThemeAndDate() {
-        //given
-        reservationTimeRepository.save(new ReservationTime("10:00"));
-
         //when
-        List<ReservationTime> result = reservationTimeRepository.findByDateAndTheme("2222-05-01", 0);
+        List<ReservationTime> result = reservationTimeRepository.findByDateAndTheme("2222-05-01", 1);
 
         //then
         assertThat(result).hasSize(1);

@@ -9,11 +9,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 @JdbcTest
+@Sql(scripts = "/test_data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_CLASS)
 class ThemeJDBCRepositoryTest {
     private ThemeRepository themeRepository;
     private ReservationTimeRepository reservationTimeRepository;
@@ -32,22 +35,17 @@ class ThemeJDBCRepositoryTest {
     @DisplayName("새로운 테마를 저장한다.")
     @Test
     void saveTheme() {
-        //given
-        Theme theme = saveThemeByName("레벨2 탈출");
-
-        //when
-        Theme result = themeRepository.save(theme);
+        //given&when
+        Theme theme = saveThemeByName("레벨 탈출");
 
         //then
-        assertThat(result.getId()).isNotZero();
+        assertThat(theme.getId()).isNotZero();
+        themeRepository.deleteById(2);
     }
 
     @DisplayName("전체 테마 목록을 조회한다.")
     @Test
     void findAll() {
-        //given
-        saveThemeByName("레벨2 탈출");
-
         //when
         List<Theme> themes = themeRepository.findAll();
 
@@ -60,7 +58,7 @@ class ThemeJDBCRepositoryTest {
     void deleteTheme() {
         //given
         Theme theme = saveThemeByName("레벨2 탈출");
-        int expectedSize = 0;
+        int expectedSize = 1;
 
         //when
         themeRepository.deleteById(theme.getId());
@@ -72,13 +70,8 @@ class ThemeJDBCRepositoryTest {
     @DisplayName("같은 테마 이름이 존재한다.")
     @Test
     void existsByName() {
-        //given
-        String name = "레벨2 탈출";
-        Theme theme = saveThemeByName(name);
-        themeRepository.save(theme);
-
         //when
-        boolean result = themeRepository.existsByName(name);
+        boolean result = themeRepository.existsByName("레벨1 탈출");
 
         //then
         assertThat(result).isTrue();
@@ -87,14 +80,8 @@ class ThemeJDBCRepositoryTest {
     @DisplayName("같은 테마 이름이 존재하지 않는다.")
     @Test
     void notExistsByName() {
-        //given
-        String name = "레벨2 탈출";
-        Theme theme = saveThemeByName(name);
-        themeRepository.save(theme);
-
         //when
-        String otherName = "레벨3 탈출";
-        boolean result = themeRepository.existsByName(otherName);
+        boolean result = themeRepository.existsByName("레벨2 탈출");
 
         //then
         assertThat(result).isFalse();
@@ -118,9 +105,9 @@ class ThemeJDBCRepositoryTest {
     void findPopularThemesByOrder() {
         //given
         ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime("10:00"));
-        String name1 = "레벨1 탈출";
-        String name2 = "레벨2 탈출";
-        String name3 = "레벨3 탈출";
+        String name1 = "레벨2 탈출";
+        String name2 = "레벨3 탈출";
+        String name3 = "레벨4 탈출";
         Theme theme1 = saveThemeByName(name1);
         Theme theme2 = saveThemeByName(name2);
         Theme theme3 = saveThemeByName(name3);
@@ -140,17 +127,17 @@ class ThemeJDBCRepositoryTest {
     void findPopularThemesByTerm() {
         //given
         ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime("10:00"));
-        String name1 = "레벨1 탈출";
-        String name2 = "레벨2 탈출";
-        String name3 = "레벨3 탈출";
+        String name1 = "레벨2 탈출";
+        String name2 = "레벨3 탈출";
+        String name3 = "레벨4 탈출";
         Theme theme1 = saveThemeByName(name1);
         Theme theme2 = saveThemeByName(name2);
         Theme theme3 = saveThemeByName(name3);
         saveReservation(reservationTime, "2222-04-01", theme1);
         saveReservation(reservationTime, "2222-03-01", theme1);
-        saveReservation(reservationTime, "2222-03-02", theme1);
         saveReservation(reservationTime, "2222-04-02", theme2);
         saveReservation(reservationTime, "2222-04-03", theme2);
+        saveReservation(reservationTime, "2222-03-02", theme3);
 
         //when
         List<Theme> themes = themeRepository.findByReservationTermAndCount("2222-04-01", "2222-04-07", 10);
