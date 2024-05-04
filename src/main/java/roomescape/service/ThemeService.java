@@ -15,6 +15,8 @@ import roomescape.dto.ThemeResponse;
 @Service
 public class ThemeService {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final int MAX_DAYS_TO_SUBTRACT = 7;
+    private static final int MIN_DAYS_TO_SUBTRACT = 1;
 
     private final ThemeDao themeDao;
     private final ReservationDao reservationDao;
@@ -32,8 +34,8 @@ public class ThemeService {
 
     public List<ThemeResponse> readPopularThemes() {
         LocalDate currentDate = LocalDate.now();
-        LocalDate startDate = currentDate.minusDays(7);
-        LocalDate endDate = currentDate.minusDays(1);
+        LocalDate startDate = currentDate.minusDays(MAX_DAYS_TO_SUBTRACT);
+        LocalDate endDate = currentDate.minusDays(MIN_DAYS_TO_SUBTRACT);
         return themeDao.readThemesSortedByCountOfReservation(startDate.format(DATE_FORMATTER), endDate.format(DATE_FORMATTER))
                 .stream()
                 .map(ThemeResponse::from)
