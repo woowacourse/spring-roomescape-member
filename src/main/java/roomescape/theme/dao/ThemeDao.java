@@ -13,14 +13,15 @@ import java.util.List;
 
 @Repository
 public class ThemeDao {
-    private final JdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert simpleJdbcInsert;
-    private final RowMapper<Theme> rowMapper = (resultSet, rowNum) ->
+    private static final RowMapper<Theme> rowMapper = (resultSet, rowNum) ->
             new Theme(
                     resultSet.getLong("id"),
                     resultSet.getString("name"),
                     resultSet.getString("description"),
                     resultSet.getString("thumbnail"));
+    
+    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public ThemeDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;

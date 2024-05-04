@@ -14,17 +14,18 @@ import java.util.List;
 
 @Repository
 public class ReservationTimeDao {
-    private final JdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert simpleJdbcInsert;
-    private final RowMapper<ReservationTime> timeRowMapper = (resultSet, rowNum) ->
+    private static final RowMapper<ReservationTime> timeRowMapper = (resultSet, rowNum) ->
             new ReservationTime(
                     resultSet.getLong("id"),
                     resultSet.getString("start_at"));
-    private final RowMapper<ReservationUserTime> userTimeRowMapper = (resultSet, rowNum) ->
+    private static final RowMapper<ReservationUserTime> userTimeRowMapper = (resultSet, rowNum) ->
             new ReservationUserTime(
                     resultSet.getLong("id"),
                     resultSet.getString("start_at"),
                     resultSet.getBoolean("already_booked"));
+
+    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public ReservationTimeDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;

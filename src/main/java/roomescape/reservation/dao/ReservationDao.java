@@ -15,9 +15,7 @@ import java.util.List;
 
 @Repository
 public class ReservationDao {
-    private final JdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert simpleJdbcInsert;
-    private final RowMapper<Reservation> rowMapper = (resultSet, rowNum) ->
+    private static final RowMapper<Reservation> rowMapper = (resultSet, rowNum) ->
             new Reservation(
                     resultSet.getLong("reservation_id"),
                     resultSet.getString("reservation_name"),
@@ -32,6 +30,9 @@ public class ReservationDao {
                             resultSet.getString("description"),
                             resultSet.getString("thumbnail")
                     ));
+    
+    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public ReservationDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
