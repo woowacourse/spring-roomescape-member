@@ -77,9 +77,9 @@ public class ThemeDao {
 
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
-            preparedStatement.setString(1, theme.getName());
-            preparedStatement.setString(2, theme.getDescription());
-            preparedStatement.setString(3, theme.getThumbnail());
+            preparedStatement.setString(1, theme.name());
+            preparedStatement.setString(2, theme.description());
+            preparedStatement.setString(3, theme.thumbnail());
             return preparedStatement;
         }, keyHolder);
 

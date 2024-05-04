@@ -107,8 +107,8 @@ public class ReservationDao {
 
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
-            preparedStatement.setString(1, reservation.getName());
-            preparedStatement.setObject(2, reservation.getDate());
+            preparedStatement.setString(1, reservation.name());
+            preparedStatement.setObject(2, reservation.date());
             preparedStatement.setLong(3, reservation.getTimeId());
             preparedStatement.setLong(4, reservation.getThemeId());
             return preparedStatement;

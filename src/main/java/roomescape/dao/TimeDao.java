@@ -71,7 +71,7 @@ public class TimeDao {
 
         jdbcTemplate.update((connection) -> {
             PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
-            preparedStatement.setObject(1, time.getStartAt());
+            preparedStatement.setObject(1, time.startAt());
             return preparedStatement;
         }, keyHolder);
 

@@ -1,13 +1,13 @@
 package roomescape.domain.exception;
 
 public class Validate {
-    public void AllNonNull(Object... objects) {
+    public static void AllNonNull(Object... objects) {
         for (Object object : objects) {
             requireNonNull(object);
         }
     }
 
-    private <T> void requireNonNull(T obj) {
+    private static <T> void requireNonNull(T obj) {
         if (obj == null)
             throw new IllegalNullArgumentException();
     }
