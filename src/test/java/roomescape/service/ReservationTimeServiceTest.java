@@ -14,7 +14,7 @@ import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.InvalidReservationException;
-import roomescape.service.dto.AllReservationTimeResponse;
+import roomescape.service.dto.ReservationTimeResponse;
 import roomescape.service.dto.AvailableReservationTimeResponse;
 import roomescape.service.dto.ReservationTimeCreateRequest;
 import roomescape.service.dto.ReservationTimeReadRequest;
@@ -45,7 +45,7 @@ class ReservationTimeServiceTest {
         ReservationTimeCreateRequest reservationTimeCreateRequest = new ReservationTimeCreateRequest(startAt);
 
         //when
-        AllReservationTimeResponse result = reservationTimeService.create(reservationTimeCreateRequest);
+        ReservationTimeResponse result = reservationTimeService.create(reservationTimeCreateRequest);
 
         //then
         assertAll(
@@ -61,7 +61,7 @@ class ReservationTimeServiceTest {
         reservationTimeRepository.save(new ReservationTime("10:00"));
 
         //when
-        List<AllReservationTimeResponse> reservationTimes = reservationTimeService.findAll();
+        List<ReservationTimeResponse> reservationTimes = reservationTimeService.findAll();
 
         //then
         assertThat(reservationTimes).hasSize(1);

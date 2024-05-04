@@ -6,11 +6,11 @@ public record ReservationResponse(
         long id,
         String name,
         String date,
-        AllReservationTimeResponse time,
+        ReservationTimeResponse time,
         ThemeResponse theme) {
     public ReservationResponse(final Reservation reservation) {
         this(reservation.getId(), reservation.getName(), reservation.getDate(),
-                new AllReservationTimeResponse(reservation.getReservationTime()),
+                new ReservationTimeResponse(reservation.getReservationTime()),
                 new ThemeResponse(reservation.getTheme()));
     }
 }

@@ -6,10 +6,10 @@ import roomescape.dao.ReservationRepository;
 import roomescape.dao.ReservationTimeRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.InvalidReservationException;
-import roomescape.service.dto.AllReservationTimeResponse;
 import roomescape.service.dto.AvailableReservationTimeResponse;
 import roomescape.service.dto.ReservationTimeCreateRequest;
 import roomescape.service.dto.ReservationTimeReadRequest;
+import roomescape.service.dto.ReservationTimeResponse;
 
 import java.util.List;
 
@@ -19,17 +19,15 @@ public class ReservationTimeService {
     private final ReservationRepository reservationRepository;
 
     @Autowired
-    public ReservationTimeService(final ReservationTimeRepository reservationTimeRepository,
-                                  ReservationRepository reservationRepository) {
+    public ReservationTimeService(final ReservationTimeRepository reservationTimeRepository, ReservationRepository reservationRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
         this.reservationRepository = reservationRepository;
     }
 
-    public AllReservationTimeResponse create(final ReservationTimeCreateRequest reservationTimeCreateRequest) {
+    public ReservationTimeResponse create(final ReservationTimeCreateRequest reservationTimeCreateRequest) {
         validateDuplicated(reservationTimeCreateRequest);
-        ReservationTime reservationTime = reservationTimeRepository.save(
-                new ReservationTime(reservationTimeCreateRequest.startAt()));
-        return new AllReservationTimeResponse(reservationTime);
+        ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime(reservationTimeCreateRequest.startAt()));
+        return new ReservationTimeResponse(reservationTime);
     }
 
     private void validateDuplicated(ReservationTimeCreateRequest reservationTimeCreateRequest) {
@@ -38,9 +36,9 @@ public class ReservationTimeService {
         }
     }
 
-    public List<AllReservationTimeResponse> findAll() {
+    public List<ReservationTimeResponse> findAll() {
         return reservationTimeRepository.findAll().stream()
-                .map(AllReservationTimeResponse::new)
+                .map(ReservationTimeResponse::new)
                 .toList();
     }
 
