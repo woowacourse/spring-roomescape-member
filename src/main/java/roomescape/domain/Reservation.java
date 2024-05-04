@@ -30,7 +30,6 @@ public class Reservation {
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         validateName(name);
-        validateDate(date);
         this.id = id;
         this.name = name;
         this.date = date;
@@ -39,16 +38,17 @@ public class Reservation {
     }
 
     private void validateName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new BadRequestException("예약자 이름은 비어있을 수 없습니다.");
+        }
         Matcher matcher = NAME_PATTERN.matcher(name);
         if (matcher.matches()) {
             throw new BadRequestException("예약자 이름은 숫자로만 구성될 수 없습니다.");
         }
     }
 
-    private void validateDate(LocalDate date) {
-        if (date.isBefore(LocalDate.now()) || date.equals(LocalDate.now())) {
-            throw new BadRequestException("이전 날짜 혹은 당일은 예약할 수 없습니다.");
-        }
+    public boolean isBeforeOrOnToday() {
+        return date.isBefore(LocalDate.now()) || date.equals(LocalDate.now());
     }
 
     public Long getReservationTimeId() {

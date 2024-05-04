@@ -3,6 +3,8 @@ package roomescape.service;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -16,11 +18,11 @@ import roomescape.exception.BadRequestException;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -48,6 +50,26 @@ class ReservationServiceTest {
 
         // then
         assertThat(response).isNotNull();
+    }
+
+    @ParameterizedTest
+    @MethodSource("invalidReservationDate")
+    @DisplayName("예약 날짜는 현재 날짜 이후이다.")
+    void validateDate(LocalDate invalidDate) {
+        // given
+        Reservation reservation = new Reservation(
+                USER_MIA, invalidDate, new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME());
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.create(reservation))
+                .isInstanceOf(BadRequestException.class);
+    }
+
+    private static Stream<LocalDate> invalidReservationDate() {
+        return Stream.of(
+                LocalDate.now(),
+                LocalDate.now().minusDays(1L)
+        );
     }
 
     @Test

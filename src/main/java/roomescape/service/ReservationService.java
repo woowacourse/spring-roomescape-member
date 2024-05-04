@@ -23,13 +23,20 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse create(Reservation reservation) {
+        validateReservationDate(reservation);
+
         List<Reservation> reservationsInSameDateTime = reservationRepository.findAllByDateAndTimeAndThemeId(
                 reservation.getDate(), reservation.getTime(), reservation.getThemeId());
-
         validateDuplicatedReservation(reservationsInSameDateTime);
 
         Reservation savedReservation = reservationRepository.save(reservation);
         return ReservationResponse.from(savedReservation);
+    }
+
+    private void validateReservationDate(Reservation reservation) {
+        if (reservation.isBeforeOrOnToday()) {
+            throw new BadRequestException("이전 날짜 혹은 당일은 예약할 수 없습니다.");
+        }
     }
 
     private void validateDuplicatedReservation(List<Reservation> reservationsInSameDateTime) {
