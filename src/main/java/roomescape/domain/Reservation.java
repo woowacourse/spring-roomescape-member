@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Reservation {
@@ -38,6 +39,12 @@ public class Reservation {
         if (theme == null) {
             throw new IllegalArgumentException("테마는 필수 값입니다.");
         }
+    }
+
+    public boolean isBefore(LocalDateTime dateTime) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
+
+        return reservationDateTime.isBefore(dateTime);
     }
 
     @Override

@@ -1,21 +1,19 @@
 package roomescape.service;
 
 import java.time.Clock;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
+import roomescape.domain.ThemeRepository;
 import roomescape.service.dto.ReservationRequest;
 import roomescape.service.dto.ReservationResponse;
-import roomescape.domain.ReservationRepository;
-import roomescape.domain.ReservationTimeRepository;
-import roomescape.domain.ThemeRepository;
 
 @Service
 @Transactional(readOnly = true)
@@ -52,7 +50,7 @@ public class ReservationService {
         Theme theme = themeRepository.getById(reservationRequest.themeId());
         Reservation reservation = reservationRequest.toReservation(reservationTime, theme);
 
-        validateDateTimeNotPassed(reservation.getDate(), reservationTime.getStartAt());
+        validateDateTimeNotPassed(reservation);
         validateDuplicatedReservation(reservation);
 
         Reservation savedReservation = reservationRepository.save(reservation);
@@ -60,11 +58,8 @@ public class ReservationService {
         return ReservationResponse.from(savedReservation);
     }
 
-    private void validateDateTimeNotPassed(LocalDate date, LocalTime startAt) {
-        LocalDateTime now = LocalDateTime.now(clock);
-        LocalDateTime reservationDateTime = LocalDateTime.of(date, startAt);
-
-        if (reservationDateTime.isBefore(now)) {
+    private void validateDateTimeNotPassed(Reservation reservation) {
+        if (reservation.isBefore(LocalDateTime.now(clock))) {
             throw new IllegalArgumentException("지나간 날짜/시간에 대한 예약은 불가능합니다.");
         }
     }
