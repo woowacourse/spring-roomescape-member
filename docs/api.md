@@ -1,8 +1,24 @@
-# 방탈출 예약 관리
-
 ## API 명세
 
-### 예약 조회 API
+### 목록
+
+- 예약
+    - [예약 조회](#예약-조회)
+    - [예약 추가](#예약-추가)
+    - [예약 취소](#예약-취소)
+- 시간
+    - [시간 조회](#시간-조회)
+    - [시간 추가](#시간-추가)
+    - [시간 삭제](#시간-삭제)
+- 테마
+    - [테마 조회](#테마-조회)
+    - [테마 추가](#테마-추가)
+    - [테마 삭제](#테마-삭제)
+    - [인기 테마](#인기-테마)
+
+<br>
+
+### 예약 조회
 
 **Request**
 
@@ -14,8 +30,8 @@ GET /reservations HTTP/1.1
 
 **Response**
 
-```
-HTTP/1.1 200 
+```http request
+HTTP/1.1 200
 Content-Type: application/json
 
 [
@@ -42,7 +58,7 @@ Content-Type: application/json
 
 <br>
 
-### 예약 추가 API
+### 예약 추가
 
 **Request**
 
@@ -61,10 +77,10 @@ content-type: application/json
 
 **Response**
 
-```
+```http request
 HTTP/1.1 201
-Content-Type: application/json
 Location: reservations/{id}
+Content-Type: application/json
 
 {
     "id": 1,
@@ -73,6 +89,12 @@ Location: reservations/{id}
     "time": {
         "id": 1,
         "startAt": "10:00"
+    },
+    "theme": {
+        "id": 1,
+        "name": "레벨2 탈출",
+        "description": "우테코 레벨2를 탈출하는 내용입니다.",
+        "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
     }
 }
 
@@ -80,7 +102,7 @@ Location: reservations/{id}
 
 <br>
 
-### 예약 취소 API
+### 예약 취소
 
 **Request**
 
@@ -90,13 +112,38 @@ DELETE /reservations/1 HTTP/1.1
 
 **Response**
 
-```
+```http request
 HTTP/1.1 204
 ```
 
 <br>
 
-### 시간 추가 API
+### 시간 조회
+
+**Request**
+
+```http request
+GET /times HTTP/1.1
+```
+
+**Response**
+
+```http request
+HTTP/1.1 200
+Content-Type: application/json
+
+[
+   {
+        "id": 1,
+        "startAt": "10:00",
+        "booked": false
+   }
+]
+```
+
+<br>
+
+### 시간 추가
 
 **Request**
 
@@ -111,10 +158,11 @@ content-type: application/json
 
 **Response**
 
-```
+```http request
 HTTP/1.1 201
+Location: /times/{id}
 Content-Type: application/json
-Localtion: 
+
 {
     "id": 1,
     "startAt": "10:00"
@@ -123,31 +171,7 @@ Localtion:
 
 <br>
 
-### 시간 조회 API
-
-**Request**
-
-```http request
-GET /times HTTP/1.1
-```
-
-**Response**
-
-```
-HTTP/1.1 200 
-Content-Type: application/json
-
-[
-   {
-        "id": 1,
-        "startAt": "10:00"
-    }
-]
-```
-
-<br>
-
-### 시간 삭제 API
+### 시간 삭제
 
 **Request**
 
@@ -157,13 +181,13 @@ DELETE /times/1 HTTP/1.1
 
 **Response**
 
-```
+```http request
 HTTP/1.1 204
 ```
 
 <br>
 
-### 테마 조회 API
+### 테마 조회
 
 **request**
 
@@ -173,8 +197,8 @@ GET /themes HTTP/1.1
 
 **response**
 
-```
-HTTP/1.1 200 
+```http request
+HTTP/1.1 200
 Content-Type: application/json
 
 [
@@ -183,13 +207,13 @@ Content-Type: application/json
         "name": "레벨2 탈출",
         "description": "우테코 레벨2를 탈출하는 내용입니다.",
         "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
-    }
+   }
 ]
 ```
 
 <br>
 
-### 테마 추가 API
+### 테마 추가
 
 **request**
 
@@ -207,7 +231,7 @@ content-type: application/json
 
 **response**
 
-```
+```http request
 HTTP/1.1 201
 Location: /themes/1
 Content-Type: application/json
@@ -222,7 +246,7 @@ Content-Type: application/json
 
 <br>
 
-### 테마 삭제 API
+### 테마 삭제
 
 **request**
 
@@ -232,13 +256,13 @@ DELETE /themes/1 HTTP/1.1
 
 **response**
 
-```
+```http request
 HTTP/1.1 204
 ```
 
 <br>
 
-### 인기 테마 API
+### 인기 테마
 
 **request**
 
