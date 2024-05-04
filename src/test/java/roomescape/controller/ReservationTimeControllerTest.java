@@ -19,7 +19,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import roomescape.controller.request.ReservationTimeWebRequest;
 import roomescape.controller.response.ReservationTimeWebResponse;
 import roomescape.domain.ReservationTime;
-import roomescape.exception.DuplicatedDomainException;
 import roomescape.exception.ReservationExistsException;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.request.ReservationTimeAppRequest;
@@ -69,7 +68,7 @@ class ReservationTimeControllerTest {
             .andExpect(status().isOk());
     }
 
-    @DisplayName("예약 시간 포맷이 잘못될 경우 -> 400")
+    @DisplayName("예약 시간 포맷이 잘못되거나, 중복 될 경우 -> 400")
     @Test
     void create_IllegalTimeFormat() throws Exception {
         when(reservationTimeService.save(new ReservationTimeAppRequest("24:00")))
@@ -88,17 +87,6 @@ class ReservationTimeControllerTest {
             .thenThrow(ReservationExistsException.class);
 
         mvc.perform(delete("/times/" + timeId))
-            .andExpect(status().isBadRequest());
-    }
-
-    @DisplayName("이미 존재하는 시간을 저장 -> 400")
-    @Test
-    void create_Duplicate() throws Exception {
-        String rawTime = "19:00";
-        when(reservationTimeService.save(new ReservationTimeAppRequest(rawTime)))
-            .thenThrow(DuplicatedDomainException.class);
-
-        mvc.perform(post("/times"))
             .andExpect(status().isBadRequest());
     }
 }

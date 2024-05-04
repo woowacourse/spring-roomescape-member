@@ -8,7 +8,6 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
-import roomescape.exception.DuplicatedDomainException;
 import roomescape.exception.ReservationExistsException;
 import roomescape.service.request.ReservationTimeAppRequest;
 import roomescape.service.response.ReservationTimeAppResponse;
@@ -34,7 +33,7 @@ public class ReservationTimeService {
 
     private void validateDuplication(LocalTime parsedTime) {
         if (reservationTimeRepository.isStartTimeExists(parsedTime)) {
-            throw new DuplicatedDomainException();
+            throw new IllegalArgumentException("이미 존재하는 예약 시간 정보 입니다.");
         }
     }
 

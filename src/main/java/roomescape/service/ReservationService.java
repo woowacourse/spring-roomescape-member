@@ -10,7 +10,6 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
-import roomescape.exception.DuplicatedDomainException;
 import roomescape.exception.PastReservationException;
 import roomescape.service.request.ReservationAppRequest;
 
@@ -68,7 +67,7 @@ public class ReservationService {
 
     private void validateDuplication(ReservationDate date, Long timeId, Long themeId) {
         if (reservationRepository.isDuplicated(date.getDate(), timeId, themeId)) {
-            throw new DuplicatedDomainException();
+            throw new IllegalArgumentException("이미 존재하는 예약 정보 입니다.");
         }
     }
 

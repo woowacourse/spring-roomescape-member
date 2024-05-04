@@ -26,7 +26,6 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
-import roomescape.exception.DuplicatedDomainException;
 import roomescape.exception.PastReservationException;
 import roomescape.service.request.ReservationAppRequest;
 
@@ -130,7 +129,7 @@ class ReservationServiceTest {
             .thenReturn(true);
 
         assertThatThrownBy(() -> reservationService.save(new ReservationAppRequest("brown", rawDate, timeId, themeId)))
-            .isInstanceOf(DuplicatedDomainException.class);
+            .isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("실패: 어제 날짜에 대한 예약을 생성하면 예외가 발생한다.")

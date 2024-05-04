@@ -25,7 +25,6 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.exception.DuplicatedDomainException;
 import roomescape.exception.PastReservationException;
 import roomescape.service.ReservationService;
 import roomescape.service.request.ReservationAppRequest;
@@ -85,16 +84,6 @@ class ReservationControllerTest {
     void reserve_BadRequest() throws Exception {
         when(reservationService.save(any(ReservationAppRequest.class)))
             .thenThrow(IllegalArgumentException.class);
-
-        mvc.perform(post("/reservations"))
-            .andExpect(status().isBadRequest());
-    }
-
-    @DisplayName("중복 예약 시도 -> 400")
-    @Test
-    void reserve_Duplication() throws Exception {
-        when(reservationService.save(any(ReservationAppRequest.class)))
-            .thenThrow(DuplicatedDomainException.class);
 
         mvc.perform(post("/reservations"))
             .andExpect(status().isBadRequest());

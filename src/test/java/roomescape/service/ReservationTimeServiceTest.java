@@ -20,7 +20,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
-import roomescape.exception.DuplicatedDomainException;
 import roomescape.exception.ReservationExistsException;
 import roomescape.service.request.ReservationTimeAppRequest;
 
@@ -71,7 +70,7 @@ class ReservationTimeServiceTest {
             .thenReturn(true);
 
         assertThatThrownBy(() -> reservationTimeService.save(new ReservationTimeAppRequest(rawTime)))
-            .isInstanceOf(DuplicatedDomainException.class);
+            .isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("실패: 시간을 사용하는 예약이 존재하는 경우 시간을 삭제할 수 없다.")
