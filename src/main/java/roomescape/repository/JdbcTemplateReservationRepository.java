@@ -2,6 +2,7 @@ package roomescape.repository;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -16,6 +17,21 @@ import roomescape.domain.Theme;
 @Repository
 public class JdbcTemplateReservationRepository implements ReservationRepository {
     private final JdbcTemplate jdbcTemplate;
+    private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (rs, rowNum) -> new Reservation(
+            rs.getLong("reservation_id"),
+            rs.getString("reservation_name"),
+            rs.getDate("reservation_date").toLocalDate(),
+            new ReservationTime(
+                    rs.getLong("time_id"),
+                    rs.getTime("time_value").toLocalTime()
+            ),
+            new Theme(
+                    rs.getLong("theme_id"),
+                    rs.getString("theme_name"),
+                    rs.getString("description"),
+                    rs.getString("thumbnail")
+            )
+    );
 
     public JdbcTemplateReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -71,22 +87,32 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
                 on r.time_id = t.id
                 inner join theme t2  
                 on t2.id = r.theme_id""";
-        RowMapper<Reservation> reservationRowMapper = (rs, rowNum) -> new Reservation(
-                rs.getLong("reservation_id"),
-                rs.getString("reservation_name"),
-                rs.getDate("reservation_date").toLocalDate(),
-                new ReservationTime(
-                        rs.getLong("time_id"),
-                        rs.getTime("time_value").toLocalTime()
-                ),
-                new Theme(
-                        rs.getLong("theme_id"),
-                        rs.getString("theme_name"),
-                        rs.getString("description"),
-                        rs.getString("thumbnail")
-                )
-        );
-        return jdbcTemplate.query(query, reservationRowMapper);
+
+        return jdbcTemplate.query(query, RESERVATION_ROW_MAPPER);
+    }
+
+    @Override
+    public List<Reservation> findByThemeAndDate(Theme theme, LocalDate date) {
+        String query = """
+                   SELECT 
+                   r.id as reservation_id,
+                   r.name as reservation_name,
+                   r.date as reservation_date,
+                   t.id as time_id,
+                   t.start_at as time_value,
+                   t2.id as theme_id,
+                   t2.NAME as theme_name,
+                   t2.DESCRIPTION as description,
+                   t2.THUMBNAIL as thumbnail
+                FROM reservation as r
+                inner join reservation_time t 
+                on r.time_id = t.id
+                inner join theme t2  
+                on t2.id = r.theme_id
+                WHERE theme_id = ? AND r.date = ?; 
+                """;
+
+        return jdbcTemplate.query(query, RESERVATION_ROW_MAPPER, theme.getId(), Date.valueOf(date));
     }
 
     @Override

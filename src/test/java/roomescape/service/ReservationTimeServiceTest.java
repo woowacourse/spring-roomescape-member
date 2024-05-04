@@ -22,18 +22,23 @@ import roomescape.dto.ReservationTimeResponse;
 import roomescape.exception.RoomescapeException;
 import roomescape.repository.CollectionReservationRepository;
 import roomescape.repository.CollectionReservationTimeRepository;
+import roomescape.repository.CollectionThemeRepository;
+import roomescape.repository.ThemeRepository;
 
 class ReservationTimeServiceTest {
 
     private CollectionReservationRepository reservationRepository;
     private CollectionReservationTimeRepository reservationTimeRepository;
     private ReservationTimeService reservationTimeService;
+    private ThemeRepository themeRepository;
 
     @BeforeEach
     void initService() {
+        themeRepository = new CollectionThemeRepository();
         reservationRepository = new CollectionReservationRepository();
         reservationTimeRepository = new CollectionReservationTimeRepository();
-        reservationTimeService = new ReservationTimeService(reservationRepository, reservationTimeRepository);
+        reservationTimeService = new ReservationTimeService(reservationRepository, reservationTimeRepository,
+                themeRepository);
     }
 
     @DisplayName("저장된 시간을 모두 조회할 수 있다.")
@@ -114,6 +119,8 @@ class ReservationTimeServiceTest {
     void findAvailableTimeTest() {
         //given
         Theme DEFUALT_THEME = new Theme(1L, "name", "description", "thumbnail");
+        themeRepository.save(DEFUALT_THEME);
+
         ReservationTime reservationTime1 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(11, 0)));
         ReservationTime reservationTime2 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 0)));
         ReservationTime reservationTime3 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(13, 0)));

@@ -12,6 +12,8 @@ import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.repository.CollectionReservationRepository;
 import roomescape.repository.CollectionReservationTimeRepository;
+import roomescape.repository.CollectionThemeRepository;
+import roomescape.repository.ThemeRepository;
 import roomescape.service.ReservationTimeService;
 
 class ReservationTimeControllerTest {
@@ -21,10 +23,11 @@ class ReservationTimeControllerTest {
 
     @BeforeEach
     void init() {
-        reservationTimeRepository = new CollectionReservationTimeRepository();
+        ThemeRepository themeRepository = new CollectionThemeRepository();
         CollectionReservationRepository reservationRepository = new CollectionReservationRepository();
+        reservationTimeRepository = new CollectionReservationTimeRepository();
         ReservationTimeService reservationTimeService = new ReservationTimeService(reservationRepository,
-                reservationTimeRepository);
+                reservationTimeRepository, themeRepository);
         reservationTimeController = new ReservationTimeController(reservationTimeService);
     }
 
