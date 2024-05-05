@@ -7,7 +7,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.jdbc.JdbcTestUtils;
 
 @SpringBootTest
-@Sql(scripts = "/reset_test_data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = "/reset_test_data.sql")
 public abstract class IntegrationTestSupport {
 
     @Autowired
