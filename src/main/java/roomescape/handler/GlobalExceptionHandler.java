@@ -29,4 +29,10 @@ public class GlobalExceptionHandler {
                 .body("데이터 저장 중 오류가 발생하였습니다.");
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleException() {
+        return ResponseEntity.internalServerError()
+                .body("오류가 발생했습니다.");
+    }
+
 }
