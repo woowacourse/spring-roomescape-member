@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 import org.springframework.stereotype.Service;
 
 import roomescape.controller.request.ReservationTimeRequest;
-import roomescape.controller.response.MemberReservationTimeResponse;
+import roomescape.controller.response.IsReservedTimeResponse;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.DuplicatedException;
 import roomescape.exception.NotFoundException;
@@ -47,12 +47,13 @@ public class ReservationTimeService {
         return reservationTimeRepository.findReservationById(id);
     }
 
-    public List<MemberReservationTimeResponse> getMemberReservationTimes(LocalDate date, long themeId) {
+    // getReservationStatus
+    public List<IsReservedTimeResponse> getIsReservedTime(LocalDate date, long themeId) {
         List<ReservationTime> allTimes = reservationTimeRepository.findAllReservationTimes();
         List<ReservationTime> bookedTimes = reservationTimeRepository.findAllReservedTimes(date, themeId);
         List<ReservationTime> notBookedTimes = filterNotBookedTimes(allTimes, bookedTimes);
-        List<MemberReservationTimeResponse> bookedResponse = mapToResponse(bookedTimes, true);
-        List<MemberReservationTimeResponse> notBookedResponse = mapToResponse(notBookedTimes, false);
+        List<IsReservedTimeResponse> bookedResponse = mapToResponse(bookedTimes, true);
+        List<IsReservedTimeResponse> notBookedResponse = mapToResponse(notBookedTimes, false);
         return concat(notBookedResponse, bookedResponse);
     }
 
@@ -82,14 +83,14 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    private List<MemberReservationTimeResponse> mapToResponse(List<ReservationTime> times, boolean isBooked) {
+    private List<IsReservedTimeResponse> mapToResponse(List<ReservationTime> times, boolean isBooked) {
         return times.stream()
-                .map(time -> new MemberReservationTimeResponse(time.getId(), time.getStartAt(), isBooked))
+                .map(time -> new IsReservedTimeResponse(time.getId(), time.getStartAt(), isBooked))
                 .toList();
     }
 
-    private List<MemberReservationTimeResponse> concat(List<MemberReservationTimeResponse> notBookedTimes,
-                                                       List<MemberReservationTimeResponse> bookedTimes) {
+    private List<IsReservedTimeResponse> concat(List<IsReservedTimeResponse> notBookedTimes,
+                                                List<IsReservedTimeResponse> bookedTimes) {
         return Stream.concat(notBookedTimes.stream(), bookedTimes.stream()).toList();
     }
 }

@@ -3,13 +3,13 @@ package roomescape.controller.response;
 import java.time.LocalTime;
 import java.util.Objects;
 
-public class MemberReservationTimeResponse {
+public class IsReservedTimeResponse {
 
     private final long timeId;
     private final LocalTime startAt;
     private boolean alreadyBooked;
 
-    public MemberReservationTimeResponse(long timeId, LocalTime startAt, boolean alreadyBooked) {
+    public IsReservedTimeResponse(long timeId, LocalTime startAt, boolean alreadyBooked) {
         this.timeId = timeId;
         this.startAt = startAt;
         this.alreadyBooked = alreadyBooked;
@@ -35,7 +35,7 @@ public class MemberReservationTimeResponse {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        MemberReservationTimeResponse that = (MemberReservationTimeResponse) o;
+        IsReservedTimeResponse that = (IsReservedTimeResponse) o;
         return timeId == that.timeId && alreadyBooked == that.alreadyBooked && Objects.equals(startAt, that.startAt);
     }
 

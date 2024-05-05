@@ -12,7 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import roomescape.controller.request.ReservationTimeRequest;
-import roomescape.controller.response.MemberReservationTimeResponse;
+import roomescape.controller.response.IsReservedTimeResponse;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.DuplicatedException;
 import roomescape.exception.NotFoundException;
@@ -90,12 +90,12 @@ class ReservationTimeServiceTest {
     @DisplayName("예약 가능 상태를 담은 시간 정보를 반환한다.")
     @Test
     void should_return_times_with_book_state() {
-        List<MemberReservationTimeResponse> times = reservationTimeService.getMemberReservationTimes(
+        List<IsReservedTimeResponse> times = reservationTimeService.getIsReservedTime(
                 LocalDate.of(2030, 8, 5), 1);
         assertThat(times).hasSize(2);
         assertThat(times).containsOnly(
-                new MemberReservationTimeResponse(1, LocalTime.of(10, 0), false),
-                new MemberReservationTimeResponse(2, LocalTime.of(11, 0), true)
+                new IsReservedTimeResponse(1, LocalTime.of(10, 0), false),
+                new IsReservedTimeResponse(2, LocalTime.of(11, 0), true)
         );
     }
 }

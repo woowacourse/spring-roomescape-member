@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 import org.assertj.core.api.AssertionsForClassTypes;
@@ -18,7 +17,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import roomescape.controller.request.ReservationRequest;
-import roomescape.controller.response.MemberReservationTimeResponse;
 import roomescape.model.Reservation;
 
 

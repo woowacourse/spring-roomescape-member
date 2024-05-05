@@ -16,7 +16,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import roomescape.controller.request.ReservationTimeRequest;
-import roomescape.controller.response.MemberReservationTimeResponse;
+import roomescape.controller.response.IsReservedTimeResponse;
 import roomescape.model.ReservationTime;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -77,16 +77,16 @@ class ReservationTimeControllerTest {
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운",
                 "2030-08-05", "1", "1");
 
-        List<MemberReservationTimeResponse> responses = RestAssured.given().log().all()
+        List<IsReservedTimeResponse> responses = RestAssured.given().log().all()
                 .when().get("/times/reserved?date=2030-08-05&themeId=1")
                 .then().log().all()
                 .statusCode(200).extract()
-                .jsonPath().getList(".", MemberReservationTimeResponse.class);
+                .jsonPath().getList(".", IsReservedTimeResponse.class);
 
         Assertions.assertThat(responses).hasSize(2);
         Assertions.assertThat(responses).containsOnly(
-                new MemberReservationTimeResponse(1, LocalTime.of(10, 0), true),
-                new MemberReservationTimeResponse(2, LocalTime.of(11, 0), false)
+                new IsReservedTimeResponse(1, LocalTime.of(10, 0), true),
+                new IsReservedTimeResponse(2, LocalTime.of(11, 0), false)
         );
     }
 }

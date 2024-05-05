@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import roomescape.controller.request.ReservationTimeRequest;
-import roomescape.controller.response.MemberReservationTimeResponse;
+import roomescape.controller.response.IsReservedTimeResponse;
 import roomescape.model.ReservationTime;
 import roomescape.service.ReservationTimeService;
 
@@ -46,10 +46,10 @@ public class ReservationTimeController {
     }
 
     @GetMapping("/times/reserved")
-    public ResponseEntity<List<MemberReservationTimeResponse>> getPossibleReservationTimes(
+    public ResponseEntity<List<IsReservedTimeResponse>> getPossibleReservationTimes(
             @RequestParam(name = "date") LocalDate date,
             @RequestParam(name = "themeId") long themeId) {
-        List<MemberReservationTimeResponse> response = reservationTimeService.getMemberReservationTimes(date, themeId);
+        List<IsReservedTimeResponse> response = reservationTimeService.getIsReservedTime(date, themeId);
         return ResponseEntity.ok(response);
     }
 }
