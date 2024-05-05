@@ -9,11 +9,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.dto.SaveThemeRequest;
 import roomescape.dto.ThemeResponse;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -45,14 +44,15 @@ class ThemeControllerIntegrationTest {
     @DisplayName("테마 정보를 저장한다.")
     @Test
     void saveThemeTest() {
-        final Map<String, String> params = new HashMap<>();
-        params.put("name", "켈리의 두근두근");
-        params.put("description", "켈리와 함께하는 두근두근 데이트");
-        params.put("thumbnail", "켈리 사진");
+        final SaveThemeRequest saveThemeRequest = new SaveThemeRequest(
+                "즐거운 방방탈출~",
+                "방방방! 탈탈탈!",
+                "방방 사진"
+        );
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
+                .body(saveThemeRequest)
                 .when().post("/themes")
                 .then().log().all()
                 .statusCode(201)

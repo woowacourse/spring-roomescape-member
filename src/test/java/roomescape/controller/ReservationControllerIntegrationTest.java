@@ -10,11 +10,10 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.ReservationResponse;
+import roomescape.dto.SaveReservationRequest;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -46,15 +45,16 @@ class ReservationControllerIntegrationTest {
     @DisplayName("예약 정보를 저장한다.")
     @Test
     void saveReservationTest() {
-        final Map<String, String> params = new HashMap<>();
-        params.put("name", "브라운");
-        params.put("date", LocalDate.now().plusDays(1).toString());
-        params.put("timeId", "1");
-        params.put("themeId", "1");
+        final SaveReservationRequest saveReservationRequest = new SaveReservationRequest(
+                LocalDate.now().plusDays(1),
+                "브라운",
+                1L,
+                1L
+        );
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
+                .body(saveReservationRequest)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
@@ -91,14 +91,16 @@ class ReservationControllerIntegrationTest {
     @DisplayName("존재하지 않는 예약 시간을 포함한 예약 저장 요청을 하면 400코드가 응답된다.")
     @Test
     void saveReservationWithNoExistReservationTime() {
-        final Map<String, String> params = new HashMap<>();
-        params.put("name", "브라운");
-        params.put("date", "2023-08-05");
-        params.put("timeId", "20");
+        final SaveReservationRequest saveReservationRequest = new SaveReservationRequest(
+                LocalDate.now().plusDays(1),
+                "브라운",
+                80L,
+                1L
+        );
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
+                .body(saveReservationRequest)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400)
@@ -108,15 +110,16 @@ class ReservationControllerIntegrationTest {
     @DisplayName("현재 날짜보다 이전 날짜의 예약을 저장하려고 요청하면 400코드가 응답된다.")
     @Test
     void saveReservationWithReservationDateAndTimeBeforeNow() {
-        final Map<String, String> params = new HashMap<>();
-        params.put("name", "브라운");
-        params.put("date", LocalDate.now().minusDays(1).toString());
-        params.put("timeId", "1");
-        params.put("themeId", "1");
+        final SaveReservationRequest saveReservationRequest = new SaveReservationRequest(
+                LocalDate.now().minusDays(1),
+                "브라운",
+                1L,
+                1L
+        );
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
+                .body(saveReservationRequest)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400)
@@ -126,15 +129,16 @@ class ReservationControllerIntegrationTest {
     @DisplayName("유효하지 않은 사용자 이름을 포함한 예약 저장 요청을 하면 400코드가 응답된다.")
     @Test
     void saveReservationWithInvalidName() {
-        final Map<String, String> params = new HashMap<>();
-        params.put("name", "브라운운운운운운운운우눙누우웅ㅇ");
-        params.put("date", LocalDate.now().plusDays(9).toString());
-        params.put("timeId", "1");
-        params.put("themeId", "1");
+        final SaveReservationRequest saveReservationRequest = new SaveReservationRequest(
+                LocalDate.now().plusDays(1),
+                "브라운운우눈우우웅우ㅜㅇ",
+                1L,
+                1L
+        );
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
+                .body(saveReservationRequest)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400)

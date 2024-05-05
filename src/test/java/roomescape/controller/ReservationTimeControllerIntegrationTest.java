@@ -10,10 +10,10 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.ReservationTimeResponse;
+import roomescape.dto.SaveReservationTimeRequest;
 
-import java.util.HashMap;
+import java.time.LocalTime;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -45,12 +45,11 @@ class ReservationTimeControllerIntegrationTest {
     @DisplayName("예약 시간 정보를 저장한다.")
     @Test
     void saveReservationTimeTest() {
-        final Map<String, String> params = new HashMap<>();
-        params.put("startAt", "12:00");
+        final SaveReservationTimeRequest saveReservationTimeRequest = new SaveReservationTimeRequest(LocalTime.of(12, 15));
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
+                .body(saveReservationTimeRequest)
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201)
