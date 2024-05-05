@@ -17,8 +17,8 @@ public interface ReservationDao {
 
     List<ReservationSavedDto> findByDateAndThemeId(LocalDate date, long themeId);
 
-    List<Long> findByDateAndGroupByThemeIdAndOrderByCountAndLimit(LocalDate startDate, LocalDate endDate, int limit);
-    // TODO: decide naming
+    List<Long> findThemeIdByDateAndOrderByThemeIdCountAndLimit(LocalDate startDate, LocalDate endDate, int limit);
+
     void deleteById(long id);
 
     Boolean isExistById(long id);

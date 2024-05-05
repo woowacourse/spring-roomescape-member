@@ -73,7 +73,7 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public List<Long> findByDateAndGroupByThemeIdAndOrderByCountAndLimit(LocalDate startDate, LocalDate endDate, int limit) {
+    public List<Long> findThemeIdByDateAndOrderByThemeIdCountAndLimit(LocalDate startDate, LocalDate endDate, int limit) {
         String sql = """
                 select theme_id
                 from reservation

@@ -11,7 +11,7 @@ public class ReservationSavedDto {
     private final long timeId;
     private final long themeId;
 
-    public ReservationSavedDto(long id, String name, LocalDate date, Long timeId, Long themeId) {
+    public ReservationSavedDto(long id, String name, LocalDate date, long timeId, long themeId) {
         this.id = id;
         this.name = name;
         this.date = date;

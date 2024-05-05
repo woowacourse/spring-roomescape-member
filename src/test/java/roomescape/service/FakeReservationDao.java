@@ -57,7 +57,7 @@ class FakeReservationDao implements ReservationDao {
     }
 
     @Override
-    public List<Long> findByDateAndGroupByThemeIdAndOrderByCountAndLimit(LocalDate startDate, LocalDate endDate, int limit) {
+    public List<Long> findThemeIdByDateAndOrderByThemeIdCountAndLimit(LocalDate startDate, LocalDate endDate, int limit) {
         // Filter reservations by date
         List<ReservationSavedDto> filteredReservations = reservations.stream()
                 .filter(reservation -> reservation.getDate().isAfter(startDate) && reservation.getDate().isBefore(endDate))

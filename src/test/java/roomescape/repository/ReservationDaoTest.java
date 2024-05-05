@@ -19,48 +19,53 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class ReservationDaoTest {
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private static final int INITIAL_RESERVATION_COUNT = 2;
+
+    private final JdbcTemplate jdbcTemplate;
+    private final ReservationDao reservationDao;
+    private final SimpleJdbcInsert themeInsertActor;
+    private final SimpleJdbcInsert reservationTimeInsertActor;
+    private final SimpleJdbcInsert reservationInsertActor;
 
     @Autowired
-    private ReservationDao reservationDao;
-
-    private SimpleJdbcInsert reservationTimeInsertActor;
-    private SimpleJdbcInsert reservationInsertActor;
-    private SimpleJdbcInsert themeInsertActor;
+    public ReservationDaoTest(JdbcTemplate jdbcTemplate, ReservationDao reservationDao) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.reservationDao = reservationDao;
+        this.themeInsertActor = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("theme")
+                .usingGeneratedKeyColumns("id");
+        this.reservationTimeInsertActor = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation_time")
+                .usingGeneratedKeyColumns("id");
+        this.reservationInsertActor = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation")
+                .usingGeneratedKeyColumns("id");
+    }
 
     @BeforeEach
     void setUp() {
-        jdbcTemplate.execute("TRUNCATE TABLE reservation RESTART IDENTITY");
+        initDatabase();
+        insertTheme("n1", "d1", "t1");
+        insertTheme("n2", "d2", "t2");
+        insertReservationTime("1:00");
+        insertReservationTime("2:00");
+        insertReservation("n1", "2000-01-01", 1, 1);
+        insertReservation("n2", "2000-01-02", 2, 2);
+    }
+
+    private void initDatabase() {
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
+        jdbcTemplate.execute("TRUNCATE TABLE theme RESTART IDENTITY");
         jdbcTemplate.execute("TRUNCATE TABLE reservation_time RESTART IDENTITY");
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
-
-        reservationTimeInsertActor = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("reservation_time")
-                .usingGeneratedKeyColumns("id");
-        reservationInsertActor = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("reservation")
-                .usingGeneratedKeyColumns("id");
-        themeInsertActor = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("theme")
-                .usingGeneratedKeyColumns("id");
-
-        insertReservationTime("10:00");
-        insertReservationTime("11:00");
-
-        insertTheme("에버", "공포", "공포.jpg");
-        insertTheme("배키", "스릴러", "스릴러.jpg");
-
-        insertReservation("브라운", "2023-08-05", "1", "1");
-        insertReservation("리사", "2023-08-01", "2", "2");
+        jdbcTemplate.execute("TRUNCATE TABLE reservation RESTART IDENTITY");
     }
 
     private void insertReservationTime(String startAt) {
@@ -69,7 +74,7 @@ class ReservationDaoTest {
         reservationTimeInsertActor.execute(parameters);
     }
 
-    private void insertReservation(String name, String date, String timeId, String themeId) {
+    private void insertReservation(String name, String date, long timeId, long themeId) {
         Map<String, Object> parameters = new HashMap<>(3);
         parameters.put("name", name);
         parameters.put("date", date);
@@ -86,61 +91,101 @@ class ReservationDaoTest {
         themeInsertActor.execute(parameters);
     }
 
-    @DisplayName("모든 예약을 조회한다")
+    @DisplayName("예약을 저장한다.")
     @Test
-    void should_get_reservation() {
-        List<ReservationSavedDto> reservations = reservationDao.findAll();
-        assertThat(reservations).hasSize(2);
-    }
-
-    @DisplayName("조회한 예약에 예약 시간이 존재한다.")
-    @Test
-    void should_get_reservation_times() {
-        List<ReservationSavedDto> reservations = reservationDao.findAll();
-        assertThat(reservations.get(0).getTimeId()).isEqualTo(1);
-    }
-
-    @DisplayName("예약을 추가한다")
-    @Test
-    void should_add_reservation() {
-        ReservationTime reservationTime = new ReservationTime(1, LocalTime.of(10, 0));
-        Theme theme = new Theme(1, "에버", "공포", "공포.jpg");
-        Reservation reservation = new Reservation("네오", LocalDate.of(2024, 9, 1), reservationTime, theme);
+    void should_save_reservation() {
+        Theme theme = new Theme(1, "n1", "d1", "t1");
+        ReservationTime time = new ReservationTime(1, LocalTime.of(1, 0));
+        Reservation reservation = new Reservation("n3", LocalDate.of(2000, 1, 3), time, theme);
 
         reservationDao.save(reservation);
 
-        Integer count = jdbcTemplate.queryForObject("select count(1) from reservation", Integer.class);
-        assertThat(count).isEqualTo(3);
+        assertThat(reservationDao.findAll()).hasSize(INITIAL_RESERVATION_COUNT + 1);
     }
 
-    @DisplayName("예약을 삭제한다")
+    @DisplayName("모든 예약을 조회한다.")
+    @Test
+    void should_find_all_reservations() {
+        List<ReservationSavedDto> reservations = reservationDao.findAll();
+        assertThat(reservations).hasSize(INITIAL_RESERVATION_COUNT);
+    }
+
+    @DisplayName("특정 id의 예약을 조회한다.")
+    @Test
+    void should_find_reservation_by_id() {
+        ReservationSavedDto expected = new ReservationSavedDto(1, "n1", LocalDate.of(2000, 1, 1), 1L, 1L);
+
+        Optional<ReservationSavedDto> actual = reservationDao.findById(1);
+
+        assertThat(actual).isNotEmpty();
+        assertThat(actual).hasValue(expected);
+    }
+
+    @DisplayName("특정 date 와 theme_id의 예약을 조회한다.")
+    @Test
+    void should_find_reservation_by_date_and_themeId() {
+        ReservationSavedDto expected = new ReservationSavedDto(1, "n1", LocalDate.of(2000, 1, 1), 1L, 1L);
+
+        List<ReservationSavedDto> actual = reservationDao.findByDateAndThemeId(LocalDate.of(2000, 1, 1), 1);
+
+        assertThat(actual).containsExactly(expected);
+    }
+
+    @DisplayName("두 date 사이의 예약을, 테마의 개수로 내림차순 정렬하여, 특정 개수의 테마 id를 조회한다.")
+    @Test
+    void should_find_themeId_between_date_and_order_by_themeId_count_and_limit() {
+        List<Long> themeIds = reservationDao.findThemeIdByDateAndOrderByThemeIdCountAndLimit(
+                LocalDate.of(2000, 1, 1), LocalDate.of(2000, 1, 2), 10);
+
+        assertThat(themeIds).containsExactly(1L, 2L);
+    }
+
+    @DisplayName("예약을 삭제한다.")
     @Test
     void should_delete_reservation() {
         reservationDao.deleteById(1);
-        Integer count = jdbcTemplate.queryForObject("select count(1) from reservation", Integer.class);
-        assertThat(count).isEqualTo(1);
+        assertThat(reservationDao.findAll()).hasSize(INITIAL_RESERVATION_COUNT - 1);
     }
 
-    @DisplayName("특정 id를 가진 데이터가 존재하면 참을 반환한다.")
+    @DisplayName("특정 id를 가진 예약이 존재하면 참을 반환한다.")
     @Test
-    void should_return_true_when_exist() {
+    void should_return_true_when_exist_id() {
         boolean isExist = reservationDao.isExistById(1);
         assertThat(isExist).isTrue();
     }
 
-    @DisplayName("특정 id를 가진 데이터가 존재하지 않으면 거짓을 반환한다.")
+    @DisplayName("특정 id를 가진 예약이 존재하지 않으면 거짓을 반환한다.")
     @Test
-    void should_return_false_when_not_exist() {
-        boolean isExist = reservationDao.isExistById(100000000);
+    void should_return_false_when_not_exist_id() {
+        boolean isExist = reservationDao.isExistById(999);
         assertThat(isExist).isFalse();
     }
 
-    @DisplayName("특정 날짜와 테마에 해당하는 예약을 조회한다.")
+    @DisplayName("특정 time_id를 가진 예약이 존재하면 참을 반환한다.")
     @Test
-    void should_get_reservation_times_when_date_and_theme_given() {
-        LocalDate date = LocalDate.of(2023, 8, 5);
-        List<ReservationSavedDto> reservations = reservationDao.findByDateAndThemeId(date, 1);
-        assertThat(reservations).hasSize(1);
-        assertThat(reservations).containsExactly(new ReservationSavedDto(1, "브라운", date, 1L, 1L));
+    void should_return_true_when_exist_timeId() {
+        boolean isExist = reservationDao.isExistByTimeId(1);
+        assertThat(isExist).isTrue();
+    }
+
+    @DisplayName("특정 time_id를 가진 예약이 존재하지 않으면 거짓을 반환한다.")
+    @Test
+    void should_return_false_when_not_exist_timeId() {
+        boolean isExist = reservationDao.isExistByTimeId(999);
+        assertThat(isExist).isFalse();
+    }
+
+    @DisplayName("특정 date와 time_id를 가진 예약이 존재하면 참을 반환한다.")
+    @Test
+    void should_return_true_when_exist_date_and_timeId() {
+        boolean isExist = reservationDao.isExistByDateAndTimeId(LocalDate.of(2000, 1, 1), 1);
+        assertThat(isExist).isTrue();
+    }
+
+    @DisplayName("특정 date와 time_id를 가진 예약이 존재하지 않으면 거짓을 반환한다.")
+    @Test
+    void should_return_false_when_not_exist_date_and_timeId() {
+        boolean isExist = reservationDao.isExistByDateAndTimeId(LocalDate.of(2000, 1, 1), 999);
+        assertThat(isExist).isFalse();
     }
 }

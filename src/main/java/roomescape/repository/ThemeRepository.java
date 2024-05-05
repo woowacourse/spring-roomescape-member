@@ -37,7 +37,7 @@ public class ThemeRepository {
 
     public List<Theme> findThemeRankingByDate(LocalDate startDate, LocalDate endDate, int rankingCount) {
         List<Theme> result = new ArrayList<>();
-        List<Long> themeIds = reservationDao.findByDateAndGroupByThemeIdAndOrderByCountAndLimit(startDate, endDate, rankingCount);
+        List<Long> themeIds = reservationDao.findThemeIdByDateAndOrderByThemeIdCountAndLimit(startDate, endDate, rankingCount);
         for (long themeId : themeIds) {
             Theme theme = themeDao.findById(themeId).orElseThrow(NoSuchElementException::new);
             result.add(theme);
