@@ -25,7 +25,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NumberFormatException.class)
     public ResponseEntity<String> handleInvalidNumber(NumberFormatException e) {
         return new ResponseEntity<>("""
-                잘못된 숫자 형식입니다
+                잘못된 숫자 형식입니다.
                 """, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<String> handleRuntimeException(RuntimeException e) {
+        return new ResponseEntity<>("""
+                예기치 못한 오류가 발생했습니다.
+                """, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
