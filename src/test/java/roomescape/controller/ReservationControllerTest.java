@@ -35,7 +35,8 @@ class ReservationControllerTest {
         Map<String, String> params = Map.of(
                 "name", "",
                 "date", "",
-                "timeId", ""
+                "timeId", "",
+                "themeId", ""
         );
 
         RestAssured.given().log().all()
@@ -53,7 +54,8 @@ class ReservationControllerTest {
         Map<String, String> params = Map.of(
                 "name", "테니",
                 "date", "2024-04-29",
-                "timeId", "1"
+                "timeId", "1",
+                "themeId", "1"
         );
 
         RestAssured.given().log().all()
@@ -71,7 +73,8 @@ class ReservationControllerTest {
         Map<String, String> params = Map.of(
                 "name", "테니",
                 "date", "2024-04-30",
-                "timeId", "1"
+                "timeId", "1",
+                "themeId", "1"
         );
 
         RestAssured.given().log().all()
@@ -85,12 +88,13 @@ class ReservationControllerTest {
     @Test
     void createReservation_duplicate_bad_request() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "테니", "2024-06-01", 1);
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "테니", "2024-06-01", 1, 1);
 
         Map<String, String> params = Map.of(
                 "name", "테니",
                 "date", "2024-06-01",
-                "timeId", "1"
+                "timeId", "1",
+                "themeId", "1"
         );
 
         RestAssured.given().log().all()

@@ -8,9 +8,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationSaveRequest;
-import roomescape.exception.AlreadyExistReservationException;
-import roomescape.exception.IllegalThemeException;
-import roomescape.exception.IllegalTimeException;
+import roomescape.exception.RoomEscapeException;
 import roomescape.mapper.ReservationMapper;
 
 import java.time.LocalDate;
@@ -39,22 +37,23 @@ public class ReservationService {
 
     public ReservationResponse saveReservation(ReservationSaveRequest request) {
         ReservationTime time = reservationTimeService.findTimeById(request.timeId());
-        if (LocalDate.now().isEqual(request.date()) && time.inPast()) {
-            throw new IllegalTimeException("[ERROR] 이미 지난 시간입니다.");
-        }
-
-        if (request.themeId() == null) {
-            throw new IllegalThemeException("[ERROR] 유효하지 않은 형식의 테마입니다.");
+        if (checkPastTime(request, time)) {
+            throw new RoomEscapeException("[ERROR] 이미 지난 시간입니다.");
         }
 
         if (reservationDao.existByDateTimeTheme(request.date(), time.getStartAt(), request.themeId())) {
-            throw new AlreadyExistReservationException("[ERROR] 같은 날짜, 테마, 시간에 중복된 예약을 생성할 수 없습니다.");
+            throw new RoomEscapeException("[ERROR] 같은 날짜, 테마, 시간에 중복된 예약을 생성할 수 없습니다.");
         }
         Theme theme = themeDao.findById(request.themeId());
 
         Reservation reservation = reservationMapper.mapToReservation(request, time, theme);
         Long saveId = reservationDao.save(reservation);
         return reservationMapper.mapToResponse(saveId, reservation);
+    }
+
+    private boolean checkPastTime(ReservationSaveRequest request, ReservationTime time) {
+        LocalDate now = LocalDate.now();
+        return now.isAfter(request.date()) || (now.isEqual(request.date()) && time.inPast());
     }
 
     public void deleteReservationById(Long id) {

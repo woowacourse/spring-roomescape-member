@@ -47,9 +47,6 @@ public class ReservationTimeService {
     }
 
     public ReservationTime findTimeById(Long id) {
-        if (id == null) {
-            throw new IllegalTimeException("[ERROR] 유효하지 않은 형식의 예약 시간입니다.");
-        }
         return timeDao.findById(id);
     }
 

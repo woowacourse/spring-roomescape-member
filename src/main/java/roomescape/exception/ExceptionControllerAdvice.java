@@ -1,6 +1,7 @@
 package roomescape.exception;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -14,7 +15,16 @@ public class ExceptionControllerAdvice {
 
     @ExceptionHandler(RoomEscapeException.class)
     public ResponseEntity<String> roomEscapeException(RoomEscapeException e) {
-        StackTraceElement stackTraceElement = e.getStackTrace()[1];
+        StackTraceElement stackTraceElement = e.getStackTrace()[0];
+        LOGGER.log(Level.WARNING, "class = {0}, method = {1}, message = {2}",
+                new Object[]{stackTraceElement.getClassName(), stackTraceElement.getMethodName(), e.getMessage()}
+        );
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<String> httpMessageNotReadableException(HttpMessageNotReadableException e) {
+        StackTraceElement stackTraceElement = e.getStackTrace()[0];
         LOGGER.log(Level.WARNING, "class = {0}, method = {1}, message = {2}",
                 new Object[]{stackTraceElement.getClassName(), stackTraceElement.getMethodName(), e.getMessage()}
         );
