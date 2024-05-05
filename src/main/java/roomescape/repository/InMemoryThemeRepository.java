@@ -77,17 +77,7 @@ public class InMemoryThemeRepository implements ThemeRepository {
 
         return template.update(sql, param);
     }
-
-    @Override
-    public boolean existById(final Long themeId) {
-        final String sql = "SELECT EXISTS(SELECT 1 FROM theme WHERE id = :themeId)";
-
-        final MapSqlParameterSource param = new MapSqlParameterSource()
-                .addValue("themeId", themeId);
-
-        return Boolean.TRUE.equals(template.queryForObject(sql, param, Boolean.class));
-    }
-
+    
     @Override
     public List<Theme> findPopularThemes(final ReservationDate startAt, final ReservationDate endAt, final int maximumThemeCount) {
         final String sql = """

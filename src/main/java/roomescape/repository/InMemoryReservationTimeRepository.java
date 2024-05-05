@@ -73,15 +73,6 @@ public class InMemoryReservationTimeRepository implements ReservationTimeReposit
     }
 
     @Override
-    public boolean existById(final Long reservationTimeId) {
-        final String sql = "SELECT EXISTS(SELECT 1 FROM reservation_time WHERE id = :reservationTimeId)";
-        final MapSqlParameterSource param = new MapSqlParameterSource()
-                .addValue("reservationTimeId", reservationTimeId);
-
-        return Boolean.TRUE.equals(template.queryForObject(sql, param, Boolean.class));
-    }
-
-    @Override
     public boolean existByStartAt(final LocalTime startAt) {
         final String sql = "SELECT EXISTS(SELECT 1 FROM reservation_time WHERE start_at = :startAt)";
         final MapSqlParameterSource param = new MapSqlParameterSource()

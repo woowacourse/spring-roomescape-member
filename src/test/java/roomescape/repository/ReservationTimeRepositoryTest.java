@@ -82,15 +82,4 @@ class ReservationTimeRepositoryTest {
         // Then
         assertThat(isExist).isTrue();
     }
-
-    @DisplayName("특정 아이디의 예약 시간이 존재하는지 조회한다.")
-    @Test
-    void existByIdTest() {
-        // When
-        final Long reservationTimeId = 1L;
-        final boolean isExist = reservationTimeRepository.existById(reservationTimeId);
-
-        // Then
-        assertThat(isExist).isTrue();
-    }
 }

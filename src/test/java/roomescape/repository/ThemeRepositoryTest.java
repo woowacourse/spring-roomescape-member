@@ -77,17 +77,6 @@ class ThemeRepositoryTest {
         assertThat(deletedDataCount).isEqualTo(1);
     }
 
-    @DisplayName("특정 아이디의 테마가 존재하는지 조회한다.")
-    @Test
-    void existByIdTest() {
-        // When
-        final Long themeId = 1L;
-        final boolean isExist = themeRepository.existById(themeId);
-
-        // Then
-        assertThat(isExist).isTrue();
-    }
-
     @DisplayName("특정 기간 중 가장 예약 개수가 많은 상위 10개의 테마 정보를 인기순으로 조회한다.")
     @Test
     void findPopularThemes() {

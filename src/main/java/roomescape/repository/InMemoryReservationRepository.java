@@ -1,6 +1,5 @@
 package roomescape.repository;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -13,7 +12,6 @@ import roomescape.domain.Theme;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class InMemoryReservationRepository implements ReservationRepository {
@@ -50,30 +48,6 @@ public class InMemoryReservationRepository implements ReservationRepository {
                         rs.getString("theme_description"),
                         rs.getString("theme_thumbnail"))
         ));
-    }
-
-    @Override
-    public Optional<Reservation> findById(final Long reservationId) {
-        final String sql = """
-                    SELECT
-                        r.id AS reservation_id, r.name AS reservation_name, r.date AS reservation_date, 
-                        rt.id AS time_id, rt.start_at AS reservation_time, 
-                        th.id AS theme_id, th.name AS theme_name, th.description AS theme_description, th.thumbnail AS theme_thumbnail 
-                    FROM reservation AS r 
-                    INNER JOIN reservation_time AS rt on r.time_id = rt.id 
-                    INNER JOIN theme AS th ON r.theme_id = th.id 
-                    WHERE r.id = :reservationId
-                """;
-
-        try {
-            final MapSqlParameterSource param = new MapSqlParameterSource()
-                    .addValue("reservationId", reservationId);
-            final Reservation reservation = template.queryForObject(sql, param, itemRowMapper());
-
-            return Optional.of(reservation);
-        } catch (final EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
     }
 
     @Override

@@ -12,7 +12,6 @@ import roomescape.domain.Theme;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -33,19 +32,6 @@ class ReservationRepositoryTest {
 
         // Then
         assertThat(reservations).hasSize(16);
-    }
-
-    @DisplayName("특정 예약 정보를 조회한다.")
-    @Test
-    void findByIdTest() {
-        // Given
-        final Long reservationId = 1L;
-
-        // When
-        final Optional<Reservation> reservation = reservationRepository.findById(reservationId);
-
-        // Then
-        assertThat(reservation.isPresent()).isTrue();
     }
 
     @DisplayName("예약 정보를 저장한다.")
