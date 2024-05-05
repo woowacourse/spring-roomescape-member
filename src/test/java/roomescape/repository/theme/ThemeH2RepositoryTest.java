@@ -2,6 +2,7 @@ package roomescape.repository.theme;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.InitialDataFixture.INITIAL_THEME_COUNT;
 import static roomescape.InitialDataFixture.THEME_1;
 import static roomescape.InitialDataFixture.THEME_2;
 
@@ -45,7 +46,7 @@ class ThemeH2RepositoryTest {
 
         Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM theme", Integer.class);
 
-        assertThat(count).isEqualTo(1);
+        assertThat(count).isEqualTo(INITIAL_THEME_COUNT - 1);
     }
 
     @Test
@@ -60,7 +61,7 @@ class ThemeH2RepositoryTest {
     void findAll() {
         List<Theme> found = themeH2Repository.findAll();
 
-        assertThat(found).hasSize(2);
+        assertThat(found).hasSize(INITIAL_THEME_COUNT);
     }
 
     @Test

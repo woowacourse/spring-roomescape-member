@@ -8,6 +8,9 @@ INSERT INTO reservation_time (start_at)
 VALUES ('11:00');
 
 INSERT INTO theme (name, description, thumbnail)
+VALUES ('레벨1 탈출', '우테코 레벨1를 탈출하는 내용입니다.', '아무 내용 없음');
+
+INSERT INTO theme (name, description, thumbnail)
 VALUES ('레벨2 탈출', '우테코 레벨2를 탈출하는 내용입니다.', '아무 내용 없음');
 
 INSERT INTO theme (name, description, thumbnail)

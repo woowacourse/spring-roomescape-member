@@ -1,6 +1,7 @@
 package roomescape.controller.reservation;
 
 import static org.hamcrest.Matchers.is;
+import static roomescape.InitialDataFixture.INITIAL_THEME_COUNT;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -55,7 +56,7 @@ class ThemeControllerTest {
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(2));
+                .body("size()", is(INITIAL_THEME_COUNT));
     }
 
     @Test
