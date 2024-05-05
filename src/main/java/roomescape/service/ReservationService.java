@@ -44,13 +44,11 @@ public class ReservationService {
     }
 
     private ReservationTime findTimeById(final long timeId) {
-        return reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new InvalidReservationException("더이상 존재하지 않는 시간입니다."));
+        return reservationTimeRepository.getById(timeId);
     }
 
     private Theme findThemeById(long themeId) {
-        return themeRepository.findById(themeId).
-                orElseThrow(() -> new InvalidReservationException("더이상 존재하지 않는 테마입니다."));
+        return themeRepository.getById(themeId);
     }
 
     private void validate(final ReservationDate reservationDate, final ReservationTime reservationTime, final Theme theme) {

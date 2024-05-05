@@ -13,10 +13,12 @@ import roomescape.domain.Theme;
 import roomescape.domain.repostiory.ReservationRepository;
 import roomescape.domain.repostiory.ReservationTimeRepository;
 import roomescape.domain.repostiory.ThemeRepository;
+import roomescape.exception.InvalidReservationException;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
 class ThemeJdbcRepositoryTest {
@@ -112,10 +114,22 @@ class ThemeJdbcRepositoryTest {
         Theme theme = saveThemeByName("레벨2 탈출");
 
         //when
-        Theme result = themeRepository.findById(theme.getId()).get();
+        Theme result = themeRepository.getById(theme.getId());
 
         //then
         assertThat(result.getId()).isEqualTo(theme.getId());
+    }
+
+    @DisplayName("id를 가진 테마를 찾을 수 없으면 예외가 발생한다.")
+    @Test
+    void cannotFindByUnknownId() {
+        //given
+        long unknownId = 0;
+
+        //when&then
+        assertThatThrownBy(() -> themeRepository.getById(unknownId))
+                .isInstanceOf(InvalidReservationException.class)
+                .hasMessage("더이상 존재하지 않는 테마입니다.");
     }
 
     @DisplayName("최근 일주일 기준 예약 많은 테마 10개를 조회한다. - 예약이 많은 순으로 반환: theme1 2개, theme2 1개, theme3 0개")

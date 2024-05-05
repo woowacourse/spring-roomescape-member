@@ -13,10 +13,12 @@ import roomescape.domain.Theme;
 import roomescape.domain.repostiory.ReservationRepository;
 import roomescape.domain.repostiory.ReservationTimeRepository;
 import roomescape.domain.repostiory.ThemeRepository;
+import roomescape.exception.InvalidReservationException;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @JdbcTest
@@ -74,13 +76,25 @@ class ReservationTimeJdbcRepositoryTest {
         ReservationTime target = reservationTimeRepository.save(reservationTime);
 
         //when
-        ReservationTime result = reservationTimeRepository.findById(target.getId()).get();
+        ReservationTime result = reservationTimeRepository.getById(target.getId());
 
         //then
         assertAll(
                 () -> assertThat(result.getId()).isEqualTo(target.getId()),
                 () -> assertThat(result.getStartAt()).isEqualTo(startAt)
         );
+    }
+
+    @DisplayName("id를 가진 시간을 찾을 수 없으면 예외가 발생한다.")
+    @Test
+    void cannotFindByUnknownId() {
+        //given
+        long unknownId = 0;
+
+        //when&then
+        assertThatThrownBy(() -> reservationTimeRepository.getById(unknownId))
+                .isInstanceOf(InvalidReservationException.class)
+                .hasMessage("더이상 존재하지 않는 시간입니다.");
     }
 
     @DisplayName("id로 예약을 삭제한다.")
