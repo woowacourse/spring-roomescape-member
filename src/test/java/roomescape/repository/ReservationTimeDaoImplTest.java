@@ -65,7 +65,7 @@ class ReservationTimeDaoImplTest {
     @Test
     void should_add_reservation_time() {
         reservationTimeDao.addReservationTime(new ReservationTime(LocalTime.of(12, 0)));
-        Integer count = jdbcTemplate.queryForObject("select count(1) from reservation_time", Integer.class);
+        Integer count = jdbcTemplate.queryForObject("SELECT count(1) FROM reservation_time", Integer.class);
         assertThat(count).isEqualTo(3);
     }
 
@@ -73,7 +73,7 @@ class ReservationTimeDaoImplTest {
     @Test
     void should_delete_reservation_time() {
         reservationTimeDao.deleteReservationTime(1);
-        Integer count = jdbcTemplate.queryForObject("select count(1) from reservation_time", Integer.class);
+        Integer count = jdbcTemplate.queryForObject("SELECT count(1) FROM reservation_time", Integer.class);
         assertThat(count).isEqualTo(1);
     }
 
@@ -95,6 +95,6 @@ class ReservationTimeDaoImplTest {
     @Test
     void should_return_false_when_id_not_exist() {
         long count = reservationTimeDao.countReservationTimeById(100000000);
-        assertThat(count).isEqualTo(0);
+        assertThat(count).isZero();
     }
 }

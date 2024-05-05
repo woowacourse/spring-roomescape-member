@@ -30,7 +30,7 @@ public class ReservationTimeDaoImpl implements ReservationTimeDao {
 
     @Override
     public List<ReservationTime> findAllReservationTimes() {
-        String sql = "select id, start_at from reservation_time";
+        String sql = "SELECT id, start_at FROM reservation_time";
         return jdbcTemplate.query(sql, (resultSet, rowNum) ->
                 new ReservationTime(
                         resultSet.getLong("id"),
@@ -41,9 +41,9 @@ public class ReservationTimeDaoImpl implements ReservationTimeDao {
     @Override
     public List<ReservationTime> findAllReservedTimes(LocalDate date, long themeId) {
         String sql = """
-                select t.id as time_id, t.start_at as start_at
-                from reservation as r inner join reservation_time as t on r.time_id = t.id
-                where date = ? and theme_id = ?
+                SELECT t.id AS time_id, t.start_at AS start_at
+                FROM reservation AS r INNER JOIN reservation_time AS t ON r.time_id = t.id
+                WHERE DATE = ? AND theme_id = ?
                 """;
         return jdbcTemplate.query(sql, (resultSet, rowNum) ->
                 new ReservationTime(
@@ -54,7 +54,7 @@ public class ReservationTimeDaoImpl implements ReservationTimeDao {
 
     @Override
     public ReservationTime findReservationById(long id) {
-        String sql = "select * from reservation_time where id = ?";
+        String sql = "SELECT * FROM reservation_time WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, (resultSet, rowNum) ->
                 new ReservationTime(
                         resultSet.getLong("id"),
@@ -72,20 +72,20 @@ public class ReservationTimeDaoImpl implements ReservationTimeDao {
 
     @Override
     public void deleteReservationTime(long id) {
-        String sql = "delete from reservation_time where id = ?";
+        String sql = "DELETE FROM reservation_time WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
 
     @Override
     public Long countReservationTimeById(long id) {
-        String sql = "select count(id) from reservation_time where id = ?";
+        String sql = "SELECT count(id) FROM reservation_time WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, (resultSet, ignored) ->
                 resultSet.getLong(1), id);
     }
 
     @Override
     public Long countReservationTimeByStartAt(LocalTime startAt) {
-        String sql = "select count(id) from reservation_time where start_at = ?";
+        String sql = "SELECT count(id) FROM reservation_time WHERE start_at = ?";
         return jdbcTemplate.queryForObject(sql, (resultSet, ignored) ->
                 resultSet.getLong(1), startAt);
     }

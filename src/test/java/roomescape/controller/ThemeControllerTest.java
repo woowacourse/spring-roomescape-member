@@ -123,7 +123,7 @@ class ThemeControllerTest {
         insertReservation("name14", LocalDate.now().minusDays(1), 1L, 9);
         insertReservation("name15", LocalDate.now().minusDays(1), 1L, 9);
 
-        Long l = jdbcTemplate.queryForObject("select count(1) from reservation", Long.class);
+        Long l = jdbcTemplate.queryForObject("SELECT count(1) FROM reservation", Long.class);
         System.out.println(l);
 
         List<Theme> popularThemes = RestAssured.given().log().all()

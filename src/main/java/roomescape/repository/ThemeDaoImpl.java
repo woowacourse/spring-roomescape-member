@@ -28,7 +28,7 @@ public class ThemeDaoImpl implements ThemeDao {
 
     @Override
     public List<Theme> findAllThemes() {
-        String sql = "select id, name, description, thumbnail from theme";
+        String sql = "SELECT id, name, description, thumbnail FROM theme";
         return jdbcTemplate.query(sql, (resultSet, rowNum) ->
                 new Theme(
                         resultSet.getLong("id"),
@@ -50,13 +50,13 @@ public class ThemeDaoImpl implements ThemeDao {
 
     @Override
     public void deleteTheme(long id) {
-        String sql = "delete from theme where id = ?";
+        String sql = "DELETE FROM theme WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
 
     @Override
     public Theme findThemeById(long id) {
-        String sql = "select id, name, description, thumbnail from theme where id = ?";
+        String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, (resultSet, ignored) ->
                 new Theme(
                         resultSet.getLong("id"),
@@ -69,12 +69,12 @@ public class ThemeDaoImpl implements ThemeDao {
     @Override
     public List<Theme> findThemeRankingByDate(LocalDate before, LocalDate after, int limit) {
         String sql = """
-                select th.id, th.name, th.description, th.thumbnail 
-                from reservation as r 
-                inner join theme as th on r.theme_id = th.id 
-                where r.date between ? and ? 
-                group by r.theme_id 
-                order by count(r.theme_id) desc
+                SELECT th.id, th.name, th.description, th.thumbnail 
+                FROM reservation AS r 
+                INNER JOIN theme AS th ON r.theme_id = th.id 
+                WHERE r.date BETWEEN ? AND ? 
+                GROUP BY r.theme_id 
+                GROUP BY COUNT(r.theme_id) DESC
                 limit ? 
                 """;
         return jdbcTemplate.query(sql, (resultSet, ignored) ->
