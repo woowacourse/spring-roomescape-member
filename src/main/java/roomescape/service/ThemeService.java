@@ -57,6 +57,8 @@ public class ThemeService {
         String startDate = LocalDate.now().minusDays(7).format(DateTimeFormatter.ISO_DATE);
         String endDate = LocalDate.now().minusDays(1).format(DateTimeFormatter.ISO_DATE);
         List<Theme> themes = themeRepository.getReferenceByReservationTermAndCount(startDate, endDate, MAXIMUM_COUNT);
-        return themes.stream().map(ThemeResponse::new).toList();
+        return themes.stream()
+                .map(ThemeResponse::new)
+                .toList();
     }
 }
