@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
@@ -31,7 +32,7 @@ public class ReservationTimeController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTimeWebResponse> create(@RequestBody ReservationTimeWebRequest request) {
+    public ResponseEntity<ReservationTimeWebResponse> create(@Valid @RequestBody ReservationTimeWebRequest request) {
         ReservationTimeAppResponse appResponse = reservationTimeService.save(
             new ReservationTimeAppRequest(request.startAt()));
         Long id = appResponse.id();
@@ -65,7 +66,7 @@ public class ReservationTimeController {
 
         List<ReservationTimeAppResponseWithBookable> appResponses = reservationTimeService
             .findAllWithBookAvailability(date, id);
-        
+
         List<ReservationTimeUserWebResponse> webResponses = appResponses.stream()
             .map(response -> new ReservationTimeUserWebResponse(
                 response.id(),
@@ -75,5 +76,5 @@ public class ReservationTimeController {
 
         return ResponseEntity.ok(webResponses);
     }
-
+    
 }
