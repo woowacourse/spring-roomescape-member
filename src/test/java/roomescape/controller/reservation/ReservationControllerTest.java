@@ -1,6 +1,7 @@
 package roomescape.controller.reservation;
 
 import static org.hamcrest.Matchers.is;
+import static roomescape.InitialDataFixture.INITIAL_RESERVATION_COUNT;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -25,7 +26,7 @@ class ReservationControllerTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(2));
+                .body("size()", is(INITIAL_RESERVATION_COUNT));
     }
 
     @Test
@@ -46,7 +47,7 @@ class ReservationControllerTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(3))
+                .body("id", is(INITIAL_RESERVATION_COUNT + 1))
                 .header("Location", "/reservations/3");
     }
 
@@ -64,6 +65,6 @@ class ReservationControllerTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", is(INITIAL_RESERVATION_COUNT - 1));
     }
 }

@@ -2,6 +2,7 @@ package roomescape.repository.reservationtime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.InitialDataFixture.INITIAL_RESERVATION_TIME_COUNT;
 import static roomescape.InitialDataFixture.RESERVATION_TIME_1;
 import static roomescape.InitialDataFixture.RESERVATION_TIME_2;
 
@@ -45,7 +46,7 @@ class ReservationTimeH2RepositoryTest {
 
         Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reservation_time", Integer.class);
 
-        assertThat(count).isEqualTo(2);
+        assertThat(count).isEqualTo(INITIAL_RESERVATION_TIME_COUNT - 1);
     }
 
     @Test
@@ -60,7 +61,7 @@ class ReservationTimeH2RepositoryTest {
     void findAll() {
         List<ReservationTime> found = reservationTimeH2Repository.findAll();
 
-        assertThat(found).hasSize(3);
+        assertThat(found).hasSize(INITIAL_RESERVATION_TIME_COUNT);
     }
 
     @Test

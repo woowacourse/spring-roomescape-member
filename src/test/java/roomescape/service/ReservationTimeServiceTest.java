@@ -2,7 +2,10 @@ package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.InitialDataFixture.INITIAL_RESERVATION_TIME_COUNT;
+import static roomescape.InitialDataFixture.RESERVATION_1;
 import static roomescape.InitialDataFixture.RESERVATION_TIME_1;
+import static roomescape.InitialDataFixture.RESERVATION_TIME_3;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -50,24 +53,24 @@ class ReservationTimeServiceTest {
     void getTimes() {
         List<ReservationTimeResponse> times = reservationTimeService.findTimes();
 
-        assertThat(times).hasSize(3);
+        assertThat(times).hasSize(INITIAL_RESERVATION_TIME_COUNT);
     }
 
     @Test
     @DisplayName("id에 맞는 예약 가능 시간을 조회한다.")
     void getGetTime() {
-        ReservationTimeResponse timeResponse = reservationTimeService.getTime(1L);
+        ReservationTimeResponse timeResponse = reservationTimeService.getTime(RESERVATION_1.getId());
 
-        assertThat(timeResponse.startAt()).isEqualTo("09:00");
+        assertThat(timeResponse.startAt()).isEqualTo(RESERVATION_1.getTime().getStartAt().toString());
     }
 
     @Test
     @DisplayName("id에 맞는 예약 가능 시간을 삭제한다.")
     void deleteGetTime() {
-        reservationTimeService.deleteTime(2L);
+        reservationTimeService.deleteTime(RESERVATION_TIME_3.getId());
 
         Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reservation_time", Integer.class);
 
-        assertThat(count).isEqualTo(2);
+        assertThat(count).isEqualTo(INITIAL_RESERVATION_TIME_COUNT - 1);
     }
 }

@@ -2,6 +2,7 @@ package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.InitialDataFixture.INITIAL_RESERVATION_COUNT;
 import static roomescape.InitialDataFixture.RESERVATION_1;
 import static roomescape.InitialDataFixture.RESERVATION_2;
 import static roomescape.InitialDataFixture.THEME_2;
@@ -83,10 +84,10 @@ ReservationServiceTest {
     @Test
     @DisplayName("id에 맞는 예약을 삭제한다.")
     void deleteReservation() {
-        reservationService.deleteReservation(1L);
+        reservationService.deleteReservation(RESERVATION_1.getId());
 
         Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reservation", Integer.class);
-        assertThat(count).isOne();
+        assertThat(count).isEqualTo(INITIAL_RESERVATION_COUNT - 1);
     }
 
     @Test
@@ -94,6 +95,6 @@ ReservationServiceTest {
     void getReservations() {
         List<ReservationResponse> reservations = reservationService.findReservations();
 
-        assertThat(reservations).hasSize(2);
+        assertThat(reservations).hasSize(INITIAL_RESERVATION_COUNT);
     }
 }

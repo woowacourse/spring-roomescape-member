@@ -2,6 +2,7 @@ package roomescape.repository.reservation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
+import static roomescape.InitialDataFixture.INITIAL_RESERVATION_COUNT;
 import static roomescape.InitialDataFixture.RESERVATION_1;
 import static roomescape.InitialDataFixture.RESERVATION_2;
 import static roomescape.InitialDataFixture.THEME_2;
@@ -81,6 +82,6 @@ class ReservationH2RepositoryTest {
     void findAll() {
         List<Reservation> found = reservationH2Repository.findAll();
 
-        assertThat(found).hasSize(2);
+        assertThat(found).hasSize(INITIAL_RESERVATION_COUNT);
     }
 }

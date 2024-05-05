@@ -1,6 +1,7 @@
 package roomescape.controller.reservation;
 
 import static org.hamcrest.Matchers.is;
+import static roomescape.InitialDataFixture.INITIAL_RESERVATION_TIME_COUNT;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -65,18 +66,11 @@ class ReservationTimeControllerTest {
     @Test
     @DisplayName("예약 가능한 시간을 조회한다.")
     void getTimes() {
-        Map<String, String> params = new HashMap<>();
-        params.put("startAt", "15:00");
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/times");
-
         RestAssured.given().log().all()
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(4));
+                .body("size()", is(INITIAL_RESERVATION_TIME_COUNT));
     }
 
     @Test
