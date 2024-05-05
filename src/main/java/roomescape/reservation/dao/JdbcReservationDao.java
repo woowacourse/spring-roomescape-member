@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.reservation.domain.Name;
+import roomescape.reservation.domain.UserName;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
@@ -19,7 +19,7 @@ public class JdbcReservationDao implements ReservationDao {
     private static final RowMapper<Reservation> RESERVATION_MAPPER = (resultSet, row) ->
             new Reservation(
                     resultSet.getLong("reservation_id"),
-                    new Name(resultSet.getString("name")),
+                    new UserName(resultSet.getString("name")),
                     resultSet.getDate("date").toLocalDate(),
                     new ReservationTime(
                             resultSet.getLong("time_id"),

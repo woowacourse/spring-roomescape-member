@@ -8,23 +8,23 @@ import roomescape.reservation.handler.exception.ExceptionCode;
 public class Reservation {
 
     private final Long id;
-    private final Name name;
+    private final UserName userName;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(Long id, Name name, LocalDate date, ReservationTime time, Theme theme) {
+    public Reservation(Long id, UserName userName, LocalDate date, ReservationTime time, Theme theme) {
         validateDateTime(date, time);
 
         this.id = id;
-        this.name = name;
+        this.userName = userName;
         this.date = date;
         this.time = time;
         this.theme = theme;
     }
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        this(id, new Name(name), date, time, theme);
+        this(id, new UserName(name), date, time, theme);
     }
 
     private void validateDateTime(LocalDate date, ReservationTime time) {
@@ -47,7 +47,7 @@ public class Reservation {
     }
 
     public String getName() {
-        return name.getValue();
+        return userName.getValue();
     }
 
     public LocalDate getDate() {
