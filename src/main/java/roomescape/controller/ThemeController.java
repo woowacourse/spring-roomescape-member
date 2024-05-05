@@ -12,7 +12,7 @@ import roomescape.domain.Theme;
 import roomescape.dto.AvailableReservationTimeResponse;
 import roomescape.dto.SaveThemeRequest;
 import roomescape.dto.ThemeResponse;
-import roomescape.service.ReservationService;
+import roomescape.service.ThemeService;
 
 import java.net.URI;
 import java.time.LocalDate;
@@ -21,15 +21,15 @@ import java.util.List;
 @RestController
 public class ThemeController {
 
-    private final ReservationService reservationService;
+    private final ThemeService themeService;
 
-    public ThemeController(final ReservationService reservationService) {
-        this.reservationService = reservationService;
+    public ThemeController(final ThemeService themeService) {
+        this.themeService = themeService;
     }
 
     @GetMapping("/themes")
     public List<ThemeResponse> getThemes() {
-        return reservationService.getThemes()
+        return themeService.getThemes()
                 .stream()
                 .map(ThemeResponse::from)
                 .toList();
@@ -37,7 +37,7 @@ public class ThemeController {
 
     @PostMapping("/themes")
     public ResponseEntity<ThemeResponse> saveTheme(@RequestBody final SaveThemeRequest request) {
-        final Theme savedTheme = reservationService.saveTheme(request);
+        final Theme savedTheme = themeService.saveTheme(request);
 
         return ResponseEntity.created(URI.create("/themes/" + savedTheme.getId()))
                 .body(ThemeResponse.from(savedTheme));
@@ -45,13 +45,13 @@ public class ThemeController {
 
     @DeleteMapping("/themes/{themeId}")
     public ResponseEntity<Void> deleteTheme(@PathVariable final Long themeId) {
-        reservationService.deleteTheme(themeId);
+        themeService.deleteTheme(themeId);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/popular-themes")
     public List<ThemeResponse> getPopularThemes() {
-        return reservationService.getPopularThemes()
+        return themeService.getPopularThemes()
                 .stream()
                 .map(ThemeResponse::from)
                 .toList();
@@ -59,7 +59,7 @@ public class ThemeController {
 
     @GetMapping("/available-reservation-times")
     public List<AvailableReservationTimeResponse> getAvailableReservationTimes(@RequestParam("date") final LocalDate date, @RequestParam("theme-id") final Long themeId) {
-        return reservationService.getAvailableReservationTimes(date, themeId)
+        return themeService.getAvailableReservationTimes(date, themeId)
                 .getValues()
                 .entrySet()
                 .stream()

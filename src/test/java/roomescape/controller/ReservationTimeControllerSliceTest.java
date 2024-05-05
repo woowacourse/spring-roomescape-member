@@ -10,7 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.SaveReservationTimeRequest;
-import roomescape.service.ReservationService;
+import roomescape.service.ReservationTimeService;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -36,7 +36,7 @@ class ReservationTimeControllerSliceTest {
     private ObjectMapper objectMapper;
 
     @MockBean
-    private ReservationService reservationService;
+    private ReservationTimeService reservationTimeService;
 
     @DisplayName("전체 예약 시간 정보를 조회한다.")
     @Test
@@ -47,7 +47,7 @@ class ReservationTimeControllerSliceTest {
                 new ReservationTime(2L, LocalTime.now().plusHours(4)),
                 new ReservationTime(3L, LocalTime.now().plusHours(5))
         );
-        given(reservationService.getReservationTimes()).willReturn(reservationTimes);
+        given(reservationTimeService.getReservationTimes()).willReturn(reservationTimes);
 
         // When & Then
         mockMvc.perform(get("/times"))
@@ -61,7 +61,7 @@ class ReservationTimeControllerSliceTest {
     void saveReservationTimeTest() throws Exception {
         final SaveReservationTimeRequest saveReservationTimeRequest = new SaveReservationTimeRequest(LocalTime.now().plusHours(3));
         final ReservationTime savedReservationTime = new ReservationTime(1L, LocalTime.now().plusHours(3));
-        given(reservationService.saveReservationTime(saveReservationTimeRequest)).willReturn(savedReservationTime);
+        given(reservationTimeService.saveReservationTime(saveReservationTimeRequest)).willReturn(savedReservationTime);
 
         // When & Then
         mockMvc.perform(post("/times")
@@ -79,7 +79,7 @@ class ReservationTimeControllerSliceTest {
     void deleteReservationTimeTest() throws Exception {
         // Given
         final long reservationTimeId = 1;
-        willDoNothing().given(reservationService).deleteReservationTime(reservationTimeId);
+        willDoNothing().given(reservationTimeService).deleteReservationTime(reservationTimeId);
 
         // When & Then
         mockMvc.perform(delete("/times/" + reservationTimeId))
@@ -93,7 +93,7 @@ class ReservationTimeControllerSliceTest {
         // Given
         final long reservationTimeId = 1;
         doThrow(new NoSuchElementException("해당 id의 예약 시간이 존재하지 않습니다."))
-                .when(reservationService)
+                .when(reservationTimeService)
                 .deleteReservationTime(reservationTimeId);
 
         // When & Then

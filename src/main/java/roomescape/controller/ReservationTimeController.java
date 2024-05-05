@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.SaveReservationTimeRequest;
-import roomescape.service.ReservationService;
+import roomescape.service.ReservationTimeService;
 
 import java.net.URI;
 import java.util.List;
@@ -18,15 +18,15 @@ import java.util.List;
 @RestController
 public class ReservationTimeController {
 
-    private final ReservationService reservationService;
+    private final ReservationTimeService reservationTimeService;
 
-    public ReservationTimeController(final ReservationService reservationService) {
-        this.reservationService = reservationService;
+    public ReservationTimeController(final ReservationTimeService reservationTimeService) {
+        this.reservationTimeService = reservationTimeService;
     }
 
     @GetMapping("/times")
     public List<ReservationTimeResponse> getReservationTimes() {
-        return reservationService.getReservationTimes()
+        return reservationTimeService.getReservationTimes()
                 .stream()
                 .map(ReservationTimeResponse::from)
                 .toList();
@@ -34,7 +34,7 @@ public class ReservationTimeController {
 
     @PostMapping("/times")
     public ResponseEntity<ReservationTimeResponse> saveReservationTime(@RequestBody final SaveReservationTimeRequest request) {
-        final ReservationTime savedReservationTime = reservationService.saveReservationTime(request);
+        final ReservationTime savedReservationTime = reservationTimeService.saveReservationTime(request);
 
         return ResponseEntity.created(URI.create("/times/" + savedReservationTime.getId()))
                 .body(ReservationTimeResponse.from(savedReservationTime));
@@ -42,7 +42,7 @@ public class ReservationTimeController {
 
     @DeleteMapping("/times/{reservation-time-id}")
     public ResponseEntity<Void> deleteReservationTime(@PathVariable("reservation-time-id") final Long reservationTimeId) {
-        reservationService.deleteReservationTime(reservationTimeId);
+        reservationTimeService.deleteReservationTime(reservationTimeId);
         return ResponseEntity.noContent().build();
     }
 }

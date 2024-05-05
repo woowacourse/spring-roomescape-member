@@ -10,7 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.domain.Theme;
 import roomescape.dto.SaveThemeRequest;
-import roomescape.service.ReservationService;
+import roomescape.service.ThemeService;
 
 import java.util.List;
 
@@ -33,7 +33,7 @@ class ThemeControllerSliceTest {
     private ObjectMapper objectMapper;
 
     @MockBean
-    private ReservationService reservationService;
+    private ThemeService themeService;
 
     @DisplayName("전체 테마 정보를 조회한다.")
     @Test
@@ -45,7 +45,7 @@ class ThemeControllerSliceTest {
                 Theme.of(3L, "커비 탈출", "커비와 탈출", "커비 사진")
         );
 
-        given(reservationService.getThemes()).willReturn(themes);
+        given(themeService.getThemes()).willReturn(themes);
 
         // When & Then
         mockMvc.perform(get("/themes"))
@@ -63,7 +63,7 @@ class ThemeControllerSliceTest {
         final SaveThemeRequest saveThemeRequest = new SaveThemeRequest(themeName, themeDescription, themeThumbnail);
         final Theme savedTheme = Theme.of(1L, themeName, themeDescription, themeThumbnail);
 
-        given(reservationService.saveTheme(saveThemeRequest)).willReturn(savedTheme);
+        given(themeService.saveTheme(saveThemeRequest)).willReturn(savedTheme);
 
         // When & Then
         mockMvc.perform(post("/themes")
@@ -83,7 +83,7 @@ class ThemeControllerSliceTest {
     void deleteThemeTest() throws Exception {
         // Given
         final Long themeId = 1L;
-        willDoNothing().given(reservationService).deleteTheme(themeId);
+        willDoNothing().given(themeService).deleteTheme(themeId);
 
         // When & Then
         mockMvc.perform(delete("/themes/" + themeId))
