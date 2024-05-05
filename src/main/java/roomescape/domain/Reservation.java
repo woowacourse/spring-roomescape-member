@@ -18,6 +18,8 @@ public class Reservation {
             final ReservationTime time,
             final Theme theme
     ) {
+        validateReservationTimeAndTheme(theme);
+
         final ReservationDate reservationDate = new ReservationDate(date);
         validateReservationDateAndTime(reservationDate, time);
 
@@ -28,6 +30,12 @@ public class Reservation {
                 time,
                 theme
         );
+    }
+
+    private static void validateReservationTimeAndTheme(final ReservationTime reservationTime, final Theme theme) {
+        if (reservationTime == null || theme == null) {
+            throw new IllegalArgumentException("예약 시간과 테마 정보는 필수입니다.");
+        }
     }
 
     private static void validateReservationDateAndTime(final ReservationDate date, final ReservationTime time) {
@@ -44,6 +52,8 @@ public class Reservation {
             final ReservationTime time,
             final Theme theme
     ) {
+        validateReservationTimeAndTheme(time, theme);
+
         return new Reservation(
                 id,
                 new ClientName(clientName),
