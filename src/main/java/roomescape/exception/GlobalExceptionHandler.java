@@ -12,17 +12,17 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<String> handleNotFoundException(NotFoundException exception) {
-        return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
+        return ResponseEntity.badRequest().body(exception.getMessage());
     }
 
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<String> handleBadRequestException(BadRequestException exception) {
-        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+        return ResponseEntity.badRequest().body(exception.getMessage());
     }
 
     @ExceptionHandler(DuplicatedException.class)
     public ResponseEntity<String> handleDuplicatedException(DuplicatedException exception) {
-        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+        return ResponseEntity.badRequest().body(exception.getMessage());
     }
 
     @ExceptionHandler(DateTimeParseException.class)
