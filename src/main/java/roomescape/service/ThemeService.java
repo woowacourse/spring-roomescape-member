@@ -26,11 +26,6 @@ public class ThemeService {
                 .toList();
     }
 
-    public ThemeResponse findById(final Long id) {
-        Theme theme = themeDao.findById(id);
-        return ThemeResponse.from(theme);
-    }
-
     public ThemeResponse create(final ThemeRequest themeRequest) {
         Long id = themeDao.create(themeRequest);
         Theme theme = themeRequest.toEntity(id);

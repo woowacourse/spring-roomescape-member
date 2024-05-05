@@ -26,11 +26,6 @@ public class TimeService {
                 .toList();
     }
 
-    public TimeSlotResponse findById(Long id) {
-        TimeSlot timeSlot = timeDao.findById(id);
-        return TimeSlotResponse.from(timeSlot);
-    }
-
     public TimeSlotResponse create(TimeSlotRequest timeSlotRequest) {
         validateDuplicatedTime(timeSlotRequest);
         Long id = timeDao.create(timeSlotRequest);
