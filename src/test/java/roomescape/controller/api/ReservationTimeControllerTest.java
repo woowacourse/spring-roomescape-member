@@ -28,9 +28,7 @@ class ReservationTimeControllerTest {
     @Test
     @DisplayName("저장된 모든 예약시간을 조회하고 상태코드 200을 응답한다.")
     void findAll() {
-        insertReservationTime("09:00");
-        insertReservationTime("10:00");
-        assertReservationTimeCountIsEqualTo(2);
+        assertReservationTimeCountIsEqualTo(5);
 
         List<ReservationTime> times = RestAssured.given().log().all()
                 .when().get("/times")
@@ -45,31 +43,29 @@ class ReservationTimeControllerTest {
     @Test
     @DisplayName("예약시간을 추가하고 상태코드 201을 응답한다.")
     void create() {
-        insertReservationTime("11:00");
-        assertReservationTimeCountIsEqualTo(1);
+        assertReservationTimeCountIsEqualTo(5);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(reservationTime("10:00"))
+                .body(new ReservationTime(0, LocalTime.parse("10:00")))
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201);
 
-        assertReservationTimeCountIsEqualTo(2);
+        assertReservationTimeCountIsEqualTo(6);
     }
 
     @Test
     @DisplayName("저장된 예약시간을 삭제하고 상태코드 204을 응답한다.")
     void delete() {
-        long id = insertReservationTimeAndGetId("13:00");
-        assertReservationTimeCountIsEqualTo(1);
+        assertReservationTimeCountIsEqualTo(5);
 
         RestAssured.given().log().all()
-                .when().delete("/times/" + id)
+                .when().delete("/times/" + 5)
                 .then().log().all()
                 .statusCode(204);
 
-        assertReservationTimeCountIsEqualTo(0);
+        assertReservationTimeCountIsEqualTo(4);
     }
 
     @Test
@@ -84,18 +80,6 @@ class ReservationTimeControllerTest {
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(400);
-    }
-
-    ReservationTime reservationTime(String time) {
-        return new ReservationTime(0, LocalTime.parse(time));
-    }
-
-    void insertReservationTime(String time) {
-        insertReservationTimeAndGetId(time);
-    }
-
-    long insertReservationTimeAndGetId(String time) {
-        return reservationTimeDao.save(new ReservationTime(0, LocalTime.parse(time))).id();
     }
 
     void assertReservationTimeCountIsEqualTo(int count) {

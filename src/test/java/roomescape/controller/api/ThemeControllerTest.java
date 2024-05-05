@@ -25,9 +25,7 @@ public class ThemeControllerTest {
     @Test
     @DisplayName("저장된 모든 테마를 조회하고 상태코드 200을 응답한다.")
     void findAll() {
-        insertTheme("브라운", "테마 설명1", "thumbnail1.jpg");
-        insertTheme("구구", "테마 설명2", "thumbnail2.jpg");
-        assertThemeCountIsEqualTo(2);
+        assertThemeCountIsEqualTo(5);
 
         List<Theme> themes = RestAssured.given().log().all()
                 .when().get("/themes")
@@ -42,8 +40,7 @@ public class ThemeControllerTest {
     @Test
     @DisplayName("테마를 추가하고 상태코드 201을 응답한다.")
     void create() {
-        insertTheme("브라운", "테마 설명1", "thumbnail1.jpg");
-        assertThemeCountIsEqualTo(1);
+        assertThemeCountIsEqualTo(5);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -52,29 +49,20 @@ public class ThemeControllerTest {
                 .then().log().all()
                 .statusCode(201);
 
-        assertThemeCountIsEqualTo(2);
+        assertThemeCountIsEqualTo(6);
     }
 
     @Test
     @DisplayName("저장된 테마를 삭제하고 상태코드 204를 응답한다.")
     void delete() {
-        long id = insertThemeAndGetId("브라운", "테마 설명1", "thumbnail1.jpg");
-        assertThemeCountIsEqualTo(1);
+        assertThemeCountIsEqualTo(5);
 
         RestAssured.given().log().all()
-                .when().delete("/themes/" + id)
+                .when().delete("/themes/" + 5)
                 .then().log().all()
                 .statusCode(204);
 
-        assertThemeCountIsEqualTo(0);
-    }
-
-    void insertTheme(String name, String description, String thumbnail) {
-        insertThemeAndGetId(name, description, thumbnail);
-    }
-
-    long insertThemeAndGetId(String name, String description, String thumbnail) {
-        return themeDao.save(new Theme(0L, name, description, thumbnail)).id();
+        assertThemeCountIsEqualTo(4);
     }
 
     void assertThemeCountIsEqualTo(int count) {

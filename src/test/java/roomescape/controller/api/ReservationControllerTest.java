@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
@@ -16,13 +15,9 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import roomescape.controller.request.ReservationRequest;
 import roomescape.domain.Reservation;
 import roomescape.repository.ReservationDao;
-import roomescape.repository.ThemeDao;
-import roomescape.controller.request.ReservationRequest;
-import roomescape.domain.Theme;
-import roomescape.domain.ReservationTime;
-import roomescape.repository.ReservationTimeDao;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -32,26 +27,16 @@ class ReservationControllerTest {
     private ReservationDao reservationDao;
 
     @Autowired
-    private ReservationTimeDao reservationTimeDao;
-
-    @Autowired
-    private ThemeDao themeDao;
-
-    @Autowired
     private ReservationController reservationController;
 
     @Test
     @DisplayName("저장된 모든 예약을 조회하고 상태코드 200을 응답한다.")
     void findAll() {
-        long timeId = insertReservationTimeAndGetId("10:00");
-        long themeId = insertThemeAndGetId("name", "description", "thumbnail");
-        insertReservation("브라운", "2024-08-05", timeId, themeId);
-        insertReservation("구구", "2024-08-06", timeId, themeId);
-        assertReservationCountIsEqualTo(2);
+        assertReservationCountIsEqualTo(5);
 
-        List<Reservation> reservations = RestAssured.given().log().all()
+        List<Reservation> reservations = RestAssured.given()
                 .when().get("/reservations")
-                .then().log().all()
+                .then()
                 .statusCode(200).extract()
                 .jsonPath().getList(".", Reservation.class);
 
@@ -62,35 +47,29 @@ class ReservationControllerTest {
     @Test
     @DisplayName("예약을 추가하고 상태코드 201을 응답한다.")
     void create() {
-        long themeId = insertThemeAndGetId("name", "description", "thumbnail");
-        long timeId = insertReservationTimeAndGetId("10:00");
+        assertReservationCountIsEqualTo(5);
 
-        insertReservation("브라운", "2024-08-05", timeId,themeId);
-        assertReservationCountIsEqualTo(1);
-
-        RestAssured.given().log().all()
+        RestAssured.given()
                 .contentType(ContentType.JSON)
-                .body(reservationRequest("구구", "2024-08-06", timeId,themeId))
+                .body(new ReservationRequest("구구", LocalDate.parse("2024-08-06"), 1, 1))
                 .when().post("/reservations")
-                .then().log().all()
+                .then()
                 .statusCode(201);
 
-        assertReservationCountIsEqualTo(2);
+        assertReservationCountIsEqualTo(6);
     }
 
     @Test
     @DisplayName("저장된 예약을 삭제하고 상태코드 204을 응답한다.")
     void delete() {
-        long themeId = insertThemeAndGetId("name", "description", "thumbnail");
-        long timeId = insertReservationTimeAndGetId("10:00");
-        long id = insertReservationAndGetId("브라운", "2024-08-05", timeId, themeId);
+        assertReservationCountIsEqualTo(5);
 
-        RestAssured.given().log().all()
-                .when().delete("/reservations/" + id)
-                .then().log().all()
+        RestAssured.given()
+                .when().delete("/reservations/" + 1)
+                .then()
                 .statusCode(204);
 
-        assertReservationCountIsEqualTo(0);
+        assertReservationCountIsEqualTo(4);
     }
 
     @Test
@@ -106,32 +85,6 @@ class ReservationControllerTest {
         }
 
         assertThat(isJdbcTemplateInjected).isFalse();
-    }
-
-    ReservationRequest reservationRequest(String name, String date, long timeId, long themeId) {
-        return new ReservationRequest(name, LocalDate.parse(date), timeId, themeId);
-    }
-
-    long insertReservationTimeAndGetId(String time) {
-        return reservationTimeDao.save(new ReservationTime(0, LocalTime.parse(time))).id();
-    }
-
-    void insertReservation(String name, String date, long timeId, long themeId) {
-        insertReservationAndGetId(name, date, timeId, themeId);
-    }
-
-    void insertTheme(String name, String description, String thumbnail) {
-        insertThemeAndGetId(name, description, thumbnail);
-    }
-
-    long insertThemeAndGetId(String name, String description, String thumbnail) {
-        return themeDao.save(new Theme(0, name, description, thumbnail)).id();
-    }
-
-    long insertReservationAndGetId(String name, String date, long timeId, long themeId) {
-        ReservationTime time = reservationTimeDao.findById(timeId);
-        Theme theme = themeDao.findById(themeId);
-        return reservationDao.save(new Reservation(0, name, LocalDate.parse(date), time, theme)).id();
     }
 
     void assertReservationCountIsEqualTo(int count) {
