@@ -2,12 +2,9 @@ package roomescape.controller;
 
 import java.net.URI;
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.List;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -60,10 +57,5 @@ public class ReservationController {
         reservationService.delete(id);
         return ResponseEntity.noContent()
                 .build();
-    }
-
-    @ExceptionHandler(value = DateTimeParseException.class)
-    public ResponseEntity<String> handleDateTimeParseException(DateTimeParseException e) {
-        return new ResponseEntity<>(e.getParsedString() + "은(는) 올바른 시간 형식이 아닙니다.", HttpStatus.BAD_REQUEST);
     }
 }
