@@ -14,7 +14,7 @@ public class Reservation {
     private final Theme theme;
 
     public Reservation(final Long id,
-                       final String name,
+                       final ReservationName name,
                        final LocalDate date,
                        final ReservationTime reservationTime,
                        final Theme theme) {
@@ -23,10 +23,33 @@ public class Reservation {
         validateReservationThemeIsNull(theme);
 
         this.id = id;
-        this.name = new ReservationName(name);
+        this.name = name;
         this.date = date;
         this.reservationTime = reservationTime;
         this.theme = theme;
+    }
+
+    public static Reservation of(final Long id,
+                                 final String name,
+                                 final LocalDate date,
+                                 final ReservationTime reservationTime,
+                                 final Theme theme) {
+        return new Reservation(
+                id,
+                new ReservationName(name),
+                date,
+                reservationTime,
+                theme);
+    }
+
+    public static Reservation of(final Long id,
+                                 final Reservation reservation) {
+        return new Reservation(
+                id,
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.getReservationTime(),
+                reservation.getTheme());
     }
 
     private void validateReservationDateIsNull(final LocalDate date) {
@@ -47,8 +70,24 @@ public class Reservation {
         }
     }
 
+    public boolean isSameId(Long id) {
+        return Objects.equals(this.id, id);
+    }
+
     public boolean isSameTime(final ReservationTime reservationTime) {
-        return this.reservationTime.equals(reservationTime);
+        return this.reservationTime.isSameTo(reservationTime.getId());
+    }
+
+    public boolean isSameTimeId(final Long timeId) {
+        return this.reservationTime.isSameTo(timeId);
+    }
+
+    public boolean isSameTheme(final Long themeId) {
+        return this.theme.isSameTo(themeId);
+    }
+
+    public boolean isSameDate(final LocalDate date) {
+        return Objects.equals(this.date, date);
     }
 
     public boolean isBeforeDateTimeThanNow(final LocalDateTime now) {

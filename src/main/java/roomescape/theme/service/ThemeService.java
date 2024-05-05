@@ -24,19 +24,19 @@ public class ThemeService {
 
     public CreateThemeResponse createTheme(CreateThemeRequest createThemeRequest) {
         Theme theme = themeRepository.save(createThemeRequest.toTheme());
-        return CreateThemeResponse.of(theme);
+        return CreateThemeResponse.from(theme);
     }
 
     public List<FindThemeResponse> getThemes() {
         List<Theme> themes = themeRepository.findAll();
         return themes.stream()
-                .map(FindThemeResponse::of)
+                .map(FindThemeResponse::from)
                 .toList();
     }
 
     public List<FindPopularThemesResponse> getPopularThemes() {
         return themeRepository.findOrderByReservation().stream()
-                .map(FindPopularThemesResponse::of)
+                .map(FindPopularThemesResponse::from)
                 .toList();
     }
 

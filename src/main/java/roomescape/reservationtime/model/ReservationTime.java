@@ -14,6 +14,10 @@ public class ReservationTime {
         this.time = time;
     }
 
+    public static ReservationTime of(final Long id, final ReservationTime reservationTime) {
+        return new ReservationTime(id, reservationTime.getTime());
+    }
+
     private void validateReservationTimeIsNull(final LocalTime time) {
         if (time == null) {
             throw new IllegalArgumentException("예약 시간 생성 시 시작 시간은 필수입니다.");
@@ -22,6 +26,10 @@ public class ReservationTime {
 
     public boolean isBefore(final LocalTime time) {
         return this.time.isBefore(time);
+    }
+
+    public boolean isSameTo(final Long timeId) {
+        return Objects.equals(this.id, timeId);
     }
 
     public Long getId() {

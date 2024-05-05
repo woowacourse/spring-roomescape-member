@@ -1,6 +1,5 @@
 package roomescape.theme.model;
 
-import java.time.LocalDate;
 import java.util.Objects;
 
 public class Theme {
@@ -20,6 +19,15 @@ public class Theme {
         this.thumbnail = thumbnail;
     }
 
+    public static Theme of(final Long id, final Theme theme) {
+        return new Theme(
+                id,
+                theme.getName(),
+                theme.getDescription(),
+                theme.getThumbnail()
+        );
+    }
+
     private void validateThemeNameIsBlank(final String name) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("테마 생성 시 테마 명은 필수입니다.");
@@ -36,6 +44,10 @@ public class Theme {
         if (thumbnail == null || thumbnail.isBlank()) {
             throw new IllegalArgumentException("다테마 생성 시 썸네일은 필수입니다.");
         }
+    }
+
+    public boolean isSameTo(final Long themeId) {
+        return Objects.equals(this.id, themeId);
     }
 
     public Long getId() {

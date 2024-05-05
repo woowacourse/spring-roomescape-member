@@ -45,7 +45,7 @@ class ReservationTimeServiceTest extends DummyDataFixture {
 
         // when & then
         assertThat(reservationTimeService.createReservationTime(createReservationTimeRequest))
-                .isEqualTo(CreateReservationTimeResponse.of(getReservationTimeById(1L)));
+                .isEqualTo(CreateReservationTimeResponse.from(getReservationTimeById(1L)));
     }
 
     @Test

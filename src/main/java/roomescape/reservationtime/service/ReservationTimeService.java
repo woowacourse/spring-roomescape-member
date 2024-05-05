@@ -26,18 +26,18 @@ public class ReservationTimeService {
             final CreateReservationTimeRequest createReservationTimeRequest) {
         ReservationTime reservationTime = reservationTimeRepository.save(
                 createReservationTimeRequest.toReservationTime());
-        return CreateReservationTimeResponse.of(reservationTime);
+        return CreateReservationTimeResponse.from(reservationTime);
     }
 
     public List<FindReservationTimeResponse> getReservationTimes() {
         return reservationTimeRepository.findAll().stream()
-                .map(FindReservationTimeResponse::of)
+                .map(FindReservationTimeResponse::from)
                 .toList();
     }
 
     public FindReservationTimeResponse getReservationTime(final Long id) {
         ReservationTime reservationTime = findReservationTime(id);
-        return FindReservationTimeResponse.of(reservationTime);
+        return FindReservationTimeResponse.from(reservationTime);
     }
 
     private ReservationTime findReservationTime(final Long id) {

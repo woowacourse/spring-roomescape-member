@@ -4,7 +4,7 @@ import roomescape.theme.model.Theme;
 
 public record FindPopularThemesResponse(Long id, String name, String description, String thumbnail) {
 
-    public static FindPopularThemesResponse of(final Theme theme) {
+    public static FindPopularThemesResponse from(final Theme theme) {
         return new FindPopularThemesResponse(
                 theme.getId(),
                 theme.getName(),

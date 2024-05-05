@@ -10,13 +10,23 @@ public record FindReservationResponse(
         FindTimeOfReservationsResponse time,
         FindThemeOfReservationResponse theme) {
 
-    public static FindReservationResponse of(final Reservation reservation) {
+    public static FindReservationResponse from(final Reservation reservation) {
         return new FindReservationResponse(
                 reservation.getId(),
                 reservation.getName().getValue(),
                 reservation.getDate(),
-                FindTimeOfReservationsResponse.of(reservation.getReservationTime()),
-                FindThemeOfReservationResponse.of(reservation.getTheme())
+                FindTimeOfReservationsResponse.from(reservation.getReservationTime()),
+                FindThemeOfReservationResponse.from(reservation.getTheme())
+        );
+    }
+
+    public static FindReservationResponse of(final Long id, Reservation reservation) {
+        return new FindReservationResponse(
+                id,
+                reservation.getName().getValue(),
+                reservation.getDate(),
+                FindTimeOfReservationsResponse.from(reservation.getReservationTime()),
+                FindThemeOfReservationResponse.from(reservation.getTheme())
         );
     }
 }

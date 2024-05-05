@@ -36,7 +36,7 @@ class ReservationTest {
         @DisplayName("예약 객체 생성 시 예약자 명이 공백인 경우 예외를 반환한다.")
         void createReservation_WhenNameOverLength() {
             assertThatThrownBy(
-                    () -> new Reservation(
+                    () -> Reservation.of(
                             1L,
                             "a".repeat(256),
                             LocalDate.parse("2024-02-02"),
@@ -50,7 +50,7 @@ class ReservationTest {
         @DisplayName("예약 객체 생성 시 예약자 명이 공백인 경우 예외를 반환한다.")
         void createReservation_WhenReservationDateIsNull() {
             assertThatThrownBy(
-                    () -> new Reservation(
+                    () -> Reservation.of(
                             1L,
                             "몰리",
                             null,
@@ -64,7 +64,7 @@ class ReservationTest {
         @DisplayName("예약 객체 생성 시 예약자 명이 공백인 경우 예외를 반환한다.")
         void createReservation_WhenReservationTimeIsNull() {
             assertThatThrownBy(
-                    () -> new Reservation(
+                    () -> Reservation.of(
                             1L,
                             "몰리",
                             LocalDate.parse("2024-02-02"),
@@ -78,7 +78,7 @@ class ReservationTest {
         @DisplayName("예약 객체 생성 시 예약 테마가 공백인 경우 예외를 반환한다.")
         void createReservation_WhenReservationThemeIsNull() {
             assertThatThrownBy(
-                    () -> new Reservation(
+                    () -> Reservation.of(
                             1L,
                             "몰리",
                             LocalDate.parse("2024-02-02"),
@@ -95,7 +95,7 @@ class ReservationTest {
         @Test
         @DisplayName("주어진 날짜와 시간보다 예약의 날짜와 시간이 이전인 경우 참을 반환한다.")
         void isBeforeDateTimeThanNow() {
-            Reservation reservation = new Reservation(
+            Reservation reservation = Reservation.of(
                     1L,
                     "아서",
                     LocalDate.parse("2024-04-23"),
@@ -107,7 +107,7 @@ class ReservationTest {
         @Test
         @DisplayName("주어진 날짜와 시간보다 예약의 날짜가 이후인 경우 거짓을 반환한다.")
         void isBeforeDateTimeThanNow_WhenDataIsAfter() {
-            Reservation reservation = new Reservation(
+            Reservation reservation = Reservation.of(
                     1L,
                     "아서",
                     LocalDate.parse("2024-04-23"),
@@ -122,7 +122,7 @@ class ReservationTest {
         @DisplayName("주어진 날짜와 시간보다 예약의 시간이 이후인 경우 거짓을 반환한다.")
         void isBeforeDateTimeThanNow_WhenTimeIsAfter() {
             LocalDate sameDate = LocalDate.parse("2024-04-23");
-            Reservation reservation = new Reservation(
+            Reservation reservation = Reservation.of(
                     1L,
                     "아서",
                     sameDate,
@@ -136,7 +136,7 @@ class ReservationTest {
         void isBeforeDateTimeThanNow_WhenDataTimeIsSame() {
             LocalDate sameDate = LocalDate.parse("2024-04-23");
             LocalTime sameTime = LocalTime.parse("10:00");
-            Reservation reservation = new Reservation(
+            Reservation reservation = Reservation.of(
                     1L,
                     "아서",
                     sameDate,
