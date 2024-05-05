@@ -13,6 +13,10 @@ public class Reservation {
     private final ReservationTime time;
     private final Theme theme;
 
+    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
+        this(null, name, date, time, theme);
+    }
+
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         validateName(name);
         validateDateTime(date, time);
@@ -23,7 +27,6 @@ public class Reservation {
         this.time = time;
         this.theme = theme;
     }
-
 
     private void validateName(String name) {
         if (name.isEmpty() || name.length() > 10) {
