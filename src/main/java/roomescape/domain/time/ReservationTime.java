@@ -1,10 +1,12 @@
 package roomescape.domain.time;
 
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalTime;
 import java.util.Objects;
 
 public class ReservationTime {
     private final Long id;
+    @NotNull(message = "시작 시간은 필수입니다.")
     private final LocalTime startAt;
 
     public ReservationTime(LocalTime startAt) {
