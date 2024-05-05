@@ -9,7 +9,7 @@ import roomescape.domain.Theme;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.service.exception.DuplicateReservation;
+import roomescape.service.exception.ReservationDuplicatedException;
 import roomescape.service.exception.PreviousTimeException;
 import roomescape.service.exception.ThemeNotFoundException;
 import roomescape.service.exception.TimeNotFoundException;
@@ -63,7 +63,7 @@ public class ReservationService {
         final Reservation parsedReservation = reservationRequest.toDomain(time, theme);
         final boolean isExistsReservation = reservationRepository.existsByDateAndTimeId(time.getId(), parsedReservation.getDate());
         if (isExistsReservation) {
-            throw new DuplicateReservation("중복된 시간으로 예약이 불가합니다.");
+            throw new ReservationDuplicatedException("중복된 시간으로 예약이 불가합니다.");
         }
 
         final LocalDateTime reservationDateTime = parsedReservation.getDate().atTime(time.getStartAt());

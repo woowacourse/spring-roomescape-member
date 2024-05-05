@@ -14,4 +14,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(e.getMessage()));
     }
+
+    @ExceptionHandler(DuplicateException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicatedException(final DuplicateException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse(e.getMessage()));
+    }
 }
