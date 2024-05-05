@@ -3,7 +3,6 @@ package roomescape.domain;
 import roomescape.exception.InvalidReservationException;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Objects;
 
@@ -40,7 +39,7 @@ public class ReservationDate {
         return Objects.equals(value, that.value);
     }
 
-    public String getValue() {
-        return value.format(DateTimeFormatter.ISO_DATE);
+    public LocalDate getValue() {
+        return value;
     }
 }

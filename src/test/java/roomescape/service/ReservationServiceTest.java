@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.repostiory.ReservationRepository;
@@ -69,7 +68,7 @@ class ReservationServiceTest {
     @Test
     void findAll() {
         //given
-        Reservation reservation = new Reservation("lini", new ReservationDate(LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_DATE)), reservationTime, theme);
+        Reservation reservation = new Reservation("lini", LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_DATE), reservationTime, theme);
         reservationRepository.save(reservation);
 
         //when
@@ -83,7 +82,7 @@ class ReservationServiceTest {
     @Test
     void deleteById() {
         //given
-        Reservation reservation = new Reservation("lini", new ReservationDate(LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_DATE)), reservationTime, theme);
+        Reservation reservation = new Reservation("lini", LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_DATE), reservationTime, theme);
         Reservation target = reservationRepository.save(reservation);
 
         //when
@@ -97,10 +96,11 @@ class ReservationServiceTest {
     @Test
     void duplicatedReservation() {
         //given
-        Reservation reservation = new Reservation("lini", new ReservationDate(LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_DATE)), reservationTime, theme);
+        String date = LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_DATE);
+        Reservation reservation = new Reservation("lini", date, reservationTime, theme);
         Reservation target = reservationRepository.save(reservation);
 
-        ReservationRequest reservationRequest = new ReservationRequest("lini", target.getDate(), reservationTime.getId(), theme.getId());
+        ReservationRequest reservationRequest = new ReservationRequest("lini", date, reservationTime.getId(), theme.getId());
 
         //when & then
         assertThatThrownBy(() -> reservationService.create(reservationRequest))

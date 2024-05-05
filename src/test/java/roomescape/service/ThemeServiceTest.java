@@ -7,7 +7,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.repostiory.ReservationRepository;
@@ -97,7 +96,7 @@ class ThemeServiceTest {
         //given
         Theme theme = createTheme("레벨2 탈출");
         ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime("21:25"));
-        reservationRepository.save(new Reservation("lini", new ReservationDate("2024-10-04"), reservationTime, theme));
+        reservationRepository.save(new Reservation("lini", "2024-10-04", reservationTime, theme));
 
         //when&then
         assertThatThrownBy(() -> themeService.deleteById(theme.getId()))
@@ -115,12 +114,9 @@ class ThemeServiceTest {
 
         ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime("21:25"));
 
-        reservationRepository.save(new Reservation("lini",
-                new ReservationDate(LocalDate.now().minusDays(1).format(DateTimeFormatter.ISO_DATE)), reservationTime, theme1));
-        reservationRepository.save(new Reservation("lini",
-                new ReservationDate(LocalDate.now().minusDays(7).format(DateTimeFormatter.ISO_DATE)), reservationTime, theme2));
-        reservationRepository.save(new Reservation("lini",
-                new ReservationDate(LocalDate.now().minusDays(8).format(DateTimeFormatter.ISO_DATE)), reservationTime, theme3));
+        reservationRepository.save(new Reservation("lini", LocalDate.now().minusDays(1).format(DateTimeFormatter.ISO_DATE), reservationTime, theme1));
+        reservationRepository.save(new Reservation("lini", LocalDate.now().minusDays(7).format(DateTimeFormatter.ISO_DATE), reservationTime, theme2));
+        reservationRepository.save(new Reservation("lini", LocalDate.now().minusDays(8).format(DateTimeFormatter.ISO_DATE), reservationTime, theme3));
 
         //when
         List<ThemeResponse> result = themeService.findPopularThemes();

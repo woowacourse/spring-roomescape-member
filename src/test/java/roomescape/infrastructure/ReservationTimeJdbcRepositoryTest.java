@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.repostiory.ReservationRepository;
@@ -150,12 +149,12 @@ class ReservationTimeJdbcRepositoryTest {
         //given
         ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime("10:00"));
         Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
-        Reservation reservation = new Reservation("브라운", new ReservationDate("2222-05-01"), reservationTime, theme);
+        String reservationDate = "2222-05-01";
+        Reservation reservation = new Reservation("브라운", reservationDate, reservationTime, theme);
         reservationRepository.save(reservation);
 
         //when
-        List<ReservationTime> result = reservationTimeRepository.findBookedTimesByDateAndTheme(
-                reservation.getDate(), theme.getId());
+        List<ReservationTime> result = reservationTimeRepository.findBookedTimesByDateAndTheme(reservationDate, theme.getId());
 
         //then
         assertThat(result).hasSize(1);

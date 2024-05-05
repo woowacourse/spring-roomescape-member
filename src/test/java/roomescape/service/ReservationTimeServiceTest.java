@@ -7,7 +7,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.repostiory.ReservationRepository;
@@ -88,7 +87,7 @@ class ReservationTimeServiceTest {
         //given
         ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime("10:00"));
         Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
-        reservationRepository.save(new Reservation("lily", new ReservationDate("2222-10-04"), reservationTime, theme));
+        reservationRepository.save(new Reservation("lily", "2222-10-04", reservationTime, theme));
 
         //when&then
         assertThatThrownBy(() -> reservationTimeService.deleteById(reservationTime.getId()))
@@ -103,10 +102,11 @@ class ReservationTimeServiceTest {
         ReservationTime bookedReservationTime = reservationTimeRepository.save(new ReservationTime("10:00"));
         ReservationTime notBookedReservationTime = reservationTimeRepository.save(new ReservationTime("11:00"));
         Theme theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
-        Reservation reservation = reservationRepository.save(new Reservation("lily", new ReservationDate("2222-10-04"), bookedReservationTime, theme));
+        String date = "2222-10-04";
+        reservationRepository.save(new Reservation("lily", date, bookedReservationTime, theme));
 
         //when
-        List<AvailableReservationTimeResponse> result = reservationTimeService.findAvailableTimes(new ReservationTimeReadRequest(reservation.getDate(), theme.getId()));
+        List<AvailableReservationTimeResponse> result = reservationTimeService.findAvailableTimes(new ReservationTimeReadRequest(date, theme.getId()));
 
         //then
         boolean isBookedOfBookedTime = result.stream().filter(time -> time.id() == bookedReservationTime.getId()).findFirst().get().isBooked();

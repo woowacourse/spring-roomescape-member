@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.repostiory.ReservationRepository;
@@ -179,7 +178,7 @@ class ThemeJdbcRepositoryTest {
     }
 
     private void saveReservation(ReservationTime reservationTime, String date, Theme theme1) {
-        Reservation reservation = new Reservation("브라운", new ReservationDate(date), reservationTime, theme1);
+        Reservation reservation = new Reservation("브라운", date, reservationTime, theme1);
         reservationRepository.save(reservation);
     }
 

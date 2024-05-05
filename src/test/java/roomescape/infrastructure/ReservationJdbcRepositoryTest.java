@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.repostiory.ReservationRepository;
@@ -24,7 +23,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 class ReservationJdbcRepositoryTest {
     private final JdbcTemplate jdbcTemplate;
     private ReservationRepository reservationRepository;
-    private ReservationDate reservationDate;
+    private String reservationDate;
     private ReservationTime reservationTime;
     private Theme theme;
 
@@ -39,7 +38,7 @@ class ReservationJdbcRepositoryTest {
         ReservationTimeRepository reservationTimeRepository = new ReservationTimeJdbcRepository(jdbcTemplate);
         ThemeRepository themeRepository = new ThemeJdbcRepository(jdbcTemplate);
 
-        reservationDate = new ReservationDate(LocalDate.now().plusDays(1).toString());
+        reservationDate = LocalDate.now().plusDays(1).toString();
         reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.now().toString()));
         theme = themeRepository.save(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
     }
@@ -95,7 +94,7 @@ class ReservationJdbcRepositoryTest {
         reservationRepository.save(reservation);
 
         //when
-        boolean result = reservationRepository.existsByDateAndTimeAndTheme(reservationDate.getValue(), reservationTime.getId(), theme.getId());
+        boolean result = reservationRepository.existsByDateAndTimeAndTheme(reservationDate, reservationTime.getId(), theme.getId());
 
         //then
         assertThat(result).isTrue();

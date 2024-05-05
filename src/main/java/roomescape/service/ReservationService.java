@@ -12,7 +12,6 @@ import roomescape.exception.InvalidReservationException;
 import roomescape.service.dto.ReservationRequest;
 import roomescape.service.dto.ReservationResponse;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -31,13 +30,12 @@ public class ReservationService {
     }
 
     public ReservationResponse create(final ReservationRequest reservationRequest) {
-        ReservationDate reservationDate = new ReservationDate(reservationRequest.date());
         ReservationTime reservationTime = findTimeById(reservationRequest.timeId());
         Theme theme = findThemeById(reservationRequest.themeId());
 
-        validate(reservationDate, reservationTime, theme);
+        validate(reservationRequest.date(), reservationTime, theme);
 
-        Reservation reservation = new Reservation(reservationRequest.name(), reservationDate, reservationTime, theme);
+        Reservation reservation = new Reservation(reservationRequest.name(), reservationRequest.date(), reservationTime, theme);
 
         return new ReservationResponse(reservationRepository.save(reservation));
     }
@@ -50,20 +48,21 @@ public class ReservationService {
         return themeRepository.getById(themeId);
     }
 
-    private void validate(final ReservationDate reservationDate, final ReservationTime reservationTime, final Theme theme) {
+    private void validate(final String date, final ReservationTime reservationTime, final Theme theme) {
+        ReservationDate reservationDate = new ReservationDate(date);
         validateIfBefore(reservationDate, reservationTime);
-        validateDuplicated(reservationDate, reservationTime, theme);
+        validateDuplicated(date, reservationTime, theme);
     }
 
     private void validateIfBefore(final ReservationDate date, final ReservationTime time) {
-        LocalDateTime value = LocalDateTime.of(LocalDate.parse(date.getValue()), time.getStartAt());
+        LocalDateTime value = LocalDateTime.of(date.getValue(), time.getStartAt());
         if (value.isBefore(LocalDateTime.now())) {
             throw new InvalidReservationException("현재보다 이전으로 일정을 설정할 수 없습니다.");
         }
     }
 
-    private void validateDuplicated(final ReservationDate reservationDate, final ReservationTime reservationTime, final Theme theme) {
-        if (reservationRepository.existsByDateAndTimeAndTheme(reservationDate.getValue(), reservationTime.getId(), theme.getId())) {
+    private void validateDuplicated(final String date, final ReservationTime reservationTime, final Theme theme) {
+        if (reservationRepository.existsByDateAndTimeAndTheme(date, reservationTime.getId(), theme.getId())) {
             throw new InvalidReservationException("선택하신 테마와 일정은 이미 예약이 존재합니다.");
         }
     }
