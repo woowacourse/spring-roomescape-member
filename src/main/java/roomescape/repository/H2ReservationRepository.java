@@ -50,7 +50,7 @@ public class H2ReservationRepository implements ReservationRepository {
                 WHERE R.DATE = ? AND T.ID = ?
                 """;
 
-        return jdbcTemplate.query(sql, getReservationRowMapper(), date, themeId);
+        return jdbcTemplate.query(sql, getReservationExceptTimeAndTheme(), date, themeId);
     }
 
     @Override
