@@ -13,6 +13,7 @@ import roomescape.service.dto.ReservationDto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Stream;
@@ -46,13 +47,13 @@ public class ReservationService {
     }
 
     private void validate(LocalDate date, ReservationTime time) {
-        validateDateTime(date, time);
+        validateDateTime(date, time.getStartAt());
         validateDuplication(date, time.getId());
     }
 
-    private void validateDateTime(LocalDate date, ReservationTime time) {
+    private void validateDateTime(LocalDate date, LocalTime time) {
         LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
-        LocalDateTime dateTime = LocalDateTime.of(date, time.getStartAt()).truncatedTo(ChronoUnit.SECONDS);
+        LocalDateTime dateTime = LocalDateTime.of(date, time).truncatedTo(ChronoUnit.SECONDS);
         if (dateTime.isBefore(now)) {
             throw new BadRequestException("[ERROR] 현재 이전 예약은 할 수 없습니다.");
         }
@@ -87,7 +88,7 @@ public class ReservationService {
 
     private List<MemberReservationTimeResponse> mapToResponse(List<ReservationTime> times, boolean isBooked) {
         return times.stream()
-                .map(time -> new MemberReservationTimeResponse(time.getId(), time.getStartAt(), isBooked))
+                .map(time -> new MemberReservationTimeResponse(time.getId(), time.getStartAt().truncatedTo(ChronoUnit.SECONDS), isBooked))
                 .toList();
     }
 

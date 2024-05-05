@@ -9,6 +9,8 @@ import roomescape.repository.dao.ReservationDao;
 import roomescape.repository.dao.ThemeDao;
 import roomescape.repository.dto.ReservationSavedDto;
 import roomescape.service.dto.ThemeDto;
+import roomescape.service.fakedao.FakeReservationDao;
+import roomescape.service.fakedao.FakeThemeDao;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -18,48 +20,47 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ThemeServiceTest {
 
+    private static final int INITIAL_THEME_COUNT = 2;
+
     private ThemeService themeService;
-    private ThemeRepository themeRepository;
 
     @BeforeEach
-    void setUp() { // 테케 의존성 분리하기
+    void setUp() {
         ThemeDao themeDao = new FakeThemeDao(new ArrayList<>(List.of(
-                new Theme(1, "에버", "공포", "공포.jpg"),
-                new Theme(2, "배키", "미스터리", "미스터리.jpg"),
-                new Theme(3, "포비", "스릴러", "스릴러.jpg"))));
+                new Theme(1, "n1", "d1", "t1"),
+                new Theme(2, "n2", "d2", "t2"))));
         ReservationDao reservationDao = new FakeReservationDao(new ArrayList<>(List.of(
-                new ReservationSavedDto(1, "브라운", LocalDate.of(2030, 8, 5), 2L, 1L),
-                new ReservationSavedDto(1, "리사", LocalDate.of(2030, 8, 1), 2L, 2L))));
-        themeRepository = new ThemeRepository(reservationDao, themeDao);
-        themeService = new ThemeService(themeRepository);
+                new ReservationSavedDto(1, "n1", LocalDate.now().minusDays(1), 1L, 1L),
+                new ReservationSavedDto(2, "n2", LocalDate.now().minusDays(8), 2L, 2L))));
+        themeService = new ThemeService(new ThemeRepository(reservationDao, themeDao));
     }
 
-    @DisplayName("테마를 조회한다.")
+    @DisplayName("모든 테마를 조회한다.")
     @Test
     void should_find_all_themes() {
-        assertThat(themeService.findAllThemes()).hasSize(3);
+        List<Theme> themes = themeService.findAllThemes();
+        assertThat(themes).hasSize(INITIAL_THEME_COUNT);
     }
 
     @DisplayName("테마를 저장한다.")
     @Test
-    void should_add_theme() {
-        ThemeDto themeDto = new ThemeDto("에버", "공포", "공포.jpg");
+    void should_save_theme() {
+        ThemeDto themeDto = new ThemeDto("n3", "d3", "t3");
         themeService.saveTheme(themeDto);
-        assertThat(themeService.findAllThemes()).hasSize(4);
+        assertThat(themeService.findAllThemes()).hasSize(INITIAL_THEME_COUNT + 1);
     }
 
     @DisplayName("테마를 삭제한다.")
     @Test
     void should_delete_theme() {
-        themeService.deleteTheme(1L);
-        assertThat(themeService.findAllThemes()).hasSize(2);
+        themeService.deleteTheme(1);
+        assertThat(themeService.findAllThemes()).hasSize(INITIAL_THEME_COUNT - 1);
     }
 
     @DisplayName("최근 일주일 간 가장 인기 있는 테마 10개를 조회한다.")
     @Test
-    void should_find_popular_theme_of_week() {
+    void should_find_popular_theme_of_week() { // TODO: test case 구체화
         List<Theme> popularThemes = themeService.findPopularThemes();
-        // TODO: now 라서 인기 테마 존재하지 않음
-        assertThat(popularThemes).hasSize(0);
+        assertThat(popularThemes).hasSize(2);
     }
 }

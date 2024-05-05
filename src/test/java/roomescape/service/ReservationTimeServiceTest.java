@@ -12,6 +12,8 @@ import roomescape.repository.dao.ReservationDao;
 import roomescape.repository.dao.ReservationTimeDao;
 import roomescape.repository.dto.ReservationSavedDto;
 import roomescape.service.dto.ReservationTimeDto;
+import roomescape.service.fakedao.FakeReservationDao;
+import roomescape.service.fakedao.FakeReservationTimeDao;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -22,67 +24,68 @@ import static org.assertj.core.api.Assertions.*;
 
 class ReservationTimeServiceTest {
 
-    private ReservationTimeRepository reservationTimeRepository;
+    private static final int INITIAL_TIME_COUNT = 3;
+
     private ReservationTimeService reservationTimeService;
 
     @BeforeEach
-    void setUp() { // 테케 의존성 분리하기
+    void setUp() {
         ReservationTimeDao reservationTimeDao = new FakeReservationTimeDao(new ArrayList<>(List.of(
-                new ReservationTime(1, LocalTime.of(10, 0)),
-                new ReservationTime(2, LocalTime.of(11, 0)))));
+                new ReservationTime(1, LocalTime.of(1, 0)),
+                new ReservationTime(2, LocalTime.of(2, 0)),
+                new ReservationTime(3, LocalTime.of(3, 0)))));
         ReservationDao reservationDao = new FakeReservationDao(new ArrayList<>(List.of(
-                new ReservationSavedDto(1, "브라운", LocalDate.of(2030, 8, 5), 2L, 1L),
-                new ReservationSavedDto(1, "리사", LocalDate.of(2030, 8, 1), 2L, 2L))));
-        reservationTimeRepository = new ReservationTimeRepository(reservationDao, reservationTimeDao);
-        reservationTimeService = new ReservationTimeService(reservationTimeRepository);
+                new ReservationSavedDto(1, "n1", LocalDate.of(2000, 1, 1), 1L, 1L),
+                new ReservationSavedDto(2, "n2", LocalDate.of(2000, 1, 2), 2L, 2L))));
+        reservationTimeService = new ReservationTimeService(new ReservationTimeRepository(reservationDao, reservationTimeDao));
     }
 
-    @DisplayName("모든 예약 시간을 반환한다")
+    @DisplayName("모든 예약 시간을 조회한다.")
     @Test
-    void should_return_all_reservation_times() {
+    void should_find_all_reservation_times() {
         List<ReservationTime> reservationTimes = reservationTimeService.findAllReservationTimes();
-        assertThat(reservationTimes).hasSize(2);
+        assertThat(reservationTimes).hasSize(INITIAL_TIME_COUNT);
     }
 
-    @DisplayName("아이디에 해당하는 예약 시간을 반환한다.")
+    @DisplayName("특정 id에 해당하는 예약 시간을 조회한다.")
     @Test
-    void should_get_reservation_time() {
-        ReservationTime reservationTime = reservationTimeService.findReservationTime(2);
-        assertThat(reservationTime.getStartAt()).isEqualTo(LocalTime.of(11, 0));
+    void should_find_reservation_time_by_id() {
+        ReservationTime expected = new ReservationTime(1, LocalTime.of(1, 0));
+        ReservationTime actual = reservationTimeService.findReservationTime(1);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @DisplayName("예약 시간을 추가한다")
     @Test
-    void should_add_reservation_times() {
-        reservationTimeService.saveReservationTime(new ReservationTimeDto(LocalTime.of(12, 0)));
-        List<ReservationTime> allReservationTimes = reservationTimeService.findAllReservationTimes();
-        assertThat(allReservationTimes).hasSize(3);
+    void should_save_reservation_time() {
+        ReservationTimeDto timeDto = new ReservationTimeDto(LocalTime.of(4, 0));
+        reservationTimeService.saveReservationTime(timeDto);
+        assertThat(reservationTimeService.findAllReservationTimes()).hasSize(INITIAL_TIME_COUNT + 1);
     }
 
-    @DisplayName("예약 시간을 삭제한다")
+    @DisplayName("예약 시간을 삭제한다.")
     @Test
-    void should_remove_reservation_times() {
-        reservationTimeService.deleteReservationTime(1);
-        List<ReservationTime> allReservationTimes = reservationTimeService.findAllReservationTimes();
-        assertThat(allReservationTimes).hasSize(1);
+    void should_delete_reservation_time() {
+        reservationTimeService.deleteReservationTime(3);
+        assertThat(reservationTimeService.findAllReservationTimes()).hasSize(INITIAL_TIME_COUNT - 1);
     }
 
-    @DisplayName("존재하지 않는 시간이면 예외를 발생시킨다.")
+    @DisplayName("예약 시간을 삭제하려 할 때 특정 id를 가진 예약 시간이 존재하는 경우 예외가 발생하지 않는다.")
+    @Test
+    void should_not_throw_exception_when_exist_id() {
+        assertThatCode(() -> reservationTimeService.deleteReservationTime(3))
+                .doesNotThrowAnyException();
+    }
+
+    @DisplayName("예약 시간을 삭제하려 할 때 특정 id를 가진 예약 시간이 존재하지 않는 경우 예외가 발생한다.")
     @Test
     void should_throw_exception_when_not_exist_id() {
-        assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(10000000))
+        assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(999))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("[ERROR] 존재하지 않는 시간입니다.");
     }
 
-    @DisplayName("존재하는 시간이면 예외가 발생하지 않는다.")
-    @Test
-    void should_not_throw_exception_when_exist_id() {
-        assertThatCode(() -> reservationTimeService.deleteReservationTime(1))
-                .doesNotThrowAnyException();
-    }
-
-    @DisplayName("특정 시간에 대핸 예약이 존재하는데, 그 시간을 삭제하려 할 때 예외가 발생한다.")
+    @DisplayName("예약 시간을 삭제하려 할 때 해당 시간을 사용하는 예약이 존재하는 경우 예외가 발생한다.")
     @Test
     void should_throw_exception_when_exist_reservation_using_time() {
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(2))
@@ -90,10 +93,11 @@ class ReservationTimeServiceTest {
                 .hasMessage("[ERROR] 해당 시간을 사용하고 있는 예약이 있습니다.");
     }
 
-    @DisplayName("존재하는 시간을 추가하려 할 때 예외가 발생한다.")
+    @DisplayName("이미 존재하는 예약 시간을 중복으로 추가하려 할 때 예외가 발생한다.")
     @Test
     void should_throw_exception_when_add_exist_time() {
-        assertThatThrownBy(() -> reservationTimeService.saveReservationTime(new ReservationTimeDto(LocalTime.of(10, 0))))
+        ReservationTimeDto timeDto = new ReservationTimeDto(LocalTime.of(1, 0));
+        assertThatThrownBy(() -> reservationTimeService.saveReservationTime(timeDto))
                 .isInstanceOf(DuplicatedException.class)
                 .hasMessage("[ERROR] 중복되는 시간은 추가할 수 없습니다.");
     }

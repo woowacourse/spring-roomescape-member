@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.service.fakedao;
 
 import roomescape.model.ReservationTime;
 import roomescape.repository.dao.ReservationTimeDao;
@@ -10,7 +10,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
-class FakeReservationTimeDao implements ReservationTimeDao {
+public class FakeReservationTimeDao implements ReservationTimeDao {
 
     private final AtomicLong index = new AtomicLong(1);
     private final List<ReservationTime> reservationTimes = new ArrayList<>();

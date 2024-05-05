@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.service.fakedao;
 
 import roomescape.model.Theme;
 import roomescape.repository.dao.ThemeDao;

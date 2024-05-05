@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.service.fakedao;
 
 import roomescape.model.Reservation;
 import roomescape.repository.dao.ReservationDao;
@@ -9,17 +9,9 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
-class FakeReservationDao implements ReservationDao {
+public class FakeReservationDao implements ReservationDao {
 
     private final AtomicLong index = new AtomicLong(3); // TODO: change to 1
-//    private final List<ReservationTime> reservationTimes = new ArrayList<>(List.of(
-//            new ReservationTime(1, LocalTime.of(10, 0)),
-//            new ReservationTime(2, LocalTime.of(11, 0))));
-//
-//    private final List<Theme> themes = new ArrayList<>(List.of(
-//            new Theme(1, "에버", "공포", "공포.jpg"),
-//            new Theme(1, "배키", "스릴러", "스릴러.jpg")));
-
     private final List<ReservationSavedDto> reservations;
 
     public FakeReservationDao(List<ReservationSavedDto> reservations) {
@@ -60,7 +52,8 @@ class FakeReservationDao implements ReservationDao {
     public List<Long> findThemeIdByDateAndOrderByThemeIdCountAndLimit(LocalDate startDate, LocalDate endDate, int limit) {
         // Filter reservations by date
         List<ReservationSavedDto> filteredReservations = reservations.stream()
-                .filter(reservation -> reservation.getDate().isAfter(startDate) && reservation.getDate().isBefore(endDate))
+                .filter(reservation -> reservation.getDate().isAfter(startDate) || reservation.getDate().isEqual(startDate)
+                        && reservation.getDate().isBefore(endDate) || reservation.getDate().isEqual(endDate))
                 .toList();
 
         // Count reservations by themeId
