@@ -77,6 +77,29 @@ public class ReservationRepositoryTest {
     }
 
     @Test
+    @DisplayName("날짜와 테마 아이디로 예약 시간 아이디들을 조회한다.")
+    void findTimeIdsByDateAndThemeIdTest() {
+        Long timeId = reservationTimeRepository.save(new ReservationTime(LocalTime.now()));
+        ReservationTime reservationTime = reservationTimeRepository.findById(timeId).get();
+
+        Long themeId = themeRepository.save(
+                new Theme(
+                        new ThemeName("공포"),
+                        new Description("무서운 테마"),
+                        "https://i.pinimg.com/236x.jpg"
+                )
+        );
+        Theme theme = themeRepository.findById(themeId).get();
+
+        Reservation reservation = new Reservation(new ReservationName("카키"), LocalDate.now(), theme, reservationTime);
+        reservationRepository.save(reservation);
+
+        List<Long> timeIds = reservationRepository.findTimeIdsByDateAndThemeId(reservation.getDate(), themeId);
+
+        assertThat(timeIds).containsExactly(timeId);
+    }
+
+    @Test
     @DisplayName("이미 저장된 예약일 경우 true를 반환한다.")
     void existReservationTest() {
         Long themeId = themeRepository.save(

@@ -1,19 +1,26 @@
 package roomescape.reservation.service;
 
+import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.dto.AvailableReservationTimeResponse;
 import roomescape.reservation.dto.TimeResponse;
 import roomescape.reservation.dto.TimeSaveRequest;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.repository.ReservationTimeRepository;
 
 @Service
 public class ReservationTimeService {
 
+    private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
 
-    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository) {
+    public ReservationTimeService(
+            final ReservationRepository reservationRepository,
+            final ReservationTimeRepository reservationTimeRepository
+    ) {
+        this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
@@ -30,10 +37,22 @@ public class ReservationTimeService {
         return TimeResponse.toResponse(reservationTime);
     }
 
+    public List<AvailableReservationTimeResponse> findAvailableTimes(LocalDate date, Long themeId) {
+        List<Long> bookedTimeIds = reservationRepository.findTimeIdsByDateAndThemeId(date, themeId);
+
+        return reservationTimeRepository.findAll().stream()
+                .map(reservationTime ->
+                        AvailableReservationTimeResponse.toResponse(
+                                reservationTime,
+                                bookedTimeIds.contains(reservationTime.getId())
+                        )
+                ).toList();
+    }
+
     public List<TimeResponse> findAll() {
         return reservationTimeRepository.findAll().stream()
                 .map(TimeResponse::toResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public void delete(Long id) {

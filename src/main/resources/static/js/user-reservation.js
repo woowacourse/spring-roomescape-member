@@ -83,7 +83,11 @@ function checkDateAndTheme() {
 }
 
 function fetchAvailableTimes(date, themeId) {
-    fetch('/times', {
+    const queryParams = new URLSearchParams({
+        'date': date,
+        'theme-id': themeId
+    });
+    fetch(`/times/available?${queryParams.toString()}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -110,7 +114,7 @@ function renderAvailableTimes(times) {
     times.forEach(time => {
         const startAt = time.startAt;
         const timeId = time.id;
-        const alreadyBooked = false;
+        const alreadyBooked = time.booked;
 
         const div = createSlot('time', startAt, timeId, alreadyBooked);
         timeSlots.appendChild(div);

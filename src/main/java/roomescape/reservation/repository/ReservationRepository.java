@@ -1,6 +1,7 @@
 package roomescape.reservation.repository;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -68,6 +69,16 @@ public class ReservationRepository {
         } catch (DataAccessException exception) {
             return Optional.empty();
         }
+    }
+
+    public List<Long> findTimeIdsByDateAndThemeId(LocalDate date, Long themeId) {
+        String sql = """
+                select time_id
+                from reservation r
+                where r.date = ? and r.theme_id = ?
+                """;
+
+        return jdbcTemplate.queryForList(sql, Long.class, date, themeId);
     }
 
     public List<Reservation> findAll() {

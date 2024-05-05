@@ -1,9 +1,11 @@
 package roomescape.reservation.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import roomescape.reservation.domain.ReservationName;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.ThemeName;
+import roomescape.reservation.dto.AvailableReservationTimeResponse;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.repository.ReservationTimeRepository;
 import roomescape.reservation.repository.ThemeRepository;
@@ -40,6 +43,36 @@ class ReservationTimeServiceTest {
     void findByIdExceptionTest() {
         assertThatThrownBy(() -> reservationTimeService.findById(1L))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("예약 가능한 시간을 조회한다.")
+    void findAvailableTimesTest() {
+        Long time1Id = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("10:00")));
+        ReservationTime reservationTime1 = reservationTimeRepository.findById(time1Id).get();
+
+        Long time2Id = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("11:00")));
+        ReservationTime reservationTime2 = reservationTimeRepository.findById(time2Id).get();
+
+        Long themeId = themeRepository.save(
+                new Theme(
+                        new ThemeName("공포"),
+                        new Description("무서운 테마"),
+                        "https://i.pinimg.com/236x.jpg"
+                )
+        );
+        Theme theme = themeRepository.findById(themeId).get();
+
+        Reservation reservation = new Reservation(new ReservationName("카키"), LocalDate.now(), theme, reservationTime1);
+        reservationRepository.save(reservation);
+
+        List<AvailableReservationTimeResponse> availableTimes = reservationTimeService.findAvailableTimes(
+                reservation.getDate(), themeId);
+
+        assertThat(availableTimes).containsExactly(
+                AvailableReservationTimeResponse.toResponse(reservationTime1, true),
+                AvailableReservationTimeResponse.toResponse(reservationTime2, false)
+        );
     }
 
     @Test

@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import org.junit.jupiter.api.DisplayName;
@@ -37,17 +38,31 @@ class ReservationTimeApiControllerTest {
 
     @Test
     @DisplayName("모든 시간 조회 성공 시 200 응답을 받는다.")
-    public void findAllTest() throws Exception {
+    void findAllTest() throws Exception {
         doReturn(new ArrayList<>()).when(reservationTimeService).findAll();
 
         mockMvc.perform(get("/times")
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("예약 가능한 시간 조회 성공 시 200응답을 받는다.")
+    void findAvailableTimes() throws Exception {
+        LocalDate date = LocalDate.now();
+        Long themeId = 1L;
+        doReturn(new ArrayList<>()).when(reservationTimeService).findAvailableTimes(date, themeId);
+
+        mockMvc.perform(get("/times/available")
+                        .param("date", date.toString())
+                        .param("theme-id", themeId.toString())
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
     @Test
     @DisplayName("시간 정보를 저장 성공 시 201 응답과 Location 헤더에 리소스 저장 경로를 받는다.")
-    public void createSuccessTest() throws Exception {
+    void createSuccessTest() throws Exception {
         TimeSaveRequest timeSaveRequest = new TimeSaveRequest(LocalTime.now());
         TimeResponse timeResponse = new TimeResponse(1L, timeSaveRequest.startAt());
 
@@ -59,7 +74,8 @@ class ReservationTimeApiControllerTest {
 
         mockMvc.perform(post("/times")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(timeSaveRequest)))
+                        .content(objectMapper.writeValueAsString(timeSaveRequest))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "/times/1"))
                 .andExpect(jsonPath("$.id").value(timeResponse.id()));
@@ -67,9 +83,9 @@ class ReservationTimeApiControllerTest {
 
     @Test
     @DisplayName("시간 삭제 성공시 204 응답을 받는다.")
-    public void deleteByIdSuccessTest() throws Exception {
+    void deleteByIdSuccessTest() throws Exception {
         mockMvc.perform(delete("/times/{id}", 1L)
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
     }
 }

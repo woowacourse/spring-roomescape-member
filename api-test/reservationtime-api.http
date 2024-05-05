@@ -2,6 +2,10 @@
 
 GET http://localhost:8080/times
 
+### 예약 가능 시간 조회 API
+
+GET http://localhost:8080/times/available?date=2024-05-05&theme-id=1
+
 ### 예약 시간 추가 API
 
 POST http://localhost:8080/times
