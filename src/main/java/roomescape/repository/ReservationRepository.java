@@ -90,17 +90,6 @@ public class ReservationRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER, timeId, date, themeId);
     }
 
-    // TODO: reservation_time의 findAll과 함께 사용하지 않고 reservation_time의 쿼리로 깔끔하게 처리되도록 변경
-    public List<Reservation> findByDateAndThemeId(final LocalDate date, final Long themeId) {
-        String sql = """
-                SELECT * FROM reservation r
-                JOIN reservation_time rt ON r.time_id = rt.id
-                JOIN theme t ON r.theme_id = t.id
-                WHERE r.date = ? AND r.theme_id = ?
-                """;
-        return jdbcTemplate.query(sql, ROW_MAPPER, date, themeId);
-    }
-
     public int deleteById(final Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
         return jdbcTemplate.update(sql, id);

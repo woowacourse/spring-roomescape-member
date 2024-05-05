@@ -6,7 +6,6 @@ import roomescape.domain.theme.Theme;
 import roomescape.domain.time.Time;
 import roomescape.dto.reservation.ReservationRequest;
 import roomescape.dto.reservation.ReservationResponse;
-import roomescape.dto.reservation.ReservationTimeInfoResponse;
 import roomescape.dto.reservation.ReservationTimeInfosResponse;
 import roomescape.dto.reservation.ReservationsResponse;
 import roomescape.global.exception.error.ErrorType;
@@ -17,10 +16,7 @@ import roomescape.repository.TimeRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class ReservationService {
@@ -47,19 +43,7 @@ public class ReservationService {
     }
 
     public ReservationTimeInfosResponse findReservationsByDateAndThemeId(final LocalDate date, final Long themeId) {
-        List<Time> allTimes = timeRepository.findAll();
-        Set<Long> reservedTimes = reservationRepository.findByDateAndThemeId(date, themeId).stream()
-                .map(Reservation::getTime)
-                .map(Time::getId)
-                .collect(Collectors.toSet());
-
-        List<ReservationTimeInfoResponse> response = new ArrayList<>();
-        for (Time time : allTimes) {
-            response.add(new ReservationTimeInfoResponse(time.getId(), time.getStartAt(),
-                    reservedTimes.contains(time.getId())));
-        }
-
-        return new ReservationTimeInfosResponse(response);
+        return timeRepository.findByDateAndThemeId(date, themeId);
     }
 
     public ReservationResponse addReservation(final ReservationRequest reservationRequest) {

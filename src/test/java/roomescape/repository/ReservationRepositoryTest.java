@@ -70,28 +70,4 @@ public class ReservationRepositoryTest {
         // then
         assertThat(deleteCount).isEqualTo(1);
     }
-
-    @Test
-    @DisplayName("테마ID와 날짜를 통해 예약정보를 조회한다.")
-    void readReservationsByThemeIdAndDate() {
-        // given
-        Time time = timeRepository.insert(new Time(LocalTime.of(17, 30)));
-        Theme theme = themeRepository.insert(new Theme("테마명", "설명", "썸네일URL"));
-        Reservation savedReservation = reservationRepository.insert(new Reservation(
-                "브라운",
-                LocalDate.of(2024, 4, 25),
-                time,
-                theme
-        ));
-
-        // when
-        List<Reservation> reservations = reservationRepository.findByDateAndThemeId(
-                LocalDate.of(2024, 4, 25),
-                theme.getId()
-        );
-
-        // then
-        assertThat(reservations.size()).isEqualTo(1);
-        assertThat(reservations.get(0).getId()).isEqualTo(savedReservation.getId());
-    }
 }
