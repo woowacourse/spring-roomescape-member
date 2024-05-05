@@ -70,7 +70,6 @@ class ReservationServiceTest {
                 .willReturn(Optional.of(new ReservationTime(1L, LocalTime.of(19, 0))));
         given(themeDao.readThemeById(1L))
                 .willReturn(Optional.of(new Theme(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg")));
-        given(reservationDao.isExistReservationByDateAndTimeIdAndThemeId(date, 1L, 1L)).willReturn(false);
         given(reservationDao.createReservation(any())).willReturn(new Reservation(
                 1L, "브라운", LocalDate.of(2024, 8, 15),
                 new ReservationTime(1L, LocalTime.of(19, 0)),
@@ -122,21 +121,5 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.createReservation(request))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약은 현재 시간 이후여야 합니다.");
-    }
-
-    @DisplayName("예약 생성 시, 같은 날짜, 시간, 테마의 예약이 있다면 예외를 던진다.")
-    @Test
-    void createReservationTest_whenReservationIsDuplicated() {
-        LocalDate date = LocalDate.now().plusDays(7);
-        ReservationCreateRequest request = new ReservationCreateRequest("브라운", date, 1L, 1L);
-        given(timeDao.readTimeById(1L))
-                .willReturn(Optional.of(new ReservationTime(1L, LocalTime.of(19, 0))));
-        given(themeDao.readThemeById(1L))
-                .willReturn(Optional.of(new Theme(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg")));
-        given(reservationDao.isExistReservationByDateAndTimeIdAndThemeId(date, 1L, 1L)).willReturn(true);
-
-        assertThatThrownBy(() -> reservationService.createReservation(request))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("해당 시간대 해당 테마 예약은 이미 존재합니다.");
     }
 }

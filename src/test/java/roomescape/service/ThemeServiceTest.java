@@ -1,7 +1,6 @@
 package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 
 import java.time.LocalDate;
@@ -56,22 +55,10 @@ class ThemeServiceTest {
     @Test
     void createThemeTest() {
         ThemeCreateRequest request = new ThemeCreateRequest("레벨2 탈출", "레벨2 탈출하기", "https://img.jpg");
-        given(themeDao.isExistThemeByName("레벨2 탈출")).willReturn(false);
         given(themeDao.createTheme(request.createTheme()))
                 .willReturn(new Theme(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg"));
         ThemeResponse expected = new ThemeResponse(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg");
 
         assertThat(themeService.createTheme(request)).isEqualTo(expected);
-    }
-
-    @DisplayName("이미 같은 이름의 테마가 있을 경우, 예외를 던진다.")
-    @Test
-    void createThemeTest_whenNameIsDuplicated() {
-        ThemeCreateRequest request = new ThemeCreateRequest("레벨2 탈출", "레벨2 탈출하기", "https://img.jpg");
-        given(themeDao.isExistThemeByName("레벨2 탈출")).willReturn(true);
-
-        assertThatThrownBy(() -> themeService.createTheme(request))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("해당 테마 이름은 이미 존재합니다.");
     }
 }

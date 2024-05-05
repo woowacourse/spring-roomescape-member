@@ -1,7 +1,6 @@
 package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 
 import java.time.LocalDate;
@@ -58,21 +57,9 @@ class TimeServiceTest {
     @Test
     void createTimeTest() {
         TimeCreateRequest request = new TimeCreateRequest(LocalTime.of(19, 0));
-        given(timeDao.isExistTimeByStartAt(LocalTime.of(19, 0))).willReturn(false);
         given(timeDao.createTime(request.createReservationTime()))
                 .willReturn(new ReservationTime(1L, LocalTime.of(19, 0)));
 
         assertThat(timeService.createTime(request)).isEqualTo(new TimeResponse(1L, LocalTime.of(19, 0)));
-    }
-
-    @DisplayName("이미 존재하는 예약 시간이면, 예외를 던진다.")
-    @Test
-    void createTimeTest_whenTimeAlreadyExist() {
-        TimeCreateRequest request = new TimeCreateRequest(LocalTime.of(19, 0));
-        given(timeDao.isExistTimeByStartAt(LocalTime.of(19, 0))).willReturn(true);
-
-        assertThatThrownBy(() -> timeService.createTime(request))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("해당 시간은 이미 존재합니다.");
     }
 }
