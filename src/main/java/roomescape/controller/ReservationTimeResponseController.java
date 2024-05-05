@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +34,7 @@ public class ReservationTimeResponseController {
     }
 
     @GetMapping("/times/user")
-    public ResponseEntity<List<ReservationTimeResponseDto>> getTimesByDateAndTheme(@RequestParam String date, @RequestParam Long themeId) {
+    public ResponseEntity<List<ReservationTimeResponseDto>> getTimesByDateAndTheme(@DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam String date, @RequestParam Long themeId) {
         List<ReservationTime> reservationTimes = reservationTimeService.getAllReservationTimes();
         List<ReservationTimeResponseDto> timeResponses = reservationTimes.stream()
                 .map(time -> new ReservationTimeResponseDto(time.getId(), time.getStartAt(), reservationTimeService.isBooked(date, time.getId(), themeId)))
