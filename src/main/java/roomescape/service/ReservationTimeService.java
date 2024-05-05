@@ -2,10 +2,10 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.ReservationTimeStatus;
+import roomescape.repository.JdbcReservationRepository;
+import roomescape.repository.JdbcReservationTimeRepository;
 import roomescape.service.dto.AvailableTimeRequestDto;
 import roomescape.service.dto.AvailableTimeResponseDtos;
 import roomescape.service.dto.ReservationTimeRequestDto;
@@ -14,11 +14,11 @@ import roomescape.service.dto.ReservationTimeResponseDto;
 @Service
 public class ReservationTimeService {
 
-    private final ReservationTimeRepository reservationTimeRepository;
-    private final ReservationRepository reservationRepository;
+    private final JdbcReservationTimeRepository reservationTimeRepository;
+    private final JdbcReservationRepository reservationRepository;
 
-    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository,
-                                  ReservationRepository reservationRepository) {
+    public ReservationTimeService(JdbcReservationTimeRepository reservationTimeRepository,
+                                  JdbcReservationRepository reservationRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
         this.reservationRepository = reservationRepository;
     }

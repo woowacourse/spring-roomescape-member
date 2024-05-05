@@ -4,20 +4,20 @@ import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.ReservationTimeRepository;
+import roomescape.repository.JdbcReservationRepository;
+import roomescape.repository.JdbcReservationTimeRepository;
 import roomescape.service.dto.ReservationRequestDto;
 import roomescape.service.dto.ReservationResponseDto;
 
 @Service
 public class ReservationService {
 
-    private final ReservationRepository reservationRepository;
-    private final ReservationTimeRepository reservationTimeRepository;
+    private final JdbcReservationRepository reservationRepository;
+    private final JdbcReservationTimeRepository reservationTimeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository) {
+    public ReservationService(JdbcReservationRepository reservationRepository,
+                              JdbcReservationTimeRepository reservationTimeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
     }
@@ -40,7 +40,7 @@ public class ReservationService {
             throw new IllegalArgumentException("지나간 날짜와 시간에 대한 예약은 불가능합니다.");
         }
 
-        if (reservationRepository.hasSameReservationForThemeAtDateTime(reservation)) {
+        if (reservationRepository.isReservationExistsByDateAndTimeIdAndThemeId(reservation)) {
             throw new IllegalArgumentException("해당 테마는 같은 시간에 이미 예약이 존재합니다.");
         }
 
