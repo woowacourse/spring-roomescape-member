@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import roomescape.service.dto.reservationtime.ReservationTimeCreateRequest;
 import roomescape.service.dto.reservationtime.ReservationTimeResponse;
@@ -38,7 +39,7 @@ public class ReservationTimeController {
     }
 
     @PostMapping
-    public ReservationTimeResponse createTime(@RequestBody ReservationTimeCreateRequest request) {
+    public ReservationTimeResponse createTime(@Valid @RequestBody ReservationTimeCreateRequest request) {
         return reservationTimeService.createTime(request);
     }
 
