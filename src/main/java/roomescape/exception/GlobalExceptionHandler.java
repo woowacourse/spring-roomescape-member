@@ -14,6 +14,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleUnknownException(Exception e) {
-        return ResponseEntity.badRequest().body("예측 불가능한 예외가 발생했습니다.");
+        return ResponseEntity.internalServerError().body("예측 불가능한 예외가 발생했습니다.");
     }
 }
