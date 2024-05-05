@@ -1,4 +1,4 @@
-package roomescape.dto;
+package roomescape.responseDto;
 
 import java.time.format.DateTimeFormatter;
 import roomescape.domain.Reservation;
