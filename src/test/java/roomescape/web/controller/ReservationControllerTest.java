@@ -9,7 +9,7 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.service.request.ReservationRequest;
-import roomescape.support.RestAssuredTestSupport;
+import roomescape.support.IntegrationTestSupport;
 
 /*
  * 테스트 데이터베이스 초기 데이터
@@ -17,7 +17,7 @@ import roomescape.support.RestAssuredTestSupport;
  * {ID=2, NAME=엘라, DATE=2024-05-04, TIME={ID=2, START_AT="11:00"}}
  * {ID=3, NAME=릴리, DATE=2023-08-05, TIME={ID=2, START_AT="11:00"}}
  */
-class ReservationControllerTest extends RestAssuredTestSupport {
+class ReservationControllerTest extends IntegrationTestSupport {
 
     @Test
     @DisplayName("전체 예약 목록을 조회한다.")

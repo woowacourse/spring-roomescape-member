@@ -8,14 +8,14 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.service.request.ReservationTimeRequest;
-import roomescape.support.RestAssuredTestSupport;
+import roomescape.support.IntegrationTestSupport;
 
 /*
  * 테스트 데이터베이스 초기 데이터
  * {ID=1, START_AT=10:00}
  * {ID=2, START_AT=11:00}
  */
-class ReservationTimeControllerTest extends RestAssuredTestSupport {
+class ReservationTimeControllerTest extends IntegrationTestSupport {
 
     @Test
     @DisplayName("전체 시간 목록을 조회한다.")

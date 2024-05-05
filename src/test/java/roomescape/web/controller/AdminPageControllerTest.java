@@ -3,9 +3,9 @@ package roomescape.web.controller;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.support.RestAssuredTestSupport;
+import roomescape.support.IntegrationTestSupport;
 
-class AdminPageControllerTest extends RestAssuredTestSupport {
+class AdminPageControllerTest extends IntegrationTestSupport {
 
     @Test
     @DisplayName("\"/admin\"으로 GET 요청을 보낼 수 있다.")
