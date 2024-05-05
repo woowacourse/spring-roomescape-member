@@ -8,7 +8,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -18,7 +17,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.dao.JdbcReservationDao;
 import roomescape.dao.JdbcReservationTimeDao;
 import roomescape.dao.JdbcThemeDao;
@@ -33,10 +33,9 @@ import roomescape.fixture.ReservationTimeFixtures;
 import roomescape.fixture.ThemeFixtures;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@Sql(value = "classpath:test_db_clean.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 class ReservationServiceTest {
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
     @Autowired
     private JdbcReservationDao reservationDao;
     @Autowired
@@ -45,16 +44,6 @@ class ReservationServiceTest {
     private JdbcThemeDao themeDao;
     @Autowired
     private ReservationService reservationService;
-
-    @BeforeEach
-    void setUp() {
-        jdbcTemplate.update("DELETE FROM reservation");
-        jdbcTemplate.update("DELETE FROM reservation_time");
-        jdbcTemplate.update("DELETE FROM theme");
-        jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
-    }
 
     @Test
     @DisplayName("모든 예약 정보를 조회한다.")
@@ -140,7 +129,7 @@ class ReservationServiceTest {
             //given
             LocalDateTime now = LocalDateTime.of(2024, 5, 2, 12, 2);
             themeDao.create(ThemeFixtures.createDefaultTheme());
-            Long given = -1L;
+            long given = -1L;
             ReservationCreateRequest givenRequest = ReservationFixtures.createReservationCreateRequest(given, 1L);
 
             //when //then
