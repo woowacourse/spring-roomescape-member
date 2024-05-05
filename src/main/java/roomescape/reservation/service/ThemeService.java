@@ -9,6 +9,9 @@ import roomescape.reservation.dto.ThemeResponse;
 
 @Service
 public class ThemeService {
+    private static final int DATE_PERIOD = 7;
+    private static final int THEME_COUNT = 10;
+
     private final ThemeRepository themeRepository;
 
     public ThemeService(ThemeRepository themeRepository) {
@@ -34,7 +37,7 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> findPopularThemes() {
-        return themeRepository.findPopularThemes().stream()
+        return themeRepository.findPopularThemes(DATE_PERIOD, THEME_COUNT).stream()
                 .map(ThemeResponse::from)
                 .toList();
     }

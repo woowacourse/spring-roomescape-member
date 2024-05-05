@@ -47,8 +47,8 @@ public class FakeThemeDao implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findPopularThemes() {
-        LocalDate startDate = LocalDate.now().minusDays(7);
+    public List<Theme> findPopularThemes(int datePeriod, int themeCount) {
+        LocalDate startDate = LocalDate.now().minusDays(datePeriod);
 
         List<Reservation> reservations = reservationRepository.findAll();
 
@@ -61,7 +61,7 @@ public class FakeThemeDao implements ThemeRepository {
 
         List<Long> popularThemeIds = themeReservationCounts.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                .limit(10)
+                .limit(themeCount)
                 .map(Map.Entry::getKey)
                 .toList();
 

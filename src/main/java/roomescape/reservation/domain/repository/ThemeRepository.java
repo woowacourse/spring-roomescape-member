@@ -12,5 +12,5 @@ public interface ThemeRepository {
 
     Theme findById(long themeId);
 
-    List<Theme> findPopularThemes();
+    List<Theme> findPopularThemes(int datePeriod, int themeCount);
 }
