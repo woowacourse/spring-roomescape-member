@@ -1,7 +1,6 @@
 package roomescape.presentation;
 
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -9,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -18,6 +18,10 @@ import roomescape.exception.RoomescapeException;
 @RestControllerAdvice
 public class RoomescapeControllerAdvice {
     private static final Logger logger = LoggerFactory.getLogger(RoomescapeControllerAdvice.class);
+
+    private static final Map<Class<? extends Throwable>, String> messages = Map.of(
+            InvalidFormatException.class, "올바르지 않은 형식입니다."
+    );
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ProblemDetail handleDateTimeParseException(MethodArgumentNotValidException exception) {
@@ -39,6 +43,16 @@ public class RoomescapeControllerAdvice {
     public ProblemDetail handleIllegalArgumentException(RoomescapeException exception) {
         logger.error(exception.getBody().getDetail(), exception);
         return exception.getBody();
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ProblemDetail handleHttpMessageNotReadableException(HttpMessageNotReadableException exception) {
+        logger.error(exception.getMessage(), exception);
+        Throwable cause = exception.getMostSpecificCause();
+        String message = messages.getOrDefault(cause.getClass(), "값을 변환하는 중 오류가 발생했습니다.");
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, message);
+        problemDetail.setTitle("요청을 변환할 수 없습니다.");
+        return problemDetail;
     }
 
     @ExceptionHandler(Exception.class)
