@@ -125,6 +125,19 @@ class ThemeServiceTest {
     }
 
     @Test
+    @DisplayName("동일한 테마명이 존재하면 예외가 발생한다.")
+    void createThemeWhenExistedThemeName() {
+        //given
+        Theme theme = ThemeFixtures.createTheme("방탈출1", "1번 방탈출", "썸네일1");
+        themeDao.create(theme);
+        ThemeCreateRequest request = ThemeFixtures.createThemeCreateRequest("방탈출1", "3번 방탈출", "썸네일12");
+
+        //when //then
+        assertThatThrownBy(() -> themeService.add(request))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
     @DisplayName("테마를 삭제한다.")
     void delete() {
         //given

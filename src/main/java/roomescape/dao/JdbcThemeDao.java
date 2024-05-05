@@ -71,7 +71,7 @@ public class JdbcThemeDao implements ThemeDao {
     }
 
     @Override
-    public Boolean exist(long id) {
+    public boolean exist(long id) {
         String sql = """
                 SELECT
                 CASE
@@ -80,7 +80,20 @@ public class JdbcThemeDao implements ThemeDao {
                     ELSE FALSE
                 END
                 """;
-        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
+        return jdbcTemplate.queryForObject(sql, boolean.class, id);
+    }
+
+    @Override
+    public boolean exist(String name) {
+        String sql = """
+                SELECT
+                CASE
+                    WHEN EXISTS (SELECT 1 FROM theme WHERE name = ?)
+                    THEN TRUE
+                    ELSE FALSE
+                END
+                """;
+        return jdbcTemplate.queryForObject(sql, boolean.class, name);
     }
 
     @Override

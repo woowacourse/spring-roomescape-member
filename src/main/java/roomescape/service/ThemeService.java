@@ -35,6 +35,7 @@ public class ThemeService {
     }
 
     public ThemeResponse add(ThemeCreateRequest request) {
+        validateExistedThemeName(request.getName());
         Theme theme = request.toDomain();
         Theme result = themeDao.create(theme);
         return ThemeResponse.from(result);
@@ -56,6 +57,12 @@ public class ThemeService {
     private void validateNotExistTheme(Long id) {
         if (!themeDao.exist(id)) {
             throw new IllegalArgumentException("테마 아이디에 해당하는 테마가 존재하지 않습니다.");
+        }
+    }
+
+    private void validateExistedThemeName(String name) {
+        if (themeDao.exist(name)) {
+            throw new IllegalArgumentException("동일한 테마명이 존재합니다.");
         }
     }
 

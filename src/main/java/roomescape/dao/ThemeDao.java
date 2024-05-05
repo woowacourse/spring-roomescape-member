@@ -11,7 +11,9 @@ public interface ThemeDao {
 
     Theme create(Theme theme);
 
-    Boolean exist(long id);
+    boolean exist(long id);
+
+    boolean exist(String name);
 
     void delete(long id);
 }
