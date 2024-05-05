@@ -3,6 +3,9 @@ package roomescape.repository.reservation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static roomescape.InitialDataFixture.INITIAL_RESERVATION_COUNT;
+import static roomescape.InitialDataFixture.NOT_RESERVATION_THEME;
+import static roomescape.InitialDataFixture.NOT_RESERVATION_TIME;
+import static roomescape.InitialDataFixture.NO_RESERVATION_DATE;
 import static roomescape.InitialDataFixture.RESERVATION_1;
 import static roomescape.InitialDataFixture.RESERVATION_2;
 import static roomescape.InitialDataFixture.THEME_2;
@@ -83,5 +86,58 @@ class ReservationH2RepositoryTest {
         List<Reservation> found = reservationH2Repository.findAll();
 
         assertThat(found).hasSize(INITIAL_RESERVATION_COUNT);
+    }
+
+    @Test
+    @DisplayName("이미 존재하는 예약과 날짜, 시간, 테마가 같으면 중복되는 예약이다.")
+    void isAlreadyBooked() {
+        boolean alreadyBooked = reservationH2Repository.isAlreadyBooked(RESERVATION_1);
+
+        assertThat(alreadyBooked).isEqualTo(true);
+    }
+
+    @Test
+    @DisplayName("이미 존재하는 예약과 날짜가 다르면 중복되는 예약이 아니다.")
+    void isNotBookedDate() {
+        Reservation reservation = new Reservation(
+                RESERVATION_1.getId(),
+                RESERVATION_1.getName(),
+                NO_RESERVATION_DATE,
+                RESERVATION_1.getTime(),
+                RESERVATION_1.getTheme()
+        );
+        boolean alreadyBooked = reservationH2Repository.isAlreadyBooked(reservation);
+
+        assertThat(alreadyBooked).isEqualTo(false);
+    }
+
+    @Test
+    @DisplayName("이미 존재하는 예약과 시간이 다르면 중복되는 예약이 아니다.")
+    void isNotBookedTime() {
+        Reservation reservation = new Reservation(
+                RESERVATION_1.getId(),
+                RESERVATION_1.getName(),
+                RESERVATION_1.getDate(),
+                NOT_RESERVATION_TIME,
+                RESERVATION_1.getTheme()
+        );
+        boolean alreadyBooked = reservationH2Repository.isAlreadyBooked(reservation);
+
+        assertThat(alreadyBooked).isEqualTo(false);
+    }
+
+    @Test
+    @DisplayName("이미 존재하는 예약과 테마가 다르면 중복되는 예약이 아니다.")
+    void isNotBookedTheme() {
+        Reservation reservation = new Reservation(
+                RESERVATION_1.getId(),
+                RESERVATION_1.getName(),
+                RESERVATION_1.getDate(),
+                RESERVATION_1.getTime(),
+                NOT_RESERVATION_THEME
+        );
+        boolean alreadyBooked = reservationH2Repository.isAlreadyBooked(reservation);
+
+        assertThat(alreadyBooked).isEqualTo(false);
     }
 }

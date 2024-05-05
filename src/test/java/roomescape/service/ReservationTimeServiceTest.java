@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static roomescape.InitialDataFixture.INITIAL_RESERVATION_TIME_COUNT;
 import static roomescape.InitialDataFixture.RESERVATION_1;
 import static roomescape.InitialDataFixture.RESERVATION_TIME_1;
-import static roomescape.InitialDataFixture.RESERVATION_TIME_3;
+import static roomescape.InitialDataFixture.NOT_RESERVATION_TIME;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -67,7 +67,7 @@ class ReservationTimeServiceTest {
     @Test
     @DisplayName("id에 맞는 예약 가능 시간을 삭제한다.")
     void deleteGetTime() {
-        reservationTimeService.deleteTime(RESERVATION_TIME_3.getId());
+        reservationTimeService.deleteTime(NOT_RESERVATION_TIME.getId());
 
         Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reservation_time", Integer.class);
 

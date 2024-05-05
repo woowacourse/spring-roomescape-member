@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static roomescape.InitialDataFixture.INITIAL_THEME_COUNT;
 import static roomescape.InitialDataFixture.THEME_1;
 import static roomescape.InitialDataFixture.THEME_2;
-import static roomescape.InitialDataFixture.THEME_3;
+import static roomescape.InitialDataFixture.NOT_RESERVATION_THEME;
 
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -84,7 +84,7 @@ class ThemeServiceTest {
     @Test
     @DisplayName("id값에 맞는 테마를 삭제한다.")
     void deleteTheme() {
-        themeService.deleteTheme(THEME_3.getId());
+        themeService.deleteTheme(NOT_RESERVATION_THEME.getId());
 
         Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM theme", Integer.class);
 
