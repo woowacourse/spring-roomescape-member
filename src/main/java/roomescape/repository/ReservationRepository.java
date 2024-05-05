@@ -53,20 +53,20 @@ public class ReservationRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
-    public Reservation insert(final Reservation requestReservation) {
+    public Reservation insert(final Reservation reservation) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", requestReservation.getName())
-                .addValue("date", requestReservation.getDate())
-                .addValue("time_id", requestReservation.getTime().getId())
-                .addValue("theme_id", requestReservation.getTheme().getId());
+                .addValue("name", reservation.getName())
+                .addValue("date", reservation.getDate())
+                .addValue("time_id", reservation.getTime().getId())
+                .addValue("theme_id", reservation.getTheme().getId());
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
 
         return new Reservation(
                 id,
-                requestReservation.getName(),
-                requestReservation.getDate(),
-                requestReservation.getTime(),
-                requestReservation.getTheme()
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.getTime(),
+                reservation.getTheme()
         );
     }
 
