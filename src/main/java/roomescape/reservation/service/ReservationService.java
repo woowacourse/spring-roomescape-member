@@ -33,7 +33,7 @@ public class ReservationService {
         Theme theme = themeDao.findById(reservationRequest.themeId())
                 .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_THEME));
 
-        if (reservationDao.existByTimeId(reservationRequest.themeId())) {
+        if (reservationDao.existByTimeIdAndDate(reservationRequest.themeId(), reservationRequest.date())) {
             throw new CustomException(ExceptionCode.DUPLICATE_RESERVATION);
         }
 
