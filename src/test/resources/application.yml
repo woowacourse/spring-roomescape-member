@@ -1,13 +1,6 @@
 spring:
   main:
     allow-bean-definition-overriding: true
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
-  datasource:
-    url: jdbc:h2:mem:database
-    driverClassName: org.h2.Driver
   sql:
     init:
       # 비어 있으면 정상 작동, test-data.sql을 만들고 비워두면 에러.
