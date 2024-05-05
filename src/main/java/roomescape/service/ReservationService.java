@@ -46,7 +46,7 @@ public class ReservationService {
         final Reservation parsedReservation = reservationRequest.toDomain(time, theme);
         validateDuplicate(theme, time, parsedReservation);
         final LocalDateTime reservationDateTime = parsedReservation.getDate().atTime(time.getStartAt());
-        validateBeforeDay(reservationDateTime); // TODO 같은 날짜지만 시간이 이후인 경우 테스트?
+        validateBeforeDay(reservationDateTime);
 
         final Reservation savedReservation = reservationRepository.save(parsedReservation);
         return ReservationResponse.from(savedReservation);

@@ -41,7 +41,7 @@ public class TimeService {
                 .stream()
                 .map(Reservation::getTime)
                 .collect(Collectors.toSet());
-        // TODO 현재 시간보다 낮은 것도 안보여야함
+
         return times.stream()
                 .map(time -> AvailabilityTimeResponse.from(time, bookedTimes.contains(time)))
                 .toList();
