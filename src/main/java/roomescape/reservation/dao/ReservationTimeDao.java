@@ -5,11 +5,9 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -73,13 +71,13 @@ public class ReservationTimeDao implements ReservationTimeRepository {
     @Override
     public Set<ReservationTime> findReservedTime(LocalDate date, long themeId) {
         String sql = """
-                    SELECT * FROM reservation_time
-                    INNER JOIN reservation as re
-                    ON re.time_id = reservation_time.id
-                    INNER JOIN reservation_list as rl
-                    ON re.id = rl.reservation_id
-                    WHERE re.date = ? AND re.theme_id = ?
-                    """;
+                SELECT * FROM reservation_time
+                INNER JOIN reservation as re
+                ON re.time_id = reservation_time.id
+                INNER JOIN reservation_list as rl
+                ON re.id = rl.reservation_id
+                WHERE re.date = ? AND re.theme_id = ?
+                """;
 
         return new HashSet<>(jdbcTemplate.query(sql, rowMapper, date, themeId));
     }

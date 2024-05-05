@@ -10,8 +10,6 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.member.domain.repository.MemberRepository;
-import roomescape.reservation.dao.FakeMemberDao;
 import roomescape.reservation.dao.FakeReservationDao;
 import roomescape.reservation.dao.FakeReservationTimeDao;
 import roomescape.reservation.dao.FakeThemeDao;
@@ -140,7 +138,7 @@ class ReservationTimeServiceTest {
 
         LocalDate date = LocalDate.now().plusYears(1);
         Reservation reservation = new Reservation(1L, "test", date, saveTime1,
-                new Theme(1L,"name", "description", "thumbnail"));
+                new Theme(1L, "name", "description", "thumbnail"));
         reservationRepository.save(reservation);
 
         //when
@@ -149,8 +147,10 @@ class ReservationTimeServiceTest {
         //then
         assertAll(
                 () -> assertThat(availableTimeResponses).hasSize(2),
-                () -> assertThat(availableTimeResponses.get(0)).isEqualTo(new AvailableTimeResponse(id1, localTime1, true)),
-                () -> assertThat(availableTimeResponses.get(1)).isEqualTo(new AvailableTimeResponse(id2, localTime2, false))
+                () -> assertThat(availableTimeResponses.get(0)).isEqualTo(
+                        new AvailableTimeResponse(id1, localTime1, true)),
+                () -> assertThat(availableTimeResponses.get(1)).isEqualTo(
+                        new AvailableTimeResponse(id2, localTime2, false))
         );
     }
 }

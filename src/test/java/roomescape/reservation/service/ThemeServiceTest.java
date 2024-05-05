@@ -130,7 +130,8 @@ class ThemeServiceTest {
         //then
         assertAll(
                 () -> assertThat(themeResponses.size()).isEqualTo(1),
-                () -> assertThat(themeResponses.get(0)).isEqualTo(new ThemeResponse(1L, name1, description1, thumbnail1))
+                () -> assertThat(themeResponses.get(0)).isEqualTo(
+                        new ThemeResponse(1L, name1, description1, thumbnail1))
         );
     }
 }

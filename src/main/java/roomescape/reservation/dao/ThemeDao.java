@@ -2,10 +2,8 @@ package roomescape.reservation.dao;
 
 import java.sql.ResultSet;
 import java.util.List;
-import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -64,14 +62,14 @@ public class ThemeDao implements ThemeRepository {
     @Override
     public List<Theme> findPopularThemes() {
         String sql = """
-                    SELECT theme.id, theme.name, theme.description, theme.thumbnail, COUNT(*) AS reservation_count FROM theme
-                    INNER JOIN reservation AS re ON re.theme_id = theme.id
-                    INNER JOIN reservation_list AS rl ON rl.reservation_id = re.id
-                    WHERE re.date BETWEEN DATEADD('DAY', -7, CURRENT_DATE()) AND CURRENT_DATE()
-                    GROUP BY theme.id, theme.name
-                    ORDER BY reservation_count DESC
-                    LIMIT 10
-                    """;
+                SELECT theme.id, theme.name, theme.description, theme.thumbnail, COUNT(*) AS reservation_count FROM theme
+                INNER JOIN reservation AS re ON re.theme_id = theme.id
+                INNER JOIN reservation_list AS rl ON rl.reservation_id = re.id
+                WHERE re.date BETWEEN DATEADD('DAY', -7, CURRENT_DATE()) AND CURRENT_DATE()
+                GROUP BY theme.id, theme.name
+                ORDER BY reservation_count DESC
+                LIMIT 10
+                """;
 
         return jdbcTemplate.query(sql, rowMapper);
     }

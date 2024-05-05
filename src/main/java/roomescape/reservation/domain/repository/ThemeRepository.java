@@ -1,7 +1,6 @@
 package roomescape.reservation.domain.repository;
 
 import java.util.List;
-import java.util.Optional;
 import roomescape.reservation.domain.Theme;
 
 public interface ThemeRepository {
@@ -11,7 +10,7 @@ public interface ThemeRepository {
 
     boolean deleteById(long themeId);
 
-   Theme findById(long themeId);
+    Theme findById(long themeId);
 
     List<Theme> findPopularThemes();
 }
