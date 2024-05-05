@@ -2,7 +2,6 @@ package roomescape.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
 import java.time.LocalTime;
 import java.util.List;
 
