@@ -79,14 +79,24 @@ public class ReservationTimeDaoImpl implements ReservationTimeDao {
     @Override
     public Long countReservationTimeById(long id) {
         String sql = "SELECT count(id) FROM reservation_time WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, (resultSet, ignored) ->
-                resultSet.getLong(1), id);
+        Long countReservationTime =
+                jdbcTemplate.queryForObject(sql, (resultSet, ignored) -> resultSet.getLong(1), id);
+        validateNullResult(countReservationTime);
+        return countReservationTime;
     }
 
     @Override
     public Long countReservationTimeByStartAt(LocalTime startAt) {
         String sql = "SELECT count(id) FROM reservation_time WHERE start_at = ?";
-        return jdbcTemplate.queryForObject(sql, (resultSet, ignored) ->
-                resultSet.getLong(1), startAt);
+        Long countReservationTime =
+                jdbcTemplate.queryForObject(sql, (resultSet, ignored) -> resultSet.getLong(1), startAt);
+        validateNullResult(countReservationTime);
+        return countReservationTime;
+    }
+
+    private void validateNullResult(Long queryResult) {
+        if (queryResult == null) {
+            throw new NullPointerException("쿼리 실행 결과가 null 입니다.");
+        }
     }
 }

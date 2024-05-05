@@ -50,7 +50,7 @@ public class ReservationRepository {
 
     private void validateDuplicatedReservation(LocalDate date, Long timeId) {
         Long countReservation = reservationDao.countReservationByDateAndTimeId(date, timeId);
-        if (countReservation == null || countReservation > 0) {
+        if (countReservation > 0) {
             throw new DuplicatedException("이미 해당 시간에 예약이 존재합니다.");
         }
     }
