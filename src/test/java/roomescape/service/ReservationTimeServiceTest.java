@@ -29,7 +29,7 @@ class ReservationTimeServiceTest {
     @InjectMocks
     private ReservationTimeService reservationTimeService;
 
-    @DisplayName("모든 예약 시간 정보 조회 및 의존 객체 상호작용 테스트")
+    @DisplayName("예약 시간을 조회할 땐 findAllReservationTimes이 호출되어야 한다.")
     @Test
     void find_all_reservation_times() {
         ReservationTime time1 = new ReservationTime(1L, "11:30");
@@ -41,7 +41,7 @@ class ReservationTimeServiceTest {
         verify(reservationTimeRepository, times(1)).findAllReservationTimes();
     }
 
-    @DisplayName("예약 시간 저장 및 의존 객체 상호작용 테스트")
+    @DisplayName("예약 시간을 정상적으로 저장할 땐 insertReservationTime이 호출되어야 한다.")
     @Test
     void create_reservation_time_test() {
         ReservationTimeRequestDto requestDto = new ReservationTimeRequestDto("11:30");

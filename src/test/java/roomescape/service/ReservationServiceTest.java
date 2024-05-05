@@ -36,7 +36,7 @@ class ReservationServiceTest {
     private final LocalDate validDate = LocalDate.now().plusDays(10);
     private final ReservationRequestDto requestDto = new ReservationRequestDto("재즈", 1L, validDate.toString(), 1L);
 
-    @DisplayName("모든 예약 정보 조회 및 의존 객체 상호작용 테스트")
+    @DisplayName("예약 리스트를 조회할 땐 findAllReservations이 호출되어야 한다")
     @Test
     void find_all_reservations_test() {
         Reservation reservation1 = new Reservation(
@@ -56,7 +56,7 @@ class ReservationServiceTest {
         verify(reservationRepository, times(1)).findAllReservations();
     }
 
-    @DisplayName("예약 저장 및 의존 객체 상호작용 테스트")
+    @DisplayName("예약을 정상적으로 저장할 땐 insertReservation이 호출되어야 한다.")
     @Test
     void create_reservation_test() {
         given(reservationTimeRepository.isExistTimeOf(requestDto.getTimeId())).willReturn(true);

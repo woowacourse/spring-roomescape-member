@@ -30,7 +30,7 @@ class ThemeServiceTest {
     @InjectMocks
     private ThemeService themeService;
 
-    @DisplayName("모든 예약 시간 정보 조회 및 의존 객체 상호작용 테스트")
+    @DisplayName("테마 리스트를 조회할 땐 findAllThemes이 호출되어야 한다.")
     @Test
     void find_all_reservation_times() {
         Theme theme1 = new Theme(1L, "안돌", "안녕하세요", "hi.jpg");
@@ -42,7 +42,7 @@ class ThemeServiceTest {
         verify(themeRepository, times(1)).findAllThemes();
     }
 
-    @DisplayName("예약 시간 저장 및 의존 객체 상호작용 테스트")
+    @DisplayName("테마를 정상적으로 저장할 땐 insertTheme이 호출되어야 한다.")
     @Test
     void create_reservation_time_test() {
         ThemeRequestDto requestDto = new ThemeRequestDto("재즈", "프로그래밍", "좋아.png");
