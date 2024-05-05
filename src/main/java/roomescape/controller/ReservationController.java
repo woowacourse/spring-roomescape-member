@@ -32,7 +32,7 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.findAllReservations());
     }
 
-    @GetMapping("/reservations/themes/{themeId}")
+    @GetMapping("/reservations/themes/{themeId}/times")
     public ResponseEntity<ReservationTimeInfosResponse> getReservationTimeInfos(
             @PathVariable final Long themeId,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") final LocalDate date) {

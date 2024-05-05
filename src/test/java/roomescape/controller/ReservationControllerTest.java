@@ -160,7 +160,7 @@ public class ReservationControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .port(port)
-                .when().get("/reservations/themes/1?date=" + LocalDate.MAX)
+                .when().get("/reservations/themes/1/times?date=" + LocalDate.MAX)
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
