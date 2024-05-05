@@ -4,7 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.dto.TimeMemberResponse;
 import roomescape.dto.TimeResponse;
-import roomescape.dto.TimeRequest;
+import roomescape.dto.TimeCreateRequest;
 import roomescape.service.ReservationTimeService;
 
 import java.net.URI;
@@ -36,7 +36,7 @@ public class TimeRestController {
     }
 
     @PostMapping
-    public ResponseEntity<TimeResponse> create(@RequestBody TimeRequest request) {
+    public ResponseEntity<TimeResponse> create(@RequestBody TimeCreateRequest request) {
         TimeResponse response = reservationTimeService.save(request);
 
         URI location = URI.create("/times/" + response.id());

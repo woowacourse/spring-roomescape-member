@@ -6,7 +6,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.IllegalReservationException;
 
-public record ReservationRequest(
+public record ReservationCreateRequest(
         Long id,
         String name,
         LocalDate date,
@@ -14,13 +14,13 @@ public record ReservationRequest(
         Long themeId
 ) {
 
-    public ReservationRequest {
+    public ReservationCreateRequest {
         validateTimeID(timeId);
         validateThemeID(themeId);
         validateDate(date);
     }
 
-    public static Reservation toReservation(final ReservationRequest request, final ReservationTime time, final Theme theme) {
+    public static Reservation toReservation(final ReservationCreateRequest request, final ReservationTime time, final Theme theme) {
         return new Reservation(request.id(), request.name(), request.date(), time, theme);
     }
 

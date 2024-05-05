@@ -7,7 +7,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.TimeMemberResponse;
-import roomescape.dto.TimeRequest;
+import roomescape.dto.TimeCreateRequest;
 import roomescape.dto.TimeResponse;
 import roomescape.exception.ExistReservationException;
 import roomescape.exception.IllegalTimeException;
@@ -43,8 +43,8 @@ public class ReservationTimeService {
         return allTimeResponsesWithBooking;
     }
 
-    public TimeResponse save(TimeRequest request) {
-        ReservationTime reservationTime = TimeRequest.toTime(request);
+    public TimeResponse save(TimeCreateRequest request) {
+        ReservationTime reservationTime = TimeCreateRequest.toTime(request);
 
         if (timeDao.existByTime(reservationTime.getStartAt())) {
             throw new IllegalTimeException("[ERROR] 중복된 시간은 생성할 수 없습니다.");

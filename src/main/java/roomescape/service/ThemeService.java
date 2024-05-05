@@ -4,7 +4,7 @@ import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
-import roomescape.dto.ThemeRequest;
+import roomescape.dto.ThemeCreateRequest;
 import roomescape.dto.ThemeResponse;
 import roomescape.exception.ExistReservationException;
 import roomescape.exception.IllegalThemeException;
@@ -32,8 +32,8 @@ public class ThemeService {
 
     }
 
-    public ThemeResponse save(ThemeRequest request) {
-        Theme theme = ThemeRequest.toTheme(request);
+    public ThemeResponse save(ThemeCreateRequest request) {
+        Theme theme = ThemeCreateRequest.toTheme(request);
 
         if (themeDao.existByName(theme.getName())) {
             throw new IllegalThemeException("[ERROR] 중복된 테마는 생성할 수 없습니다.");
