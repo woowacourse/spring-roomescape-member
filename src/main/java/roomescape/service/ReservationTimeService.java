@@ -1,13 +1,13 @@
 package roomescape.service;
 
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.time.TimeRequest;
-
-import java.time.format.DateTimeFormatter;
-import java.util.List;
+import roomescape.dto.time.TimeResponse;
 
 @Service
 public class ReservationTimeService {
@@ -20,15 +20,19 @@ public class ReservationTimeService {
         this.reservationTimeDao = reservationTimeDao;
     }
 
-    public ReservationTime insertReservationTime(TimeRequest timeRequest) {
+    public TimeResponse insertReservationTime(TimeRequest timeRequest) {
         Long id = reservationTimeDao.insert(
                 timeRequest.startAt().format(DateTimeFormatter.ofPattern("HH:mm")));
+        ReservationTime inserted = new ReservationTime(id,
+                timeRequest.startAt().format(DateTimeFormatter.ofPattern("HH:mm")));
 
-        return new ReservationTime(id, timeRequest.startAt().format(DateTimeFormatter.ofPattern("HH:mm")));
+        return new TimeResponse(inserted);
     }
 
-    public List<ReservationTime> getAllReservationTimes() {
-        return reservationTimeDao.findAll();
+    public List<TimeResponse> getAllReservationTimes() {
+        return reservationTimeDao.findAll().stream()
+                .map(TimeResponse::new)
+                .toList();
     }
 
     public void deleteReservationTime(Long id) {

@@ -1,15 +1,20 @@
 package roomescape.controller;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-import roomescape.domain.ReservationTime;
-import roomescape.dto.time.TimeRequest;
-import roomescape.dto.time.BookableTimeResponse;
-import roomescape.service.ReservationTimeService;
-
 import java.net.URI;
 import java.util.List;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import roomescape.dto.time.BookableTimeResponse;
+import roomescape.dto.time.TimeRequest;
+import roomescape.dto.time.TimeResponse;
+import roomescape.service.ReservationTimeService;
 
 @Controller
 @RequestMapping("/times")
@@ -22,23 +27,24 @@ public class ReservationTimeController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTime> insertTime(@RequestBody TimeRequest timeRequest) {
-        ReservationTime reservationTime = reservationTimeService.insertReservationTime(timeRequest);
-        return ResponseEntity.created(URI.create("/times/" + reservationTime.getId())).body(reservationTime);
+    public ResponseEntity<TimeResponse> insertTime(@RequestBody TimeRequest timeRequest) {
+        TimeResponse response = reservationTimeService.insertReservationTime(timeRequest);
+        return ResponseEntity.created(URI.create("/times/" + response.id())).body(response);
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationTime>> getTimes() {
-        List<ReservationTime> reservationTimes = reservationTimeService.getAllReservationTimes();
+    public ResponseEntity<List<TimeResponse>> getTimes() {
+        List<TimeResponse> reservationTimes = reservationTimeService.getAllReservationTimes();
         return ResponseEntity.ok().body(reservationTimes);
     }
 
     @GetMapping("/{date}/{themeId}")
-    public ResponseEntity<List<BookableTimeResponse>> getTimesByDateAndTheme(@PathVariable String date, @PathVariable Long themeId) {
-        List<ReservationTime> reservationTimes = reservationTimeService.getAllReservationTimes();
+    public ResponseEntity<List<BookableTimeResponse>> getTimesByDateAndTheme(@PathVariable String date,
+                                                                             @PathVariable Long themeId) {
+        List<TimeResponse> reservationTimes = reservationTimeService.getAllReservationTimes();
         List<BookableTimeResponse> bookableTimeRespons = reservationTimes.stream()
-                .map(time -> new BookableTimeResponse(time.getId(), time.getStartAt(), reservationTimeService.isBooked(date, time.getId(), themeId)))
-                .toList();
+                .map(time -> new BookableTimeResponse(time.id(), time.startAt(),
+                        reservationTimeService.isBooked(date, time.id(), themeId))).toList();
         return ResponseEntity.ok().body(bookableTimeRespons);
     }
 
