@@ -1,5 +1,6 @@
 package roomescape.reservation.domain;
 
+import java.util.Objects;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import roomescape.reservation.handler.exception.CustomException;
@@ -75,5 +76,22 @@ public class Reservation {
 
     public Long getThemeId() {
         return theme.getId();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Reservation that = (Reservation) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
