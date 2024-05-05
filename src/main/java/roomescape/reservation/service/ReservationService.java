@@ -3,6 +3,7 @@ package roomescape.reservation.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.repository.MemberRepository;
 import roomescape.reservation.controller.dto.ReservationRequest;
@@ -37,6 +38,7 @@ public class ReservationService {
                 .toList();
     }
 
+    @Transactional
     public ReservationResponse create(ReservationRequest reservationRequest) {
         ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId()).orElseThrow(
                 () -> new IllegalArgumentException(
