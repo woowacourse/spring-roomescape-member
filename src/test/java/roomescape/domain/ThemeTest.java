@@ -5,7 +5,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static roomescape.domain.Theme.DEFAULT_THUMBNAIL;
 
 class ThemeTest {
 
@@ -17,6 +16,6 @@ class ThemeTest {
         final Theme theme = new Theme(null, "spring", "", thumbnail);
 
         // then
-        assertThat(theme.getThumbnail()).isEqualTo(DEFAULT_THUMBNAIL);
+        assertThat(theme.getThumbnail()).isEqualTo("https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
     }
 }
