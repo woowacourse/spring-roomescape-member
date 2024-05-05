@@ -1,5 +1,6 @@
 package roomescape.web.exception;
 
+import jakarta.validation.ConstraintViolationException;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.slf4j.Logger;
@@ -38,6 +39,11 @@ public class GlobalExceptionHandler {
                 allValidationResults.toArray(ParameterValidationResult[]::new);
 
         return new ResponseEntity(new ErrorResponse(parameterValidationResults), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handle(ConstraintViolationException exception) {
+        return new ResponseEntity(new ErrorResponse(exception.getConstraintViolations()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
