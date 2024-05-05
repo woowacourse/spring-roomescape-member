@@ -1,5 +1,6 @@
 package roomescape.core.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import roomescape.core.domain.Reservation;
 import roomescape.core.domain.Theme;
@@ -9,7 +10,7 @@ public interface ReservationRepository {
 
     List<Reservation> findAll();
 
-    List<Theme> findPopularTheme();
+    List<Theme> findPopularTheme(final LocalDate today, final LocalDate yesterday);
 
     List<Reservation> findAllByDateAndThemeId(final String date, long themeId);
 

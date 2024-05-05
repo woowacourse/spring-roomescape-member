@@ -101,10 +101,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
-    public List<Theme> findPopularTheme() {
-        final LocalDate today = LocalDate.now();
-        final LocalDate lastWeek = today.minusWeeks(1);
-
+    public List<Theme> findPopularTheme(final LocalDate today, final LocalDate lastWeek) {
         final String query = """
                 SELECT t.id, t.name, t.description, t.thumbnail
                 FROM theme as t
