@@ -33,19 +33,24 @@ public class ReservationService {
     }
 
     public ReservationResponse createReservation(ReservationCreateRequest dto) {
-        ReservationTime time = timeDao.readTimeById(dto.timeId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 예약 시간이 존재하지 않습니다."));
-        Theme theme = themeDao.readThemeById(dto.themeId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 테마가 존재하지 않습니다."));
-        Reservation reservation = dto.createReservation(time, theme);
-
-        validateReservationTime(reservation);
+        Reservation reservation = createReservationFromDto(dto);
 
         Reservation createdReservation = reservationDao.createReservation(reservation);
         return ReservationResponse.from(createdReservation);
     }
 
-    private void validateReservationTime(Reservation reservation) {
+    private Reservation createReservationFromDto(ReservationCreateRequest dto) {
+        ReservationTime time = timeDao.readTimeById(dto.timeId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 예약 시간이 존재하지 않습니다."));
+        Theme theme = themeDao.readThemeById(dto.themeId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 테마가 존재하지 않습니다."));
+
+        Reservation reservation = dto.createReservation(time, theme);
+        validateAvailableReservation(reservation);
+        return reservation;
+    }
+
+    private void validateAvailableReservation(Reservation reservation) {
         if (reservation.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("예약은 현재 시간 이후여야 합니다.");
         }
