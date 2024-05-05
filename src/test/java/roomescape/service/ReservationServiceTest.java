@@ -137,6 +137,20 @@ class ReservationServiceTest {
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
+        @Test
+        @DisplayName("존재하지 않는 테마 아이디로 예약 추가시 에외가 발생한다.")
+        void addNotExistThemeId() {
+            //given
+            LocalDateTime now = LocalDateTime.of(2024, 5, 2, 12, 2);
+            reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:24"));
+            long given = -1L;
+            ReservationCreateRequest givenRequest = ReservationFixtures.createReservationCreateRequest(1L, given);
+
+            //when //then
+            assertThatThrownBy(() -> reservationService.add(givenRequest, now))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+
         @ParameterizedTest
         @NullAndEmptySource
         @DisplayName("예약자명에 null이나 공백 문자열이 입력되면 예외가 발생한다.")

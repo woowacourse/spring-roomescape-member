@@ -54,6 +54,7 @@ public class ReservationService {
     public ReservationResponse add(ReservationCreateRequest request, LocalDateTime now) {
         validateNotExistReservationTime(request.getTimeId());
         ReservationTime reservationTime = reservationTimeDao.readById(request.getTimeId());
+        validateNotExistTheme(request.getThemeId());
         Theme theme = themeDao.readById(request.getThemeId());
         Reservation reservation = request.toDomain(reservationTime, theme);
         validateDate(reservation.getDate(), now);
@@ -123,6 +124,12 @@ public class ReservationService {
     private void validateNotExistReservationTime(Long id) {
         if (!reservationTimeDao.exist(id)) {
             throw new IllegalArgumentException("예약 시간 아이디에 해당하는 예약 시간이 존재하지 않습니다.");
+        }
+    }
+
+    private void validateNotExistTheme(Long id) {
+        if (!themeDao.exist(id)) {
+            throw new IllegalArgumentException("테마 아이디에 해당하는 테마가 존재하지 않습니다.");
         }
     }
 }
