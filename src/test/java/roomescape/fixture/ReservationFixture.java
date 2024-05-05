@@ -2,8 +2,8 @@ package roomescape.fixture;
 
 import static roomescape.fixture.DateTimeFixture.TOMORROW;
 import static roomescape.fixture.DateTimeFixture.YESTERDAY;
-import static roomescape.fixture.ReservationTimeFixture.RESERVATION_TIME_1;
-import static roomescape.fixture.ReservationTimeFixture.RESERVATION_TIME_2;
+import static roomescape.fixture.ReservationTimeFixture.RESERVATION_TIME_10_00_ID_1;
+import static roomescape.fixture.ReservationTimeFixture.RESERVATION_TIME_11_00_ID_2;
 import static roomescape.fixture.ThemeFixture.THEME_1;
 import static roomescape.fixture.ThemeFixture.THEME_2;
 
@@ -27,20 +27,20 @@ public class ReservationFixture {
             1L,
             "썬",
             TOMORROW,
-            RESERVATION_TIME_1,
+            RESERVATION_TIME_10_00_ID_1,
             THEME_1);
 
     public static final Reservation SAVED_RESERVATION_2 = new Reservation(
             2L,
             "리비",
             TOMORROW,
-            RESERVATION_TIME_1,
+            RESERVATION_TIME_10_00_ID_1,
             THEME_2);
 
     public static final Reservation SAVED_RESERVATION_3 = new Reservation(
             3L,
             "도도",
             TOMORROW,
-            RESERVATION_TIME_2,
+            RESERVATION_TIME_11_00_ID_2,
             THEME_1);
 }

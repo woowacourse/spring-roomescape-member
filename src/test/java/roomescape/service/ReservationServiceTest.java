@@ -9,7 +9,7 @@ import static roomescape.fixture.ReservationFixture.PAST_DATE_RESERVATION_REQUES
 import static roomescape.fixture.ReservationFixture.RESERVATION_REQUEST_1;
 import static roomescape.fixture.ReservationFixture.SAVED_RESERVATION_1;
 import static roomescape.fixture.ReservationFixture.SAVED_RESERVATION_2;
-import static roomescape.fixture.ReservationTimeFixture.RESERVATION_TIME_1;
+import static roomescape.fixture.ReservationTimeFixture.RESERVATION_TIME_10_00_ID_1;
 import static roomescape.fixture.ThemeFixture.THEME_1;
 
 import java.util.List;
@@ -58,7 +58,7 @@ class ReservationServiceTest {
     @Test
     void should_save_reservation_when_requested() {
         when(reservationRepository.save(any(Reservation.class))).thenReturn(SAVED_RESERVATION_1);
-        when(reservationTimeRepository.findById(1L)).thenReturn(Optional.of(RESERVATION_TIME_1));
+        when(reservationTimeRepository.findById(1L)).thenReturn(Optional.of(RESERVATION_TIME_10_00_ID_1));
         when(themeRepository.findById(1L)).thenReturn(Optional.of(THEME_1));
 
         ReservationResponse savedReservation = reservationService.saveReservation(RESERVATION_REQUEST_1);
@@ -78,7 +78,7 @@ class ReservationServiceTest {
     @DisplayName("존재하지 않은 테마로 예약 시 예외가 발생한다")
     @Test
     void should_throw_exception_when_request_with_non_exist_theme() {
-        when(reservationTimeRepository.findById(1L)).thenReturn(Optional.of(RESERVATION_TIME_1));
+        when(reservationTimeRepository.findById(1L)).thenReturn(Optional.of(RESERVATION_TIME_10_00_ID_1));
         when(themeRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> reservationService.saveReservation(RESERVATION_REQUEST_1))
@@ -88,7 +88,7 @@ class ReservationServiceTest {
     @DisplayName("현재보다 이전날짜로 예약 시 예외가 발생한다")
     @Test
     void should_throw_exception_when_request_with_past_date() {
-        when(reservationTimeRepository.findById(1L)).thenReturn(Optional.of(RESERVATION_TIME_1));
+        when(reservationTimeRepository.findById(1L)).thenReturn(Optional.of(RESERVATION_TIME_10_00_ID_1));
         when(themeRepository.findById(1L)).thenReturn(Optional.of(THEME_1));
 
         assertThatThrownBy(() -> reservationService.saveReservation(PAST_DATE_RESERVATION_REQUEST))

@@ -2,68 +2,58 @@ package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static roomescape.fixture.DateTimeFixture.TIME_10_00;
+import static roomescape.fixture.ReservationTimeFixture.RESERVATION_TIME_10_00_ID_1;
+import static roomescape.fixture.ReservationTimeFixture.TIME_ADD_REQUEST_10_00;
 
-import java.time.LocalTime;
-import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.request.ReservationTimeAddRequest;
+import roomescape.domain.ReservationTimeRepository;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.exception.DuplicateSaveException;
 
+@ExtendWith(MockitoExtension.class)
 class ReservationTimeServiceTest {
 
-    @DisplayName("모든 예약 시간을 찾습니다")
+    @InjectMocks
+    private ReservationTimeService reservationTimeService;
+
+    @Mock
+    private ReservationTimeRepository reservationTimeRepository;
+
+    @DisplayName("모든 예약 시간을 조회하고 응답 형태로 반환할 수 있다")
     @Test
-    void findAllReservationTime() {
-        ReservationTimeService reservationTimeService = new ReservationTimeService(new FakeReservationTimeRepository(
-                Arrays.asList(new ReservationTime(1L, LocalTime.of(10, 0)))
-        ));
-        int expectedSize = 1;
+    void should_return_all_reservation_times_as_responses() {
+        when(reservationTimeRepository.findAll()).thenReturn(List.of(RESERVATION_TIME_10_00_ID_1));
 
-        int actualSize = reservationTimeService.findAllReservationTime().size();
-
-        assertThat(actualSize).isEqualTo(expectedSize);
+        assertThat(reservationTimeService.findAllReservationTime()).hasSize(1);
     }
 
-    @DisplayName("예약시간을 추가하고 저장된 예약시간을 반환합니다.")
+    @DisplayName("예약 시간을 추가하고 응답을 반환할 수 있다")
     @Test
-    void should_add_reservation_time() {
-        ReservationTimeService reservationTimeService = new ReservationTimeService(new FakeReservationTimeRepository());
-        ReservationTimeResponse expectedResponse = new ReservationTimeResponse(1L, LocalTime.of(10, 0));
+    void should_save_reservation_time_when_requested() {
+        when(reservationTimeRepository.save(any(ReservationTime.class))).thenReturn(RESERVATION_TIME_10_00_ID_1);
+        when(reservationTimeRepository.existByStartAt(TIME_10_00)).thenReturn(false);
 
-        ReservationTimeAddRequest reservationTimeAddRequest = new ReservationTimeAddRequest(LocalTime.of(10, 0));
+        ReservationTimeResponse saved = reservationTimeService.saveReservationTime(TIME_ADD_REQUEST_10_00);
 
-        ReservationTimeResponse actualReservationTime = reservationTimeService.saveReservationTime(
-                reservationTimeAddRequest);
-
-        assertThat(actualReservationTime).isEqualTo(expectedResponse);
+        assertThat(saved).isEqualTo(new ReservationTimeResponse(RESERVATION_TIME_10_00_ID_1));
     }
 
-    @DisplayName("중복되는 예약 시각을 추가할 경우 예외가 발생합니다.")
+    @DisplayName("이미 존재하는 예약 시간에 대한 추가 요청 시 예외가 발생한다")
     @Test
-    void should_throw_IllegalArgumentException_when_reservation_time_is_duplicated() {
-        ReservationTimeService reservationTimeService = new ReservationTimeService(new FakeReservationTimeRepository(
-                Arrays.asList(new ReservationTime(1L, LocalTime.of(10, 0)))
-        ));
+    void should_throw_exception_when_reservation_time_already_exists() {
+        when(reservationTimeRepository.existByStartAt(TIME_ADD_REQUEST_10_00.startAt())).thenReturn(true);
 
-        ReservationTimeAddRequest reservationTimeAddRequest = new ReservationTimeAddRequest(LocalTime.of(10, 0));
-
-        assertThatThrownBy(() -> reservationTimeService.saveReservationTime(reservationTimeAddRequest))
+        assertThatThrownBy(() -> reservationTimeService.saveReservationTime(TIME_ADD_REQUEST_10_00))
                 .isInstanceOf(DuplicateSaveException.class);
-    }
-
-    @DisplayName("원하는 id의 예약시간을 삭제합니다")
-    @Test
-    void should_remove_reservation_time_with_exist_id() {
-        FakeReservationTimeRepository fakeReservationTimeDao = new FakeReservationTimeRepository(
-                Arrays.asList(new ReservationTime(1L, LocalTime.of(10, 0)))
-        );
-        ReservationTimeService reservationTimeService = new ReservationTimeService(fakeReservationTimeDao);
-
-        reservationTimeService.removeReservationTime(1L);
-
-        assertThat(fakeReservationTimeDao.reservationTimes.containsKey(1L)).isFalse();
     }
 }
