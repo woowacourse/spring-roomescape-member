@@ -34,9 +34,9 @@ class ThemeControllerTest extends ControllerTest {
     @DisplayName("테마 목록을 조회하면 200 과 테마 리스트를 응답한다.")
     void getThemes200AndThemes() throws Exception {
         // given
-        final List<CreateThemeResponse> expectResponses = List.of(
-                new CreateThemeResponse(1L, "Theme 1", "Description 1", "Thumbnail 1"),
-                new CreateThemeResponse(2L, "Theme 2", "Description 2", "Thumbnail 2")
+        final List<ThemeResponse> expectResponses = List.of(
+                new ThemeResponse(1L, "Theme 1", "Description 1", "Thumbnail 1"),
+                new ThemeResponse(2L, "Theme 2", "Description 2", "Thumbnail 2")
         );
         final String expectJson = objectMapper.writeValueAsString(expectResponses);
 
@@ -55,7 +55,7 @@ class ThemeControllerTest extends ControllerTest {
         // given
         final CreateThemeRequest request = new CreateThemeRequest("Theme 1", "Description 1", "Thumbnail 1");
         final String requestJson = objectMapper.writeValueAsString(request);
-        final CreateThemeResponse response = new CreateThemeResponse(1L, request.name(), request.description(), request.thumbnail());
+        final ThemeResponse response = new ThemeResponse(1L, request.name(), request.description(), request.thumbnail());
         final String responseJson = objectMapper.writeValueAsString(response);
 
         Mockito.when(themeService.addTheme(request))

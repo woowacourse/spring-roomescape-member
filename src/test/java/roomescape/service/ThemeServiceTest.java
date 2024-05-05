@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import roomescape.controller.theme.CreateThemeRequest;
-import roomescape.controller.theme.CreateThemeResponse;
+import roomescape.controller.theme.ThemeResponse;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReserveName;
@@ -53,12 +53,12 @@ class ThemeServiceTest {
     @DisplayName("테마 목록을 조회한다.")
     void getThemes() {
         // given
-        final List<CreateThemeResponse> expected = sampleThemes.stream()
+        final List<ThemeResponse> expected = sampleThemes.stream()
                 .map(themeService::addTheme)
                 .toList();
 
         // when
-        final List<CreateThemeResponse> actual = themeService.getThemes();
+        final List<ThemeResponse> actual = themeService.getThemes();
 
         // then
         assertThat(actual).isEqualTo(expected);
@@ -71,8 +71,8 @@ class ThemeServiceTest {
         final CreateThemeRequest themeRequest = sampleThemes.get(0);
 
         // when
-        final CreateThemeResponse actual = themeService.addTheme(themeRequest);
-        final CreateThemeResponse expected = new CreateThemeResponse(
+        final ThemeResponse actual = themeService.addTheme(themeRequest);
+        final ThemeResponse expected = new ThemeResponse(
                 actual.id(),
                 themeRequest.name(),
                 themeRequest.description(),
@@ -103,7 +103,7 @@ class ThemeServiceTest {
     @Test
     @DisplayName("예약이 있는 테마를 삭제할 경우 예외가 발생한다.")
     void exceptionOnDeletingThemeAlreadyReserved() {
-        final CreateThemeResponse themeResponse = themeService.addTheme(sampleThemes.get(0));
+        final ThemeResponse themeResponse = themeService.addTheme(sampleThemes.get(0));
         final Long themeId = themeResponse.id();
         final ReservationTime time = new ReservationTime(null, "08:00");
         final Reservation reservation = new Reservation(
