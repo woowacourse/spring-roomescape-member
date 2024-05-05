@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
@@ -55,12 +56,13 @@ class ThemeAcceptanceTest extends BasicAcceptanceTest {
     @Sql("/init-for-top-theme.sql")
     @DisplayName("예약 횟수 상위 10개의 테마를 조회한다")
     Stream<DynamicTest> top10Theme() {
+        LocalDate today = LocalDate.now();
         return Stream.of(
                 dynamicTest("인기 테마를 조회한다", () -> getTopTheme(200, TestFixtures.THEME_RESPONSES_1)),
-                dynamicTest("과거 예약을 추가한다", () -> postPastReservation("2024-04-29", "1", "10")),
+                dynamicTest("과거 예약을 추가한다", () -> postPastReservation(today.minusDays(5).toString(), "1", "10")),
                 dynamicTest("인기 테마를 조회한다", () -> getTopTheme(200, TestFixtures.THEME_RESPONSES_2)),
-                dynamicTest("과거 예약을 추가한다", () -> postPastReservation("2024-04-30", "1", "11")),
-                dynamicTest("과거 예약을 추가한다", () -> postPastReservation("2024-04-30", "2", "11")),
+                dynamicTest("과거 예약을 추가한다", () -> postPastReservation(today.minusDays(4).toString(), "1", "11")),
+                dynamicTest("과거 예약을 추가한다", () -> postPastReservation(today.minusDays(4).toString(), "2", "11")),
                 dynamicTest("인기 테마를 조회한다", () -> getTopTheme(200, TestFixtures.THEME_RESPONSES_3))
         );
     }
