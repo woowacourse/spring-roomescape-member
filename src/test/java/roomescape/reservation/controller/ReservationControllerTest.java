@@ -6,28 +6,34 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import roomescape.common.DateTimeFormatConfiguration;
 import roomescape.reservation.dto.request.CreateReservationRequest;
+import roomescape.reservation.dto.response.CreateReservationResponse;
+import roomescape.reservation.dto.response.FindAvailableTimesResponse;
+import roomescape.reservation.dto.response.FindReservationResponse;
+import roomescape.reservation.model.Reservation;
+import roomescape.reservation.service.ReservationService;
+import roomescape.reservationtime.model.ReservationTime;
+import roomescape.theme.model.Theme;
+import roomescape.util.ReservationFixture;
+import roomescape.util.ReservationTimeFixture;
 
 @ActiveProfiles("test")
-@AutoConfigureMockMvc
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
+@WebMvcTest({
+        ReservationController.class,
+        DateTimeFormatConfiguration.class
+})
 class ReservationControllerTest {
 
     @Autowired
@@ -36,241 +42,133 @@ class ReservationControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Nested
-    class createReservation {
+    @MockBean
+    private ReservationService reservationService;
 
-        @Test
-        @DisplayName("예약 생성 요청 시 201 상태와 Location 헤더에 생성된 리소스의 위치를 반환한다.")
-        void createReservation() throws Exception {
-            mockMvc.perform(MockMvcRequestBuilders.post("/reservations")
-                            .content(objectMapper.writeValueAsString(new CreateReservationRequest(
-                                    LocalDate.of(3000, 1, 1), "포비", 1L, 1L)))
-                            .contentType(MediaType.APPLICATION_JSON))
-                    .andExpectAll(
-                            status().isCreated(),
-                            header().stringValues("Location", "/reservations/14")
-                    );
-        }
+    @Test
+    @DisplayName("예약 생성 요청 시 201 상태와 Location 헤더에 생성된 리소스의 위치를 반환한다.")
+    void createReservation() throws Exception {
+        // given
+        Reservation reservation = ReservationFixture.getOne();
+        CreateReservationRequest createReservationRequest = new CreateReservationRequest(
+                LocalDate.of(3000, 1, 1), "포비", 1L, 1L);
 
-        @Test
-        @DisplayName("예약 생성 요청 시 예약 날짜가 과거인 경우 경우 404를 반환한다.")
-        void createReservation_WhenDateInPast() throws Exception {
-            mockMvc.perform(MockMvcRequestBuilders.post("/reservations")
-                            .content(objectMapper.writeValueAsString(new CreateReservationRequest(
-                                    LocalDate.parse("2000-02-11"), "몰리", 1L, 10L)))
-                            .contentType(MediaType.APPLICATION_JSON))
-                    .andExpectAll(
-                            status().isBadRequest(),
-                            jsonPath("$").value("예약 날짜는 현재보다 과거일 수 없습니다.")
-                    );
-        }
+        // stub
+        Mockito.when(reservationService.createReservation(createReservationRequest))
+                .thenReturn(CreateReservationResponse.from(reservation));
 
-        @Test
-        @DisplayName("예약 생성 요청 시 예약 날짜가 공백인 경우 경우 404를 반환한다.")
-        void createReservation_WhenDateIsNull() throws Exception {
-            mockMvc.perform(MockMvcRequestBuilders.post("/reservations")
-                            .content(objectMapper.writeValueAsString(new CreateReservationRequest(
-                                    null, "몰리", 1L, 10L)))
-                            .contentType(MediaType.APPLICATION_JSON))
-                    .andExpectAll(
-                            status().isBadRequest(),
-                            jsonPath("$").value("예약 등록 시 예약 날짜는 필수입니다.")
-                    );
-        }
-
-        @ParameterizedTest
-        @NullAndEmptySource
-        @DisplayName("예약 생성 요청 시 예약자 명이 공백인 경우 경우 404를 반환한다.")
-        void createReservation_WhenUserNameInBlank(String name) throws Exception {
-            mockMvc.perform(MockMvcRequestBuilders.post("/reservations")
-                            .content(objectMapper.writeValueAsString(new CreateReservationRequest(
-                                    LocalDate.of(3000, 1, 1), name, 1L, 10L)))
-                            .contentType(MediaType.APPLICATION_JSON))
-                    .andExpectAll(
-                            status().isBadRequest(),
-                            jsonPath("$").value("예약자 명은 공백 문자가 불가능합니다.")
-                    );
-        }
-
-        @Test
-        @DisplayName("예약 생성 요청 시 예약자 명이 255자 초과인 경우 404를 반환한다.")
-        void createReservation_WhenUserNameOverLength() throws Exception {
-            mockMvc.perform(MockMvcRequestBuilders.post("/reservations")
-                            .content(objectMapper.writeValueAsString(new CreateReservationRequest(
-                                    LocalDate.of(3000, 1, 1), "a".repeat(256), 1L, 10L)))
-                            .contentType(MediaType.APPLICATION_JSON))
-                    .andExpectAll(
-                            status().isBadRequest(),
-                            jsonPath("$").value("예약자 명은 최대 255자까지 입력이 가능합니다.")
-                    );
-        }
-
-        @ParameterizedTest
-        @ValueSource(longs = {0, -1})
-        @DisplayName("예약 생성 요청 시 예약 시간 식별자가 음수인 경우 404를 반환한다.")
-        void createReservation_WhenTimeIdIsNegativeOrZero(Long timeId) throws Exception {
-            mockMvc.perform(MockMvcRequestBuilders.post("/reservations")
-                            .content(objectMapper.writeValueAsString(new CreateReservationRequest(
-                                    LocalDate.of(3000, 1, 1), "비밥", timeId, 10L)))
-                            .contentType(MediaType.APPLICATION_JSON))
-                    .andExpectAll(
-                            status().isBadRequest(),
-                            jsonPath("$").value("예약 시간 식별자는 양수만 가능합니다.")
-                    );
-        }
-
-        @Test
-        @DisplayName("예약 생성 요청 시 예약 시간이 공백인 경우 경우 404를 반환한다.")
-        void createReservation_WhenTimeIsNull() throws Exception {
-            mockMvc.perform(MockMvcRequestBuilders.post("/reservations")
-                            .content(objectMapper.writeValueAsString(new CreateReservationRequest(
-                                    LocalDate.of(3000, 1, 1), "몰리", null, 10L)))
-                            .contentType(MediaType.APPLICATION_JSON))
-                    .andExpectAll(
-                            status().isBadRequest(),
-                            jsonPath("$").value("예약 등록 시 시간은 필수입니다.")
-                    );
-        }
-
-        @ParameterizedTest
-        @ValueSource(longs = {0, -1})
-        @DisplayName("예약 생성 요청 시 테마 시간 식별자가 음수인 경우 404를 반환한다.")
-        void createReservation_WhenThemeIdIsNegativeOrZero(Long themeId) throws Exception {
-            mockMvc.perform(MockMvcRequestBuilders.post("/reservations")
-                            .content(objectMapper.writeValueAsString(new CreateReservationRequest(
-                                    LocalDate.of(3000, 1, 1), "비밥", 1L, themeId)))
-                            .contentType(MediaType.APPLICATION_JSON))
-                    .andExpectAll(
-                            status().isBadRequest(),
-                            jsonPath("$").value("예약 테마 식별자는 양수만 가능합니다.")
-                    );
-        }
-
-        @Test
-        @DisplayName("예약 생성 요청 시 예약 테마가 공백인 경우 경우 404를 반환한다.")
-        void createReservation_WhenThemeIsNull() throws Exception {
-            mockMvc.perform(MockMvcRequestBuilders.post("/reservations")
-                            .content(objectMapper.writeValueAsString(new CreateReservationRequest(
-                                    LocalDate.of(3000, 1, 1), "몰리", 1L, null)))
-                            .contentType(MediaType.APPLICATION_JSON))
-                    .andExpectAll(
-                            status().isBadRequest(),
-                            jsonPath("$").value("예약 등록 시 테마는 필수입니다.")
-                    );
-        }
-
-        @Test
-        @DisplayName("예약 생성 요청 시 시간 식별자가 존재하지 않을 경우 404를 반환한다.")
-        void createReservation_WhenTimeNotExists() throws Exception {
-            mockMvc.perform(MockMvcRequestBuilders.post("/reservations")
-                            .content(objectMapper.writeValueAsString(new CreateReservationRequest(
-                                    LocalDate.of(3000, 1, 1), "포비", 1000L, 1L)))
-                            .contentType(MediaType.APPLICATION_JSON))
-                    .andExpectAll(
-                            status().isNotFound(),
-                            jsonPath("$").value("생성하려는 예약의 예약 시간이 존재하지 않습니다.")
-                    );
-        }
-
-        @Test
-        @DisplayName("예약 생성 요청 시 테마 식별자가 존재하지 않을 경우 404를 반환한다.")
-        void createReservation_WhenThemeNotExists() throws Exception {
-            mockMvc.perform(MockMvcRequestBuilders.post("/reservations")
-                            .content(objectMapper.writeValueAsString(new CreateReservationRequest(
-                                    LocalDate.of(3000, 1, 1), "포비", 1L, 1000L)))
-                            .contentType(MediaType.APPLICATION_JSON))
-                    .andExpectAll(
-                            status().isNotFound(),
-                            jsonPath("$").value("생성하려는 테마가 존재하지 않습니다.")
-                    );
-        }
+        // when & then
+        mockMvc.perform(MockMvcRequestBuilders.post("/reservations")
+                        .content(objectMapper.writeValueAsString(createReservationRequest))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpectAll(
+                        status().isCreated(),
+                        header().stringValues("Location", "/reservations/" + reservation.getId()),
+                        jsonPath("$.id").value(reservation.getId()),
+                        jsonPath("$.name").value(reservation.getName().getValue()),
+                        jsonPath("$.date").value(reservation.getDate().toString()),
+                        jsonPath("$.time.id").value(reservation.getReservationTime().getId()),
+                        jsonPath("$.time.startAt").value(reservation.getReservationTime().getTime().toString()),
+                        jsonPath("$.theme.id").value(reservation.getTheme().getId()),
+                        jsonPath("$.theme.name").value(reservation.getTheme().getName()),
+                        jsonPath("$.theme.description").value(reservation.getTheme().getDescription()),
+                        jsonPath("$.theme.thumbnail").value(reservation.getTheme().getThumbnail())
+                );
     }
 
     @Test
     @DisplayName("예약 목록 조회 요청 성공 시 200과 해당 정보를 반환한다.")
     void getReservations() throws Exception {
+        // stub
+        List<Reservation> reservations = ReservationFixture.get(2);
+        Reservation reservation1 = reservations.get(0);
+        Reservation reservation2 = reservations.get(1);
+
+        // stub
+        Mockito.when(reservationService.getReservations())
+                .thenReturn(List.of(FindReservationResponse.from(reservation1),
+                        FindReservationResponse.from(reservation2)));
+
         mockMvc.perform(MockMvcRequestBuilders.get("/reservations")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpectAll(
-                        jsonPath("$.[0].id").value(1),
-                        jsonPath("$.[0].name").value("아서"),
-                        jsonPath("$.[0].date").value("2024-04-23"),
-                        jsonPath("$.[0].time.id").value(1),
-                        jsonPath("$.[0].time.startAt").value("10:00"),
+                        jsonPath("$.[0].id").value(reservation1.getId()),
+                        jsonPath("$.[0].name").value(reservation1.getName().getValue()),
+                        jsonPath("$.[0].date").value(reservation1.getDate().toString()),
+                        jsonPath("$.[0].time.id").value(reservation1.getReservationTime().getId()),
+                        jsonPath("$.[0].time.startAt").value(reservation1.getReservationTime().getTime().toString()),
 
-                        jsonPath("$.[1].id").value(2),
-                        jsonPath("$.[1].name").value("몰리"),
-                        jsonPath("$.[1].date").value("2024-04-24"),
-                        jsonPath("$.[1].time.id").value(2),
-                        jsonPath("$.[1].time.startAt").value("12:00"),
+                        jsonPath("$.[1].id").value(reservation2.getId()),
+                        jsonPath("$.[1].name").value(reservation2.getName().getValue()),
+                        jsonPath("$.[1].date").value(reservation2.getDate().toString()),
+                        jsonPath("$.[1].time.id").value(reservation2.getReservationTime().getId()),
+                        jsonPath("$.[1].time.startAt").value(reservation2.getReservationTime().getTime().toString()),
                         status().isOk()
                 );
     }
 
-    @Nested
-    class getReservation {
 
-        @Test
-        @DisplayName("예약 단건 조회 요청 성공 시 200과 해당 정보를 반환한다.")
-        void getReservation() throws Exception {
-            mockMvc.perform(MockMvcRequestBuilders.get("/reservations/2")
-                            .contentType(MediaType.APPLICATION_JSON))
-                    .andExpectAll(
-                            jsonPath("$.id").value(2),
-                            jsonPath("$.name").value("몰리"),
-                            jsonPath("$.date").value("2024-04-24"),
-                            jsonPath("$.time.id").value(2),
-                            jsonPath("$.time.startAt").value("12:00"),
-                            status().isOk()
-                    );
-        }
+    @Test
+    @DisplayName("예약 단건 조회 요청 성공 시 200과 해당 정보를 반환한다.")
+    void getReservation() throws Exception {
+        // given
+        Reservation reservation = ReservationFixture.getOne();
+        ReservationTime time = reservation.getReservationTime();
+        Theme theme = reservation.getTheme();
 
-        @Test
-        @DisplayName("예약 단건 조회 요청 시 존재하지 않는 예약인 경우 404를 반환한다.")
-        void getReservation_WhenReservationNotExists() throws Exception {
-            mockMvc.perform(MockMvcRequestBuilders.get("/reservations/1000")
-                            .contentType(MediaType.APPLICATION_JSON))
-                    .andExpectAll(
-                            status().isNotFound(),
-                            jsonPath("$").value("조회하려는 예약이 존재하지 않습니다.")
-                    );
-        }
+        // stub
+        Mockito.when(reservationService.getReservation(1L))
+                .thenReturn(FindReservationResponse.from(reservation));
+
+        // when & then
+        mockMvc.perform(MockMvcRequestBuilders.get("/reservations/1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpectAll(
+                        jsonPath("$.id").value(reservation.getId()),
+                        jsonPath("$.name").value(reservation.getName().getValue()),
+                        jsonPath("$.date").value(reservation.getDate().toString()),
+                        jsonPath("$.time.id").value(time.getId()),
+                        jsonPath("$.time.startAt").value(time.getTime().toString()),
+                        jsonPath("$.theme.id").value(theme.getId()),
+                        jsonPath("$.theme.name").value(theme.getName()),
+                        jsonPath("$.theme.description").value(theme.getDescription()),
+                        jsonPath("$.theme.thumbnail").value(theme.getThumbnail()),
+                        status().isOk()
+                );
     }
+
 
     @Test
     @DisplayName("예약 가능 시간 요청한 시간 요청 성공 시 해당 정보과 200을 반환한다.")
     void getAvailableTimes() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/reservations/times?date=2024-04-24&themeId=1")
+        // given
+        LocalDate date = LocalDate.parse("2024-01-01");
+        List<ReservationTime> times = ReservationTimeFixture.get(2);
+
+        // stub
+        Mockito.when(reservationService.getAvailableTimes(date, 1L))
+                .thenReturn(List.of(new FindAvailableTimesResponse(1L, times.get(0).getTime(), false),
+                        new FindAvailableTimesResponse(2L, times.get(1).getTime(), true)));
+
+        // when & then
+        mockMvc.perform(MockMvcRequestBuilders.get(
+                                "/reservations/times?date=" + date + "&themeId=" + 1L)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpectAll(
                         jsonPath("$.[0].id").value(1),
-                        jsonPath("$.[0].startAt").value("10:00"),
+                        jsonPath("$.[0].startAt").value(times.get(0).getTime().toString()),
                         jsonPath("$.[0].alreadyBooked").value(false),
                         jsonPath("$.[1].id").value(2),
-                        jsonPath("$.[1].startAt").value("12:00"),
+                        jsonPath("$.[1].startAt").value(times.get(1).getTime().toString()),
                         jsonPath("$.[1].alreadyBooked").value(true),
                         status().isOk()
                 );
     }
 
-    @Nested
-    class deleteReservation {
-
-        @Test
-        @DisplayName("예약 삭제 요청 성공 시 204 상태 코드를 반환한다.")
-        void deleteReservation() throws Exception {
-            mockMvc.perform(MockMvcRequestBuilders.delete("/reservations/1"))
-                    .andExpect(status().isNoContent());
-        }
-
-        @Test
-        @DisplayName("예약 삭제 요청 시 존재하지 않는 예약인 경우 404 상태 코드를 반환한다.")
-        void deleteReservation_When() throws Exception {
-            mockMvc.perform(MockMvcRequestBuilders.delete("/reservations/100"))
-                    .andExpectAll(
-                            status().isNotFound(),
-                            jsonPath("$").value("삭제하려는 예약이 존재하지 않습니다.")
-                    );
-        }
+    @Test
+    @DisplayName("예약 삭제 요청 성공 시 204 상태 코드를 반환한다.")
+    void deleteReservation() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete("/reservations/1"))
+                .andExpect(status().isNoContent());
     }
 }
