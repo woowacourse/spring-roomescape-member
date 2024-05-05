@@ -60,8 +60,8 @@ public class ReservationJdbcDao implements ReservationDao {
         String findAllReservationSql =
                 """
                         SELECT r.id, r.name, r.date, 
-                        t.id AS time_id, t.start_at, 
-                        th.id AS theme_id, th.name AS themeName, th.description, th.thumbnail 
+                            t.id AS time_id, t.start_at, 
+                            th.id AS theme_id, th.name AS themeName, th.description, th.thumbnail 
                         FROM reservation r 
                         INNER JOIN reservation_time t ON r.time_id = t.id 
                         INNER JOIN theme th ON r.theme_id = th.id 
@@ -76,8 +76,8 @@ public class ReservationJdbcDao implements ReservationDao {
         String findAllByThemeIdAndDateSql =
                 """
                         SELECT r.id, r.name, r.date, 
-                        t.id AS timeId, t.start_at, 
-                        th.id AS themeId, th.name AS themeName, th.description, th.thumbnail 
+                            t.id AS timeId, t.start_at, 
+                            th.id AS themeId, th.name AS themeName, th.description, th.thumbnail 
                         FROM reservation r 
                         INNER JOIN reservation_time t ON r.time_id = t.id 
                         INNER JOIN theme th ON r.theme_id = th.id 
