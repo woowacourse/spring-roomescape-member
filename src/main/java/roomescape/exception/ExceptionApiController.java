@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ExceptionApiController {
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ExceptionInfo> IllegalArgExHandler(IllegalArgumentException exception) {
-        return ResponseEntity.badRequest().body(new ExceptionInfo(exception.getMessage()));
+    public ResponseEntity<String> IllegalArgExHandler(IllegalArgumentException exception) {
+        return ResponseEntity.badRequest().body(exception.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
