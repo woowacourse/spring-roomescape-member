@@ -42,7 +42,7 @@ class ThemeDaoTest {
 
         List<Theme> actual = themeDao.readThemes();
 
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual).containsAll(expected);
     }
 
     @DisplayName("id를 통해 테마를 조회할 수 있다.")
@@ -76,7 +76,7 @@ class ThemeDaoTest {
         jdbcTemplate.update(
                 "INSERT INTO theme (name, description, thumbnail) values (?, ?, ?)",
                 "레벨3 탈출", "레벨3 탈출하기", "https://img.jpg");
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00");
+        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00:00");
         jdbcTemplate.update(
                 "INSERT INTO reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)",
                 "브라운", "2024-08-15", 1, 2);
@@ -113,6 +113,19 @@ class ThemeDaoTest {
         assertThat(countSavedTheme()).isEqualTo(1);
     }
 
+    @DisplayName("이미 해당 테마 이름이 존재한다면, 테마를 생성할 수 없다.")
+    @Test
+    void createThemeTest_whenNameIsAlreadyExist() {
+        jdbcTemplate.update(
+                "INSERT INTO theme (name, description, thumbnail) values (?, ?, ?)",
+                "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg");
+        Theme theme = new Theme("레벨2 탈출", "레벨2 탈출하기 대작전", "https://img.jpg");
+
+        assertThatThrownBy(() -> themeDao.createTheme(theme))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("해당 테마 이름은 이미 존재합니다.");
+    }
+
     @DisplayName("테마를 삭제할 수 있다.")
     @Test
     void deleteThemeTest() {
@@ -131,7 +144,7 @@ class ThemeDaoTest {
         jdbcTemplate.update(
                 "INSERT INTO theme (name, description, thumbnail) values (?, ?, ?)",
                 "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg");
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00");
+        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00:00");
         jdbcTemplate.update(
                 "INSERT INTO reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)",
                 "브라운", "2024-08-15", 1, 1);

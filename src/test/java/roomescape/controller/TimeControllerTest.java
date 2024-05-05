@@ -50,8 +50,8 @@ class TimeControllerTest {
     @DisplayName("예약 가능한 시간 목록을 읽을 수 있다.")
     @Test
     void readAvailableTimes() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "11:00");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00:00");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "11:00:00");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                 "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg");
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)"
@@ -90,7 +90,7 @@ class TimeControllerTest {
     @DisplayName("삭제할 id를 받아서 DB에서 해당 시간을 삭제 할 수 있다.")
     @Test
     void deleteTime() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00:00");
 
         RestAssured.given().log().all()
                 .when().delete("/times/1")

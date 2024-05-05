@@ -1,10 +1,13 @@
 package roomescape.dao;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -73,18 +76,24 @@ public class ThemeDao {
 
     public Theme createTheme(Theme theme) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        String sql = "INSERT INTO theme (name, description, thumbnail) values (?, ?, ?)";
-
-        jdbcTemplate.update(connection -> {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
-            preparedStatement.setString(1, theme.getName());
-            preparedStatement.setString(2, theme.getDescription());
-            preparedStatement.setString(3, theme.getThumbnail());
-            return preparedStatement;
-        }, keyHolder);
+        try {
+            jdbcTemplate.update(connection -> createPreparedStatementForUpdate(connection, theme), keyHolder);
+        } catch (DuplicateKeyException exception) {
+            throw new IllegalArgumentException("해당 테마 이름은 이미 존재합니다.");
+        }
 
         Long id = keyHolder.getKey().longValue();
         return theme.withId(id);
+    }
+
+    private PreparedStatement createPreparedStatementForUpdate(Connection connection, Theme theme)
+            throws SQLException {
+        String sql = "INSERT INTO theme (name, description, thumbnail) values (?, ?, ?)";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
+        preparedStatement.setString(1, theme.getName());
+        preparedStatement.setString(2, theme.getDescription());
+        preparedStatement.setString(3, theme.getThumbnail());
+        return preparedStatement;
     }
 
     public void deleteTheme(Long id) {

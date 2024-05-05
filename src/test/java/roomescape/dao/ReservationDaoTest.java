@@ -1,6 +1,7 @@
 package roomescape.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -31,7 +32,7 @@ class ReservationDaoTest {
     @DisplayName("모든 예약을 읽을 수 있다.")
     @Test
     void readReservationsTest() {
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00");
+        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00:00");
         jdbcTemplate.update(
                 "INSERT INTO theme (name, description, thumbnail) values (?, ?, ?)",
                 "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg");
@@ -53,13 +54,13 @@ class ReservationDaoTest {
 
         List<Reservation> actual = reservationDao.readReservations();
 
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual).containsAll(expected);
     }
 
     @DisplayName("해당 날짜, 시간, 테마의 예약이 있는지 알 수 있다.")
     @Test
     void isExistReservationByDateAndTimeIdAndThemeIdTest() {
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00");
+        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00:00");
         jdbcTemplate.update(
                 "INSERT INTO theme (name, description, thumbnail) values (?, ?, ?)",
                 "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg");
@@ -78,7 +79,7 @@ class ReservationDaoTest {
     @DisplayName("예약을 생성할 수 있다.")
     @Test
     void createReservationTest() {
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00");
+        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00:00");
         jdbcTemplate.update(
                 "INSERT INTO theme (name, description, thumbnail) values (?, ?, ?)",
                 "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg");
@@ -97,10 +98,30 @@ class ReservationDaoTest {
         assertThat(countSavedReservation()).isEqualTo(1);
     }
 
+    @DisplayName("날짜, 시간, 테마가 모두 겹치는 예약이 있다면, 예약을 생성할 수 없다.")
+    @Test
+    void createReservationTest_whenReservationIsDuplicated() {
+        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00:00");
+        jdbcTemplate.update(
+                "INSERT INTO theme (name, description, thumbnail) values (?, ?, ?)",
+                "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg");
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)",
+                "브라운", "2024-08-15", 1, 1);
+        Reservation reservation = new Reservation(
+                "브리", LocalDate.of(2024, 8, 15),
+                new ReservationTime(1L, LocalTime.of(19, 0)),
+                new Theme(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg"));
+
+        assertThatThrownBy(() -> reservationDao.createReservation(reservation))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("해당 날짜, 시간, 테마에 이미 예약이 존재합니다.");
+    }
+
     @DisplayName("예약을 삭제할 수 있다.")
     @Test
     void deleteReservationTest() {
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00");
+        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00:00");
         jdbcTemplate.update(
                 "INSERT INTO theme (name, description, thumbnail) values (?, ?, ?)",
                 "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg");

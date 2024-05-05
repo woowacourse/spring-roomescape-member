@@ -124,7 +124,7 @@ class ReservationServiceTest {
                 .hasMessage("예약은 현재 시간 이후여야 합니다.");
     }
 
-    @DisplayName("예약 생성 시, 같은 날짜, 시간,테마의 예약이 있다면 예외를 던진다.")
+    @DisplayName("예약 생성 시, 같은 날짜, 시간, 테마의 예약이 있다면 예외를 던진다.")
     @Test
     void createReservationTest_whenReservationIsDuplicated() {
         LocalDate date = LocalDate.now().plusDays(7);

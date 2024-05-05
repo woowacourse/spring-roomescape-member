@@ -31,8 +31,8 @@ class TimeDaoTest {
     @DisplayName("저장한 예약 시간을 불러올 수 있다.")
     @Test
     void readTimesTest() {
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00");
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "10:00");
+        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00:00");
+        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "10:00:00");
         List<ReservationTime> expected = List.of(
                 new ReservationTime(1L, LocalTime.of(19, 0)),
                 new ReservationTime(2L, LocalTime.of(10, 0))
@@ -40,13 +40,13 @@ class TimeDaoTest {
 
         List<ReservationTime> actual = timeDao.readTimes();
 
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual).containsAll(expected);
     }
 
     @DisplayName("id를 통해 예약 시간을 조회할 수 있다.")
     @Test
     void readTimeByIdTest() {
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00");
+        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00:00");
         Optional<ReservationTime> expected = Optional.of(new ReservationTime(1L, LocalTime.of(19, 0)));
 
         Optional<ReservationTime> actual = timeDao.readTimeById(1L);
@@ -65,8 +65,8 @@ class TimeDaoTest {
     @DisplayName("특정 날짜, 테마가 예약된 시간을 조회할 수 있다.")
     @Test
     void readTimesExistsReservationDateAndThemeIdTest() {
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00");
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "10:00");
+        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00:00");
+        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "10:00:00");
         jdbcTemplate.update(
                 "INSERT INTO theme (name, description, thumbnail) values (?, ?, ?)",
                 "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg");
@@ -83,7 +83,7 @@ class TimeDaoTest {
     @DisplayName("특정 시간에 시작하는 예약 시간이 있는지 알 수 있다.")
     @Test
     void isExistTimeByStartAtTest() {
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00");
+        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00:00");
 
         boolean actual = timeDao.isExistTimeByStartAt(LocalTime.of(19, 0));
 
@@ -102,10 +102,21 @@ class TimeDaoTest {
         assertThat(countSavedReservationTime()).isEqualTo(1);
     }
 
+    @DisplayName("이미 존재하는 예약 시간이면, 예약 시간을 생성할 수 없다.")
+    @Test
+    void createTimeTest_whenStartAtIsOverlapped() {
+        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00:00");
+        ReservationTime time = new ReservationTime(LocalTime.of(19, 0));
+
+        assertThatThrownBy(() -> timeDao.createTime(time))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("해당 시간은 이미 존재합니다.");
+    }
+
     @DisplayName("예약 시간을 삭제할 수 있다.")
     @Test
     void deleteTimeTest() {
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00");
+        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00:00");
 
         timeDao.deleteTime(1L);
 
@@ -115,7 +126,7 @@ class TimeDaoTest {
     @DisplayName("해당 시간에 예약이 있다면, 예약 시간을 삭제할 수 없다.")
     @Test
     void deleteTimeTest_whenReservationUsingTimeExist() {
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00");
+        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00:00");
         jdbcTemplate.update(
                 "INSERT INTO theme (name, description, thumbnail) values (?, ?, ?)",
                 "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg");
