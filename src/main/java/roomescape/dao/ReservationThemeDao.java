@@ -34,9 +34,16 @@ public class ReservationThemeDao {
     }
 
     public List<ReservationTheme> findBestThemesBetweenDates(String from, String to, int count) {
-        String sql = "SELECT theme.id, theme.name, theme.description, theme.thumbnail " +
-                "FROM theme INNER JOIN reservation ON theme.id = reservation.theme_id " +
-                "WHERE reservation.date BETWEEN ? AND ? GROUP BY reservation.theme_id ORDER BY count(*) DESC LIMIT ?";
+        String sql = """
+                SELECT 
+                    theme.id, theme.name, theme.description, theme.thumbnail 
+                FROM 
+                    theme INNER JOIN reservation ON theme.id = reservation.theme_id 
+                WHERE 
+                    reservation.date BETWEEN ? AND ? 
+                GROUP BY reservation.theme_id 
+                ORDER BY count(*) DESC LIMIT ?
+        """;
         return jdbcTemplate.query(sql, getReservationThemeRowMapper(), from, to, count);
     }
 
