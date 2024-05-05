@@ -6,14 +6,15 @@ import java.time.LocalTime;
 public class Reservation {
 
     private final Long id;
-    private final Name name;
+    private final ReservationName reservationName;
     private final Theme theme;
     private final ReservationDate date;
     private final ReservationTime time;
 
-    public Reservation(Long id, Name name, Theme theme, ReservationDate date, ReservationTime time) {
+    public Reservation(Long id, ReservationName reservationName, Theme theme, ReservationDate date,
+                       ReservationTime time) {
         this.id = id;
-        this.name = name;
+        this.reservationName = reservationName;
         this.theme = theme;
         this.date = date;
         this.time = time;
@@ -21,7 +22,8 @@ public class Reservation {
 
     public Reservation(Long id, String name, Long themeId, String themeName, String description, String thumbnail,
                        String date, Long timeId, String time) {
-        this(id, new Name(name), new Theme(themeId, themeName, description, thumbnail), new ReservationDate(date),
+        this(id, new ReservationName(name), new Theme(themeId, themeName, description, thumbnail),
+                new ReservationDate(date),
                 new ReservationTime(timeId, time));
     }
 
@@ -30,7 +32,7 @@ public class Reservation {
     }
 
     public String getName() {
-        return name.getValue();
+        return reservationName.getValue();
     }
 
     public Theme getTheme() {

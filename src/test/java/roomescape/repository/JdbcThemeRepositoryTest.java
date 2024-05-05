@@ -13,9 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
+import roomescape.domain.ReservationName;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.repository.rowmapper.ReservationRowMapper;
@@ -108,11 +108,11 @@ class JdbcThemeRepositoryTest {
         ReservationTime savedTime1 = timeRepository.insertReservationTime(time1);
 
         Reservation reservation1 = new Reservation(
-                null, new Name("재즈"), savedTheme1, new ReservationDate("2024-05-01"), savedTime1);
+                null, new ReservationName("재즈"), savedTheme1, new ReservationDate("2024-05-01"), savedTime1);
         Reservation reservation2 = new Reservation(
-                null, new Name("러너덕"), savedTheme2, new ReservationDate("2024-05-02"), savedTime1);
+                null, new ReservationName("러너덕"), savedTheme2, new ReservationDate("2024-05-02"), savedTime1);
         Reservation reservation3 = new Reservation(
-                null, new Name("재즈덕"), savedTheme2, new ReservationDate("2024-05-03"), savedTime1);
+                null, new ReservationName("재즈덕"), savedTheme2, new ReservationDate("2024-05-03"), savedTime1);
         reservationRepository.insertReservation(reservation1);
         reservationRepository.insertReservation(reservation2);
         reservationRepository.insertReservation(reservation3);

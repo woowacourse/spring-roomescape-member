@@ -2,11 +2,11 @@ package roomescape.domain;
 
 import java.util.Objects;
 
-public class Name {
+public class ReservationName {
 
     private final String value;
 
-    public Name(String value) {
+    public ReservationName(String value) {
         this.value = value;
         validateNotEmpty(value);
     }
@@ -29,8 +29,8 @@ public class Name {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Name name = (Name) o;
-        return Objects.equals(value, name.value);
+        ReservationName reservationName = (ReservationName) o;
+        return Objects.equals(value, reservationName.value);
     }
 
     @Override

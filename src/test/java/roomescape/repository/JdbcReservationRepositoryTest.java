@@ -13,9 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
+import roomescape.domain.ReservationName;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.repository.rowmapper.ReservationRowMapper;
@@ -45,13 +45,13 @@ class JdbcReservationRepositoryTest {
     private final Theme theme2 = new Theme(null, "우테코", "난이도 2", "hi.jpg");
 
     private final Reservation reservation1 = new Reservation(
-            null, new Name("안돌"),
+            null, new ReservationName("안돌"),
             new Theme(1L, null, null, null),
             new ReservationDate("2023-09-08"),
             new ReservationTime(1L, (LocalTime) null)
     );
     private final Reservation reservation2 = new Reservation(
-            null, new Name("재즈"),
+            null, new ReservationName("재즈"),
             new Theme(2L, null, null, null),
             new ReservationDate("2024-04-22"),
             new ReservationTime(2L, (LocalTime) null)
@@ -162,7 +162,7 @@ class JdbcReservationRepositoryTest {
     void is_reservation_exists_by_date_and_time_id_and_theme_id() {
         Reservation inputReservation = new Reservation(
                 3L,
-                new Name("재즈덕"),
+                new ReservationName("재즈덕"),
                 new Theme(1L, null, null, null),
                 new ReservationDate("2023-09-08"),
                 new ReservationTime(1L, (LocalTime) null)
