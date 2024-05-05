@@ -1,9 +1,12 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 public class CollectionReservationRepository implements ReservationRepository {
     private final List<Reservation> reservations;
@@ -27,6 +30,26 @@ public class CollectionReservationRepository implements ReservationRepository {
         return reservations.stream()
                 .sorted()
                 .toList();
+    }
+
+    @Override
+    public boolean existsByThemeAndDateAndTime(Theme theme, LocalDate date, ReservationTime reservationTime) {
+        return reservations.stream()
+                .filter(reservation -> theme.equals(reservation.getTheme()))
+                .filter(reservation -> date.equals(reservation.getDate()))
+                .anyMatch(reservation -> reservationTime.equals(reservation.getReservationTime()));
+    }
+
+    @Override
+    public boolean existsByTime(ReservationTime reservationTime) {
+        return reservations.stream()
+                .anyMatch(reservation -> reservationTime.equals(reservation.getReservationTime()));
+    }
+
+    @Override
+    public boolean existsByTheme(Theme theme) {
+        return reservations.stream()
+                .anyMatch(reservation -> theme.equals(reservation.getTheme()));
     }
 
     @Override

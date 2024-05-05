@@ -1,42 +1,43 @@
 package roomescape.service;
 
+import static roomescape.exception.ExceptionType.NOT_FOUND_THEME;
+
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
-import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.dto.AvailableTimeResponse;
-import roomescape.repository.ReservationRepository;
+import roomescape.exception.RoomescapeException;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 
 @Service
 public class AvailableTimeService {
-    private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
 
-    public AvailableTimeService(ReservationRepository reservationRepository,
-                                ReservationTimeRepository reservationTimeRepository) {
-        this.reservationRepository = reservationRepository;
+    public AvailableTimeService(ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
     }
 
-    //todo : 메서드 개선
     public List<AvailableTimeResponse> findByThemeAndDate(LocalDate date, long themeId) {
-        Set<Long> alreadyReservedTimeIds = reservationRepository.findAll().stream()
-                .filter(reservation -> reservation.isDateOf(date))
-                .filter(reservation -> reservation.isThemeOf(themeId))
-                .map(Reservation::getReservationTime)
-                .map(ReservationTime::getId)
-                .collect(Collectors.toSet());
+        Theme theme = themeRepository.findById(themeId)
+                .orElseThrow(() -> new RoomescapeException(NOT_FOUND_THEME));
+
+        var alreadyUsedTimes = new HashSet<>(reservationTimeRepository.findUsedTimeByDateAndTheme(date, theme));
 
         return reservationTimeRepository.findAll().stream()
-                .map(reservationTime -> {
-                    long id = reservationTime.getId();
-                    boolean isBooked = alreadyReservedTimeIds.contains(id);
-                    return new AvailableTimeResponse(id, reservationTime.getStartAt(), isBooked);
-                })
+                .map(reservationTime -> toResponse(alreadyUsedTimes, reservationTime))
                 .toList();
+    }
+
+    private AvailableTimeResponse toResponse(Set<ReservationTime> alreadyUsedTimes, ReservationTime reservationTime) {
+        boolean isBooked = alreadyUsedTimes.contains(reservationTime);
+        long id = reservationTime.getId();
+        return new AvailableTimeResponse(id, reservationTime.getStartAt(), isBooked);
     }
 }

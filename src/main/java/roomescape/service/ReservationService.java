@@ -5,9 +5,11 @@ import static roomescape.exception.ExceptionType.NOT_FOUND_RESERVATION_TIME;
 import static roomescape.exception.ExceptionType.NOT_FOUND_THEME;
 import static roomescape.exception.ExceptionType.PAST_TIME_RESERVATION;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -21,6 +23,7 @@ import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 
 @Service
+@Transactional
 public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
@@ -34,7 +37,6 @@ public class ReservationService {
     }
 
     public ReservationResponse save(ReservationRequest reservationRequest) {
-
         ReservationTime requestedTime = reservationTimeRepository.findById(reservationRequest.timeId())
                 .orElseThrow(() -> new RoomescapeException(NOT_FOUND_RESERVATION_TIME));
         Theme requestedTheme = themeRepository.findById(reservationRequest.themeId())
@@ -46,24 +48,25 @@ public class ReservationService {
                 requestedTime,
                 requestedTheme
         );
-        boolean isDuplicate = reservationRepository.findAll()
-                .stream()
-                .anyMatch(reservation -> validateDuplicateReservation(beforeSave, reservation));
-        if (isDuplicate) {
-            throw new RoomescapeException(DUPLICATE_RESERVATION);
-        }
 
-        if (beforeSave.isBefore(LocalDateTime.now())) {
-            throw new RoomescapeException(PAST_TIME_RESERVATION);
-        }
+        validateDuplicateReservation(requestedTime, requestedTheme, beforeSave.getDate());
+        validatePastTimeReservation(beforeSave);
 
         Reservation saved = reservationRepository.save(beforeSave);
         return toResponse(saved);
     }
 
-    private boolean validateDuplicateReservation(Reservation beforeSave, Reservation reservation) {
-        return reservation.isSameDateTime(beforeSave)
-               && beforeSave.isSameTheme(reservation);
+    private void validateDuplicateReservation(ReservationTime requestedTime, Theme requestedTheme, LocalDate date) {
+        boolean isDuplicate = reservationRepository.existsByThemeAndDateAndTime(requestedTheme, date, requestedTime);
+        if (isDuplicate) {
+            throw new RoomescapeException(DUPLICATE_RESERVATION);
+        }
+    }
+
+    private void validatePastTimeReservation(Reservation beforeSave) {
+        if (beforeSave.isBefore(LocalDateTime.now())) {
+            throw new RoomescapeException(PAST_TIME_RESERVATION);
+        }
     }
 
     private ReservationResponse toResponse(Reservation reservation) {

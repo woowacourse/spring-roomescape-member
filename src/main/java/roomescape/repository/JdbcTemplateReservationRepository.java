@@ -2,12 +2,15 @@ package roomescape.repository;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.repository.rowmapper.ReservationRowMapper;
 
 @Repository
@@ -59,6 +62,28 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
                 INNER JOIN theme t2  
                 ON t2.id = r.theme_id""";
         return jdbcTemplate.query(query, reservationRowMapper);
+    }
+
+    @Override
+    public boolean existsByThemeAndDateAndTime(Theme theme, LocalDate date, ReservationTime reservationTime) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE theme_id = ? AND date = ? AND time_id = ?)";
+        long themeId = theme.getId();
+        long timeId = reservationTime.getId();
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, themeId, date, timeId));
+    }
+
+    @Override
+    public boolean existsByTime(ReservationTime reservationTime) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE time_id = ?)";
+        long timeId = reservationTime.getId();
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, timeId));
+    }
+
+    @Override
+    public boolean existsByTheme(Theme theme) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE theme_id = ?)";
+        long themeId = theme.getId();
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, themeId));
     }
 
     @Override

@@ -5,7 +5,7 @@ import static roomescape.exception.ExceptionType.DUPLICATE_RESERVATION_TIME;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.domain.Reservation;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
@@ -14,6 +14,7 @@ import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
 @Service
+@Transactional
 public class ReservationTimeService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
@@ -44,16 +45,18 @@ public class ReservationTimeService {
     }
 
     public void delete(long id) {
-        //todo SQL로 구현
-        List<Reservation> reservations = reservationRepository.findAll();
-        if (isUsedTime(id, reservations)) {
-            throw new RoomescapeException(DELETE_USED_TIME);
-        }
+        validateUsedTime(id);
         reservationTimeRepository.delete(id);
     }
 
-    private static boolean isUsedTime(long id, List<Reservation> reservations) {
-        return reservations.stream()
-                .anyMatch(reservation -> reservation.isReservationTimeOf(id));
+    private void validateUsedTime(long id) {
+        reservationTimeRepository.findById(id).ifPresent(this::validateUsedTime);
+    }
+
+    private void validateUsedTime(ReservationTime reservationTime) {
+        boolean existsByTime = reservationRepository.existsByTime(reservationTime);
+        if (existsByTime) {
+            throw new RoomescapeException(DELETE_USED_TIME);
+        }
     }
 }

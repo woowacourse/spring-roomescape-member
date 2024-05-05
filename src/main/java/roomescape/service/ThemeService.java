@@ -6,6 +6,7 @@ import static roomescape.exception.ExceptionType.DUPLICATE_THEME;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
@@ -14,6 +15,7 @@ import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 
 @Service
+@Transactional
 public class ThemeService {
 
     private final ThemeRepository themeRepository;
@@ -52,14 +54,18 @@ public class ThemeService {
     }
 
     public void delete(long id) {
-        if (isUsedTheme(id)) {
-            throw new RoomescapeException(DELETE_USED_THEME);
-        }
+        validateUsedTheme(id);
         themeRepository.delete(id);
     }
 
-    private boolean isUsedTheme(long id) {
-        return reservationRepository.findAll().stream()
-                .anyMatch(reservation -> reservation.isThemeOf(id));
+    private void validateUsedTheme(long id) {
+        themeRepository.findById(id).ifPresent(this::validateUsedTheme);
+    }
+
+    private void validateUsedTheme(Theme theme) {
+        boolean existsByTime = reservationRepository.existsByTheme(theme);
+        if (existsByTime) {
+            throw new RoomescapeException(DELETE_USED_THEME);
+        }
     }
 }
