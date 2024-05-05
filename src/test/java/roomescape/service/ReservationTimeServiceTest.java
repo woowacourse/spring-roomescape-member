@@ -20,10 +20,8 @@ class ReservationTimeServiceTest {
     @Test
     @DisplayName("중복되는 예약 시간을 생성할 수 없다.")
     void cantCreateDuplicateReservationTime() {
-        // given
         ReservationTimeRequest request = new ReservationTimeRequest("10:00");
 
-        // when, then
         assertThatThrownBy(() -> reservationTimeService.createReservationTime(request))
                 .isInstanceOf(IllegalStateException.class);
     }
@@ -31,10 +29,8 @@ class ReservationTimeServiceTest {
     @Test
     @DisplayName("예약 시간을 사용하는 예약이 존재하면, 삭제하지 않는다.")
     void cantDelete() {
-        // given
         Long id = 1L;
 
-        // when, then
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(id))
                 .isInstanceOf(IllegalStateException.class);
     }

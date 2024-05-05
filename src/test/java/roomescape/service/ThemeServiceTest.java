@@ -19,10 +19,8 @@ class ThemeServiceTest {
     @Test
     @DisplayName("테마를 사용하는 예약이 존재하면, 삭제하지 않는다.")
     void cantDelete() {
-        // given
         Long id = 1L;
 
-        // when, then
         assertThatThrownBy(() -> themeService.deleteTheme(id))
                 .isInstanceOf(IllegalStateException.class);
     }

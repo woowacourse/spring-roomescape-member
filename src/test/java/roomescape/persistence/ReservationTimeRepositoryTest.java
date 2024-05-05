@@ -42,60 +42,47 @@ class ReservationTimeRepositoryTest {
     @Test
     @DisplayName("모든 예약 시간 데이터를 가져온다.")
     void findAll() {
-        // when
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
 
-        // then
         assertThat(reservationTimes).hasSize(3);
     }
 
     @Test
     @DisplayName("특정 예약 시간 id의 데이터를 조회한다.")
     void findById() {
-        // when
         ReservationTime findReservationTime = reservationTimeRepository.findById(2L).orElseThrow();
 
-        // then
         assertThat(findReservationTime.getStartAt()).isEqualTo("11:00");
     }
 
     @Test
     @DisplayName("예약 시간을 생성한다.")
     void create() {
-        // given
         LocalTime startAt = LocalTime.parse("13:00");
         ReservationTime inputData = new ReservationTime(null, startAt);
 
-        // when
         ReservationTime createdTime = reservationTimeRepository.save(inputData);
 
-        // then
         assertThat(createdTime.getStartAt()).isEqualTo(startAt);
     }
 
     @Test
     @DisplayName("예약 시간을 삭제한다.")
     void delete() {
-        // given
         Long id = 3L;
 
-        // when
         reservationTimeRepository.removeById(id);
 
-        // then
         assertThat(reservationTimeRepository.findById(id)).isEmpty();
     }
 
     @Test
     @DisplayName("동일한 예약 시간이 존재하는지 확인한다.")
     void hasDuplicateTime() {
-        // given
         ReservationTime reservationTime = new ReservationTime(LocalTime.parse("10:00"));
 
-        // when
         boolean result = reservationTimeRepository.hasDuplicateTime(reservationTime);
 
-        // then
         assertThat(result).isTrue();
     }
 }

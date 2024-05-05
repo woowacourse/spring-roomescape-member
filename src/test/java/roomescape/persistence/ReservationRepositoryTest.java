@@ -44,20 +44,16 @@ class ReservationRepositoryTest {
     @Test
     @DisplayName("모든 예약 데이터를 가져온다.")
     void findAll() {
-        // when
         List<Reservation> reservations = reservationRepository.findAll();
 
-        // then
         assertThat(reservations).hasSize(3);
     }
 
     @Test
     @DisplayName("특정 예약 id의 데이터를 조회한다.")
     void findById() {
-        // when
         Reservation findReservations = reservationRepository.findById(2L);
 
-        // then
         assertAll(
                 () -> assertThat(findReservations.getName().value()).isEqualTo("엘라"),
                 () -> assertThat(findReservations.getDate()).isEqualTo("2024-05-04")
@@ -68,48 +64,39 @@ class ReservationRepositoryTest {
     @Test
     @DisplayName("새로운 예약을 생성한다.")
     void create() {
-        // given
         Name name = new Name("브라운");
         LocalDate date = LocalDate.parse("2023-08-05");
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.parse("10:00"));
         Theme theme = new Theme(1L, null, null, null);
         Reservation createReservation = new Reservation(name, date, reservationTime, theme);
 
-        // when
         reservationRepository.save(createReservation);
         List<Reservation> reservations = reservationRepository.findAll();
 
-        // then
         assertThat(reservations).hasSize(4);
     }
 
     @Test
     @DisplayName("특정 id를 가진 예약을 삭제한다.")
     void remove() {
-        // given
         Long id = 2L;
 
-        // when
         reservationRepository.removeById(id);
 
-        // then
         assertThatThrownBy(() -> reservationRepository.findById(id)).isInstanceOf(EmptyResultDataAccessException.class);
     }
 
     @Test
     @DisplayName("동일한 날짜, 시간, 테마의 예약이 있는지 확인한다.")
     void hasDuplicateDateTimeThemeReservation() {
-        // given
         Name name = new Name("아톰");
         LocalDate date = LocalDate.parse("2024-05-04");
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.parse("10:00"));
         Theme theme = new Theme(1L, "테마1", "테마1설명", "테마1이미지");
         Reservation reservation = new Reservation(name, date, reservationTime, theme);
 
-        // when
         boolean result = reservationRepository.hasDuplicateReservation(reservation);
 
-        // then
         assertThat(result).isTrue();
     }
 }

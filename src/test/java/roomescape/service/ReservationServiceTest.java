@@ -27,11 +27,9 @@ class ReservationServiceTest {
     @Test
     @DisplayName("지나간 날짜에 대한 예약은 생성할 수 없다.")
     void cantCreateReservationWithPreviousDate() {
-        // given
         LocalDate date = LocalDate.now().minusDays(1);
         ReservationRequest request = new ReservationRequest("엘라", date.toString(), 1L, 1L);
 
-        // when, then
         assertThatThrownBy(() -> reservationService.createReservation(request))
                 .isInstanceOf(IllegalStateException.class);
     }
@@ -39,13 +37,11 @@ class ReservationServiceTest {
     @Test
     @DisplayName("당일이지만, 이전 시간이면 예약을 생성할 수 없다.")
     void cantCreateReservationWithPreviousTime() {
-        // given
         ReservationTime reservationTime = reservationTimeRepository.save(
                 new ReservationTime(LocalTime.now().minusHours(1)));
         LocalDate date = LocalDate.now();
         ReservationRequest request = new ReservationRequest("엘라", date.toString(), reservationTime.getId(), 1L);
 
-        // when, then
         assertThatThrownBy(() -> reservationService.createReservation(request))
                 .isInstanceOf(IllegalStateException.class);
     }
