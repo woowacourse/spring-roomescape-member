@@ -5,6 +5,7 @@ import java.util.List;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +22,7 @@ import roomescape.web.exception.DateValid;
 
 @RestController
 @RequestMapping("/times")
+@Validated
 class ReservationTimeController {
 
     private final ReservationTimeService reservationTimeService;
@@ -55,8 +57,8 @@ class ReservationTimeController {
 
     @GetMapping("/available")
     public ResponseEntity<List<AvailableReservationTimeResponse>> readReservationTimesWithBooked(
-            @Valid @DateValid @RequestParam String date,
-            @Valid @Positive @RequestParam long themeId
+            @DateValid @RequestParam String date,
+            @Positive @RequestParam long themeId
     ) {
         List<AvailableReservationTimeResponse> responses =
                 reservationTimeService.getAvailableReservationTimes(date, themeId);

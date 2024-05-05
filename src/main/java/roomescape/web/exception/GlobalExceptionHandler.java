@@ -2,6 +2,9 @@ package roomescape.web.exception;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -9,12 +12,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.validation.method.ParameterValidationResult;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import roomescape.web.exception.response.ErrorResponse;
 
@@ -33,12 +34,11 @@ class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<ErrorResponse> handle(HandlerMethodValidationException exception) {
-        List<ParameterValidationResult> allValidationResults = exception.getAllValidationResults();
-        ParameterValidationResult[] parameterValidationResults =
-                allValidationResults.toArray(ParameterValidationResult[]::new);
+    public ResponseEntity<ErrorResponse> handle(ConstraintViolationException exception) {
+        Set<ConstraintViolation<?>> constraintViolations = exception.getConstraintViolations();
+        ErrorResponse errorResponse = new ErrorResponse(constraintViolations);
 
-        return new ResponseEntity(new ErrorResponse(parameterValidationResults), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(value = {
