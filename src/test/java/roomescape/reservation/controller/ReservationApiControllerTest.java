@@ -40,7 +40,7 @@ class ReservationApiControllerTest {
     @DisplayName("예약 목록 조회에 성공하면 200 응답을 받는다.")
     void getReservationRequestTest() throws Exception {
         mockMvc.perform(get("/reservations")
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
@@ -61,7 +61,8 @@ class ReservationApiControllerTest {
 
         mockMvc.perform(post("/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(reservationSaveRequest)))
+                        .content(objectMapper.writeValueAsString(reservationSaveRequest))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "/reservations/1"))
                 .andExpect(jsonPath("$.id").value(reservationResponse.id()));
@@ -71,7 +72,7 @@ class ReservationApiControllerTest {
     @DisplayName("예약을 성공적으로 제거하면 204 응답을 받는다.")
     void deleteReservationRequestTest() throws Exception {
         mockMvc.perform(delete("/reservations/{id}", 1L)
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
     }
 }

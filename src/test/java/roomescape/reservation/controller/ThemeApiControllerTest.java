@@ -36,7 +36,7 @@ class ThemeApiControllerTest {
     @DisplayName("인기 테마 목록 조회를 성공하면 200 응답을 받는다.")
     void getPopularThemeRequestTest() throws Exception {
         mockMvc.perform(get("/themes/popular")
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
@@ -44,7 +44,7 @@ class ThemeApiControllerTest {
     @DisplayName("테마 목록 조회에 성공하면 200 응답을 받는다.")
     void getThemeRequestTest() throws Exception {
         mockMvc.perform(get("/themes")
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
@@ -63,7 +63,8 @@ class ThemeApiControllerTest {
 
         mockMvc.perform(post("/themes")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(themeSaveRequest)))
+                        .content(objectMapper.writeValueAsString(themeSaveRequest))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "/themes/1"))
                 .andExpect(jsonPath("$.id").value(themeResponse.id()));
@@ -73,7 +74,7 @@ class ThemeApiControllerTest {
     @DisplayName("테마를 성공적으로 제거하면 204 응답을 받는다.")
     void deleteThemeRequestTest() throws Exception {
         mockMvc.perform(delete("/themes/{id}", 1L)
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
     }
 }
