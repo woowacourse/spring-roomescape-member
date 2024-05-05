@@ -1,16 +1,20 @@
 package roomescape.time.dao;
 
+import java.util.List;
+import java.util.Optional;
+
+import javax.sql.DataSource;
+
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.domain.ReservationUserTime;
-
-import javax.sql.DataSource;
-import java.util.List;
 
 @Repository
 public class ReservationTimeDao {
@@ -34,9 +38,13 @@ public class ReservationTimeDao {
         return simpleJdbcInsert.executeAndReturnKey(params).longValue();
     }
 
-    public ReservationTime findById(final long id) {
+    public Optional<ReservationTime> findById(final long id) {
         final String sql = "select * from reservation_time where id = ?";
-        return jdbcTemplate.queryForObject(sql, timeRowMapper, id);
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, timeRowMapper, id));
+        } catch (final EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
     }
 
     public List<ReservationTime> findAll() {
@@ -55,5 +63,11 @@ public class ReservationTimeDao {
                 "AS already_booked " +
                 "FROM reservation_time t";
         return jdbcTemplate.query(sql, userTimeRowMapper, date, themeId);
+    }
+
+    public boolean checkExistTime(final ReservationTime reservationTime) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation_time WHERE start_at = ?)";
+        Boolean result = jdbcTemplate.queryForObject(sql, Boolean.class, reservationTime.getStartAt());
+        return Boolean.TRUE.equals(result);
     }
 }

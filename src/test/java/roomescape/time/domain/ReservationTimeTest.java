@@ -1,12 +1,12 @@
 package roomescape.time.domain;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.format.DateTimeParseException;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 class ReservationTimeTest {
 
@@ -14,11 +14,11 @@ class ReservationTimeTest {
     @Test
     void validateTimeExist() {
         assertAll(
-                () -> assertThatThrownBy(() -> new ReservationTime(1L, null))
+                () -> assertThatThrownBy(() -> ReservationTime.of(1L, null))
                         .isInstanceOf(NullPointerException.class),
-                () -> assertThatThrownBy(() -> new ReservationTime(1L, "25:00"))
+                () -> assertThatThrownBy(() -> ReservationTime.of(1L, "25:00"))
                         .isInstanceOf(DateTimeParseException.class),
-                () -> assertThatThrownBy(() -> new ReservationTime(1L, "15:68"))
+                () -> assertThatThrownBy(() -> ReservationTime.of(1L, "15:68"))
                         .isInstanceOf(DateTimeParseException.class)
         );
     }

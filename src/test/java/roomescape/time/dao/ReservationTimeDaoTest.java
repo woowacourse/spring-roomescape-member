@@ -1,18 +1,19 @@
 package roomescape.time.dao;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+
+import java.util.List;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
+
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.domain.ReservationUserTime;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -25,14 +26,14 @@ class ReservationTimeDaoTest {
     @Test
     @DisplayName("예약 시간을 생성할 수 있다.")
     void save() {
-        ReservationTime reservationTime = new ReservationTime(null, "23:59");
+        ReservationTime reservationTime = ReservationTime.of(null, "23:59");
         assertThat(reservationTimeDao.save(reservationTime)).isEqualTo(11L);
     }
 
     @Test
     @DisplayName("특정 예약 시간을 조회할 수 있다.")
     void findById() {
-        assertThat(reservationTimeDao.findById(1L)).isEqualTo(new ReservationTime(1L, "09:00"));
+        assertThat(reservationTimeDao.findById(1L).get()).isEqualTo(ReservationTime.of(1L, "09:00"));
     }
 
     @Test
@@ -40,7 +41,7 @@ class ReservationTimeDaoTest {
     void findAll() {
         assertAll(
                 () -> assertThat(reservationTimeDao.findAll()
-                        .size()).isEqualTo(10)
+                                                   .size()).isEqualTo(10)
         );
     }
 
@@ -54,17 +55,23 @@ class ReservationTimeDaoTest {
     @DisplayName("날짜와 테마를 통해 가능한 예약을 찾을 수 있다.")
     void findAvailableTime() {
         List<ReservationUserTime> userTimes = List.of(
-                new ReservationUserTime(1, "09:00", false),
-                new ReservationUserTime(2, "10:00", true),
-                new ReservationUserTime(3, "11:00", false),
-                new ReservationUserTime(4, "12:00", false),
-                new ReservationUserTime(5, "13:00", false),
-                new ReservationUserTime(6, "14:00", false),
-                new ReservationUserTime(7, "15:00", false),
-                new ReservationUserTime(8, "16:00", false),
-                new ReservationUserTime(9, "17:00", false),
-                new ReservationUserTime(10, "18:00", false)
+                new ReservationUserTime(1L, "09:00", false),
+                new ReservationUserTime(2L, "10:00", true),
+                new ReservationUserTime(3L, "11:00", false),
+                new ReservationUserTime(4L, "12:00", false),
+                new ReservationUserTime(5L, "13:00", false),
+                new ReservationUserTime(6L, "14:00", false),
+                new ReservationUserTime(7L, "15:00", false),
+                new ReservationUserTime(8L, "16:00", false),
+                new ReservationUserTime(9L, "17:00", false),
+                new ReservationUserTime(10L, "18:00", false)
         );
         assertThat(reservationTimeDao.findAvailableTime("2024-04-24", 2)).isEqualTo(userTimes);
+    }
+
+    @Test
+    @DisplayName("특정 예약 시간이 이미 존재하는 지 알 수 있다.")
+    void checkExistTime() {
+        assertThat(reservationTimeDao.checkExistTime(ReservationTime.of(1L, "09:00"))).isTrue();
     }
 }

@@ -1,46 +1,49 @@
 package roomescape.time.service;
 
-import org.springframework.dao.DataAccessException;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
-import roomescape.response.ResponseCode;
+
+import roomescape.exception.DuplicatedDataException;
+import roomescape.exception.EmptyDataAccessException;
+import roomescape.exception.UnableDeleteDataException;
+import roomescape.reservation.dao.ReservationDao;
 import roomescape.time.dao.ReservationTimeDao;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.domain.ReservationUserTime;
 import roomescape.time.dto.ReservationTimeRequestDto;
-import roomescape.time.dto.ReservationTimeResponseDto;
-
-import java.util.List;
 
 @Service
 public class ReservationTimeService {
 
+    private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
 
-    public ReservationTimeService(final ReservationTimeDao reservationTimeDao) {
+    public ReservationTimeService(final ReservationDao reservationDao, final ReservationTimeDao reservationTimeDao) {
+        this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
     }
 
-    public List<ReservationTimeResponseDto> findAll() {
-        final List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
-        return reservationTimes.stream()
-                .map(ReservationTimeResponseDto::new)
-                .toList();
+    public List<ReservationTime> findAll() {
+        return reservationTimeDao.findAll();
     }
 
-    public ReservationTimeResponseDto save(final ReservationTimeRequestDto requestDto) {
+    public ReservationTime save(final ReservationTimeRequestDto requestDto) {
+        final ReservationTime reservationTime = ReservationTime.of(null, requestDto.startAt());
+        if (reservationTimeDao.checkExistTime(reservationTime)) {
+            throw new DuplicatedDataException("이미 해당 예약 시간이 존재합니다.");
+        }
         final long id = reservationTimeDao.save(requestDto.toReservationTime());
-        final ReservationTime reservationTime = reservationTimeDao.findById(id);
-        return new ReservationTimeResponseDto(id, reservationTime.getStartAt().toString());
+        return new ReservationTime(id, reservationTime);
     }
 
-    public ResponseCode deleteById(final long id) {
-        try {
-            if (reservationTimeDao.deleteById(id) > 0) {
-                return ResponseCode.SUCCESS_DELETE;
-            }
-            return ResponseCode.NOT_FOUND;
-        } catch (final DataAccessException dataAccessException) {
-            return ResponseCode.FAILED_DELETE;
+    public void deleteById(final long id) {
+        if (reservationDao.checkExistReservationByTime(id)) {
+            throw new UnableDeleteDataException("해당 시간을 예약한 예약내역이 존재하여 삭제가 불가합니다.");
+        }
+        int affectedColumn = reservationTimeDao.deleteById(id);
+        if (affectedColumn == 0) {
+            throw new EmptyDataAccessException("timeId : %d에 해당하는 시간이 존재하지 않습니다.", id);
         }
     }
 

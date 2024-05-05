@@ -1,11 +1,12 @@
 package roomescape.time.dao.mapper;
 
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Component;
-import roomescape.time.domain.ReservationUserTime;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
+
+import roomescape.time.domain.ReservationUserTime;
 
 @Component
 public class UserTimeRowMapper implements RowMapper<ReservationUserTime> {

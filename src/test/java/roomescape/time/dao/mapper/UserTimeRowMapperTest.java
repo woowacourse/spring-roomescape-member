@@ -1,13 +1,14 @@
 package roomescape.time.dao.mapper;
 
-import org.h2.tools.SimpleResultSet;
-import org.junit.jupiter.api.Test;
-import roomescape.time.domain.ReservationUserTime;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.sql.SQLException;
 import java.sql.Types;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.h2.tools.SimpleResultSet;
+import org.junit.jupiter.api.Test;
+
+import roomescape.time.domain.ReservationUserTime;
 
 class UserTimeRowMapperTest {
     private final UserTimeRowMapper userTimeRowMapper = new UserTimeRowMapper();
@@ -21,8 +22,7 @@ class UserTimeRowMapperTest {
         rs.addRow(1, "10:00", false);
         rs.next();
 
-        ReservationUserTime reservationUserTime = new ReservationUserTime(1, "10:00", false);
+        ReservationUserTime reservationUserTime = new ReservationUserTime(1L, "10:00", false);
         assertThat(userTimeRowMapper.mapRow(rs, 1)).isEqualTo(reservationUserTime);
     }
-
 }

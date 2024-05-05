@@ -32,7 +32,7 @@ class ReservationDaoTest {
     @Autowired
     private ThemeDao themeDao;
 
-    private final ReservationTime reservationTime = new ReservationTime(1L, "10:00");
+    private final ReservationTime reservationTime = ReservationTime.of(1L, "10:00");
     private final Theme theme = new Theme(1L, "정글 모험", "열대 정글의 심연을 탐험하세요.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
     private final Reservation reservation = Reservation.of(1L, "hotea", LocalDate.MAX.toString(), reservationTime, theme);
 
@@ -79,6 +79,15 @@ class ReservationDaoTest {
         save();
         assertThat(reservationDao.checkExistReservationByTheme(
                 theme.getId())
+        ).isTrue();
+    }
+
+    @Test
+    @DisplayName("특정 시간 예약이 존재하는지 알 수 있다.")
+    void checkExistReservationByTime() {
+        save();
+        assertThat(reservationDao.checkExistReservationByTime(
+                reservationTime.getId())
         ).isTrue();
     }
 }

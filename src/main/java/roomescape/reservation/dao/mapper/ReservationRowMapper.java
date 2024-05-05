@@ -19,7 +19,7 @@ public class ReservationRowMapper implements RowMapper<Reservation> {
                 resultSet.getLong("reservation_id"),
                 resultSet.getString("reservation_name"),
                 resultSet.getString("date"),
-                new ReservationTime(
+                ReservationTime.of(
                         resultSet.getLong("time_id"),
                         resultSet.getString("time_value")
                 ),

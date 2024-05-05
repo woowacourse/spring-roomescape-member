@@ -1,15 +1,22 @@
 package roomescape.time.controller;
 
+import java.net.URI;
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import roomescape.response.ResponseCode;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import roomescape.time.domain.ReservationUserTime;
 import roomescape.time.dto.ReservationTimeRequestDto;
 import roomescape.time.dto.ReservationTimeResponseDto;
 import roomescape.time.service.ReservationTimeService;
-
-import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequestMapping("/times")
@@ -23,19 +30,22 @@ public class ReservationTimeController {
 
     @PostMapping
     public ResponseEntity<ReservationTimeResponseDto> save(@RequestBody final ReservationTimeRequestDto request) {
-        ReservationTimeResponseDto timeResponseDto = reservationTimeService.save(request);
-        return ResponseEntity.created(URI.create("/times/" + timeResponseDto.id())).body(timeResponseDto);
+        final ReservationTimeResponseDto responseDto = new ReservationTimeResponseDto(reservationTimeService.save(request));
+        return ResponseEntity.created(URI.create("/times/" + responseDto.id())).body(responseDto);
     }
 
     @GetMapping
-    public List<ReservationTimeResponseDto> findAll() {
-        return reservationTimeService.findAll();
+    public ResponseEntity<List<ReservationTimeResponseDto>> findAll() {
+        final List<ReservationTimeResponseDto> responseDto = reservationTimeService.findAll().stream()
+                                                                                   .map(ReservationTimeResponseDto::new)
+                                                                                   .toList();
+        return ResponseEntity.ok(responseDto);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") final long id) {
-        final ResponseCode deletedStatus = reservationTimeService.deleteById(id);
-        return ResponseEntity.status(deletedStatus.getHttpStatus()).build();
+        reservationTimeService.deleteById(id);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/available")

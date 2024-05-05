@@ -33,7 +33,7 @@ class ReservationRowMapperTest {
         rs.next();
 
         Reservation reservation = Reservation.of(1L, "hotea", LocalDate.MAX.toString(),
-                new ReservationTime(1L, "10:00"),
+                ReservationTime.of(1L, "10:00"),
                 new Theme(1L, "정글 모험", "열대 정글의 심연을 탐험하세요.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg")
         );
         assertThat(reservationRowMapper.mapRow(rs, 1)).isEqualTo(reservation);

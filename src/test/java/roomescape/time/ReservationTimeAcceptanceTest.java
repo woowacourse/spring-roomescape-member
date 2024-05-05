@@ -1,17 +1,16 @@
 package roomescape.time;
 
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
+import static org.hamcrest.Matchers.is;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.hamcrest.Matchers.is;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import roomescape.time.dto.ReservationTimeRequestDto;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -27,34 +26,21 @@ public class ReservationTimeAcceptanceTest {
 
     @Test
     void save() {
-        Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10:00");
+        ReservationTimeRequestDto requestDto = new ReservationTimeRequestDto("10:00");
 
         RestAssured.given()
-                   .log()
-                   .all()
                    .contentType(ContentType.JSON)
-                   .body(params)
-                   .when()
-                   .post("/times")
-                   .then()
-                   .log()
-                   .all()
-                   .statusCode(201);
+                   .body(requestDto)
+                   .when().post("/times")
+                   .then().statusCode(201);
     }
 
     @Test
     void findAll() {
         save();
         RestAssured.given()
-                   .log()
-                   .all()
-                   .when()
-                   .get("/times")
-                   .then()
-                   .log()
-                   .all()
-                   .statusCode(200)
+                   .when().get("/times")
+                   .then().statusCode(200)
                    .body("size()", is(1));
     }
 
@@ -62,23 +48,11 @@ public class ReservationTimeAcceptanceTest {
     void delete() {
         save();
         RestAssured.given()
-                   .log()
-                   .all()
-                   .when()
-                   .delete("/times/1")
-                   .then()
-                   .log()
-                   .all()
-                   .statusCode(204);
+                   .when().delete("/times/1")
+                   .then().statusCode(200);
 
         RestAssured.given()
-                   .log()
-                   .all()
-                   .when()
-                   .delete("/times/1")
-                   .then()
-                   .log()
-                   .all()
-                   .statusCode(404);
+                   .when().delete("/times/1")
+                   .then().statusCode(204);
     }
 }
