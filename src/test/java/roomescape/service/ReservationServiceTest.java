@@ -98,7 +98,7 @@ class ReservationServiceTest {
         //given
         String date = LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_DATE);
         Reservation reservation = new Reservation("lini", date, reservationTime, theme);
-        Reservation target = reservationRepository.save(reservation);
+        reservationRepository.save(reservation);
 
         ReservationRequest reservationRequest = new ReservationRequest("lini", date, reservationTime.getId(), theme.getId());
 

@@ -12,12 +12,14 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
+import org.springframework.test.context.jdbc.SqlMergeMode;
 import roomescape.service.dto.ThemeRequest;
 
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SqlMergeMode(SqlMergeMode.MergeMode.MERGE)
 @Sql(scripts = {"classpath:truncate.sql"}, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 class ThemeControllerTest {
     @LocalServerPort
@@ -69,7 +71,7 @@ class ThemeControllerTest {
     @Test
     void findAll() {
         //given
-        createThemeByName("레벨2 탈출");
+        createThemeByName();
 
         //when&then
         RestAssured.given().log().all()
@@ -82,7 +84,7 @@ class ThemeControllerTest {
     @Test
     void deleteTheme() {
         //given
-        long id = createThemeByName("레벨2 탈출");
+        long id = createThemeByName();
 
         //when&then
         RestAssured.given().log().all()
@@ -95,8 +97,8 @@ class ThemeControllerTest {
                 .assertThat().statusCode(200).body("size()", is(0));
     }
 
-    private long createThemeByName(String name) {
-        ThemeRequest themeRequest = new ThemeRequest(name, "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+    private long createThemeByName() {
+        ThemeRequest themeRequest = new ThemeRequest("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         return (int) RestAssured.given().contentType(ContentType.JSON).body(themeRequest)
                 .when().post("/themes")
                 .then().extract().response().jsonPath().get("id");
