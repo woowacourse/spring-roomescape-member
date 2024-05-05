@@ -50,7 +50,6 @@ class ReservationTimeControllerTest extends ControllerTest {
     @ParameterizedTest
     @ValueSource(strings = {"25:00", "10:60"})
     void shouldReturn400BadRequestWhenCreateInvalidReservationTime(String time) throws Exception {
-
         String reservationTimeRequestJson = "{\"startAt\": \"" + time + "\"}";
         mvc.perform(post("/times")
                         .contentType(MediaType.APPLICATION_JSON)
