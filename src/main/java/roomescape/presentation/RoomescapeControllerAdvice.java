@@ -19,10 +19,6 @@ import roomescape.exception.RoomescapeException;
 public class RoomescapeControllerAdvice {
     private static final Logger logger = LoggerFactory.getLogger(RoomescapeControllerAdvice.class);
 
-    private static final Map<Class<? extends Throwable>, String> messages = Map.of(
-            InvalidFormatException.class, "올바르지 않은 형식입니다."
-    );
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ProblemDetail handleDateTimeParseException(MethodArgumentNotValidException exception) {
         logger.error(exception.getMessage(), exception);
@@ -48,9 +44,7 @@ public class RoomescapeControllerAdvice {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ProblemDetail handleHttpMessageNotReadableException(HttpMessageNotReadableException exception) {
         logger.error(exception.getMessage(), exception);
-        Throwable cause = exception.getMostSpecificCause();
-        String message = messages.getOrDefault(cause.getClass(), "값을 변환하는 중 오류가 발생했습니다.");
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, message);
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "값을 변환하는 중 오류가 발생했습니다.");
         problemDetail.setTitle("요청을 변환할 수 없습니다.");
         return problemDetail;
     }
