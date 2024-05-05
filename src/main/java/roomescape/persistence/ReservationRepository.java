@@ -111,29 +111,6 @@ public class ReservationRepository {
         return jdbcTemplate.query(sql, reservationRowMapper());
     }
 
-    public Reservation findById(long id) {
-        String sql = """
-                SELECT 
-                    r.id AS reservation_id, 
-                    r.name, 
-                    r.date, 
-                    t.id AS time_id, 
-                    t.start_at AS time_value,
-                    th.id AS theme_id,
-                    th.name AS theme_name,
-                    th.description,
-                    th.thumbnail
-                FROM reservation AS r 
-                INNER JOIN reservation_time AS t
-                ON r.time_id = t.id
-                INNER JOIN theme AS th
-                ON r.theme_id = th.id
-                WHERE r.id = ?
-                """;
-
-        return jdbcTemplate.queryForObject(sql, reservationRowMapper(), id);
-    }
-
     private RowMapper<Reservation> reservationRowMapper() {
         return (resultSet, rowNum) -> {
             LocalTime startAt = LocalTime.parse(resultSet.getString("start_at"));

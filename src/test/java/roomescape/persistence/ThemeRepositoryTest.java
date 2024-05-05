@@ -4,60 +4,82 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.domain.Theme;
+import roomescape.support.IntegrationTestSupport;
 
-@JdbcTest
-@Sql(scripts = "/reset_test_data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_CLASS)
-class ThemeRepositoryTest {
-
-    private ThemeRepository themeRepository;
+/*
+ * 테스트 데이터베이스 테마 초기 데이터
+ * {ID=1, NAME="레벨1 탈출"}
+ * {ID=2, NAME="레벨2 탈출"}
+ */
+class ThemeRepositoryTest extends IntegrationTestSupport {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @BeforeEach
-    void setUp() {
-        themeRepository = new ThemeRepository(jdbcTemplate);
-    }
+    private ThemeRepository target;
 
     @Test
-    @DisplayName("모든 테마를 조회한다.")
+    @DisplayName("모든 테마 데이터를 조회한다.")
     void findAll() {
-        List<Theme> themes = themeRepository.findAll();
+        List<Theme> themes = target.findAll();
 
         assertThat(themes).hasSize(2);
     }
 
     @Test
-    @DisplayName("테마를 생성한다.")
-    void create() {
-        Theme theme = new Theme("레벨4 탈출",
-                "우테코 레벨4를 탈출하는 내용입니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+    @DisplayName("테마 데이터가 존재하지 않으면 빈 리스트를 반환한다.")
+    void empty() {
+        cleanUp("reservation");
+        cleanUp("theme");
 
-        themeRepository.save(theme);
+        List<Theme> themes = target.findAll();
 
-        List<Theme> themes = themeRepository.findAll();
-        assertThat(themes).hasSize(3);
+        assertThat(themes).isEmpty();
     }
 
     @Test
-    @DisplayName("테마를 삭제한다.")
+    @DisplayName("특정 테마 id의 데이터를 조회한다.")
+    void findById() {
+        Optional<Theme> findReservationTime = target.findById(2L);
+
+        assertThat(findReservationTime)
+                .map(Theme::getName)
+                .isNotEmpty()
+                .get()
+                .isEqualTo("레벨2 탈출");
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 테마 id의 데이터를 조회한다.")
+    void notFound() {
+        Optional<Theme> findReservationTime = target.findById(5L);
+
+        assertThat(findReservationTime).isEmpty();
+    }
+
+    @Test
+    @DisplayName("새로운 테마 데이터를 생성한다.")
+    void create() {
+        Theme theme = new Theme("레벨4 탈출", "우테코 레벨4를 탈출하는 내용입니다.", "woowahan.com");
+
+        target.save(theme);
+
+        int countRow = countRow("theme");
+        assertThat(countRow).isEqualTo(3);
+    }
+
+    @Test
+    @DisplayName("특정 id를 가진 테마를 삭제한다.")
     void delete() {
-        Long id = 2L;
+        target.removeById(2L);
 
-        themeRepository.removeById(id);
-
-        List<Theme> themes = themeRepository.findAll();
-        assertThat(themes).hasSize(1);
+        int countRow = countRow("theme");
+        assertThat(countRow).isEqualTo(1);
     }
 
     // 테스트 데이터 - 테마아이디(해당테마 예약 갯수): 6(6), 5(5), 7(5), 4(4), 3(3), 1(1), 8(1), 2(0), 9(0), 10(0)
@@ -70,11 +92,11 @@ class ThemeRepositoryTest {
         LocalDate endDate = LocalDate.parse("2024-04-07");
         int limit = 10;
 
-        List<Theme> popularThemes = themeRepository.findPopularThemes(startDate, endDate, limit);
+        List<Theme> popularThemes = target.findPopularThemes(startDate, endDate, limit);
 
         assertThat(popularThemes)
-                .hasSize(10)
-                .extracting("id")
+                .hasSize(limit)
+                .extracting(Theme::getId)
                 .containsExactly(6L, 5L, 7L, 4L, 3L, 1L, 8L, 2L, 9L, 10L);
     }
 }

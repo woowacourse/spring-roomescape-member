@@ -1,11 +1,17 @@
-DELETE FROM reservation;
-ALTER TABLE reservation ALTER COLUMN id RESTART;
+DELETE
+FROM reservation;
+ALTER TABLE reservation
+    ALTER COLUMN id RESTART;
 
-DELETE  FROM reservation_time;
-ALTER TABLE reservation_time ALTER COLUMN id RESTART;
+DELETE
+FROM reservation_time;
+ALTER TABLE reservation_time
+    ALTER COLUMN id RESTART;
 
-DELETE  FROM theme;
-ALTER TABLE theme ALTER COLUMN id RESTART;
+DELETE
+FROM theme;
+ALTER TABLE theme
+    ALTER COLUMN id RESTART;
 
 INSERT INTO reservation_time (start_at)
 VALUES ('10:00'),
@@ -21,6 +27,6 @@ VALUES ('레벨1 탈출',
         'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
 
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('브라운', '2024-05-04', 1, 1),
-       ('엘라', '2024-05-04', 2, 1),
+VALUES ('브라운', '2023-05-04', 1, 1),
+       ('엘라', '2023-05-04', 2, 1),
        ('릴리', '2023-08-05', 2, 1);

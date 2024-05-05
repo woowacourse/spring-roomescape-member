@@ -1,102 +1,125 @@
 package roomescape.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.support.IntegrationTestSupport;
 
 /*
- * 테스트 데이터베이스 초기 데이터
- * {ID=1, NAME=브라운, DATE=2024-05-04, TIME={ID=1, START_AT="10:00"}}
- * {ID=2, NAME=엘라, DATE=2024-05-04, TIME={ID=2, START_AT="11:00"}}
- * {ID=3, NAME=릴리, DATE=2023-08-05, TIME={ID=2, START_AT="11:00"}}
+ * 테스트 데이터베이스 예약 초기 데이터
+ * {ID=1, NAME=브라운, DATE=2023-05-04, TIME={ID=1, START_AT="10:00"}, THEME={ID=1, NAME="레벨1 탈출"}}
+ * {ID=2, NAME=엘라, DATE=2023-05-04, TIME={ID=2, START_AT="11:00"}, THEME={ID=1, NAME="레벨1 탈출"}}
+ * {ID=3, NAME=릴리, DATE=2023-08-05, TIME={ID=2, START_AT="11:00"}, THEME={ID=1, NAME="레벨1 탈출"}}
  */
-@JdbcTest
-@Sql(scripts = "/reset_test_data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_CLASS)
-class ReservationRepositoryTest {
-
-    private ReservationRepository reservationRepository;
+class ReservationRepositoryTest extends IntegrationTestSupport {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @BeforeEach
-    void setUp() {
-        reservationRepository = new ReservationRepository(jdbcTemplate);
-    }
+    private ReservationRepository target;
 
     @Test
     @DisplayName("모든 예약 데이터를 가져온다.")
     void findAll() {
-        List<Reservation> reservations = reservationRepository.findAll();
+        List<Reservation> reservations = target.findAll();
 
         assertThat(reservations).hasSize(3);
     }
 
     @Test
-    @DisplayName("특정 예약 id의 데이터를 조회한다.")
-    void findById() {
-        Reservation findReservations = reservationRepository.findById(2L);
+    @DisplayName("예약 데이터가 존재하지 않으면 빈 리스트를 반환한다.")
+    void empty() {
+        cleanUp("reservation");
 
-        assertAll(
-                () -> assertThat(findReservations.getName().value()).isEqualTo("엘라"),
-                () -> assertThat(findReservations.getDate()).isEqualTo("2024-05-04")
-        );
+        List<Reservation> reservations = target.findAll();
 
+        assertThat(reservations).isEmpty();
     }
 
     @Test
-    @DisplayName("새로운 예약을 생성한다.")
+    @DisplayName("특정 테마 id를 사용하고 있는 예약 데이터가 존재하는지 검증한다.")
+    void hasByThemeId() {
+        boolean result = target.hasByThemeId(1L);
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    @DisplayName("특정 테마 id를 사용하고 있는 예약 데이터가 존재하지 않는지 검증한다.")
+    void noHasByThemeId() {
+        boolean result = target.hasByThemeId(2L);
+
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    @DisplayName("특정 시간 id를 사용하고 있는 예약 데이터가 존재하는지 검증한다.")
+    void hasByTimeId() {
+        boolean result = target.hasByTimeId(1L);
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    @DisplayName("특정 시간 id를 사용하고 있는 예약 데이터가 존재하지 않는지 검증한다.")
+    void noHasByTimeId() {
+        boolean result = target.hasByTimeId(3L);
+
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    @DisplayName("새로운 예약 데이터를 저장한다.")
     void create() {
-        Name name = new Name("브라운");
-        LocalDate date = LocalDate.parse("2023-08-05");
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.parse("10:00"));
-        Theme theme = new Theme(1L, null, null, null);
-        Reservation createReservation = new Reservation(name, date, reservationTime, theme);
+        Reservation reservation = createReservation("브라운", "2023-08-05", 1L, 1L);
 
-        reservationRepository.save(createReservation);
-        List<Reservation> reservations = reservationRepository.findAll();
+        target.save(reservation);
 
-        assertThat(reservations).hasSize(4);
+        int countRow = countRow("reservation");
+        assertThat(countRow).isEqualTo(4);
     }
 
     @Test
     @DisplayName("특정 id를 가진 예약을 삭제한다.")
     void remove() {
-        Long id = 2L;
+        target.removeById(2L);
 
-        reservationRepository.removeById(id);
-
-        assertThatThrownBy(() -> reservationRepository.findById(id)).isInstanceOf(EmptyResultDataAccessException.class);
+        int countRow = countRow("reservation");
+        assertThat(countRow).isEqualTo(2);
     }
 
     @Test
     @DisplayName("동일한 날짜, 시간, 테마의 예약이 있는지 확인한다.")
     void hasDuplicateDateTimeThemeReservation() {
-        Name name = new Name("아톰");
-        LocalDate date = LocalDate.parse("2024-05-04");
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.parse("10:00"));
-        Theme theme = new Theme(1L, "테마1", "테마1설명", "테마1이미지");
-        Reservation reservation = new Reservation(name, date, reservationTime, theme);
+        Reservation reservation = createReservation("아톰", "2023-05-04", 1L, 1L);
 
-        boolean result = reservationRepository.hasDuplicateReservation(reservation);
+        boolean result = target.hasDuplicateReservation(reservation);
 
         assertThat(result).isTrue();
+    }
+
+    @Test
+    @DisplayName("동일한 날짜, 시간, 테마의 예약이 없는지 확인한다.")
+    void noHasDuplicateDateTimeThemeReservation() {
+        Reservation reservation = createReservation("아톰", "2023-06-04", 2L, 1L);
+
+        boolean result = target.hasDuplicateReservation(reservation);
+
+        assertThat(result).isFalse();
+    }
+
+    private Reservation createReservation(String nameValue, String dateValue, long timeId, long themeId) {
+        Name name = new Name(nameValue);
+        LocalDate date = LocalDate.parse(dateValue);
+        ReservationTime reservationTime = new ReservationTime(timeId, null);
+        Theme theme = new Theme(themeId, null, null, null);
+
+        return new Reservation(name, date, reservationTime, theme);
     }
 }
