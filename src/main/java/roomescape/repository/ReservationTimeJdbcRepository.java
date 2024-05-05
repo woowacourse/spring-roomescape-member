@@ -16,8 +16,6 @@ import roomescape.domain.ReservationTime;
 @Repository
 public class ReservationTimeJdbcRepository implements ReservationTimeRepository {
 
-    private static final String TABLE_NAME = "reservation_time";
-
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
@@ -33,12 +31,12 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
     public ReservationTimeJdbcRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName(TABLE_NAME)
+                .withTableName("reservation_time")
                 .usingGeneratedKeyColumns("id");
     }
 
     public List<ReservationTime> findAll() {
-        String sql = "SELECT id, start_at FROM " + TABLE_NAME;
+        String sql = "SELECT id, start_at FROM reservation_time";
         return jdbcTemplate.query(sql, reservationTimeRowMapper);
     }
 
@@ -59,7 +57,7 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
     }
 
     public int deleteById(Long id) {
-        String sql = "DELETE FROM " + TABLE_NAME + " WHERE id = ?";
+        String sql = "DELETE FROM reservation_time WHERE id = ?";
         try {
             return jdbcTemplate.update(sql, id);
         } catch (DataIntegrityViolationException e) {

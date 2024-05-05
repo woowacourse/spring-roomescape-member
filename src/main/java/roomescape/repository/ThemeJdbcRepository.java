@@ -15,8 +15,6 @@ import roomescape.domain.Theme;
 @Repository
 public class ThemeJdbcRepository implements ThemeRepository {
 
-    private static final String TABLE_NAME = "theme";
-
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
@@ -30,12 +28,12 @@ public class ThemeJdbcRepository implements ThemeRepository {
     public ThemeJdbcRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName(TABLE_NAME)
+                .withTableName("theme")
                 .usingGeneratedKeyColumns("id");
     }
 
     public List<Theme> findAll() {
-        String sql = "SELECT id, name, description, thumbnail FROM " + TABLE_NAME;
+        String sql = "SELECT id, name, description, thumbnail FROM theme";
         return jdbcTemplate.query(sql, themeRowMapper);
     }
 
@@ -82,7 +80,7 @@ public class ThemeJdbcRepository implements ThemeRepository {
     }
 
     public int deleteById(Long id) {
-        String sql = "DELETE FROM " + TABLE_NAME + " WHERE id = ?";
+        String sql = "DELETE FROM theme WHERE id = ?";
         try {
             return jdbcTemplate.update(sql, id);
         } catch (DataIntegrityViolationException e) {

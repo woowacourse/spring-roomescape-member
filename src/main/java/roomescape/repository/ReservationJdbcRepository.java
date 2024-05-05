@@ -19,8 +19,6 @@ import roomescape.domain.UserName;
 @Repository
 public class ReservationJdbcRepository implements ReservationRepository {
 
-    private static final String TABLE_NAME = "reservation";
-
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
@@ -43,7 +41,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
     public ReservationJdbcRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName(TABLE_NAME)
+                .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
     }
 
@@ -109,7 +107,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     public int deleteById(Long id) {
-        String sql = "DELETE FROM " + TABLE_NAME + " WHERE id = ?";
+        String sql = "DELETE FROM reservation WHERE id = ?";
         return jdbcTemplate.update(sql, id);
     }
 }
