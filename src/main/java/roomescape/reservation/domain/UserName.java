@@ -23,19 +23,19 @@ public class UserName {
 
     private void validateLength(String name) {
         if (name.isEmpty() || name.length() > MAX_NAME_LENGTH) {
-            throw new IllegalArgumentException(String.format("이름은 %s 이하로 입력해야 합니다.", MAX_NAME_LENGTH));
+            throw new IllegalArgumentException(String.format("예약자 이름은 %s 이하로 입력해야 합니다.", MAX_NAME_LENGTH));
         }
     }
 
     private void validateBlank(String name) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("이름은 필수로 입력해야 합니다.");
+            throw new IllegalArgumentException("예약자 이름은 필수로 입력해야 합니다.");
         }
     }
 
     private void validateFormat(String name) {
         if (!PATTERN.matcher(name).matches()) {
-            throw new IllegalArgumentException("이름은 한글 또는 영어만 입력가능합니다.");
+            throw new IllegalArgumentException("예약자 이름은 한글 또는 영어만 입력가능합니다.");
         }
     }
 
