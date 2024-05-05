@@ -94,6 +94,12 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
+    public boolean existByTimeId(Long timeId) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE time_id = ?)";
+        Boolean result = jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
+        return Boolean.TRUE.equals(result);
+    }
+    @Override
     public void delete(Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
 
