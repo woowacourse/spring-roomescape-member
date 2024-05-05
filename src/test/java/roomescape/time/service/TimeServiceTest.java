@@ -6,8 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,7 +19,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.exception.model.RoomEscapeException;
+import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
+import roomescape.theme.domain.Theme;
 import roomescape.time.domain.Time;
 import roomescape.time.dto.TimeRequest;
 import roomescape.time.dto.TimeResponse;
@@ -63,8 +67,8 @@ class TimeServiceTest {
     @Test
     @DisplayName("중복된 예약 시간 생성 요청시 예외를 던진다.")
     void validation_ShouldThrowException_WhenStartAtIsDuplicated() {
-        Mockito.when(timeRepository.countByStartAt(any()))
-                .thenReturn(1);
+        Mockito.when(timeRepository.findByStartAt(any()))
+                .thenReturn(Optional.of(time));
 
         assertAll(() -> {
                     Throwable duplicateStartAt = assertThrows(
@@ -88,8 +92,9 @@ class TimeServiceTest {
     @Test
     @DisplayName("예약이 존재하는 예약 시간 삭제 요청시 예외를 던진다.")
     void validateReservationExistence_ShouldThrowException_WhenReservationExistAtTime() {
-        Mockito.when(reservationRepository.countByTimeId(1L))
-                .thenReturn(1);
+        Mockito.when(reservationRepository.findByTimeId(1L))
+                .thenReturn(
+                        Optional.of(Reservation.reservationOf(1, "폴라", LocalDate.now(), new Time(1), new Theme(1))));
 
         assertAll(() -> {
                     Throwable reservationExistAtTime = assertThrows(

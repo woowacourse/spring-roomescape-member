@@ -17,6 +17,8 @@ import roomescape.time.domain.Time;
 @Sql(scripts = "/data-test.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 class TimeJdbcDaoTest {
 
+    private static final LocalTime testTime = LocalTime.of(10, 0);
+
     private final TimeJdbcDao timeJdbcDao;
 
     @Autowired
@@ -27,7 +29,7 @@ class TimeJdbcDaoTest {
     @Test
     @DisplayName("시간 데이터들이 잘 저장되는지 확인.")
     void saveTime() {
-        Time time = new Time(LocalTime.now());
+        Time time = new Time(testTime);
         timeJdbcDao.save(time);
 
         Assertions.assertThat(time.getId()).isNotEqualTo(0);

@@ -13,7 +13,7 @@ public interface TimeDao {
 
     Optional<Time> findById(long reservationTimeId);
 
-    void deleteById(long reservationTimeId);
+    Optional<Time> findByStartAt(LocalTime startAt);
 
-    int countByStartAt(LocalTime startAt);
+    void deleteById(long reservationTimeId);
 }

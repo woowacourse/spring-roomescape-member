@@ -6,6 +6,7 @@ import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -14,17 +15,18 @@ import roomescape.time.domain.Time;
 
 @Component
 public class TimeJdbcDao implements TimeDao {
-    public static final String TABLE_NAME = "reservation_time";
-    public static final String TABLE_KEY = "id";
-    public static final String TIME_START_ATTRIBUTE = "start_at";
+
+    private static final RowMapper<Time> TIME_ROW_MAPPER = (resultSet, rowNum) -> new Time(
+            resultSet.getLong("id"),
+            resultSet.getTime("start_at").toLocalTime());
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
     public TimeJdbcDao(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName(TABLE_NAME)
-                .usingGeneratedKeyColumns(TABLE_KEY);
+                .withTableName("reservation_time")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
@@ -39,21 +41,15 @@ public class TimeJdbcDao implements TimeDao {
     public List<Time> findAllReservationTimesInOrder() {
         String findAllReservationTimeSql = "SELECT id, start_at FROM reservation_time ORDER BY start_at ASC ";
 
-        return jdbcTemplate.query(findAllReservationTimeSql, (resultSet, rowNum) -> new Time(
-                resultSet.getLong(TABLE_KEY),
-                resultSet.getTime(TIME_START_ATTRIBUTE).toLocalTime()
-        ));
+        return jdbcTemplate.query(findAllReservationTimeSql, TIME_ROW_MAPPER);
     }
 
     @Override
     public Optional<Time> findById(long reservationTimeId) {
-        String findReservationTimeSql = "SELECT start_at FROM reservation_time WHERE id = ?";
+        String findReservationTimeSql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
 
         try {
-            Time time = jdbcTemplate.queryForObject(findReservationTimeSql, (resultSet, rowNum) -> new Time(
-                    reservationTimeId,
-                    resultSet.getTime(TIME_START_ATTRIBUTE).toLocalTime()), reservationTimeId);
-
+            Time time = jdbcTemplate.queryForObject(findReservationTimeSql, TIME_ROW_MAPPER, reservationTimeId);
             return Optional.of(time);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -61,9 +57,15 @@ public class TimeJdbcDao implements TimeDao {
     }
 
     @Override
-    public int countByStartAt(LocalTime startAt) {
-        String findByStartAtSql = "SELECT COUNT(*) FROM reservation_time WHERE start_at = ?";
-        return jdbcTemplate.queryForObject(findByStartAtSql, Integer.class, startAt);
+    public Optional<Time> findByStartAt(LocalTime startAt) {
+        String findByStartAtSql = "SELECT id, start_at FROM reservation_time WHERE start_at = ?";
+
+        try {
+            Time time = jdbcTemplate.queryForObject(findByStartAtSql, TIME_ROW_MAPPER, startAt);
+            return Optional.of(time);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override

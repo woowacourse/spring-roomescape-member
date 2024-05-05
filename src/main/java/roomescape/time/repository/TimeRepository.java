@@ -2,6 +2,7 @@ package roomescape.time.repository;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Repository;
 import roomescape.time.dao.TimeDao;
 import roomescape.time.domain.Time;
@@ -27,11 +28,11 @@ public class TimeRepository {
         return timeDao.findAllReservationTimesInOrder();
     }
 
-    public void deleteById(long reservationTimeId) {
-        timeDao.deleteById(reservationTimeId);
+    public Optional<Time> findByStartAt(LocalTime startAt) {
+        return timeDao.findByStartAt(startAt);
     }
 
-    public int countByStartAt(LocalTime startAt) {
-        return timeDao.countByStartAt(startAt);
+    public void deleteById(long reservationTimeId) {
+        timeDao.deleteById(reservationTimeId);
     }
 }

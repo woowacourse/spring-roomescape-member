@@ -2,8 +2,10 @@ package roomescape.time.service;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.exception.model.RoomEscapeException;
+import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.domain.Time;
 import roomescape.time.dto.TimeRequest;
@@ -48,15 +50,17 @@ public class TimeService {
     }
 
     public void validateDuplicateTime(LocalTime startAt) {
-        int duplicateTimeCount = timeRepository.countByStartAt(startAt);
-        if (duplicateTimeCount > 0) {
+        Optional<Time> time = timeRepository.findByStartAt(startAt);
+
+        if (time.isPresent()) {
             throw new RoomEscapeException(TimeExceptionCode.DUPLICATE_TIME_EXCEPTION);
         }
     }
 
     public void validateReservationExistence(long timeId) {
-        int reservationCount = reservationRepository.countByTimeId(timeId);
-        if (reservationCount > 0) {
+        Optional<Reservation> reservation = reservationRepository.findByTimeId(timeId);
+
+        if (reservation.isPresent()) {
             throw new RoomEscapeException(TimeExceptionCode.EXIST_RESERVATION_AT_CHOOSE_TIME);
         }
     }
