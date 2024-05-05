@@ -7,17 +7,21 @@ public class Theme {
     private final Long id;
     private final ThemeName name;
     private final ThemeDescription description;
-    private final String thumbnail;
+    private final ThemeThumbnail thumbnail;
 
     public static Theme of(final String name, final String description, final String thumbnail) {
-        return new Theme(null, new ThemeName(name), new ThemeDescription(description), thumbnail);
+        return new Theme(null, new ThemeName(name), new ThemeDescription(description), new ThemeThumbnail(thumbnail));
     }
 
     public static Theme of(final Long id, final String name, final String description, final String thumbnail) {
-        return new Theme(id, new ThemeName(name), new ThemeDescription(description), thumbnail);
+        if (id == null) {
+            throw new IllegalArgumentException("id는 필수 값입니다.");
+        }
+
+        return new Theme(id, new ThemeName(name), new ThemeDescription(description), new ThemeThumbnail(thumbnail));
     }
 
-    private Theme(final Long id, final ThemeName name, final ThemeDescription description, final String thumbnail) {
+    private Theme(final Long id, final ThemeName name, final ThemeDescription description, final ThemeThumbnail thumbnail) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -40,7 +44,7 @@ public class Theme {
         return description;
     }
 
-    public String getThumbnail() {
+    public ThemeThumbnail getThumbnail() {
         return thumbnail;
     }
 

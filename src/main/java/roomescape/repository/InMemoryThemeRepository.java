@@ -60,7 +60,7 @@ public class InMemoryThemeRepository implements ThemeRepository {
         final MapSqlParameterSource param = new MapSqlParameterSource()
                 .addValue("name", theme.getName().getValue())
                 .addValue("description", theme.getDescription().getValue())
-                .addValue("thumbnail", theme.getThumbnail());
+                .addValue("thumbnail", theme.getThumbnail().getValue());
         final KeyHolder keyHolder = new GeneratedKeyHolder();
         template.update(sql, param, keyHolder);
 
@@ -77,7 +77,7 @@ public class InMemoryThemeRepository implements ThemeRepository {
 
         return template.update(sql, param);
     }
-    
+
     @Override
     public List<Theme> findPopularThemes(final ReservationDate startAt, final ReservationDate endAt, final int maximumThemeCount) {
         final String sql = """

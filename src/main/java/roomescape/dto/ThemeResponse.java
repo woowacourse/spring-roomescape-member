@@ -13,7 +13,7 @@ public record ThemeResponse(
                 theme.getId(),
                 theme.getName().getValue(),
                 theme.getDescription().getValue(),
-                theme.getThumbnail()
+                theme.getThumbnail().getValue()
         );
     }
 }

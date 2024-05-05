@@ -53,7 +53,7 @@ class ThemeServiceIntegrationTest {
                 () -> assertThat(theme.getId()).isEqualTo(16L),
                 () -> assertThat(theme.getName().getValue()).isEqualTo(name),
                 () -> assertThat(theme.getDescription().getValue()).isEqualTo(description),
-                () -> assertThat(theme.getThumbnail()).isEqualTo(thumbnail)
+                () -> assertThat(theme.getThumbnail().getValue()).isEqualTo(thumbnail)
         );
     }
 
