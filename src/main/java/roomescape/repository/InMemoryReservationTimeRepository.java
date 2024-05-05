@@ -16,10 +16,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class InMemoryH2ReservationTimeRepository implements ReservationTimeRepository {
+public class InMemoryReservationTimeRepository implements ReservationTimeRepository {
     private final NamedParameterJdbcTemplate template;
 
-    public InMemoryH2ReservationTimeRepository(final NamedParameterJdbcTemplate template) {
+    public InMemoryReservationTimeRepository(final NamedParameterJdbcTemplate template) {
         this.template = template;
     }
 

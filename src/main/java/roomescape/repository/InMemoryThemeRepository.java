@@ -14,11 +14,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class InMemoryH2ThemeRepository implements ThemeRepository {
+public class InMemoryThemeRepository implements ThemeRepository {
 
     private final NamedParameterJdbcTemplate template;
 
-    public InMemoryH2ThemeRepository(final NamedParameterJdbcTemplate template) {
+    public InMemoryThemeRepository(final NamedParameterJdbcTemplate template) {
         this.template = template;
     }
 
