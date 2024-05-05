@@ -8,7 +8,11 @@ public interface ThemeRepository {
 
     Optional<Theme> findById(Long id);
 
+    List<Theme> findThemesByPeriodWithLimit(String startDate, String endDate, int limit);
+
     Theme save(Theme theme);
 
     void delete(Theme theme);
+
+    void deleteAll();
 }

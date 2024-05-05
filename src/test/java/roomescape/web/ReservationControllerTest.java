@@ -29,13 +29,10 @@ import roomescape.web.dto.response.ThemeResponse;
 
 @WebMvcTest(controllers = ReservationController.class)
 class ReservationControllerTest {
-
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private ObjectMapper objectMapper;
-
     @MockBean
     private ReservationService reservationService;
 

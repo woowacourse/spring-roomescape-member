@@ -1,6 +1,5 @@
 package roomescape.service;
 
-import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -25,16 +24,13 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
-    private final Clock clock;
 
     public ReservationService(ReservationRepository reservationRepository,
                               ReservationTimeRepository reservationTimeRepository,
-                              ThemeRepository themeRepository,
-                              Clock clock) {
+                              ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
-        this.clock = clock;
     }
 
     public List<ReservationResponse> findAllReservation() {
@@ -65,7 +61,7 @@ public class ReservationService {
 
     private void validateDateTimeReservation(ReservationRequest request, ReservationTime time) {
         LocalDateTime localDateTime = request.date().atTime(time.getStartAt());
-        if (localDateTime.isBefore(LocalDateTime.now(clock))) {
+        if (localDateTime.isBefore(LocalDateTime.now())) {
             throw new InvalidDateTimeReservationException();
         }
     }

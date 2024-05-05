@@ -1,28 +1,24 @@
 package roomescape.service;
 
-import java.time.Clock;
-import java.time.LocalDate;
 import java.util.List;
+
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import roomescape.domain.ReservationRepository;
+
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 import roomescape.exception.theme.NotFoundThemeException;
 import roomescape.exception.theme.ReservationReferencedThemeException;
+import roomescape.service.policy.BaseDate;
 import roomescape.web.dto.request.ThemeRequest;
 import roomescape.web.dto.response.ThemeResponse;
 
 @Service
 public class ThemeService {
     private final ThemeRepository themeRepository;
-    private final ReservationRepository reservationRepository;
-    private final Clock clock;
 
-    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository, Clock clock) {
+    public ThemeService(ThemeRepository themeRepository) {
         this.themeRepository = themeRepository;
-        this.reservationRepository = reservationRepository;
-        this.clock = clock;
     }
 
     public List<ThemeResponse> findAllTheme() {
@@ -32,10 +28,12 @@ public class ThemeService {
                 .toList();
     }
 
-    public List<ThemeResponse> findAllPopularTheme() {
-        String startDate = LocalDate.now(clock).minusDays(7L).toString();
-        String endDate = LocalDate.now(clock).toString();
-        List<Theme> themes = reservationRepository.findThemeIdWithMostPopularReservation(startDate, endDate);
+    public List<ThemeResponse> findAllPopularTheme(BaseDate baseDate) {
+        String startDate = baseDate.getStartDateBefore(7).toString();
+        String endDate = baseDate.getStartDateBefore(1).toString();
+        int popularLength = 10;
+
+        List<Theme> themes = themeRepository.findThemesByPeriodWithLimit(startDate, endDate, popularLength);
         return themes.stream()
                 .map(ThemeResponse::from)
                 .toList();

@@ -14,4 +14,6 @@ public interface ReservationTimeRepository {
     ReservationTime save(ReservationTime time);
 
     void delete(ReservationTime time);
+
+    void deleteAll();
 }

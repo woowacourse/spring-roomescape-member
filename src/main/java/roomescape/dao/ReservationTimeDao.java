@@ -6,12 +6,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+
 import javax.sql.DataSource;
+
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 
@@ -62,5 +65,11 @@ public class ReservationTimeDao implements ReservationTimeRepository {
     public void delete(ReservationTime time) {
         String sql = "DELETE FROM reservation_time WHERE id = ?";
         jdbcTemplate.update(sql, time.getId());
+    }
+
+    @Override
+    public void deleteAll() {
+        String sql = "DELETE FROM reservation_time";
+        jdbcTemplate.update(sql);
     }
 }

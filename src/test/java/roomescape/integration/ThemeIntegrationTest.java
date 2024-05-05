@@ -3,15 +3,18 @@ package roomescape.integration;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 
-import io.restassured.RestAssured;
-import io.restassured.common.mapper.TypeRef;
-import io.restassured.http.ContentType;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+
+import io.restassured.RestAssured;
+import io.restassured.common.mapper.TypeRef;
+import io.restassured.http.ContentType;
 
 class ThemeIntegrationTest extends IntegrationTest {
     @Nested
@@ -33,7 +36,7 @@ class ThemeIntegrationTest extends IntegrationTest {
         @Test
         void 최근_일주일동안_예약_건수_많은_순서대로_10개_테마를_인기_테마로_조회할_수_있다() {
             jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                    "브라운", "1999-09-18", "1", "1");
+                    "브라운", LocalDate.now().minusDays(1).toString(), "1", "1");
 
             RestAssured.given().log().all()
                     .when().get("/themes/ranking")

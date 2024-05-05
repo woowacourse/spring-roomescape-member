@@ -11,11 +11,11 @@ public interface ReservationRepository {
 
     List<Long> findTimeIdByDateAndThemeId(LocalDate date, Long themeId);
 
-    List<Theme> findThemeIdWithMostPopularReservation(String startDate, String endDate);
-
     boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId);
 
     Reservation save(Reservation reservation);
 
     void delete(Reservation reservation);
+
+    void deleteAll();
 }

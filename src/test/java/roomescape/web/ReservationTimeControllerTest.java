@@ -26,13 +26,10 @@ import roomescape.web.dto.response.ReservationTimeResponse;
 
 @WebMvcTest(controllers = ReservationTimeController.class)
 class ReservationTimeControllerTest {
-
     @MockBean
     private ReservationTimeService reservationTimeService;
-
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private ObjectMapper objectMapper;
 

@@ -4,12 +4,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
 import javax.sql.DataSource;
+
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 
@@ -45,6 +48,20 @@ public class ThemeDao implements ThemeRepository {
     }
 
     @Override
+    public List<Theme> findThemesByPeriodWithLimit(String startDate, String endDate, int limit) {
+        String sql = """
+                SELECT theme.id, theme.name, theme.description, theme.thumbnail
+                FROM reservation
+                LEFT JOIN theme ON theme.id=reservation.theme_id
+                WHERE reservation.date >= ? AND reservation.date <= ?
+                GROUP BY theme.id
+                ORDER BY COUNT(*) DESC
+                LIMIT ?;
+                """;
+        return jdbcTemplate.query(sql, themeRowMapper, startDate, endDate, limit);
+    }
+
+    @Override
     public Theme save(Theme theme) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("name", theme.getName());
@@ -58,5 +75,11 @@ public class ThemeDao implements ThemeRepository {
     public void delete(Theme theme) {
         String sql = "DELETE FROM theme WHERE id = ?";
         jdbcTemplate.update(sql, theme.getId());
+    }
+
+    @Override
+    public void deleteAll() {
+        String sql = " DELETE FROM theme";
+        jdbcTemplate.update(sql);
     }
 }

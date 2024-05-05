@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.is;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +50,7 @@ class MissionStepTest extends IntegrationTest {
     void 삼단계() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-06");
+        params.put("date", LocalDate.now().plusDays(1).toString());
         params.put("timeId", "1");
         params.put("themeId", "1");
 
@@ -112,7 +113,7 @@ class MissionStepTest extends IntegrationTest {
     void 육단계() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-06");
+        params.put("date", LocalDate.now().plusDays(1).toString());
         params.put("timeId", "1");
         params.put("themeId", "1");
 
@@ -168,7 +169,7 @@ class MissionStepTest extends IntegrationTest {
     void 팔단계() {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-06");
+        reservation.put("date", LocalDate.now().plusDays(1).toString());
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
 
