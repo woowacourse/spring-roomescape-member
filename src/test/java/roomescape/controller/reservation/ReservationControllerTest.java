@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -44,7 +46,7 @@ class ReservationControllerTest {
 
     static Stream<Arguments> invalidRequestParameterProvider() {
         final String name = "name";
-        final String date = "2025-10-10";
+        final String date = LocalDate.now().plusDays(5).format(DateTimeFormatter.ISO_DATE);
         final String timeId = "1";
         final String themeId = "1";
 

@@ -10,5 +10,5 @@ VALUES ('spring', 'Escape from spring cold',
         'https://www.lifewire.com/thmb/unRdFjROthGxGQXL9SZIbc5BzeA=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/summerbeach-5b4650c946e0fb005bfb3207.jpg');
 
 INSERT INTO RESERVATION (NAME, DATE, TIME_ID, THEME_ID)
-VALUES ('al', '2025-01-20', 1, 1),
-       ('be', '2025-02-19', 2, 2);
+VALUES ('al',  CURRENT_DATE - 1, 1, 1),
+       ('be',  CURRENT_DATE - 2, 2, 2);
