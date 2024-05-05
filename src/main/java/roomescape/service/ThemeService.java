@@ -24,7 +24,7 @@ public class ThemeService {
         this.themeRepository = themeRepository;
     }
 
-    public ThemeResponse create(ThemeRequest request) {
+    public ThemeResponse createTheme(ThemeRequest request) {
         Theme theme = request.toDomain();
         Theme createdTheme = themeRepository.save(theme);
 
