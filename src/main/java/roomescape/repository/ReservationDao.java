@@ -42,6 +42,17 @@ public class ReservationDao {
         return reservation.assignId(id);
     }
 
+    public List<Reservation> getAll() {
+        String sql = """
+                SELECT r.id AS reservation_id, r.name, r.date, time.id AS time_id, time.start_at AS time_value, 
+                    theme.id AS theme_id, theme.name AS theme_name, theme.description, theme.thumbnail 
+                FROM reservation AS r
+                INNER JOIN reservation_time AS time ON r.time_id = time.id
+                INNER JOIN theme ON r.theme_id = theme.id
+                """;
+        return jdbcTemplate.query(sql, reservationRowMapper);
+    }
+
     public Optional<Reservation> findById(long id) {
         try {
             String sql = """
@@ -56,17 +67,6 @@ public class ReservationDao {
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
         }
-    }
-    
-    public List<Reservation> getAll() {
-        String sql = """
-                SELECT r.id AS reservation_id, r.name, r.date, time.id AS time_id, time.start_at AS time_value, 
-                    theme.id AS theme_id, theme.name AS theme_name, theme.description, theme.thumbnail 
-                FROM reservation AS r
-                INNER JOIN reservation_time AS time ON r.time_id = time.id
-                INNER JOIN theme ON r.theme_id = theme.id
-                """;
-        return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
     public List<Reservation> findByTimeId(final long timeId) {

@@ -38,10 +38,7 @@ public class ReservationTimeDao {
     }
 
     public List<ReservationTime> getAll() {
-        return jdbcTemplate.query(
-                "SELECT id, start_at FROM reservation_time",
-                reservationTimeRowMapper
-        );
+        return jdbcTemplate.query("SELECT * FROM reservation_time", reservationTimeRowMapper);
     }
 
     public Optional<ReservationTime> findById(final long id) {
