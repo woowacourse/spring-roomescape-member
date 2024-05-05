@@ -11,16 +11,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.dto.AvailableReservationTimeResponse;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.exception.ExistReservationInReservationTimeException;
-import roomescape.exception.NotExistReservationTimeException;
-import roomescape.exception.ReservationTimeAlreadyExistsException;
+import roomescape.exception.AlreadyExistsException;
+import roomescape.exception.ExistReservationException;
+import roomescape.exception.NotExistException;
 import roomescape.fixture.ThemeFixture;
 import roomescape.service.dto.input.AvailableReservationTimeInput;
 import roomescape.service.dto.input.ReservationInput;
@@ -73,7 +72,7 @@ class ReservationTimeServiceTest {
     @DisplayName("존재하지 않는 시간 ID 를 삭제하려 하면 에외를 발생한다.")
     void throw_exception_when_not_exist_id() {
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(-1))
-                .isInstanceOf(NotExistReservationTimeException.class);
+                .isInstanceOf(NotExistException.class);
     }
 
     @Test
@@ -91,7 +90,7 @@ class ReservationTimeServiceTest {
         ));
 
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(timeOutput.id()))
-                .isInstanceOf(ExistReservationInReservationTimeException.class);
+                .isInstanceOf(ExistReservationException.class);
     }
 
     @Test
@@ -100,7 +99,7 @@ class ReservationTimeServiceTest {
         reservationTimeService.createReservationTime(new ReservationTimeInput("10:00"));
         final var input = new ReservationTimeInput("10:00");
         assertThatThrownBy(() -> reservationTimeService.createReservationTime(input))
-                .isInstanceOf(ReservationTimeAlreadyExistsException.class);
+                .isInstanceOf(AlreadyExistsException.class);
     }
 
     @Test

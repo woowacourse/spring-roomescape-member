@@ -8,14 +8,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.ReservationTime;
-import roomescape.exception.NotExistReservationException;
+import roomescape.exception.AlreadyExistsException;
+import roomescape.exception.NotExistException;
 import roomescape.exception.PastTimeReservationException;
-import roomescape.exception.ReservationAlreadyExistsException;
 import roomescape.fixture.ThemeFixture;
 import roomescape.service.dto.input.ReservationInput;
 import roomescape.service.util.DateTimeFormatter;
@@ -62,7 +61,7 @@ class ReservationServiceTest {
     @DisplayName("존재하지 않는 예약 ID 를 삭제하려 하면 에외를 발생한다.")
     void throw_exception_when_not_exist_id() {
         assertThatThrownBy(() -> reservationService.deleteReservation(-1))
-                .isInstanceOf(NotExistReservationException.class);
+                .isInstanceOf(NotExistException.class);
     }
 
     @Test
@@ -77,7 +76,7 @@ class ReservationServiceTest {
 
         assertThatThrownBy(
                 () -> reservationService.createReservation(input))
-                .isInstanceOf(ReservationAlreadyExistsException.class);
+                .isInstanceOf(AlreadyExistsException.class);
     }
 
     @Test

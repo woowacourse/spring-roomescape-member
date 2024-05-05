@@ -7,10 +7,12 @@ import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
 import roomescape.domain.VisitDate;
-import roomescape.exception.ExistReservationInThemeException;
-import roomescape.exception.NotExistThemeException;
+import roomescape.exception.ExistReservationException;
+import roomescape.exception.NotExistException;
 import roomescape.service.dto.input.ThemeInput;
 import roomescape.service.dto.output.ThemeOutput;
+
+import static roomescape.exception.ExceptionDomainType.THEME;
 
 @Service
 public class ThemeService {
@@ -40,9 +42,9 @@ public class ThemeService {
 
     public void deleteTheme(final long id) {
         Theme theme = themeDao.find(id)
-                              .orElseThrow(() -> new NotExistThemeException(id));
+                              .orElseThrow(() -> new NotExistException(THEME, id));
         if (reservationDao.isExistByThemeId(theme.getId())) {
-            throw new ExistReservationInThemeException(theme.getId());
+            throw new ExistReservationException(THEME, theme.getId());
         }
 
         themeDao.delete(theme.getId());

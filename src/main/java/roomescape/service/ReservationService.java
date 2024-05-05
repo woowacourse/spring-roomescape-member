@@ -9,14 +9,12 @@ import roomescape.dao.ThemeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.exception.NotExistReservationException;
-import roomescape.exception.NotExistReservationTimeException;
-import roomescape.exception.NotExistThemeException;
-import roomescape.exception.PastTimeReservationException;
-import roomescape.exception.ReservationAlreadyExistsException;
+import roomescape.exception.*;
 import roomescape.service.dto.input.ReservationInput;
 import roomescape.service.dto.output.ReservationOutput;
 import roomescape.service.util.DateTimeFormatter;
+
+import static roomescape.exception.ExceptionDomainType.*;
 
 @Service
 public class ReservationService {
@@ -38,13 +36,14 @@ public class ReservationService {
 
     public ReservationOutput createReservation(final ReservationInput input) {
         final ReservationTime time = reservationTimeDao.find(input.timeId())
-                                                       .orElseThrow(() -> new NotExistReservationTimeException(input.timeId()));
+                                                       .orElseThrow(() -> new NotExistException(RESERVATION_TIME, input.timeId()));
+
         final Theme theme = themeDao.find(input.themeId())
-                                    .orElseThrow(() -> new NotExistThemeException(input.themeId()));
+                                    .orElseThrow(() -> new NotExistException(THEME, input.themeId()));
 
         final Reservation reservation = input.toReservation(time, theme);
         if (reservationDao.isExistByReservationAndTime(reservation.getDate(), time.getId())) {
-            throw new ReservationAlreadyExistsException(reservation.getDateAndTimeFormat());
+            throw new AlreadyExistsException(RESERVATION, reservation.getDateAndTimeFormat());
         }
         if (reservation.isBefore(dateTimeFormatter.getDate(), dateTimeFormatter.getTime())) {
             throw new PastTimeReservationException(reservation.getDateAndTimeFormat());
@@ -60,7 +59,7 @@ public class ReservationService {
 
     public void deleteReservation(final long id) {
         if (!reservationDao.isExistById(id)) {
-            throw new NotExistReservationException(id);
+            throw new NotExistException(RESERVATION, id);
         }
         reservationDao.delete(id);
     }
