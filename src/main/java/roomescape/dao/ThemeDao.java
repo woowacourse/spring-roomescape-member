@@ -10,7 +10,6 @@ import roomescape.domain.Theme;
 import roomescape.exception.IllegalThemeException;
 
 import java.sql.PreparedStatement;
-import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
@@ -60,18 +59,5 @@ public class ThemeDao {
 
     public void deleteById(Long id) {
         jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id);
-    }
-
-    public List<Theme> findThemesOrderByReservationThemeCountDesc(LocalDate startDate, LocalDate endDate) {
-        return jdbcTemplate.query("""
-                SELECT th.id, th.name, th.description, th.thumbnail,
-                COUNT(r.theme_id) AS reservation_theme_count
-                FROM theme AS th
-                INNER JOIN reservation AS r ON r.theme_id = th.id
-                WHERE r.date >= ? AND r.date <= ?
-                GROUP BY th.id
-                ORDER BY reservation_theme_count DESC
-                LIMIT 10
-                """, themeRowMapper, startDate, endDate);
     }
 }
