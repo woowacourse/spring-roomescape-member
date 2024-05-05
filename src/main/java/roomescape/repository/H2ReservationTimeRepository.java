@@ -64,11 +64,12 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
     }
 
     @Override
-    public void deleteById(final Long reservationTimeId) {
+    public int deleteById(final Long reservationTimeId) {
         final String sql = "DELETE FROM reservation_time WHERE id = :id";
         final MapSqlParameterSource param = new MapSqlParameterSource()
                 .addValue("id", reservationTimeId);
-        template.update(sql, param);
+
+        return template.update(sql, param);
     }
 
     @Override

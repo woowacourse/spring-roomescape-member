@@ -70,11 +70,12 @@ public class H2ThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public void deleteById(final Long themeId) {
+    public int deleteById(final Long themeId) {
         final String sql = "DELETE FROM theme WHERE id = :id";
         final MapSqlParameterSource param = new MapSqlParameterSource()
                 .addValue("id", themeId);
-        template.update(sql, param);
+
+        return template.update(sql, param);
     }
 
     @Override

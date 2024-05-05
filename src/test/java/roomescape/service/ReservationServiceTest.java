@@ -26,7 +26,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willDoNothing;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
@@ -99,12 +98,7 @@ class ReservationServiceTest {
     @Test
     void deleteReservationTest() {
         // Given
-        final ReservationTime savedReservationTime = new ReservationTime(1L, LocalTime.now().plusHours(3));
-        final Theme savedTheme = Theme.of(1L, "테바의 비밀친구", "테바의 은밀한 비밀친구", "대충 테바 사진 링크");
-        final Reservation savedReservation = Reservation.of(1L, "켈리", LocalDate.now().plusDays(5), savedReservationTime, savedTheme);
-
-        given(reservationRepository.findById(1L)).willReturn(Optional.of(savedReservation));
-        willDoNothing().given(reservationRepository).deleteById(1L);
+        given(reservationRepository.deleteById(1L)).willReturn(1);
 
         // When & Then
         assertThatCode(() -> reservationService.deleteReservation(1L))
@@ -115,7 +109,7 @@ class ReservationServiceTest {
     @Test
     void throwExceptionWhenDeleteNotExistReservationTest() {
         // Given
-        given(reservationRepository.findById(1L)).willReturn(Optional.empty());
+        given(reservationRepository.deleteById(1L)).willReturn(0);
 
         // When & Then
         assertThatThrownBy(() -> reservationService.deleteReservation(1L))
@@ -161,10 +155,7 @@ class ReservationServiceTest {
     @Test
     void deleteReservationTimeTest() {
         // Given
-        final ReservationTime savedReservationTime = new ReservationTime(1L, LocalTime.now().plusHours(3));
-
-        given(reservationTimeRepository.existById(1L)).willReturn(true);
-        willDoNothing().given(reservationTimeRepository).deleteById(1L);
+        given(reservationTimeRepository.deleteById(1L)).willReturn(1);
 
         // When & Then
         assertThatCode(() -> reservationService.deleteReservationTime(1L))
@@ -175,7 +166,7 @@ class ReservationServiceTest {
     @Test
     void throwExceptionWhenDeleteNotExistReservationTimeTest() {
         // Given
-        given(reservationTimeRepository.existById(1L)).willReturn(false);
+        given(reservationTimeRepository.deleteById(1L)).willReturn(0);
 
         // When & Then
         assertThatThrownBy(() -> reservationService.deleteReservationTime(1L))
@@ -230,8 +221,6 @@ class ReservationServiceTest {
     void throwExceptionWhenDeleteReservationTimeHasRelation() {
         // Given
         final Long reservationTimeId = 1L;
-
-        given(reservationTimeRepository.existById(reservationTimeId)).willReturn(true);
         given(reservationRepository.existByTimeId(reservationTimeId)).willReturn(true);
 
         // When & Then
@@ -281,13 +270,10 @@ class ReservationServiceTest {
     @Test
     void deleteThemeTest() {
         // Given
-        final Long themeId = 1L;
-
-        given(themeRepository.existById(themeId)).willReturn(true);
-        willDoNothing().given(themeRepository).deleteById(themeId);
+        given(themeRepository.deleteById(1L)).willReturn(1);
 
         // When & Then
-        assertThatCode(() -> reservationService.deleteTheme(themeId))
+        assertThatCode(() -> reservationService.deleteTheme(1L))
                 .doesNotThrowAnyException();
     }
 }

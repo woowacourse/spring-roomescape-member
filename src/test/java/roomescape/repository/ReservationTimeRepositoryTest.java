@@ -66,11 +66,10 @@ class ReservationTimeRepositoryTest {
     @Test
     void deleteByIdTest() {
         // When
-        reservationTimeRepository.deleteById(2L);
+        final int deletedDataCount = reservationTimeRepository.deleteById(2L);
 
         // Then
-        final List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
-        assertThat(reservationTimes).hasSize(7);
+        assertThat(deletedDataCount).isEqualTo(1);
     }
 
     @DisplayName("특정 시간값의 예약 시간이 존재하는지 조회한다.")

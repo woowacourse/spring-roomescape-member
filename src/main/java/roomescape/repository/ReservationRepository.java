@@ -13,7 +13,7 @@ public interface ReservationRepository {
 
     Reservation save(Reservation reservation);
 
-    void deleteById(Long reservationId);
+    int deleteById(Long reservationId);
 
     boolean existByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId);
 

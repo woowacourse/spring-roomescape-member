@@ -14,7 +14,7 @@ public interface ReservationTimeRepository {
 
     ReservationTime save(ReservationTime reservationTime);
 
-    void deleteById(Long reservationTimeId);
+    int deleteById(Long reservationTimeId);
 
     boolean existById(Long reservationTimeId);
 

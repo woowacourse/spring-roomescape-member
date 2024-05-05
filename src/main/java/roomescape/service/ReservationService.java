@@ -55,13 +55,11 @@ public class ReservationService {
     }
 
     public void deleteReservation(final Long reservationId) {
-        checkReservationExist(reservationId);
-        reservationRepository.deleteById(reservationId);
-    }
+        final int deletedDataCount = reservationRepository.deleteById(reservationId);
 
-    private void checkReservationExist(final Long reservationId) {
-        reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new NoSuchElementException("해당 id의 예약이 존재하지 않습니다."));
+        if (deletedDataCount <= 0) {
+            throw new NoSuchElementException("해당 id의 예약이 존재하지 않습니다.");
+        }
     }
 
     public List<ReservationTime> getReservationTimes() {
@@ -81,13 +79,10 @@ public class ReservationService {
     }
 
     public void deleteReservationTime(final Long reservationTimeId) {
-        checkReservationTimeExist(reservationTimeId);
         validateReservationTimeExist(reservationTimeId);
-        reservationTimeRepository.deleteById(reservationTimeId);
-    }
+        final int deletedDataCount = reservationTimeRepository.deleteById(reservationTimeId);
 
-    private void checkReservationTimeExist(final Long reservationTimeId) {
-        if (!reservationTimeRepository.existById(reservationTimeId)) {
+        if (deletedDataCount <= 0) {
             throw new NoSuchElementException("해당 id의 예약 시간이 존재하지 않습니다.");
         }
     }
@@ -107,13 +102,10 @@ public class ReservationService {
     }
 
     public void deleteTheme(final Long themeId) {
-        validateThemeExist(themeId);
+        // TODO : 예약에 포함된 테마인지 검증하는 로직 추가
+        final int deletedDataCount = themeRepository.deleteById(themeId);
 
-        themeRepository.deleteById(themeId);
-    }
-
-    private void validateThemeExist(final Long themeId) {
-        if (!themeRepository.existById(themeId)) {
+        if (deletedDataCount <= 0) {
             throw new NoSuchElementException("해당 id의 테마 정보가 존재하지 않습니다.");
         }
     }

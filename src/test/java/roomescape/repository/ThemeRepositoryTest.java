@@ -71,11 +71,10 @@ class ThemeRepositoryTest {
     @Test
     void deleteByIdTest() {
         // When
-        themeRepository.deleteById(3L);
+        final int deletedDataCount = themeRepository.deleteById(3L);
 
         // Then
-        final List<Theme> themes = themeRepository.findAll();
-        assertThat(themes).hasSize(14);
+        assertThat(deletedDataCount).isEqualTo(1);
     }
 
     @DisplayName("특정 아이디의 테마가 존재하는지 조회한다.")

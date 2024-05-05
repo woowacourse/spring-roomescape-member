@@ -76,11 +76,10 @@ class ReservationRepositoryTest {
     @Test
     void deleteByIdTest() {
         // When
-        reservationRepository.deleteById(1L);
+        final int deletedDataCount = reservationRepository.deleteById(1L);
 
         // Then
-        final List<Reservation> reservations = reservationRepository.findAll();
-        assertThat(reservations).hasSize(15);
+        assertThat(deletedDataCount).isEqualTo(1);
     }
 
     @DisplayName("특정 날짜와 시간 아이디를 가진 예약이 존재하는지 조회한다.")
