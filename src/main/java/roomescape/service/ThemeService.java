@@ -1,8 +1,6 @@
 package roomescape.service;
 
 import java.time.Clock;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
@@ -10,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Theme;
 import roomescape.domain.repository.ReservationRepository;
 import roomescape.domain.repository.ThemeRepository;
+import roomescape.dto.request.PopularThemeRequest;
 import roomescape.dto.request.ThemeRequest;
 import roomescape.dto.response.ThemeResponse;
 
@@ -62,13 +61,9 @@ public class ThemeService {
         themeRepository.deleteById(id);
     }
 
-    public List<ThemeResponse> getPopularThemes(
-            LocalDate startDate,
-            LocalDate endDate,
-            int limit
-    ) {
-        LocalDateTime now = LocalDateTime.now(clock);
-        List<Theme> themes = themeRepository.findPopularThemes(startDate, endDate, limit);
+    public List<ThemeResponse> getPopularThemes(PopularThemeRequest popularThemeRequest) {
+        List<Theme> themes = themeRepository.findPopularThemes(
+                popularThemeRequest.startDate(), popularThemeRequest.endDate(), popularThemeRequest.limit());
 
         return themes.stream()
                 .map(ThemeResponse::from)
