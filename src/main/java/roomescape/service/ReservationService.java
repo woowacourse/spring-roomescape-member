@@ -51,7 +51,7 @@ public class ReservationService {
         }
 
         if (reservationDao.isExistReservationByDateAndTimeIdAndThemeId(
-                reservation.date(), reservation.findTimeId(), reservation.findThemeId())) {
+                reservation.date(), reservation.getTimeId(), reservation.getThemeId())) {
             throw new IllegalArgumentException("해당 시간대 해당 테마 예약은 이미 존재합니다.");
         }
     }
