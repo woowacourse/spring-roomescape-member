@@ -12,6 +12,7 @@ import java.net.URI;
 import java.util.List;
 
 @Controller
+@RequestMapping("/times")
 public class ReservationTimeController {
 
     private final ReservationTimeService reservationTimeService;
@@ -20,19 +21,19 @@ public class ReservationTimeController {
         this.reservationTimeService = reservationTimeService;
     }
 
-    @PostMapping("/times")
+    @PostMapping
     public ResponseEntity<ReservationTime> insertTime(@RequestBody TimeRequest timeRequest) {
         ReservationTime reservationTime = reservationTimeService.insertReservationTime(timeRequest);
         return ResponseEntity.created(URI.create("/times/" + reservationTime.getId())).body(reservationTime);
     }
 
-    @GetMapping("/times")
+    @GetMapping
     public ResponseEntity<List<ReservationTime>> getTimes() {
         List<ReservationTime> reservationTimes = reservationTimeService.getAllReservationTimes();
         return ResponseEntity.ok().body(reservationTimes);
     }
 
-    @GetMapping("/times/{date}/{themeId}")
+    @GetMapping("/{date}/{themeId}")
     public ResponseEntity<List<BookableTimeResponse>> getTimesByDateAndTheme(@PathVariable String date, @PathVariable Long themeId) {
         List<ReservationTime> reservationTimes = reservationTimeService.getAllReservationTimes();
         List<BookableTimeResponse> bookableTimeRespons = reservationTimes.stream()
@@ -41,7 +42,7 @@ public class ReservationTimeController {
         return ResponseEntity.ok().body(bookableTimeRespons);
     }
 
-    @DeleteMapping("/times/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTime(@PathVariable Long id) {
         reservationTimeService.deleteReservationTime(id);
         return ResponseEntity.noContent().build();
