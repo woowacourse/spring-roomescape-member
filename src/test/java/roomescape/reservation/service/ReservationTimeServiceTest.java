@@ -1,16 +1,16 @@
 package roomescape.reservation.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.LocalTime;
 import java.util.List;
+import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.dto.request.ReservationTimeRequest;
-import roomescape.reservation.dto.response.ReservationTimeResponse;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -23,14 +23,15 @@ class ReservationTimeServiceTest {
     @Test
     void createReservationTime() {
         ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.of(10, 1));
-        ReservationTimeResponse reservationTime = reservationTimeService.createReservationTime(reservationTimeRequest);
-        assertThat(reservationTime.startAt()).isEqualTo(LocalTime.of(10, 1));
+        ReservationTime reservationTime = reservationTimeService.createReservationTime(
+                reservationTimeRequest.toEntity());
+        assertThat(reservationTime.getStartAt()).isEqualTo(LocalTime.of(10, 1));
     }
 
     @DisplayName("모든 예약 시간 조회 테스트")
     @Test
     void findAllReservationTimes() {
-        List<ReservationTimeResponse> reservationTimes = reservationTimeService.findAllReservationTimes();
+        List<ReservationTime> reservationTimes = reservationTimeService.findAllReservationTimes();
         assertThat(reservationTimes).isEmpty();
     }
 
@@ -38,11 +39,11 @@ class ReservationTimeServiceTest {
     @Test
     void deleteReservationTime() {
         ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.of(10, 1));
-        ReservationTimeResponse savedReservationTime = reservationTimeService.createReservationTime(
-                reservationTimeRequest);
+        ReservationTime savedReservationTime = reservationTimeService.createReservationTime(
+                reservationTimeRequest.toEntity());
 
-        reservationTimeService.deleteReservationTime(savedReservationTime.id());
-        List<ReservationTimeResponse> reservationTimes = reservationTimeService.findAllReservationTimes();
+        reservationTimeService.deleteReservationTime(savedReservationTime.getId());
+        List<ReservationTime> reservationTimes = reservationTimeService.findAllReservationTimes();
         assertThat(reservationTimes).isEmpty();
     }
 }

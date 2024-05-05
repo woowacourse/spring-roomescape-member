@@ -1,15 +1,13 @@
 package roomescape.reservation.service;
 
+import java.util.List;
 import java.time.Clock;
 import java.time.LocalDate;
-import java.util.List;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.dao.ThemeDao;
 import roomescape.reservation.domain.Theme;
-import roomescape.reservation.dto.request.ThemeRequest;
-import roomescape.reservation.dto.response.ThemeResponse;
 import roomescape.reservation.handler.exception.CustomBadRequest;
 import roomescape.reservation.handler.exception.CustomException;
 import roomescape.reservation.handler.exception.CustomInternalServerError;
@@ -18,7 +16,6 @@ import roomescape.reservation.handler.exception.CustomInternalServerError;
 public class ThemeService {
 
     private final ThemeDao themeDao;
-
     private final Clock clock;
 
     public ThemeService(ThemeDao themeDao, Clock clock) {
@@ -26,34 +23,33 @@ public class ThemeService {
         this.clock = clock;
     }
 
-    public ThemeResponse createTheme(ThemeRequest themeRequest) {
+    public Theme createTheme(Theme theme) {
         try {
-            Theme theme = themeDao.save(themeRequest.toEntity());
-            return ThemeResponse.from(theme);
+            return themeDao.save(theme);
         } catch (DataAccessException e) {
             throw new CustomException(CustomInternalServerError.FAIl_TO_CREATE);
         }
     }
 
-    public List<ThemeResponse> findAllThemes() {
-        List<Theme> themes = themeDao.findAllThemes();
-        return themes.stream()
-                .map(ThemeResponse::from)
-                .toList();
+    public Theme findTheme(Long id) {
+        return themeDao.findById(id)
+                .orElseThrow(() -> new CustomException(CustomBadRequest.NOT_FOUND_THEME));
     }
 
-    public List<ThemeResponse> findWeeklyTop10Themes() {
+    public List<Theme> findAllThemes() {
+         return themeDao.findAllThemes();
+    }
+
+    public List<Theme> findWeeklyTop10Themes() {
         return findLimitThemes(10);
     }
 
-    private List<ThemeResponse> findLimitThemes(int limit) {
+    private List<Theme> findLimitThemes(int limit) {
         LocalDate now = LocalDate.now(clock);
 
         LocalDate start = now.minusDays(8);
         LocalDate end = now.minusDays(1);
-        return themeDao.findTopReservedThemesByDateRangeAndLimit(start, end, limit).stream()
-                .map(ThemeResponse::from)
-                .toList();
+        return themeDao.findTopReservedThemesByDateRangeAndLimit(start, end, limit);
     }
 
     public void deleteTheme(Long id) {

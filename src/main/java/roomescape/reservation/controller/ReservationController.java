@@ -1,7 +1,7 @@
 package roomescape.reservation.controller;
 
-import java.net.URI;
 import java.util.List;
+import java.net.URI;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.util.UriComponentsBuilder;
+import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.request.ReservationRequest;
 import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
@@ -28,19 +29,22 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> postReservation(@RequestBody ReservationRequest reservationRequest) {
-        ReservationResponse reservationResponse = reservationService.createReservation(reservationRequest);
+        Reservation reservation = reservationService.createReservation(reservationRequest);
         URI location = UriComponentsBuilder.newInstance()
                 .path("/reservations/{id}")
-                .buildAndExpand(reservationResponse.id())
+                .buildAndExpand(reservation.getId())
                 .toUri();
 
         return ResponseEntity.created(location)
-                .body(reservationResponse);
+                .body(ReservationResponse.from(reservation));
     }
 
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> getReservations() {
-        return ResponseEntity.ok(reservationService.findAllReservations());
+        List<ReservationResponse> reservationResponses = reservationService.findAllReservations().stream()
+                .map(ReservationResponse::from)
+                .toList();
+        return ResponseEntity.ok(reservationResponses);
     }
 
     @DeleteMapping("/{id}")

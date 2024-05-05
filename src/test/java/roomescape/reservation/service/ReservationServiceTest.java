@@ -1,22 +1,21 @@
 package roomescape.reservation.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
-
+import java.util.List;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.request.ReservationRequest;
-import roomescape.reservation.dto.request.ReservationTimeRequest;
-import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.handler.exception.CustomException;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -46,11 +45,11 @@ class ReservationServiceTest {
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES(?, ?, ?)", "happy", "hi", "abcd.html");
 
         ReservationRequest reservationRequest = new ReservationRequest("브라운", LocalDate.of(2999, 8, 5), 1L, 1L);
-        ReservationResponse reservationResponse = reservationService.createReservation(reservationRequest);
+        Reservation reservation = reservationService.createReservation(reservationRequest);
 
         assertAll(
-                () -> assertThat(reservationResponse.name()).isEqualTo("브라운"),
-                () -> assertThat(reservationResponse.date()).isEqualTo(LocalDate.of(2999, 8, 5))
+                () -> assertThat(reservation.getName()).isEqualTo("브라운"),
+                () -> assertThat(reservation.getDate()).isEqualTo(LocalDate.of(2999, 8, 5))
         );
     }
 
@@ -63,12 +62,12 @@ class ReservationServiceTest {
         ReservationRequest reservationRequest = new ReservationRequest("브라운", LocalDate.of(2999, 8, 5), 1L, 1L);
         reservationService.createReservation(reservationRequest);
 
-        List<ReservationResponse> reservations = reservationService.findAllReservations();
+        List<Reservation> reservations = reservationService.findAllReservations();
 
         assertAll(
                 () -> assertThat(reservations).hasSize(1),
-                () -> assertThat(reservations.get(0).name()).isEqualTo("브라운"),
-                () -> assertThat(reservations.get(0).date()).isEqualTo(LocalDate.of(2999, 8, 5))
+                () -> assertThat(reservations.get(0).getName()).isEqualTo("브라운"),
+                () -> assertThat(reservations.get(0).getDate()).isEqualTo(LocalDate.of(2999, 8, 5))
         );
     }
 
@@ -79,11 +78,11 @@ class ReservationServiceTest {
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES(?, ?, ?)", "happy", "hi", "abcd.html");
 
         ReservationRequest reservationRequest = new ReservationRequest("브라운", LocalDate.of(2999, 8, 5), 1L, 1L);
-        ReservationResponse savedReservation = reservationService.createReservation(reservationRequest);
+        Reservation savedReservation = reservationService.createReservation(reservationRequest);
 
-        reservationService.deleteReservation(savedReservation.id());
+        reservationService.deleteReservation(savedReservation.getId());
 
-        List<ReservationResponse> reservations = reservationService.findAllReservations();
+        List<Reservation> reservations = reservationService.findAllReservations();
 
         assertThat(reservations).isEmpty();
     }

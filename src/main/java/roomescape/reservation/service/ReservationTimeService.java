@@ -4,66 +4,37 @@ import java.util.List;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.dao.ReservationTimeDao;
-import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
-import roomescape.reservation.dto.request.AvailableTimeRequest;
-import roomescape.reservation.dto.request.ReservationTimeRequest;
-import roomescape.reservation.dto.response.AvailableTimeResponse;
-import roomescape.reservation.dto.response.ReservationTimeResponse;
-import roomescape.reservation.handler.exception.CustomException;
+import roomescape.reservation.dto.request.ReservationRequest;
 import roomescape.reservation.handler.exception.CustomBadRequest;
+import roomescape.reservation.handler.exception.CustomException;
 import roomescape.reservation.handler.exception.CustomInternalServerError;
 
 @Service
 public class ReservationTimeService {
 
-    private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
 
-    public ReservationTimeService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao) {
-        this.reservationDao = reservationDao;
+    public ReservationTimeService(ReservationTimeDao reservationTimeDao) {
         this.reservationTimeDao = reservationTimeDao;
     }
 
-    public ReservationTimeResponse createReservationTime(ReservationTimeRequest reservationTimeRequest) {
-        ReservationTime reservationTime = reservationTimeRequest.toEntity();
+    public ReservationTime createReservationTime(ReservationTime reservationTime) {
         try {
-            ReservationTime savedReservationTime = reservationTimeDao.save(reservationTime);
-            return ReservationTimeResponse.from(savedReservationTime);
+            return reservationTimeDao.save(reservationTime);
         } catch (DataAccessException e) {
             throw new CustomException(CustomInternalServerError.FAIl_TO_CREATE);
         }
     }
 
-    public List<ReservationTimeResponse> findAllReservationTimes() {
-        List<ReservationTime> reservationTimes = reservationTimeDao.findAllReservationTimes();
-        return reservationTimes.stream()
-                .map(ReservationTimeResponse::from)
-                .toList();
+    public ReservationTime findReservationTime(ReservationRequest reservationRequest) {
+        return reservationTimeDao.findById(reservationRequest.timeId())
+                .orElseThrow(() -> new CustomException(CustomBadRequest.NOT_FOUND_RESERVATION_TIME));
     }
 
-    public List<AvailableTimeResponse> findAvailableTimes(AvailableTimeRequest availableTimeRequest) {
-        List<Reservation> reservations = reservationDao.findReservationsByDateAndThemeId(
-                availableTimeRequest.date(),
-                availableTimeRequest.themeId()
-        );
-
-        List<ReservationTime> reservationTimes = reservationTimeDao.findAllReservationTimes();
-
-        return reservationTimes.stream()
-                .map(reservationTime -> new AvailableTimeResponse(
-                        reservationTime.getStartAt(),
-                        reservationTime.getId(),
-                        isReservedTime(reservations, reservationTime)
-                ))
-                .toList();
-    }
-
-    private boolean isReservedTime(List<Reservation> reservations, ReservationTime reservationTime) {
-        return reservations.stream()
-                .noneMatch(reservation -> reservation.isSameTime(reservationTime));
+    public List<ReservationTime> findAllReservationTimes() {
+        return reservationTimeDao.findAllReservationTimes();
     }
 
     public void deleteReservationTime(Long id) {

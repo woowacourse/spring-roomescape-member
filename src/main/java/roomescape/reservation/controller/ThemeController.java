@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.util.UriComponentsBuilder;
+import roomescape.reservation.domain.Theme;
 import roomescape.reservation.dto.request.ThemeRequest;
 import roomescape.reservation.dto.response.ThemeResponse;
 import roomescape.reservation.service.ThemeService;
@@ -27,25 +28,29 @@ public class ThemeController {
 
     @PostMapping
     public ResponseEntity<ThemeResponse> postTheme(@RequestBody ThemeRequest themeRequest) {
-        ThemeResponse themeResponse = themeService.createTheme(themeRequest);
+        Theme theme = themeService.createTheme(themeRequest.toEntity());
         URI location = UriComponentsBuilder.newInstance()
                 .path("/themes/{id}")
-                .buildAndExpand(themeResponse.id())
+                .buildAndExpand(theme.getId())
                 .toUri();
 
-        return ResponseEntity.created(location).body(themeResponse);
+        return ResponseEntity.created(location).body(ThemeResponse.from(theme));
     }
 
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> getThemes() {
-        List<ThemeResponse> themes = themeService.findAllThemes();
-        return ResponseEntity.ok(themes);
+        List<ThemeResponse> themeResponses = themeService.findAllThemes().stream()
+                .map(ThemeResponse::from)
+                .toList();
+        return ResponseEntity.ok(themeResponses);
     }
 
     @GetMapping("/ranking")
     public ResponseEntity<List<ThemeResponse>> getWeeklyTopThemes() {
-        List<ThemeResponse> weeklyTopThemes = themeService.findWeeklyTop10Themes();
-        return ResponseEntity.ok(weeklyTopThemes);
+        List<ThemeResponse> themeResponses = themeService.findWeeklyTop10Themes().stream()
+                .map(ThemeResponse::from)
+                .toList();
+        return ResponseEntity.ok(themeResponses);
     }
 
     @DeleteMapping("/{id}")
