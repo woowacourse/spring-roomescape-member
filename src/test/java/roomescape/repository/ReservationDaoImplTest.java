@@ -62,7 +62,6 @@ class ReservationDaoImplTest {
         Reservation expectedReservation = new Reservation(1L, "브라운", DATE_AFTER_TWO, reservationTime, theme);
 
         List<Reservation> all = reservationDaoImpl.findAll();
-        System.out.println("all = " + all);
         assertThat(reservationDaoImpl.findById(1L)).isPresent();
     }
 
