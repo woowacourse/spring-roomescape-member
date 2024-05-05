@@ -16,6 +16,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import roomescape.controller.request.ReservationTimeRequest;
+import roomescape.controller.response.MemberReservationTimeResponse;
 import roomescape.model.ReservationTime;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -68,5 +69,24 @@ class ReservationTimeControllerTest {
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation_time", Integer.class);
         assertThat(count).isEqualTo(1);
+    }
+
+    @DisplayName("특정 날짜와 테마에 따른 모든 시간의 예약 가능 여부를 확인한다.")
+    @Test
+    void should_get_reservations_with_book_state_by_date_and_theme() {
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운",
+                "2030-08-05", "1", "1");
+
+        List<MemberReservationTimeResponse> responses = RestAssured.given().log().all()
+                .when().get("/times/reserved?date=2030-08-05&themeId=1")
+                .then().log().all()
+                .statusCode(200).extract()
+                .jsonPath().getList(".", MemberReservationTimeResponse.class);
+
+        Assertions.assertThat(responses).hasSize(2);
+        Assertions.assertThat(responses).containsOnly(
+                new MemberReservationTimeResponse(1, LocalTime.of(10, 0), true),
+                new MemberReservationTimeResponse(2, LocalTime.of(11, 0), false)
+        );
     }
 }

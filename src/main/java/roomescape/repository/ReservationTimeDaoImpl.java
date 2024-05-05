@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +36,20 @@ public class ReservationTimeDaoImpl implements ReservationTimeDao {
                         resultSet.getLong("id"),
                         resultSet.getTime("start_at").toLocalTime()
                 ));
+    }
+
+    @Override
+    public List<ReservationTime> findAllReservedTimes(LocalDate date, long themeId) {
+        String sql = """
+                select t.id as time_id, t.start_at as start_at
+                from reservation as r inner join reservation_time as t on r.time_id = t.id
+                where date = ? and theme_id = ?
+                """;
+        return jdbcTemplate.query(sql, (resultSet, rowNum) ->
+                new ReservationTime(
+                        resultSet.getLong("time_id"),
+                        resultSet.getTime("start_at").toLocalTime()
+                ), date, themeId);
     }
 
     @Override

@@ -43,4 +43,13 @@ public class MemberReservationTimeResponse {
     public int hashCode() {
         return Objects.hash(timeId, startAt, alreadyBooked);
     }
+
+    @Override
+    public String toString() {
+        return "MemberReservationTimeResponse{" +
+                "timeId=" + timeId +
+                ", startAt=" + startAt +
+                ", alreadyBooked=" + alreadyBooked +
+                '}';
+    }
 }

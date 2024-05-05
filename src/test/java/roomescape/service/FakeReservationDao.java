@@ -17,7 +17,7 @@ class FakeReservationDao implements ReservationDao {
             new Reservation(1L, "브라운", LocalDate.of(2030, 8, 5),
                     new ReservationTime(2L, LocalTime.of(11, 0)),
                     new Theme(1L, "에버", "공포", "공포.jpg")),
-            new Reservation(1L, "리사", LocalDate.of(2030, 8, 1),
+            new Reservation(2L, "리사", LocalDate.of(2030, 8, 1),
                     new ReservationTime(2L, LocalTime.of(11, 0)),
                     new Theme(2L, "배키", "스릴러", "스릴러.jpg"))));
 

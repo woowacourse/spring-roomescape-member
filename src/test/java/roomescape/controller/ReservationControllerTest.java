@@ -108,23 +108,4 @@ class ReservationControllerTest {
 
         AssertionsForClassTypes.assertThat(isJdbcTemplateInjected).isFalse();
     }
-
-    @DisplayName("특정 날짜와 테마에 따른 모든 시간의 예약 가능 여부를 확인한다.")
-    @Test
-    void should_get_reservations_with_book_state_by_date_and_theme() {
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운",
-                "2030-08-05", "1", "1");
-
-        List<MemberReservationTimeResponse> responses = RestAssured.given().log().all()
-                .when().get("/reservations/times?date=2030-08-05&themeId=1")
-                .then().log().all()
-                .statusCode(200).extract()
-                .jsonPath().getList(".", MemberReservationTimeResponse.class);
-
-        assertThat(responses).hasSize(2);
-        assertThat(responses).containsOnly(
-                new MemberReservationTimeResponse(1, LocalTime.of(10, 0), true),
-                new MemberReservationTimeResponse(2, LocalTime.of(11, 0), false)
-        );
-    }
 }

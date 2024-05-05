@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,11 @@ class FakeReservationTimeDao implements ReservationTimeDao {
     @Override
     public List<ReservationTime> findAllReservationTimes() {
         return reservationTimes;
+    }
+
+    @Override
+    public List<ReservationTime> findAllReservedTimes(LocalDate date, long themeId) {
+        return List.of(reservationTimes.get(1));
     }
 
     @Override

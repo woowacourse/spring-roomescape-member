@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -11,16 +12,17 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import roomescape.controller.request.ReservationTimeRequest;
+import roomescape.controller.response.MemberReservationTimeResponse;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.DuplicatedException;
 import roomescape.exception.NotFoundException;
 import roomescape.model.ReservationTime;
+import roomescape.repository.ReservationTimeRepository;
 
 class ReservationTimeServiceTest {
 
     private final ReservationTimeService reservationTimeService = new ReservationTimeService(
-            new FakeReservationDao(),
-            new FakeReservationTimeDao()
+            new ReservationTimeRepository(new FakeReservationDao(), new FakeReservationTimeDao())
     );
 
     @DisplayName("모든 예약 시간을 반환한다")
@@ -83,5 +85,17 @@ class ReservationTimeServiceTest {
         assertThatThrownBy(() -> reservationTimeService.addReservationTime(request))
                 .isInstanceOf(DuplicatedException.class)
                 .hasMessage("[ERROR] 이미 존재하는 시간입니다.");
+    }
+
+    @DisplayName("예약 가능 상태를 담은 시간 정보를 반환한다.")
+    @Test
+    void should_return_times_with_book_state() {
+        List<MemberReservationTimeResponse> times = reservationTimeService.getMemberReservationTimes(
+                LocalDate.of(2030, 8, 5), 1);
+        assertThat(times).hasSize(2);
+        assertThat(times).containsOnly(
+                new MemberReservationTimeResponse(1, LocalTime.of(10, 0), false),
+                new MemberReservationTimeResponse(2, LocalTime.of(11, 0), true)
+        );
     }
 }
