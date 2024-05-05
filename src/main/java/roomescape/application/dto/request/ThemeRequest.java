@@ -3,6 +3,7 @@ package roomescape.application.dto.request;
 import jakarta.validation.constraints.NotBlank;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeName;
+import roomescape.exception.RoomescapeException;
 
 public record ThemeRequest(
         @NotBlank(message = "테마 이름을 입력해주세요.")
@@ -13,6 +14,10 @@ public record ThemeRequest(
         String thumbnail) {
 
     public Theme toTheme() {
-        return new Theme(new ThemeName(name), description, thumbnail);
+        try {
+            return new Theme(new ThemeName(name), description, thumbnail);
+        } catch (IllegalArgumentException e) {
+            throw new RoomescapeException("테마를 생성할 수 없습니다.");
+        }
     }
 }

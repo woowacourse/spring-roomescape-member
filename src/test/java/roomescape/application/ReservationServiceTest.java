@@ -11,8 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.application.dto.request.ReservationRequest;
 import roomescape.application.dto.response.ReservationResponse;
-import roomescape.application.exception.DuplicatedEntityException;
-import roomescape.application.exception.ReserveOnPastException;
 import roomescape.domain.PlayerName;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
@@ -21,7 +19,7 @@ import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeName;
 import roomescape.domain.ThemeRepository;
-import roomescape.application.exception.EntityNotFoundException;
+import roomescape.exception.RoomescapeException;
 
 @ServiceTest
 class ReservationServiceTest {
@@ -62,7 +60,8 @@ class ReservationServiceTest {
         ReservationRequest request = new ReservationRequest("test", "2024-01-01", 99L, savedTheme.getId());
 
         assertThatCode(() -> reservationService.create(request))
-                .isInstanceOf(EntityNotFoundException.class);
+                .isInstanceOf(RoomescapeException.class)
+                .hasMessage("존재하지 않는 예약 시간 입니다.");
     }
 
     @Test
@@ -76,7 +75,8 @@ class ReservationServiceTest {
                 99L
         );
         assertThatCode(() -> reservationService.create(request))
-                .isInstanceOf(EntityNotFoundException.class);
+                .isInstanceOf(RoomescapeException.class)
+                .hasMessage("존재하지 않는 테마 입니다.");
     }
 
 
@@ -94,7 +94,7 @@ class ReservationServiceTest {
         reservationRepository.create(request.toReservation(time, theme));
 
         assertThatCode(() -> reservationService.create(request))
-                .isInstanceOf(DuplicatedEntityException.class)
+                .isInstanceOf(RoomescapeException.class)
                 .hasMessage("이미 존재하는 예약입니다.");
     }
 
@@ -109,7 +109,7 @@ class ReservationServiceTest {
         );
 
         assertThatCode(() -> reservationService.create(reservationRequest))
-                .isInstanceOf(ReserveOnPastException.class)
+                .isInstanceOf(RoomescapeException.class)
                 .hasMessage("현재 시간보다 과거로 예약할 수 없습니다.");
     }
 
@@ -135,7 +135,7 @@ class ReservationServiceTest {
     @Test
     void shouldThrowsIllegalArgumentExceptionWhenReservationDoesNotExist() {
         assertThatCode(() -> reservationService.deleteById(99L))
-                .isInstanceOf(EntityNotFoundException.class)
+                .isInstanceOf(RoomescapeException.class)
                 .hasMessage("존재하지 않는 예약 입니다.");
     }
 

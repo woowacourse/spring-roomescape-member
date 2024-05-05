@@ -25,8 +25,7 @@ import roomescape.application.dto.request.ReservationRequest;
 import roomescape.application.dto.response.ReservationResponse;
 import roomescape.application.dto.response.ReservationTimeResponse;
 import roomescape.application.dto.response.ThemeResponse;
-import roomescape.application.exception.DuplicatedEntityException;
-import roomescape.application.exception.EntityNotFoundException;
+import roomescape.exception.RoomescapeException;
 
 @WebMvcTest(ReservationController.class)
 class ReservationControllerTest extends ControllerTest {
@@ -92,7 +91,7 @@ class ReservationControllerTest extends ControllerTest {
         String reservationRequestJson = objectMapper.writeValueAsString(reservationRequest);
 
         given(reservationService.create(any(ReservationRequest.class)))
-                .willThrow(new EntityNotFoundException("존재하지 않는 예약 시간 입니다."));
+                .willThrow(new RoomescapeException("존재하지 않는 예약 시간 입니다."));
 
         mvc.perform(post("/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -101,19 +100,19 @@ class ReservationControllerTest extends ControllerTest {
                 .andExpect(content().string(containsString("존재하지 않는 예약 시간 입니다.")));
     }
 
-    @DisplayName("이미 존재하는 예약을 생성하려고 하면 409 Conflict 응답을 반환한다.")
+    @DisplayName("이미 존재하는 예약을 생성하려고 하면 400 Bad Request 응답을 반환한다.")
     @Test
     void shouldReturn400ConflictWhenAlreadyExistReservationCreate() throws Exception {
         ReservationRequest reservationRequest = new ReservationRequest("test", "2024-01-01", 1L, 1L);
         String reservationRequestJson = objectMapper.writeValueAsString(reservationRequest);
 
         given(reservationService.create(reservationRequest))
-                .willThrow(new DuplicatedEntityException("이미 존재하는 예약입니다."));
+                .willThrow(new RoomescapeException("이미 존재하는 예약입니다."));
 
         mvc.perform(post("/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(reservationRequestJson))
-                .andExpect(status().isConflict())
+                .andExpect(status().isBadRequest())
                 .andExpect(content().string(containsString("이미 존재하는 예약입니다.")));
     }
 
@@ -129,7 +128,7 @@ class ReservationControllerTest extends ControllerTest {
     @DisplayName("존재하지 않는 예약의 id로 삭제 요청을 하면 400 Bad Request 응답을 반환한다.")
     @Test
     void shouldReturn400BadRequestWhenReservationIdNotExist() throws Exception {
-        doThrow(new EntityNotFoundException("존재하지 않는 예약입니다."))
+        doThrow(new RoomescapeException("존재하지 않는 예약입니다."))
                 .when(reservationService).deleteById(1L);
 
         mvc.perform(delete("/reservations/1"))

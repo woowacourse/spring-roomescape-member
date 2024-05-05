@@ -41,8 +41,8 @@ public class RoomescapeControllerAdvice {
 
     @ExceptionHandler(RoomescapeException.class)
     public ProblemDetail handleIllegalArgumentException(RoomescapeException exception) {
-        logger.error(exception.getBody().getDetail(), exception);
-        return exception.getBody();
+        logger.error(exception.getMessage(), exception);
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exception.getMessage());
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)

@@ -10,11 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.application.dto.request.ThemeRequest;
 import roomescape.application.dto.response.ThemeResponse;
-import roomescape.application.exception.EntityReferenceOnDeleteException;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeName;
 import roomescape.domain.ThemeRepository;
-import roomescape.application.exception.EntityNotFoundException;
+import roomescape.exception.RoomescapeException;
 
 @ServiceTest
 class ThemeServiceTest {
@@ -54,7 +53,7 @@ class ThemeServiceTest {
     @Test
     void shouldThrowIllegalArgumentExceptionWhenDeleteWithNonExistId() {
         assertThatCode(() -> themeService.deleteById(1L))
-                .isInstanceOf(EntityNotFoundException.class)
+                .isInstanceOf(RoomescapeException.class)
                 .hasMessage("존재하지 않는 테마 입니다.");
     }
 
@@ -63,8 +62,8 @@ class ThemeServiceTest {
     @Sql("/insert-single-reservation.sql")
     void shouldThrowEntityReferenceOnDeleteExceptionWhenDeleteThemeWithReservation() {
         assertThatCode(() -> themeService.deleteById(1L))
-                .isInstanceOf(EntityReferenceOnDeleteException.class)
-                .hasMessageContaining("해당 테마와 연관된 예약이 존재하여 삭제할 수 없습니다. 삭제 요청한 테마:");
+                .isInstanceOf(RoomescapeException.class)
+                .hasMessage("연관된 예약이 존재하여 삭제할 수 없습니다.");
     }
 
     private Theme createTheme() {

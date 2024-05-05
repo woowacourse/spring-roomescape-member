@@ -7,12 +7,10 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.application.dto.request.ReservationTimeRequest;
 import roomescape.application.dto.response.AvailableTimeResponse;
 import roomescape.application.dto.response.ReservationTimeResponse;
-import roomescape.application.exception.DuplicatedEntityException;
-import roomescape.application.exception.EntityNotFoundException;
-import roomescape.application.exception.EntityReferenceOnDeleteException;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
+import roomescape.exception.RoomescapeException;
 
 @Service
 public class ReservationTimeService {
@@ -28,9 +26,7 @@ public class ReservationTimeService {
     @Transactional
     public ReservationTimeResponse create(ReservationTimeRequest request) {
         if (reservationTimeRepository.existsByStartAt(request.parsedStartAt())) {
-            throw new DuplicatedEntityException(
-                    String.format("이미 존재하는 예약시간이 있습니다. 해당 시간:%s", request.startAt())
-            );
+            throw new RoomescapeException("이미 존재하는 예약입니다.");
         }
         ReservationTime reservationTime = reservationTimeRepository.create(request.toReservationTime());
         return ReservationTimeResponse.from(reservationTime);
@@ -45,15 +41,12 @@ public class ReservationTimeService {
 
     @Transactional
     public void deleteById(long id) {
-        ReservationTime findReservationTime = reservationTimeRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 예약 시간입니다."));
-        if (reservationRepository.existsByTimeId(id)) {
-            throw new EntityReferenceOnDeleteException(String.format(
-                    "해당 예약 시간에 연관된 예약이 존재하여 삭제할 수 없습니다. 삭제 요청한 시간:%s",
-                    findReservationTime.getStartAt())
-            );
+        ReservationTime time = reservationTimeRepository.findById(id)
+                .orElseThrow(() -> new RoomescapeException("존재하지 않는 예약 시간입니다."));
+        if (reservationRepository.existsByTimeId(time.getId())) {
+            throw new RoomescapeException("연관된 예약이 존재하여 삭제할 수 없습니다.");
         }
-        reservationTimeRepository.deleteById(id);
+        reservationTimeRepository.deleteById(time.getId());
     }
 
     public List<AvailableTimeResponse> findAvailableTimes(LocalDate date, long themeId) {
