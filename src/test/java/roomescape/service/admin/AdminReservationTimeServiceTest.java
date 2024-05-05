@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeAddRequest;
+import roomescape.service.fakeDao.FakeReservationTimeDao;
 
 class AdminReservationTimeServiceTest {
 

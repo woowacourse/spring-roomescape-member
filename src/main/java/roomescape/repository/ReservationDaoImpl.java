@@ -122,7 +122,7 @@ public class ReservationDaoImpl implements ReservationDao {
     }
 
     @Override
-    public List<ReservationTime> findByDateAndTheme(LocalDate date, Long themeId) {
+    public List<ReservationTime> findTimesByDateAndTheme(LocalDate date, Long themeId) {
         String sql = """
                 select t.id, t.start_at
                 from reservation as r

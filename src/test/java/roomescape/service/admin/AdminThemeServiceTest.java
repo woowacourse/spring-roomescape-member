@@ -5,9 +5,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.repository.ThemeDao;
+import roomescape.service.fakeDao.FakeThemeDao;
 
 class AdminThemeServiceTest {
-
 
     @DisplayName("존재하지 않는 테마 삭제 요청시 예외가 발생합니다")
     @Test

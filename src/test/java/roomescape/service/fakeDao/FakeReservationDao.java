@@ -1,7 +1,6 @@
-package roomescape.service.admin;
+package roomescape.service.fakeDao;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +18,7 @@ public class FakeReservationDao implements ReservationDao {
     AtomicLong reservationTimeAtomicLong = new AtomicLong(0);
     AtomicLong themeAtomicLong = new AtomicLong(0);
 
-    FakeReservationDao() {
+    public FakeReservationDao() {
         this.reservations = new HashMap<>();
     }
 
@@ -44,19 +43,20 @@ public class FakeReservationDao implements ReservationDao {
     }
 
     @Override
-    public Reservation insert(Reservation reservationAddRequest) {
+    public Reservation insert(Reservation reservation) {
         Long id = reservationAtomicLong.incrementAndGet();
 
-        long timeId = reservationTimeAtomicLong.incrementAndGet();
-        ReservationTime reservationTime = new ReservationTime(timeId, LocalTime.of(10, 0));
+        ReservationTime reservationTime = new ReservationTime(reservationTimeAtomicLong.incrementAndGet(),
+                reservation.getTime().getStartAt());
 
-        long themeId = themeAtomicLong.getAndIncrement();
-        Theme theme = new Theme(themeId, "리비", "dummy", "url");
+        Theme theme = reservation.getTheme();
+        Theme addTheme = new Theme(themeAtomicLong.incrementAndGet(), theme.getName(), theme.getDescription(),
+                theme.getDescription());
 
-        Reservation reservation = new Reservation(id, reservationAddRequest.getName(), reservationAddRequest.getDate(),
-                reservationTime, theme);
+        Reservation addReservation = new Reservation(id, reservation.getName(), reservation.getDate(),
+                reservationTime, addTheme);
 
-        reservations.put(id, reservation);
+        reservations.put(id, addReservation);
         return reservation;
     }
 
@@ -73,8 +73,15 @@ public class FakeReservationDao implements ReservationDao {
     }
 
     @Override
-    public List<ReservationTime> findByDateAndTheme(LocalDate date, Long themeId) {
-        return null;
+    public List<ReservationTime> findTimesByDateAndTheme(LocalDate date, Long themeId) {
+        return reservations.values()
+                .stream()
+                .filter(reservation ->
+                        reservation.getDate().isEqual(date) && reservation.getThemeId().equals(themeId))
+                .map(reservation -> {
+                    return new ReservationTime(reservation.getTimeId(), reservation.getTime().getStartAt());
+                })
+                .toList();
     }
 
     @Override

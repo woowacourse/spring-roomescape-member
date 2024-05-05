@@ -1,6 +1,7 @@
 package roomescape.service.admin;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.service.fixture.LocalDateFixture.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -11,6 +12,9 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationAddRequest;
+import roomescape.service.fakeDao.FakeReservationDao;
+import roomescape.service.fakeDao.FakeReservationTimeDao;
+import roomescape.service.fakeDao.FakeThemeDao;
 
 class AdminReservationServiceTest {
 
@@ -38,7 +42,7 @@ class AdminReservationServiceTest {
     @DisplayName("존재하지 않는 예약시각으로 예약 시 예외가 발생합니다.")
     @Test
     void should_throw_IllegalArgumentException_when_reserve_non_exist_time() {
-        LocalDate reservationDate = LocalDate.now().plusDays(2L);
+        LocalDate reservationDate = AFTER_TWO_DAYS_DATE;
         ReservationAddRequest reservationAddRequest = new ReservationAddRequest(reservationDate, "dodo", 1L, 1L);
 
         assertThatThrownBy(() -> adminReservationService.addReservation(reservationAddRequest))
@@ -52,12 +56,12 @@ class AdminReservationServiceTest {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(12, 0));
         Theme theme = new Theme(1L, "dummy", "description", "url");
 
-        Reservation reservation = new Reservation(null, "lib", LocalDate.now().plusDays(1), reservationTime, theme);
+        Reservation reservation = new Reservation(null, "lib", AFTER_ONE_DAYS_DATE, reservationTime, theme);
         ReservationTime savedTime = fakeReservationTimeDao.insert(reservationTime);
         Theme savedTheme = fakeThemeDao.insert(theme);
         Reservation savedReservation = fakeReservationDao.insert(reservation);
 
-        ReservationAddRequest conflictRequest = new ReservationAddRequest(LocalDate.now().plusDays(1), "dodo",
+        ReservationAddRequest conflictRequest = new ReservationAddRequest(AFTER_ONE_DAYS_DATE, "dodo",
                 savedTime.getId(), savedTheme.getId());
 
         assertThatThrownBy(() -> adminReservationService.addReservation(conflictRequest))

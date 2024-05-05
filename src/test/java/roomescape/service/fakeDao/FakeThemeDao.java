@@ -1,4 +1,4 @@
-package roomescape.service.admin;
+package roomescape.service.fakeDao;
 
 import java.util.HashMap;
 import java.util.List;
