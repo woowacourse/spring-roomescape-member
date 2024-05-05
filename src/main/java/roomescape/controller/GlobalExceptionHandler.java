@@ -1,22 +1,19 @@
 package roomescape.controller;
 
-import org.springframework.http.HttpStatus;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<String> handleHttpMessageNotReadableException(final HttpMessageNotReadableException ex) {
-        String errorMessage = "[ERROR] 적절하지 않은 입력값 입니다";
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
+    @ExceptionHandler(value = IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
     }
 
-    @ExceptionHandler(NumberFormatException.class)
-    public ResponseEntity<String> handleNumberFormatException(final NumberFormatException ex) {
-        String errorMessage = "[ERROR] 적절하지 않은 입력값 입니다";
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
+    @ExceptionHandler(value = JsonMappingException.class)
+    public ResponseEntity<String> handleBadRequestException(JsonMappingException ex) {
+        return ResponseEntity.badRequest().body("[ERROR] 적절하지 않은 입력값 입니다");
     }
 }

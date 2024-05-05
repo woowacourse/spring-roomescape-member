@@ -1,6 +1,5 @@
 package roomescape.controller;
 
-import org.apache.coyote.BadRequestException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.domain.dto.TimeSlotRequest;
@@ -37,13 +36,5 @@ public class TimeController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(value = IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
-        return ResponseEntity.badRequest().body(ex.getMessage());
-    }
 
-    @ExceptionHandler(value = BadRequestException.class)
-    public ResponseEntity<String> handleBadRequestException(BadRequestException ex) {
-        return ResponseEntity.badRequest().body("[ERROR] 잘못된 시간입니다");
-    }
 }
