@@ -19,7 +19,7 @@ class ReservationTest {
         final LocalDate reservationDate = LocalDate.now().plusDays(1);
         final ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(2, 22));
         final Theme theme = Theme.of(1L, "테바의 비밀친구", "테바의 은밀한 비밀친구", "대충 테바 사진 링크");
-        final Reservation reservation = Reservation.createNewReservation(
+        final Reservation reservation = Reservation.of(
                 clientName,
                 reservationDate,
                 reservationTime,
@@ -34,17 +34,14 @@ class ReservationTest {
         assertThat(initIndexReservation.getId()).isEqualTo(initialIndex);
     }
 
-    @DisplayName("현재 날짜/시간보다 이전의 예약 정보를 입력하면 예외가 발생한다.")
+    @DisplayName("id값을 누락하고 생성 시도를 하면 예외가 발생한다.")
     @Test
-    void throwExceptionWithReservationDateTimeBeforeNow() {
-        // Given
-        final ReservationTime reservationTime = new ReservationTime(LocalTime.now());
-        final Theme theme = Theme.of(1L, "테바의 비밀친구", "테바의 은밀한 비밀친구", "대충 테바 사진 링크");
-        final LocalDate dateBeforeNow = LocalDate.now().minusDays(1);
-
+    void throwExceptionWhenIdIsNull() {
         // When & Then
-        assertThatThrownBy(() -> Reservation.createNewReservation("켈리", dateBeforeNow, reservationTime, theme))
+        final ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
+        final Theme theme = Theme.of(1L, "hi", "hihi", "hh");
+        assertThatThrownBy(() -> Reservation.of(null, "치킨", LocalDate.now(), reservationTime, theme))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("현재 날짜보다 이전 날짜를 예약할 수 없습니다.");
+                .hasMessage("id는 필수 값입니다.");
     }
 }

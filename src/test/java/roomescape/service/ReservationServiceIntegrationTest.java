@@ -90,6 +90,17 @@ class ReservationServiceIntegrationTest {
                 .hasMessage("해당 id의 예약이 존재하지 않습니다.");
     }
 
+    @DisplayName("현재 보다 이전 날짜/시간의 예약 정보를 저장하려고 하면 예외가 발생한다.")
+    @Test
+    void throwExceptionWhenPastDateOrTime() {
+        // Given
+        final SaveReservationRequest saveReservationRequest = new SaveReservationRequest(LocalDate.now().minusDays(3), "예약자", 1L, 1L);
+
+        // When & Then
+        assertThatThrownBy(() -> reservationService.saveReservation(saveReservationRequest))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("현재 날짜보다 이전 날짜를 예약할 수 없습니다.");
+    }
 
     @DisplayName("이미 존재하는 예약 날짜/시간/테마가 입력되면 예외가 발생한다.")
     @Test

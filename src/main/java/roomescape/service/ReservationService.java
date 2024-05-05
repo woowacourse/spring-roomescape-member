@@ -2,6 +2,7 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.SaveReservationRequest;
@@ -9,6 +10,7 @@ import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -38,9 +40,18 @@ public class ReservationService {
         final Theme theme = themeRepository.findById(request.themeId())
                 .orElseThrow(() -> new NoSuchElementException("해당 id의 테마가 존재하지 않습니다."));
 
+        final Reservation reservation = request.toReservation(reservationTime, theme);
+        validateReservationDateAndTime(reservation.getDate(), reservationTime);
         validateReservationDuplication(request);
 
         return reservationRepository.save(request.toReservation(reservationTime, theme));
+    }
+
+    private static void validateReservationDateAndTime(final ReservationDate date, final ReservationTime time) {
+        final LocalDateTime reservationLocalDateTime = LocalDateTime.of(date.getValue(), time.getStartAt());
+        if (reservationLocalDateTime.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("현재 날짜보다 이전 날짜를 예약할 수 없습니다.");
+        }
     }
 
     private void validateReservationDuplication(final SaveReservationRequest request) {

@@ -37,7 +37,7 @@ public class InMemoryReservationRepository implements ReservationRepository {
     }
 
     private RowMapper<Reservation> itemRowMapper() {
-        return ((rs, rowNum) -> Reservation.ofSavedReservation(
+        return ((rs, rowNum) -> Reservation.of(
                 rs.getLong("reservation_id"),
                 rs.getString("reservation_name"),
                 rs.getDate("reservation_date").toLocalDate(),

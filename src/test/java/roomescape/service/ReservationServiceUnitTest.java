@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
-class ReservationServiceTest {
+class ReservationServiceUnitTest {
 
     @InjectMocks
     private ReservationService reservationService;
@@ -45,8 +45,8 @@ class ReservationServiceTest {
         final ReservationTime savedReservationTime2 = new ReservationTime(2L, LocalTime.now().plusHours(4));
         final Theme theme = Theme.of(1L, "테바의 비밀친구", "테바의 은밀한 비밀친구", "대충 테바 사진 링크");
         final List<Reservation> savedReservations = List.of(
-                Reservation.ofSavedReservation(1L, "켈리", LocalDate.now().plusDays(5), savedReservationTime1, theme),
-                Reservation.ofSavedReservation(2L, "켈리", LocalDate.now().plusDays(6), savedReservationTime2, theme)
+                Reservation.of(1L, "켈리", LocalDate.now().plusDays(5), savedReservationTime1, theme),
+                Reservation.of(2L, "켈리", LocalDate.now().plusDays(6), savedReservationTime2, theme)
         );
 
         given(reservationRepository.findAll()).willReturn(savedReservations);
@@ -64,7 +64,7 @@ class ReservationServiceTest {
         // Given
         final ReservationTime savedReservationTime = new ReservationTime(1L, LocalTime.now().plusHours(3));
         final Theme savedTheme = Theme.of(1L, "테바의 비밀친구", "테바의 은밀한 비밀친구", "대충 테바 사진 링크");
-        final Reservation savedReservation = Reservation.ofSavedReservation(1L, "켈리", LocalDate.now().plusDays(5), savedReservationTime, savedTheme);
+        final Reservation savedReservation = Reservation.of(1L, "켈리", LocalDate.now().plusDays(5), savedReservationTime, savedTheme);
         final SaveReservationRequest saveReservationRequest = new SaveReservationRequest(LocalDate.now().plusDays(5), "켈리", 1L, 1L);
 
         given(reservationTimeRepository.findById(1L)).willReturn(Optional.of(savedReservationTime));
@@ -113,6 +113,24 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.deleteReservation(1L))
                 .isInstanceOf(NoSuchElementException.class)
                 .hasMessage("해당 id의 예약이 존재하지 않습니다.");
+    }
+
+    @DisplayName("현재 보다 이전 날짜/시간의 예약 정보를 저장하려고 하면 예외가 발생한다.")
+    @Test
+    void throwExceptionWhenPastDateOrTime() {
+        // Given
+        final ReservationTime savedReservationTime = new ReservationTime(1L, LocalTime.now().plusHours(3));
+        final Theme savedTheme = Theme.of(1L, "테바의 비밀친구", "테바의 은밀한 비밀친구", "대충 테바 사진 링크");
+        final SaveReservationRequest saveReservationRequest = new SaveReservationRequest(
+                LocalDate.now().minusDays(3), "예약자", 1L, 1L);
+
+        given(reservationTimeRepository.findById(1L)).willReturn(Optional.of(savedReservationTime));
+        given(themeRepository.findById(1L)).willReturn(Optional.of(savedTheme));
+
+        // When & Then
+        assertThatThrownBy(() -> reservationService.saveReservation(saveReservationRequest))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("현재 날짜보다 이전 날짜를 예약할 수 없습니다.");
     }
 
 
