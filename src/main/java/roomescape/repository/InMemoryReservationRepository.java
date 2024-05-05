@@ -122,6 +122,15 @@ public class InMemoryReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public boolean existByThemeId(final Long themeId) {
+        final String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE theme_id = :themeId)";
+        final MapSqlParameterSource param = new MapSqlParameterSource()
+                .addValue("themeId", themeId);
+
+        return Boolean.TRUE.equals(template.queryForObject(sql, param, Boolean.class));
+    }
+
+    @Override
     public List<Reservation> findAllByDateAndThemeId(final LocalDate date, final Long themeId) {
         final String sql = """
                     SELECT

@@ -13,6 +13,7 @@ import roomescape.dto.SaveThemeRequest;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -65,5 +66,16 @@ class ThemeServiceIntegrationTest {
         // Then
         final List<Theme> themes = themeService.getThemes();
         assertThat(themes).hasSize(14);
+    }
+
+    @DisplayName("해당 테마 정보를 참조하고 있는 예약이 하나라도 있으면 삭제시 예외가 발생한다.")
+    @Test
+    void throwExceptionWhenDeleteThemeHasRelation() {
+        // Given
+        final long themeId = 1;
+        // When & Then
+        assertThatThrownBy(() -> themeService.deleteTheme(themeId))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("예약에 포함된 테마 정보는 삭제할 수 없습니다.");
     }
 }

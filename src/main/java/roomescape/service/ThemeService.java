@@ -41,11 +41,18 @@ public class ThemeService {
     }
 
     public void deleteTheme(final Long themeId) {
-        // TODO : 예약에 포함된 테마인지 검증하는 로직 추가
+        validateReservationOfIncludeThemeExist(themeId);
+
         final int deletedDataCount = themeRepository.deleteById(themeId);
 
         if (deletedDataCount <= 0) {
             throw new NoSuchElementException("해당 id의 테마 정보가 존재하지 않습니다.");
+        }
+    }
+
+    private void validateReservationOfIncludeThemeExist(final Long themeId) {
+        if (reservationRepository.existByThemeId(themeId)) {
+            throw new IllegalArgumentException("예약에 포함된 테마 정보는 삭제할 수 없습니다.");
         }
     }
 

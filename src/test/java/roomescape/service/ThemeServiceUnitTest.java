@@ -8,12 +8,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.Theme;
 import roomescape.dto.SaveThemeRequest;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
@@ -21,6 +23,8 @@ class ThemeServiceUnitTest {
 
     @InjectMocks
     private ThemeService themeService;
+    @Mock
+    private ReservationRepository reservationRepository;
     @Mock
     private ThemeRepository themeRepository;
 
@@ -70,5 +74,18 @@ class ThemeServiceUnitTest {
         // When & Then
         assertThatCode(() -> themeService.deleteTheme(1L))
                 .doesNotThrowAnyException();
+    }
+
+    @DisplayName("해당 테마 정보를 참조하고 있는 예약이 하나라도 있으면 삭제시 예외가 발생한다.")
+    @Test
+    void throwExceptionWhenDeleteThemeHasRelation() {
+        // Given
+        final Long themeId = 1L;
+        given(reservationRepository.existByThemeId(themeId)).willReturn(true);
+
+        // When & Then
+        assertThatThrownBy(() -> themeService.deleteTheme(themeId))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("예약에 포함된 테마 정보는 삭제할 수 없습니다.");
     }
 }
