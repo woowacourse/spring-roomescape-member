@@ -1,8 +1,7 @@
 package roomescape.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -28,6 +27,9 @@ import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 import roomescape.exception.PastReservationException;
 import roomescape.service.request.ReservationAppRequest;
+import roomescape.service.response.ReservationAppResponse;
+import roomescape.service.response.ReservationTimeAppResponse;
+import roomescape.service.response.ThemeAppResponse;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
@@ -72,18 +74,15 @@ class ReservationServiceTest {
         ReservationAppRequest request = new ReservationAppRequest(name, reservationDate.getDate().toString(), timeId,
             themeId);
 
-        Reservation actual = reservationService.save(request);
-        Reservation expected = new Reservation(1L, reservation.getName(), reservation.getReservationDate(),
-            reservation.getReservationTime(),
-            new Theme("방탈출", "방탈출하는 게임",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        ReservationAppResponse actual = reservationService.save(request);
+        ReservationAppResponse expected = new ReservationAppResponse(
+            reservationId,
+            reservation.getName(),
+            reservation.getReservationDate(),
+            ReservationTimeAppResponse.from(reservation.getReservationTime()),
+            ThemeAppResponse.from(reservation.getTheme()));
 
-        assertAll(
-            () -> assertEquals(expected.getId(), actual.getId()),
-            () -> assertEquals(expected.getReservationDate(), actual.getReservationDate()),
-            () -> assertEquals(expected.getReservationTime(), actual.getReservationTime()),
-            () -> assertEquals(expected.getName(), actual.getName())
-        );
+        assertThat(actual).isEqualTo(expected);
     }
 
     @DisplayName("실패: 빈 이름을 저장하면 예외가 발생한다.")

@@ -1,9 +1,8 @@
 package roomescape.service;
 
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
@@ -22,6 +21,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.exception.ReservationExistsException;
 import roomescape.service.request.ReservationTimeAppRequest;
+import roomescape.service.response.ReservationTimeAppResponse;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationTimeServiceTest {
@@ -39,17 +39,15 @@ class ReservationTimeServiceTest {
     void save() {
         long timeId = 1L;
         String startAt = LocalTime.now().toString();
+        ReservationTime reservationTime = new ReservationTime(timeId, startAt);
 
         when(reservationTimeRepository.save(any(ReservationTime.class)))
-            .thenReturn(new ReservationTime(timeId, startAt));
+            .thenReturn(reservationTime);
 
-        ReservationTime actual = reservationTimeService.save(new ReservationTimeAppRequest(startAt.toString()));
-        ReservationTime expected = new ReservationTime(timeId, startAt);
+        ReservationTimeAppResponse actual = reservationTimeService.save(new ReservationTimeAppRequest(startAt));
+        ReservationTimeAppResponse expected = ReservationTimeAppResponse.from(reservationTime);
 
-        assertAll(
-            () -> assertEquals(expected.getId(), actual.getId()),
-            () -> assertEquals(expected.getStartAt(), actual.getStartAt())
-        );
+        assertThat(actual).isEqualTo(expected);
     }
 
     @DisplayName("실패: 잘못된 시간 포맷을 저장하면 예외가 발생한다.")

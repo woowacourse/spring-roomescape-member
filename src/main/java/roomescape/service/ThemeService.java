@@ -7,6 +7,7 @@ import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 import roomescape.exception.ReservationExistsException;
 import roomescape.service.request.ThemeAppRequest;
+import roomescape.service.response.ThemeAppResponse;
 
 @Service
 public class ThemeService {
@@ -22,10 +23,12 @@ public class ThemeService {
         this.reservationRepository = reservationRepository;
     }
 
-    public Theme save(ThemeAppRequest request) {
+    public ThemeAppResponse save(ThemeAppRequest request) {
         Theme theme = new Theme(request.name(), request.description(), request.thumbnail());
         validateDuplication(request);
-        return themeRepository.save(theme);
+        Theme savedTheme = themeRepository.save(theme);
+
+        return ThemeAppResponse.from(savedTheme);
     }
 
     private void validateDuplication(ThemeAppRequest request) {
@@ -41,12 +44,16 @@ public class ThemeService {
         return themeRepository.deleteById(id);
     }
 
-    public List<Theme> findAll() {
-        return themeRepository.findAll();
+    public List<ThemeAppResponse> findAll() {
+        return themeRepository.findAll().stream()
+            .map(ThemeAppResponse::from)
+            .toList();
     }
 
-    public List<Theme> findPopular() {
+    public List<ThemeAppResponse> findPopular() {
         return themeRepository.findMostReservedThemesInPeriod(BASED_ON_PERIOD_POPULAR_THEME,
-            MAX_POPULAR_THEME_COUNT);
+                MAX_POPULAR_THEME_COUNT).stream()
+            .map(ThemeAppResponse::from)
+            .toList();
     }
 }

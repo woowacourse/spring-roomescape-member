@@ -19,9 +19,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.controller.request.ReservationWebRequest;
-import roomescape.controller.response.ReservationTimeWebResponse;
 import roomescape.controller.response.ReservationWebResponse;
-import roomescape.controller.response.ThemeWebResponse;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
@@ -29,6 +27,7 @@ import roomescape.domain.Theme;
 import roomescape.exception.PastReservationException;
 import roomescape.service.ReservationService;
 import roomescape.service.request.ReservationAppRequest;
+import roomescape.service.response.ReservationAppResponse;
 
 @WebMvcTest(ReservationController.class)
 class ReservationControllerTest {
@@ -47,17 +46,18 @@ class ReservationControllerTest {
         long themeId = 1L;
         ReservationDate date = new ReservationDate("2040-04-04");
         String name = "브리";
+
         Reservation reservation = new Reservation(1L, name, date, new ReservationTime(LocalTime.MIN.toString()),
             new Theme("방탈출", "방탈출하는 게임",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        ReservationAppResponse appResponse = ReservationAppResponse.from(reservation);
 
         when(reservationService.save(new ReservationAppRequest(name, date.toString(), timeId, themeId)))
-            .thenReturn(reservation);
+            .thenReturn(appResponse);
 
         String requestBody = objectMapper.writeValueAsString(
             new ReservationWebRequest(name, date.toString(), timeId, themeId));
-        String responseBody = objectMapper.writeValueAsString(new ReservationWebResponse(1L, name, date,
-            ReservationTimeWebResponse.from(reservation), ThemeWebResponse.from(reservation)));
+        String responseBody = objectMapper.writeValueAsString(ReservationWebResponse.from(appResponse));
 
         mvc.perform(post("/reservations")
                 .content(requestBody)

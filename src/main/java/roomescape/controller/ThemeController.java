@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.request.ThemeWebRequest;
 import roomescape.controller.response.ThemeWebResponse;
-import roomescape.domain.Theme;
 import roomescape.service.ThemeService;
 import roomescape.service.request.ThemeAppRequest;
+import roomescape.service.response.ThemeAppResponse;
 
 @RestController
 @RequestMapping("/themes")
@@ -28,52 +28,38 @@ public class ThemeController {
 
     @PostMapping
     public ResponseEntity<ThemeWebResponse> create(@RequestBody ThemeWebRequest request) {
-        Theme newTheme = themeService.save(
+        ThemeAppResponse appResponse = themeService.save(
             new ThemeAppRequest(request.name(), request.description(), request.thumbnail()));
-        Long id = newTheme.getId();
 
-        return ResponseEntity.created(URI.create("/themes/" + id))
-            .body(new ThemeWebResponse(
-                id,
-                newTheme.getName(),
-                newTheme.getDescription(),
-                newTheme.getThumbnail()
-            ));
+        Long id = appResponse.id();
+        ThemeWebResponse webResponse = ThemeWebResponse.from(appResponse);
+
+        return ResponseEntity.created(URI.create("/themes/" + id)).body(webResponse);
     }
 
     @GetMapping
     public ResponseEntity<List<ThemeWebResponse>> findAll() {
         List<ThemeWebResponse> response = themeService.findAll()
             .stream()
-            .map(theme -> new ThemeWebResponse(
-                theme.getId(),
-                theme.getName(),
-                theme.getDescription(),
-                theme.getThumbnail())
-            ).toList();
+            .map(ThemeWebResponse::from).toList();
 
-        return ResponseEntity.ok()
-            .body(response);
+        return ResponseEntity.ok().body(response);
     }
 
     @GetMapping("/popular")
     public ResponseEntity<List<ThemeWebResponse>> findPopular() {
         List<ThemeWebResponse> response = themeService.findPopular()
             .stream()
-            .map(theme -> new ThemeWebResponse(
-                theme.getId(),
-                theme.getName(),
-                theme.getDescription(),
-                theme.getThumbnail())
-            ).toList();
+            .map(ThemeWebResponse::from)
+            .toList();
 
-        return ResponseEntity.ok()
-            .body(response);
+        return ResponseEntity.ok().body(response);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         themeService.delete(id);
+
         return ResponseEntity.noContent().build();
     }
 }

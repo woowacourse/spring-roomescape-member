@@ -22,6 +22,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.exception.ReservationExistsException;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.request.ReservationTimeAppRequest;
+import roomescape.service.response.ReservationTimeAppResponse;
 
 @WebMvcTest(ReservationTimeController.class)
 class ReservationTimeControllerTest {
@@ -39,13 +40,13 @@ class ReservationTimeControllerTest {
         long id = 1L;
         String time = LocalTime.now().toString();
         ReservationTime reservationTime = new ReservationTime(id, time);
+        ReservationTimeAppResponse appResponse = ReservationTimeAppResponse.from(reservationTime);
 
         when(reservationTimeService.save(new ReservationTimeAppRequest(time)))
-            .thenReturn(reservationTime);
+            .thenReturn(appResponse);
 
         String requestBody = objectMapper.writeValueAsString(new ReservationTimeWebRequest(id, time));
-        String responseBody = objectMapper.writeValueAsString(
-            new ReservationTimeWebResponse(id, reservationTime.getStartAt()));
+        String responseBody = objectMapper.writeValueAsString(ReservationTimeWebResponse.from(appResponse));
 
         mvc.perform(post("/times")
                 .content(requestBody)

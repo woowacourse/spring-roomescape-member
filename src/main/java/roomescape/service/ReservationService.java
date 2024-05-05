@@ -12,6 +12,7 @@ import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 import roomescape.exception.PastReservationException;
 import roomescape.service.request.ReservationAppRequest;
+import roomescape.service.response.ReservationAppResponse;
 
 @Service
 public class ReservationService {
@@ -30,7 +31,7 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public Reservation save(ReservationAppRequest request) {
+    public ReservationAppResponse save(ReservationAppRequest request) {
         ReservationDate date = new ReservationDate(request.date());
         ReservationTime time = findTime(request.timeId());
         Theme theme = findTheme(request.themeId());
@@ -38,7 +39,9 @@ public class ReservationService {
         validatePastReservation(reservation);
         validateDuplication(date, request.timeId(), request.themeId());
 
-        return reservationRepository.save(reservation);
+        Reservation savedReservation = reservationRepository.save(reservation);
+
+        return ReservationAppResponse.from(savedReservation);
     }
 
     private ReservationTime findTime(Long timeId) {
@@ -75,7 +78,9 @@ public class ReservationService {
         return reservationRepository.deleteById(id);
     }
 
-    public List<Reservation> findAll() {
-        return reservationRepository.findAll();
+    public List<ReservationAppResponse> findAll() {
+        return reservationRepository.findAll().stream()
+            .map(ReservationAppResponse::from)
+            .toList();
     }
 }

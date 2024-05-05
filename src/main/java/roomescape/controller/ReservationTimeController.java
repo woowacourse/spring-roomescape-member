@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.request.ReservationTimeWebRequest;
 import roomescape.controller.response.ReservationTimeUserWebResponse;
 import roomescape.controller.response.ReservationTimeWebResponse;
-import roomescape.domain.ReservationTime;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.request.ReservationTimeAppRequest;
 import roomescape.service.response.ReservationTimeAppResponse;
+import roomescape.service.response.ReservationTimeAppResponseWithBookable;
 
 @RestController
 @RequestMapping("/times")
@@ -32,15 +32,12 @@ public class ReservationTimeController {
 
     @PostMapping
     public ResponseEntity<ReservationTimeWebResponse> create(@RequestBody ReservationTimeWebRequest request) {
-        ReservationTime newReservationTime = reservationTimeService.save(
+        ReservationTimeAppResponse appResponse = reservationTimeService.save(
             new ReservationTimeAppRequest(request.startAt()));
-        Long id = newReservationTime.getId();
+        Long id = appResponse.id();
 
         return ResponseEntity.created(URI.create("/times/" + id))
-            .body(new ReservationTimeWebResponse(
-                id,
-                newReservationTime.getStartAt()
-            ));
+            .body(new ReservationTimeWebResponse(id, appResponse.startAt()));
     }
 
     @DeleteMapping("/{id}")
@@ -52,10 +49,11 @@ public class ReservationTimeController {
 
     @GetMapping
     public ResponseEntity<List<ReservationTimeWebResponse>> getReservationTimes() {
-        List<ReservationTime> reservationTimes = reservationTimeService.findAll();
-        List<ReservationTimeWebResponse> reservationTimeWebResponses = reservationTimes.stream()
-            .map(reservationTime -> new ReservationTimeWebResponse(reservationTime.getId(),
-                reservationTime.getStartAt()))
+        List<ReservationTimeAppResponse> appResponses = reservationTimeService.findAll();
+
+        List<ReservationTimeWebResponse> reservationTimeWebResponses = appResponses.stream()
+            .map(appResponse -> new ReservationTimeWebResponse(appResponse.id(),
+                appResponse.startAt()))
             .toList();
 
         return ResponseEntity.ok(reservationTimeWebResponses);
@@ -65,8 +63,9 @@ public class ReservationTimeController {
     public ResponseEntity<List<ReservationTimeUserWebResponse>> getReservationTimesWithAvailability(
         @RequestParam LocalDate date, @RequestParam Long id) {
 
-        List<ReservationTimeAppResponse> appResponses = reservationTimeService
+        List<ReservationTimeAppResponseWithBookable> appResponses = reservationTimeService
             .findAllWithBookAvailability(date, id);
+        
         List<ReservationTimeUserWebResponse> webResponses = appResponses.stream()
             .map(response -> new ReservationTimeUserWebResponse(
                 response.id(),

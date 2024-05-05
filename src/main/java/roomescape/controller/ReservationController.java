@@ -11,12 +11,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.request.ReservationWebRequest;
-import roomescape.controller.response.ReservationTimeWebResponse;
 import roomescape.controller.response.ReservationWebResponse;
-import roomescape.controller.response.ThemeWebResponse;
-import roomescape.domain.Reservation;
 import roomescape.service.ReservationService;
 import roomescape.service.request.ReservationAppRequest;
+import roomescape.service.response.ReservationAppResponse;
 
 @RestController
 @RequestMapping("/reservations")
@@ -30,14 +28,11 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationWebResponse> reserve(@RequestBody ReservationWebRequest request) {
-        Reservation newReservation = reservationService.save(
+        ReservationAppResponse appResponse = reservationService.save(
             new ReservationAppRequest(request.name(), request.date(), request.timeId(), request.themeId()));
-        Long id = newReservation.getId();
 
-        ReservationWebResponse reservationWebResponse = new ReservationWebResponse(id, newReservation.getName(),
-            newReservation.getReservationDate(),
-            ReservationTimeWebResponse.from(newReservation),
-            ThemeWebResponse.from(newReservation));
+        Long id = appResponse.id();
+        ReservationWebResponse reservationWebResponse = ReservationWebResponse.from(appResponse);
 
         return ResponseEntity.created(URI.create("/reservations/" + id))
             .body(reservationWebResponse);
@@ -52,15 +47,10 @@ public class ReservationController {
 
     @GetMapping
     public ResponseEntity<List<ReservationWebResponse>> getReservations() {
-        List<Reservation> reservations = reservationService.findAll();
-        List<ReservationWebResponse> reservationWebResponse = reservations.stream().
-            map(reservation -> new ReservationWebResponse(
-                reservation.getId(),
-                reservation.getName(),
-                reservation.getReservationDate(),
-                ReservationTimeWebResponse.from(reservation),
-                ThemeWebResponse.from(reservation)
-            )).toList();
+        List<ReservationAppResponse> appResponses = reservationService.findAll();
+        List<ReservationWebResponse> reservationWebResponse = appResponses.stream()
+            .map(ReservationWebResponse::from)
+            .toList();
 
         return ResponseEntity.ok(reservationWebResponse);
     }
