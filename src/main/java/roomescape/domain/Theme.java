@@ -14,9 +14,9 @@ public class Theme {
 
     public Theme(Long id, String name, String description, String thumbnail) {
         this.id = id;
-        this.name = name;
-        this.description = description;
-        this.thumbnail = thumbnail;
+        this.name = Objects.requireNonNull(name, "name must not be null");
+        this.description = Objects.requireNonNull(description, "description must not be null");
+        this.thumbnail = Objects.requireNonNull(thumbnail, "thumbnail must not be null");
     }
 
     public Long getId() {

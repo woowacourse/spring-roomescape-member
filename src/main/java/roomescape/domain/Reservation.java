@@ -3,6 +3,7 @@ package roomescape.domain;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Objects;
 
 public class Reservation {
     private final Long id;
@@ -21,10 +22,10 @@ public class Reservation {
 
     public Reservation(Long id, Name name, LocalDate date, ReservationTime time, Theme theme) {
         this.id = id;
-        this.name = name;
-        this.date = date;
-        this.time = time;
-        this.theme = theme;
+        this.name = Objects.requireNonNull(name, "name must not be null");
+        this.date = Objects.requireNonNull(date, "date must not be null");
+        this.time = Objects.requireNonNull(time, "time must not be null");
+        this.theme = Objects.requireNonNull(theme, "theme must not be null");
     }
 
     public boolean hasSameTheme(Reservation reservation) {

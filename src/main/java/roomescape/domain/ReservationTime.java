@@ -4,16 +4,16 @@ import java.time.LocalTime;
 import java.util.Objects;
 
 public class ReservationTime {
-    private final long id;
+    private final Long id;
     private final LocalTime startAt;
 
     public ReservationTime(LocalTime startAt) {
-        this(0L, startAt);
+        this(null, startAt);
     }
 
-    public ReservationTime(long id, LocalTime startAt) {
+    public ReservationTime(Long id, LocalTime startAt) {
         this.id = id;
-        this.startAt = startAt;
+        this.startAt = Objects.requireNonNull(startAt, "startAt must not be null");
     }
 
     public boolean hasSameStartAt(ReservationTime reservationTime) {
@@ -37,7 +37,7 @@ public class ReservationTime {
             return false;
         }
         ReservationTime time = (ReservationTime) o;
-        return id == time.id;
+        return Objects.equals(id, time.id);
     }
 
     @Override
