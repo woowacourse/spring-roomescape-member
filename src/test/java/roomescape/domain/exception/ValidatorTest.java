@@ -7,7 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class ValidatorTest {
-    @DisplayName("인자 중 null이 있을 시 에러를 던진다.")
+    @DisplayName("인자 중 null이 있을 시 예외를 던진다.")
     @Test
     void validateNull() {
         assertThatThrownBy(() -> Validator.nonNull(null, "안녕", 1L))
@@ -21,7 +21,7 @@ class ValidatorTest {
                 .doesNotThrowAnyException();
     }
 
-    @DisplayName("인자 중 빈 값이 있을 시 에러를 던진다.")
+    @DisplayName("인자 중 빈 값이 있을 시 예외를 던진다.")
     @Test
     void validateEmpty() {
         assertThatThrownBy(() -> Validator.notEmpty("", "안녕"))
@@ -36,7 +36,7 @@ class ValidatorTest {
                 .doesNotThrowAnyException();
     }
 
-    @DisplayName("인자 중 최대 길이를 초과한 값이 있을 시 에러를 던진다.")
+    @DisplayName("인자 중 최대 길이를 초과한 값이 있을 시 예외를 던진다.")
     @Test
     void validateOverSize() {
         assertThatThrownBy(() -> Validator.overSize(3, "안녕", "안녕하세요"))

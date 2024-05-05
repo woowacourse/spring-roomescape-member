@@ -32,7 +32,7 @@ class ReservationDaoTest {
         this.reservationDao = new ReservationDao(jdbcTemplate);
     }
 
-    @DisplayName("DB에서 예약목록을 읽을 수 있다.")
+    @DisplayName("DB에서 예약 목록을 읽을 수 있다.")
     @Test
     void readReservations() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
@@ -110,10 +110,9 @@ class ReservationDaoTest {
                 new ReservationTime(1L, LocalTime.of(10, 0)),
                 new Theme(1L, "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg")
         );
-
         reservationDao.createReservation(reservation);
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
 
+        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
         assertThat(count).isEqualTo(1);
     }
 
@@ -125,10 +124,9 @@ class ReservationDaoTest {
                 "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg");
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)"
                 , "브라운", "2023-08-05", 1, 1);
-
         reservationDao.deleteReservation(1L);
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
 
+        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
         assertThat(count).isEqualTo(0);
     }
 }
