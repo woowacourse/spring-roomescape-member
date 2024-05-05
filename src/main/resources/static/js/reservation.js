@@ -17,7 +17,7 @@ function render(data) {
     const tableBody = document.getElementById('table-body');
     tableBody.innerHTML = '';
 
-    data.forEach(item => {
+    data.responses.forEach(item => {
         const row = tableBody.insertRow();
 
         row.insertCell(0).textContent = item.id;
@@ -33,7 +33,7 @@ function render(data) {
 function fetchTimes() {
     requestRead(TIME_API_ENDPOINT)
         .then(data => {
-            timesOptions.push(...data);
+            timesOptions.push(...data.responses);
         })
         .catch(error => console.error('Error fetching time:', error));
 }

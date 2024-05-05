@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.ThemeCreateRequest;
 import roomescape.dto.ThemeResponse;
+import roomescape.dto.ThemeResponses;
 import roomescape.service.ThemeService;
 
 @RestController
@@ -25,17 +26,15 @@ public class ThemeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ThemeResponse>> findAllThemes() {
-        List<ThemeResponse> themeResponses = themeService.findAll();
-
+    public ResponseEntity<ThemeResponses> findAllThemes() {
+        ThemeResponses themeResponses = themeService.findAll();
         return ResponseEntity.ok()
                 .body(themeResponses);
     }
 
     @GetMapping("/hot/weekly")
-    public ResponseEntity<List<ThemeResponse>> findWeeklyHotThemes() {
-        List<ThemeResponse> themeResponses = themeService.findWeeklyHotThemes();
-
+    public ResponseEntity<ThemeResponses> findWeeklyHotThemes() {
+        ThemeResponses themeResponses = themeService.findWeeklyHotThemes();
         return ResponseEntity.ok()
                 .body(themeResponses);
     }

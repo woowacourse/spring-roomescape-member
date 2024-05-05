@@ -63,7 +63,9 @@ class ReservationServiceTest {
         Long themeId = 1L;
 
         //when
-        List<AvailableTimeResponse> availableTimeResponses = reservationService.findByDateAndThemeId(date, themeId);
+        List<AvailableTimeResponse> availableTimeResponses
+                = reservationService.findByDateAndThemeId(date, themeId)
+                .responses();
         AvailableTimeResponse availableTimeResponse = availableTimeResponses.get(0);
 
         //then

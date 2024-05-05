@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.ReservationTimeCreateRequest;
 import roomescape.dto.ReservationTimeResponse;
+import roomescape.dto.ReservationTimeResponses;
 import roomescape.service.ReservationTimeService;
 
 @RestController
@@ -25,8 +26,8 @@ public class ReservationTimeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationTimeResponse>> findAllReservationTimes() {
-        List<ReservationTimeResponse> reservationTimeResponses = reservationTimeService.findAll();
+    public ResponseEntity<ReservationTimeResponses> findAllReservationTimes() {
+        ReservationTimeResponses reservationTimeResponses = reservationTimeService.findAll();
 
         return ResponseEntity.ok()
                 .body(reservationTimeResponses);

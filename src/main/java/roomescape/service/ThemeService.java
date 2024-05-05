@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeCreateRequest;
 import roomescape.dto.ThemeResponse;
+import roomescape.dto.ThemeResponses;
 import roomescape.repository.ThemeRepository;
 
 @Service
@@ -16,18 +17,20 @@ public class ThemeService {
         this.themeRepository = themeRepository;
     }
 
-    public List<ThemeResponse> findAll() {
-        return themeRepository.findAll()
+    public ThemeResponses findAll() {
+        List<ThemeResponse> themeResponses = themeRepository.findAll()
                 .stream()
                 .map(ThemeResponse::from)
                 .toList();
+        return new ThemeResponses(themeResponses);
     }
 
-    public List<ThemeResponse> findWeeklyHotThemes() {
-        return themeRepository.findWeeklyHotThemes()
+    public ThemeResponses findWeeklyHotThemes() {
+        List<ThemeResponse> themeResponses = themeRepository.findWeeklyHotThemes()
                 .stream()
                 .map(ThemeResponse::from)
                 .toList();
+        return new ThemeResponses(themeResponses);
     }
 
     public ThemeResponse create(ThemeCreateRequest themeCreateRequest) {
