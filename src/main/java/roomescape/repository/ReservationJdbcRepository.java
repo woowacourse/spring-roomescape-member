@@ -22,7 +22,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> new Reservation(
+    private static final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> new Reservation(
             resultSet.getLong("id"),
             new UserName(resultSet.getString("name")),
             LocalDate.parse(resultSet.getString("date")),

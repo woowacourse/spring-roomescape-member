@@ -18,7 +18,7 @@ public class ThemeJdbcRepository implements ThemeRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    private final RowMapper<Theme> themeRowMapper = (resultSet, rowNum) -> new Theme(
+    private static final RowMapper<Theme> themeRowMapper = (resultSet, rowNum) -> new Theme(
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("description"),
