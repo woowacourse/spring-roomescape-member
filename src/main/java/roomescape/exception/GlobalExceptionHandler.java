@@ -11,4 +11,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleInvalidValueException(InvalidValueException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleUnknownException(Exception e) {
+        return ResponseEntity.badRequest().body("예측 불가능한 예외가 발생했습니다.");
+    }
 }
