@@ -7,7 +7,6 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import static org.assertj.core.api.Assertions.assertThat;
 import static roomescape.domain.Theme.DEFAULT_THUMBNAIL;
 
-//TODO 도메인 테스트 삭제한 대신 dto 테스트 추가하기
 class ThemeTest {
 
     @ParameterizedTest

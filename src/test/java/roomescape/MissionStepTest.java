@@ -16,7 +16,7 @@ import static org.hamcrest.CoreMatchers.is;
 class MissionStepTest {
 
     @LocalServerPort
-    private int port;
+    int port;
 
     @BeforeEach
     void setUp() {
