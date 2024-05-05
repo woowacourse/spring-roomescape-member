@@ -169,7 +169,7 @@ function onReservationButtonClick() {
       name: name
     };
 
-    fetch('/reservations/validate', {
+    fetch('/reservations/member', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
