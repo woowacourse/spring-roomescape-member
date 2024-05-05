@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.exception;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import org.springframework.http.ResponseEntity;
