@@ -11,6 +11,8 @@ import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparing;
 
@@ -66,18 +68,20 @@ public class ReservationTimeService {
 
     public List<ReservationTimeBookedResponse> getTimesWithBooked(final ReservationTimeBookedRequest reservationTimeBookedRequest) {
         final List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
-        final List<Reservation> reservations = reservationRepository.findByDateAndThemeId(reservationTimeBookedRequest.date(), reservationTimeBookedRequest.themeId());
+        final Set<Long> bookedReservationTimeIds = reservationRepository.findByDateAndThemeId(reservationTimeBookedRequest.date(), reservationTimeBookedRequest.themeId())
+                .stream()
+                .map(Reservation::getTimeId)
+                .collect(Collectors.toSet());
 
         return reservationTimes.stream()
                 .sorted(comparing(ReservationTime::getStartAt))
-                .map(reservationTime -> createReservationTimeBooked(reservationTime, reservations))
+                .map(reservationTime -> createReservationTimeBooked(reservationTime, bookedReservationTimeIds))
                 .toList();
     }
 
-    private ReservationTimeBookedResponse createReservationTimeBooked(final ReservationTime reservationTime, final List<Reservation> reservations) {
+    private ReservationTimeBookedResponse createReservationTimeBooked(final ReservationTime reservationTime, Set<Long> bookedReservationTimeIds) {
         final Long reservationTimeId = reservationTime.getId();
-        final boolean alreadyBooked = reservations.stream()
-                .anyMatch(reservation -> reservation.getTimeId().equals(reservationTimeId));
+        final boolean alreadyBooked = bookedReservationTimeIds.contains(reservationTimeId);
         return new ReservationTimeBookedResponse(reservationTime, alreadyBooked);
     }
 }
