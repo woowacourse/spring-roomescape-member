@@ -58,13 +58,15 @@ public class ThemeDao {
     }
 
     public List<Theme> findPopularThemes(final LocalDate startDate, final LocalDate lastDate) {
-        final String sql = "SELECT t.id, t.name, t.description, t.thumbnail, COUNT(r.id) AS reservation_count " +
-                "FROM theme t " +
-                "JOIN reservation r ON t.id = r.theme_id " +
-                "WHERE r.date BETWEEN ? AND ? " +
-                "GROUP BY t.id, t.name, t.description, t.thumbnail " +
-                "ORDER BY reservation_count DESC " +
-                "LIMIT 10;";
+        final String sql = """
+                SELECT t.id, t.name, t.description, t.thumbnail, COUNT(r.id) AS reservation_count 
+                FROM theme t 
+                JOIN reservation r ON t.id = r.theme_id 
+                WHERE r.date BETWEEN ? AND ? 
+                GROUP BY t.id, t.name, t.description, t.thumbnail 
+                ORDER BY reservation_count DESC 
+                LIMIT 10;
+                """;
         return jdbcTemplate.query(sql, rowMapper, startDate, lastDate);
     }
 

@@ -48,7 +48,7 @@ public class ReservationTimeDao {
     }
 
     public List<ReservationTime> findAll() {
-        final String sql = "select * from reservation_time";
+        final String sql = "select * from reservation_time order by start_at asc";
         return jdbcTemplate.query(sql, timeRowMapper);
     }
 
@@ -58,10 +58,12 @@ public class ReservationTimeDao {
     }
 
     public List<ReservationUserTime> findAvailableTime(final String date, final long themeId) {
-        final String sql = "SELECT t.id, t.start_at, " +
-                "EXISTS (SELECT 1 FROM reservation r WHERE r.time_id = t.id AND r.date = ? AND r.theme_id = ?) " +
-                "AS already_booked " +
-                "FROM reservation_time t";
+        final String sql = """
+                SELECT t.id, t.start_at, 
+                EXISTS (SELECT 1 FROM reservation r WHERE r.time_id = t.id AND r.date = ? AND r.theme_id = ?) 
+                AS already_booked 
+                FROM reservation_time t
+                """;
         return jdbcTemplate.query(sql, userTimeRowMapper, date, themeId);
     }
 
