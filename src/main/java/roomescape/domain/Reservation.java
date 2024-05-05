@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Objects;
 
@@ -48,18 +49,16 @@ public class Reservation {
         return theme;
     }
 
-    public String getDateAndTimeFormat() {
-        return this.date.asString() + " " + this.time.getStartAtAsString();
+    public String getLocalDateTimeFormat() {
+        return parseLocalDateTime().toString();
     }
 
     public boolean isBefore(final LocalDate localDate, final LocalTime localTime) {
-        if (this.date.isBefore(localDate)) {
-            return true;
-        }
-        if (this.date.isEqual(localDate)) {
-            return this.time.isBefore(localTime);
-        }
-        return false;
+        return parseLocalDateTime().isBefore(LocalDateTime.of(localDate, localTime));
+    }
+
+    public LocalDateTime parseLocalDateTime() {
+        return LocalDateTime.of(date.date(), this.time.getStartAt());
     }
 
     @Override

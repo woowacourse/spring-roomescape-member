@@ -30,6 +30,10 @@ public class ReservationTime {
         return id;
     }
 
+    public LocalTime getStartAt() {
+        return startAt;
+    }
+
     public String getStartAtAsString() {
         return startAt.toString();
     }

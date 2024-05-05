@@ -31,7 +31,7 @@ public class ReservationService {
         final Reservation reservation = reservationValidator.validateReservationInput(input);
 
         if (reservation.isBefore(dateTimeFormatter.getDate(), dateTimeFormatter.getTime())) {
-            throw new PastTimeReservationException(reservation.getDateAndTimeFormat());
+            throw new PastTimeReservationException(reservation.getLocalDateTimeFormat());
         }
         final Reservation savedReservation = reservationDao.create(reservation);
         return ReservationOutput.toOutput(savedReservation);

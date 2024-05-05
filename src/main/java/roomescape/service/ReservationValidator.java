@@ -29,12 +29,11 @@ public class ReservationValidator {
     public Reservation validateReservationInput(final ReservationInput input) {
         final ReservationTime reservationTime = validateExistReservationTime(input.timeId());
         final Theme theme = validateExistTheme(input.themeId());
-
+        final Reservation reservation = input.toReservation(reservationTime, theme);
         if (reservationDao.isExistByReservationAndTime(ReservationDate.from(input.date()), input.timeId())) {
-            throw new AlreadyExistsException(RESERVATION, input.date() + reservationTime.getStartAtAsString());
+            throw new AlreadyExistsException(RESERVATION, reservation.getLocalDateTimeFormat());
         }
-
-        return input.toReservation(reservationTime, theme);
+        return reservation;
     }
 
     private ReservationTime validateExistReservationTime(final long timeId) {
