@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test;
 class DescriptionTest {
 
     @Test
-    @DisplayName("설명에 공백을 포함할 수 있고 한글 또는 숫자가 아닌 값을 입력시 예외가 발생한다.")
+    @DisplayName("설명에 공백, 쉼표, 구두점을 포함할 수 있고 한글 또는 숫자가 아닌 값을 입력시 예외가 발생한다.")
     void createDescriptionByInvalidFormat() {
-        assertThatThrownBy(() -> new Description("scare 이야기"))
+        assertThatThrownBy(() -> new Description("경험했던, scare 이야기 입니다."))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 

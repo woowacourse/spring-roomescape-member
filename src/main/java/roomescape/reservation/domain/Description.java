@@ -4,7 +4,7 @@ import java.util.regex.Pattern;
 
 public class Description {
 
-    private final Pattern DESCRIPTION_FORMAT = Pattern.compile("^[가-힣0-9\\s]+$");
+    private final Pattern DESCRIPTION_FORMAT = Pattern.compile("^[가-힣0-9\\s.,]+$");
     private final int NAME_LENGTH = 50;
     private final String text;
 
@@ -20,7 +20,7 @@ public class Description {
 
     private void validateFormat(String name) {
         if (!DESCRIPTION_FORMAT.matcher(name).matches()) {
-            throw new IllegalArgumentException("설명은 공백, 한글, 숫자만 입력 가능합니다.");
+            throw new IllegalArgumentException("설명에 영어 또는 특수문자를 포함할 수 없습니다.");
         }
     }
 
