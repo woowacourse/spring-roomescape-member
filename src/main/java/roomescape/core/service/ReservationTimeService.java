@@ -7,10 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.core.domain.Reservation;
 import roomescape.core.domain.ReservationTime;
 import roomescape.core.dto.reservationtime.BookedTimeResponse;
-import roomescape.core.dto.reservationtime.BookedTimesResponse;
 import roomescape.core.dto.reservationtime.ReservationTimeRequest;
 import roomescape.core.dto.reservationtime.ReservationTimeResponse;
-import roomescape.core.dto.reservationtime.ReservationTimesResponse;
 import roomescape.core.repository.ReservationRepository;
 import roomescape.core.repository.ReservationTimeRepository;
 
@@ -42,21 +40,21 @@ public class ReservationTimeService {
     }
 
     @Transactional(readOnly = true)
-    public ReservationTimesResponse findAll() {
-        return new ReservationTimesResponse(reservationTimeRepository.findAll()
+    public List<ReservationTimeResponse> findAll() {
+        return reservationTimeRepository.findAll()
                 .stream()
                 .map(ReservationTimeResponse::new)
-                .toList());
+                .toList();
     }
 
     @Transactional(readOnly = true)
-    public BookedTimesResponse findAllWithBookable(final String date, final long themeId) {
+    public List<BookedTimeResponse> findAllWithBookable(final String date, final long themeId) {
         final List<Reservation> reservations = reservationRepository.findAllByDateAndThemeId(date, themeId);
         final List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
 
-        return new BookedTimesResponse(reservationTimes.stream()
+        return reservationTimes.stream()
                 .map(reservationTime -> findBookedTimes(reservationTime, reservations))
-                .toList());
+                .toList();
     }
 
     private BookedTimeResponse findBookedTimes(final ReservationTime reservationTime,
