@@ -1,6 +1,9 @@
 package roomescape.controller;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +20,7 @@ import roomescape.service.reservation.ReservationFindService;
 import java.net.URI;
 import java.util.List;
 
+@Validated
 @RestController
 public class ReservationController {
 
@@ -43,14 +47,16 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity<ReservationResponse> addReservation(@RequestBody ReservationSaveRequest request) {
+    public ResponseEntity<ReservationResponse> addReservation(@RequestBody @Valid ReservationSaveRequest request) {
         Reservation newReservation = reservationCreateService.createReservation(request);
         return ResponseEntity.created(URI.create("/reservations/" + newReservation.getId()))
                 .body(new ReservationResponse(newReservation));
     }
 
     @DeleteMapping("/reservations/{id}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteReservation(@PathVariable
+                                                  @Positive(message = "1 이상의 값만 입력해주세요.") Long id) {
+        System.out.println(11);
         reservationDeleteService.deleteReservation(id);
         return ResponseEntity.noContent().build();
     }

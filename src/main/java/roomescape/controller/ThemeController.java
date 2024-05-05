@@ -1,6 +1,9 @@
 package roomescape.controller;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +20,7 @@ import roomescape.service.theme.ThemeFindService;
 import java.net.URI;
 import java.util.List;
 
+@Validated
 @RestController
 public class ThemeController {
 
@@ -53,14 +57,15 @@ public class ThemeController {
     }
 
     @PostMapping("/themes")
-    public ResponseEntity<ThemeResponse> addTheme(@RequestBody ThemeSaveRequest request) {
+    public ResponseEntity<ThemeResponse> addTheme(@RequestBody @Valid ThemeSaveRequest request) {
         Theme theme = themeCreateService.createTheme(request);
         return ResponseEntity.created(URI.create("/themes/" + theme.getId()))
                 .body(new ThemeResponse(theme));
     }
 
     @DeleteMapping("/themes/{id}")
-    public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteTheme(@PathVariable
+                                            @Positive(message = "1 이상의 값만 입력해주세요.") Long id) {
         themeDeleteService.deleteTheme(id);
         return ResponseEntity.noContent().build();
     }

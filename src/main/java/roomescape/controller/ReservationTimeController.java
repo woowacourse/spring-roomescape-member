@@ -1,6 +1,9 @@
 package roomescape.controller;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +24,7 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 
+@Validated
 @RestController
 public class ReservationTimeController {
 
@@ -47,8 +51,9 @@ public class ReservationTimeController {
     }
 
     @GetMapping("/times/available")
-    public ResponseEntity<List<ReservationStatusResponse>> getReservationTimesIsBooked(@RequestParam LocalDate date,
-                                                                                       @RequestParam Long themeId) {
+    public ResponseEntity<List<ReservationStatusResponse>> getReservationTimesIsBooked(
+            @RequestParam LocalDate date,
+            @RequestParam @Positive(message = "1 이상의 값만 입력해주세요.") Long themeId) {
         ReservationStatus reservationStatus = reservationTimeFindService.findIsBooked(date, themeId);
         return ResponseEntity.ok(
                 reservationStatus.getReservationStatus()
@@ -61,14 +66,15 @@ public class ReservationTimeController {
     }
 
     @PostMapping("/times")
-    public ResponseEntity<ReservationTimeResponse> addReservationTime(@RequestBody ReservationTimeSaveRequest request) {
+    public ResponseEntity<ReservationTimeResponse> addReservationTime(@RequestBody @Valid ReservationTimeSaveRequest request) {
         ReservationTime reservationTime = reservationTimeCreateService.createReservationTime(request);
         return ResponseEntity.created(URI.create("times/" + reservationTime.getId()))
                 .body(new ReservationTimeResponse(reservationTime));
     }
 
     @DeleteMapping("/times/{id}")
-    public ResponseEntity<Void> deleteReservationTime(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteReservationTime(@PathVariable
+                                                      @Positive(message = "1 이상의 값만 입력해주세요.") Long id) {
         reservationTimeDeleteService.deleteReservationTime(id);
         return ResponseEntity.noContent().build();
     }
