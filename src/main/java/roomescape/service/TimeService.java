@@ -38,7 +38,7 @@ public class TimeService {
     }
 
     public TimeResponse createTime(TimeCreateRequest dto) {
-        if (timeDao.isExistTimeByStartAt(DateTimeFormatter.ofPattern("HH:mm").format(dto.startAt()))) {
+        if (timeDao.existsTimeByStartAt(DateTimeFormatter.ofPattern("HH:mm").format(dto.startAt()))) {
             throw new IllegalArgumentException("해당 시간은 이미 존재합니다.");
         }
         ReservationTime createdTime = timeDao.createTime(dto.createReservationTime());
@@ -46,7 +46,7 @@ public class TimeService {
     }
 
     public void deleteTime(Long id) {
-        if (reservationDao.isExistReservationByTimeId(id)) {
+        if (reservationDao.existsReservationByTimeId(id)) {
             throw new IllegalArgumentException("해당 시간을 사용하는 예약이 존재합니다.");
         }
         timeDao.deleteTime(id);

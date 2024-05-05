@@ -54,7 +54,7 @@ public class TimeDao {
         }
     }
 
-    public boolean isExistTimeByStartAt(String startAt) {
+    public boolean existsTimeByStartAt(String startAt) {
         String sql = """
                 SELECT EXISTS (
                     SELECT 1

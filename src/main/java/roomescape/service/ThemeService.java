@@ -43,7 +43,7 @@ public class ThemeService {
     }
 
     public ThemeResponse createTheme(ThemeCreateRequest dto) {
-        if (themeDao.isExistThemeByName(dto.name())) {
+        if (themeDao.existsThemeByName(dto.name())) {
             throw new IllegalArgumentException("해당 테마 이름은 이미 존재합니다.");
         }
         Theme createdTheme = themeDao.createTheme(dto.createTheme());
@@ -51,7 +51,7 @@ public class ThemeService {
     }
 
     public void deleteTheme(Long id) {
-        if (reservationDao.isExistReservationByThemeId(id)) {
+        if (reservationDao.existsReservationByThemeId(id)) {
             throw new IllegalArgumentException("해당 테마를 사용하는 예약이 존재합니다.");
         }
         themeDao.deleteTheme(id);

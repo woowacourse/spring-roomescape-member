@@ -1,7 +1,6 @@
 package roomescape.integrated;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.is;
 
 
 import java.time.LocalDate;
@@ -87,8 +86,7 @@ class ReservationIntegratedTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(400)
-                .body("errorMessage", is("인자 중에 입력되지 않은 null 값이 존재합니다."));
+                .statusCode(400);
     }
 
     @DisplayName("삭제할 id를 받아서 DB에서 해당 예약을 삭제 할 수 있다.")

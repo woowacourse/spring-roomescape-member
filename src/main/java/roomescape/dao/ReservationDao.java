@@ -68,7 +68,7 @@ public class ReservationDao {
         }
     }
 
-    public boolean isExistReservationByTimeId(Long timeId) {
+    public boolean existsReservationByTimeId(Long timeId) {
         String sql = """
                 SELECT EXISTS (
                     SELECT 1
@@ -79,7 +79,7 @@ public class ReservationDao {
         return jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
     }
 
-    public boolean isExistReservationByThemeId(Long themeId) {
+    public boolean existsReservationByThemeId(Long themeId) {
         String sql = """
                 SELECT EXISTS (
                     SELECT 1
@@ -90,7 +90,7 @@ public class ReservationDao {
         return jdbcTemplate.queryForObject(sql, Boolean.class, themeId);
     }
 
-    public boolean isExistReservationByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+    public boolean existsReservationByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
         String sql = """
                 SELECT EXISTS (
                     SELECT 1

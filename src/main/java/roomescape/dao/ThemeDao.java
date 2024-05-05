@@ -60,7 +60,7 @@ public class ThemeDao {
         return jdbcTemplate.query(sql, rowMapper, startDate, endDate);
     }
 
-    public boolean isExistThemeByName(String name) {
+    public boolean existsThemeByName(String name) {
         String sql = """
                 SELECT EXISTS (
                     SELECT 1
