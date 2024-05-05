@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.service.dto.request.SaveReservationRequest;
+import roomescape.service.dto.request.ReservationSaveRequest;
 
 import java.time.LocalDate;
 
@@ -35,7 +35,7 @@ class ReservationCreateServiceTest {
     @Test
     @DisplayName("예약 가능한 시간인 경우 성공한다.")
     void checkDuplicateReservationTime_Success() {
-        SaveReservationRequest request = new SaveReservationRequest(
+        ReservationSaveRequest request = new ReservationSaveRequest(
                 "capy", LocalDate.now().plusDays(1L), 2L, 2L);
 
         assertThatCode(() -> reservationCreateService.createReservation(request))
@@ -45,7 +45,7 @@ class ReservationCreateServiceTest {
     @Test
     @DisplayName("이미 예약된 시간인 경우 예외가 발생한다.")
     void checkDuplicateReservationTime_Failure() {
-        SaveReservationRequest request = new SaveReservationRequest(
+        ReservationSaveRequest request = new ReservationSaveRequest(
                 "capy", LocalDate.now().plusDays(1L), 1L, 1L);
 
         assertThatThrownBy(() -> reservationCreateService.createReservation(request))
@@ -56,7 +56,7 @@ class ReservationCreateServiceTest {
     @Test
     @DisplayName("지나간 날짜와 시간에 대한 예약 생성시 예외가 발생한다.")
     void checkReservationDateTimeIsFuture_Failure() {
-        SaveReservationRequest request = new SaveReservationRequest(
+        ReservationSaveRequest request = new ReservationSaveRequest(
                 "capy", LocalDate.now().minusDays(1L), 2L, 2L);
 
         assertThatThrownBy(() -> reservationCreateService.createReservation(request))

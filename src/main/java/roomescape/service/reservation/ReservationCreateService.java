@@ -7,7 +7,7 @@ import roomescape.domain.Theme;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.service.dto.request.SaveReservationRequest;
+import roomescape.service.dto.request.ReservationSaveRequest;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -27,7 +27,7 @@ public class ReservationCreateService {
         this.themeRepository = themeRepository;
     }
 
-    public Reservation createReservation(SaveReservationRequest request) {
+    public Reservation createReservation(ReservationSaveRequest request) {
         ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간 입니다."));
         Theme theme = themeRepository.findById(request.themeId())
@@ -37,7 +37,7 @@ public class ReservationCreateService {
         }
         validateDateIsFuture(toLocalDateTime(request.date(), reservationTime));
 
-        Reservation reservation = SaveReservationRequest.toEntity(request, reservationTime, theme);
+        Reservation reservation = ReservationSaveRequest.toEntity(request, reservationTime, theme);
         return reservationRepository.save(reservation);
     }
 

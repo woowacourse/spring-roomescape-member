@@ -6,9 +6,9 @@ import roomescape.domain.Theme;
 
 import java.time.LocalDate;
 
-public record SaveReservationRequest(String name, LocalDate date, Long timeId, Long themeId) {
+public record ReservationSaveRequest(String name, LocalDate date, Long timeId, Long themeId) {
 
-    public SaveReservationRequest {
+    public ReservationSaveRequest {
         validateNameBlank(name);
     }
 
@@ -18,7 +18,7 @@ public record SaveReservationRequest(String name, LocalDate date, Long timeId, L
         }
     }
 
-    public static Reservation toEntity(SaveReservationRequest request, ReservationTime reservationTime, Theme theme) {
+    public static Reservation toEntity(ReservationSaveRequest request, ReservationTime reservationTime, Theme theme) {
         return new Reservation(request.name(), request.date(), reservationTime, theme);
     }
 }

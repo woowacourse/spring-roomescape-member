@@ -2,9 +2,9 @@ package roomescape.service.dto.request;
 
 import roomescape.domain.Theme;
 
-public record SaveThemeRequest(String name, String description, String thumbnail) {
+public record ThemeSaveRequest(String name, String description, String thumbnail) {
 
-    public SaveThemeRequest {
+    public ThemeSaveRequest {
         validateNameBlank(name);
     }
 
@@ -14,7 +14,7 @@ public record SaveThemeRequest(String name, String description, String thumbnail
         }
     }
 
-    public static Theme toEntity(SaveThemeRequest request) {
+    public static Theme toEntity(ThemeSaveRequest request) {
         return new Theme(request.name(), request.description(), request.thumbnail());
     }
 }

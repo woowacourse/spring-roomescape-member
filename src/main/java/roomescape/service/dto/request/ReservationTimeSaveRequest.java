@@ -4,9 +4,9 @@ import roomescape.domain.ReservationTime;
 
 import java.time.LocalTime;
 
-public record SaveReservationTimeRequest(LocalTime startAt) {
+public record ReservationTimeSaveRequest(LocalTime startAt) {
 
-    public static ReservationTime toEntity(SaveReservationTimeRequest request) {
+    public static ReservationTime toEntity(ReservationTimeSaveRequest request) {
         return new ReservationTime(request.startAt());
     }
 }

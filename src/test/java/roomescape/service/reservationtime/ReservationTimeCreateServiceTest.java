@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.repository.ReservationTimeRepository;
-import roomescape.service.dto.request.SaveReservationTimeRequest;
+import roomescape.service.dto.request.ReservationTimeSaveRequest;
 
 import java.time.LocalTime;
 
@@ -30,7 +30,7 @@ class ReservationTimeCreateServiceTest {
     @Test
     @DisplayName("존재하지 않는 예약 시간인 경우 성공한다")
     void checkDuplicateTime_Success() {
-        SaveReservationTimeRequest request = new SaveReservationTimeRequest(LocalTime.of(12, 0));
+        ReservationTimeSaveRequest request = new ReservationTimeSaveRequest(LocalTime.of(12, 0));
 
         assertThatCode(() -> reservationTimeCreateService.createReservationTime(request))
                 .doesNotThrowAnyException();
@@ -39,7 +39,7 @@ class ReservationTimeCreateServiceTest {
     @Test
     @DisplayName("이미 존재하는 예약 시간인 경우 예외가 발생한다.")
     void checkDuplicateTime_Failure() {
-        SaveReservationTimeRequest request = new SaveReservationTimeRequest(LocalTime.of(11, 0));
+        ReservationTimeSaveRequest request = new ReservationTimeSaveRequest(LocalTime.of(11, 0));
 
         assertThatThrownBy(() -> reservationTimeCreateService.createReservationTime(request))
                 .isInstanceOf(IllegalArgumentException.class)
