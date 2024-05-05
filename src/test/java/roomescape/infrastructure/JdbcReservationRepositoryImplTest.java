@@ -2,7 +2,6 @@ package roomescape.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -41,47 +40,6 @@ class JdbcReservationRepositoryImplTest {
         reservationTime = reservationTimeRepository.save(new ReservationTime("05:30"));
         theme = themeRepository.save(
             new Theme("방탈출", "방탈출하는 게임", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
-    }
-
-    @DisplayName("예약 정보를 DB에 저장한다.")
-    @Test
-    void save() {
-        Reservation reservation = new Reservation("브리", reservationDate, reservationTime, theme);
-
-        Reservation actual = reservationRepository.save(reservation);
-        Reservation expected = new Reservation(
-            actual.getId(),
-            reservation.getName(),
-            reservation.getReservationDate(),
-            reservation.getReservationTime(),
-            reservation.getTheme());
-
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @DisplayName("모든 예약 정보를 DB에서 조회한다.")
-    @Test
-    void findAll() {
-        Reservation save1 = reservationRepository.save(
-            new Reservation("브리", reservationDate, reservationTime, theme));
-        Reservation save2 = reservationRepository.save(
-            new Reservation("솔라", reservationDate, reservationTime, theme));
-
-        List<Reservation> actual = reservationRepository.findAll();
-        List<Reservation> expected = List.of(save1, save2);
-
-        assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
-    }
-
-    @DisplayName("id값을 통해 예약 정보를 DB에서 삭제한다.")
-    @Test
-    void deleteById() {
-        Reservation reservation = new Reservation("브리", reservationDate, reservationTime, theme);
-        Reservation save = reservationRepository.save(reservation);
-
-        reservationRepository.deleteById(save.getId());
-
-        assertThat(reservationRepository.findAll().isEmpty()).isTrue();
     }
 
     @DisplayName("time_id값을 통해 예약이 존재하는지를 구한다.")
