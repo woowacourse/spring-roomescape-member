@@ -1,0 +1,49 @@
+package roomescape.presentation;
+
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import java.util.Map;
+import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import roomescape.exception.RoomescapeException;
+
+@RestControllerAdvice
+public class RoomescapeControllerAdvice {
+    private static final Logger logger = LoggerFactory.getLogger(RoomescapeControllerAdvice.class);
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ProblemDetail handleDateTimeParseException(MethodArgumentNotValidException exception) {
+        logger.error(exception.getMessage(), exception);
+        Map<String, Object> parameters = exception.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .collect(Collectors.toMap(
+                        FieldError::getField,
+                        DefaultMessageSourceResolvable::getDefaultMessage
+                ));
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        problemDetail.setTitle("요청 값 검증에 실패했습니다.");
+        problemDetail.setProperties(Map.of("details", parameters));
+        return problemDetail;
+    }
+
+    @ExceptionHandler(RoomescapeException.class)
+    public ProblemDetail handleIllegalArgumentException(RoomescapeException exception) {
+        logger.error(exception.getBody().getDetail(), exception);
+        return exception.getBody();
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ProblemDetail handleException(Exception exception) {
+        logger.error(exception.getMessage(), exception);
+        return ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "예기치 않은 오류가 발생했습니다.");
+    }
+}

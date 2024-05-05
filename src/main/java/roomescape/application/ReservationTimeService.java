@@ -26,7 +26,7 @@ public class ReservationTimeService {
 
     @Transactional
     public ReservationTimeResponse create(ReservationTimeRequest request) {
-        if (reservationTimeRepository.existsByStartAt(request.startAt())) {
+        if (reservationTimeRepository.existsByStartAt(request.parsedStartAt())) {
             throw new DuplicatedEntityException(
                     String.format("이미 존재하는 예약시간이 있습니다. 해당 시간:%s", request.startAt())
             );

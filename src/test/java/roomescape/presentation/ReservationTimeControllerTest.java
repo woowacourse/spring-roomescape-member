@@ -31,7 +31,7 @@ class ReservationTimeControllerTest extends ControllerTest {
     @DisplayName("예약 시간 저장을 요청하면, 해당 예약 시간의 저장 id와 시간 201 Created 응답으로 반환한다.")
     @Test
     void shouldReturnReservationTimeResponseWith201CreatedWhenCreateReservationTime() throws Exception {
-        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.parse("10:00"));
+        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest("10:00");
         ReservationTimeResponse reservationTimeResponse = new ReservationTimeResponse(1L, LocalTime.of(10, 0));
 
         String reservationTimeRequestJson = objectMapper.writeValueAsString(reservationTimeRequest);
@@ -55,7 +55,7 @@ class ReservationTimeControllerTest extends ControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(reservationTimeRequestJson))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string(containsString("올바르지 않은 시간/날짜 형식입니다.")));
+                .andExpect(content().string(containsString("시간 형식이 올바르지 않습니다.")));
     }
 
     @DisplayName("예약 시간을 조회하면, 200 OK 응답으로 저장된 예약 시간을 모두 반환한다.")

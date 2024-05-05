@@ -39,7 +39,7 @@ public class ReservationService {
         Theme theme = themeRepository.getById(request.themeId());
         ReservationTime reservationTime = reservationTimeRepository.getById(request.timeId());
 
-        if (reservationRepository.existsBy(request.date(), request.timeId(), request.themeId())) {
+        if (reservationRepository.existsBy(request.parsedDate(), request.timeId(), request.themeId())) {
             throw new DuplicatedEntityException("이미 존재하는 예약입니다.");
         }
         Reservation reservation = request.toReservation(reservationTime, theme);

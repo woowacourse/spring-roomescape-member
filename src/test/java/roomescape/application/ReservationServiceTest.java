@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import javax.swing.text.DefaultEditorKit.PasteAction;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +44,7 @@ class ReservationServiceTest {
         Theme theme = themeRepository.create(new Theme(new ThemeName("themeName"), "desc", "url"));
         ReservationRequest reservationRequest = new ReservationRequest(
                 "test",
-                LocalDate.of(2024, 1, 1),
+                "2024-01-01",
                 time.getId(),
                 theme.getId()
         );
@@ -60,7 +59,7 @@ class ReservationServiceTest {
     @Test
     void shouldReturnIllegalArgumentExceptionWhenNotFoundReservationTime() {
         Theme savedTheme = themeRepository.create(new Theme(new ThemeName("test"), "test", "test"));
-        ReservationRequest request = new ReservationRequest("test", LocalDate.now(), 99L, savedTheme.getId());
+        ReservationRequest request = new ReservationRequest("test", "2024-01-01", 99L, savedTheme.getId());
 
         assertThatCode(() -> reservationService.create(request))
                 .isInstanceOf(EntityNotFoundException.class);
@@ -72,7 +71,7 @@ class ReservationServiceTest {
         ReservationTime time = reservationTimeRepository.create(new ReservationTime(LocalTime.of(12, 0)));
         ReservationRequest request = new ReservationRequest(
                 "test",
-                LocalDate.of(2024, 1, 1),
+                "2024-01-01",
                 time.getId(),
                 99L
         );
@@ -88,7 +87,7 @@ class ReservationServiceTest {
         Theme theme = themeRepository.create(new Theme(new ThemeName("test"), "test", "test"));
         ReservationRequest request = new ReservationRequest(
                 "test",
-                LocalDate.of(2024, 12, 25),
+                "2024-01-01",
                 time.getId(),
                 theme.getId()
         );
@@ -102,10 +101,12 @@ class ReservationServiceTest {
     @DisplayName("과거 시간을 예약하는 경우 예외를 반환한다.")
     @Test
     void shouldThrowsIllegalArgumentExceptionWhenReservationDateIsBeforeCurrentDate() {
-        ReservationTime time = reservationTimeRepository.create(new ReservationTime(1L, LocalTime.of(12, 0)));
+        ReservationTime time = reservationTimeRepository.create(new ReservationTime(LocalTime.of(12, 0)));
         Theme theme = themeRepository.create(new Theme(new ThemeName("test"), "test", "test"));
-        ReservationRequest reservationRequest = new ReservationRequest("test", LocalDate.of(1999, 12, 25), time.getId(),
-                theme.getId());
+        System.out.println(time.getId() + " " + theme.getId());
+        ReservationRequest reservationRequest = new ReservationRequest(
+                "test", "1999-12-31", time.getId(), theme.getId()
+        );
 
         assertThatCode(() -> reservationService.create(reservationRequest))
                 .isInstanceOf(ReserveOnPastException.class)

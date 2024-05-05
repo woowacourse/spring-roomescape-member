@@ -66,7 +66,7 @@ class ReservationControllerTest extends ControllerTest {
     @DisplayName("존재하지 않는 새로운 예약을 저장하면 201 Created 응답과 ReservationResponse가 반환된다.")
     @Test
     void shouldReturn201CreatedWithReservationResponseWhenNotExistReservationCreate() throws Exception {
-        ReservationRequest reservationRequest = new ReservationRequest("test", LocalDate.now(), 1L, 1L);
+        ReservationRequest reservationRequest = new ReservationRequest("test", "2024-12-25", 1L, 1L);
         String reservationRequestJson = objectMapper.writeValueAsString(reservationRequest);
 
         ReservationResponse reservationResponse = new ReservationResponse(
@@ -88,7 +88,7 @@ class ReservationControllerTest extends ControllerTest {
     @DisplayName("존재하지 않는 예약 시간으로 예약을 생성하려고 하면 400 Bad Request 응답을 반환한다.")
     @Test
     void shouldReturn400BadRequestWhenNotFoundReservationTimeCreate() throws Exception {
-        ReservationRequest reservationRequest = new ReservationRequest("test", LocalDate.now(), 1L, 1L);
+        ReservationRequest reservationRequest = new ReservationRequest("test", "2024-01-01", 1L, 1L);
         String reservationRequestJson = objectMapper.writeValueAsString(reservationRequest);
 
         given(reservationService.create(any(ReservationRequest.class)))
@@ -104,7 +104,7 @@ class ReservationControllerTest extends ControllerTest {
     @DisplayName("이미 존재하는 예약을 생성하려고 하면 409 Conflict 응답을 반환한다.")
     @Test
     void shouldReturn400ConflictWhenAlreadyExistReservationCreate() throws Exception {
-        ReservationRequest reservationRequest = new ReservationRequest("test", LocalDate.now(), 1L, 1L);
+        ReservationRequest reservationRequest = new ReservationRequest("test", "2024-01-01", 1L, 1L);
         String reservationRequestJson = objectMapper.writeValueAsString(reservationRequest);
 
         given(reservationService.create(reservationRequest))

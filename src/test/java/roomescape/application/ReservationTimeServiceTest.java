@@ -41,8 +41,7 @@ class ReservationTimeServiceTest {
     @DisplayName("예약 시간을 생성한다.")
     @Test
     void shouldReturnReservationTimeResponseWhenCreateReservationTime() {
-        LocalTime startAt = LocalTime.of(10, 0);
-        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(startAt);
+        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest("10:00");
         reservationTimeService.create(reservationTimeRequest);
         List<ReservationTime> times = reservationTimeRepository.findAll();
         assertThat(times).hasSize(1);
@@ -52,7 +51,7 @@ class ReservationTimeServiceTest {
     @Test
     void shouldThrowsIllegalStateExceptionWhenCreateExistStartAtTime() {
         LocalTime startAt = createTime(10, 0).getStartAt();
-        ReservationTimeRequest request = new ReservationTimeRequest(startAt);
+        ReservationTimeRequest request = new ReservationTimeRequest("10:00");
         assertThatCode(() -> reservationTimeService.create(request))
                 .isInstanceOf(DuplicatedEntityException.class)
                 .hasMessage(String.format("이미 존재하는 예약시간이 있습니다. 해당 시간:%s", startAt));
