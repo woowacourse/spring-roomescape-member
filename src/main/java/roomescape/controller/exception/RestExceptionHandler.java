@@ -3,15 +3,14 @@ package roomescape.controller.exception;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import roomescape.exception.CustomException;
 
-@RestControllerAdvice("roomescape.controller.api")
+@RestControllerAdvice(basePackages = "roomescape.controller.api")
 public class RestExceptionHandler {
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<CustomErrorResponse> handleIllegalArgumentException(IllegalArgumentException e) {
-        CustomErrorResponse errorResponse = new CustomErrorResponse(e.getMessage());
-
-        return ResponseEntity.badRequest()
-                .body(errorResponse);
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<CustomExceptionResponse> handleCustomException(CustomException e) {
+        return ResponseEntity.status(e.getHttpStatusCode())
+                        .body(new CustomExceptionResponse(e.getDetails()));
     }
 }

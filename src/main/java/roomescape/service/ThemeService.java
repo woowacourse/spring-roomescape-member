@@ -7,6 +7,10 @@ import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
+import roomescape.exception.CustomException;
+import roomescape.exception.CustomExceptionCode;
+
+import static roomescape.exception.CustomExceptionCode.CAN_NOT_DELETE_THEME_CAUSE_RESERVATION_EXIST;
 
 @Service
 public class ThemeService {
@@ -36,7 +40,7 @@ public class ThemeService {
     public void deleteThemeById(Long id) {
         boolean exist = reservationRepository.existByThemeId(id);
         if (exist) {
-            throw new IllegalArgumentException("해당 테마에 예약이 존재합니다.");
+            throw new CustomException(CAN_NOT_DELETE_THEME_CAUSE_RESERVATION_EXIST);
         }
 
         themeRepository.deleteById(id);

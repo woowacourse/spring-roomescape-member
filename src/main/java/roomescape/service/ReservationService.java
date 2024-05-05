@@ -1,18 +1,18 @@
 package roomescape.service;
 
+import org.springframework.stereotype.Service;
+import roomescape.domain.*;
+import roomescape.dto.ReservationRequest;
+import roomescape.dto.ReservationResponse;
+import roomescape.exception.CustomException;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import org.springframework.stereotype.Service;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationRepository;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.ReservationTimeRepository;
-import roomescape.domain.Theme;
-import roomescape.domain.ThemeRepository;
-import roomescape.dto.ReservationRequest;
-import roomescape.dto.ReservationResponse;
+
+import static roomescape.exception.CustomExceptionCode.RESERVATION_ALREADY_EXIST;
+import static roomescape.exception.CustomExceptionCode.RESERVATION_FOR_PAST_IS_NOT_ALLOWED;
 
 @Service
 public class ReservationService {
@@ -42,8 +42,7 @@ public class ReservationService {
         validateNotDuplicatedTime(request.date(), request.timeId());
         Theme theme = themeRepository.findById(request.themeId());
 
-        Reservation reservation = new Reservation(request.name(), request.date(), reservationTime,
-                theme);
+        Reservation reservation = new Reservation(request.name(), request.date(), reservationTime, theme);
         Reservation savedReservation = reservationRepository.save(reservation);
 
         return ReservationResponse.from(savedReservation);
@@ -51,14 +50,14 @@ public class ReservationService {
 
     private void validateNotDuplicatedTime(LocalDate date, Long id) {
         if (reservationRepository.existByDateAndTimeId(date, id)) {
-            throw new IllegalArgumentException("중복 예약은 불가능하다.");
+            throw new CustomException(RESERVATION_ALREADY_EXIST);
         }
     }
 
     private void validateNotPast(LocalDate date, LocalTime time) {
         LocalDateTime reservationDateTime = date.atTime(time);
         if (reservationDateTime.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("지나간 시간에 대한 예약 생성은 불가능하다.");
+            throw new CustomException(RESERVATION_FOR_PAST_IS_NOT_ALLOWED);
         }
     }
 
