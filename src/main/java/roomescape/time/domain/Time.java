@@ -43,7 +43,7 @@ public class Time {
         if (startAt == null) {
             throw new RoomEscapeException(TimeExceptionCode.FOUND_TIME_IS_NULL_EXCEPTION);
         }
-        if (OPEN_TIME.isAfter(startAt) || CLOSE_TIME.isBefore(startAt)) {
+        if (startAt.isBefore(OPEN_TIME) || startAt.isAfter(CLOSE_TIME)) {
             throw new RoomEscapeException(TimeExceptionCode.TIME_IS_OUT_OF_OPERATING_TIME);
         }
     }
