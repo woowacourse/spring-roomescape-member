@@ -71,10 +71,10 @@ public class ThemeDaoImpl implements ThemeDao {
         String sql = """
                 SELECT th.id, th.name, th.description, th.thumbnail 
                 FROM reservation AS r 
-                INNER JOIN theme AS th ON r.theme_id = th.id 
+                INNER JOIN theme AS th on r.theme_id = th.id 
                 WHERE r.date BETWEEN ? AND ? 
                 GROUP BY r.theme_id 
-                GROUP BY COUNT(r.theme_id) DESC
+                ORDER BY COUNT(r.theme_id) DESC
                 limit ? 
                 """;
         return jdbcTemplate.query(sql, (resultSet, ignored) ->
