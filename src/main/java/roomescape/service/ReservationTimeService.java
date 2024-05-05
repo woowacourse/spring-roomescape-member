@@ -10,7 +10,6 @@ import roomescape.dto.AvailableReservationTimeResponse;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.exception.CustomException;
-import roomescape.exception.CustomExceptionCode;
 
 import static roomescape.exception.CustomExceptionCode.*;
 
@@ -43,7 +42,7 @@ public class ReservationTimeService {
     public void deleteReservationTimeById(Long id) {
         boolean exist = reservationRepository.existByReservationTimeId(id);
         if (exist) {
-            throw new CustomException(CAN_NOT_DELETE_TIME_CAUSE_RESERVATION_EXIST);
+            throw new CustomException(CAN_NOT_DELETE_TIME_DUE_TO_RESERVATION_EXIST);
         }
 
         reservationTimeRepository.deleteById(id);

@@ -9,7 +9,7 @@ public class InputValidator {
     public static void validateNotNull(Object... inputs) {
         for (Object input : inputs) {
             if (input == null) {
-                throw new CustomException(INPUT_NULL_IS_NOT_ALLOWED);
+                throw new CustomException(NULL_INPUT_NOT_ALLOWED);
             }
         }
     }
@@ -17,7 +17,7 @@ public class InputValidator {
     public static void validateNotEmpty(String... inputs) {
         for (String input : inputs) {
             if (input.isEmpty()) {
-                throw new CustomException(INPUT_BLANK_IS_NOT_ALLOWED);
+                throw new CustomException(BLANK_INPUT_NOT_ALLOWED);
             }
         }
     }

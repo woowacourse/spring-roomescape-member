@@ -8,9 +8,8 @@ import roomescape.domain.ThemeRepository;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
 import roomescape.exception.CustomException;
-import roomescape.exception.CustomExceptionCode;
 
-import static roomescape.exception.CustomExceptionCode.CAN_NOT_DELETE_THEME_CAUSE_RESERVATION_EXIST;
+import static roomescape.exception.CustomExceptionCode.CAN_NOT_DELETE_THEME_DUE_TO_RESERVATION_EXIST;
 
 @Service
 public class ThemeService {
@@ -40,7 +39,7 @@ public class ThemeService {
     public void deleteThemeById(Long id) {
         boolean exist = reservationRepository.existByThemeId(id);
         if (exist) {
-            throw new CustomException(CAN_NOT_DELETE_THEME_CAUSE_RESERVATION_EXIST);
+            throw new CustomException(CAN_NOT_DELETE_THEME_DUE_TO_RESERVATION_EXIST);
         }
 
         themeRepository.deleteById(id);

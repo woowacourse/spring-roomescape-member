@@ -12,7 +12,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import static roomescape.exception.CustomExceptionCode.RESERVATION_ALREADY_EXIST;
-import static roomescape.exception.CustomExceptionCode.RESERVATION_FOR_PAST_IS_NOT_ALLOWED;
+import static roomescape.exception.CustomExceptionCode.RESERVATION_FOR_PAST_NOT_ALLOWED;
 
 @Service
 public class ReservationService {
@@ -57,7 +57,7 @@ public class ReservationService {
     private void validateNotPast(LocalDate date, LocalTime time) {
         LocalDateTime reservationDateTime = date.atTime(time);
         if (reservationDateTime.isBefore(LocalDateTime.now())) {
-            throw new CustomException(RESERVATION_FOR_PAST_IS_NOT_ALLOWED);
+            throw new CustomException(RESERVATION_FOR_PAST_NOT_ALLOWED);
         }
     }
 
