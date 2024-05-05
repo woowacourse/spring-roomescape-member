@@ -1,12 +1,10 @@
 package roomescape.global.exception.model;
 
-public class ConflictException extends RuntimeException {
+import roomescape.global.exception.error.ErrorType;
 
-    public ConflictException() {
-        super();
-    }
+public class ConflictException extends CustomException {
 
-    public ConflictException(final String message) {
-        super(message);
+    public ConflictException(final ErrorType errorType, final String message) {
+        super(errorType, message);
     }
 }

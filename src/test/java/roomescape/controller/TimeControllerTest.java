@@ -42,7 +42,7 @@ public class TimeControllerTest {
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(1))
+                .body("data.id", is(1))
                 .header("Location", "/times/1");
     }
 
@@ -54,7 +54,7 @@ public class TimeControllerTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("times.size()", is(0));
+                .body("data.times.size()", is(0));
     }
 
     @Test
@@ -67,7 +67,7 @@ public class TimeControllerTest {
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(1))
+                .body("data.id", is(1))
                 .header("Location", "/times/1");
 
         RestAssured.given().log().all()
@@ -75,7 +75,7 @@ public class TimeControllerTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("times.size()", is(1));
+                .body("data.times.size()", is(1));
     }
 
     @Test
@@ -88,7 +88,7 @@ public class TimeControllerTest {
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(1))
+                .body("data.id", is(1))
                 .header("Location", "/times/1");
 
         RestAssured.given().log().all()
@@ -102,7 +102,7 @@ public class TimeControllerTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("times.size()", is(0));
+                .body("data.times.size()", is(0));
     }
 
     @Test

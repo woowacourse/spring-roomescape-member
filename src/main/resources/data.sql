@@ -37,9 +37,13 @@ VALUES ('테마11', '재밌는 테마입니다',
 INSERT INTO reservation_time (start_at)
 VALUES ('08:00');
 INSERT INTO reservation_time (start_at)
+VALUES ('09:00');
+INSERT INTO reservation_time (start_at)
 VALUES ('10:00');
 INSERT INTO reservation_time (start_at)
 VALUES ('13:00');
+INSERT INTO reservation_time (start_at)
+VALUES ('18:00');
 INSERT INTO reservation_time (start_at)
 VALUES ('21:00');
 INSERT INTO reservation_time (start_at)

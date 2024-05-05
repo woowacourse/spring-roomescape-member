@@ -17,7 +17,7 @@ function render(data) {
     const tableBody = document.getElementById('table-body');
     tableBody.innerHTML = '';
 
-    data.reservations.forEach(item => {
+    data.data.reservations.forEach(item => {
         const row = tableBody.insertRow();
 
         row.insertCell(0).textContent = item.id;
@@ -32,7 +32,7 @@ function render(data) {
 
 function fetchTimes() {
     requestRead(TIME_API_ENDPOINT)
-        .then(data.times => {
+        .then(data.data.times => {
             timesOptions.push(...times);
         })
         .catch(error => console.error('Error fetching time:', error));

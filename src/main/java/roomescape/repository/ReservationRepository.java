@@ -90,6 +90,7 @@ public class ReservationRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER, timeId, date, themeId);
     }
 
+    // TODO: reservation_time의 findAll과 함께 사용하지 않고 reservation_time의 쿼리로 깔끔하게 처리되도록 변경
     public List<Reservation> findByDateAndThemeId(final LocalDate date, final Long themeId) {
         String sql = """
                 SELECT * FROM reservation r

@@ -30,7 +30,7 @@ class ThemeControllerTest {
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("themes.size()", is(0));
+                .body("data.themes.size()", is(0));
     }
 
     @Test
@@ -49,7 +49,7 @@ class ThemeControllerTest {
                 .when().post("/themes")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(1))
+                .body("data.id", is(1))
                 .header("Location", "/themes/1");
     }
 
@@ -69,7 +69,7 @@ class ThemeControllerTest {
                 .when().post("/themes")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(1))
+                .body("data.id", is(1))
                 .header("Location", "/themes/1");
 
         RestAssured.given().log().all()
@@ -96,7 +96,7 @@ class ThemeControllerTest {
                 .when().get("/themes/top?count=10")
                 .then().log().all()
                 .statusCode(200)
-                .body("themes.size()", is(10))
-                .body("themes.id", contains(1, 4, 2, 6, 3, 5, 7, 8, 9, 10));
+                .body("data.themes.size()", is(10))
+                .body("data.themes.id", contains(1, 4, 2, 6, 3, 5, 7, 8, 9, 10));
     }
 }

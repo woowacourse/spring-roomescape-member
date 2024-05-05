@@ -54,7 +54,7 @@ public class ReservationControllerTest {
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(1));
+                .body("data.id", is(1));
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -63,7 +63,7 @@ public class ReservationControllerTest {
                 .when().post("/themes")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(1));
+                .body("data.id", is(1));
     }
 
     @Test
@@ -76,7 +76,7 @@ public class ReservationControllerTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(1))
+                .body("data.id", is(1))
                 .header("Location", "/reservations/1");
     }
 
@@ -88,7 +88,7 @@ public class ReservationControllerTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("reservations.size()", is(0));
+                .body("data.reservations.size()", is(0));
     }
 
     @Test
@@ -101,7 +101,7 @@ public class ReservationControllerTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(1))
+                .body("data.id", is(1))
                 .header("Location", "/reservations/1");
 
         RestAssured.given().log().all()
@@ -109,7 +109,7 @@ public class ReservationControllerTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("reservations.size()", is(1));
+                .body("data.reservations.size()", is(1));
     }
 
     @Test
@@ -122,7 +122,7 @@ public class ReservationControllerTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(1))
+                .body("data.id", is(1))
                 .header("Location", "/reservations/1");
 
         RestAssured.given().log().all()
@@ -136,7 +136,7 @@ public class ReservationControllerTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("reservations.size()", is(0));
+                .body("data.reservations.size()", is(0));
     }
 
     @Test
@@ -163,6 +163,6 @@ public class ReservationControllerTest {
                 .when().get("/reservations/themes/1/times?date=" + LocalDate.MAX)
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("data.reservationTimes.size()", is(1));
     }
 }

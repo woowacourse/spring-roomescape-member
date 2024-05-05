@@ -9,6 +9,7 @@ import roomescape.dto.reservation.ReservationResponse;
 import roomescape.dto.reservation.ReservationTimeInfoResponse;
 import roomescape.dto.reservation.ReservationTimeInfosResponse;
 import roomescape.dto.reservation.ReservationsResponse;
+import roomescape.global.exception.error.ErrorType;
 import roomescape.global.exception.model.ConflictException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
@@ -78,7 +79,7 @@ public class ReservationService {
     private void validateDateAndTime(final LocalDate requestDate, final LocalDate today, final Time time) {
         if (requestDate.isBefore(today) || (requestDate.isEqual(today) && time.getStartAt()
                 .isBefore(LocalTime.now()))) {
-            throw new ConflictException("지난 날짜나 시간은 예약이 불가능합니다.");
+            throw new ConflictException(ErrorType.RESERVATION_PERIOD_CONFLICT, "지난 날짜나 시간은 예약이 불가능합니다.");
         }
     }
 
@@ -87,7 +88,7 @@ public class ReservationService {
                 reservationRequest.timeId(), reservationRequest.date(), theme.getId());
 
         if (duplicateTimeReservation.size() > 0) {
-            throw new ConflictException("이미 해당 날짜/시간/테마에 예약이 존재합니다.");
+            throw new ConflictException(ErrorType.RESERVATION_DUPLICATION_CONFLICT, "이미 해당 날짜/시간/테마에 예약이 존재합니다.");
         }
     }
 

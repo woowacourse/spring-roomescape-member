@@ -24,7 +24,7 @@ function render(data) {
   const tableBody = document.getElementById('table-body');
   tableBody.innerHTML = '';
 
-  data.reservations.forEach(item => {
+  data.data.reservations.forEach(item => {
     const row = tableBody.insertRow();
 
     /*

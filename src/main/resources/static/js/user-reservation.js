@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function renderTheme(themes) {
     const themeSlots = document.getElementById('theme-slots');
     themeSlots.innerHTML = '';
-    themes.themes.forEach(theme => {
+    themes.data.themes.forEach(theme => {
         const name = theme.name;
         const themeId = theme.id;
         themeSlots.appendChild(createSlot('theme', name, themeId));
@@ -83,7 +83,7 @@ function checkDateAndTheme() {
 
 function fetchAvailableTimes(date, themeId) {
 
-    fetch(`/reservations/themes/${themeId}?date=${date}`, { // 예약 가능 시간 조회 API endpoint
+    fetch(`/reservations/themes/${themeId}/times?date=${date}`, { // 예약 가능 시간 조회 API endpoint
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -107,7 +107,7 @@ function renderAvailableTimes(times) {
         timeSlots.innerHTML = '<div class="no-times">선택할 수 있는 시간이 없습니다.</div>';
         return;
     }
-    times.reservationTimes.forEach(time => {
+    times.data.reservationTimes.forEach(time => {
         const startAt = time.startAt;
         const timeId = time.timeId;
         const alreadyBooked = time.alreadyBooked;

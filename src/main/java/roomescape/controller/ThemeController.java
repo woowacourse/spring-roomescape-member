@@ -1,19 +1,20 @@
 package roomescape.controller;
 
-import org.springframework.http.ResponseEntity;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.theme.ThemeRequest;
 import roomescape.dto.theme.ThemeResponse;
 import roomescape.dto.theme.ThemesResponse;
+import roomescape.global.dto.response.ApiResponse;
 import roomescape.service.ThemeService;
-
-import java.net.URI;
 
 @RestController
 public class ThemeController {
@@ -25,29 +26,36 @@ public class ThemeController {
     }
 
     @GetMapping("/themes")
-    public ResponseEntity<ThemesResponse> getAllThemes() {
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<ThemesResponse> getAllThemes() {
 
-        return ResponseEntity.ok(themeService.findAllThemes());
+        return ApiResponse.success(themeService.findAllThemes());
     }
 
     @GetMapping("/themes/top")
-    public ResponseEntity<ThemesResponse> getTopNThemes(@RequestParam final int count) {
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<ThemesResponse> getTopNThemes(@RequestParam final int count) {
 
-        return ResponseEntity.ok(themeService.findTopNThemes(count));
+        return ApiResponse.success(themeService.findTopNThemes(count));
     }
 
     @PostMapping("/themes")
-    public ResponseEntity<ThemeResponse> saveTheme(@RequestBody final ThemeRequest request) {
-        ThemeResponse response = themeService.addTheme(request);
+    @ResponseStatus(HttpStatus.CREATED)
+    public ApiResponse<ThemeResponse> saveTheme(
+            @RequestBody final ThemeRequest request,
+            HttpServletResponse response
+    ) {
+        ThemeResponse themeResponse = themeService.addTheme(request);
+        response.setHeader("Location", "/themes/" + themeResponse.id());
 
-        return ResponseEntity.created(URI.create("/themes/" + response.id()))
-                .body(response);
+        return ApiResponse.success(themeResponse);
     }
 
     @DeleteMapping("/themes/{id}")
-    public ResponseEntity<Void> removeTheme(@PathVariable final Long id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public ApiResponse<Void> removeTheme(@PathVariable final Long id) {
         themeService.removeThemeById(id);
 
-        return ResponseEntity.noContent().build();
+        return ApiResponse.success();
     }
 }
