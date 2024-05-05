@@ -35,8 +35,10 @@ public class ReservationService {
         LocalDate date = reservationDto.getDate();
         long timeId = reservationDto.getTimeId();
         long themeId = reservationDto.getThemeId();
-        ReservationTime time = reservationRepository.findReservationTimeById(timeId);
-        Theme theme = reservationRepository.findThemeById(themeId);
+        ReservationTime time = reservationRepository.findReservationTimeById(timeId)
+                .orElseThrow(() -> new BadRequestException("[ERROR] 데이터가 저장되지 않습니다."));
+        Theme theme = reservationRepository.findThemeById(themeId)
+                .orElseThrow(() -> new BadRequestException("[ERROR] 데이터가 저장되지 않습니다."));
 
         validate(date, time);
         Reservation reservation = new Reservation(name, date, time, theme);

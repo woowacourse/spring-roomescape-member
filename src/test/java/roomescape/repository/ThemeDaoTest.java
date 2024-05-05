@@ -11,8 +11,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import roomescape.model.Theme;
 import roomescape.repository.dao.ThemeDao;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,7 +60,7 @@ class ThemeDaoTest {
     @DisplayName("모든 테마를 조회한다.")
     @Test
     void should_find_all_themes() {
-        List<Theme> allThemes = themeDao.findAllThemes();
+        List<Theme> allThemes = themeDao.findAll();
         assertThat(allThemes).hasSize(2);
     }
 
@@ -70,17 +68,18 @@ class ThemeDaoTest {
     @Test
     void should_add_theme() {
         Theme theme = new Theme("브라운", "공포", "공포.jpg");
-        themeDao.saveTheme(theme);
-        assertThat(themeDao.findAllThemes()).hasSize(3);
+        themeDao.save(theme);
+        assertThat(themeDao.findAll()).hasSize(3);
     }
 
     @DisplayName("테마를 삭제한다.")
     @Test
     void should_delete_theme() {
-        themeDao.deleteThemeById(1);
-        assertThat(themeDao.findAllThemes()).hasSize(1);
+        themeDao.deleteById(1);
+        assertThat(themeDao.findAll()).hasSize(1);
     }
 
+    /*
     @DisplayName("특정 기간의 테마를 인기순으로 정렬하여 조회한다.")
     @Test
     void should_find_ranking_theme_by_date() {
@@ -132,4 +131,5 @@ class ThemeDaoTest {
         parameters.put("theme_id", themeId);
         reservationInsertActor.execute(parameters);
     }
+     */
 }

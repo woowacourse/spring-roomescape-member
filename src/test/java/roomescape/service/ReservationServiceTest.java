@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.controller.response.MemberReservationTimeResponse;
@@ -8,25 +9,42 @@ import roomescape.exception.DuplicatedException;
 import roomescape.exception.NotFoundException;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
+import roomescape.model.Theme;
 import roomescape.repository.ReservationRepository;
+import roomescape.repository.dao.ReservationDao;
 import roomescape.repository.dao.ReservationTimeDao;
+import roomescape.repository.dao.ThemeDao;
+import roomescape.repository.dto.ReservationSavedDto;
 import roomescape.service.dto.ReservationDto;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 
 class ReservationServiceTest {
 
-    private final ReservationTimeDao reservationTimeDao = new FakeReservationTimeDao();
-    private final ReservationRepository reservationRepository = new ReservationRepository(
-            new FakeReservationDao(), reservationTimeDao, new FakeThemeDao());
-//    private ReservationTimeRepository reservationTimeRepository = new ReservationTimeRepository(
-//            new FakeReservationDao(), new FakeReservationTimeDao());
-    private final ReservationService reservationService = new ReservationService(reservationRepository);
+    private ReservationService reservationService;
+    private ReservationRepository reservationRepository;
+    private ReservationTimeDao reservationTimeDao; // TODO: remove field
 
+    @BeforeEach
+    void setUp() { // 테케 의존성 분리하기
+        ThemeDao themeDao = new FakeThemeDao(new ArrayList<>(List.of(
+                new Theme(1, "에버", "공포", "공포.jpg"),
+                new Theme(2, "배키", "미스터리", "미스터리.jpg"),
+                new Theme(3, "포비", "스릴러", "스릴러.jpg"))));
+        reservationTimeDao = new FakeReservationTimeDao(new ArrayList<>(List.of(
+                new ReservationTime(1, LocalTime.of(10, 0)),
+                new ReservationTime(2, LocalTime.of(11, 0)))));
+        ReservationDao reservationDao = new FakeReservationDao(new ArrayList<>(List.of(
+                new ReservationSavedDto(1, "브라운", LocalDate.of(2030, 8, 5), 2L, 1L),
+                new ReservationSavedDto(1, "리사", LocalDate.of(2030, 8, 1), 2L, 2L))));
+        reservationRepository = new ReservationRepository(reservationDao, reservationTimeDao, themeDao);
+        reservationService = new ReservationService(reservationRepository);
+    }
 
     @DisplayName("모든 예약 시간을 반환한다")
     @Test
@@ -79,8 +97,8 @@ class ReservationServiceTest {
     @DisplayName("현재로 예약하면 예외가 발생하지 않는다.")
     @Test
     void should_not_throw_exception_when_current_date() {
-        reservationTimeDao.saveReservationTime(new ReservationTime(3, LocalTime.now()));
-        ReservationDto request = new ReservationDto("에버", LocalDate.now(), 3L, 1L);
+        long timeId = reservationTimeDao.save(new ReservationTime(3, LocalTime.now()));
+        ReservationDto request = new ReservationDto("에버", LocalDate.now(), timeId, 1L);
         assertThatCode(() -> reservationService.saveReservation(request))
                 .doesNotThrowAnyException();
     }

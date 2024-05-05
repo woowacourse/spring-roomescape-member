@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.exception.BadRequestException;
@@ -7,19 +8,34 @@ import roomescape.exception.DuplicatedException;
 import roomescape.exception.NotFoundException;
 import roomescape.model.ReservationTime;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.dao.ReservationDao;
+import roomescape.repository.dao.ReservationTimeDao;
+import roomescape.repository.dto.ReservationSavedDto;
 import roomescape.service.dto.ReservationTimeDto;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 
 class ReservationTimeServiceTest {
 
-    private final ReservationTimeRepository reservationTimeRepository = new ReservationTimeRepository(
-            new FakeReservationDao(), new FakeReservationTimeDao());
+    private ReservationTimeRepository reservationTimeRepository;
+    private ReservationTimeService reservationTimeService;
 
-    private final ReservationTimeService reservationTimeService = new ReservationTimeService(reservationTimeRepository);
+    @BeforeEach
+    void setUp() { // 테케 의존성 분리하기
+        ReservationTimeDao reservationTimeDao = new FakeReservationTimeDao(new ArrayList<>(List.of(
+                new ReservationTime(1, LocalTime.of(10, 0)),
+                new ReservationTime(2, LocalTime.of(11, 0)))));
+        ReservationDao reservationDao = new FakeReservationDao(new ArrayList<>(List.of(
+                new ReservationSavedDto(1, "브라운", LocalDate.of(2030, 8, 5), 2L, 1L),
+                new ReservationSavedDto(1, "리사", LocalDate.of(2030, 8, 1), 2L, 2L))));
+        reservationTimeRepository = new ReservationTimeRepository(reservationDao, reservationTimeDao);
+        reservationTimeService = new ReservationTimeService(reservationTimeRepository);
+    }
 
     @DisplayName("모든 예약 시간을 반환한다")
     @Test

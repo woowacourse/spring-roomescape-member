@@ -28,7 +28,8 @@ public class ReservationTimeService {
         LocalTime startAt = reservationTimeDto.getStartAt();
         validateDuplication(startAt);
         ReservationTime reservationTime = new ReservationTime(reservationTimeDto.getStartAt());
-        return reservationTimeRepository.saveReservationTime(reservationTime);
+        return reservationTimeRepository.saveReservationTime(reservationTime)
+                .orElseThrow(() -> new BadRequestException("[ERROR] 데이터가 저장되지 않습니다."));
     }
 
     private void validateDuplication(LocalTime startAt) {
@@ -39,7 +40,8 @@ public class ReservationTimeService {
     }
 
     public ReservationTime findReservationTime(long id) {
-        return reservationTimeRepository.findReservationById(id);
+        return reservationTimeRepository.findReservationById(id)
+                .orElseThrow(() -> new BadRequestException("[ERROR] 데이터가 저장되지 않습니다."));
     }
 
     public void deleteReservationTime(long id) {

@@ -4,18 +4,19 @@ import roomescape.model.ReservationTime;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface ReservationTimeDao {
 
-    List<ReservationTime> findAllReservationTimes();
+    long save(ReservationTime reservationTime);
 
-    ReservationTime findReservationTimeById(long id);
+    List<ReservationTime> findAll();
 
-    ReservationTime saveReservationTime(ReservationTime reservationTime);
+    Optional<ReservationTime> findById(long id);
 
-    void deleteReservationTimeById(long id);
+    void deleteById(long id);
 
-    boolean isExistReservationTimeById(long id);
+    Boolean isExistById(long id);
 
-    boolean isExistReservationTimeByStartAt(LocalTime startAt);
+    Boolean isExistByStartAt(LocalTime startAt);
 }

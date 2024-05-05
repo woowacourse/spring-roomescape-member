@@ -52,14 +52,14 @@ class ReservationTimeDaoTest {
     @DisplayName("모든 예약 시간을 조회한다")
     @Test
     void should_get_reservation_times() {
-        List<ReservationTime> reservationTimes = reservationTimeDao.findAllReservationTimes();
+        List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
         assertThat(reservationTimes).hasSize(2);
     }
 
     @DisplayName("예약 시간을 추가한다")
     @Test
     void should_add_reservation_time() {
-        reservationTimeDao.saveReservationTime(new ReservationTime(LocalTime.of(12, 0)));
+        reservationTimeDao.save(new ReservationTime(LocalTime.of(12, 0)));
         Integer count = jdbcTemplate.queryForObject("select count(1) from reservation_time", Integer.class);
         assertThat(count).isEqualTo(3);
     }
@@ -67,7 +67,7 @@ class ReservationTimeDaoTest {
     @DisplayName("예약 시간을 삭제한다")
     @Test
     void should_delete_reservation_time() {
-        reservationTimeDao.deleteReservationTimeById(1);
+        reservationTimeDao.deleteById(1);
         Integer count = jdbcTemplate.queryForObject("select count(1) from reservation_time", Integer.class);
         assertThat(count).isEqualTo(1);
     }
@@ -75,21 +75,21 @@ class ReservationTimeDaoTest {
     @DisplayName("아이디에 해당하는 예약 시간을 조회한다.")
     @Test
     void should_get_reservation_time() {
-        ReservationTime reservationTime = reservationTimeDao.findReservationTimeById(1);
+        ReservationTime reservationTime = reservationTimeDao.findById(1).orElse(null);
         assertThat(reservationTime.getStartAt()).isEqualTo(LocalTime.of(10, 0));
     }
 
     @DisplayName("특정 id를 갖는 데이터가 존재하는 경우 참을 반환한다.")
     @Test
     void should_return_true_when_exist() {
-        Boolean isExist = reservationTimeDao.isExistReservationTimeById(1);
+        Boolean isExist = reservationTimeDao.isExistById(1);
         assertThat(isExist).isTrue();
     }
 
     @DisplayName("특정 id를 갖는 데이터가 존재하지 않는 경우 거짓을 반환한다.")
     @Test
     void should_return_false_when_not_exist() {
-        Boolean isExist = reservationTimeDao.isExistReservationTimeById(100000000);
+        Boolean isExist = reservationTimeDao.isExistById(100000000);
         assertThat(isExist).isFalse();
     }
 }

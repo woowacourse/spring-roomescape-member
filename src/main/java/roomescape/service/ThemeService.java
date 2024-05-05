@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.exception.BadRequestException;
 import roomescape.model.Theme;
 import roomescape.repository.ThemeRepository;
 import roomescape.service.dto.ThemeDto;
@@ -26,7 +27,8 @@ public class ThemeService {
 
     public Theme saveTheme(ThemeDto themeDto) {
         Theme theme = Theme.from(themeDto);
-        return themeRepository.saveTheme(theme);
+        return themeRepository.saveTheme(theme)
+                .orElseThrow(() -> new BadRequestException("[ERROR] 데이터가 저장되지 않습니다."));
     }
 
     public void deleteTheme(long id) {

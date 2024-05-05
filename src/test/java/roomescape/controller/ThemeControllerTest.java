@@ -126,16 +126,16 @@ class ThemeControllerTest {
 
         assertThat(popularThemes).hasSize(10);
         assertAll(() -> {
-            assertThat(popularThemes.get(0).getThemeId()).isEqualTo(10);
-            assertThat(popularThemes.get(1).getThemeId()).isEqualTo(9);
-            assertThat(popularThemes.get(2).getThemeId()).isEqualTo(1);
-            assertThat(popularThemes.get(3).getThemeId()).isEqualTo(2);
-            assertThat(popularThemes.get(4).getThemeId()).isEqualTo(3);
-            assertThat(popularThemes.get(5).getThemeId()).isEqualTo(4);
-            assertThat(popularThemes.get(6).getThemeId()).isEqualTo(5);
-            assertThat(popularThemes.get(7).getThemeId()).isEqualTo(6);
-            assertThat(popularThemes.get(8).getThemeId()).isEqualTo(7);
-            assertThat(popularThemes.get(9).getThemeId()).isEqualTo(8);
+            assertThat(popularThemes.get(0).getId()).isEqualTo(10);
+            assertThat(popularThemes.get(1).getId()).isEqualTo(9);
+            assertThat(popularThemes.get(2).getId()).isEqualTo(1);
+            assertThat(popularThemes.get(3).getId()).isEqualTo(2);
+            assertThat(popularThemes.get(4).getId()).isEqualTo(3);
+            assertThat(popularThemes.get(5).getId()).isEqualTo(4);
+            assertThat(popularThemes.get(6).getId()).isEqualTo(5);
+            assertThat(popularThemes.get(7).getId()).isEqualTo(6);
+            assertThat(popularThemes.get(8).getId()).isEqualTo(7);
+            assertThat(popularThemes.get(9).getId()).isEqualTo(8);
         });
     }
 

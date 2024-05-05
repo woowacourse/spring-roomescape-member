@@ -12,6 +12,7 @@ import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
 import roomescape.repository.dao.ReservationDao;
+import roomescape.repository.dto.ReservationSavedDto;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -88,15 +89,15 @@ class ReservationDaoTest {
     @DisplayName("모든 예약을 조회한다")
     @Test
     void should_get_reservation() {
-        List<Reservation> reservations = reservationDao.findAllReservations();
+        List<ReservationSavedDto> reservations = reservationDao.findAll();
         assertThat(reservations).hasSize(2);
     }
 
     @DisplayName("조회한 예약에 예약 시간이 존재한다.")
     @Test
     void should_get_reservation_times() {
-        List<Reservation> reservations = reservationDao.findAllReservations();
-        assertThat(reservations.get(0).getTime().getStartAt()).isEqualTo(LocalTime.of(10, 0));
+        List<ReservationSavedDto> reservations = reservationDao.findAll();
+        assertThat(reservations.get(0).getTimeId()).isEqualTo(1);
     }
 
     @DisplayName("예약을 추가한다")
@@ -106,7 +107,7 @@ class ReservationDaoTest {
         Theme theme = new Theme(1, "에버", "공포", "공포.jpg");
         Reservation reservation = new Reservation("네오", LocalDate.of(2024, 9, 1), reservationTime, theme);
 
-        reservationDao.saveReservation(reservation);
+        reservationDao.save(reservation);
 
         Integer count = jdbcTemplate.queryForObject("select count(1) from reservation", Integer.class);
         assertThat(count).isEqualTo(3);
@@ -115,7 +116,7 @@ class ReservationDaoTest {
     @DisplayName("예약을 삭제한다")
     @Test
     void should_delete_reservation() {
-        reservationDao.deleteReservationById(1);
+        reservationDao.deleteById(1);
         Integer count = jdbcTemplate.queryForObject("select count(1) from reservation", Integer.class);
         assertThat(count).isEqualTo(1);
     }
@@ -123,23 +124,23 @@ class ReservationDaoTest {
     @DisplayName("특정 id를 가진 데이터가 존재하면 참을 반환한다.")
     @Test
     void should_return_true_when_exist() {
-        boolean isExist = reservationDao.isExistReservationById(1);
+        boolean isExist = reservationDao.isExistById(1);
         assertThat(isExist).isTrue();
     }
 
     @DisplayName("특정 id를 가진 데이터가 존재하지 않으면 거짓을 반환한다.")
     @Test
     void should_return_false_when_not_exist() {
-        boolean isExist = reservationDao.isExistReservationById(100000000);
+        boolean isExist = reservationDao.isExistById(100000000);
         assertThat(isExist).isFalse();
     }
 
-    @DisplayName("특정 날짜와 테마에 해당하는 시간을 조회한다.")
+    @DisplayName("특정 날짜와 테마에 해당하는 예약을 조회한다.")
     @Test
     void should_get_reservation_times_when_date_and_theme_given() {
         LocalDate date = LocalDate.of(2023, 8, 5);
-        List<ReservationTime> times = reservationDao.findReservationTimeBooked(date, 1);
-        assertThat(times).hasSize(1);
-        assertThat(times).containsExactly(new ReservationTime(1, LocalTime.of(10, 0)));
+        List<ReservationSavedDto> reservations = reservationDao.findByDateAndThemeId(date, 1);
+        assertThat(reservations).hasSize(1);
+        assertThat(reservations).containsExactly(new ReservationSavedDto(1, "브라운", date, 1L, 1L));
     }
 }

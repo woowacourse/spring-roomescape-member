@@ -2,18 +2,16 @@ package roomescape.repository.dao;
 
 import roomescape.model.Theme;
 
-import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface ThemeDao {
 
-    List<Theme> findAllThemes();
+    long save(Theme theme);
 
-    Theme saveTheme(Theme theme);
+    List<Theme> findAll();
 
-    void deleteThemeById(long id);
+    Optional<Theme> findById(long id);
 
-    Theme findThemeById(long id);
-
-    List<Theme> findThemeRankingByDate(LocalDate before, LocalDate after, int limit);
+    void deleteById(long id);
 }

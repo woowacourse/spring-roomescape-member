@@ -5,10 +5,10 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.model.Theme;
 
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class JdbcThemeDao implements ThemeDao {
@@ -24,7 +24,16 @@ public class JdbcThemeDao implements ThemeDao {
     }
 
     @Override
-    public List<Theme> findAllThemes() {
+    public long save(Theme theme) {
+        Map<String, Object> parameters = new HashMap<>(3);
+        parameters.put("name", theme.getName());
+        parameters.put("description", theme.getDescription());
+        parameters.put("thumbnail", theme.getThumbnail());
+        return insertActor.executeAndReturnKey(parameters).longValue();
+    }
+
+    @Override
+    public List<Theme> findAll() {
         String sql = "select id, name, description, thumbnail from theme";
         return jdbcTemplate.query(sql, (resultSet, rowNum) ->
                 new Theme(
@@ -36,50 +45,21 @@ public class JdbcThemeDao implements ThemeDao {
     }
 
     @Override
-    public Theme saveTheme(Theme theme) {
-        Map<String, Object> parameters = new HashMap<>(1);
-        parameters.put("name", theme.getName());
-        parameters.put("description", theme.getDescription());
-        parameters.put("thumbnail", theme.getThumbnail());
-        Number newId = insertActor.executeAndReturnKey(parameters);
-        return new Theme(newId.longValue(), theme.getName(), theme.getDescription(), theme.getThumbnail());
-    }
-
-    @Override
-    public void deleteThemeById(long id) {
-        String sql = "delete from theme where id = ?";
-        jdbcTemplate.update(sql, id);
-    }
-
-    @Override
-    public Theme findThemeById(long id) {
+    public Optional<Theme> findById(long id) {
         String sql = "select id, name, description, thumbnail from theme where id = ?";
-        return jdbcTemplate.queryForObject(sql, (resultSet, ignored) ->
+        Theme theme = jdbcTemplate.queryForObject(sql, (resultSet, rowNum) ->
                 new Theme(
                         resultSet.getLong("id"),
                         resultSet.getString("name"),
                         resultSet.getString("description"),
                         resultSet.getString("thumbnail")
                 ), id);
+        return Optional.ofNullable(theme);
     }
 
     @Override
-    public List<Theme> findThemeRankingByDate(LocalDate before, LocalDate after, int limit) {
-        String sql = """
-                select th.id, th.name, th.description, th.thumbnail 
-                from reservation as r 
-                inner join theme as th on r.theme_id = th.id 
-                where r.date between ? and ? 
-                group by r.theme_id 
-                order by count(r.theme_id) desc
-                limit ? 
-                """;
-        return jdbcTemplate.query(sql, (resultSet, ignored) ->
-                new Theme(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("description"),
-                        resultSet.getString("thumbnail")
-                ), before, after, limit);
+    public void deleteById(long id) {
+        String sql = "delete from theme where id = ?";
+        jdbcTemplate.update(sql, id);
     }
 }

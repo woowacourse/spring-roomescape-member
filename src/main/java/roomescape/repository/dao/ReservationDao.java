@@ -1,26 +1,29 @@
 package roomescape.repository.dao;
 
 import roomescape.model.Reservation;
-import roomescape.model.ReservationTime;
+import roomescape.repository.dto.ReservationSavedDto;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface ReservationDao {
 
-    List<Reservation> findAllReservations();
+    long save(Reservation reservation);
 
-    Reservation saveReservation(Reservation reservation);
+    List<ReservationSavedDto> findAll();
 
-    void deleteReservationById(long id);
+    Optional<ReservationSavedDto> findById(long id);
 
-    boolean isExistReservationById(long id);
+    List<ReservationSavedDto> findByDateAndThemeId(LocalDate date, long themeId);
 
-    boolean isExistReservationByTimeId(long timeId);
+    List<Long> findByDateAndGroupByThemeIdAndOrderByCountAndLimit(LocalDate startDate, LocalDate endDate, int limit);
+    // TODO: decide naming
+    void deleteById(long id);
 
-    boolean isExistReservationByDateAndTimeId(LocalDate date, long timeId);
+    Boolean isExistById(long id);
 
-    List<ReservationTime> findReservationTimeBooked(LocalDate date, long themeId);
+    Boolean isExistByTimeId(long timeId);
 
-    List<ReservationTime> findReservationTimeNotBooked(LocalDate date, long themeId);
+    Boolean isExistByDateAndTimeId(LocalDate date, long timeId);
 }

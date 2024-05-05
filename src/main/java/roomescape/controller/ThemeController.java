@@ -36,7 +36,7 @@ public class ThemeController {
         Theme theme = themeService.saveTheme(themeDto);
         ThemeResponse response = ThemeResponse.from(theme);
         return ResponseEntity
-                .created(URI.create("/themes/" + response.getThemeId()))
+                .created(URI.create("/themes/" + response.getId()))
                 .body(response);
     }
 

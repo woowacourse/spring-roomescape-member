@@ -7,6 +7,7 @@ import roomescape.repository.dao.ReservationTimeDao;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class ReservationTimeRepository {
@@ -20,30 +21,31 @@ public class ReservationTimeRepository {
     }
 
     public List<ReservationTime> findAllReservationTimes() {
-        return reservationTimeDao.findAllReservationTimes();
+        return reservationTimeDao.findAll();
     }
 
     public boolean isExistReservationTimeByStartAt(LocalTime startAt) {
-        return reservationTimeDao.isExistReservationTimeByStartAt(startAt);
+        return reservationTimeDao.isExistByStartAt(startAt);
     }
 
-    public ReservationTime saveReservationTime(ReservationTime reservationTime) {
-        return reservationTimeDao.saveReservationTime(reservationTime);
+    public Optional<ReservationTime> saveReservationTime(ReservationTime reservationTime) {
+        long id = reservationTimeDao.save(reservationTime);
+        return reservationTimeDao.findById(id);
     }
 
-    public ReservationTime findReservationById(long id) {
-        return reservationTimeDao.findReservationTimeById(id);
+    public Optional<ReservationTime> findReservationById(long id) {
+        return reservationTimeDao.findById(id);
     }
 
     public boolean isExistReservationTimeById(long id) {
-        return reservationTimeDao.isExistReservationTimeById(id);
+        return reservationTimeDao.isExistById(id);
     }
 
     public boolean isExistReservationByTimeId(long timeId) {
-        return reservationDao.isExistReservationByTimeId(timeId);
+        return reservationDao.isExistByTimeId(timeId);
     }
 
     public void deleteReservationTimeById(long id) {
-        reservationTimeDao.deleteReservationTimeById(id);
+        reservationTimeDao.deleteById(id);
     }
 }

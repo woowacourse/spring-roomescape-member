@@ -1,44 +1,121 @@
 package roomescape.service;
 
 import roomescape.model.Reservation;
-import roomescape.model.ReservationTime;
-import roomescape.model.Theme;
 import roomescape.repository.dao.ReservationDao;
+import roomescape.repository.dto.ReservationSavedDto;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 class FakeReservationDao implements ReservationDao {
 
-    private List<ReservationTime> reservationTimes = new ArrayList<>(List.of(
-            new ReservationTime(1, LocalTime.of(10, 0)),
-            new ReservationTime(2, LocalTime.of(11, 0))));
+    private final AtomicLong index = new AtomicLong(3); // TODO: change to 1
+//    private final List<ReservationTime> reservationTimes = new ArrayList<>(List.of(
+//            new ReservationTime(1, LocalTime.of(10, 0)),
+//            new ReservationTime(2, LocalTime.of(11, 0))));
+//
+//    private final List<Theme> themes = new ArrayList<>(List.of(
+//            new Theme(1, "에버", "공포", "공포.jpg"),
+//            new Theme(1, "배키", "스릴러", "스릴러.jpg")));
 
-    private List<Reservation> reservations = new ArrayList<>(List.of(
-            new Reservation(1, "브라운", LocalDate.of(2030, 8, 5),
-                    new ReservationTime(2, LocalTime.of(11, 0)),
-                    new Theme(1, "에버", "공포", "공포.jpg")),
-            new Reservation(1, "리사", LocalDate.of(2030, 8, 1),
-                    new ReservationTime(2, LocalTime.of(11, 0)),
-                    new Theme(2, "배키", "스릴러", "스릴러.jpg"))));
+    private final List<ReservationSavedDto> reservations;
 
-    @Override
-    public List<Reservation> findAllReservations() {
-        return reservations;
+    public FakeReservationDao(List<ReservationSavedDto> reservations) {
+//        for (ReservationSavedDto dto : reservations) {
+//            Reservation reservation = new Reservation(dto.getName(), dto.getDate(), dto.);
+//        } TODO
+        this.reservations = reservations;
     }
 
     @Override
-    public Reservation saveReservation(Reservation reservation) {
-        reservations.add(reservation);
-        return reservation;
+    public List<ReservationSavedDto> findAll() {
+        return Collections.unmodifiableList(reservations);
     }
 
     @Override
-    public void deleteReservationById(long id) {
-        Reservation foundReservation = reservations.stream()
+    public long save(Reservation reservation) {
+        long key = index.getAndIncrement();
+        ReservationSavedDto saved = new ReservationSavedDto(key, reservation.getName(), reservation.getDate(), reservation.getTime().getId(), reservation.getTheme().getId());
+        reservations.add(saved);
+        return key;
+    }
+
+    @Override
+    public Optional<ReservationSavedDto> findById(long id) {
+        return reservations.stream()
+                .filter(reservation -> reservation.getId() == id)
+                .findFirst();
+    }
+
+    @Override
+    public List<ReservationSavedDto> findByDateAndThemeId(LocalDate date, long themeId) {
+        return reservations.stream()
+                .filter(reservation -> reservation.getDate().equals(date) && reservation.getThemeId() == themeId)
+                .toList();
+    }
+
+    @Override
+    public List<Long> findByDateAndGroupByThemeIdAndOrderByCountAndLimit(LocalDate startDate, LocalDate endDate, int limit) {
+        // Filter reservations by date
+        List<ReservationSavedDto> filteredReservations = reservations.stream()
+                .filter(reservation -> reservation.getDate().isAfter(startDate) && reservation.getDate().isBefore(endDate))
+                .toList();
+
+        // Count reservations by themeId
+        Map<Long, Long> countOfThemeIds = filteredReservations.stream()
+                .collect(Collectors.groupingBy(ReservationSavedDto::getThemeId, Collectors.counting()));
+        // Sort themeIds by count
+        List<Long> finalThemeIds = countOfThemeIds.entrySet().stream()
+                .sorted(Map.Entry.<Long, Long>comparingByValue().reversed())
+                .limit(10)
+                .map(Map.Entry::getKey)
+                .toList();
+        // Filter reservations by top 10 themeIds
+        return finalThemeIds;
+
+        /*
+        // find by date
+        List<ReservationSavedDto> filteredReservations = reservations.stream()
+                .filter(reservation -> reservation.getDate().isBefore(endDate) && reservation.getDate().isAfter(startDate))
+                .toList();
+
+        // group by themeId
+        List<Long> filteredThemeIds = filteredReservations.stream()
+                .map(ReservationSavedDto::getThemeId)
+                .collect(Collectors.toList());
+
+        // order by count
+        Map<Long, Long> countOfThemeIds = new HashMap<>();
+        for (Long filteredThemeId : filteredThemeIds) {
+            long count = filteredThemeIds.stream()
+                    .filter(id -> id.equals(filteredThemeId))
+                    .count();
+            countOfThemeIds.put(filteredThemeId, count);
+        }
+        filteredThemeIds.sort(Comparator.comparingLong(countOfThemeIds::get));
+
+        // limit 10
+        List<Long> themeIds = filteredThemeIds.stream().distinct().toList();
+        List<Long> finalThemeIds = themeIds.subList(0, 10);
+
+        // make DTO
+        List<ReservationSavedDto> result = new ArrayList<>();
+        for (Long finalThemeId : finalThemeIds) {
+            result.add(filteredReservations.stream()
+                    .filter(reservation -> reservation.getThemeId() == finalThemeId)
+                    .findFirst()
+                    .orElseThrow(NoSuchElementException::new));
+        }
+        return result;
+
+         */
+    }
+
+    @Override
+    public void deleteById(long id) {
+        ReservationSavedDto foundReservation = reservations.stream()
                 .filter(reservation -> reservation.getId() == id)
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("아이디가 존재하지 않습니다."));
@@ -46,33 +123,20 @@ class FakeReservationDao implements ReservationDao {
     }
 
     @Override
-    public boolean isExistReservationById(long id) {
-        return reservations.stream().anyMatch(reservation -> reservation.getId() == id);
-    }
-
-    @Override
-    public boolean isExistReservationByTimeId(long timeId) {
-        return reservations.stream().anyMatch(reservation -> reservation.getTime().getId() == timeId);
-    }
-
-    @Override
-    public boolean isExistReservationByDateAndTimeId(LocalDate date, long timeId) {
+    public Boolean isExistById(long id) {
         return reservations.stream()
-                .anyMatch(reservation -> reservation.getDate().isEqual(date) && reservation.getTime().getId() == timeId);
+                .anyMatch(reservation -> reservation.getId() == id);
     }
 
     @Override
-    public List<ReservationTime> findReservationTimeBooked(LocalDate date, long themeId) {
+    public Boolean isExistByTimeId(long timeId) {
         return reservations.stream()
-                .filter(reservation -> reservation.getDate().equals(date) && reservation.getTheme().getId() == themeId)
-                .map(reservation -> new ReservationTime(reservation.getTime().getId(), reservation.getTime().getStartAt()))
-                .toList();
+                .anyMatch(reservation -> reservation.getTimeId() == timeId);
     }
 
     @Override
-    public List<ReservationTime> findReservationTimeNotBooked(LocalDate date, long themeId) {
-        List<ReservationTime> all = new ArrayList<>(reservationTimes);
-        all.removeAll(findReservationTimeBooked(date, themeId));
-        return all;
+    public Boolean isExistByDateAndTimeId(LocalDate date, long timeId) {
+        return reservations.stream()
+                .anyMatch(reservation -> reservation.getDate().isEqual(date) && reservation.getTimeId() == timeId);
     }
 }
