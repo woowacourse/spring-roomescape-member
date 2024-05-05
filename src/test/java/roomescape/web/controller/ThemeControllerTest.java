@@ -168,7 +168,7 @@ class ThemeControllerTest {
     @DisplayName("지난 한 주 동안의 인기 테마 목록을 조회한다.")
     void findPopularThemes() {
         Map<String, String> timeParams = new HashMap<>();
-        timeParams.put("startAt", LocalTime.now().plusHours(1).format(DateTimeFormatter.ofPattern("HH:mm")));
+        timeParams.put("startAt", LocalTime.now().plusMinutes(1).format(DateTimeFormatter.ofPattern("HH:mm")));
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
