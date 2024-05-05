@@ -39,7 +39,7 @@ class ReservationServiceTest {
     void setUp() {
         reservationRepository = new FakeReservationRepository();
         reservationTimeRepository = new FakeReservationTimeRepository();
-        themeRepository = new FakeThemeRepository();
+        themeRepository = new FakeThemeRepository(reservationRepository);
 
         reservationService = new ReservationService(reservationRepository, reservationTimeRepository,
                 themeRepository);

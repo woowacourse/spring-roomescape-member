@@ -2,15 +2,27 @@ package roomescape.theme.repository;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
+import roomescape.reservation.model.Reservation;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.model.Theme;
 
-@Repository @Qualifier("FakeThemeRepository")
+@Repository
 public class FakeThemeRepository implements ThemeRepository {
     private final List<Theme> themes = new ArrayList<>();
+
+    private final ReservationRepository reservationRepository;
+
+    public FakeThemeRepository(
+            @Qualifier("fakeReservationRepository") final ReservationRepository reservationRepository) {
+        this.reservationRepository = reservationRepository;
+    }
 
     @Override
     public Theme save(final Theme theme) {
@@ -35,8 +47,12 @@ public class FakeThemeRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findOrderByReservation() {
-        return themes.stream()
-                .sorted()
+        Map<Theme, List<Reservation>> reservationsByTheme = reservationRepository.findAll().stream()
+                .collect(Collectors.groupingBy(Reservation::getTheme));
+
+        return reservationsByTheme.entrySet().stream()
+                .sorted(Comparator.comparing(entry -> -entry.getValue().size()))
+                .flatMap(themeListEntry -> themeListEntry.getValue().stream().map(Reservation::getTheme))
                 .toList();
     }
 

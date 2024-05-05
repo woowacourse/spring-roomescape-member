@@ -29,6 +29,16 @@ public class ReservationFixture {
         );
     }
 
+    public static Reservation getOne(final Theme theme) {
+        return Reservation.of(
+                null,
+                "몰리의 신기한 이야기",
+                LocalDate.parse("3000-10-10"),
+                ReservationTimeFixture.getOne(),
+                theme
+        );
+    }
+
     public static Reservation getOne(final LocalDate date,
                                      final ReservationTime reservationTime,
                                      final Theme theme) {
