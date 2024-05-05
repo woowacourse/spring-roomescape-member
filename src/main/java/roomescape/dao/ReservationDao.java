@@ -20,6 +20,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.reservation.ReservationDeletionException;
 
 @Repository
 public class ReservationDao implements ReservationRepository {
@@ -108,13 +109,21 @@ public class ReservationDao implements ReservationRepository {
 
     @Override
     public void delete(Reservation reservation) {
-        String sql = "DELETE FROM reservation WHERE id = ?";
-        jdbcTemplate.update(sql, reservation.getId());
+        try {
+            String sql = "DELETE FROM reservation WHERE id = ?";
+            jdbcTemplate.update(sql, reservation.getId());
+        } catch (Exception e) {
+            throw new ReservationDeletionException();
+        }
     }
 
     @Override
     public void deleteAll() {
-        String sql = "DELETE FROM reservation";
-        jdbcTemplate.update(sql);
+        try {
+            String sql = "DELETE FROM reservation";
+            jdbcTemplate.update(sql);
+        } catch (Exception e) {
+            throw new ReservationDeletionException();
+        }
     }
 }

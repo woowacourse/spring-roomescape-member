@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
+import roomescape.exception.theme.ThemeDeletionException;
 
 @Repository
 public class ThemeDao implements ThemeRepository {
@@ -73,13 +74,21 @@ public class ThemeDao implements ThemeRepository {
 
     @Override
     public void delete(Theme theme) {
-        String sql = "DELETE FROM theme WHERE id = ?";
-        jdbcTemplate.update(sql, theme.getId());
+        try {
+            String sql = "DELETE FROM theme WHERE id = ?";
+            jdbcTemplate.update(sql, theme.getId());
+        } catch (Exception e) {
+            throw new ThemeDeletionException();
+        }
     }
 
     @Override
     public void deleteAll() {
-        String sql = " DELETE FROM theme";
-        jdbcTemplate.update(sql);
+        try {
+            String sql = "DELETE FROM theme";
+            jdbcTemplate.update(sql);
+        } catch (Exception e) {
+            throw new ThemeDeletionException();
+        }
     }
 }
