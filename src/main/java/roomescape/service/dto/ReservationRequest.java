@@ -9,14 +9,14 @@ import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
-public class ReservationRequestDto {
+public class ReservationRequest {
 
     private final String name;
     private final Long themeId;
     private final String date;
     private final Long timeId;
 
-    public ReservationRequestDto(String name, Long themeId, String date, Long timeId) {
+    public ReservationRequest(String name, Long themeId, String date, Long timeId) {
         validateNameExist(name);
         validateThemeIdExist(themeId);
         validateIdNaturalNumber(themeId);

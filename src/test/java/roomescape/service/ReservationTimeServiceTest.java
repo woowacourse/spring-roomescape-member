@@ -15,7 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
-import roomescape.service.dto.ReservationTimeRequestDto;
+import roomescape.service.dto.ReservationTimeRequest;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationTimeServiceTest {
@@ -44,7 +44,7 @@ class ReservationTimeServiceTest {
     @DisplayName("예약 시간을 정상적으로 저장할 땐 insertReservationTime이 호출되어야 한다.")
     @Test
     void create_reservation_time_test() {
-        ReservationTimeRequestDto requestDto = new ReservationTimeRequestDto("11:30");
+        ReservationTimeRequest requestDto = new ReservationTimeRequest("11:30");
         ReservationTime reservationTime = new ReservationTime(1L, "11:30");
         given(reservationTimeRepository.isExistTimeOf(requestDto.getStartAt())).willReturn(false);
         given(reservationTimeRepository.insertReservationTime(requestDto.toReservationTime())).willReturn(
@@ -57,7 +57,7 @@ class ReservationTimeServiceTest {
     @DisplayName("중복된 시간을 생성하려고 하면 예외가 발생한다.")
     @Test
     void throw_exception_when_duplicate_time_create() {
-        ReservationTimeRequestDto requestDto = new ReservationTimeRequestDto("11:30");
+        ReservationTimeRequest requestDto = new ReservationTimeRequest("11:30");
         given(reservationTimeRepository.isExistTimeOf(requestDto.getStartAt())).willReturn(true);
 
         assertThatThrownBy(() -> reservationTimeService.createReservationTime(requestDto))

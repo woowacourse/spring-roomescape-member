@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.service.ThemeService;
-import roomescape.service.dto.ThemeRequestDto;
-import roomescape.service.dto.ThemeResponseDto;
+import roomescape.service.dto.ThemeRequest;
+import roomescape.service.dto.ThemeResponse;
 
 @RestController
 @RequestMapping("/themes")
@@ -27,18 +27,18 @@ public class ThemeApiController {
     }
 
     @GetMapping
-    public List<ThemeResponseDto> findAllThemes() {
+    public List<ThemeResponse> findAllThemes() {
         return themeService.findAllThemes();
     }
 
     @GetMapping("/rank")
-    public List<ThemeResponseDto> findTopBookedThemes() {
+    public List<ThemeResponse> findTopBookedThemes() {
         return themeService.findTopBookedThemes();
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponseDto> createTheme(@RequestBody ThemeRequestDto requestDto) {
-        ThemeResponseDto theme = themeService.createTheme(requestDto);
+    public ResponseEntity<ThemeResponse> createTheme(@RequestBody ThemeRequest requestDto) {
+        ThemeResponse theme = themeService.createTheme(requestDto);
         return ResponseEntity.created(URI.create("/themes/" + theme.getId())).body(theme);
     }
 

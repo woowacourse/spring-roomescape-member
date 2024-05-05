@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
-import roomescape.service.dto.ThemeRequestDto;
-import roomescape.service.dto.ThemeResponseDto;
+import roomescape.service.dto.ThemeRequest;
+import roomescape.service.dto.ThemeResponse;
 
 @Service
 public class ThemeService {
@@ -20,27 +20,27 @@ public class ThemeService {
         this.reservationRepository = reservationRepository;
     }
 
-    public List<ThemeResponseDto> findAllThemes() {
+    public List<ThemeResponse> findAllThemes() {
         return themeRepository.findAllThemes()
                 .stream()
-                .map(ThemeResponseDto::new)
+                .map(ThemeResponse::new)
                 .toList();
     }
 
-    public List<ThemeResponseDto> findTopBookedThemes() {
+    public List<ThemeResponse> findTopBookedThemes() {
         List<Theme> topBookedThemes = themeRepository.findTopBookedThemes(
                 LocalDate.now().minusDays(7),
                 LocalDate.now().minusDays(1),
                 10);
 
         return topBookedThemes.stream()
-                .map(ThemeResponseDto::new)
+                .map(ThemeResponse::new)
                 .toList();
     }
 
-    public ThemeResponseDto createTheme(ThemeRequestDto requestDto) {
+    public ThemeResponse createTheme(ThemeRequest requestDto) {
         Theme theme = themeRepository.insertTheme(requestDto.toTheme());
-        return new ThemeResponseDto(theme);
+        return new ThemeResponse(theme);
     }
 
     public void deleteTheme(long id) {

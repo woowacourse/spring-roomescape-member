@@ -2,13 +2,13 @@ package roomescape.service.dto;
 
 import roomescape.domain.Theme;
 
-public class ThemeRequestDto {
+public class ThemeRequest {
 
     private final String name;
     private final String description;
     private final String thumbnail;
 
-    public ThemeRequestDto(String name, String description, String thumbnail) {
+    public ThemeRequest(String name, String description, String thumbnail) {
         validateNameExist(name);
         validateDescriptionExist(description);
         validateThumbnailExist(thumbnail);

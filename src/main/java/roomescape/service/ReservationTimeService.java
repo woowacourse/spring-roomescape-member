@@ -5,10 +5,10 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
-import roomescape.service.dto.AvailabilityOfTimeRequestDto;
-import roomescape.service.dto.AvailabilityOfTimeResponseDto;
-import roomescape.service.dto.ReservationTimeRequestDto;
-import roomescape.service.dto.ReservationTimeResponseDto;
+import roomescape.service.dto.AvailabilityOfTimeRequest;
+import roomescape.service.dto.AvailabilityOfTimeResponse;
+import roomescape.service.dto.ReservationTimeRequest;
+import roomescape.service.dto.ReservationTimeResponse;
 
 @Service
 public class ReservationTimeService {
@@ -22,33 +22,32 @@ public class ReservationTimeService {
         this.reservationRepository = reservationRepository;
     }
 
-    public List<ReservationTimeResponseDto> findAllReservationTimes() {
+    public List<ReservationTimeResponse> findAllReservationTimes() {
         return reservationTimeRepository.findAllReservationTimes()
                 .stream()
-                .map(ReservationTimeResponseDto::new)
+                .map(ReservationTimeResponse::new)
                 .toList();
     }
 
-    public List<AvailabilityOfTimeResponseDto> findReservationTimesAvailability(
-            AvailabilityOfTimeRequestDto requestDto) {
+    public List<AvailabilityOfTimeResponse> findReservationTimesAvailability(AvailabilityOfTimeRequest requestDto) {
         List<ReservationTime> allTimes = reservationTimeRepository.findAllReservationTimes();
         List<ReservationTime> bookedTimes = reservationTimeRepository.findBookedTimeForThemeAtDate(
                 requestDto.getDate(), requestDto.getThemeId());
 
         return allTimes.stream()
-                .map(reservationTime -> new AvailabilityOfTimeResponseDto(
+                .map(reservationTime -> new AvailabilityOfTimeResponse(
                         reservationTime,
                         bookedTimes.contains(reservationTime)))
                 .toList();
     }
 
-    public ReservationTimeResponseDto createReservationTime(ReservationTimeRequestDto requestDto) {
+    public ReservationTimeResponse createReservationTime(ReservationTimeRequest requestDto) {
         ReservationTime reservationTime = requestDto.toReservationTime();
         if (reservationTimeRepository.isExistTimeOf(reservationTime.getStartAt().toString())) {
             throw new IllegalArgumentException("중복된 시간을 입력할 수 없습니다.");
         }
         ReservationTime savedTime = reservationTimeRepository.insertReservationTime(reservationTime);
-        return new ReservationTimeResponseDto(savedTime);
+        return new ReservationTimeResponse(savedTime);
     }
 
     public void deleteReservationTime(long id) {

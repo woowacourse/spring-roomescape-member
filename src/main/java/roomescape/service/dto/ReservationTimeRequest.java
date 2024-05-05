@@ -6,12 +6,12 @@ import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import roomescape.domain.ReservationTime;
 
-public class ReservationTimeRequestDto {
+public class ReservationTimeRequest {
 
     private final String startAt;
 
     @JsonCreator(mode = Mode.PROPERTIES)
-    public ReservationTimeRequestDto(String startAt) {
+    public ReservationTimeRequest(String startAt) {
         validateTimeExist(startAt);
         validateTimeFormat(startAt);
         this.startAt = startAt;

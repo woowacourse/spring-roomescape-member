@@ -18,7 +18,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
-import roomescape.service.dto.ReservationRequestDto;
+import roomescape.service.dto.ReservationRequest;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
@@ -34,7 +34,7 @@ class ReservationServiceTest {
 
     private final ReservationTime time = new ReservationTime(1L, "15:30");
     private final LocalDate validDate = LocalDate.now().plusDays(10);
-    private final ReservationRequestDto requestDto = new ReservationRequestDto("재즈", 1L, validDate.toString(), 1L);
+    private final ReservationRequest requestDto = new ReservationRequest("재즈", 1L, validDate.toString(), 1L);
 
     @DisplayName("예약 리스트를 조회할 땐 findAllReservations이 호출되어야 한다")
     @Test
@@ -90,7 +90,7 @@ class ReservationServiceTest {
     @Test
     void throw_exception_when_past_datetime_create() {
         LocalDate pastDate = LocalDate.now().minusDays(10);
-        ReservationRequestDto invalidDateRequest = new ReservationRequestDto("재즈", 1L, pastDate.toString(), 1L);
+        ReservationRequest invalidDateRequest = new ReservationRequest("재즈", 1L, pastDate.toString(), 1L);
         given(reservationTimeRepository.isExistTimeOf(invalidDateRequest.getTimeId())).willReturn(true);
         given(reservationTimeRepository.findReservationTimeById(requestDto.getTimeId())).willReturn(time);
 

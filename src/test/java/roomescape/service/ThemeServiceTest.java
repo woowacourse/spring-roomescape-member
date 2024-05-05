@@ -16,7 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
-import roomescape.service.dto.ThemeRequestDto;
+import roomescape.service.dto.ThemeRequest;
 
 @ExtendWith(MockitoExtension.class)
 class ThemeServiceTest {
@@ -45,7 +45,7 @@ class ThemeServiceTest {
     @DisplayName("테마를 정상적으로 저장할 땐 insertTheme이 호출되어야 한다.")
     @Test
     void create_reservation_time_test() {
-        ThemeRequestDto requestDto = new ThemeRequestDto("재즈", "프로그래밍", "좋아.png");
+        ThemeRequest requestDto = new ThemeRequest("재즈", "프로그래밍", "좋아.png");
         Theme Theme = new Theme(1L, "재즈", "프로그래밍", "좋아.png");
         given(themeRepository.insertTheme(requestDto.toTheme())).willReturn(Theme);
 

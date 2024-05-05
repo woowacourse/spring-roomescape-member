@@ -20,8 +20,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.domain.Reservation;
 import roomescape.service.ReservationService;
-import roomescape.service.dto.ReservationRequestDto;
-import roomescape.service.dto.ReservationResponseDto;
+import roomescape.service.dto.ReservationRequest;
+import roomescape.service.dto.ReservationResponse;
 
 @WebMvcTest(ReservationApiController.class)
 class ReservationApiControllerTest {
@@ -49,9 +49,9 @@ class ReservationApiControllerTest {
     @DisplayName("/reservations GET 요청 시 모든 예약 목록과 200 상태 코드를 응답한다.")
     @Test
     void return_200_status_code_and_saved_all_reservations_when_get_request() throws Exception {
-        List<ReservationResponseDto> responseDtos = List.of(
-                new ReservationResponseDto(reservation1),
-                new ReservationResponseDto(reservation2)
+        List<ReservationResponse> responseDtos = List.of(
+                new ReservationResponse(reservation1),
+                new ReservationResponse(reservation2)
         );
 
         given(reservationService.findAllReservations()).willReturn(responseDtos);
@@ -64,9 +64,9 @@ class ReservationApiControllerTest {
     @DisplayName("/reservations POST 요청 시 저장된 예약과 201 상태 코드를 응답한다.")
     @Test
     void return_200_status_code_and_saved_reservation_when_post_request() throws Exception {
-        ReservationRequestDto requestDto = new ReservationRequestDto("재즈", 1L, "2024-04-22", 2L);
+        ReservationRequest requestDto = new ReservationRequest("재즈", 1L, "2024-04-22", 2L);
         String requestBody = objectMapper.writeValueAsString(requestDto);
-        ReservationResponseDto responseDto = new ReservationResponseDto(reservation1);
+        ReservationResponse responseDto = new ReservationResponse(reservation1);
 
         given(reservationService.createReservation(any())).willReturn(responseDto);
 

@@ -8,13 +8,13 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-class ReservationTimeRequestDtoTest {
+class ReservationTimeRequestTest {
 
     @DisplayName("시작 시간이 입력되지 않으면 예외가 발생한다.")
     @ParameterizedTest
     @NullAndEmptySource
     void throw_exception_when_null_input(String startAt) {
-        assertThatThrownBy(() -> new ReservationTimeRequestDto(startAt))
+        assertThatThrownBy(() -> new ReservationTimeRequest(startAt))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("시작 시간은 반드시 입력되어야 합니다.");
     }
@@ -23,7 +23,7 @@ class ReservationTimeRequestDtoTest {
     @ParameterizedTest
     @ValueSource(strings = {"23", "25:00", "3:3", "3시 25분", "03:60"})
     void throw_exception_when_invalid_time_format_input(String startAt) {
-        assertThatThrownBy(() -> new ReservationTimeRequestDto(startAt))
+        assertThatThrownBy(() -> new ReservationTimeRequest(startAt))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("시간 형식이 올바르지 않습니다.");
     }
@@ -33,6 +33,6 @@ class ReservationTimeRequestDtoTest {
     @ValueSource(strings = {"00:00", "23:59", "05:05"})
     void create_success(String startAt) {
         assertThatNoException()
-                .isThrownBy(() -> new ReservationTimeRequestDto(startAt));
+                .isThrownBy(() -> new ReservationTimeRequest(startAt));
     }
 }

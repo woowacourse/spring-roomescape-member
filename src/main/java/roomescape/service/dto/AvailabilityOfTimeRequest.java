@@ -3,12 +3,12 @@ package roomescape.service.dto;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
-public class AvailabilityOfTimeRequestDto {
+public class AvailabilityOfTimeRequest {
 
     private final String date;
     private final Long themeId;
 
-    public AvailabilityOfTimeRequestDto(String date, Long themeId) {
+    public AvailabilityOfTimeRequest(String date, Long themeId) {
         validateDateExist(date);
         validateDateFormat(date);
         validateThemeIdExist(themeId);
