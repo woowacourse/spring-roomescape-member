@@ -87,12 +87,11 @@ function fetchAvailableTimes(date, themeId) {
     headers: {
       'Content-Type': 'application/json',
     },
-
   }).then(response => {
     if (response.status === 200) return response.json();
     throw new Error('Read failed');
   }).then(renderAvailableTimes)
-      .catch(error => console.error("Error fetching available times:", error));
+  .catch(error => console.error("Error fetching available times:", error));
 }
 
 function renderAvailableTimes(times) {
