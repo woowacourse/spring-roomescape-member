@@ -1,7 +1,9 @@
 package roomescape.controller;
 
+import java.net.URI;
 import java.util.List;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,10 +36,10 @@ public class ThemeApiController {
         return themeService.findTopBookedThemes();
     }
 
-    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ThemeResponseDto createTheme(@RequestBody ThemeRequestDto requestDto) {
-        return themeService.createTheme(requestDto);
+    public ResponseEntity<ThemeResponseDto> createTheme(@RequestBody ThemeRequestDto requestDto) {
+        ThemeResponseDto theme = themeService.createTheme(requestDto);
+        return ResponseEntity.created(URI.create("/themes/" + theme.getId())).body(theme);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)

@@ -1,7 +1,9 @@
 package roomescape.controller;
 
+import java.net.URI;
 import java.util.List;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,10 +31,10 @@ public class ReservationApiController {
         return reservationService.findAllReservations();
     }
 
-    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ReservationResponseDto createReservation(@RequestBody ReservationRequestDto requestDto) {
-        return reservationService.createReservation(requestDto);
+    public ResponseEntity<ReservationResponseDto> createReservation(@RequestBody ReservationRequestDto requestDto) {
+        ReservationResponseDto reservation = reservationService.createReservation(requestDto);
+        return ResponseEntity.created(URI.create("/reservations/" + reservation.getId())).body(reservation);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
