@@ -31,7 +31,8 @@ class ThemeJDBCRepositoryTest {
     void saveTheme() {
         //given&when
         Theme theme = themeRepository.save(new Theme("레벨3 탈출", "우테코 레벨3을 탈출하는 내용입니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));;
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        ;
 
         //then
         assertThat(theme.getId()).isNotZero();
