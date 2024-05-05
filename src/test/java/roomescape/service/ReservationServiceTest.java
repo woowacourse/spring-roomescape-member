@@ -19,12 +19,12 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.UserName;
-import roomescape.responseDto.AvailableTimeResponse;
-import roomescape.requestDto.ReservationCreateRequest;
-import roomescape.responseDto.ReservationResponse;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
+import roomescape.requestDto.ReservationCreateRequest;
+import roomescape.responseDto.AvailableTimeResponse;
+import roomescape.responseDto.ReservationResponse;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
