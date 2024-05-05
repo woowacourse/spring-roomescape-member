@@ -28,9 +28,10 @@ class ThemeDescriptionTest {
     @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = {
-            "테바와 코딩을 하고 있으니 제가 LA에 있을 시절이 떠오르는............................................................................."
+            " ",
+            "테바와 코딩을 하고 있으니 제가 LA에 있을 시절이 떠오르는................................................"
     })
-    void themeDescriptionLengthTest(String invalidDescription) {
+    void themeDescriptionLengthTest(final String invalidDescription) {
         // When & Then
         assertThatThrownBy(() -> new ThemeDescription(invalidDescription))
                 .isInstanceOf(IllegalArgumentException.class)

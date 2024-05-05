@@ -12,8 +12,8 @@ class ClientNameTest {
     @DisplayName("유효하지 않은 길이의 이름이 입력되면 예외를 발생시킨다.")
     @ParameterizedTest
     @NullAndEmptySource
-    @ValueSource(strings = {"kellykelly"})
-    void playerNameLengthTest(String invalidName) {
+    @ValueSource(strings = {" ", "kelly6"})
+    void playerNameLengthTest(final String invalidName) {
         // When & Then
         assertThatThrownBy(() -> new ClientName(invalidName))
                 .isInstanceOf(IllegalArgumentException.class)
