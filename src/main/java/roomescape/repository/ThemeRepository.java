@@ -12,6 +12,4 @@ public interface ThemeRepository {
     Theme save(Theme theme);
 
     void deleteById(Long id);
-
-    //List<Theme> findTopThemesDurationOrderByCount(LocalDate startDate, LocalDate endDate, Integer limit);
 }

@@ -55,25 +55,6 @@ public class H2ThemeRepository implements ThemeRepository {
         jdbcTemplate.update(sql, id);
     }
 
-    /*public List<Theme> findTopThemesDurationOrderByCount(LocalDate startDate, LocalDate endDate, Integer limit) {
-        final String sql = """
-                SELECT 
-                    t.id as theme_id, 
-                    t.name as theme_name, 
-                    t.description, 
-                    t.thumbnail
-                FROM theme AS t
-                LEFT JOIN reservation AS r
-                ON t.id = r.theme_id
-                WHERE r.date BETWEEN ? AND ?
-                GROUP BY t.id
-                ORDER BY COUNT(r.id) DESC
-                LIMIT ?
-                """;
-
-        return jdbcTemplate.query(sql, rowMapper, startDate, endDate, limit);
-    }*/
-
     private static class ThemeRowMapper implements RowMapper<Theme> {
         public Theme mapRow(ResultSet rs, int rowNum) throws SQLException {
             return new Theme(
