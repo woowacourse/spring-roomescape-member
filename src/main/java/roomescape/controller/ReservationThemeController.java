@@ -1,14 +1,19 @@
 package roomescape.controller;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-import roomescape.domain.ReservationTheme;
-import roomescape.dto.theme.ThemeRequest;
-import roomescape.service.ReservationThemeService;
-
 import java.net.URI;
 import java.util.List;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import roomescape.dto.theme.ThemeRequest;
+import roomescape.dto.theme.ThemeResponse;
+import roomescape.service.ReservationThemeService;
 
 @Controller
 @RequestMapping("/themes")
@@ -21,15 +26,15 @@ public class ReservationThemeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationTheme>> getThemes() {
-        List<ReservationTheme> themes = reservationThemeService.getAllThemes();
+    public ResponseEntity<List<ThemeResponse>> getThemes() {
+        List<ThemeResponse> themes = reservationThemeService.getAllThemes();
         return ResponseEntity.ok().body(themes);
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTheme> createTheme(@RequestBody ThemeRequest themeRequest) {
-        ReservationTheme theme = reservationThemeService.insertTheme(themeRequest);
-        return ResponseEntity.created(URI.create("/themes/" + theme.getId())).body(theme);
+    public ResponseEntity<ThemeResponse> createTheme(@RequestBody ThemeRequest themeRequest) {
+        ThemeResponse response = reservationThemeService.insertTheme(themeRequest);
+        return ResponseEntity.created(URI.create("/themes/" + response.id())).body(response);
     }
 
     @DeleteMapping("/{id}")
@@ -39,8 +44,8 @@ public class ReservationThemeController {
     }
 
     @GetMapping("/weeklyBest")
-    public ResponseEntity<List<ReservationTheme>> weeklyTheme() {
-        List<ReservationTheme> reservationThemes = reservationThemeService.getWeeklyBestThemes();
+    public ResponseEntity<List<ThemeResponse>> weeklyTheme() {
+        List<ThemeResponse> reservationThemes = reservationThemeService.getWeeklyBestThemes();
         return ResponseEntity.ok().body(reservationThemes);
     }
 
