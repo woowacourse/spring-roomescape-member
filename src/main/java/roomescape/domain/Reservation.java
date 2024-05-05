@@ -18,7 +18,7 @@ public class Reservation {
             final ReservationTime time,
             final Theme theme
     ) {
-        validateReservationTimeAndTheme(theme);
+        validateReservationTimeAndTheme(time, theme);
 
         final ReservationDate reservationDate = new ReservationDate(date);
         validateReservationDateAndTime(reservationDate, time);
