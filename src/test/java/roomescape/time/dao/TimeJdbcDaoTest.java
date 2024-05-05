@@ -16,6 +16,7 @@ import roomescape.time.domain.Time;
 @JdbcTest
 @Sql(scripts = "/data-test.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 class TimeJdbcDaoTest {
+
     private final TimeJdbcDao timeJdbcDao;
 
     @Autowired

@@ -17,27 +17,28 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.exception.model.RoomEscapeException;
-import roomescape.reservation.dao.ReservationJdbcDao;
-import roomescape.time.dao.TimeJdbcDao;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.domain.Time;
 import roomescape.time.dto.TimeRequest;
 import roomescape.time.dto.TimeResponse;
+import roomescape.time.repository.TimeRepository;
 
 @ExtendWith(MockitoExtension.class)
 class TimeServiceTest {
+
     private final Time time = new Time(1L, LocalTime.of(17, 3));
 
     @InjectMocks
     private TimeService timeService;
     @Mock
-    private TimeJdbcDao timeJdbcDao;
+    private TimeRepository timeRepository;
     @Mock
-    private ReservationJdbcDao reservationJdbcDao;
+    private ReservationRepository reservationRepository;
 
     @Test
     @DisplayName("시간을 추가한다.")
     void addReservationTime() {
-        Mockito.when(timeJdbcDao.save(any()))
+        Mockito.when(timeRepository.save(any()))
                 .thenReturn(time);
 
         TimeRequest timeRequest = new TimeRequest(time.getStartAt());
@@ -50,7 +51,7 @@ class TimeServiceTest {
     @Test
     @DisplayName("시간을 찾는다.")
     void findReservationTimes() {
-        Mockito.when(timeJdbcDao.findAllReservationTimesInOrder())
+        Mockito.when(timeRepository.findAllReservationTimesInOrder())
                 .thenReturn(List.of(time));
 
         List<TimeResponse> timeResponses = timeService.findReservationTimes();
@@ -62,7 +63,7 @@ class TimeServiceTest {
     @Test
     @DisplayName("중복된 예약 시간 생성 요청시 예외를 던진다.")
     void validation_ShouldThrowException_WhenStartAtIsDuplicated() {
-        Mockito.when(timeJdbcDao.countByStartAt(any()))
+        Mockito.when(timeRepository.countByStartAt(any()))
                 .thenReturn(1);
 
         assertAll(() -> {
@@ -78,7 +79,7 @@ class TimeServiceTest {
     @DisplayName("시간을 지운다.")
     void removeReservationTime() {
         Mockito.doNothing()
-                .when(timeJdbcDao)
+                .when(timeRepository)
                 .deleteById(time.getId());
 
         assertDoesNotThrow(() -> timeService.removeReservationTime(time.getId()));
@@ -87,7 +88,7 @@ class TimeServiceTest {
     @Test
     @DisplayName("예약이 존재하는 예약 시간 삭제 요청시 예외를 던진다.")
     void validateReservationExistence_ShouldThrowException_WhenReservationExistAtTime() {
-        Mockito.when(reservationJdbcDao.countByTimeId(1L))
+        Mockito.when(reservationRepository.countByTimeId(1L))
                 .thenReturn(1);
 
         assertAll(() -> {

@@ -9,10 +9,10 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 import roomescape.theme.domain.Theme;
 
-@Repository
+@Component
 public class ThemeJdbcDao implements ThemeDao {
 
     public static final RowMapper<Theme> THEME_ROW_MAPPER = (resultSet, rowNum) -> new Theme(
