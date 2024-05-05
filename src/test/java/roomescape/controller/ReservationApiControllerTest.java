@@ -2,8 +2,10 @@ package roomescape.controller;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+
 import java.util.HashMap;
 import java.util.Map;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,7 +22,7 @@ import roomescape.service.dto.input.ReservationInput;
 import roomescape.service.dto.input.ReservationTimeInput;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class ReservationApiControllerTest {
+class ReservationApiControllerTest {
 
     @Autowired
     ReservationService reservationService;
@@ -46,8 +48,10 @@ public class ReservationApiControllerTest {
     @Test
     @DisplayName("예약 생성에 성공하면, 201을 반환한다")
     void return_200_when_reservation_create_success() {
-        long timeId = reservationTimeService.createReservationTime(new ReservationTimeInput("14:00")).id();
-        long themeId = themeService.createTheme(ThemeFixture.getInput()).id();
+        long timeId = reservationTimeService.createReservationTime(new ReservationTimeInput("14:00"))
+                                            .id();
+        long themeId = themeService.createTheme(ThemeFixture.getInput())
+                                   .id();
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
@@ -55,19 +59,26 @@ public class ReservationApiControllerTest {
         reservation.put("timeId", timeId);
         reservation.put("themeId", themeId);
 
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservation)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(201);
+        RestAssured.given()
+                   .log()
+                   .all()
+                   .contentType(ContentType.JSON)
+                   .body(reservation)
+                   .when()
+                   .post("/reservations")
+                   .then()
+                   .log()
+                   .all()
+                   .statusCode(201);
     }
 
     @Test
     @DisplayName("예약 생성 시 예약자명, 날짜, 시간에 유효하지 않은 값이 입력되었을 때 400을 반환한다.")
     void return_400_when_reservation_create_input_is_invalid() {
-        long timeId = reservationTimeService.createReservationTime(new ReservationTimeInput("12:00")).id();
-        long themeId = themeService.createTheme(ThemeFixture.getInput()).id();
+        long timeId = reservationTimeService.createReservationTime(new ReservationTimeInput("12:00"))
+                                            .id();
+        long themeId = themeService.createTheme(ThemeFixture.getInput())
+                                   .id();
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "");
@@ -75,28 +86,35 @@ public class ReservationApiControllerTest {
         reservation.put("timeId", timeId);
         reservation.put("themeId", themeId);
 
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservation)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(400);
+        RestAssured.given()
+                   .log()
+                   .all()
+                   .contentType(ContentType.JSON)
+                   .body(reservation)
+                   .when()
+                   .post("/reservations")
+                   .then()
+                   .log()
+                   .all()
+                   .statusCode(400);
     }
 
     @Test
     @DisplayName("특정 예약이 존재하지 않는데, 그 예약을 삭제하려 할 때 404을 반환한다.")
     void return_404_when_not_exist_id() {
         RestAssured.given()
-                .delete("/reservations/-1")
-                .then()
-                .statusCode(404);
+                   .delete("/reservations/-1")
+                   .then()
+                   .statusCode(404);
     }
 
     @Test
     @DisplayName("중복된 예약을 생성하려 할 때 409를 반환한다.")
     void return_409_when_duplicate_reservation() {
-        long timeId = reservationTimeService.createReservationTime(new ReservationTimeInput("13:00")).id();
-        long themeId = themeService.createTheme(ThemeFixture.getInput()).id();
+        long timeId = reservationTimeService.createReservationTime(new ReservationTimeInput("13:00"))
+                                            .id();
+        long themeId = themeService.createTheme(ThemeFixture.getInput())
+                                   .id();
         reservationService.createReservation(new ReservationInput("조이썬", "2024-06-30", timeId, themeId));
 
         Map<String, Object> reservation = new HashMap<>();
@@ -106,18 +124,21 @@ public class ReservationApiControllerTest {
         reservation.put("themeId", themeId);
 
         RestAssured.given()
-                .contentType(ContentType.JSON)
-                .body(reservation)
-                .when().post("/reservations")
-                .then()
-                .statusCode(409);
+                   .contentType(ContentType.JSON)
+                   .body(reservation)
+                   .when()
+                   .post("/reservations")
+                   .then()
+                   .statusCode(409);
     }
 
     @Test
     @DisplayName("지나간 날짜와 시간으로 예약 생성 시 400를 반환한다.")
     void return_400_when_create_past_time_reservation() {
-        long timeId = reservationTimeService.createReservationTime(new ReservationTimeInput("03:00")).id();
-        long themeId = themeService.createTheme(ThemeFixture.getInput()).id();
+        long timeId = reservationTimeService.createReservationTime(new ReservationTimeInput("03:00"))
+                                            .id();
+        long themeId = themeService.createTheme(ThemeFixture.getInput())
+                                   .id();
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "제리");
@@ -126,10 +147,11 @@ public class ReservationApiControllerTest {
         reservation.put("themeId", themeId);
 
         RestAssured.given()
-                .contentType(ContentType.JSON)
-                .body(reservation)
-                .when().post("/reservations")
-                .then()
-                .statusCode(400);
+                   .contentType(ContentType.JSON)
+                   .body(reservation)
+                   .when()
+                   .post("/reservations")
+                   .then()
+                   .statusCode(400);
     }
 }

@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.util.List;
+
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
@@ -38,12 +39,12 @@ public class ThemeService {
     }
 
     public void deleteTheme(final long id) {
-        themeDao.find(id)
-                .orElseThrow(() -> new NotExistThemeException(id));
-        if (reservationDao.isExistByThemeId(id)) {
-            throw new ExistReservationInThemeException(id);
+        Theme theme = themeDao.find(id)
+                              .orElseThrow(() -> new NotExistThemeException(id));
+        if (reservationDao.isExistByThemeId(theme.getId())) {
+            throw new ExistReservationInThemeException(theme.getId());
         }
 
-        themeDao.delete(id);
+        themeDao.delete(theme.getId());
     }
 }

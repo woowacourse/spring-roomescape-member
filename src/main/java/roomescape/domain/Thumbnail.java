@@ -5,8 +5,8 @@ import java.util.regex.Pattern;
 
 public record Thumbnail(String value) {
 
-    private static final List<String> ALLOW_EXTENTIONS = List.of("jpg", "jpeg", "png", "heic");
-    public static final String ALLOW_EXTENSIONS_PATTERN = String.join("|", ALLOW_EXTENTIONS);
+    private static final List<String> ALLOW_EXTENSIONS = List.of("jpg", "jpeg", "png", "heic");
+    public static final String ALLOW_EXTENSIONS_PATTERN = String.join("|", ALLOW_EXTENSIONS);
     private static final Pattern PATTERN = Pattern.compile(
             String.format("^\\S+.(?i)(%s)$", ALLOW_EXTENSIONS_PATTERN));
 
@@ -27,7 +27,8 @@ public record Thumbnail(String value) {
     }
 
     private void validateExt(final String url) {
-        if (!PATTERN.matcher(url).matches()) {
+        if (!PATTERN.matcher(url)
+                    .matches()) {
             throw new IllegalArgumentException(String.format("%s 확장자만 가능합니다.", ALLOW_EXTENSIONS_PATTERN));
         }
     }

@@ -3,6 +3,7 @@ package roomescape.dao;
 import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
+
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -34,7 +35,8 @@ public class ThemeDao {
                 .addValue("description", theme.getDescription())
                 .addValue("thumbnail", theme.getThumbnailAsString());
 
-        final long id = jdbcInsert.executeAndReturnKey(params).longValue();
+        final long id = jdbcInsert.executeAndReturnKey(params)
+                                  .longValue();
         return Theme.of(id, theme.getName(), theme.getDescription(), theme.getThumbnailAsString());
     }
 
@@ -61,7 +63,9 @@ public class ThemeDao {
                 ORDER BY COUNT(r.id) DESC
                 LIMIT 10;
                 """;
-        return jdbcTemplate.query(sql, rowMapper, visitDate.beforeWeek().asString(), visitDate.beforeDay().asString());
+        return jdbcTemplate.query(sql, rowMapper, visitDate.beforeWeek()
+                                                           .asString(), visitDate.beforeDay()
+                                                                                 .asString());
     }
 
     public List<Theme> getAll() {

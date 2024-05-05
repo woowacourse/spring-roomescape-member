@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.stream.Stream;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -13,7 +14,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import roomescape.fixture.ThemeFixture;
 
-public class ReservationTest {
+class ReservationTest {
 
     @Test
     @DisplayName("id, name, reservationDate, reservationTime 을 통해 도메인을 생성한다.")

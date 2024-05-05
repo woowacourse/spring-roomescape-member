@@ -3,6 +3,7 @@ package roomescape.dao;
 import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
+
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -36,7 +37,8 @@ public class ReservationTimeDao {
     public ReservationTime create(final ReservationTime reservationTime) {
         final SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("start_at", reservationTime.getStartAtAsString());
-        final long id = jdbcInsert.executeAndReturnKey(params).longValue();
+        final long id = jdbcInsert.executeAndReturnKey(params)
+                                  .longValue();
         return ReservationTime.from(id, reservationTime.getStartAtAsString());
     }
 
@@ -70,8 +72,6 @@ public class ReservationTimeDao {
                 ON t.id = r.time_id AND r.theme_id = ? AND r.date = ?;
                 """;
         return jdbcTemplate.query(sql, availableReservationTimeMapper, themeId, date.asString());
-
-
     }
 
     public void delete(final long id) {

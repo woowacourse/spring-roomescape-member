@@ -2,6 +2,7 @@ package roomescape.controller.api;
 
 import java.net.URI;
 import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,7 +31,7 @@ public class ThemeApiController {
     public ResponseEntity<ThemeResponse> createTheme(@RequestBody final ThemeCreateRequest request) {
         final ThemeOutput output = themeService.createTheme(request.toInput());
         return ResponseEntity.created(URI.create("/times/" + output.id()))
-                .body(ThemeResponse.toResponse(output));
+                             .body(ThemeResponse.toResponse(output));
     }
 
     @GetMapping
@@ -42,12 +43,14 @@ public class ThemeApiController {
     @GetMapping("/popular")
     public ResponseEntity<List<ThemeResponse>> getPopularThemes(@RequestParam final String date) {
         final List<ThemeOutput> outputs = themeService.getPopularThemes(date);
-        return ResponseEntity.ok().body(ThemeResponse.toResponses(outputs));
+        return ResponseEntity.ok()
+                             .body(ThemeResponse.toResponses(outputs));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable final long id) {
         themeService.deleteTheme(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent()
+                             .build();
     }
 }

@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.util.List;
+
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
@@ -37,9 +38,9 @@ public class ReservationService {
 
     public ReservationOutput createReservation(final ReservationInput input) {
         final ReservationTime time = reservationTimeDao.find(input.timeId())
-                .orElseThrow(() -> new NotExistReservationTimeException(input.timeId()));
+                                                       .orElseThrow(() -> new NotExistReservationTimeException(input.timeId()));
         final Theme theme = themeDao.find(input.themeId())
-                .orElseThrow(() -> new NotExistThemeException(input.themeId()));
+                                    .orElseThrow(() -> new NotExistThemeException(input.themeId()));
 
         final Reservation reservation = input.toReservation(time, theme);
         if (reservationDao.isExistByReservationAndTime(reservation.getDate(), time.getId())) {

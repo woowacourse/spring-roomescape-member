@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.util.List;
+
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
@@ -47,7 +48,7 @@ public class ReservationTimeService {
 
     public void deleteReservationTime(final long id) {
         final ReservationTime reservationTime = reservationTimeDao.find(id)
-                .orElseThrow(() -> new NotExistReservationTimeException(id));
+                                                                  .orElseThrow(() -> new NotExistReservationTimeException(id));
 
         if (reservationDao.isExistByTimeId(id)) {
             throw new ExistReservationInReservationTimeException(id);

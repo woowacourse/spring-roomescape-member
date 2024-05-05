@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,7 +29,7 @@ import roomescape.service.dto.output.ReservationTimeOutput;
 import roomescape.service.dto.output.ThemeOutput;
 
 @SpringBootTest
-public class ReservationTimeServiceTest {
+class ReservationTimeServiceTest {
 
     @Autowired
     ReservationTimeService reservationTimeService;
@@ -97,16 +98,20 @@ public class ReservationTimeServiceTest {
     @DisplayName("중복 예약 시간이면 예외를 발생한다.")
     void throw_exception_when_duplicate_reservationTime() {
         reservationTimeService.createReservationTime(new ReservationTimeInput("10:00"));
-        assertThatThrownBy(() -> reservationTimeService.createReservationTime(new ReservationTimeInput("10:00")))
+        final var input = new ReservationTimeInput("10:00");
+        assertThatThrownBy(() -> reservationTimeService.createReservationTime(input))
                 .isInstanceOf(ReservationTimeAlreadyExistsException.class);
     }
 
     @Test
     @DisplayName("예약 가능한 시간을 조회한다.")
     void get_available_reservationTime() {
-        long timeId1 = reservationTimeService.createReservationTime(new ReservationTimeInput("10:00")).id();
-        long timeId2 = reservationTimeService.createReservationTime(new ReservationTimeInput("11:00")).id();
-        long themeId = themeService.createTheme(ThemeFixture.getInput()).id();
+        long timeId1 = reservationTimeService.createReservationTime(new ReservationTimeInput("10:00"))
+                                             .id();
+        long timeId2 = reservationTimeService.createReservationTime(new ReservationTimeInput("11:00"))
+                                             .id();
+        long themeId = themeService.createTheme(ThemeFixture.getInput())
+                                   .id();
         reservationService.createReservation(new ReservationInput("조이썬", "2025-01-01", timeId2, themeId));
 
         List<AvailableReservationTimeResponse> actual = reservationTimeService.getAvailableTimes(

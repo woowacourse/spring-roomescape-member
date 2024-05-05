@@ -1,6 +1,7 @@
 package roomescape.service.dto.output;
 
 import java.util.List;
+
 import roomescape.domain.Theme;
 
 public record ThemeOutput(long id, String name, String description, String thumbnail) {
@@ -11,7 +12,7 @@ public record ThemeOutput(long id, String name, String description, String thumb
 
     public static List<ThemeOutput> toOutputs(final List<Theme> themes) {
         return themes.stream()
-                .map(ThemeOutput::toOutput)
-                .toList();
+                     .map(ThemeOutput::toOutput)
+                     .toList();
     }
 }

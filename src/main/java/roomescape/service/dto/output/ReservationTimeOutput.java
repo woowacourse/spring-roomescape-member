@@ -1,6 +1,7 @@
 package roomescape.service.dto.output;
 
 import java.util.List;
+
 import roomescape.domain.ReservationTime;
 
 public record ReservationTimeOutput(long id, String startAt) {
@@ -11,7 +12,7 @@ public record ReservationTimeOutput(long id, String startAt) {
 
     public static List<ReservationTimeOutput> toOutputs(final List<ReservationTime> reservationTimes) {
         return reservationTimes.stream()
-                .map(ReservationTimeOutput::toOutput)
-                .toList();
+                               .map(ReservationTimeOutput::toOutput)
+                               .toList();
     }
 }

@@ -10,8 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-//@Import(TestConfig.class)
-public class AdminPageControllerTest {
+class AdminPageControllerTest {
 
     @LocalServerPort
     int port;
@@ -24,11 +23,14 @@ public class AdminPageControllerTest {
     @Test
     @DisplayName("/admin/theme 요청시 테마 관리 페이지를 응답한다.")
     void response_theme_page() {
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .when().get("/admin/theme")
-                .then()
-                .statusCode(200);
+        RestAssured.given()
+                   .log()
+                   .all()
+                   .contentType(ContentType.JSON)
+                   .when()
+                   .get("/admin/theme")
+                   .then()
+                   .statusCode(200);
     }
 
 }
