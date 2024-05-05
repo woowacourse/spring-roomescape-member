@@ -18,14 +18,14 @@ public class ExceptionControllerAdvice {
 
     @ExceptionHandler(value = ValidateException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiResponse<Object> handleDateTimeParseException(final ValidateException e) {
+    public ApiResponse<Object> handleValidateException(final ValidateException e) {
         logger.error(e.getMessage(), e);
         return ApiResponse.fail(ErrorType.BAD_REQUEST);
     }
 
     @ExceptionHandler(value = HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiResponse<Object> handleDateTimeParseException(final HttpMessageNotReadableException e) {
+    public ApiResponse<Object> handleHttpMessageNotReadableException(final HttpMessageNotReadableException e) {
         logger.error(e.getMessage(), e);
         return ApiResponse.fail(ErrorType.BAD_REQUEST);
     }
