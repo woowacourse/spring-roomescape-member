@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static org.hamcrest.Matchers.is;
+
 @Sql(scripts = {"/drop.sql", "/schema.sql", "/data.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -35,7 +37,8 @@ class ThemeControllerTest {
         RestAssured.given().log().all()
                 .when().get("/themes")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(200)
+                .body("size()", is(4));
     }
 
     @Test
@@ -73,6 +76,21 @@ class ThemeControllerTest {
                 .when().delete("/themes/3")
                 .then().log().all()
                 .statusCode(204);
+
+        RestAssured.given().log().all()
+                .when().delete("/themes/3")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    @DisplayName("인기 테마 조회")
+    void getPopularThemes() {
+        RestAssured.given().log().all()
+                .when().get("/themes/popular")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(2));
     }
 
     @ParameterizedTest
