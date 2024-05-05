@@ -1,6 +1,8 @@
 package roomescape.reservation.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.Min;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
@@ -40,14 +42,15 @@ public class ReservationTimeController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") long timeId) {
+    public ResponseEntity<Void> delete(@PathVariable("id") @Min(1) long timeId) {
         reservationTimeService.delete(timeId);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/available")
-    public ResponseEntity<List<AvailableTimeResponse>> getAvailable(@RequestParam("date") LocalDate date,
-                                                                    @RequestParam("themeId") long themeId) {
+    public ResponseEntity<List<AvailableTimeResponse>> getAvailable(
+            @RequestParam("date") @Future LocalDate date,
+            @RequestParam("themeId") @Min(1) long themeId) {
         return ResponseEntity.ok().body(reservationTimeService.findAvailableTimes(date, themeId));
     }
 }

@@ -69,7 +69,8 @@ public class ReservationDao implements ReservationRepository {
     public List<ReservationMember> findAll() {
         String sql =
                 "SELECT r.id AS reservation_id, r.date, t.id AS time_id, t.start_at AS time_value, " +
-                        "th.id AS theme_id, th.name AS theme_name, th.description, th.thumbnail, m.id AS member_id, m.name AS member_name " +
+                        "th.id AS theme_id, th.name AS theme_name, th.description, th.thumbnail, m.id AS member_id, m.name AS member_name "
+                        +
                         "FROM reservation AS r " +
                         "INNER JOIN reservation_time AS t ON r.time_id = t.id " +
                         "INNER JOIN theme AS th ON r.theme_id = th.id " +
@@ -102,7 +103,8 @@ public class ReservationDao implements ReservationRepository {
     public Optional<ReservationMember> findBy(LocalDate date, long timeId, long themeId) {
         String sql =
                 "SELECT r.id AS reservation_id, r.date, t.id AS time_id, t.start_at AS time_value, " +
-                        "th.id AS theme_id, th.name AS theme_name, th.description, th.thumbnail, m.id AS member_id, m.name AS member_name " +
+                        "th.id AS theme_id, th.name AS theme_name, th.description, th.thumbnail, m.id AS member_id, m.name AS member_name "
+                        +
                         "FROM reservation AS r " +
                         "INNER JOIN reservation_time AS t ON r.time_id = t.id " +
                         "INNER JOIN theme AS th ON r.theme_id = th.id " +

@@ -1,6 +1,7 @@
 package roomescape.reservation.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +37,7 @@ public class ThemeController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") long themeId) {
+    public ResponseEntity<Void> delete(@PathVariable("id") @Min(1) long themeId) {
         themeService.delete(themeId);
         return ResponseEntity.noContent().build();
     }

@@ -18,7 +18,7 @@ public class ReservationTime {
     }
 
     public void validate(LocalTime startAt) {
-        if(startAt == null){
+        if (startAt == null) {
             throw new IllegalArgumentException("시작 시간은 null을 허용하지 않습니다.");
         }
     }
