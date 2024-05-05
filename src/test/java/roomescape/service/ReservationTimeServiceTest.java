@@ -51,7 +51,7 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    @DisplayName("예약 시간 삭제 기능의 실패를을 확인한다.")
+    @DisplayName("예약 시간 삭제 기능의 실패를 확인한다.")
     void checkReservationTimeDeleteFail() {
         //given & when & then
         assertThatThrownBy(() -> reservationTimeService.delete(0L))
