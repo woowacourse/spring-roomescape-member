@@ -15,15 +15,16 @@ import java.util.Optional;
 
 @Repository
 public class ThemeDao {
-    private final JdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert jdbcInsert;
-    private final RowMapper<Theme> rowMapper =
+    private static final RowMapper<Theme> rowMapper =
             (resultSet, rowNum) -> new Theme(
                     resultSet.getLong("id"),
                     resultSet.getString("name"),
                     resultSet.getString("description"),
                     resultSet.getString("thumbnail")
             );
+
+    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert jdbcInsert;
 
 
     public ThemeDao(final JdbcTemplate jdbcTemplate) {

@@ -16,13 +16,14 @@ import java.util.Optional;
 
 @Repository
 public class TimeDao {
-    private final JdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert jdbcInsert;
-    private final RowMapper<TimeSlot> rowMapper =
+    private static final RowMapper<TimeSlot> rowMapper =
             (resultSet, rowNum) -> new TimeSlot(
                     resultSet.getLong("id"),
                     resultSet.getString("start_at")
             );
+
+    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert jdbcInsert;
 
     public TimeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;

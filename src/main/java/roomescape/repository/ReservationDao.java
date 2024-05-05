@@ -16,9 +16,7 @@ import java.util.List;
 
 @Repository
 public class ReservationDao {
-    private final JdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert jdbcInsert;
-    private final RowMapper<Reservation> rowMapper =
+    private static final RowMapper<Reservation> rowMapper =
             (resultSet, rowNum) -> new Reservation(
                     resultSet.getLong("id"),
                     resultSet.getString("name"),
@@ -26,6 +24,9 @@ public class ReservationDao {
                     new TimeSlot(resultSet.getLong("time_id"), resultSet.getString("time_value")),
                     new Theme(resultSet.getLong("theme_id"), resultSet.getString("theme_name"), resultSet.getString("theme_description"), resultSet.getString("theme_thumbnail"))
             );
+
+    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert jdbcInsert;
 
     public ReservationDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;

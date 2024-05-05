@@ -10,14 +10,15 @@ import java.util.List;
 
 @Repository
 public class RankDao {
-    private final JdbcTemplate jdbcTemplate;
-    private final RowMapper<Theme> rowMapper =
+    private static final RowMapper<Theme> rowMapper =
             (resultSet, rowNum) -> new Theme(
                     resultSet.getLong("id"),
                     resultSet.getString("name"),
                     resultSet.getString("description"),
                     resultSet.getString("thumbnail")
             );
+
+    private final JdbcTemplate jdbcTemplate;
 
     public RankDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
