@@ -11,6 +11,7 @@ import java.net.URI;
 import java.util.List;
 
 @Controller
+@RequestMapping("/themes")
 public class ReservationThemeController {
 
     private final ReservationThemeService reservationThemeService;
@@ -19,25 +20,25 @@ public class ReservationThemeController {
         this.reservationThemeService = reservationThemeService;
     }
 
-    @GetMapping("/themes")
+    @GetMapping
     public ResponseEntity<List<ReservationTheme>> getThemes() {
         List<ReservationTheme> themes = reservationThemeService.getAllThemes();
         return ResponseEntity.ok().body(themes);
     }
 
-    @PostMapping("/themes")
+    @PostMapping
     public ResponseEntity<ReservationTheme> createTheme(@RequestBody ThemeRequest themeRequest) {
         ReservationTheme theme = reservationThemeService.insertTheme(themeRequest);
         return ResponseEntity.created(URI.create("/themes/" + theme.getId())).body(theme);
     }
 
-    @DeleteMapping("/themes/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
         reservationThemeService.deleteTheme(id);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/weeklyThemes")
+    @GetMapping("/weeklyBest")
     public ResponseEntity<List<ReservationTheme>> weeklyTheme() {
         List<ReservationTheme> reservationThemes = reservationThemeService.getWeeklyBestThemes();
         return ResponseEntity.ok().body(reservationThemes);
