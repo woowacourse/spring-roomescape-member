@@ -3,14 +3,29 @@ package roomescape.web.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import roomescape.core.dto.exception.ExceptionResponse;
 
 @RestControllerAdvice
 public class ControllerExceptionHandler {
     @ExceptionHandler
-    public ResponseEntity<String> handleIllegalArgumentException(final IllegalArgumentException exception) {
-        return ResponseEntity.badRequest().body(exception.getMessage());
+    public ResponseEntity<ExceptionResponse> handleMethodArgumentNotValidException(
+            final MethodArgumentNotValidException exception) {
+        final ExceptionResponse response = new ExceptionResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                exception.getBindingResult()
+        );
+
+        return ResponseEntity.badRequest().body(response);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ProblemDetail> handleIllegalArgumentException(final IllegalArgumentException exception) {
+        return ResponseEntity.badRequest()
+                .body(ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exception.getMessage()));
     }
 
     @ExceptionHandler

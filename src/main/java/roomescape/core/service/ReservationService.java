@@ -53,7 +53,7 @@ public class ReservationService {
                 reservation.getDateString(),
                 reservationTime.getId(), reservation.getTheme().getId());
         if (reservationCount > 0) {
-            throw new IllegalArgumentException("예약 내역이 존재합니다.");
+            throw new IllegalArgumentException("해당 시간에 이미 예약 내역이 존재합니다.");
         }
     }
 
