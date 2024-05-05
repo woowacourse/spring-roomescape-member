@@ -20,11 +20,6 @@ public class ReservationTimeController {
         this.reservationTimeService = reservationTimeService;
     }
 
-    @GetMapping("/admin/time")
-    public String time() {
-        return "admin/time";
-    }
-
     @PostMapping("/times")
     public ResponseEntity<ReservationTime> insertTime(@RequestBody TimeRequest timeRequest) {
         ReservationTime reservationTime = reservationTimeService.insertReservationTime(timeRequest);

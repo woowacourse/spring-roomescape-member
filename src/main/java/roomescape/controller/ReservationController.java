@@ -19,11 +19,6 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @GetMapping("/admin/reservation")
-    public String getReservation() {
-        return "admin/reservation-new";
-    }
-
     @GetMapping("/reservations")
     public ResponseEntity<List<Reservation>> getReservations() {
         List<Reservation> reservations = reservationService.getAllReservations();

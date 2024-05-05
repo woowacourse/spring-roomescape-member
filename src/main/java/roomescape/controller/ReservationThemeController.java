@@ -19,11 +19,6 @@ public class ReservationThemeController {
         this.reservationThemeService = reservationThemeService;
     }
 
-    @GetMapping("/admin/theme")
-    public String getTheme() {
-        return "admin/theme";
-    }
-
     @GetMapping("/themes")
     public ResponseEntity<List<ReservationTheme>> getThemes() {
         List<ReservationTheme> themes = reservationThemeService.getAllThemes();
