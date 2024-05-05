@@ -2,6 +2,9 @@ package roomescape.web;
 
 import java.net.URI;
 import java.util.List;
+
+import jakarta.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,13 +13,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import roomescape.service.ThemeService;
-import roomescape.web.dto.ThemeRequest;
-import roomescape.web.dto.ThemeResponse;
+import roomescape.web.dto.request.ThemeRequest;
+import roomescape.web.dto.response.ThemeResponse;
 
 @RequestMapping("/themes")
 @RestController
 public class ThemeController {
+
     private final ThemeService themeService;
 
     public ThemeController(ThemeService themeService) {
@@ -36,9 +41,9 @@ public class ThemeController {
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponse> saveTheme(@RequestBody ThemeRequest request) {
+    public ResponseEntity<ThemeResponse> saveTheme(@Valid @RequestBody ThemeRequest request) {
         ThemeResponse response = themeService.saveTheme(request);
-        return ResponseEntity.created(URI.create("/themes/" + response.getId())).body(response);
+        return ResponseEntity.created(URI.create("/themes/" + response.id())).body(response);
     }
 
     @DeleteMapping("/{theme_id}")

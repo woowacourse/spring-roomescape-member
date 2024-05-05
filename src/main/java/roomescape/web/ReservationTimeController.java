@@ -3,6 +3,9 @@ package roomescape.web;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
+
+import jakarta.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,14 +15,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import roomescape.service.ReservationTimeService;
-import roomescape.web.dto.AvailableReservationTimeResponse;
-import roomescape.web.dto.ReservationTimeRequest;
-import roomescape.web.dto.ReservationTimeResponse;
+import roomescape.web.dto.request.ReservationTimeRequest;
+import roomescape.web.dto.response.AvailableReservationTimeResponse;
+import roomescape.web.dto.response.ReservationTimeResponse;
 
 @RequestMapping("/times")
 @RestController
 public class ReservationTimeController {
+
     private final ReservationTimeService reservationTimeService;
 
     public ReservationTimeController(ReservationTimeService reservationTimeService) {
@@ -34,16 +39,17 @@ public class ReservationTimeController {
 
     @GetMapping("/available")
     public ResponseEntity<List<AvailableReservationTimeResponse>> findAllAvailableReservationTime(
-            @RequestParam LocalDate date, @RequestParam(name = "theme-id") Long themeId) {
+            @RequestParam(name = "date") LocalDate date, @RequestParam(name = "theme-id") Long themeId) {
         List<AvailableReservationTimeResponse> response =
                 reservationTimeService.findAllAvailableReservationTime(date, themeId);
         return ResponseEntity.ok().body(response);
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTimeResponse> saveReservationTime(@RequestBody ReservationTimeRequest request) {
+    public ResponseEntity<ReservationTimeResponse> saveReservationTime(
+            @Valid @RequestBody ReservationTimeRequest request) {
         ReservationTimeResponse response = reservationTimeService.saveReservationTime(request);
-        return ResponseEntity.created(URI.create("/times/" + response.getId())).body(response);
+        return ResponseEntity.created(URI.create("/times/" + response.id())).body(response);
     }
 
     @DeleteMapping("/{time_id}")
