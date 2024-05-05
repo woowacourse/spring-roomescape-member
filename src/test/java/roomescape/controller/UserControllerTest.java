@@ -1,4 +1,4 @@
-package roomescape.integrated;
+package roomescape.controller;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -9,7 +9,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import io.restassured.RestAssured;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class UserIntegratedTest {
+class UserControllerTest {
     @LocalServerPort
     private int port;
 
