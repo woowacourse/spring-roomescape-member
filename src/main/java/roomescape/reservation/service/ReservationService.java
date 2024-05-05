@@ -2,8 +2,8 @@ package roomescape.reservation.service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.stereotype.Service;
+import roomescape.exception.model.RoomEscapeException;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationRequest;
@@ -11,8 +11,10 @@ import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.dto.ReservationTimeAvailabilityResponse;
 import roomescape.theme.dao.ThemeDao;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.exception.ThemeExceptionCode;
 import roomescape.time.dao.TimeDao;
 import roomescape.time.domain.Time;
+import roomescape.time.exception.TimeExceptionCode;
 
 @Service
 public class ReservationService {
@@ -28,10 +30,11 @@ public class ReservationService {
 
     public ReservationResponse addReservation(ReservationRequest reservationRequest) {
         Reservation reservation = reservationRequest.fromRequest();
+
         Time time = timeDao.findById(reservation.getReservationTime().getId())
-                .orElseThrow(() -> new NullPointerException("존재하는 시간이 없습니다."));
+                .orElseThrow(() -> new RoomEscapeException(TimeExceptionCode.FOUND_TIME_IS_NULL_EXCEPTION));
         Theme theme = themeDao.findById(reservation.getThemeId())
-                .orElseThrow(() -> new NullPointerException("존재하는 테마가 없습니다."));
+                .orElseThrow(() -> new RoomEscapeException(ThemeExceptionCode.FOUND_THEME_IS_NULL_EXCEPTION));
 
         reservation.setTimeOnSave(time);
         reservation.setThemeOnSave(theme);

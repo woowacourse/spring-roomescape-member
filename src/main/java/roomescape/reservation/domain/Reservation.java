@@ -4,7 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Objects;
 import java.util.regex.Pattern;
-import roomescape.exception.BadRequestException;
+import roomescape.exception.model.RoomEscapeException;
+import roomescape.reservation.exception.ReservationExceptionCode;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.Time;
 
@@ -79,20 +80,20 @@ public class Reservation {
 
     private void validateTime(Time time) {
         if (time.getStartAt().isBefore(LocalTime.now())) {
-            throw new BadRequestException("지난 시간의 테마를 선택했습니다.");
+            throw new RoomEscapeException(ReservationExceptionCode.RESERVATION_TIME_IS_PAST_EXCEPTION);
         }
     }
 
     private void validate() {
         if (name == null || name.isBlank()) {
-            throw new BadRequestException("null 혹은 빈칸으로 이루어진 이름으로 예약을 시도하였습니다.");
+            throw new RoomEscapeException(ReservationExceptionCode.NAME_IS_NULL_OR_BLANK_EXCEPTION);
         }
         if (date.isBefore(LocalDate.now())) {
-            throw new BadRequestException("지난 날짜의 예약을 시도하였습니다.");
+            throw new RoomEscapeException(ReservationExceptionCode.RESERVATION_DATE_IS_PAST_EXCEPTION);
         }
         if (ILLEGAL_NAME_REGEX.matcher(name)
                 .matches()) {
-            throw new BadRequestException("특수문자가 포함된 이름으로 예약을 시도하였습니다.");
+            throw new RoomEscapeException(ReservationExceptionCode.ILLEGAL_NAME_FORM_EXCEPTION);
         }
     }
 

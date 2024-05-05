@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.exception.BadRequestException;
+import roomescape.exception.model.RoomEscapeException;
 
 public class TimeTest {
 
@@ -16,8 +16,8 @@ public class TimeTest {
     void validation_ShouldThrowException_WhenStartAtIsNull() {
         assertAll(() -> {
                     Throwable nullStartAt = assertThrows(
-                            BadRequestException.class, () -> new Time(null));
-                    assertEquals("시간 값이 정의되지 않은 요청입니다.", nullStartAt.getMessage());
+                            RoomEscapeException.class, () -> new Time(null));
+                    assertEquals("존재하는 시간이 없습니다.", nullStartAt.getMessage());
                 }
         );
     }
@@ -27,11 +27,11 @@ public class TimeTest {
     void validation_ShouldThrowException_WhenStartAtIsNotOpeningHour() {
         assertAll(() -> {
                     Throwable beforeOpenTime = assertThrows(
-                            BadRequestException.class, () -> new Time(LocalTime.of(7, 59)));
+                            RoomEscapeException.class, () -> new Time(LocalTime.of(7, 59)));
                     assertEquals("운영 시간 외의 예약 시간 요청입니다.", beforeOpenTime.getMessage());
 
                     Throwable afterCloseTime = assertThrows(
-                            BadRequestException.class, () -> new Time(LocalTime.of(23, 1)));
+                            RoomEscapeException.class, () -> new Time(LocalTime.of(23, 1)));
                     assertEquals("운영 시간 외의 예약 시간 요청입니다.", afterCloseTime.getMessage());
                 }
         );

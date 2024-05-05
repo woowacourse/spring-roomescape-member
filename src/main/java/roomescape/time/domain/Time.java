@@ -2,7 +2,8 @@ package roomescape.time.domain;
 
 import java.time.LocalTime;
 import java.util.Objects;
-import roomescape.exception.BadRequestException;
+import roomescape.exception.model.RoomEscapeException;
+import roomescape.time.exception.TimeExceptionCode;
 
 public class Time {
 
@@ -40,10 +41,10 @@ public class Time {
 
     public void validation() {
         if (startAt == null) {
-            throw new BadRequestException("시간 값이 정의되지 않은 요청입니다.");
+            throw new RoomEscapeException(TimeExceptionCode.FOUND_TIME_IS_NULL_EXCEPTION);
         }
         if (OPEN_TIME.isAfter(startAt) || CLOSE_TIME.isBefore(startAt)) {
-            throw new BadRequestException("운영 시간 외의 예약 시간 요청입니다.");
+            throw new RoomEscapeException(TimeExceptionCode.TIME_IS_OUT_OF_OPERATING_TIME);
         }
     }
 

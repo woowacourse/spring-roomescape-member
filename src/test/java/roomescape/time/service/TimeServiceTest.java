@@ -16,7 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.exception.ConflictException;
+import roomescape.exception.model.RoomEscapeException;
 import roomescape.reservation.dao.ReservationJdbcDao;
 import roomescape.time.dao.TimeJdbcDao;
 import roomescape.time.domain.Time;
@@ -67,7 +67,7 @@ class TimeServiceTest {
 
         assertAll(() -> {
                     Throwable duplicateStartAt = assertThrows(
-                            ConflictException.class,
+                            RoomEscapeException.class,
                             () -> timeService.addReservationTime(new TimeRequest(LocalTime.now())));
                     assertEquals("이미 존재하는 예약 시간입니다.", duplicateStartAt.getMessage());
                 }
@@ -92,7 +92,7 @@ class TimeServiceTest {
 
         assertAll(() -> {
                     Throwable reservationExistAtTime = assertThrows(
-                            ConflictException.class,
+                            RoomEscapeException.class,
                             () -> timeService.removeReservationTime(1L));
                     assertEquals("삭제를 요청한 시간에 예약이 존재합니다.", reservationExistAtTime.getMessage());
                 }
