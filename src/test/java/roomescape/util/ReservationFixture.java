@@ -51,6 +51,17 @@ public class ReservationFixture {
         );
     }
 
+    public static Reservation getOne(final ReservationTime reservationTime,
+                                     final Theme theme) {
+        return Reservation.of(
+                null,
+                "몰리의 신기한 이야기",
+                LocalDate.parse("3000-10-10"),
+                reservationTime,
+                theme
+        );
+    }
+
     public static List<Reservation> get(final int count) {
         final List<Reservation> reservations = new ArrayList<>();
         for (int i = 0; i < count; i++) {
