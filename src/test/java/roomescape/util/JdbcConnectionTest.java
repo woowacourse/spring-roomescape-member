@@ -19,19 +19,12 @@ import roomescape.reservation.controller.ReservationController;
 @DisplayName("JDBC 테스트")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class JdbcConnectionTest {
-    @LocalServerPort
-    int port;
-
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
     private ReservationController reservationController;
 
-    @BeforeEach
-    void setUp() {
-        RestAssured.port = port;
-    }
 
     @DisplayName("DataSource 객체를 이용하여 Connection 검증한다.")
     @Test
