@@ -28,12 +28,12 @@ public class AdminReservationService {
     }
 
     public Reservation addReservation(ReservationAddRequest reservationAddRequest) {
-        if (reservationDao.existByDateAndTimeIdAndThemeId(reservationAddRequest.getDate(),
-                reservationAddRequest.getTimeId(), reservationAddRequest.getThemeId())) {
+        if (reservationDao.existByDateAndTimeIdAndThemeId(reservationAddRequest.date(),
+                reservationAddRequest.timeId(), reservationAddRequest.themeId())) {
             throw new IllegalArgumentException("예약 날짜와 예약시간 그리고 테마가 겹치는 예약은 할 수 없습니다.");
         }
 
-        ReservationTime reservationTime = getReservationTime(reservationAddRequest.getTimeId());
+        ReservationTime reservationTime = getReservationTime(reservationAddRequest.timeId());
         Theme theme = getTheme(reservationAddRequest);
 
         Reservation reservationRequest = reservationAddRequest.toEntity(reservationTime, theme);
@@ -41,7 +41,7 @@ public class AdminReservationService {
     }
 
     private Theme getTheme(ReservationAddRequest reservationAddRequest) {
-        return themeDao.findById(reservationAddRequest.getThemeId())
+        return themeDao.findById(reservationAddRequest.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재 하지 않는 테마로 예약할 수 없습니다"));
     }
 

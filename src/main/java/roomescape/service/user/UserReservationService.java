@@ -21,8 +21,8 @@ public class UserReservationService {
     }
 
     public List<BookableTimeResponse> findBookableTimes(BookableTimesRequest bookableTimesRequest) {
-        List<ReservationTime> bookedTimes = reservationDao.findByDateAndTheme(bookableTimesRequest.getDate(),
-                bookableTimesRequest.getThemeId());
+        List<ReservationTime> bookedTimes = reservationDao.findByDateAndTheme(bookableTimesRequest.date(),
+                bookableTimesRequest.themeId());
         List<ReservationTime> allTimes = reservationTimeDao.findAll();
         List<BookableTimeResponse> bookableTimeResponses = new ArrayList<>();
         for (ReservationTime allTime : allTimes) {

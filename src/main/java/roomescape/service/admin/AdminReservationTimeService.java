@@ -20,7 +20,7 @@ public class AdminReservationTimeService {
     }
 
     public ReservationTime addReservationTime(ReservationTimeAddRequest reservationTimeAddRequest) {
-        if (reservationTimeDao.existByStartAt(reservationTimeAddRequest.getStartAt())) {
+        if (reservationTimeDao.existByStartAt(reservationTimeAddRequest.startAt())) {
             throw new IllegalArgumentException("이미 존재하는 예약시간은 추가할 수 없습니다.");
         }
         return reservationTimeDao.insert(reservationTimeAddRequest.toEntity());
