@@ -5,11 +5,10 @@ import static roomescape.domain.ReservationStatus.AVAILABLE;
 import static roomescape.domain.ReservationStatus.BOOKED;
 
 import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class ReservationTimeStatusTest {
+class ReservationTimeStatusesTest {
 
     private final ReservationTime reservationTime1 = new ReservationTime(1L, "10:30");
     private final ReservationTime reservationTime2 = new ReservationTime(2L, "11:30");
@@ -20,14 +19,16 @@ class ReservationTimeStatusTest {
     void calculate_available_reservation_times_status() {
         List<ReservationTime> allTimes = List.of(reservationTime1, reservationTime2, reservationTime3);
         List<ReservationTime> bookedTimes = List.of(reservationTime2);
-        Map<ReservationTime, ReservationStatus> expectedTimeStatus = Map.of(
-                reservationTime1, AVAILABLE,
-                reservationTime2, BOOKED,
-                reservationTime3, AVAILABLE
+        ReservationTimeStatuses expectedTimeStatuses = new ReservationTimeStatuses(
+                List.of(new ReservationTimeStatus(reservationTime1, AVAILABLE),
+                        new ReservationTimeStatus(reservationTime2, BOOKED),
+                        new ReservationTimeStatus(reservationTime3, AVAILABLE))
         );
 
-        ReservationTimeStatus actualTimeStatus = new ReservationTimeStatus(allTimes, bookedTimes);
+        ReservationTimeStatuses reservationTimeStatuses = new ReservationTimeStatuses(allTimes, bookedTimes);
 
-        assertThat(actualTimeStatus.getTimesStatus()).isEqualTo(expectedTimeStatus);
+        assertThat(expectedTimeStatuses)
+                .usingRecursiveComparison()
+                .isEqualTo(reservationTimeStatuses);
     }
 }

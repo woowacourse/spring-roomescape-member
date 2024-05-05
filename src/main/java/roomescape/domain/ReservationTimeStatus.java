@@ -1,23 +1,20 @@
 package roomescape.domain;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 public class ReservationTimeStatus {
 
-    private final Map<ReservationTime, ReservationStatus> timesStatus;
+    private final ReservationTime reservationTime;
+    private final ReservationStatus reservationStatus;
 
-    public ReservationTimeStatus(List<ReservationTime> allTimes, List<ReservationTime> bookedTimes) {
-        timesStatus = new HashMap<>();
-        for (ReservationTime time : allTimes) {
-            boolean isBooked = bookedTimes.contains(time);
-            ReservationStatus status = isBooked ? ReservationStatus.BOOKED : ReservationStatus.AVAILABLE;
-            timesStatus.put(time, status);
-        }
+    public ReservationTimeStatus(ReservationTime reservationTime, ReservationStatus reservationStatus) {
+        this.reservationTime = reservationTime;
+        this.reservationStatus = reservationStatus;
     }
 
-    public Map<ReservationTime, ReservationStatus> getTimesStatus() {
-        return timesStatus;
+    public ReservationTime getReservationTime() {
+        return reservationTime;
+    }
+
+    public ReservationStatus getReservationStatus() {
+        return reservationStatus;
     }
 }

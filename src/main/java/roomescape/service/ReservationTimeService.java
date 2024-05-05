@@ -3,7 +3,7 @@ package roomescape.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.ReservationTimeStatus;
+import roomescape.domain.ReservationTimeStatuses;
 import roomescape.repository.JdbcReservationRepository;
 import roomescape.repository.JdbcReservationTimeRepository;
 import roomescape.service.dto.AvailableTimeRequestDto;
@@ -35,8 +35,8 @@ public class ReservationTimeService {
         List<ReservationTime> bookedTimes = reservationTimeRepository.findReservedTimeByThemeAndDate(
                 requestDto.getDate(), requestDto.getThemeId());
 
-        ReservationTimeStatus reservationStatus = new ReservationTimeStatus(allTimes, bookedTimes);
-        return new AvailableTimeResponseDtos(reservationStatus);
+        ReservationTimeStatuses reservationStatuses = new ReservationTimeStatuses(allTimes, bookedTimes);
+        return new AvailableTimeResponseDtos(reservationStatuses);
     }
 
     public ReservationTimeResponseDto createReservationTime(ReservationTimeRequestDto requestDto) {
