@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import java.time.format.DateTimeParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -21,5 +22,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = HttpMessageNotReadableException.class)
     public ResponseEntity<String> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         return new ResponseEntity<>("올바르지 않은 형식입니다.", HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = DateTimeParseException.class)
+    public ResponseEntity<String> handleDateTimeParseException(DateTimeParseException e) {
+        return new ResponseEntity<>(e.getParsedString() + "은(는) 올바른 시간 형식이 아닙니다.", HttpStatus.BAD_REQUEST);
     }
 }
