@@ -55,7 +55,9 @@ public class ReservationRepository {
     }
 
     public Reservation save(Reservation reservation) {
-        String sql = "INSERT INTO reservation (name, date, reservation_time_id, theme_id) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO reservation " +
+                "(name, date, reservation_time_id, theme_id) " +
+                "VALUES (?, ?, ?, ?)";
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(con -> {
@@ -74,27 +76,36 @@ public class ReservationRepository {
     }
 
     public void deleteById(Long id) {
-        String sql = "DELETE FROM reservation WHERE id = ?";
+        String sql = "DELETE FROM reservation " +
+                "WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
 
     public boolean existsByReservationTimeId(Long reservationTimeId) {
-        String sql = "SELECT exists(SELECT 1 FROM reservation " +
+        String sql = "SELECT exists(" +
+                "SELECT 1 " +
+                "FROM reservation " +
                 "WHERE reservation_time_id = ?)";
 
         return jdbcTemplate.queryForObject(sql, Boolean.class, reservationTimeId);
     }
 
     public boolean existsByReservationThemeId(Long themeId) {
-        String sql = "SELECT exists(SELECT 1 FROM reservation " +
+        String sql = "SELECT exists(" +
+                "SELECT 1 " +
+                "FROM reservation " +
                 "WHERE theme_id = ?)";
 
         return jdbcTemplate.queryForObject(sql, Boolean.class, themeId);
     }
 
     public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long reservationTimeId, Long themeId) {
-        String sql = "SELECT exists(SELECT 1 FROM reservation " +
-                "WHERE date = ? AND reservation_time_id = ? AND theme_id = ?)";
+        String sql = "SELECT exists(" +
+                "SELECT 1 " +
+                "FROM reservation " +
+                "WHERE date = ? " +
+                "AND reservation_time_id = ? " +
+                "AND theme_id = ?)";
 
         return jdbcTemplate.queryForObject(sql, Boolean.class, Date.valueOf(date), reservationTimeId, themeId);
     }

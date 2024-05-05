@@ -29,7 +29,9 @@ public class ThemeRepository {
     }
 
     public Theme save(Theme theme) {
-        String sql = "INSERT INTO theme (name, description, thumbnail) VALUES (?, ? ,?)";
+        String sql = "INSERT INTO theme " +
+                "(name, description, thumbnail) " +
+                "VALUES (?, ? ,?)";
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(con -> {
@@ -46,19 +48,23 @@ public class ThemeRepository {
     }
 
     public Optional<Theme> findById(Long id) {
-        String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
+        String sql = "SELECT id, name, description, thumbnail " +
+                "FROM theme " +
+                "WHERE id = ?";
         List<Theme> themes = jdbcTemplate.query(sql, themeRowMapper, id);
         return themes.isEmpty() ? Optional.empty() : Optional.of(themes.get(0));
     }
 
     public List<Theme> findAll() {
-        String sql = "SELECT id, name, description, thumbnail FROM theme";
+        String sql = "SELECT id, name, description, thumbnail " +
+                "FROM theme";
         return jdbcTemplate.query(sql, themeRowMapper);
     }
 
     public List<Theme> findTop10ByOrderByReservationCountBetween(LocalDate start, LocalDate end) {
         String sql = "SELECT t.id, t.name, t.description, t.thumbnail " +
-                "FROM theme AS t INNER JOIN reservation AS r " +
+                "FROM theme AS t " +
+                "INNER JOIN reservation AS r " +
                 "ON t.id = r.theme_id " +
                 "WHERE r.date BETWEEN ? AND ? " +
                 "GROUP BY t.id " +
@@ -68,7 +74,8 @@ public class ThemeRepository {
     }
 
     public void deleteById(Long id) {
-        String sql = "DELETE FROM theme WHERE id = ?";
+        String sql = "DELETE FROM theme " +
+                "WHERE id = ?";
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setLong(1, id);

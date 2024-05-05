@@ -30,7 +30,9 @@ public class ReservationTimeRepository {
     }
 
     public ReservationTime save(ReservationTime time) {
-        String sql = "INSERT INTO reservation_time (start_at) VALUES (?)";
+        String sql = "INSERT INTO reservation_time " +
+                "(start_at) " +
+                "VALUES (?)";
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(con -> {
@@ -44,31 +46,40 @@ public class ReservationTimeRepository {
     }
 
     public Optional<ReservationTime> findById(Long id) {
-        String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
+        String sql = "SELECT id, start_at " +
+                "FROM reservation_time " +
+                "WHERE id = ?";
         List<ReservationTime> reservationTimes = jdbcTemplate.query(sql, reservationTimeRowMapper, id);
         return reservationTimes.isEmpty() ? Optional.empty() : Optional.of(reservationTimes.get(0));
     }
 
     public Optional<ReservationTime> findByStartAt(LocalTime startAt) {
-        String sql = "SELECT id, start_at FROM reservation_time WHERE start_at = ?";
+        String sql = "SELECT id, start_at " +
+                "FROM reservation_time " +
+                "WHERE start_at = ?";
         List<ReservationTime> reservationTimes = jdbcTemplate.query(sql, reservationTimeRowMapper, Time.valueOf(startAt));
         return reservationTimes.isEmpty() ? Optional.empty() : Optional.of(reservationTimes.get(0));
     }
 
     public List<ReservationTime> findReservedBy(LocalDate date, Long themeId) {
-        String sql = "SELECT rt.id, rt.start_at FROM reservation_time AS rt INNER JOIN reservation AS r " +
+        String sql = "SELECT rt.id, rt.start_at " +
+                "FROM reservation_time AS rt " +
+                "INNER JOIN reservation AS r " +
                 "ON rt.id = r.reservation_time_id " +
-                "WHERE r.date = ? AND r.theme_id = ?";
+                "WHERE r.date = ? " +
+                "AND r.theme_id = ?";
         return jdbcTemplate.query(sql, reservationTimeRowMapper, Date.valueOf(date), themeId);
     }
 
     public List<ReservationTime> findAll() {
-        String sql = "SELECT id, start_at FROM reservation_time";
+        String sql = "SELECT id, start_at " +
+                "FROM reservation_time";
         return jdbcTemplate.query(sql, reservationTimeRowMapper);
     }
 
     public void deleteById(Long id) {
-        String sql = "DELETE FROM reservation_time WHERE id = ?";
+        String sql = "DELETE FROM reservation_time " +
+                "WHERE id = ?";
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setLong(1, id);
