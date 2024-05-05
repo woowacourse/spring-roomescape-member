@@ -58,6 +58,7 @@ public class ReservationService {
 
     public ReservationResponse create(ReservationCreateRequest reservationCreateRequest) {
         ReservationTime reservationTime = reservationTimeRepository.findByTimeId(reservationCreateRequest.timeId());
+        validateAvailableDateTime(reservationCreateRequest.date(), reservationTime.getStartAt());
         Theme theme = themeRepository.findByThemeId(reservationCreateRequest.themeId());
         Reservation reservation = new Reservation(
                 new UserName(reservationCreateRequest.name()),
@@ -65,7 +66,6 @@ public class ReservationService {
                 reservationTime,
                 theme
         );
-        validateAvailableDateTime(reservationCreateRequest.date(), reservationTime.getStartAt());
         Reservation savedReservation = reservationRepository.save(reservation);
         return ReservationResponse.from(savedReservation);
     }
