@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.api.dto.request.ReservationRequest;
 import roomescape.controller.api.dto.response.ReservationResponse;
+import roomescape.controller.api.dto.response.ReservationsResponse;
 import roomescape.service.ReservationService;
 import roomescape.service.dto.output.ReservationOutput;
 
@@ -34,9 +35,9 @@ public class ReservationApiController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> getAllReservations() {
+    public ResponseEntity<ReservationsResponse> getAllReservations() {
         final List<ReservationOutput> outputs = reservationService.getAllReservations();
-        return ResponseEntity.ok(ReservationResponse.toResponses(outputs));
+        return ResponseEntity.ok(ReservationsResponse.toResponse(outputs));
     }
 
     @DeleteMapping("/{id}")

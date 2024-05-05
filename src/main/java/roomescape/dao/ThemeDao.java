@@ -49,7 +49,13 @@ public class ThemeDao {
         }
     }
 
-    public List<Theme> getPopularTheme(final VisitDate visitDate) {
+    public List<Theme> getPopularWeekendTheme(final VisitDate visitDate) {
+        return getPopularTheme(visitDate.beforeWeek()
+                                        .asString(), visitDate.beforeDay()
+                                                              .asString());
+    }
+
+    private List<Theme> getPopularTheme(final String startDate, final String endDate) {
         final String sql = """
                 SELECT
                     t.id AS theme_id,
@@ -63,10 +69,9 @@ public class ThemeDao {
                 ORDER BY COUNT(r.id) DESC
                 LIMIT 10;
                 """;
-        return jdbcTemplate.query(sql, rowMapper, visitDate.beforeWeek()
-                                                           .asString(), visitDate.beforeDay()
-                                                                                 .asString());
+        return jdbcTemplate.query(sql, rowMapper, startDate, endDate);
     }
+
 
     public List<Theme> getAll() {
         final String sql = "SELECT id, name,description, thumbnail FROM theme";

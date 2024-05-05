@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const formattedDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
 
     requestRead(`/themes/popular?date=${formattedDate}`) // 인기 테마 목록 조회 API endpoint
+        .then(data => data.data)
         .then(render)
         .catch(error => console.error('Error fetching times:', error));
 });

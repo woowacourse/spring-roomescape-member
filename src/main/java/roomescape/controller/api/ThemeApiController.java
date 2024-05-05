@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import roomescape.controller.api.dto.request.ThemeCreateRequest;
 import roomescape.controller.api.dto.response.ThemeResponse;
+import roomescape.controller.api.dto.response.ThemesResponse;
 import roomescape.service.ThemeService;
 import roomescape.service.dto.output.ThemeOutput;
 
@@ -35,16 +36,17 @@ public class ThemeApiController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ThemeResponse>> getAllThemes() {
+    public ResponseEntity<ThemesResponse> getAllThemes() {
         final List<ThemeOutput> outputs = themeService.getAllThemes();
-        return ResponseEntity.ok(ThemeResponse.toResponses(outputs));
+        return ResponseEntity.ok()
+                             .body(ThemesResponse.toResponse(outputs));
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<ThemeResponse>> getPopularThemes(@RequestParam final String date) {
+    public ResponseEntity<ThemesResponse> getPopularThemes(@RequestParam final String date) {
         final List<ThemeOutput> outputs = themeService.getPopularThemes(date);
         return ResponseEntity.ok()
-                             .body(ThemeResponse.toResponses(outputs));
+                             .body(ThemesResponse.toResponse(outputs));
     }
 
     @DeleteMapping("/{id}")

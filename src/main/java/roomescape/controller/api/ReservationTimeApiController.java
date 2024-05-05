@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.api.dto.request.ReservationTimeRequest;
 import roomescape.controller.api.dto.response.ReservationTimeResponse;
+import roomescape.controller.api.dto.response.ReservationTimesResponse;
 import roomescape.dao.dto.AvailableReservationTimeResponse;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.dto.input.AvailableReservationTimeInput;
@@ -37,9 +38,9 @@ public class ReservationTimeApiController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationTimeResponse>> getAllReservationTimes() {
+    public ResponseEntity<ReservationTimesResponse> getAllReservationTimes() {
         final List<ReservationTimeOutput> output = reservationTimeService.getAllReservationTimes();
-        return ResponseEntity.ok(ReservationTimeResponse.toResponses(output));
+        return ResponseEntity.ok(ReservationTimesResponse.toResponse(output));
     }
 
     @GetMapping("/available")

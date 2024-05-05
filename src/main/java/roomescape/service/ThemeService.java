@@ -36,7 +36,7 @@ public class ThemeService {
     }
 
     public List<ThemeOutput> getPopularThemes(final String date) {
-        final List<Theme> themes = themeDao.getPopularTheme(VisitDate.from(date));
+        final List<Theme> themes = themeDao.getPopularWeekendTheme(VisitDate.from(date));
         return ThemeOutput.toOutputs(themes);
     }
 

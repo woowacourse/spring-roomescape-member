@@ -2,6 +2,7 @@ const THEME_API_ENDPOINT = '/themes';
 
 document.addEventListener('DOMContentLoaded', () => {
     requestRead(THEME_API_ENDPOINT)
+        // .then(data => data.data)
         .then(renderTheme)
         .catch(error => console.error('Error fetching times:', error));
 
@@ -94,7 +95,8 @@ function fetchAvailableTimes(date, themeId) {
     }).then(response => {
         if (response.status === 200) return response.json();
         throw new Error('Read failed');
-    }).then(renderAvailableTimes)
+    }).then(data => data.data)
+        .then(renderAvailableTimes)
         .catch(error => console.error("Error fetching available times:", error));
 }
 
@@ -115,7 +117,7 @@ function renderAvailableTimes(times) {
         TODO: [3단계] 사용자 예약 - 예약 가능 시간 조회 API 호출 후 렌더링
               response 명세에 맞춰 createSlot 함수 호출 시 값 설정
         */
-        
+
         const startAt = time.startAt;
         const timeId = time.timeId;
         const alreadyBooked = time.alreadyBooked;
