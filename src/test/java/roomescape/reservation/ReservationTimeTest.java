@@ -34,7 +34,7 @@ class ReservationTimeTest {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES(?)", LocalTime.of(10, 0));
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES(?, ?, ?)", "hi", "happy", "abcd.html");
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES(?, ?, ?, ?)",
-                "rush", LocalDate.of(2030, 12, 12), 1, 1);
+                "rush", LocalDate.of(2999, 12, 12), 1, 1);
     }
 
     @Autowired
