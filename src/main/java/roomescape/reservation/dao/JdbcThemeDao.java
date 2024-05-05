@@ -58,13 +58,13 @@ public class JdbcThemeDao implements ThemeDao {
     @Override
     public List<Theme> findTopReservedThemesByDateRangeAndLimit(LocalDate start, LocalDate end, int limit) {
         String sql = """
-                SELECT t.id, t.name, t.description, t.thumbnail
+                SELECT t.id, t.name, t.description, t.thumbnail, COUNT(*) as reservation_count
                 FROM reservation as r
                 INNER JOIN theme as t on r.theme_id = t.id
-                WHERE r.date  BETWEEN ? AND ?
+                WHERE r.date BETWEEN ? AND ?
                 GROUP BY t.id
-                ORDER BY COUNT(*) desc
-                LIMIT(?);
+                ORDER BY reservation_count desc
+                LIMIT(?)
                 """;
 
         return jdbcTemplate.query(sql, THEME_MAPPER, start.toString(), end.toString(), limit);
