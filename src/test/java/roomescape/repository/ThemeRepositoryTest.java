@@ -111,21 +111,21 @@ class ThemeRepositoryTest {
             }
         }
 
-        final LocalDate start = LocalDate.now().minusDays(days);
-        final LocalDate end = LocalDate.now().minusDays(1);
-        final int count = 2;
+        final LocalDate from = LocalDate.now().minusDays(days);
+        final LocalDate to = LocalDate.now().minusDays(1);
+        final int limit = 2;
 
         // when
-        final List<Theme> actual = themeRepository.findPopularThemes(start, end, count);
-        final List<Theme> reservationsContainExpected = reservations.stream()
-                .filter(r -> r.getDate().isAfter(start))
+        final List<Theme> actual = themeRepository.findPopularThemes(from, to, limit);
+        final List<Theme> themesContainExpected = reservations.stream()
+                .filter(r -> r.getDate().isAfter(from))
                 .map(Reservation::getTheme)
                 .distinct()
                 .toList();
 
         // then
-        assertThat(actual.size()).isLessThanOrEqualTo(count);
-        assertThat(reservationsContainExpected.containsAll(actual)).isTrue();
+        assertThat(actual.size()).isLessThanOrEqualTo(limit);
+        assertThat(themesContainExpected.containsAll(actual)).isTrue();
     }
 
     @Test

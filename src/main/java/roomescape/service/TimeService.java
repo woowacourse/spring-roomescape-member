@@ -28,6 +28,12 @@ public class TimeService {
         this.timeRepository = timeRepository;
     }
 
+    private static void validateNotFound(int deletedCount) {
+        if (deletedCount == 0) {
+            throw new TimeNotFoundException("예약 시간이 존재하지 않습니다.");
+        }
+    }
+
     public List<TimeResponse> getTimes() {
         return timeRepository.findAllByOrderByStartAt().stream()
                 .map(time -> TimeResponse.from(time, false))
@@ -35,16 +41,10 @@ public class TimeService {
     }
 
     public List<TimeResponse> getTimesWithBooked(final String date, final Long themeId) {
-        final List<ReservationTime> times = timeRepository.findAllByOrderByStartAt()
-                .stream()
-                .toList();
-
         validateDateFormat(date);
-        final Set<ReservationTime> bookedTimes = reservationRepository
-                .findAllByDateAndThemeId(LocalDate.parse(date), themeId)
-                .stream()
-                .map(Reservation::getTime)
-                .collect(Collectors.toSet());
+
+        final List<ReservationTime> times = findAllTimes();
+        final Set<ReservationTime> bookedTimes = findAllBookedTimes(date, themeId);
 
         return times.stream()
                 .map(time -> TimeResponse.from(time, bookedTimes.contains(time)))
@@ -59,21 +59,40 @@ public class TimeService {
         }
     }
 
+    private List<ReservationTime> findAllTimes() {
+        return timeRepository.findAllByOrderByStartAt()
+                .stream()
+                .toList();
+    }
+
+    private Set<ReservationTime> findAllBookedTimes(String date, Long themeId) {
+        return reservationRepository
+                .findAllByDateAndThemeId(LocalDate.parse(date), themeId)
+                .stream()
+                .map(Reservation::getTime)
+                .collect(Collectors.toSet());
+    }
+
     // TODO: validate duplicate
     public TimeResponse addTime(final TimeRequest timeRequest) {
         final ReservationTime parsedTime = timeRequest.toDomain();
         final ReservationTime savedTime = timeRepository.save(parsedTime);
+
         return TimeResponse.from(savedTime, false);
     }
 
     public int deleteTime(final Long id) {
+        validateUsed(id);
+        
+        final int deletedCount = timeRepository.delete(id);
+        validateNotFound(deletedCount);
+
+        return deletedCount;
+    }
+
+    private void validateUsed(Long id) {
         if (reservationRepository.existsByTimeId(id)) {
             throw new TimeUsedException("예약된 시간은 삭제할 수 없습니다.");
         }
-        final int deletedCount = timeRepository.delete(id);
-        if (deletedCount == 0) {
-            throw new TimeNotFoundException("예약 시간이 존재하지 않습니다.");
-        }
-        return deletedCount;
     }
 }
