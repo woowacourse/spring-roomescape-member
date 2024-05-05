@@ -1,4 +1,4 @@
-package roomescape.integration;
+package roomescape.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -16,7 +16,7 @@ import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 
-class ThemeIntegrationTest extends IntegrationTest {
+class ThemeAcceptanceTest extends AcceptanceTest {
     @Nested
     @DisplayName("테마 목록 조회 API")
     class FindAllTheme {

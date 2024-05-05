@@ -1,4 +1,4 @@
-package roomescape.integration;
+package roomescape.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -16,7 +16,7 @@ import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 
-class ReservationTimeIntegrationTest extends IntegrationTest {
+class ReservationTimeAcceptanceTest extends AcceptanceTest {
     @Nested
     @DisplayName("시간 목록 조회 API")
     class FindAllReservationTime {

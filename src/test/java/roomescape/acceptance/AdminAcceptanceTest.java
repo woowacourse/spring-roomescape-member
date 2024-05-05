@@ -1,9 +1,10 @@
-package roomescape.integration;
+package roomescape.acceptance;
 
-import io.restassured.RestAssured;
 import org.junit.jupiter.api.Test;
 
-public class AdminIntegrationTest extends IntegrationTest {
+import io.restassured.RestAssured;
+
+public class AdminAcceptanceTest extends AcceptanceTest {
     @Test
     void 어드민_메인_페이지를_응답할_수_있다() {
         RestAssured.given().log().all()

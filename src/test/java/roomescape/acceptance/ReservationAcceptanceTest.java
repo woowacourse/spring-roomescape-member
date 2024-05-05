@@ -1,4 +1,4 @@
-package roomescape.integration;
+package roomescape.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
-class ReservationIntegrationTest extends IntegrationTest {
+class ReservationAcceptanceTest extends AcceptanceTest {
     @Nested
     @DisplayName("예약 목록 조회 API")
     class FindAllReservations {

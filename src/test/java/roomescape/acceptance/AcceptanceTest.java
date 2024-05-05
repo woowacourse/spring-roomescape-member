@@ -1,4 +1,4 @@
-package roomescape.integration;
+package roomescape.acceptance;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,7 @@ import roomescape.helper.DatabaseInitializer;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-public abstract class IntegrationTest {
+public abstract class AcceptanceTest {
     @Autowired
     protected JdbcTemplate jdbcTemplate;
     @Autowired

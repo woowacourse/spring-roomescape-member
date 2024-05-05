@@ -1,4 +1,4 @@
-package roomescape.integration;
+package roomescape.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -20,7 +20,7 @@ import io.restassured.http.ContentType;
 import roomescape.web.ReservationController;
 import roomescape.web.dto.response.ReservationResponse;
 
-class MissionStepTest extends IntegrationTest {
+class MissionStepTest extends AcceptanceTest {
     @Autowired
     private ReservationController reservationController;
 
