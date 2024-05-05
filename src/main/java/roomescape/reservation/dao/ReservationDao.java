@@ -107,7 +107,7 @@ public class ReservationDao implements ReservationRepository {
     }
 
     @Override
-    public Optional<Reservation> findBy(LocalDate date, long timeId, long themeId) {
+    public Reservation findBy(LocalDate date, long timeId, long themeId) {
         String sql = """
                     SELECT r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at as time_value, th.id as theme_id, th.name as theme_name, th.description, th.thumbnail
                     FROM reservation as r
@@ -116,7 +116,7 @@ public class ReservationDao implements ReservationRepository {
                     WHERE r.date = ? AND t.time_id = ? AND r.theme_id = ?
                     """;
 
-        return jdbcTemplate.query(sql, rowMapper, date, timeId, themeId).stream().findFirst();
+        return jdbcTemplate.queryForObject(sql, rowMapper, date, timeId, themeId);
     }
 
     @Override

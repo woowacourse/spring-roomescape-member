@@ -37,18 +37,12 @@ public class ReservationService {
 
     public ReservationResponse create(ReservationRequest reservationRequest) {
         ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId());
-        validateTimeExist(reservationTime, reservationRequest.timeId());
-
         Theme theme = themeRepository.findById(reservationRequest.themeId());
-        validateThemeExist(theme, reservationRequest.themeId());
-
         LocalDate date = LocalDate.parse(reservationRequest.date());
 
-        Optional<Reservation> reservationOptional = reservationRepository.findBy(date, reservationRequest.timeId(),
-                reservationRequest.themeId());
-        if (reservationOptional.isPresent()) {
-            throw new IllegalArgumentException("예약 시간이 중복되었습니다.");
-        }
+        validateTimeExist(reservationTime, reservationRequest.timeId());
+        validateThemeExist(theme, reservationRequest.themeId());
+        validateReservationDuplicate(reservationRequest, date);
 
         Member member = memberRepository.save(new Member(reservationRequest.name()));
         Reservation reservation = reservationRepository.save(
@@ -75,6 +69,14 @@ public class ReservationService {
         if (theme == null) {
             throw new IllegalArgumentException(
                     String.format("잘못된 테마입니다. id=%d를 확인해주세요.", themeId));
+        }
+    }
+
+    private void validateReservationDuplicate(ReservationRequest reservationRequest, LocalDate date) {
+        Reservation sameDateTimereservation = reservationRepository.findBy(date, reservationRequest.timeId(),
+                reservationRequest.themeId());
+        if (sameDateTimereservation != null) {
+            throw new IllegalArgumentException("예약 시간이 중복되었습니다.");
         }
     }
 }
