@@ -1,5 +1,6 @@
 package roomescape.exception;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import java.util.NoSuchElementException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,9 +27,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleJsonParseException(HttpMessageNotReadableException e) {
+        if (e.getCause() instanceof JsonMappingException jsonMappingException) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse(
+                            jsonMappingException.getPath().get(0).getFieldName() + " 필드의 값이 잘못되었습니다."));
+        }
+
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse("올바르지 않은 JSON 형식입니다."));
+                .body(new ErrorResponse("잘못된 JSON 형식입니다."));
     }
 
     @ExceptionHandler(Exception.class)
