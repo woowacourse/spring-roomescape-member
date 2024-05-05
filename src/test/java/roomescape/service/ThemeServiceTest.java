@@ -19,8 +19,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
-import roomescape.service.dto.request.ThemeRequest;
-import roomescape.service.dto.response.ThemeResponse;
+import roomescape.dto.request.ThemeRequest;
+import roomescape.dto.response.ThemeResponse;
 
 @ExtendWith(MockitoExtension.class)
 class ThemeServiceTest {

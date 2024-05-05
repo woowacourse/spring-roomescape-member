@@ -5,14 +5,13 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.dto.AvailableReservationTimeDto;
-import roomescape.service.dto.request.ReservationTimeRequest;
-import roomescape.service.dto.response.AvailableReservationTimeResponse;
-import roomescape.service.dto.response.ReservationTimeResponse;
+import roomescape.dto.request.ReservationTimeRequest;
+import roomescape.dto.response.AvailableReservationTimeResponse;
+import roomescape.dto.response.ReservationTimeResponse;
 
 @Service
 @Transactional(readOnly = true)

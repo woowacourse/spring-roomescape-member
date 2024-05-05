@@ -25,8 +25,8 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
-import roomescape.service.dto.request.ReservationRequest;
-import roomescape.service.dto.response.ReservationResponse;
+import roomescape.dto.request.ReservationRequest;
+import roomescape.dto.response.ReservationResponse;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
