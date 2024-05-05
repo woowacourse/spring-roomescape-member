@@ -10,10 +10,9 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
-import roomescape.domain.ThemeRepository;
 
 @Repository
-public class JdbcThemeRepository implements ThemeRepository {
+public class JdbcThemeRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
@@ -27,13 +26,11 @@ public class JdbcThemeRepository implements ThemeRepository {
         this.rowMapper = rowMapper;
     }
 
-    @Override
     public List<Theme> findAllThemes() {
         String sql = "SELECT * FROM theme";
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    @Override
     public Theme insertTheme(Theme theme) {
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("name", theme.getName())
@@ -44,7 +41,6 @@ public class JdbcThemeRepository implements ThemeRepository {
         return findThemeById(savedId);
     }
 
-    @Override
     public void deleteThemeById(long id) {
         String sql = "DELETE FROM theme WHERE id = :id";
         SqlParameterSource parameterSource = new MapSqlParameterSource()
@@ -52,7 +48,6 @@ public class JdbcThemeRepository implements ThemeRepository {
         jdbcTemplate.update(sql, parameterSource);
     }
 
-    @Override
     public boolean isThemeExistsById(long themeId) {
         String sql = "SELECT 1 FROM theme WHERE id = :themeId";
         SqlParameterSource parameterSource = new MapSqlParameterSource()
@@ -61,8 +56,8 @@ public class JdbcThemeRepository implements ThemeRepository {
         return !result.isEmpty();
     }
 
-    @Override
-    public List<Theme> findTopPopularThemes(LocalDate startDate, LocalDate endDate, int themeCount) {
+    public List<Theme> findTopThemesDescendingByReservationCount(LocalDate startDate, LocalDate endDate,
+                                                                 int themeCount) {
         String sql = """
                     SELECT th.id, th.name, th.description, th.thumbnail
                     FROM theme AS th
