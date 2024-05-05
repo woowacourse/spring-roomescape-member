@@ -74,7 +74,7 @@ public class H2ThemeRepository implements ThemeRepository {
         return jdbcTemplate.query(sql, rowMapper, startDate, endDate, limit);
     }*/
 
-    static class ThemeRowMapper implements RowMapper<Theme> {
+    private static class ThemeRowMapper implements RowMapper<Theme> {
         public Theme mapRow(ResultSet rs, int rowNum) throws SQLException {
             return new Theme(
                     rs.getLong("id"),

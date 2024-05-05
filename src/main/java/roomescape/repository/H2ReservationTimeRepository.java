@@ -55,7 +55,7 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
         jdbcTemplate.update(sql, id);
     }
 
-    static class ReservationTimeRowMapper implements RowMapper<ReservationTime> {
+    private static class ReservationTimeRowMapper implements RowMapper<ReservationTime> {
         @Override
         public ReservationTime mapRow(ResultSet rs, int rowNum) throws SQLException {
             return new ReservationTime(

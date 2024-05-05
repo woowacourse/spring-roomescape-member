@@ -89,7 +89,7 @@ public class H2ReservationRepository implements ReservationRepository {
                 """;
     }
 
-    static class ReservationRowMapper implements RowMapper<Reservation> {
+    private static class ReservationRowMapper implements RowMapper<Reservation> {
         @Override
         public Reservation mapRow(ResultSet rs, int rowNum) throws SQLException {
             return new Reservation(
