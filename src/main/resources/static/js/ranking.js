@@ -1,6 +1,6 @@
-const RANKED_THEMES_ENDPOINT = '/themes/rank';
-
 document.addEventListener('DOMContentLoaded', () => {
+    const date = new Date().toISOString().split('T')[0];
+    const RANKED_THEMES_ENDPOINT = `/themes/rank?date=${date}`;
     /*
     TODO: [3단계] 인기 테마 - 인기 테마 목록 조회 API 호출
     */

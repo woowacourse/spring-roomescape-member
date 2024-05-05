@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,7 +27,8 @@ import roomescape.theme.service.ThemeService;
 @WebMvcTest(ThemeController.class)
 public class ThemeControllerTest {
 
-    private final Theme theme = new Theme(1L, "포레스트", "공포 테마", "https://zerogangnam.com/storage/AVISPw8N2JfMThKvnk3VJzeY9qywIaYd8pTy46Xx.jpg");
+    private final Theme theme = new Theme(1L, "포레스트", "공포 테마",
+            "https://zerogangnam.com/storage/AVISPw8N2JfMThKvnk3VJzeY9qywIaYd8pTy46Xx.jpg");
 
     @Autowired
     private MockMvc mockMvc;
@@ -44,10 +46,10 @@ public class ThemeControllerTest {
                 .writeValueAsString(new ThemeRequest(theme.getName(), theme.getDescription(), theme.getThumbnail()));
 
         mockMvc.perform(post("/themes")
-                .content(content)
-                .contentType("application/Json")
-                .accept(MediaType.APPLICATION_JSON)
-        )
+                        .content(content)
+                        .contentType("application/Json")
+                        .accept(MediaType.APPLICATION_JSON)
+                )
                 .andDo(print())
                 .andExpect(status().isCreated());
     }
@@ -66,10 +68,10 @@ public class ThemeControllerTest {
     @Test
     @DisplayName("인기많은 테마 정보를 정상적으로 가져오는지 확인한다.")
     void findTopRankThemes() throws Exception {
-        Mockito.when(themeService.findRankedThemes())
+        Mockito.when(themeService.findRankedThemes(LocalDate.now()))
                 .thenReturn(List.of(ThemeRankResponse.fromTheme(theme)));
 
-        mockMvc.perform(get("/themes/rank"))
+        mockMvc.perform(get("/themes/rank?date=" + LocalDate.now()))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
@@ -81,4 +83,4 @@ public class ThemeControllerTest {
                 .andDo(print())
                 .andExpect(status().isNoContent());
     }
- }
+}

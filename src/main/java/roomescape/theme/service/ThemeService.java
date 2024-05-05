@@ -31,15 +31,11 @@ public class ThemeService {
         return ThemeResponse.fromTheme(savedTheme);
     }
 
-    public List<ThemeRankResponse> findRankedThemes() {
-        LocalDate today = LocalDate.now()
-                .minusDays(NUMBER_OF_ONE_DAY);
+    public List<ThemeRankResponse> findRankedThemes(LocalDate today) {
         LocalDate beforeOneWeek = today.minusDays(NUMBER_OF_ONE_WEEK);
-        System.out.println(beforeOneWeek + " " + today);
+
         List<Theme> rankedThemes = reservationRepository.findThemeByDateOrderByThemeIdCountLimit(beforeOneWeek, today,
                 TOP_THEMES_LIMIT);
-
-        System.out.println(rankedThemes.size());
 
         return rankedThemes.stream()
                 .map(ThemeRankResponse::fromTheme)
