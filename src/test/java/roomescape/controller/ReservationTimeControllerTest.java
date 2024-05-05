@@ -45,7 +45,7 @@ class ReservationTimeControllerTest {
         when(reservationTimeService.save(new ReservationTimeAppRequest(time)))
             .thenReturn(appResponse);
 
-        String requestBody = objectMapper.writeValueAsString(new ReservationTimeWebRequest(id, time));
+        String requestBody = objectMapper.writeValueAsString(new ReservationTimeWebRequest(time));
         String responseBody = objectMapper.writeValueAsString(ReservationTimeWebResponse.from(appResponse));
 
         mvc.perform(post("/times")
@@ -72,7 +72,7 @@ class ReservationTimeControllerTest {
     @DisplayName("예약 시간 포맷이 잘못되거나, 중복 될 경우 -> 400")
     @Test
     void create_IllegalTimeFormat() throws Exception {
-        String requestBody = objectMapper.writeValueAsString(new ReservationTimeWebRequest(1L, "20:00"));
+        String requestBody = objectMapper.writeValueAsString(new ReservationTimeWebRequest("20:00"));
 
         when(reservationTimeService.save(new ReservationTimeAppRequest("20:00")))
             .thenThrow(IllegalArgumentException.class);
@@ -92,6 +92,17 @@ class ReservationTimeControllerTest {
             .thenThrow(ReservationExistsException.class);
 
         mvc.perform(delete("/times/" + timeId))
+            .andExpect(status().isBadRequest());
+    }
+
+    @DisplayName("요청 포맷이 잘못될 경우 -> 400")
+    @Test
+    void create_MethodArgNotValid() throws Exception {
+        String requestBody = objectMapper.writeValueAsString(new ReservationTimeWebRequest(null));
+
+        mvc.perform(post("/times")
+                .content(requestBody)
+                .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
     }
 }

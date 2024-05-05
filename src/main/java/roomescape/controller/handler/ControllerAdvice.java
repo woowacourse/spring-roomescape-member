@@ -1,7 +1,11 @@
 package roomescape.controller.handler;
 
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.exception.PastReservationException;
@@ -28,6 +32,16 @@ public class ControllerAdvice {
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<String> handleNoSuchElementException(NoSuchElementException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<String> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        BindingResult result = e.getBindingResult();
+        String errMessage = result.getFieldErrors().stream()
+            .map(DefaultMessageSourceResolvable::getDefaultMessage)
+            .collect(Collectors.joining(","));
+
+        return ResponseEntity.badRequest().body(errMessage);
     }
 
     @ExceptionHandler(Exception.class)

@@ -102,6 +102,19 @@ class ThemeControllerTest {
             .statusCode(400);
     }
 
+    @DisplayName("요청이 잘못된 형식일 경우 -> 400")
+    @Test
+    void create_MethodArgNotValid() {
+        ThemeWebRequest request = new ThemeWebRequest("", null, "https://url1");
+
+        RestAssured.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(request)
+            .when().post("/themes")
+            .then().log().all()
+            .statusCode(400);
+    }
+
     @DisplayName("예약이 존재한 상태에서 테마를 삭제한다 -> 400")
     @Test
     void delete_ReservationExists() {

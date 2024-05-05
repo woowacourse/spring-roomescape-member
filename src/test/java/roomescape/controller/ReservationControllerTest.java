@@ -139,4 +139,18 @@ class ReservationControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
     }
+
+    @DisplayName("실패: 예약 추가에서 MethodArgumentNotValidException 발생 시 -> 400")
+    @Test
+    void reserve_MethodArgNotValidException() throws Exception {
+        ReservationWebRequest request = new ReservationWebRequest(null, "2040-04-04", 1L, 1L);
+        
+        String requestBody = objectMapper.writeValueAsString(
+            request);
+
+        mvc.perform(post("/reservations")
+                .content(requestBody)
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
 }
