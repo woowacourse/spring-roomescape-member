@@ -50,8 +50,10 @@ public class FakeReservationDao implements ReservationRepository {
 
     @Override
     public boolean existByTimeId(long timeId) {
-        return reservationTimeRepository.findById(timeId) != null;
+        return reservations.values().stream()
+                .anyMatch(reservation -> reservation.getTime().getId() == timeId);
     }
+
 
     @Override
     public boolean existBy(LocalDate date, long timeId, long themeId) {
