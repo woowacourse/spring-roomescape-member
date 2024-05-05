@@ -1,5 +1,6 @@
 package roomescape.dao;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -29,27 +30,31 @@ public class ThemeDAO {
         String description = theme.getDescription();
         String thumbnail = theme.getThumbnail();
 
-        final SqlParameterSource parameterSource = new MapSqlParameterSource()
+        SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("name", name)
                 .addValue("description", description)
                 .addValue("thumbnail", thumbnail);
 
-        final long id = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
+        long id = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
         return new Theme(id, name, description, thumbnail);
     }
 
     public Theme findById(Long id) {
-        final String sql = "SELECT * FROM theme WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, themeRowMapper(), id);
+        String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
+        Theme theme = jdbcTemplate.queryForObject(sql, themeRowMapper(), id);
+        if (theme == null) {
+            throw new EmptyResultDataAccessException("id에 맞는 테마가 존재하지 않습니다.", 1);
+        }
+        return theme;
     }
 
     public List<Theme> selectAll() {
-        final String sql = "SELECT * FROM theme";
+        String sql = "SELECT id, name, description, thumbnail FROM theme";
         return jdbcTemplate.query(sql, themeRowMapper());
     }
 
     public void deleteById(Long id) {
-        final String sql = "DELETE FROM theme WHERE id = ?";
+        String sql = "DELETE FROM theme WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
 

@@ -22,6 +22,8 @@ class ReservationTimeDAOTest {
     @Test
     @DisplayName("예약 시간을 추가한다.")
     void insert() {
+        ReservationTime timeDAOById = reservationTimeDAO.findById(2L);
+
         ReservationTime savedReservationTime = reservationTimeDAO.insert(new ReservationTime(LocalTime.now()));
 
         assertThat(savedReservationTime).isNotNull();

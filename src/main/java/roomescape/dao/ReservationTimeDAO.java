@@ -1,5 +1,6 @@
 package roomescape.dao;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -25,27 +26,31 @@ public class ReservationTimeDAO {
     }
 
     public ReservationTime insert(ReservationTime reservationTime) {
-        final LocalTime startAt = reservationTime.getStartAt();
+        LocalTime startAt = reservationTime.getStartAt();
 
-        final SqlParameterSource parameterSource = new MapSqlParameterSource()
+        SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("start_at", startAt);
 
-        final long id = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
+        long id = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
         return new ReservationTime(id, startAt);
     }
 
     public ReservationTime findById(Long id) {
-        final String sql = "SELECT * FROM reservation_time WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, reservationTimeRowMapper(), id);
+        String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
+        ReservationTime reservationTime = jdbcTemplate.queryForObject(sql, reservationTimeRowMapper(), id);
+        if (reservationTime == null) {
+            throw new EmptyResultDataAccessException("id에 맞는 예약시간이 존재하지 않습니다.", 1);
+        }
+        return reservationTime;
     }
 
     public List<ReservationTime> selectAll() {
-        final String sql = "SELECT * FROM reservation_time";
+        String sql = "SELECT id, start_at FROM reservation_time";
         return jdbcTemplate.query(sql, reservationTimeRowMapper());
     }
 
     public void deleteById(Long id) {
-        final String sql = "DELETE FROM reservation_time WHERE id = ?";
+        String sql = "DELETE FROM reservation_time WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
 

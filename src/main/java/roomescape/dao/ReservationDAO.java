@@ -27,23 +27,23 @@ public class ReservationDAO {
     }
 
     public Reservation insert(Reservation reservation) {
-        final String name = reservation.getName();
-        final LocalDate date = reservation.getDate();
-        final ReservationTime time = reservation.getTime();
-        final Theme theme = reservation.getTheme();
+        String name = reservation.getName();
+        LocalDate date = reservation.getDate();
+        ReservationTime time = reservation.getTime();
+        Theme theme = reservation.getTheme();
 
-        final SqlParameterSource parameterSource = new MapSqlParameterSource()
+        SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("name", name)
                 .addValue("date", date)
                 .addValue("time_id", time.getId())
                 .addValue("theme_id", theme.getId());
 
-        final long id = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
+        long id = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
         return new Reservation(id, name, date, time, theme);
     }
 
     public List<Reservation> selectAll() {
-        final String sql =
+        String sql =
                 "SELECT " +
                         "r.id AS reservation_id, " +
                         "r.name, " +
@@ -64,35 +64,22 @@ public class ReservationDAO {
     }
 
     public void deleteById(long id) {
-        final String sql = "DELETE FROM reservation WHERE id = ?";
+        String sql = "DELETE FROM reservation WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
 
     public boolean hasReservationTime(Long timeId) {
-        final String sql =
-                "SELECT " +
-                        "r.id AS reservation_id, " +
-                        "r.name, " +
-                        "r.date, " +
-                        "rt.id AS time_id, " +
-                        "rt.start_at AS time_value, " +
-                        "t.id AS theme_id, " +
-                        "t.name AS theme_name, " +
-                        "t.description AS theme_description, " +
-                        "t.thumbnail AS theme_thumbnail " +
-                        "FROM reservation AS r " +
-                        "INNER JOIN reservation_time AS rt " +
-                        "ON r.time_id = rt.id " +
-                        "INNER JOIN theme AS t " +
-                        "ON r.theme_id = t.id " +
-                        "WHERE time_id = ?";
-        List<Reservation> reservations = jdbcTemplate.query(sql, reservationRowMapper(), timeId);
-
-        return !reservations.isEmpty();
+        String sql =
+                "SELECT EXISTS (" +
+                        "    SELECT 1 " +
+                        "    FROM reservation " +
+                        "    WHERE time_id = ?" +
+                        ")";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
     }
 
     public List<Long> findReservedTimeIds(LocalDate date, Long themeId) {
-        final String sql = "SELECT time_id FROM reservation WHERE date = ? AND theme_id = ?";
+        String sql = "SELECT time_id FROM reservation WHERE date = ? AND theme_id = ?";
         return jdbcTemplate.query(sql, (resultSet, rowNum) -> resultSet.getLong("time_id"), date, themeId);
     }
 
