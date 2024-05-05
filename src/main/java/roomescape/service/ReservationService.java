@@ -36,12 +36,11 @@ public class ReservationService {
                 .toList();
     }
 
-    public List<AvailableReservationResponse> findTimeByDateAndThemeID(String date, Long themeId) {
-        LocalDate today = LocalDate.now();
+    public List<AvailableReservationResponse> findTimeByDateAndThemeID(String date, Long themeId, LocalDate today, LocalTime now) {
         ReservationDate reservationDate = ReservationDate.from(date);
         List<ReservationTime> reservationTimes = reservationTimeDao.readAll();
         List<Long> ids = reservationDao.readTimeIdsByDateAndThemeId(reservationDate, themeId);
-        List<ReservationTime> filteredTimes = filterByDate(reservationDate, reservationTimes, today);
+        List<ReservationTime> filteredTimes = filterByDate(reservationDate, reservationTimes, today, now);
         return filteredTimes.stream()
                 .map(time ->
                         AvailableReservationResponse.of(
@@ -69,10 +68,11 @@ public class ReservationService {
 
     private List<ReservationTime> filterByDate(ReservationDate reservationDate,
                                                List<ReservationTime> reservationTimes,
-                                               LocalDate date) {
+                                               LocalDate date,
+                                               LocalTime now) {
         if (reservationDate.isSameDate(date)) {
             return reservationTimes.stream()
-                    .filter(time -> !time.isBeforeTime(LocalTime.now())) // TODO: 수정
+                    .filter(time -> !time.isBeforeTime(now))
                     .toList();
         }
         return reservationTimes;

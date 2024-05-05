@@ -1,6 +1,8 @@
 package roomescape.controller;
 
 import java.net.URI;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,8 +35,10 @@ public class ReservationController {
 
     @GetMapping("/user")
     public ResponseEntity<List<AvailableReservationResponse>> readReservationTimes(@RequestParam String date,
-                                                                                   @RequestParam Long themeId) {
-        return ResponseEntity.ok(reservationService.findTimeByDateAndThemeID(date, themeId));
+                                                                                   @RequestParam Long themeId,
+                                                                                   @RequestParam LocalDate today,
+                                                                                   @RequestParam LocalTime now) {
+        return ResponseEntity.ok(reservationService.findTimeByDateAndThemeID(date, themeId, today, now));
     }
 
     @PostMapping

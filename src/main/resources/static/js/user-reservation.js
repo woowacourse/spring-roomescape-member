@@ -2,8 +2,8 @@ const THEME_API_ENDPOINT = '/themes';
 
 document.addEventListener('DOMContentLoaded', () => {
   requestRead(THEME_API_ENDPOINT)
-      .then(renderTheme)
-      .catch(error => console.error('Error fetching times:', error));
+    .then(renderTheme)
+    .catch(error => console.error('Error fetching times:', error));
 
   flatpickr("#datepicker", {
     inline: true,
@@ -67,8 +67,8 @@ function checkDate() {
     timeSlots.innerHTML = '';
 
     requestRead(THEME_API_ENDPOINT)
-        .then(renderTheme)
-        .catch(error => console.error('Error fetching times:', error));
+      .then(renderTheme)
+      .catch(error => console.error('Error fetching times:', error));
   }
 }
 
@@ -82,7 +82,7 @@ function checkDateAndTheme() {
 }
 
 function fetchAvailableTimes(date, themeId) {
-  const requrl = new URLSearchParams({date, themeId})
+  const requrl = new URLSearchParams({date, themeId, today: getToday(), now: getNowTime()})
   fetch(`/reservations/user?${requrl}`, { // 예약 가능 시간 조회 API endpoint
     method: 'GET',
     headers: {
@@ -92,7 +92,7 @@ function fetchAvailableTimes(date, themeId) {
     if (response.status === 200) return response.json();
     throw new Error('Read failed');
   }).then(renderAvailableTimes)
-  .catch(error => console.error("Error fetching available times:", error));
+    .catch(error => console.error("Error fetching available times:", error));
 }
 
 function renderAvailableTimes(times) {
@@ -165,18 +165,18 @@ function onReservationButtonClick() {
       },
       body: JSON.stringify(reservationData)
     })
-        .then(response => {
-          if (!response.ok) throw new Error('Reservation failed');
-          return response.json();
-        })
-        .then(data => {
-          alert("Reservation successful!");
-          location.reload();
-        })
-        .catch(error => {
-          alert("An error occurred while making the reservation.");
-          console.error(error);
-        });
+      .then(response => {
+        if (!response.ok) throw new Error('Reservation failed');
+        return response.json();
+      })
+      .then(data => {
+        alert("Reservation successful!");
+        location.reload();
+      })
+      .catch(error => {
+        alert("An error occurred while making the reservation.");
+        console.error(error);
+      });
   } else {
     alert("Please select a date, theme, and time before making a reservation.");
   }
@@ -184,10 +184,10 @@ function onReservationButtonClick() {
 
 function requestRead(endpoint) {
   return fetch(endpoint)
-      .then(response => {
-        if (response.status === 200) return response.json();
-        throw new Error('Read failed');
-      });
+    .then(response => {
+      if (response.status === 200) return response.json();
+      throw new Error('Read failed');
+    });
 }
 
 function getToday() {
