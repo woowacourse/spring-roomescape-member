@@ -101,7 +101,7 @@ class ThemeDaoTest {
     @DisplayName("DB에 테마를 추가할 수 있다.")
     @Test
     void createTheme() {
-        Theme theme = new Theme(1L, "테마1", "설명1", "https://image.jpg");
+        Theme theme = new Theme("테마1", "설명1", "https://image.jpg");
 
         themeDao.createTheme(theme);
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from theme", Integer.class);
