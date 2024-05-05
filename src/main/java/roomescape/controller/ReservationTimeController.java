@@ -8,9 +8,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.domain.ReservationStatus;
 import roomescape.domain.ReservationTime;
 import roomescape.service.dto.request.ReservationTimeSaveRequest;
-import roomescape.service.dto.response.ReservationTimeIsBookedResponse;
+import roomescape.service.dto.response.ReservationStatusResponse;
 import roomescape.service.dto.response.ReservationTimeResponse;
 import roomescape.service.reservationtime.ReservationTimeCreateService;
 import roomescape.service.reservationtime.ReservationTimeDeleteService;
@@ -19,7 +20,6 @@ import roomescape.service.reservationtime.ReservationTimeFindService;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 public class ReservationTimeController {
@@ -47,14 +47,16 @@ public class ReservationTimeController {
     }
 
     @GetMapping("/times/available")
-    public ResponseEntity<List<ReservationTimeIsBookedResponse>> getReservationTimesIsBooked(@RequestParam LocalDate date,
-                                                                                             @RequestParam Long themeId) {
-        Map<ReservationTime, Boolean> isBooked = reservationTimeFindService.findIsBooked(date, themeId);
+    public ResponseEntity<List<ReservationStatusResponse>> getReservationTimesIsBooked(@RequestParam LocalDate date,
+                                                                                       @RequestParam Long themeId) {
+        ReservationStatus reservationStatus = reservationTimeFindService.findIsBooked(date, themeId);
         return ResponseEntity.ok(
-                isBooked.keySet().stream()
-                        .map(reservationTime -> new ReservationTimeIsBookedResponse(
+                reservationStatus.getReservationStatus()
+                        .keySet()
+                        .stream()
+                        .map(reservationTime -> new ReservationStatusResponse(
                                 reservationTime,
-                                isBooked.get(reservationTime))
+                                reservationStatus.findReservationStatusBy(reservationTime))
                         ).toList());
     }
 
