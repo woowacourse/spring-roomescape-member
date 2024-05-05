@@ -42,6 +42,23 @@ class ReservationTimeControllerTest extends ControllerTest {
                 .statusCode(201);
     }
 
+    @DisplayName("시간 생성 시, 잘못된 시간 형식에 대해 400을 반환한다.")
+    @ParameterizedTest
+    @ValueSource(strings = {"", "26:57", "23:89", "-1"})
+    void createBadRequest(String startAt) {
+        //given
+        Map<String, String> params = new HashMap<>();
+        params.put("startAt", startAt);
+
+        //when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(400);
+    }
+
     @DisplayName("시간 조회 시, 200을 반환한다.")
     @Test
     void findAll() {
@@ -61,22 +78,5 @@ class ReservationTimeControllerTest extends ControllerTest {
                 .when().delete("/times/1")
                 .then().log().all()
                 .statusCode(200);
-    }
-
-    @DisplayName("시간 생성 시, 잘못된 시간 형식에 대해 400을 반환한다.")
-    @ParameterizedTest
-    @ValueSource(strings = {"", "26:57", "23:89", "-1"})
-    void createBadRequest(String startAt) {
-        //given
-        Map<String, String> params = new HashMap<>();
-        params.put("startAt", startAt);
-
-        //when & then
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(400);
     }
 }
