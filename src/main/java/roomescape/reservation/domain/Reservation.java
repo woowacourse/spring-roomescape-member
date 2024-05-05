@@ -19,10 +19,11 @@ public class Reservation {
 
     public Reservation(String name, LocalDate date, Time time, Theme theme) {
         this(0, name, date, time, theme);
-        validate(name, date, time, theme);
+
     }
 
     public Reservation(long id, String name, LocalDate date, Time time, Theme theme) {
+        validate(name, date, time, theme);
         this.id = id;
         this.name = name;
         this.date = date;
@@ -35,9 +36,6 @@ public class Reservation {
             throw new BadRequestException("예약 정보가 부족합니다.");
         }
         validateName(name);
-        if (date.isBefore(LocalDate.now())) {
-            throw new IllegalReservationDateTimeRequestException("지난 날짜의 예약을 시도하였습니다.");
-        }
     }
 
     private void validateName(String name) {

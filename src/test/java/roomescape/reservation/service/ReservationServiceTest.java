@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.exception.ConflictException;
+import roomescape.exception.IllegalReservationDateTimeRequestException;
 import roomescape.reservation.dao.ReservationJdbcDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationRequest;
@@ -28,8 +29,8 @@ import roomescape.time.domain.Time;
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
 
-    private final Reservation reservation = new Reservation(1L, "polla", LocalDate.MAX,
-            new Time(1L, LocalTime.of(12,0)),
+    private final Reservation reservation = new Reservation(1L, "Dobby", LocalDate.MAX,
+            new Time(1L, LocalTime.of(12, 0)),
             new Theme(1L, "pollaBang", "폴라 방탈출", "thumbnail"));
 
     @InjectMocks
@@ -61,6 +62,29 @@ class ReservationServiceTest {
 
         Assertions.assertThat(reservationResponse.id())
                 .isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("과거의 날짜를 예약하려고 시도하는 경우 에외를 던진다.")
+    void validation_ShouldThrowException_WhenReservationDateIsPast() {
+
+        Mockito.when(timeJdbcDao.findById(1L))
+                .thenReturn(reservation.getReservationTime());
+
+        Mockito.when(themeJdbcDao.findById(1L))
+                .thenReturn(reservation.getTheme());
+
+        assertThrows(IllegalReservationDateTimeRequestException.class,
+                () -> reservationService.addReservation(
+                        new ReservationRequest(
+                        LocalDate.MIN,
+                        reservation.getName(),
+                        reservation.getReservationTimeId(),
+                        reservation.getThemeId()
+                        )
+                )
+        );
+
     }
 
     @Test

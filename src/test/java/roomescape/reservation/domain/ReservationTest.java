@@ -10,6 +10,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.exception.BadRequestException;
+import roomescape.exception.IllegalReservationDateTimeRequestException;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.Time;
 
@@ -37,16 +38,6 @@ class ReservationTest {
             Throwable nameIsNull = assertThrows(BadRequestException.class,
                     () -> new Reservation(null, LocalDate.now(), new Time(1L, LocalTime.of(12, 0)), new Theme(1L)));
             assertEquals("예약 정보가 부족합니다.", nameIsNull.getMessage());
-        });
-    }
-
-    @Test
-    @DisplayName("과거의 날짜를 예약하려고 시도하는 경우 에러를 발생한다.")
-    void validation_ShouldThrowException_WhenReservationDateIsPast() {
-        assertAll(() -> {
-            Throwable pastDateReservation = assertThrows(BadRequestException.class,
-                    () -> new Reservation("dobby", LocalDate.MIN, new Time(1L, LocalTime.of(12, 0)), new Theme(1L)));
-            assertEquals("지난 날짜의 예약을 시도하였습니다.", pastDateReservation.getMessage());
         });
     }
 

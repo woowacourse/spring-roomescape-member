@@ -3,6 +3,7 @@ package roomescape.reservation.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.exception.IllegalReservationDateTimeRequestException;
 import roomescape.exception.SaveDuplicateContentException;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
@@ -30,10 +31,17 @@ public class ReservationService {
     public ReservationResponse addReservation(ReservationRequest reservationRequest) {
         Time time = timeDao.findById(reservationRequest.timeId());
         Theme theme = themeDao.findById(reservationRequest.themeId());
-        validateDuplicateReservation(reservationRequest, time);
+        validateReservationRequest(reservationRequest, time);
         Reservation reservation = reservationRequest.toReservation(time, theme);
         Reservation savedReservation = reservationDao.save(reservation);
         return ReservationResponse.fromReservation(savedReservation);
+    }
+
+    private void validateReservationRequest(ReservationRequest reservationRequest, Time time) {
+        if (reservationRequest.date().isBefore(LocalDate.now())) {
+            throw new IllegalReservationDateTimeRequestException("지난 날짜의 예약을 시도하였습니다.");
+        }
+        validateDuplicateReservation(reservationRequest, time);
     }
 
     private void validateDuplicateReservation(ReservationRequest reservationRequest, Time time) {
