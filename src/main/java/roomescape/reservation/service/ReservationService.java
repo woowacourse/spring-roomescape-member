@@ -61,7 +61,7 @@ public class ReservationService {
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAll().stream()
                 .map(ReservationResponse::toResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public void delete(Long id) {

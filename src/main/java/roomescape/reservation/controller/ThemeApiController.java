@@ -40,8 +40,6 @@ public class ThemeApiController {
 
     @PostMapping("/themes")
     public ResponseEntity<ThemeResponse> save(@Valid @RequestBody ThemeSaveRequest themeSaveRequest) {
-        System.out.println(themeSaveRequest);
-
         Long saveId = themeService.save(themeSaveRequest);
         ThemeResponse themeResponse = themeService.findById(saveId);
 
