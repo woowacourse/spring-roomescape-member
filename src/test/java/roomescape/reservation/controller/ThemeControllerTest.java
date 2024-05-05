@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import roomescape.reservation.dto.ThemeRequest;
+import roomescape.reservation.controller.dto.ThemeRequest;
 import roomescape.reservation.service.ThemeService;
 import roomescape.util.ControllerTest;
 

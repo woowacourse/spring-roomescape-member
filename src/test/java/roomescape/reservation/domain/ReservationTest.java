@@ -29,8 +29,8 @@ class ReservationTest {
         LocalTime time2 = LocalTime.of(11, 23, 0);
 
         //when
-        Reservation reservation1 = new Reservation(id, name1, date1, time1, getTheme1());
-        Reservation reservation2 = new Reservation(id, name2, date2, time1, getTheme1());
+        Reservation reservation1 = new Reservation(id, date1, time1, getTheme1());
+        Reservation reservation2 = new Reservation(id, date2, time1, getTheme1());
 
         //then
         assertThat(reservation1).isEqualTo(reservation2);
@@ -46,23 +46,7 @@ class ReservationTest {
         ReservationTime time = new ReservationTime(timeId, localTime);
 
         //when & then
-        assertThatThrownBy(() -> new Reservation(1L, "테스트", localDate, time, getTheme1()))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @DisplayName("한글, 영어 이외의 이름에 대해 예외가 발생한다.")
-    @ParameterizedTest
-    @ValueSource(strings = {"", "   ", "$#@%!"})
-    void invalidName(String invalidName) {
-        //given
-        long id = 1L;
-        LocalDate date1 = LocalDate.now().plusYears(1);
-        long timeId = 1;
-        LocalTime localTime = LocalTime.of(12, 23, 0);
-        ReservationTime time1 = new ReservationTime(timeId, localTime);
-
-        //when & then
-        assertThatThrownBy(() -> new Reservation(id, invalidName, date1, time1, getTheme1()))
+        assertThatThrownBy(() -> new Reservation(1L, localDate, time, getTheme1()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

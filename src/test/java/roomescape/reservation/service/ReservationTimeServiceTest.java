@@ -17,8 +17,8 @@ import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.domain.repository.ReservationTimeRepository;
 import roomescape.reservation.domain.repository.ThemeRepository;
-import roomescape.reservation.dto.ReservationTimeRequest;
-import roomescape.reservation.dto.ReservationTimeResponse;
+import roomescape.reservation.controller.dto.ReservationTimeRequest;
+import roomescape.reservation.controller.dto.ReservationTimeResponse;
 
 @DisplayName("예약 시간 로직 테스트")
 class ReservationTimeServiceTest {
@@ -88,7 +88,7 @@ class ReservationTimeServiceTest {
         LocalTime localTime = LocalTime.MIDNIGHT;
         ReservationTime saveTime = reservationTimeRepository.save(new ReservationTime(id, localTime));
 
-        Reservation reservation = new Reservation(1L, "test", LocalDate.now().plusYears(1), saveTime,
+        Reservation reservation = new Reservation(1L, LocalDate.now().plusYears(1), saveTime,
                 new Theme("name", "description", "thumbnail"));
         reservationRepository.save(reservation);
 

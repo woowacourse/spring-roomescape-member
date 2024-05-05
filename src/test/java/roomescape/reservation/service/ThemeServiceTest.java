@@ -12,8 +12,8 @@ import roomescape.reservation.dao.FakeThemeDao;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.domain.repository.ThemeRepository;
-import roomescape.reservation.dto.ThemeRequest;
-import roomescape.reservation.dto.ThemeResponse;
+import roomescape.reservation.controller.dto.ThemeRequest;
+import roomescape.reservation.controller.dto.ThemeResponse;
 
 @DisplayName("테마 로직 테스트")
 class ThemeServiceTest {

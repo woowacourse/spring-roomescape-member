@@ -9,9 +9,9 @@ import org.springframework.stereotype.Service;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.domain.repository.ReservationTimeRepository;
-import roomescape.reservation.dto.AvailableTimeResponse;
-import roomescape.reservation.dto.ReservationTimeRequest;
-import roomescape.reservation.dto.ReservationTimeResponse;
+import roomescape.reservation.controller.dto.AvailableTimeResponse;
+import roomescape.reservation.controller.dto.ReservationTimeRequest;
+import roomescape.reservation.controller.dto.ReservationTimeResponse;
 
 @Service
 public class ReservationTimeService {

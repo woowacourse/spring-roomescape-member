@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import roomescape.reservation.dto.ThemeRequest;
-import roomescape.reservation.dto.ThemeResponse;
+import roomescape.reservation.controller.dto.ThemeRequest;
+import roomescape.reservation.controller.dto.ThemeResponse;
 import roomescape.reservation.service.ThemeService;
 
 @Controller

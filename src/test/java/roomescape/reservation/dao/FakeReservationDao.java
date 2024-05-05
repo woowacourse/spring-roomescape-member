@@ -1,11 +1,14 @@
 package roomescape.reservation.dao;
 
+import static roomescape.fixture.MemberFixture.getMemberChoco;
+
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.dto.ReservationMember;
 import roomescape.reservation.domain.repository.ReservationRepository;
 
 public class FakeReservationDao implements ReservationRepository {
@@ -17,7 +20,6 @@ public class FakeReservationDao implements ReservationRepository {
         reservations.put((long) reservations.size() + 1, reservation);
         return new Reservation(
                 (long) reservations.size(),
-                reservation.getName(),
                 reservation.getDate(),
                 reservation.getTime(),
                 reservation.getTheme()
@@ -25,9 +27,10 @@ public class FakeReservationDao implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAll() {
+    public List<ReservationMember> findAll() {
         return reservations.values()
                 .stream()
+                .map(reservation -> new ReservationMember(reservation, null))
                 .toList();
     }
 
@@ -47,12 +50,12 @@ public class FakeReservationDao implements ReservationRepository {
     }
 
     @Override
-    public Optional<Reservation> findBy(final LocalDate date, final long timeId, final long themeId) {
-        return reservations.values().stream()
+    public Optional<ReservationMember> findBy(final LocalDate date, final long timeId, final long themeId) {
+        return Optional.of(new ReservationMember(reservations.values().stream()
                 .filter(reservation -> reservation.getDate().equals(date) &&
                         reservation.getTime().getId() == timeId &&
                         reservation.getTheme().getId() == themeId)
-                .findFirst();
+                .findFirst().orElseThrow(), getMemberChoco()));
     }
 
     @Override

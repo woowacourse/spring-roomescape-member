@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.Theme;
+import roomescape.reservation.domain.dto.ReservationMember;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.domain.repository.ThemeRepository;
 
@@ -43,7 +44,7 @@ public class FakeThemeDao implements ThemeRepository {
 
     private boolean containsThemeId(long themeId) {
         return reservationRepository.findAll().stream()
-                .anyMatch(reservation -> reservation.getTheme().getId() == themeId);
+                .anyMatch(reservationMember -> reservationMember.reservation().getTheme().getId() == themeId);
     }
 
     @Override
@@ -55,12 +56,12 @@ public class FakeThemeDao implements ThemeRepository {
     public List<Theme> findPopularThemes() {
         LocalDate startDate = LocalDate.now().minusDays(7);
 
-        List<Reservation> reservations = reservationRepository.findAll();
+        List<ReservationMember> reservationMembers = reservationRepository.findAll();
 
-        Map<Long, Long> themeReservationCounts = reservations.stream()
-                .filter(reservation -> reservation.getDate().isAfter(startDate))
+        Map<Long, Long> themeReservationCounts = reservationMembers.stream()
+                .filter(reservationMember -> reservationMember.reservation().getDate().isAfter(startDate))
                 .collect(Collectors.groupingBy(
-                        reservation -> reservation.getTheme().getId(),
+                        reservationMember -> reservationMember.reservation().getTheme().getId(),
                         Collectors.counting()
                 ));
 

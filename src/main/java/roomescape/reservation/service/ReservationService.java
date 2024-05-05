@@ -6,14 +6,15 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.repository.MemberRepository;
+import roomescape.reservation.controller.dto.ReservationRequest;
+import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
+import roomescape.reservation.domain.dto.ReservationMember;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.domain.repository.ReservationTimeRepository;
 import roomescape.reservation.domain.repository.ThemeRepository;
-import roomescape.reservation.dto.ReservationRequest;
-import roomescape.reservation.dto.ReservationResponse;
 
 @Service
 public class ReservationService {
@@ -48,22 +49,11 @@ public class ReservationService {
 
         LocalDate date = LocalDate.parse(reservationRequest.date());
 
-        Optional<Reservation> reservationOptional = reservationRepository.findBy(
-                date,
-                reservationRequest.timeId(),
-                reservationRequest.themeId()
-        );
-
-        if (reservationOptional.isPresent()) {
-            throw new IllegalArgumentException("예약 시간이 중복되었습니다.");
-        }
-
         Member member = memberRepository.save(new Member(reservationRequest.name()));
-        Reservation reservation = reservationRepository.save(
-                new Reservation(reservationRequest.name(), date, reservationTime, theme));
+        Reservation reservation = reservationRepository.save(new Reservation(date, reservationTime, theme));
         reservationRepository.saveReservationList(member.getId(), reservation.getId());
 
-        return ReservationResponse.from(reservation);
+        return ReservationResponse.from(new ReservationMember(reservation, member));
     }
 
     public void delete(long reservationId) {

@@ -3,6 +3,7 @@ package roomescape.reservation.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static roomescape.fixture.ThemeFixture.getTheme1;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -11,6 +12,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.member.domain.repository.MemberRepository;
+import roomescape.reservation.controller.dto.ReservationRequest;
+import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.dao.FakeMemberDao;
 import roomescape.reservation.dao.FakeReservationDao;
 import roomescape.reservation.dao.FakeReservationTimeDao;
@@ -21,8 +24,6 @@ import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.domain.repository.ReservationTimeRepository;
 import roomescape.reservation.domain.repository.ThemeRepository;
-import roomescape.reservation.dto.ReservationRequest;
-import roomescape.reservation.dto.ReservationResponse;
 
 @DisplayName("예약 로직 테스트")
 class ReservationServiceTest {
@@ -52,11 +53,10 @@ class ReservationServiceTest {
         //given
         String name = "choco";
         String date = "2100-04-18";
-        long timeId = 1L;
-        long themeId = 1L;
-        reservationTimeRepository.save(new ReservationTime(timeId, LocalTime.MIDNIGHT));
-        themeRepository.save(new Theme(themeId, "name", "description", "thumbnail"));
-        ReservationRequest reservationRequest = new ReservationRequest(name, date, timeId, themeId);
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(1L, LocalTime.NOON));
+        Theme theme = themeRepository.save(getTheme1());
+        reservationRepository.save(new Reservation(LocalDate.parse(date), time, theme));
+        ReservationRequest reservationRequest = new ReservationRequest(name, date, time.getId(), theme.getId());
 
         //when
         ReservationResponse reservationResponse = reservationService.create(reservationRequest);
@@ -65,7 +65,7 @@ class ReservationServiceTest {
         assertAll(
                 () -> assertThat(reservationResponse.name()).isEqualTo(name),
                 () -> assertThat(reservationResponse.date()).isEqualTo(date),
-                () -> assertThat(reservationResponse.time().id()).isEqualTo(timeId)
+                () -> assertThat(reservationResponse.time().id()).isEqualTo(time.getId())
         );
     }
 
@@ -82,7 +82,7 @@ class ReservationServiceTest {
         ReservationTime reservationTime = new ReservationTime(timeId, localTime);
 
         Theme theme = new Theme(themeId, "name", "description", "thumbnail");
-        reservationRepository.save(new Reservation(id, name, date, reservationTime, theme));
+        reservationRepository.save(new Reservation(id, date, reservationTime, theme));
 
         //when
         List<ReservationResponse> reservations = reservationService.findAllReservations();
@@ -110,7 +110,7 @@ class ReservationServiceTest {
         ReservationTime reservationTime = new ReservationTime(timeId, localTime);
 
         Theme theme = new Theme(themeId, "name", "description", "thumbnail");
-        reservationRepository.save(new Reservation(id, name, date, reservationTime, theme));
+        reservationRepository.save(new Reservation(id, date, reservationTime, theme));
 
         //when
         reservationService.delete(id);
@@ -130,7 +130,7 @@ class ReservationServiceTest {
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(timeId, LocalTime.MIDNIGHT));
         Theme theme = new Theme(themeId, "name", "description", "thumbnail");
         themeRepository.save(theme);
-        reservationRepository.save(new Reservation(1L, "choco", LocalDate.parse(date), time, theme));
+        reservationRepository.save(new Reservation(1L, LocalDate.parse(date), time, theme));
 
         ReservationRequest reservationRequest = new ReservationRequest(name, date, timeId, themeId);
 
