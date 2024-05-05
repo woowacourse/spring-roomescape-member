@@ -110,3 +110,23 @@ response
 ```json
 HTTP/1.1 204
 ```
+
+---
+
+## 1차 리뷰 개선사안
+
+- 예약 생성 시 시간검증 책임 이전 : Reservation > ReservationService
+- domain 생성 책임을 builder 클래스에게 분담
+- Service/dao 추상화
+- default 접근 제어자를 활용한 Service/Dao 구현체 은닉
+- ReservationDao : join문을 활용한 mapping 로직 일반화
+- 에러 처리 로직 추가
+    - dto / fail-fast를 위해 Valid를 활용한 1차 검증
+    - 명확하고 유의한 메세지 전달을 위한 ErrorResponse 객체 반환
+    - ControllerAdvice :스프링 내부 에러 처리를 위해 ResponseEntityExceptionHandler 상속
+    - ControllerAdvice/ ExceptionHandler 추가
+        - NoSuchElement > NOT_FOUND
+        - MethodArgumentNotValid > BAD_REQUEST(Override)
+        - IllegalArgument > BAD_REQUEST
+        - IllegalState > INTERNAL_SERVER
+        - etc > INTERNAL_SERVER
