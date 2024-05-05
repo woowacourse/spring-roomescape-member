@@ -3,10 +3,12 @@ package roomescape.reservation.dao;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.domain.repository.ReservationTimeRepository;
@@ -56,6 +58,13 @@ public class FakeReservationTimeDao implements ReservationTimeRepository {
 
     @Override
     public Set<ReservationTime> findReservedTime(LocalDate date, long themeId) {
-        return null;
+        Set<ReservationTime> reservedTimes = new HashSet<>();
+
+        reservationRepository.findAll().stream()
+                .filter(reservation -> reservation.getDate().equals(date) && reservation.getTheme().getId() == themeId)
+                .forEach(reservation -> reservedTimes.add(reservationTimes.get(reservation.getTime().getId())));
+
+        return reservedTimes;
     }
+
 }
