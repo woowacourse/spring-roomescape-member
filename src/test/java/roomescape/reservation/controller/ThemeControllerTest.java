@@ -1,5 +1,6 @@
 package roomescape.reservation.controller;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
@@ -13,6 +14,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.reservation.dto.ThemeRequest;
+import roomescape.reservation.dto.ThemeResponse;
 import roomescape.reservation.service.ThemeService;
 import roomescape.util.ControllerTest;
 
@@ -44,6 +46,63 @@ class ThemeControllerTest extends ControllerTest {
                 .statusCode(201);
     }
 
+    @DisplayName("테마 생성 시, 잘못된 이름 형식에 대해 400을 반환한다.")
+    @ParameterizedTest
+    @ValueSource(strings = {"", "      "})
+    void createBadNameRequest(String name) {
+        //given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("description", "Hi, I am Siso");
+        params.put("thumbnail", "thumbnail");
+
+        //when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @DisplayName("테마 생성 시, 잘못된 설명 형식에 대해 400을 반환한다.")
+    @ParameterizedTest
+    @ValueSource(strings = {"", "      "})
+    void createBadDescriptionRequest(String description) {
+        //given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "siso");
+        params.put("description", description);
+        params.put("thumbnail", "thumbnail");
+
+        //when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @DisplayName("테마 생성 시, 잘못된 썸네일 형식에 대해 400을 반환한다.")
+    @ParameterizedTest
+    @ValueSource(strings = {"", "      "})
+    void createBadThumbnailRequest(String description) {
+        //given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "siso");
+        params.put("description", "Hi, I am Siso");
+        params.put("thumbnail", description);
+
+        //when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(400);
+    }
+
     @DisplayName("테마 조회 시, 200을 반환한다.")
     @Test
     void findAll() {
@@ -65,22 +124,13 @@ class ThemeControllerTest extends ControllerTest {
                 .statusCode(204);
     }
 
-    @DisplayName("테마 생성 시, 잘못된 형식에 대해 400을 반환한다.")
-    @ParameterizedTest
-    @ValueSource(strings = {"", "      "})
-    void createBadRequest(String name) {
-        //given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("description", "Hi, I am Siso");
-        params.put("thumbnail", "thumbnail");
-
-        //when & then
+    @DisplayName("인기 테마 조회 시, 200를 반환한다.")
+    @Test
+    void findPopular() {
+        //given & when & then
         RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/themes")
+                .when().get("/themes/popular")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(200);
     }
 }
