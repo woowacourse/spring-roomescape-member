@@ -77,7 +77,7 @@ class ReservationH2RepositoryTest {
 
         Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reservation", Integer.class);
 
-        assertThat(count).isOne();
+        assertThat(count).isEqualTo(INITIAL_RESERVATION_COUNT - 1);
     }
 
     @Test

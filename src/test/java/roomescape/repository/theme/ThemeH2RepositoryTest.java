@@ -3,9 +3,10 @@ package roomescape.repository.theme;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static roomescape.InitialDataFixture.INITIAL_THEME_COUNT;
+import static roomescape.InitialDataFixture.NOT_RESERVATION_THEME;
 import static roomescape.InitialDataFixture.THEME_1;
-import static roomescape.InitialDataFixture.THEME_2;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -42,7 +43,7 @@ class ThemeH2RepositoryTest {
     @Test
     @DisplayName("id에 맞는 Theme을 제거한다.")
     void delete() {
-        themeH2Repository.delete(THEME_2.getId());
+        themeH2Repository.delete(NOT_RESERVATION_THEME.getId());
 
         Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM theme", Integer.class);
 
@@ -78,5 +79,17 @@ class ThemeH2RepositoryTest {
         Optional<Theme> theme = themeH2Repository.findById(-1L);
 
         assertThat(theme.isEmpty()).isTrue();
+    }
+
+    @Test
+    @DisplayName("이미 예약된 정보를 바탕으로 인기테마를 찾는다.")
+    void findTrendings() {
+        List<Theme> trendings = themeH2Repository.findTrendings(
+                LocalDate.parse("2024-04-25"),
+                LocalDate.parse("2024-04-26"),
+                1L
+        );
+
+        assertThat(trendings).containsExactly(THEME_1);
     }
 }

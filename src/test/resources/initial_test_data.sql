@@ -21,3 +21,15 @@ VALUES ('브라운', '2024-04-25', 1, 1);
 
 INSERT INTO reservation (name, date, time_id, theme_id)
 VALUES ('솔라', '2099-05-01', 1, 1);
+
+INSERT INTO reservation (name, date, time_id, theme_id)
+VALUES ('아무 이름', '2024-04-25', 2, 1);
+
+INSERT INTO reservation (name, date, time_id, theme_id)
+VALUES ('아무 이름', '2024-04-25', 2, 2);
+
+INSERT INTO reservation (name, date, time_id, theme_id)
+VALUES ('아무 이름', '2024-04-27', 1, 2);
+
+INSERT INTO reservation (name, date, time_id, theme_id)
+VALUES ('아무 이름', '2024-04-27', 2, 2);

@@ -69,7 +69,6 @@ class ThemeServiceTest {
     void findTrendingThemes() {
         List<ThemeResponse> themes = themeService.findTrendingThemes(1L);
 
-
         assertThat(themes).containsExactly(ThemeResponse.from(THEME_1));
     }
 

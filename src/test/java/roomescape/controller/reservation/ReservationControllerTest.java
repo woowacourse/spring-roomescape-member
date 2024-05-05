@@ -48,7 +48,7 @@ class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(201)
                 .body("id", is(INITIAL_RESERVATION_COUNT + 1))
-                .header("Location", "/reservations/3");
+                .header("Location", String.format("/reservations/%d", INITIAL_RESERVATION_COUNT + 1));
     }
 
     @Test

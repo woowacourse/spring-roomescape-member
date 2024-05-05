@@ -3,8 +3,8 @@ package roomescape.repository.reservationtime;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static roomescape.InitialDataFixture.INITIAL_RESERVATION_TIME_COUNT;
+import static roomescape.InitialDataFixture.NOT_RESERVATION_TIME;
 import static roomescape.InitialDataFixture.RESERVATION_TIME_1;
-import static roomescape.InitialDataFixture.RESERVATION_TIME_2;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -42,7 +42,7 @@ class ReservationTimeH2RepositoryTest {
     @Test
     @DisplayName("id에 맞는 ReservationTime을 제거한다.")
     void delete() {
-        reservationTimeH2Repository.delete(RESERVATION_TIME_2.getId());
+        reservationTimeH2Repository.delete(NOT_RESERVATION_TIME.getId());
 
         Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reservation_time", Integer.class);
 
