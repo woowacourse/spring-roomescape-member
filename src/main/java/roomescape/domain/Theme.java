@@ -14,10 +14,17 @@ public class Theme {
     }
 
     public Theme(Long id, String name, String description, String thumbnail) {
+        validateNotnull(name, description, thumbnail);
         this.id = id;
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
+    }
+
+    private static void validateNotnull(String name, String description, String thumbnail) {
+        if (name == null || name.isBlank() || description == null || thumbnail == null) {
+            throw new IllegalArgumentException("테마 필드값이 null 입니다.");
+        }
     }
 
     public Long getId() {
