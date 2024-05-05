@@ -1,5 +1,7 @@
 # API 명세
 
+프로젝트 /httpRequests 디렉터리에서 .http 파일을 통해 path 에 따른 API 요청 가능
+
 ### 메인 페이지 조회
 
 #### Request
