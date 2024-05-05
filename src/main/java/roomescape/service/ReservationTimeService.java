@@ -6,6 +6,7 @@ import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeRequestDto;
 
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -39,6 +40,9 @@ public class ReservationTimeService {
     }
 
     public boolean isBooked(String date, Long timeId, Long themeId) {
+        if (LocalDate.parse(date).isBefore(LocalDate.parse("2020-01-01"))) {
+            throw new IllegalArgumentException("2020년 이전의 날짜는 입력할 수 없습니다.");
+        }
         int count = reservationDao.count(date, timeId, themeId);
         return count > 0;
     }

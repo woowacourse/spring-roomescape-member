@@ -69,4 +69,12 @@ public class ReservationTimeServiceTest {
 
         assertThat(actualIsBooked).isEqualTo(true);
     }
+
+    @DisplayName("허용된 날짜 이전이 입력된 경우 예외를 발생한다.")
+    @Test
+    void dateLimitTest() {
+        assertThatThrownBy(() -> reservationTimeService.isBooked("1999-01-01", 1L, 1L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("2020년 이전의 날짜는 입력할 수 없습니다.");
+    }
 }

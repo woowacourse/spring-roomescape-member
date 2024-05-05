@@ -13,6 +13,7 @@
   - [x] 예약 생성 시 시간, 테마에 유효하지 않은 값이 입력 되었을 때 HttpMessageNotReadableException 발생
   - [x] 특정 시간 혹은 테마에 대한 예약이 존재하는데, 그 시간 혹은 테마를을 삭제하려 할 때 IllegalStateException 발생
   - [x] 이미 존재하는 테마 이름으로 테마를 추가할 때 IllegalArgumentException 발생
+  - [x] 인기 테마 조회 시 특정 날짜('2020-01-01') 이전의 날짜가 입력될 경우 IllegalArgumentException 발생
 
 - [x] 서비스 정책
   - [x] 지나간 날짜와 시간에 대한 예약 생성은 불가능
