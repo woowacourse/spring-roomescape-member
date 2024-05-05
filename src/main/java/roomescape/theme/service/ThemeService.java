@@ -2,6 +2,7 @@ package roomescape.theme.service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.dto.request.CreateThemeRequest;
@@ -17,7 +18,8 @@ public class ThemeService {
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
 
-    public ThemeService(final ThemeRepository themeRepository, final ReservationRepository reservationRepository) {
+    public ThemeService(@Qualifier("jdbcThemeRepository") final ThemeRepository themeRepository,
+                        @Qualifier("jdbcReservationRepository") final ReservationRepository reservationRepository) {
         this.themeRepository = themeRepository;
         this.reservationRepository = reservationRepository;
     }

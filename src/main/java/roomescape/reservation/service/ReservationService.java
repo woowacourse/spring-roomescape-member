@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.dto.request.CreateReservationRequest;
 import roomescape.reservation.dto.response.CreateReservationResponse;
@@ -23,9 +24,9 @@ public class ReservationService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
 
-    public ReservationService(final ReservationRepository reservationRepository,
-                              final ReservationTimeRepository reservationTimeRepository,
-                              final ThemeRepository themeRepository) {
+    public ReservationService(@Qualifier("jdbcReservationRepository") final ReservationRepository reservationRepository,
+                              @Qualifier("jdbcReservationTimeRepository") final ReservationTimeRepository reservationTimeRepository,
+                              @Qualifier("jdbcThemeRepository") final ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;

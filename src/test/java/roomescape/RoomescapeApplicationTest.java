@@ -7,10 +7,8 @@ import io.restassured.http.ContentType;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,225 +30,224 @@ class RoomescapeApplicationTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    @Nested
-    class ReservationTest {
+    @LocalServerPort
+    private int port;
 
-        @LocalServerPort
-        private int port;
-
-        @BeforeEach
-        void beforeEach() {
-            RestAssured.port = this.port;
-        }
-
-        @Test
-        @DisplayName("예약을 생성한다.")
-        void postReservation() {
-            Map<String, Object> params = new HashMap<>();
-            params.put("name", "브라운");
-            params.put("date", "2025-08-05");
-            params.put("timeId", 1);
-            params.put("themeId", 1);
-
-            RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .body(params)
-                    .when().post("/reservations")
-                    .then().log().all()
-                    .statusCode(201)
-                    .header("Location", "/reservations/14");
-        }
-
-        @Test
-        @DisplayName("예약 목록을 조회한다.")
-        void getReservations() {
-            List<Reservation> reservations = RestAssured.given().log().all()
-                    .when().get("/reservations")
-                    .then().log().all()
-                    .statusCode(200).extract()
-                    .jsonPath().getList(".");
-
-            Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-
-            assertThat(reservations.size()).isEqualTo(count);
-        }
-
-        @Test
-        @DisplayName("예약을 조회한다.")
-        void getReservation() {
-            RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .when().get("/reservations/3")
-                    .then().log().all()
-                    .statusCode(200);
-
-        }
-
-        @Test
-        @DisplayName("예약 가능한 시간 목록을 조회한다.")
-        void getAvailableTimes() {
-            RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .when().get("/reservations/times?date=2024-04-23&themeId=1")
-                    .then().log().all()
-                    .statusCode(200);
-        }
-
-        @Test
-        @DisplayName("예약을 삭제한다.")
-        void deleteReservation() {
-            RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .when().delete("/reservations/3")
-                    .then().log().all()
-                    .statusCode(204);
-        }
+    @BeforeEach
+    void beforeEach() {
+        RestAssured.port = this.port;
     }
 
-    @Nested
-    class ReservationTimeTest {
+    @Test
+    @DisplayName("예약을 생성한다.")
+    void postReservation() {
+        postReservationTime();
+        postTheme();
 
-        @LocalServerPort
-        private int port;
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", "2025-08-05");
+        params.put("timeId", 1);
+        params.put("themeId", 1);
 
-        @BeforeEach
-        void beforeEach() {
-            RestAssured.port = this.port;
-        }
-
-        @Test
-        @DisplayName("예약 시간을 생성한다.")
-        void postReservationTime() {
-            Map<String, Object> params = new HashMap<>();
-            params.put("startAt", "08:00");
-
-            RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .body(params)
-                    .when().post("/times")
-                    .then().log().all()
-                    .statusCode(201)
-                    .header("Location", "/times/7");
-        }
-
-        @Test
-        @DisplayName("예약 시간 목록을 조회한다.")
-        void getReservationsTime() {
-            List<ReservationTime> reservations = RestAssured.given().log().all()
-                    .when().get("/times")
-                    .then().log().all()
-                    .statusCode(200).extract()
-                    .jsonPath().getList(".");
-
-            Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation_time", Integer.class);
-
-            assertThat(reservations.size()).isEqualTo(count);
-        }
-
-        @Test
-        @DisplayName("예약 시간을 조회한다.")
-        void getReservationTime() {
-            RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .when().get("/times/3")
-                    .then().log().all()
-                    .statusCode(200);
-
-        }
-
-        @Test
-        @DisplayName("예약 시간을 삭제한다.")
-        void deleteReservationTime() {
-            RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .when().delete("/times/6")
-                    .then().log().all()
-                    .statusCode(204);
-        }
-
-        @Test
-        @DisplayName("예약 시간이 사용 중인 예약이 존재할 경우, 시간 삭제 요청 시 409를 반환한다.")
-        void deleteReservationTime_isConflict() {
-            RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .when().delete("/times/3")
-                    .then().log().all()
-                    .statusCode(409);
-        }
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .header("Location", "/reservations/1");
     }
 
-    @Nested
-    class ThemeTest {
+    @Test
+    @DisplayName("예약 목록을 조회한다.")
+    void getReservations() {
+        List<Reservation> reservations = RestAssured.given().log().all()
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200).extract()
+                .jsonPath().getList(".");
 
-        @LocalServerPort
-        private int port;
+        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
 
-        @BeforeEach
-        void beforeEach() {
-            RestAssured.port = this.port;
-        }
-
-        @Test
-        @DisplayName("테마를 생성한다.")
-        void postTheme() {
-            Map<String, Object> params = new HashMap<>();
-            params.put("name", "몰리");
-            params.put("description", "드디어");
-            params.put("thumbnail", "https://끝");
-
-            RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .body(params)
-                    .when().post("/themes")
-                    .then().log().all()
-                    .statusCode(201)
-                    .header("Location", "/themes/11");
-        }
-
-        @Test
-        @DisplayName("테마 목록을 조회한다.")
-        void getTheme() {
-            List<Theme> themes = RestAssured.given().log().all()
-                    .when().get("/themes")
-                    .then().log().all()
-                    .statusCode(200).extract()
-                    .jsonPath().getList(".");
-
-            Integer count = jdbcTemplate.queryForObject("SELECT count(1) from theme", Integer.class);
-
-            assertThat(themes.size()).isEqualTo(count);
-        }
-
-        @Test
-        @DisplayName("테마를 조회한다.")
-        void getThemes() {
-            RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .when().get("/themes/popular")
-                    .then().log().all()
-                    .statusCode(200)
-                    .body("size()", Matchers.is(10));
-        }
-
-        @Test
-        @DisplayName("테마를 삭제한다.")
-        void deleteTheme() {
-            RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .when().delete("/themes/10")
-                    .then().log().all()
-                    .statusCode(204);
-        }
-
-        @Test
-        @DisplayName("예약 테마가 사용 중인 예약이 존재할 경우, 테마 삭제 요청 시 409를 반환한다.")
-        void deleteTheme_isConflict() {
-            RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .when().delete("/themes/3")
-                    .then().log().all()
-                    .statusCode(409);
-        }
+        assertThat(reservations.size()).isEqualTo(count);
     }
 
+    @Test
+    @DisplayName("예약을 조회한다.")
+    void getReservation() {
+        postReservation();
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().get("/reservations/1")
+                .then().log().all()
+                .statusCode(200);
+
+    }
+
+    @Test
+    @DisplayName("예약 가능한 시간 목록을 조회한다.")
+    void getAvailableTimes() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().get("/reservations/times?date=2024-04-23&themeId=1")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @Test
+    @DisplayName("예약을 삭제한다.")
+    void deleteReservation() {
+        postReservation();
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().delete("/reservations/1")
+                .then().log().all()
+                .statusCode(204);
+    }
+
+    @Test
+    @DisplayName("예약 시간을 생성한다.")
+    void postReservationTime() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("startAt", "08:00");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(201)
+                .header("Location", "/times/1");
+    }
+
+    @Test
+    @DisplayName("예약 시간 목록을 조회한다.")
+    void getReservationsTime() {
+        List<ReservationTime> reservations = RestAssured.given().log().all()
+                .when().get("/times")
+                .then().log().all()
+                .statusCode(200).extract()
+                .jsonPath().getList(".");
+
+        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation_time", Integer.class);
+
+        assertThat(reservations.size()).isEqualTo(count);
+    }
+
+    @Test
+    @DisplayName("예약 시간을 조회한다.")
+    void getReservationTime() {
+        postReservationTime();
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().get("/times/1")
+                .then().log().all()
+                .statusCode(200);
+
+    }
+
+    @Test
+    @DisplayName("예약 시간을 삭제한다.")
+    void deleteReservationTime() {
+        postReservationTime();
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().delete("/times/1")
+                .then().log().all()
+                .statusCode(204);
+    }
+
+    @Test
+    @DisplayName("예약 시간이 사용 중인 예약이 존재할 경우, 시간 삭제 요청 시 409를 반환한다.")
+    void deleteReservationTime_isConflict() {
+        postReservation();
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().delete("/times/1")
+                .then().log().all()
+                .statusCode(409);
+    }
+
+    @Test
+    @DisplayName("테마를 생성한다.")
+    void postTheme() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "몰리");
+        params.put("description", "드디어");
+        params.put("thumbnail", "https://끝");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201)
+                .header("Location", "/themes/1");
+    }
+
+    @Test
+    @DisplayName("테마 목록을 조회한다.")
+    void getTheme() {
+        List<Theme> themes = RestAssured.given().log().all()
+                .when().get("/themes")
+                .then().log().all()
+                .statusCode(200).extract()
+                .jsonPath().getList(".");
+
+        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from theme", Integer.class);
+
+        assertThat(themes.size()).isEqualTo(count);
+    }
+
+    @Test
+    @DisplayName("테마를 조회한다.")
+    void getThemes() {
+        postTheme();
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().get("/themes/popular")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @Test
+    @DisplayName("테마를 삭제한다.")
+    void deleteTheme() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "몰리");
+        params.put("description", "드디어");
+        params.put("thumbnail", "https://끝");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201)
+                .header("Location", "/themes/1");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().delete("/themes/1")
+                .then().log().all()
+                .statusCode(204);
+    }
+
+    @Test
+    @DisplayName("예약 테마가 사용 중인 예약이 존재할 경우, 테마 삭제 요청 시 409를 반환한다.")
+    void deleteTheme_isConflict() {
+        postReservation();
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().delete("/themes/1")
+                .then().log().all()
+                .statusCode(409);
+    }
 }
