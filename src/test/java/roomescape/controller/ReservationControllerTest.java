@@ -83,30 +83,60 @@ class ReservationControllerTest {
     @DisplayName("실패: 예약 추가에서 IllegalArgumentException 발생 시 -> 400")
     @Test
     void reserve_Illegal() throws Exception {
+        long timeId = 1L;
+        long themeId = 1L;
+        ReservationDate date = new ReservationDate("2040-04-04");
+        String name = "브리";
+
         when(reservationService.save(any(ReservationAppRequest.class)))
             .thenThrow(IllegalArgumentException.class);
 
-        mvc.perform(post("/reservations"))
+        String requestBody = objectMapper.writeValueAsString(
+            new ReservationWebRequest(name, date.toString(), timeId, themeId));
+
+        mvc.perform(post("/reservations")
+                .content(requestBody)
+                .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
     }
 
     @DisplayName("실패: 예약 추가에서 NoSuchElementException 발생 시 -> 400")
     @Test
     void reserve_NoSuch() throws Exception {
+        long timeId = 1L;
+        long themeId = 1L;
+        ReservationDate date = new ReservationDate("2040-04-04");
+        String name = "브리";
+
         when(reservationService.save(any(ReservationAppRequest.class)))
             .thenThrow(NoSuchElementException.class);
 
-        mvc.perform(post("/reservations"))
+        String requestBody = objectMapper.writeValueAsString(
+            new ReservationWebRequest(name, date.toString(), timeId, themeId));
+
+        mvc.perform(post("/reservations")
+                .content(requestBody)
+                .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
     }
 
     @DisplayName("과거 시간에 예약을 넣을 경우 -> 400")
     @Test
     void reserve_PastTime() throws Exception {
+        long timeId = 1L;
+        long themeId = 1L;
+        ReservationDate date = new ReservationDate("1040-04-04");
+        String name = "브리";
+
         when(reservationService.save(any(ReservationAppRequest.class)))
             .thenThrow(PastReservationException.class);
 
-        mvc.perform(post("/reservations"))
+        String requestBody = objectMapper.writeValueAsString(
+            new ReservationWebRequest(name, date.toString(), timeId, themeId));
+
+        mvc.perform(post("/reservations")
+                .content(requestBody)
+                .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
     }
 }

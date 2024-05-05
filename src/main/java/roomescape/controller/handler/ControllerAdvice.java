@@ -29,4 +29,9 @@ public class ControllerAdvice {
     public ResponseEntity<String> handleNoSuchElementException(NoSuchElementException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handlerException(Exception e) {
+        return ResponseEntity.internalServerError().body("예기치 못한 에러 발생");
+    }
 }
