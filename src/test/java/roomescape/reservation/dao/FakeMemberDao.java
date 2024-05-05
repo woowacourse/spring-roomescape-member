@@ -6,7 +6,6 @@ import roomescape.member.domain.Member;
 import roomescape.member.domain.repository.MemberRepository;
 
 public class FakeMemberDao implements MemberRepository {
-
     private final Map<Long, Member> members = new HashMap<>();
 
     @Override

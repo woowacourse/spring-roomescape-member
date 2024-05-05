@@ -23,9 +23,10 @@ class ThemeServiceTest {
 
     @BeforeEach
     void setUp() {
-        reservationRepository = new FakeReservationDao();
+
         themeRepository = new FakeThemeDao(reservationRepository);
         themeService = new ThemeService(themeRepository);
+        reservationRepository = new FakeReservationDao(reservationTimeRepository, themeRepository);
     }
 
     @DisplayName("테마 조회에 성공한다.")
