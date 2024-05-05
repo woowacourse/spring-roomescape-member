@@ -5,7 +5,6 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.sql.DataSource;
-
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -21,6 +20,7 @@ import roomescape.domain.Theme;
 public class ReservationH2Repository implements ReservationRepository {
 
     private static final String TABLE_NAME = "RESERVATION";
+    private static final int ANY_INTEGER_FOR_COUNTING = 0;
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
@@ -41,13 +41,8 @@ public class ReservationH2Repository implements ReservationRepository {
                 .addValue("theme_id", reservation.getTheme().getId());
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
 
-        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
-    }
-
-    @Override
-    public boolean isAlreadyBooked(Reservation reservation) {
-        String sql = "SELECT * FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?";
-        return !jdbcTemplate.query(sql, (rs, rowNum) -> 0, reservation.getDate(), reservation.getTime().getId(), reservation.getTheme().getId()).isEmpty();
+        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
+                reservation.getTheme());
     }
 
     @Override
@@ -86,5 +81,16 @@ public class ReservationH2Repository implements ReservationRepository {
                     theme
             );
         };
+    }
+
+    @Override
+    public boolean isAlreadyBooked(Reservation reservation) {
+        return !jdbcTemplate.query(
+                "SELECT * FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?",
+                (rs, rowNum) -> ANY_INTEGER_FOR_COUNTING,
+                reservation.getDate(),
+                reservation.getTime().getId(),
+                reservation.getTheme().getId()
+        ).isEmpty();
     }
 }
