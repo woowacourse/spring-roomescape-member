@@ -1,54 +1,57 @@
 package roomescape.endpoint;
 
-import static org.hamcrest.Matchers.notNullValue;
-import static roomescape.endpoint.RequestFixture.reservationRequest;
-import static roomescape.endpoint.RequestFixture.reservationTimeId;
-import static roomescape.endpoint.RequestFixture.themeId;
-
-import java.time.LocalDate;
-import org.junit.jupiter.api.AfterEach;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
+import roomescape.controller.exception.CustomExceptionResponse;
 import roomescape.dto.ReservationRequest;
+import roomescape.dto.ReservationResponse;
+
+import java.time.LocalDate;
+
+import static roomescape.endpoint.HttpRestTestTemplate.*;
+import static roomescape.endpoint.RequestFixture.*;
+import static roomescape.endpoint.ResponseFormatTestTemplate.assertBodyFormat;
+import static roomescape.endpoint.ResponseFormatTestTemplate.assertHeaderContainsValue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @TestPropertySource(locations = "classpath:application-test.properties")
-public class ReservationEndPointTest {
+class ReservationEndPointTest {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @AfterEach
-    void cleanUp() {
-        jdbcTemplate.update("DELETE FROM reservation");
-    }
+    private ObjectMapper objectMapper;
 
     @DisplayName("예약 목록 조회")
     @Test
     void getReservations() {
-        HttpRestTestTemplate.assertGetOk("/reservations");
+        assertGetOk("/reservations");
     }
 
-    @DisplayName("예약 추가")
+    @DisplayName("[예약 추가] 정상 작동")
     @Test
     void addReservation() {
-        HttpRestTestTemplate.assertPostCreated(reservationRequest, "/reservations", "id", notNullValue());
+        Response response = assertPostCreated(reservationRequest, "/reservations");
+        assertHeaderContainsValue(response, "location", "/reservations/");
+        assertBodyFormat(objectMapper, response, ReservationResponse.class);
     }
 
-    @DisplayName("예약 삭제")
+    @DisplayName("[예약 추가, 해당 예약 삭제] 정상 작동")
     @Test
     void deleteReservation() {
-        HttpRestTestTemplate.assertDeleteNoContent("/reservations/1");
+        Response response = assertPostCreated(reservationRequest, "/reservations");
+        String createdId = response.getBody().path("id").toString();
+
+        assertDeleteNoContent("/reservations/" + createdId);
     }
 
-    @DisplayName("예약 추가 불가능 - 과거 시간 예약")
+    @DisplayName("[과거 예약 추가] 예외 발생")
     @Test
     void validateReservationTimeIsFutureFail() {
         ReservationRequest past = new ReservationRequest(
@@ -58,10 +61,11 @@ public class ReservationEndPointTest {
                 themeId
         );
 
-        HttpRestTestTemplate.assertPostBadRequest(past, "/reservations");
+        Response response = assertPostBadRequest(past, "/reservations");
+        assertBodyFormat(objectMapper, response, CustomExceptionResponse.class);
     }
 
-    @DisplayName("예약 추가 불가능 - 중복 예약")
+    @DisplayName("[예약 추가, 동일한 예약 추가] 예외 발생")
     @TestFactory
     void validateReservationIsDuplicatedFail() {
         ReservationRequest duplicated = new ReservationRequest(
@@ -71,7 +75,8 @@ public class ReservationEndPointTest {
                 themeId
         );
 
-        HttpRestTestTemplate.assertPostCreated(duplicated, "/reservations", "id", notNullValue());
-        HttpRestTestTemplate.assertPostBadRequest(duplicated, "/reservations");
+        assertPostCreated(duplicated, "/reservations");
+        Response response = assertPostBadRequest(duplicated, "/reservations");
+        assertBodyFormat(objectMapper, response, CustomExceptionResponse.class);
     }
 }
