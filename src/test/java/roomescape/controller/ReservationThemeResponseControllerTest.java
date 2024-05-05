@@ -66,21 +66,22 @@ public class ReservationThemeResponseControllerTest {
         params.put("thumbnail", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
 
 
-        RestAssured.given().log().all()
+        int id = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/themes")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .extract().path("id");
 
         RestAssured.given().log().all()
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(2));
+                .body("size()", is(id));
 
         RestAssured.given().log().all()
-                .when().delete("/themes/2")
+                .when().delete("/themes/" + id)
                 .then().log().all()
                 .statusCode(204);
     }

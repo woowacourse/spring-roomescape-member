@@ -57,21 +57,22 @@ public class ReservationTimeResponseControllerTest {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
 
-        RestAssured.given().log().all()
+        int id = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .extract().path("id");
 
         RestAssured.given().log().all()
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(2));
+                .body("size()", is(id));
 
         RestAssured.given().log().all()
-                .when().delete("/times/2")
+                .when().delete("/times/" + id)
                 .then().log().all()
                 .statusCode(204);
     }
