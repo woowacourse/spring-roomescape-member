@@ -5,44 +5,40 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
+import roomescape.repository.rowmapper.ThemeRowMapper;
 
 @Repository
 public class JdbcTemplateThemeRepository implements ThemeRepository {
     private final JdbcTemplate jdbcTemplate;
-    private final RowMapper<Theme> themeRowMapper = (rs, rowNum) -> {
-        long id = rs.getLong("id");
-        String name = rs.getString("name");
-        String description = rs.getString("description");
-        String thumbnail = rs.getString("thumbnail");
-        return new Theme(id, name, description, thumbnail);
-    };
+    private final ThemeRowMapper themeRowMapper;
 
-    public JdbcTemplateThemeRepository(JdbcTemplate jdbcTemplate) {
+    public JdbcTemplateThemeRepository(JdbcTemplate jdbcTemplate, ThemeRowMapper themeRowMapper) {
         this.jdbcTemplate = jdbcTemplate;
+        this.themeRowMapper = themeRowMapper;
     }
 
     @Override
     public List<Theme> findAll() {
-        return jdbcTemplate.query("select ID, NAME, DESCRIPTION, THUMBNAIL from THEME", themeRowMapper);
+        String sql = "SELECT id, name, description, thumbnail FROM theme";
+        return jdbcTemplate.query(sql, themeRowMapper);
     }
 
     @Override
     public List<Theme> findAndOrderByPopularity(LocalDate start, LocalDate end, int count) {
-        return jdbcTemplate.query(
-                "select th.*, count(*) as count from theme th join reservation r on r.theme_id = th.id where PARSEDATETIME(r.date,'yyyy-MM-dd') >= PARSEDATETIME(?,'yyyy-MM-dd') and PARSEDATETIME(r.date,'yyyy-MM-dd') <= PARSEDATETIME(?,'yyyy-MM-dd') group by th.id order by count desc limit ?",
-                themeRowMapper, start, end, count);
+        String sql = "SELECT th.id AS id, th.name AS name, description, thumbnail, COUNT(*) AS count FROM theme th JOIN reservation r ON r.theme_id = th.id WHERE PARSEDATETIME(r.date,'yyyy-MM-dd') >= PARSEDATETIME(?,'yyyy-MM-dd') AND PARSEDATETIME(r.date,'yyyy-MM-dd') <= PARSEDATETIME(?,'yyyy-MM-dd') GROUP BY th.id ORDER BY count DESC LIMIT ?";
+        return jdbcTemplate.query(sql, themeRowMapper, start, end, count);
     }
 
     @Override
     public Optional<Theme> findById(long id) {
-        List<Theme> themes = jdbcTemplate.query("select id, name, description, thumbnail from theme where id = ?",
-                themeRowMapper, id);
-        return themes.stream().findFirst();
+        String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
+        return jdbcTemplate.query(sql, themeRowMapper, id)
+                .stream()
+                .findAny();
     }
 
     @Override
@@ -55,18 +51,18 @@ public class JdbcTemplateThemeRepository implements ThemeRepository {
 
     private void save(Theme theme, KeyHolder keyHolder) {
         jdbcTemplate.update(con -> {
-                    PreparedStatement pstm = con.prepareStatement(
-                            "insert into THEME (NAME, DESCRIPTION, THUMBNAIL) values (?, ?, ?) ", new String[]{"id"});
-                    pstm.setString(1, theme.getName());
-                    pstm.setString(2, theme.getDescription());
-                    pstm.setString(3, theme.getThumbnail());
-                    return pstm;
-                },
-                keyHolder);
+            String sql = "INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)";
+            PreparedStatement pstmt = con.prepareStatement(sql, new String[]{"id"});
+            pstmt.setString(1, theme.getName());
+            pstmt.setString(2, theme.getDescription());
+            pstmt.setString(3, theme.getThumbnail());
+            return pstmt;
+        }, keyHolder);
     }
 
     @Override
     public void delete(long id) {
-        jdbcTemplate.update("delete from THEME where id = ?", id);
+        String sql = "DELETE FROM theme WHERE id = ?";
+        jdbcTemplate.update(sql, id);
     }
 }

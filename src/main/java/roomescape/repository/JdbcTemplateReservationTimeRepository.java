@@ -10,59 +10,59 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
+import roomescape.repository.rowmapper.ReservationTimeRowMapper;
 
 @Repository
 public class JdbcTemplateReservationTimeRepository implements ReservationTimeRepository {
     private final JdbcTemplate jdbcTemplate;
+    private final ReservationTimeRowMapper reservationTimeRowMapper;
 
-    public JdbcTemplateReservationTimeRepository(JdbcTemplate jdbcTemplate) {
+    public JdbcTemplateReservationTimeRepository(JdbcTemplate jdbcTemplate,
+                                                 ReservationTimeRowMapper reservationTimeRowMapper) {
         this.jdbcTemplate = jdbcTemplate;
+        this.reservationTimeRowMapper = reservationTimeRowMapper;
     }
 
     @Override
     public ReservationTime save(ReservationTime reservationTime) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         save(reservationTime, keyHolder);
-        return new ReservationTime(keyHolder.getKey().longValue(), reservationTime.getStartAt());
-    }
-
-    @Override
-    public boolean existsByStartAt(LocalTime startAt) {
-        return jdbcTemplate.queryForObject(
-                "select exists(select 1 from RESERVATION_TIME where START_AT = ?)",
-                Boolean.class, startAt);
-    }
-
-    @Override
-    public Optional<ReservationTime> findById(long id) {
-        List<ReservationTime> times = jdbcTemplate.query("select start_at from reservation_time where id = ?",
-                (rs, rowNum) -> {
-                    LocalTime time = rs.getTime(1).toLocalTime();
-                    return new ReservationTime(id, time);
-                }, id);
-        return times.stream().findFirst();
-    }
-
-    @Override
-    public List<ReservationTime> findAll() {
-        return jdbcTemplate.query("select * from reservation_time", (rs, rowNum) -> {
-            long id = rs.getLong(1);
-            LocalTime time = rs.getTime(2).toLocalTime();
-            return new ReservationTime(id, time);
-        });
-    }
-
-    @Override
-    public void delete(long id) {
-        jdbcTemplate.update("delete from reservation_time where id = ?", id);
+        long id = keyHolder.getKey().longValue();
+        return new ReservationTime(id, reservationTime.getStartAt());
     }
 
     private void save(ReservationTime reservationTime, KeyHolder keyHolder) {
         jdbcTemplate.update(con -> {
-            PreparedStatement pstmt = con.prepareStatement("insert into reservation_time(start_at) values ( ? )",
-                    new String[]{"id"});
+            String sql = "INSERT INTO reservation_time(start_at) VALUES ( ? )";
+            PreparedStatement pstmt = con.prepareStatement(sql, new String[]{"id"});
             pstmt.setTime(1, Time.valueOf(reservationTime.getStartAt()));
             return pstmt;
         }, keyHolder);
+    }
+
+    @Override
+    public boolean existsByStartAt(LocalTime startAt) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM reservation_time WHERE start_at = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, startAt));
+    }
+
+    @Override
+    public Optional<ReservationTime> findById(long id) {
+        String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
+        return jdbcTemplate.query(sql, reservationTimeRowMapper, id)
+                .stream()
+                .findAny();
+    }
+
+    @Override
+    public List<ReservationTime> findAll() {
+        String sql = "SELECT id, start_at FROM reservation_time";
+        return jdbcTemplate.query(sql, reservationTimeRowMapper);
+    }
+
+    @Override
+    public void delete(long id) {
+        String sql = "DELETE FROM reservation_time WHERE id = ?";
+        jdbcTemplate.update(sql, id);
     }
 }
