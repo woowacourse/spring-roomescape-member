@@ -1,12 +1,8 @@
-package roomescape.controller.api;
+package roomescape.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
-import roomescape.exception.AlreadyExistsException;
-import roomescape.exception.ExistReservationException;
-import roomescape.exception.NotExistException;
-import roomescape.exception.PastTimeReservationException;
 
 @ControllerAdvice
 public class ExceptionHandler {
