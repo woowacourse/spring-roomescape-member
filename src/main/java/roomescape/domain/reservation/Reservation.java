@@ -1,5 +1,7 @@
 package roomescape.domain.reservation;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Objects;
@@ -9,9 +11,17 @@ import roomescape.domain.user.UserName;
 
 public class Reservation {
     private final Long id;
+    @NotBlank(message = "예약자명은 필수입니다.")
+    @Size(min = 2, max = 10, message = "이름 길이는 2글자 이상, 10글자 이하여야 합니다.")
     private final UserName name;
+
+    @NotBlank(message = "예약 날짜는 필수입니다.")
     private final LocalDate date;
+
+    @NotBlank(message = "예약 시간은 필수입니다.")
     private final ReservationTime time;
+
+    @NotBlank(message = "예약 테마는 필수입니다.")
     private final Theme theme;
 
     public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
