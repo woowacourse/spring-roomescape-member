@@ -30,7 +30,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     private final RowMapper<Reservation> reservationRowMapper =
-            (resultSet, rowNum) -> new Reservation(
+            (resultSet, rowNum) -> Reservation.of(
                     resultSet.getLong("id"),
                     resultSet.getString("name"),
                     resultSet.getDate("date").toLocalDate(),
@@ -54,7 +54,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
         long id = simpleJdbcInsert.executeAndReturnKey(mapSqlParameterSource).longValue();
 
-        return new Reservation(
+        return Reservation.of(
                 id,
                 reservation.getName().getValue(),
                 reservation.getDate(),

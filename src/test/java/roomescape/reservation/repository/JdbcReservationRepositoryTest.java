@@ -27,10 +27,10 @@ class JdbcReservationRepositoryTest extends DummyDataFixture {
     @Test
     @DisplayName("Reservation를 저장한 후 저장한 row의 id값을 반환한다.")
     void save() {
-        Reservation newReservation = new Reservation(null, "포비", LocalDate.of(2024, 4, 23),
+        Reservation newReservation = Reservation.of(null, "포비", LocalDate.of(2024, 4, 23),
                 getReservationTimeById(1L), getThemeById(1L));
         assertThat(jdbcReservationRepository.save(newReservation))
-                .isEqualTo(new Reservation(14L, "포비", LocalDate.of(2024, 4, 23),
+                .isEqualTo(Reservation.of(14L, "포비", LocalDate.of(2024, 4, 23),
                         getReservationTimeById(1L), getThemeById(1L)));
     }
 

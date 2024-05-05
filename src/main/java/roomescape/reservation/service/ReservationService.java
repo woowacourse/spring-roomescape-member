@@ -39,7 +39,7 @@ public class ReservationService {
         validateReservationIsPast(reservation);
         validateAlreadyExistReservation(reservationTime, theme, reservation);
 
-        return CreateReservationResponse.of(reservationRepository.save(reservation));
+        return CreateReservationResponse.from(reservationRepository.save(reservation));
     }
 
     private ReservationTime findReservationTime(final Long id) {
@@ -60,21 +60,20 @@ public class ReservationService {
 
     private void validateAlreadyExistReservation(final ReservationTime reservationTime, final Theme theme,
                                                  final Reservation reservation) {
-        if (reservationRepository.existsByDateAndTimeAndTheme(reservation.getDate(), reservationTime.getId(),
-                theme.getId())) {
+        if (reservationRepository.existsByDateAndTimeAndTheme(reservation.getDate(), reservationTime.getId(), theme.getId())) {
             throw new IllegalStateException("동일한 시간의 예약이 존재합니다.");
         }
     }
 
     public List<FindReservationResponse> getReservations() {
         return reservationRepository.findAll().stream()
-                .map(FindReservationResponse::of)
+                .map(FindReservationResponse::from)
                 .toList();
     }
 
     public FindReservationResponse getReservation(final Long id) {
         Reservation reservation = findReservation(id);
-        return FindReservationResponse.of(reservation);
+        return FindReservationResponse.from(reservation);
     }
 
     private Reservation findReservation(final Long id) {
@@ -92,7 +91,7 @@ public class ReservationService {
 
     private static FindAvailableTimesResponse generateFindAvailableTimesResponse(final List<Reservation> reservations,
                                                                                  final ReservationTime reservationTime) {
-        return FindAvailableTimesResponse.of(
+        return FindAvailableTimesResponse.from(
                 reservationTime,
                 reservations.stream()
                         .anyMatch(reservation -> reservation.isSameTime(reservationTime)));
