@@ -8,9 +8,9 @@ import org.springframework.context.annotation.Import;
 import roomescape.domain.ReservationTime;
 
 import java.time.LocalTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -21,8 +21,8 @@ class ReservationTimeRepositoryTest {
     final List<ReservationTime> sampleTimes = List.of(
             new ReservationTime(null, "08:00"),
             new ReservationTime(null, "09:10"),
-            new ReservationTime(null, "10:20"),
-            new ReservationTime(null, "11:30")
+            new ReservationTime(null, "11:30"),
+            new ReservationTime(null, "10:20")
     );
 
     @Autowired
@@ -30,14 +30,20 @@ class ReservationTimeRepositoryTest {
 
     @Test
     @DisplayName("모든 예약 시간 목록을 조회한다.")
-    void findAll() {
+    void findAllByOrderByStartAt() {
         // given
         sampleTimes.forEach(timeRepository::save);
 
         // when
-        final List<ReservationTime> actual = timeRepository.findAll();
-        final List<ReservationTime> expected = IntStream.range(0, sampleTimes.size())
-                .mapToObj(i -> sampleTimes.get(i).assignId(actual.get(i).getId()))
+        final List<ReservationTime> actual = timeRepository.findAllByOrderByStartAt();
+        final List<ReservationTime> expected = sampleTimes.stream()
+                .map(time -> time.assignId(
+                        actual.stream()
+                                .filter(t -> t.getStartAt().equals(time.getStartAt()))
+                                .findAny()
+                                .orElseThrow()
+                                .getId()
+                )).sorted(Comparator.comparing(ReservationTime::getStartAt))
                 .toList();
 
         // then

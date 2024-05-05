@@ -29,13 +29,13 @@ public class TimeService {
     }
 
     public List<TimeResponse> getTimes() {
-        return timeRepository.findAll().stream()
+        return timeRepository.findAllByOrderByStartAt().stream()
                 .map(time -> TimeResponse.from(time, false))
                 .toList();
     }
 
     public List<TimeResponse> getTimesWithBooked(final String date, final Long themeId) {
-        final List<ReservationTime> times = timeRepository.findAll()
+        final List<ReservationTime> times = timeRepository.findAllByOrderByStartAt()
                 .stream()
                 .toList();
 

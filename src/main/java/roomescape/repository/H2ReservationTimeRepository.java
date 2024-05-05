@@ -35,8 +35,11 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
     }
 
     @Override
-    public List<ReservationTime> findAll() {
-        final String sql = "SELECT * FROM RESERVATION_TIME";
+    public List<ReservationTime> findAllByOrderByStartAt() {
+        final String sql = """
+                SELECT * FROM RESERVATION_TIME
+                ORDER BY START_AT
+                """;
 
         return jdbcTemplate.query(sql, this::mapRowTime);
     }

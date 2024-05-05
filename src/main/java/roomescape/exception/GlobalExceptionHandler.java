@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidNameException(final BadRequestException e) {
+    public ResponseEntity<ErrorResponse> handleBadRequestException(final BadRequestException e) {
         return createErrorResponse(HttpStatus.BAD_REQUEST, e);
     }
 
@@ -20,8 +20,13 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ConflictException.class)
-    public ResponseEntity<ErrorResponse> handleDuplicatedException(final ConflictException e) {
+    public ResponseEntity<ErrorResponse> handleConflictException(final ConflictException e) {
         return createErrorResponse(HttpStatus.CONFLICT, e);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleException(final Exception e) {
+        return ResponseEntity.internalServerError().build();
     }
 
     public ResponseEntity<ErrorResponse> createErrorResponse(final HttpStatus httpStatus, final Exception e) {

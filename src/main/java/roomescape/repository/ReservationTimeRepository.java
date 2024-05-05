@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface ReservationTimeRepository {
 
-    List<ReservationTime> findAll();
+    List<ReservationTime> findAllByOrderByStartAt();
 
     Optional<ReservationTime> findById(long id);
 
