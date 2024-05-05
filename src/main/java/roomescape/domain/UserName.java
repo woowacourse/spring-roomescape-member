@@ -12,11 +12,14 @@ public class UserName {
     private final String userName;
 
     private void validate(String userName) {
-        if (userName.isBlank() || userName.length() > 20) {
-            throw new IllegalArgumentException("예약자명은 1글자 이상, 20글자 이하로 작성해야 합니다.");
+        if (userName.isBlank()) {
+            throw new IllegalArgumentException("예약자명이 입력되지 않았습니다. 1글자 이상 20글자 이하로 입력해주세요.");
+        }
+        if (userName.length() > 20) {
+            throw new IllegalArgumentException(userName + "은 유효하지 않은 예약자명입니다. 20글자 이하로 입력해주세요.");
         }
         if (!userName.matches(NAME_FORMAT)) {
-            throw new IllegalArgumentException("예약자명은 한글, 영문, 숫자만 허용합니다.");
+            throw new IllegalArgumentException(userName + "은 유효하지 않은 예약자명입니다. 한글, 영문, 숫자로만 입력해주세요.");
         }
     }
 
