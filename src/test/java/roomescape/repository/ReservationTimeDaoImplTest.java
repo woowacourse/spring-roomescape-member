@@ -37,6 +37,7 @@ class ReservationTimeDaoImplTest {
 
     @BeforeEach
     void setUp() {
+        jdbcTemplate.execute("TRUNCATE TABLE reservation RESTART IDENTITY");
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
         jdbcTemplate.execute("TRUNCATE TABLE reservation_time RESTART IDENTITY");
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
@@ -44,6 +45,7 @@ class ReservationTimeDaoImplTest {
         insertActor = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation_time")
                 .usingGeneratedKeyColumns("id");
+
         insertToReservationTime("10:00");
         insertToReservationTime("11:00");
     }

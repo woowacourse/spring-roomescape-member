@@ -54,7 +54,8 @@ class ThemeControllerTest {
     @DisplayName("전체 테마를 조회한다.")
     @Test
     void should_get_themes() {
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "에버", "공포", "공포.jpg");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "에버", "공포",
+                "공포.jpg");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "배키", "미스터리",
                 "미스터리.jpg");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "포비", "스릴러",
@@ -81,27 +82,23 @@ class ThemeControllerTest {
                 .when().post("/themes")
                 .then().log().all()
                 .statusCode(201)
-                .header("Location", "/themes/3");
+                .header("Location", "/themes/12");
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from theme", Integer.class);
 
-        assertThat(count).isEqualTo(3);
+        assertThat(count).isEqualTo(12);
     }
 
     @DisplayName("테마를 삭제한다")
     @Test
     void should_remove_theme() {
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "에버", "공포", "공포.jpg");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "배키", "미스터리",
-                "미스터리.jpg");
-
         RestAssured.given().log().all()
-                .when().delete("/themes/1")
+                .when().delete("/themes/10")
                 .then().log().all()
                 .statusCode(204);
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from theme", Integer.class);
-        assertThat(count).isEqualTo(3);
+        assertThat(count).isEqualTo(10);
     }
 
     @DisplayName("인기 테마를 조회한다.")

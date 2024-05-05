@@ -66,7 +66,7 @@ public class ReservationDaoImpl implements ReservationDao {
 
     @Override
     public Reservation addReservation(Reservation reservation) {
-        Map<String, Object> parameters = new HashMap<>(3);
+        Map<String, Object> parameters = new HashMap<>(4);
         parameters.put("name", reservation.getName());
         parameters.put("date", reservation.getDate());
         parameters.put("time_id", reservation.getTime().getId());
@@ -86,7 +86,7 @@ public class ReservationDaoImpl implements ReservationDao {
     public Long countReservationById(long id) {
         String sql = "SELECT count(id) FROM reservation WHERE id = ?";
         Long countReservation = jdbcTemplate.queryForObject(sql, (resultSet, ignored) -> resultSet.getLong(1), id);
-        validateNullResult(countReservation);
+        validateNullResult(countReservation); //todo 예외는 꼭 예외를 발생시켜야 할 때만 해야함 : 그냥 0으로 반환하면 안되나? count잖아!!
         return countReservation;
     }
 

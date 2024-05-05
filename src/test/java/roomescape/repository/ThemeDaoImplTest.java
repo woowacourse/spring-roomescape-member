@@ -41,6 +41,8 @@ class ThemeDaoImplTest {
     @BeforeEach
     void setUp() {
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
+        jdbcTemplate.execute("TRUNCATE TABLE reservation RESTART IDENTITY");
+        jdbcTemplate.execute("TRUNCATE TABLE reservation_time RESTART IDENTITY");
         jdbcTemplate.execute("TRUNCATE TABLE theme RESTART IDENTITY");
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
         themeInsertActor = new SimpleJdbcInsert(dataSource)
@@ -52,21 +54,13 @@ class ThemeDaoImplTest {
         timeInsertActor = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation_time")
                 .usingGeneratedKeyColumns("id");
-        insertTheme("에버", "공포", "공포.jpg");
-        insertTheme("배키", "미스터리", "미스터리.jpg");
-    }
-
-    private void insertTheme(String name, String description, String thumbnail) {
-        Map<String, Object> parameters = new HashMap<>(3);
-        parameters.put("name", name);
-        parameters.put("description", description);
-        parameters.put("thumbnail", thumbnail);
-        themeInsertActor.execute(parameters);
     }
 
     @DisplayName("모든 테마를 조회한다.")
     @Test
     void should_find_all_themes() {
+        insertTheme("에버", "공포", "공포.jpg");
+        insertTheme("배키", "미스터리", "미스터리.jpg");
         List<Theme> allThemes = themeDao.findAllThemes();
         assertThat(allThemes).hasSize(2);
     }
@@ -74,6 +68,8 @@ class ThemeDaoImplTest {
     @DisplayName("테마를 저장한다.")
     @Test
     void should_add_theme() {
+        insertTheme("에버", "공포", "공포.jpg");
+        insertTheme("배키", "미스터리", "미스터리.jpg");
         Theme theme = new Theme("브라운", "공포", "공포.jpg");
         themeDao.addTheme(theme);
         assertThat(themeDao.findAllThemes()).hasSize(3);
@@ -82,6 +78,8 @@ class ThemeDaoImplTest {
     @DisplayName("테마를 삭제한다.")
     @Test
     void should_delete_theme() {
+        insertTheme("에버", "공포", "공포.jpg");
+        insertTheme("배키", "미스터리", "미스터리.jpg");
         themeDao.deleteTheme(1);
         assertThat(themeDao.findAllThemes()).hasSize(1);
     }
@@ -89,9 +87,6 @@ class ThemeDaoImplTest {
     @DisplayName("특정 기간의 테마를 인기순으로 정렬하여 조회한다.")
     @Test
     void should_find_ranking_theme_by_date() {
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
-        jdbcTemplate.execute("TRUNCATE TABLE theme RESTART IDENTITY");
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
         insertReservationTime(LocalTime.of(10, 0));
         for (int i = 1; i <= 15; i++) {
             insertTheme("name" + i, "description" + i, "thumbnail" + i);
@@ -121,6 +116,14 @@ class ThemeDaoImplTest {
                 new Theme(7L, "name7", "description7", "thumbnail7"),
                 new Theme(8L, "name8", "description8", "thumbnail8")
         );
+    }
+
+    private void insertTheme(String name, String description, String thumbnail) {
+        Map<String, Object> parameters = new HashMap<>(3);
+        parameters.put("name", name);
+        parameters.put("description", description);
+        parameters.put("thumbnail", thumbnail);
+        themeInsertActor.execute(parameters);
     }
 
     private void insertReservationTime(LocalTime startAt) {
