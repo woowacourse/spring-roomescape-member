@@ -104,6 +104,4 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
         return jdbcTemplate.queryForObject(sql, Boolean.class, startAt);
     }
-
-
 }
