@@ -31,9 +31,11 @@ public class ReservationService {
 
     public ReservationResponse save(ReservationRequest reservationRequest) {
         ReservationTime requestedReservationTime = reservationTimeRepository.findById(reservationRequest.timeId())
-                .orElseThrow(() -> new IllegalArgumentException("예약할 수 없는 시간입니다. timeId: " + reservationRequest.timeId()));
+                .orElseThrow(() -> new IllegalArgumentException(String.format("예약할 수 없는 시간입니다. timeId: %d",
+                        reservationRequest.timeId())));
         Theme requestedTheme = themeRepository.findById(reservationRequest.themeId())
-                .orElseThrow(() -> new IllegalArgumentException("예약할 수 없는 테마입니다. themeId: " + reservationRequest.themeId()));
+                .orElseThrow(() -> new IllegalArgumentException(String.format("예약할 수 없는 테마입니다. themeId: %d",
+                        reservationRequest.themeId())));
         Reservation requestedReservation = reservationRequest.toEntity(requestedReservationTime, requestedTheme);
 
         rejectPastTimeReservation(requestedReservation);
@@ -56,8 +58,9 @@ public class ReservationService {
         LocalDateTime currentDateTime = LocalDateTime.now();
 
         if (reservationDataTime.isBefore(currentDateTime)) {
-            throw new IllegalArgumentException("이미 지난 시간입니다. 입력한 시간: " + reservationDataTime.toLocalDate() + " "
-                                               + reservationDataTime.toLocalTime());
+            throw new IllegalArgumentException(String.format("이미 지난 시간입니다. 입력한 예약 시간: %s %s",
+                    reservationDataTime.toLocalDate(),
+                    reservationDataTime.toLocalTime()));
         }
     }
 

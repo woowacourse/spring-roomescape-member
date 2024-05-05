@@ -16,7 +16,7 @@ public record ReservationTimeRequest(String startAt) {
         try {
             LocalTime.parse(startAt);
         } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("시간은 HH:mm 형식으로 입력해야 합니다. 입력한 값: " + startAt);
+            throw new IllegalArgumentException(String.format("시간은 HH:mm 형식으로 입력해야 합니다. 입력한 값: %s", startAt));
         }
     }
 
