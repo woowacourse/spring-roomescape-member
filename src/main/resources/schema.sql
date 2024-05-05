@@ -1,3 +1,7 @@
+DROP TABLE IF EXISTS reservation_time CASCADE;
+DROP TABLE IF EXISTS theme CASCADE;
+DROP TABLE IF EXISTS reservation CASCADE;
+
 CREATE TABLE reservation_time
 (
     id       BIGINT NOT NULL AUTO_INCREMENT,
