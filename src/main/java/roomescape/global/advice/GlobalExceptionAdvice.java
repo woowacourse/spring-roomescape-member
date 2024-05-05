@@ -14,38 +14,38 @@ import roomescape.global.dto.ErrorResponse;
 public class GlobalExceptionAdvice {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    @ExceptionHandler({RuntimeException.class, Exception.class})
-    public ResponseEntity<ErrorResponse> handleServerErrorException(Exception e) {
-        logger.error(e.getMessage());
-        ErrorResponse errorResponse = new ErrorResponse(500, "서버 에러입니다. 관리자에게 문의하세요");
-        return ResponseEntity.internalServerError().body(errorResponse);
-    }
-
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException e) {
         logger.warn(e.getMessage());
-        ErrorResponse errorResponse = new ErrorResponse(400, e.getMessage());
+        ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
         return ResponseEntity.badRequest().body(errorResponse);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         logger.warn(e.getMessage());
-        ErrorResponse errorResponse = new ErrorResponse(e.getStatusCode().value(), e);
+        ErrorResponse errorResponse = new ErrorResponse(e);
         return ResponseEntity.badRequest().body(errorResponse);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException e) {
         logger.warn(e.getMessage());
-        ErrorResponse errorResponse = new ErrorResponse(400, e.getConstraintViolations());
+        ErrorResponse errorResponse = new ErrorResponse(e.getConstraintViolations());
         return ResponseEntity.badRequest().body(errorResponse);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorResponse> handle(HttpMessageNotReadableException e) {
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         logger.warn(e.getMessage());
-        ErrorResponse errorResponse = new ErrorResponse(400, "잘못된 데이터 형식입니다");
+        ErrorResponse errorResponse = new ErrorResponse("잘못된 데이터 형식입니다");
         return ResponseEntity.badRequest().body(errorResponse);
+    }
+
+    @ExceptionHandler({RuntimeException.class, Exception.class})
+    public ResponseEntity<ErrorResponse> handleServerErrorException(Exception e) {
+        logger.error(e.getMessage());
+        ErrorResponse errorResponse = new ErrorResponse("서버 에러입니다. 관리자에게 문의하세요");
+        return ResponseEntity.internalServerError().body(errorResponse);
     }
 }

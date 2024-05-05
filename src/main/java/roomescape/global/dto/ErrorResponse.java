@@ -9,23 +9,22 @@ import java.util.Set;
 import org.springframework.validation.BindingResult;
 
 public record ErrorResponse(
-        int statusCode,
         String message,
         @JsonInclude(Include.NON_NULL)
         List<FieldError> fieldErrors,
         @JsonInclude(Include.NON_NULL)
         List<ConstraintViolationError> violationErrors
 ) {
-    public ErrorResponse(int statusCode, String message) {
-        this(statusCode, message, null, null);
+    public ErrorResponse(String message) {
+        this(message, null, null);
     }
 
-    public ErrorResponse(int statusCode, BindingResult bindingResult) {
-        this(statusCode, "입력이 잘못되었습니다.", FieldError.from(bindingResult), null);
+    public ErrorResponse(BindingResult bindingResult) {
+        this("입력이 잘못되었습니다.", FieldError.from(bindingResult), null);
     }
 
-    public ErrorResponse(int statusCode, Set<ConstraintViolation<?>> constraintViolations) {
-        this(statusCode, "입력이 잘못되었습니다.", null, ConstraintViolationError.from(constraintViolations));
+    public ErrorResponse(Set<ConstraintViolation<?>> constraintViolations) {
+        this("입력이 잘못되었습니다.", null, ConstraintViolationError.from(constraintViolations));
     }
 
     private record FieldError(String field, Object rejectedValue, String reason) {
