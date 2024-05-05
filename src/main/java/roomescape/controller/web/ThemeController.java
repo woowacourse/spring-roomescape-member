@@ -1,5 +1,6 @@
 package roomescape.controller.web;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class ThemeController {
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponse> save(@RequestBody ThemeRequest themeRequest) {
+    public ResponseEntity<ThemeResponse> save(@RequestBody @Valid ThemeRequest themeRequest) {
         ThemeResponse themeResponse = themeService.save(themeRequest);
         return ResponseEntity.created(URI.create("/themes/" + themeResponse.themeId()))
                 .body(themeResponse);
