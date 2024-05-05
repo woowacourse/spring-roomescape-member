@@ -25,6 +25,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import roomescape.dto.reservationtime.ReservationTimeCreateRequest;
 import roomescape.dto.reservationtime.ReservationTimeResponse;
 import roomescape.exception.InvalidValueException;
+import roomescape.fixture.ReservationTimeFixtures;
 import roomescape.service.ReservationTimeService;
 
 @WebMvcTest(ReservationTimeController.class)
@@ -44,8 +45,8 @@ class ReservationTimeControllerTest {
         String firstStartAt = "12:40";
         String secondStartAt = "23:25";
         List<ReservationTimeResponse> responses = List.of(
-                ReservationTimeResponse.of(1L, firstStartAt),
-                ReservationTimeResponse.of(2L, secondStartAt)
+                ReservationTimeFixtures.createReservationTimeResponse(1L, firstStartAt),
+                ReservationTimeFixtures.createReservationTimeResponse(2L, secondStartAt)
         );
         given(reservationTimeService.findAll())
                 .willReturn(responses);
@@ -65,8 +66,8 @@ class ReservationTimeControllerTest {
     void create() throws Exception {
         //given
         String startAt = "22:04";
-        ReservationTimeCreateRequest givenRequest = ReservationTimeCreateRequest.from(startAt);
-        ReservationTimeResponse expectedResponse = ReservationTimeResponse.of(2L, startAt);
+        ReservationTimeCreateRequest givenRequest = ReservationTimeFixtures.createReservationTimeCreateRequest(startAt);
+        ReservationTimeResponse expectedResponse = ReservationTimeFixtures.createReservationTimeResponse(2L, startAt);
         given(reservationTimeService.add(givenRequest))
                 .willReturn(expectedResponse);
         String requestBody = objectMapper.writeValueAsString(givenRequest);
@@ -95,10 +96,10 @@ class ReservationTimeControllerTest {
     @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = {"1212", "anytime"})
-    @DisplayName("유효하지 않은 값이 입력되면 Bad Request 응답을 반환한다.")
+    @DisplayName("InvalidValueException이 발생하면 Bad Request 응답을 반환한다.")
     void createReservationTimeByInvalidStartAt(String given) throws Exception {
         //given
-        ReservationTimeCreateRequest givenRequest = ReservationTimeCreateRequest.from(given);
+        ReservationTimeCreateRequest givenRequest = ReservationTimeFixtures.createReservationTimeCreateRequest(given);
         given(reservationTimeService.add(givenRequest))
                 .willThrow(InvalidValueException.class);
         String requestBody = objectMapper.writeValueAsString(givenRequest);

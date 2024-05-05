@@ -24,9 +24,9 @@ import roomescape.domain.theme.Theme;
 import roomescape.dto.reservationtime.ReservationTimeCreateRequest;
 import roomescape.dto.reservationtime.ReservationTimeResponse;
 import roomescape.exception.InvalidValueException;
-import roomescape.service.fixture.ReservationFixtures;
-import roomescape.service.fixture.ReservationTimeFixtures;
-import roomescape.service.fixture.ThemeFixtures;
+import roomescape.fixture.ReservationFixtures;
+import roomescape.fixture.ReservationTimeFixtures;
+import roomescape.fixture.ThemeFixtures;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class ReservationTimeServiceTest {

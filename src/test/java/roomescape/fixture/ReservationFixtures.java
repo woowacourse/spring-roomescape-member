@@ -1,4 +1,4 @@
-package roomescape.service.fixture;
+package roomescape.fixture;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -8,6 +8,9 @@ import roomescape.domain.reservation.ReservationName;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
 import roomescape.dto.reservation.ReservationCreateRequest;
+import roomescape.dto.reservation.ReservationResponse;
+import roomescape.dto.reservationtime.ReservationTimeResponse;
+import roomescape.dto.theme.ThemeResponse;
 
 public class ReservationFixtures {
 
@@ -32,5 +35,9 @@ public class ReservationFixtures {
 
     public static ReservationCreateRequest createReservationCreateRequest(long timeId, long themeId) {
         return ReservationCreateRequest.of("default", "2024-04-02", timeId, themeId, LocalDate.now(), LocalTime.now());
+    }
+
+    public static ReservationResponse createReservationResponse(long id, String name, String date, ReservationTimeResponse timeResponse, ThemeResponse themeResponse) {
+        return ReservationResponse.of(id, name, date, timeResponse, themeResponse);
     }
 }

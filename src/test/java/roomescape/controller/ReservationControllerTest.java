@@ -11,8 +11,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,9 +21,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.dto.reservation.ReservationCreateRequest;
 import roomescape.dto.reservation.ReservationResponse;
-import roomescape.dto.reservationtime.ReservationTimeResponse;
-import roomescape.dto.theme.ThemeResponse;
 import roomescape.exception.InvalidValueException;
+import roomescape.fixture.ReservationFixtures;
+import roomescape.fixture.ReservationTimeFixtures;
+import roomescape.fixture.ThemeFixtures;
 import roomescape.service.ReservationService;
 
 @WebMvcTest(ReservationController.class)
@@ -42,9 +41,9 @@ class ReservationControllerTest {
     @DisplayName("전체 예약을 조회한다.")
     void getAllReservationsTest() throws Exception {
         //given
-        String firstName = "daon";
-        String secondDate = "2022-02-05";
-        String secondStartAt = "23:22";
+        String firstName = "daon" ;
+        String secondDate = "2022-02-05" ;
+        String secondStartAt = "23:22" ;
         List<ReservationResponse> expectedResponses = getExpectedResponses(firstName, secondDate, secondStartAt);
         given(reservationService.findAll()).willReturn(expectedResponses);
 
@@ -63,17 +62,17 @@ class ReservationControllerTest {
     @DisplayName("예약을 성공적으로 추가한다.")
     void addReservationTest() throws Exception {
         //given
-        String expectedName = "daon";
-        String expectedDate = "2024-11-29";
-        String expectedStartAt = "00:01";
-        ReservationCreateRequest givenRequest = ReservationCreateRequest.of(expectedName, expectedDate, 1L, 1L,
-                LocalDate.now(), LocalTime.now());
-        ReservationResponse response = ReservationResponse.of(
+        String expectedName = "daon" ;
+        String expectedDate = "2024-11-29" ;
+        String expectedStartAt = "00:01" ;
+        ReservationCreateRequest givenRequest =
+                ReservationFixtures.createReservationCreateRequest(expectedName, expectedDate, 1L, 1L);
+        ReservationResponse response = ReservationFixtures.createReservationResponse(
                 1L,
                 expectedName,
                 expectedDate,
-                ReservationTimeResponse.of(1L, expectedStartAt),
-                ThemeResponse.of(1L, "방탈출1", "1번 방탈출", "썸네일1")
+                ReservationTimeFixtures.createReservationTimeResponse(1L, expectedStartAt),
+                ThemeFixtures.createThemeResponse(1L, "방탈출1", "1번 방탈출", "썸네일1")
         );
         given(reservationService.add(givenRequest)).willReturn(response);
         String givenJsonRequest = objectMapper.writeValueAsString(givenRequest);
@@ -99,11 +98,11 @@ class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("유효하지 않은 값이 입력되면 Bad Request 응답을 반환한다.")
+    @DisplayName("InvalidValueException이 발생하면 Bad Request 응답을 반환한다.")
     void createReservationByInvalidRequest() throws Exception {
         //given
         ReservationCreateRequest givenRequest
-                = ReservationCreateRequest.of("InvalidName", "InvalidDate", -1L, 1L, LocalDate.now(), LocalTime.now());
+                = ReservationFixtures.createReservationCreateRequest("InvalidName", "InvalidDate", -1L, -1L);
         given(reservationService.add(givenRequest))
                 .willThrow(InvalidValueException.class);
         String requestBody = objectMapper.writeValueAsString(givenRequest);
@@ -118,19 +117,19 @@ class ReservationControllerTest {
 
     private List<ReservationResponse> getExpectedResponses(String firstName, String secondDate, String secondStartAt) {
         return List.of(
-                ReservationResponse.of(
+                ReservationFixtures.createReservationResponse(
                         1L,
                         firstName,
                         "2022-02-23",
-                        ReservationTimeResponse.of(1L, "12:12"),
-                        ThemeResponse.of(1L, "방탈출1", "1번 방탈출", "썸네일1")
+                        ReservationTimeFixtures.createReservationTimeResponse(1L, "12:12"),
+                        ThemeFixtures.createThemeResponse(1L, "방탈출1", "1번 방탈출", "썸네일1")
                 ),
-                ReservationResponse.of(
+                ReservationFixtures.createReservationResponse(
                         2L,
                         "ikjo",
                         secondDate,
-                        ReservationTimeResponse.of(2L, secondStartAt),
-                        ThemeResponse.of(1L, "방탈출1", "1번 방탈출", "썸네일1")
+                        ReservationTimeFixtures.createReservationTimeResponse(2L, secondStartAt),
+                        ThemeFixtures.createThemeResponse(1L, "방탈출1", "1번 방탈출", "썸네일1")
                 )
         );
     }

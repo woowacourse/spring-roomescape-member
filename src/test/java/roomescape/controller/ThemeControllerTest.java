@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import roomescape.dto.theme.ThemeCreateRequest;
 import roomescape.dto.theme.ThemeResponse;
 import roomescape.exception.InvalidValueException;
+import roomescape.fixture.ThemeFixtures;
 import roomescape.service.ThemeService;
 
 @WebMvcTest(ThemeController.class)
@@ -36,8 +37,8 @@ class ThemeControllerTest {
     void readAll() throws Exception {
         //given
         List<ThemeResponse> responses = List.of(
-                ThemeResponse.of(1L, "방탈출1", "1번 방탈출", "썸네일 1"),
-                ThemeResponse.of(2L, "방탈출2", "2번 방탈출", "썸네일 2")
+                ThemeFixtures.createThemeResponse(1L, "방탈출1", "1번 방탈출", "썸네일 1"),
+                ThemeFixtures.createThemeResponse(2L, "방탈출2", "2번 방탈출", "썸네일 2")
         );
         given(themeService.findAll())
                 .willReturn(responses);
@@ -52,8 +53,8 @@ class ThemeControllerTest {
     @DisplayName("테마를 추가한다.")
     void create() throws Exception {
         //given
-        ThemeCreateRequest givenRequest = ThemeCreateRequest.of("방탈출1", "1번 방탈출", "썸네일 1");
-        ThemeResponse response = ThemeResponse.of(1L, "방탈출1", "1번 방탈출", "썸네일 1");
+        ThemeCreateRequest givenRequest = ThemeFixtures.createThemeCreateRequest("방탈출1", "1번 방탈출", "썸네일 1");
+        ThemeResponse response = ThemeFixtures.createThemeResponse(1L, "방탈출1", "1번 방탈출", "썸네일 1");
         given(themeService.add(givenRequest)).willReturn(response);
         String requestBody = objectMapper.writeValueAsString(givenRequest);
 
@@ -77,11 +78,11 @@ class ThemeControllerTest {
     }
 
     @Test
-    @DisplayName("유효하지않은 값이 입력되면 Bad Request 응답을 반환한다.")
+    @DisplayName("InvalidValueException이 발생하면 Bad Request 응답을 반환한다.")
     void createThemeByInvalidRequest() throws Exception {
         //given
         ThemeCreateRequest givenRequest
-                = ThemeCreateRequest.of("InvalidName", "InvalidDescription", "InvalidThumbnail");
+                = ThemeFixtures.createThemeCreateRequest("InvalidName", "InvalidDescription", "InvalidThumbnail");
         given(themeService.add(givenRequest))
                 .willThrow(InvalidValueException.class);
         String requestBody = objectMapper.writeValueAsString(givenRequest);

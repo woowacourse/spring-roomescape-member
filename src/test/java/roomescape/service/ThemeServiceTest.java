@@ -20,7 +20,7 @@ import roomescape.domain.theme.Theme;
 import roomescape.dto.theme.ThemeCreateRequest;
 import roomescape.dto.theme.ThemeResponse;
 import roomescape.exception.InvalidValueException;
-import roomescape.service.fixture.ThemeFixtures;
+import roomescape.fixture.ThemeFixtures;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class ThemeServiceTest {
