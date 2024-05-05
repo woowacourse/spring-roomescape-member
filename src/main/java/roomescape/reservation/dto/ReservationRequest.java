@@ -2,6 +2,8 @@ package roomescape.reservation.dto;
 
 import java.time.LocalDate;
 import roomescape.reservation.domain.Reservation;
+import roomescape.theme.domain.Theme;
+import roomescape.time.domain.Time;
 
 public record ReservationRequest(
         LocalDate date,
@@ -10,8 +12,8 @@ public record ReservationRequest(
         long themeId
 ) {
 
-    public Reservation toReservation() {
-        return new Reservation(name, date, timeId, themeId);
+    public Reservation toReservation(Time time, Theme theme) {
+        return new Reservation(name, date, time, theme);
     }
 
 }

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 import java.util.regex.Pattern;
 import roomescape.exception.BadRequestException;
+import roomescape.exception.IllegalReservationDateTimeRequestException;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.Time;
 
@@ -12,13 +13,13 @@ public class Reservation {
     private static final Pattern ILLEGAL_NAME_REGEX = Pattern.compile(".*[^\\w\\s가-힣].*");
     private final String name;
     private final LocalDate date;
-    private final Theme theme;
+    private Theme theme;
     private long id;
     private Time time;
 
-    public Reservation(String name, LocalDate date, long timeId, long themeId) {
-        this(0, name, date, new Time(timeId), new Theme(themeId));
-        validate();
+    public Reservation(String name, LocalDate date, Time time, Theme theme) {
+        this(0, name, date, time, theme);
+        validate(name, date, time, theme);
     }
 
     public Reservation(long id, String name, LocalDate date, Time time, Theme theme) {
@@ -29,12 +30,19 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public void validate() {
-        if (name == null || name.isBlank()) {
-            throw new BadRequestException("null 혹은 빈칸으로 이루어진 이름으로 예약을 시도하였습니다.");
+    public void validate(String name, LocalDate date, Time time, Theme theme) {
+        if (name == null || date == null || time == null || theme == null) {
+            throw new BadRequestException("예약 정보가 부족합니다.");
         }
+        validateName(name);
         if (date.isBefore(LocalDate.now())) {
-            throw new BadRequestException("지난 날짜의 예약을 시도하였습니다.");
+            throw new IllegalReservationDateTimeRequestException("지난 날짜의 예약을 시도하였습니다.");
+        }
+    }
+
+    private void validateName(String name) {
+        if (name.isBlank()) {
+            throw new BadRequestException("공백으로 이루어진 이름으로 예약할 수 없습니다.");
         }
         if (ILLEGAL_NAME_REGEX.matcher(name)
                 .matches()) {
@@ -82,6 +90,10 @@ public class Reservation {
         this.time = time;
     }
 
+    public void setTheme(Theme theme) {
+        this.theme = theme;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -90,8 +102,8 @@ public class Reservation {
         if (!(o instanceof Reservation that)) {
             return false;
         }
-        return id == that.id && Objects.equals(name, that.name) && Objects.equals(date, that.date)
-                && Objects.equals(theme, that.theme) && Objects.equals(time, that.time);
+        return id == that.id && Objects.equals(name, that.name) && Objects.equals(date, that.date) && Objects.equals(
+                theme, that.theme) && Objects.equals(time, that.time);
     }
 
     @Override

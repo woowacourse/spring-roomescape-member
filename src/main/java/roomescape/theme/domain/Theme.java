@@ -7,6 +7,10 @@ public class Theme {
     private final String thumbnail;
     private long id;
 
+    public Theme(long id) {
+        this(id, null, null, null);
+    }
+
     public Theme(String name, String description, String thumbnail) {
         this(0, name, description, thumbnail);
     }
@@ -16,10 +20,6 @@ public class Theme {
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
-    }
-
-    public Theme(long id) {
-        this(id, null, null, null);
     }
 
     public long getId() {

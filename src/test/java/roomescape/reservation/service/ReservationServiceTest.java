@@ -20,6 +20,7 @@ import roomescape.reservation.dao.ReservationJdbcDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
+import roomescape.theme.dao.ThemeJdbcDao;
 import roomescape.theme.domain.Theme;
 import roomescape.time.dao.TimeJdbcDao;
 import roomescape.time.domain.Time;
@@ -37,6 +38,8 @@ class ReservationServiceTest {
     private ReservationJdbcDao reservationJdbcDao;
     @Mock
     private TimeJdbcDao timeJdbcDao;
+    @Mock
+    private ThemeJdbcDao themeJdbcDao;
 
     @Test
     @DisplayName("예약을 추가한다.")
@@ -46,6 +49,9 @@ class ReservationServiceTest {
 
         Mockito.when(timeJdbcDao.findById(1L))
                 .thenReturn(reservation.getReservationTime());
+
+        Mockito.when(themeJdbcDao.findById(1L))
+                .thenReturn(reservation.getTheme());
 
         ReservationRequest reservationRequest = new ReservationRequest(reservation.getDate(), reservation.getName(),
                 reservation.getReservationTime()

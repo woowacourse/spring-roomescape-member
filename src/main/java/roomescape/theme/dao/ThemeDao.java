@@ -14,4 +14,6 @@ public interface ThemeDao {
 
     void deleteById(long themeId);
 
+    Theme findById(long themeId);
+
 }

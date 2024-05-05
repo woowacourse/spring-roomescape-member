@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -13,6 +14,12 @@ import roomescape.theme.domain.Theme;
 @Repository
 public class ThemeJdbcDao implements ThemeDao {
 
+    public static final RowMapper<Theme> THEME_ROW_MAPPER = (resultSet, rowNum) -> new Theme(
+            resultSet.getLong("id"),
+            resultSet.getString("name"),
+            resultSet.getString("description"),
+            resultSet.getString("thumbnail")
+    );
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
@@ -36,12 +43,13 @@ public class ThemeJdbcDao implements ThemeDao {
     public List<Theme> findAll() {
         String findAllThemesSql = "SELECT id, name, description, thumbnail FROM theme";
 
-        return jdbcTemplate.query(findAllThemesSql, (resultSet, rowNum) -> new Theme(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getString("description"),
-                resultSet.getString("thumbnail")
-        ));
+        return jdbcTemplate.query(findAllThemesSql, THEME_ROW_MAPPER);
+    }
+
+    @Override
+    public Theme findById(long themeId) {
+        String findByIdSql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
+        return jdbcTemplate.queryForObject(findByIdSql, THEME_ROW_MAPPER, themeId);
     }
 
     @Override
@@ -59,13 +67,7 @@ public class ThemeJdbcDao implements ThemeDao {
                 ) r ON th.id = r.theme_id;
                 """;
 
-        return jdbcTemplate.query(findThemesInOrderSql, (resultSet, rowNum)
-                        -> new Theme(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("description"),
-                        resultSet.getString("thumbnail")
-                )
+        return jdbcTemplate.query(findThemesInOrderSql, THEME_ROW_MAPPER
                 , startDate.toString(), endDate.toString());
     }
 
