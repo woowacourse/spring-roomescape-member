@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.service.exception.ReservationNotFoundException;
 
 import javax.sql.DataSource;
 import java.time.LocalDate;
@@ -60,6 +61,16 @@ public class H2ReservationRepository implements ReservationRepository {
         return jdbcTemplate.query(sql, getReservationExceptTimeAndTheme(), id)
                 .stream()
                 .findAny();
+    }
+
+    @Override
+    public Reservation fetchById(final Long id) {
+        final String sql = "SELECT * FROM reservation WHERE ID = ?";
+
+        return jdbcTemplate.query(sql, getReservationExceptTimeAndTheme(), id)
+                .stream()
+                .findAny()
+                .orElseThrow(() -> new ReservationNotFoundException("존재하지 않는 예약입니다."));
     }
 
     @Override

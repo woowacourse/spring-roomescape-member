@@ -60,8 +60,7 @@ public class TimeService {
         if (reservationRepository.existsByTimeId(id)) {
             throw new TimeUsedException("예약된 시간은 삭제할 수 없습니다.");
         }
-        final ReservationTime findTime = timeRepository.findById(id)
-                .orElseThrow(() -> new TimeNotFoundException("존재하지 않는 시간입니다."));
+        final ReservationTime findTime = timeRepository.fetchById(id);
         timeRepository.deleteById(findTime.getId());
     }
 
