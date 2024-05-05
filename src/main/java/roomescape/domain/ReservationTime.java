@@ -12,28 +12,28 @@ public class ReservationTime {
     private final long id;
     private final LocalTime startAt;
 
-    public ReservationTime(final long id, final LocalTime startAt) {
+    public ReservationTime(long id, LocalTime startAt) {
         this.id = id;
         this.startAt = startAt;
     }
 
-    public ReservationTime(final long id, final ReservationTime reservationTime) {
+    public ReservationTime(long id, ReservationTime reservationTime) {
         this(id, reservationTime.startAt);
     }
 
-    public ReservationTime(final long id, final String time) {
+    public ReservationTime(long id, String time) {
         validate(time);
         this.id = id;
         this.startAt = LocalTime.parse(time);
     }
 
-    public ReservationTime(final String time) {
+    public ReservationTime(String time) {
         validate(time);
         this.id = NO_ID;
         this.startAt = LocalTime.parse(time);
     }
 
-    private void validate(final String time) {
+    private void validate(String time) {
         try {
             LocalTime.parse(time);
         } catch (DateTimeParseException e) {
@@ -47,7 +47,7 @@ public class ReservationTime {
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final ReservationTime that = (ReservationTime) o;

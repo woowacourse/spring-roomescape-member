@@ -19,12 +19,12 @@ public class ReservationTimeService {
     private final ReservationRepository reservationRepository;
 
     @Autowired
-    public ReservationTimeService(final ReservationTimeRepository reservationTimeRepository, ReservationRepository reservationRepository) {
+    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository, ReservationRepository reservationRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
         this.reservationRepository = reservationRepository;
     }
 
-    public ReservationTimeResponse create(final ReservationTimeCreateRequest reservationTimeCreateRequest) {
+    public ReservationTimeResponse create(ReservationTimeCreateRequest reservationTimeCreateRequest) {
         validateDuplicated(reservationTimeCreateRequest);
         ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime(reservationTimeCreateRequest.startAt()));
         return new ReservationTimeResponse(reservationTime);
@@ -42,7 +42,7 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    public void deleteById(final long id) {
+    public void deleteById(long id) {
         validateByReservation(id);
         reservationTimeRepository.deleteById(id);
     }
@@ -61,7 +61,7 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    private boolean isBooked(final List<ReservationTime> bookedReservationTimes, final ReservationTime time) {
+    private boolean isBooked(List<ReservationTime> bookedReservationTimes, ReservationTime time) {
         return bookedReservationTimes.contains(time);
     }
 }

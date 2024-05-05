@@ -11,7 +11,7 @@ public record ReservationResponse(
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul") LocalDate date,
         ReservationTimeResponse time,
         ThemeResponse theme) {
-    public ReservationResponse(final Reservation reservation) {
+    public ReservationResponse(Reservation reservation) {
         this(reservation.getId(), reservation.getName(), reservation.getDate(),
                 new ReservationTimeResponse(reservation.getReservationTime()),
                 new ThemeResponse(reservation.getTheme()));

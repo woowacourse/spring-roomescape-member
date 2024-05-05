@@ -21,15 +21,15 @@ public class ReservationService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
 
-    public ReservationService(final ReservationRepository reservationRepository,
-                              final ReservationTimeRepository reservationTimeRepository,
+    public ReservationService(ReservationRepository reservationRepository,
+                              ReservationTimeRepository reservationTimeRepository,
                               ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
     }
 
-    public ReservationResponse create(final ReservationRequest reservationRequest) {
+    public ReservationResponse create(ReservationRequest reservationRequest) {
         ReservationTime reservationTime = findTimeById(reservationRequest.timeId());
         Theme theme = findThemeById(reservationRequest.themeId());
 
@@ -40,7 +40,7 @@ public class ReservationService {
         return new ReservationResponse(reservationRepository.save(reservation));
     }
 
-    private ReservationTime findTimeById(final long timeId) {
+    private ReservationTime findTimeById(long timeId) {
         return reservationTimeRepository.getById(timeId);
     }
 
@@ -48,20 +48,20 @@ public class ReservationService {
         return themeRepository.getById(themeId);
     }
 
-    private void validate(final String date, final ReservationTime reservationTime, final Theme theme) {
+    private void validate(String date, ReservationTime reservationTime, Theme theme) {
         ReservationDate reservationDate = new ReservationDate(date);
         validateIfBefore(reservationDate, reservationTime);
         validateDuplicated(date, reservationTime, theme);
     }
 
-    private void validateIfBefore(final ReservationDate date, final ReservationTime time) {
+    private void validateIfBefore(ReservationDate date, ReservationTime time) {
         LocalDateTime value = LocalDateTime.of(date.getValue(), time.getStartAt());
         if (value.isBefore(LocalDateTime.now())) {
             throw new InvalidReservationException("현재보다 이전으로 일정을 설정할 수 없습니다.");
         }
     }
 
-    private void validateDuplicated(final String date, final ReservationTime reservationTime, final Theme theme) {
+    private void validateDuplicated(String date, ReservationTime reservationTime, Theme theme) {
         if (reservationRepository.existsByDateAndTimeAndTheme(date, reservationTime.getId(), theme.getId())) {
             throw new InvalidReservationException("선택하신 테마와 일정은 이미 예약이 존재합니다.");
         }
@@ -73,7 +73,7 @@ public class ReservationService {
                 .toList();
     }
 
-    public void deleteById(final long id) {
+    public void deleteById(long id) {
         reservationRepository.deleteById(id);
     }
 }

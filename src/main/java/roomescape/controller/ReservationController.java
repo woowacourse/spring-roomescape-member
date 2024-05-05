@@ -15,7 +15,7 @@ import java.util.List;
 public class ReservationController {
     private final ReservationService reservationService;
 
-    public ReservationController(final ReservationService reservationService) {
+    public ReservationController(ReservationService reservationService) {
         this.reservationService = reservationService;
     }
 
@@ -25,15 +25,14 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> createReservation(
-            @RequestBody @Valid final ReservationRequest reservationRequest) {
+    public ResponseEntity<ReservationResponse> createReservation(@RequestBody @Valid ReservationRequest reservationRequest) {
         ReservationResponse reservationResponse = reservationService.create(reservationRequest);
         return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.id()))
                 .body(reservationResponse);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable final long id) {
+    public ResponseEntity<Void> deleteReservation(@PathVariable long id) {
         reservationService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

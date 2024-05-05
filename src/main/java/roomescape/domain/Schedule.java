@@ -7,7 +7,7 @@ public class Schedule {
     private final ReservationDate date;
     private final ReservationTime time;
 
-    public Schedule(final ReservationDate date, final ReservationTime time) {
+    public Schedule(ReservationDate date, ReservationTime time) {
         this.date = date;
         this.time = time;
     }

@@ -14,7 +14,7 @@ public class Theme {
         this.thumbnail = thumbnail;
     }
 
-    public Theme(final String name, final String description, final String thumbnail) {
+    public Theme(String name, String description, String thumbnail) {
         this(NO_ID, new ThemeName(name), description, thumbnail);
     }
 

@@ -17,13 +17,12 @@ import java.util.List;
 public class ReservationTimeController {
     private final ReservationTimeService reservationTimeService;
 
-    public ReservationTimeController(final ReservationTimeService reservationTimeService) {
+    public ReservationTimeController(ReservationTimeService reservationTimeService) {
         this.reservationTimeService = reservationTimeService;
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTimeResponse> createReservationTime(
-            @RequestBody @Valid final ReservationTimeCreateRequest reservationTimeCreateRequest) {
+    public ResponseEntity<ReservationTimeResponse> createReservationTime(@RequestBody @Valid ReservationTimeCreateRequest reservationTimeCreateRequest) {
         ReservationTimeResponse reservationTimeResponse = reservationTimeService.create(reservationTimeCreateRequest);
         return ResponseEntity.created(URI.create("/times/" + reservationTimeResponse.id()))
                 .body(reservationTimeResponse);
@@ -42,7 +41,7 @@ public class ReservationTimeController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservationTimeById(@PathVariable final long id) {
+    public ResponseEntity<Void> deleteReservationTimeById(@PathVariable long id) {
         reservationTimeService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

@@ -9,12 +9,12 @@ import java.util.Objects;
 public class ReservationDate {
     private final LocalDate value;
 
-    public ReservationDate(final String value) {
+    public ReservationDate(String value) {
         validate(value);
         this.value = LocalDate.parse(value);
     }
 
-    private void validate(final String value) {
+    private void validate(String value) {
         try {
             LocalDate.parse(value);
         } catch (DateTimeParseException e) {
@@ -28,7 +28,7 @@ public class ReservationDate {
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(Object o) {
         if (this == o) {
             return true;
         }

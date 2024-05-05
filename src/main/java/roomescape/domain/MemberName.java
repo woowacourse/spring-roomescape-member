@@ -12,12 +12,12 @@ public class MemberName {
 
     private final String value;
 
-    public MemberName(final String value) {
+    public MemberName(String value) {
         validateName(value);
         this.value = value;
     }
 
-    private void validateName(final String name) {
+    private void validateName(String name) {
         if (name == null || name.isBlank() || name.length() < MINIMUM_NAME_LENGTH || name.length() > MAXIMUM_NAME_LENGTH) {
             throw new InvalidReservationException(INVALID_NAME_LENGTH);
         }
@@ -29,7 +29,7 @@ public class MemberName {
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
