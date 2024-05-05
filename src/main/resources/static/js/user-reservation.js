@@ -38,8 +38,6 @@ function renderTheme(themes) {
     themes.forEach(theme => {
         const name = theme.name;
         const themeId = theme.id;
-        console.log(name);
-        console.log(themeId)
         themeSlots.appendChild(createSlot('theme', name, themeId));
     });
 }
@@ -112,9 +110,9 @@ function renderAvailableTimes(times) {
     times.availableTimeResponses.forEach(time => {
         const startAt = time.timeResponseDto.startAt;
         const timeId = time.timeResponseDto.id;
-        const isBooked = time.booked;
+        const booked = time.booked;
 
-        const div = createSlot('time', startAt, timeId, isBooked); // createSlot('time', 시작 시간, time id, 예약 여부)
+        const div = createSlot('time', startAt, timeId, booked); // createSlot('time', 시작 시간, time id, 예약 여부)
         timeSlots.appendChild(div);
     });
 }
