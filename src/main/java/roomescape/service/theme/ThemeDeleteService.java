@@ -17,10 +17,7 @@ public class ThemeDeleteService {
     }
 
     public void deleteTheme(Long id) {
-        themeRepository.findAll()
-                .stream()
-                .filter(theme -> theme.isSameTheme(id))
-                .findFirst()
+        themeRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마 아이디 입니다."));
 
         if (reservationRepository.existsByReservationThemeId(id)) {

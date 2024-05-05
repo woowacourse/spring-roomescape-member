@@ -13,12 +13,8 @@ public class ReservationDeleteService {
     }
 
     public void deleteReservation(Long id) {
-        reservationRepository.findAll()
-                .stream()
-                .filter(reservation -> reservation.isSameReservation(id))
-                .findFirst()
+        reservationRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 아이디 입니다."));
-
         reservationRepository.deleteById(id);
     }
 }

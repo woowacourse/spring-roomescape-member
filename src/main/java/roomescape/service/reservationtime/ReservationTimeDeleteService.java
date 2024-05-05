@@ -17,10 +17,7 @@ public class ReservationTimeDeleteService {
     }
 
     public void deleteReservationTime(Long id) {
-        reservationTimeRepository.findAll()
-                .stream()
-                .filter(reservationTime -> reservationTime.isSameReservationTime(id))
-                .findFirst()
+        reservationTimeRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 아이디 입니다."));
 
         if (reservationRepository.existsByReservationTimeId(id)) {
