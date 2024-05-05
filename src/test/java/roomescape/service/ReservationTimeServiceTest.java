@@ -109,8 +109,8 @@ class ReservationTimeServiceTest {
         List<AvailableReservationTimeResponse> result = reservationTimeService.findAvailableTimes(new ReservationTimeReadRequest(date, theme.getId()));
 
         //then
-        boolean isBookedOfBookedTime = result.stream().filter(time -> time.id() == bookedReservationTime.getId()).findFirst().get().isBooked();
-        boolean isBookedOfUnBookedTime = result.stream().filter(time -> time.id() == notBookedReservationTime.getId()).findFirst().get().isBooked();
+        boolean isBookedOfBookedTime = result.stream().filter(time -> time.id() == bookedReservationTime.getId()).findFirst().get().alreadyBooked();
+        boolean isBookedOfUnBookedTime = result.stream().filter(time -> time.id() == notBookedReservationTime.getId()).findFirst().get().alreadyBooked();
         assertAll(
                 () -> assertThat(result).hasSize(2),
                 () -> assertThat(isBookedOfUnBookedTime).isFalse(),
