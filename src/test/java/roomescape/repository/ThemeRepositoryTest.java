@@ -1,16 +1,14 @@
 package roomescape.repository;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.domain.theme.Theme;
 
-import javax.sql.DataSource;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -18,21 +16,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @JdbcTest
+@Import(ThemeRepository.class)
 @Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
 class ThemeRepositoryTest {
 
+    @Autowired
     private ThemeRepository themeRepository;
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    private DataSource dataSource;
-
-    @BeforeEach
-    void init() {
-        this.themeRepository = new ThemeRepository(jdbcTemplate, dataSource);
-    }
 
     @Test
     @DisplayName("데이터베이스에서 모든 테마 정보를 조회한다.")

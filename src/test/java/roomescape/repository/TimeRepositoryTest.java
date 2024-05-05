@@ -1,37 +1,26 @@
 package roomescape.repository;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.domain.time.Time;
 
-import javax.sql.DataSource;
 import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
+@Import(TimeRepository.class)
 @Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 public class TimeRepositoryTest {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    private DataSource dataSource;
-
     private TimeRepository timeRepository;
-
-    @BeforeEach
-    void init() {
-        this.timeRepository = new TimeRepository(jdbcTemplate, dataSource);
-    }
 
     @Test
     @DisplayName("등록된 시간의 id를 통해 단건 조회할 수 있다.")
@@ -47,17 +36,17 @@ public class TimeRepositoryTest {
     }
 
     @Test
-    @DisplayName("repository를 통해 조회한 시간 수는 DB를 통해 조회한 시간 수와 같다.")
+    @DisplayName("전체 시간 정보를 조회한다.")
     void readDbTimes() {
         // given
-        timeRepository.insert(new Time(1L, LocalTime.of(17, 30)));
+        timeRepository.insert(new Time(LocalTime.of(17, 30)));
+        timeRepository.insert(new Time(LocalTime.of(19, 30)));
 
         // when
         List<Time> times = timeRepository.findAll();
-        Integer count = jdbcTemplate.queryForObject("SELECT count(*) from reservation_time", Integer.class);
 
         // then
-        assertThat(times.size()).isEqualTo(count);
+        assertThat(times.size()).isEqualTo(2);
     }
 
     @Test

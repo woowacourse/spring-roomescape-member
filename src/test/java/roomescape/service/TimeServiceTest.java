@@ -1,11 +1,10 @@
 package roomescape.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.domain.reservation.Reservation;
@@ -17,34 +16,24 @@ import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.TimeRepository;
 
-import javax.sql.DataSource;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
+@Import({TimeService.class, TimeRepository.class, ReservationRepository.class, ThemeRepository.class})
 @Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 class TimeServiceTest {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    private DataSource dataSource;
-
     private TimeService timeService;
+    @Autowired
     private TimeRepository timeRepository;
+    @Autowired
     private ReservationRepository reservationRepository;
+    @Autowired
     private ThemeRepository themeRepository;
-
-    @BeforeEach
-    void init() {
-        timeRepository = new TimeRepository(jdbcTemplate, dataSource);
-        reservationRepository = new ReservationRepository(jdbcTemplate, dataSource);
-        themeRepository = new ThemeRepository(jdbcTemplate, dataSource);
-        timeService = new TimeService(timeRepository, reservationRepository);
-    }
 
     @Test
     @DisplayName("중복된 예약 시간을 등록하는 경우 예외가 발생한다.")

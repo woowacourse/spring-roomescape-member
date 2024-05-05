@@ -1,19 +1,16 @@
 package roomescape.repository;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
-import org.springframework.test.jdbc.JdbcTestUtils;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.Time;
 
-import javax.sql.DataSource;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -21,28 +18,21 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
+@Import({ReservationRepository.class, TimeRepository.class, ThemeRepository.class})
 @Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 public class ReservationRepositoryTest {
 
+    @Autowired
     private ReservationRepository reservationRepository;
+
+    @Autowired
     private TimeRepository timeRepository;
+
+    @Autowired
     private ThemeRepository themeRepository;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    private DataSource dataSource;
-
-    @BeforeEach
-    void init() {
-        this.reservationRepository = new ReservationRepository(jdbcTemplate, dataSource);
-        this.timeRepository = new TimeRepository(jdbcTemplate, dataSource);
-        this.themeRepository = new ThemeRepository(jdbcTemplate, dataSource);
-    }
-
     @Test
-    @DisplayName("repository를 통해 조회한 예약 수는 DB를 통해 조회한 예약 수와 같다.")
+    @DisplayName("전체 예약 정보를 조회한다")
     void readDbReservations() {
         // given
         Time time = timeRepository.insert(new Time(LocalTime.of(17, 30)));
@@ -56,30 +46,9 @@ public class ReservationRepositoryTest {
 
         // when
         List<Reservation> reservations = reservationRepository.findAll();
-        int count = JdbcTestUtils.countRowsInTable(jdbcTemplate, "reservation");
 
         // then
-        assertThat(reservations.size()).isEqualTo(count);
-    }
-
-    @Test
-    @DisplayName("하나의 예약만 등록한 경우, DB를 조회 했을 때 조회 결과 개수는 1개이다.")
-    void postReservationIntoDb() {
-        // given
-        Time time = timeRepository.insert(new Time(LocalTime.of(17, 30)));
-        Theme theme = themeRepository.insert(new Theme("테마명", "설명", "썸네일URL"));
-
-        // when
-        reservationRepository.insert(new Reservation(
-                "브라운",
-                LocalDate.of(2024, 4, 25),
-                time,
-                theme
-        ));
-        int count = JdbcTestUtils.countRowsInTable(jdbcTemplate, "reservation");
-
-        // then
-        assertThat(count).isEqualTo(1);
+        assertThat(reservations.size()).isEqualTo(1);
     }
 
     @Test
