@@ -1,5 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
-    requestRead('/themes/populars') // 인기 테마 목록 조회 API endpoint
+    const today = new Date();
+
+    const year = today.getFullYear();
+    const month = (today.getMonth() + 1).toString().padStart(2, '0');
+    const day = today.getDate().toString().padStart(2, '0');
+
+    const dateString = year + '-' + month + '-' + day;
+    requestRead(`/themes/populars/${dateString}`) // 인기 테마 목록 조회 API endpoint
         .then(render)
         .catch(error => console.error('Error fetching times:', error));
 });

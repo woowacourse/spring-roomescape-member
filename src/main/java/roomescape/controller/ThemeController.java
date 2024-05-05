@@ -30,12 +30,9 @@ public class ThemeController {
         return ResponseEntity.ok(themeService.findAll());
     }
 
-    @GetMapping("/populars")
-    public ResponseEntity<List<ThemeResponse>> readPopularThemes() {
-        LocalDate today = LocalDate.now();
-        LocalDate startDate = today.minusWeeks(1);
-        LocalDate endDate = today.minusDays(1);
-        return ResponseEntity.ok(themeService.findPopulars(startDate, endDate));
+    @GetMapping("/populars/{today}")
+    public ResponseEntity<List<ThemeResponse>> readPopularThemes(@PathVariable LocalDate today) {
+        return ResponseEntity.ok(themeService.findPopulars(today));
     }
 
     @PostMapping

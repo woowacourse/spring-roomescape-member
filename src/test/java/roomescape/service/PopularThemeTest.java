@@ -24,11 +24,10 @@ class PopularThemeTest {
     @DisplayName("시작일부터 종료일까지 예약이 많이된 상위 10개의 테마를 응답한다.")
     void findPopulars() {
         //given
-        LocalDate startDate = LocalDate.of(2024, 4, 25);
-        LocalDate endDate = LocalDate.of(2024, 5, 1);
+        LocalDate today = LocalDate.of(2024, 5, 2);
 
         //when
-        List<ThemeResponse> results = themeService.findPopulars(startDate, endDate);
+        List<ThemeResponse> results = themeService.findPopulars(today);
 
         //then
         assertAll(
