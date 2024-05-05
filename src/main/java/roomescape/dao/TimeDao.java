@@ -32,7 +32,7 @@ public class TimeDao {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public List<ReservationTime> readTimesExistsReservationDateAndThemeId(String date, Long themeId) {
+    public List<ReservationTime> readTimesExistsReservation(String date, Long themeId) {
         String sql = """
                 SELECT id, start_at 
                 FROM reservation_time
