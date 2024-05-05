@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -10,6 +11,7 @@ import roomescape.domain.Theme;
 import roomescape.domain.dto.ThemeRequest;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class ThemeDao {
@@ -50,8 +52,12 @@ public class ThemeDao {
         jdbcTemplate.update(sql, id);
     }
 
-    public Theme findById(final Long id) {
+    public Optional<Theme> findById(final Long id) {
         String sql = "select id, name, description, thumbnail from theme where id = ?";
-        return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
+        } catch (DataAccessException e) {
+            return Optional.empty();
+        }
     }
 }

@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -11,6 +12,7 @@ import roomescape.domain.dto.TimeSlotRequest;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class TimeDao {
@@ -35,9 +37,14 @@ public class TimeDao {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public TimeSlot findById(Long id) {
+    public Optional<TimeSlot> findById(final Long id) {
         String sql = "select id, start_at from reservation_time where id = ?";
-        return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
+
+        } catch (DataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public Long create(TimeSlotRequest timeSlotRequest) {

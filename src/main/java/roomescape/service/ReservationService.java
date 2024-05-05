@@ -1,6 +1,5 @@
 package roomescape.service;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
@@ -44,23 +43,13 @@ public class ReservationService {
     }
 
     private TimeSlot getTimeSlot(final ReservationRequest reservationRequest) {
-        TimeSlot timeSlot;
-        try {
-            timeSlot = timeDao.findById(reservationRequest.timeId());
-        } catch (EmptyResultDataAccessException e) {
-            throw new IllegalArgumentException("[ERROR] 존재하지 않는 예약 시간입니다");
-        }
-        return timeSlot;
+        return timeDao.findById(reservationRequest.timeId())
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 예약 시간입니다"));
     }
 
     private Theme getTheme(final ReservationRequest reservationRequest) {
-        Theme theme;
-        try {
-            theme = themeDao.findById(reservationRequest.themeId());
-        } catch (EmptyResultDataAccessException e) {
-            throw new IllegalArgumentException("[ERROR] 존재하지 않는 테마 입니다");
-        }
-        return theme;
+        return themeDao.findById(reservationRequest.themeId())
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 테마 입니다"));
     }
 
     private void validate(final LocalDate date, final TimeSlot timeSlot, final Theme theme) {
