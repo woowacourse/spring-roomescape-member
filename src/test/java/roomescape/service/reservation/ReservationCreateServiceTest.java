@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.service.dto.SaveReservationRequest;
+import roomescape.service.dto.request.SaveReservationRequest;
 
 import java.time.LocalDate;
 

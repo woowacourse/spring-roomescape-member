@@ -3,7 +3,7 @@ package roomescape.service.theme;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
 import roomescape.repository.ThemeRepository;
-import roomescape.service.dto.SaveThemeRequest;
+import roomescape.service.dto.request.SaveThemeRequest;
 
 @Service
 public class ThemeCreateService {

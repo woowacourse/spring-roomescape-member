@@ -3,7 +3,7 @@ package roomescape.service.reservationtime;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
 import roomescape.repository.ReservationTimeRepository;
-import roomescape.service.dto.SaveReservationTimeRequest;
+import roomescape.service.dto.request.SaveReservationTimeRequest;
 
 @Service
 public class ReservationTimeCreateService {

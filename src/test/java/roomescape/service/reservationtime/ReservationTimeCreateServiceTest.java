@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.repository.ReservationTimeRepository;
-import roomescape.service.dto.SaveReservationTimeRequest;
+import roomescape.service.dto.request.SaveReservationTimeRequest;
 
 import java.time.LocalTime;
 
