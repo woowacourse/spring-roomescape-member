@@ -20,7 +20,7 @@ public interface ReservationRepository {
 
     void deleteById(Long id);
 
-    boolean existsByTimeId(Long timeId);
+    Boolean existsByTimeId(Long timeId);
 
-    boolean existsByThemeId(Long themeId);
+    Boolean existsByThemeId(Long themeId);
 }
