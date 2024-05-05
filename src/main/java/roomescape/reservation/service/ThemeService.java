@@ -1,5 +1,6 @@
 package roomescape.reservation.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.controller.dto.ThemeRequest;
@@ -34,8 +35,8 @@ public class ThemeService {
         }
     }
 
-    public List<ThemeResponse> findPopularThemes() {
-        return themeRepository.findPopularThemes().stream()
+    public List<ThemeResponse> findPopularThemes(LocalDate startDate, LocalDate endDate, int limit) {
+        return themeRepository.findPopularThemes(startDate, endDate, limit).stream()
                 .map(ThemeResponse::from)
                 .toList();
 

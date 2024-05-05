@@ -1,6 +1,7 @@
 package roomescape.reservation.dao;
 
 import java.sql.ResultSet;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
@@ -76,16 +77,18 @@ public class ThemeDao implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findPopularThemes() {
+    public List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, int limit) {
         String sql =
-                "SELECT theme.id, theme.name, theme.description, theme. thumbnail, COUNT(*) AS reservation_count " +
+                "SELECT theme.id, theme.name, theme.description, theme.thumbnail, COUNT(*) AS reservation_count " +
                         "FROM theme " +
                         "INNER JOIN reservation AS re ON re.theme_id = theme.id " +
                         "INNER JOIN reservation_list AS rl ON rl.reservation_id = re.id " +
-                        "WHERE re.date BETWEEN DATEADD('DAY', -7, CURRENT_DATE()) AND CURRENT_DATE() " +
+                        "WHERE re.date BETWEEN ? AND ? " +
                         "GROUP BY theme.id, theme.name " +
                         "ORDER BY reservation_count DESC " +
-                        "LIMIT 10; ";
-        return jdbcTemplate.query(sql, rowMapper);
+                        "LIMIT ?";
+
+        return jdbcTemplate.query(sql, rowMapper, startDate, endDate, limit);
     }
+
 }
