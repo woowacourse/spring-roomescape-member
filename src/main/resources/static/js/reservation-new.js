@@ -150,7 +150,10 @@ function saveRow(event) {
       .then(() => {
         location.reload();
       })
-      .catch(error => console.error('Error:', error));
+      .catch(error => {
+        alert(error.message);
+        console.error('Error:', error)
+      });
 
   isEditing = false;  // isEditing 값을 false로 설정
 }
@@ -174,7 +177,9 @@ function requestCreate(reservation) {
   return fetch(RESERVATION_API_ENDPOINT, requestOptions)
       .then(response => {
         if (response.status === 201) return response.json();
-        throw new Error('Create failed');
+        return response.json().then(data => {
+          throw new Error(data.message || 'Reservation failed');
+        });
       });
 }
 

@@ -103,7 +103,9 @@ function fetchAvailableTimes(date, themeId) {
     },
   }).then(response => {
     if (response.status === 200) return response.json();
-    throw new Error('Read failed');
+    return response.json().then(data => {
+      throw new Error(data.message || 'Reservation failed');
+    });
   }).then(renderAvailableTimes)
   .catch(error => console.error("Error fetching available times:", error));
 }
@@ -127,7 +129,7 @@ function renderAvailableTimes(times) {
     */
     const startAt = time.startAt;
     const timeId = time.id;
-    const alreadyBooked = false;
+    const alreadyBooked = time.alreadyBooked;
 
     const div = createSlot('time', startAt, timeId, alreadyBooked); // createSlot('time', 시작 시간, time id, 예약 여부)
     timeSlots.appendChild(div);
@@ -182,7 +184,9 @@ function onReservationButtonClick() {
       body: JSON.stringify(reservationData)
     })
         .then(response => {
-          if (!response.ok) throw new Error('Reservation failed');
+          if (!response.ok) return response.json().then(data => {
+            throw new Error(data.message || 'Reservation failed');
+          });
           return response.json();
         })
         .then(data => {
@@ -190,7 +194,7 @@ function onReservationButtonClick() {
           location.reload();
         })
         .catch(error => {
-          alert("An error occurred while making the reservation.");
+          alert(error.message);
           console.error(error);
         });
   } else {
