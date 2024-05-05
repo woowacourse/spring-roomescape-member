@@ -41,4 +41,13 @@
 - [x] 패키지 변경
 - [ ] 인기 테마 조회 로직 변경
 - [ ] 전역 예외 처리 클래스 추가
+- [x] 커스텀 예외 추가 및 처리
+  - [x] EntityExistsException
+  - [x] EntityNotFoundException
 - [x] 테스트 red -> green
+- [x] Controller, Service 메서드명
+  - [x] `save` -> `create`
+  - [x] `findAll` -> `getAll`
+- [ ] 테스트 추가
+  - [ ] service
+  - [ ] 예외
