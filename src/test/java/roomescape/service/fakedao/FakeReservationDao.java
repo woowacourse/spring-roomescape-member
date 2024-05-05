@@ -50,60 +50,33 @@ public class FakeReservationDao implements ReservationDao {
 
     @Override
     public List<Long> findThemeIdByDateAndOrderByThemeIdCountAndLimit(LocalDate startDate, LocalDate endDate, int limit) {
-        // Filter reservations by date
-        List<ReservationSavedDto> filteredReservations = reservations.stream()
-                .filter(reservation -> reservation.getDate().isAfter(startDate) || reservation.getDate().isEqual(startDate)
-                        && reservation.getDate().isBefore(endDate) || reservation.getDate().isEqual(endDate))
-                .toList();
+        List<ReservationSavedDto> filteredReservations = findBetweenDates(startDate, endDate);
+        Map<Long, Long> countOfThemeIds = countByThemeId(filteredReservations);
+        return sortByCountAndLimit(countOfThemeIds);
+    }
 
-        // Count reservations by themeId
-        Map<Long, Long> countOfThemeIds = filteredReservations.stream()
+    private List<ReservationSavedDto> findBetweenDates(LocalDate startDate, LocalDate endDate) {
+        return reservations.stream()
+                .filter(reservation -> isBetweenDate(reservation.getDate(), startDate, endDate))
+                .toList();
+    }
+
+    private boolean isBetweenDate(LocalDate target, LocalDate startDate, LocalDate endDate) {
+        return target.isAfter(startDate) || target.isEqual(startDate)
+                && target.isBefore(endDate) || target.isEqual(endDate);
+    }
+
+    private Map<Long, Long> countByThemeId(List<ReservationSavedDto> filteredReservations) {
+        return filteredReservations.stream()
                 .collect(Collectors.groupingBy(ReservationSavedDto::getThemeId, Collectors.counting()));
-        // Sort themeIds by count
-        List<Long> finalThemeIds = countOfThemeIds.entrySet().stream()
+    }
+
+    private List<Long> sortByCountAndLimit(Map<Long, Long> countOfThemeIds) {
+        return countOfThemeIds.entrySet().stream()
                 .sorted(Map.Entry.<Long, Long>comparingByValue().reversed())
                 .limit(10)
                 .map(Map.Entry::getKey)
                 .toList();
-        // Filter reservations by top 10 themeIds
-        return finalThemeIds;
-
-        /*
-        // find by date
-        List<ReservationSavedDto> filteredReservations = reservations.stream()
-                .filter(reservation -> reservation.getDate().isBefore(endDate) && reservation.getDate().isAfter(startDate))
-                .toList();
-
-        // group by themeId
-        List<Long> filteredThemeIds = filteredReservations.stream()
-                .map(ReservationSavedDto::getThemeId)
-                .collect(Collectors.toList());
-
-        // order by count
-        Map<Long, Long> countOfThemeIds = new HashMap<>();
-        for (Long filteredThemeId : filteredThemeIds) {
-            long count = filteredThemeIds.stream()
-                    .filter(id -> id.equals(filteredThemeId))
-                    .count();
-            countOfThemeIds.put(filteredThemeId, count);
-        }
-        filteredThemeIds.sort(Comparator.comparingLong(countOfThemeIds::get));
-
-        // limit 10
-        List<Long> themeIds = filteredThemeIds.stream().distinct().toList();
-        List<Long> finalThemeIds = themeIds.subList(0, 10);
-
-        // make DTO
-        List<ReservationSavedDto> result = new ArrayList<>();
-        for (Long finalThemeId : finalThemeIds) {
-            result.add(filteredReservations.stream()
-                    .filter(reservation -> reservation.getThemeId() == finalThemeId)
-                    .findFirst()
-                    .orElseThrow(NoSuchElementException::new));
-        }
-        return result;
-
-         */
     }
 
     @Override
