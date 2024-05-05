@@ -40,11 +40,9 @@ public class ReservationService {
     }
 
     public List<AvailableTimeResponse> findByDateAndThemeId(LocalDate date, Long themeId) {
-        List<Long> foundReservations = reservationRepository
-                .findByDateAndThemeId(date, themeId)
+        List<Long> foundReservations = reservationRepository.findByDateAndThemeId(date, themeId)
                 .stream()
-                .map(Reservation::getReservationTime)
-                .map(ReservationTime::getId)
+                .map(reservation -> reservation.getReservationTime().getId())
                 .toList();
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
         List<AvailableTimeResponse> availableTimeResponses = new ArrayList<>();
