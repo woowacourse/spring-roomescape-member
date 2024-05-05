@@ -20,6 +20,44 @@ class ReservationTimeTest {
     }
 
     @Nested
+    class isSameTo {
+
+        @Test
+        @DisplayName("주어진 id값이 시간 객체의 id와 동일할 경우 참을 반환한다.")
+        void isSameTo() {
+            long sameTimeId = 1L;
+            ReservationTime reservationTime = new ReservationTime(sameTimeId, LocalTime.parse("10:00"));
+            assertTrue(reservationTime.isSameTo(sameTimeId));
+        }
+
+        @Test
+        @DisplayName("주어진 id값이 시간 객체의 id와 동일하지 않는 경우 거짓을 반환한다.")
+        void isSameTo_WhenNotSame() {
+            ReservationTime reservationTime = new ReservationTime(1L, LocalTime.parse("10:00"));
+            assertFalse(reservationTime.isSameTo(2L));
+        }
+    }
+
+    @Nested
+    class isSameStartAt {
+
+        @Test
+        @DisplayName("주어진 시간과 시간 객체의 시작 시간이 동일할 경우 참을 반환한다.")
+        void isSameStartAt() {
+            LocalTime sameTime = LocalTime.parse("10:00");
+            ReservationTime reservationTime = new ReservationTime(null, sameTime);
+            assertTrue(reservationTime.isSameStartAt(sameTime));
+        }
+
+        @Test
+        @DisplayName("주어진 시간과 시간 객체의 시작 시간이 동일하지 않는 경우 거짓을 반환한다.")
+        void isSameStartAt_WhenNotSame() {
+            ReservationTime reservationTime = new ReservationTime(null, LocalTime.parse("10:00"));
+            assertFalse(reservationTime.isSameStartAt(LocalTime.parse("10:01")));
+        }
+    }
+
+    @Nested
     class isBefore {
         @Test
         @DisplayName("주어진 시간보다 예약 시간이 이전인 경우 참을 반환한다.")

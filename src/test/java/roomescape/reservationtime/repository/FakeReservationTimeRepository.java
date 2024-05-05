@@ -1,5 +1,6 @@
 package roomescape.reservationtime.repository;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -37,6 +38,12 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     public boolean existsById(final Long id) {
         return reservationTimes.stream()
                 .anyMatch(reservationTime -> reservationTime.isSameTo(id));
+    }
+
+    @Override
+    public boolean existsByStartAt(final LocalTime time) {
+        return reservationTimes.stream()
+                .anyMatch(reservationTime -> reservationTime.isSameStartAt(time));
     }
 
     @Override

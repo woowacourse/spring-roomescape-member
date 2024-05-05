@@ -32,6 +32,10 @@ public class ReservationTime {
         return Objects.equals(this.id, timeId);
     }
 
+    public boolean isSameStartAt(final LocalTime time) {
+        return Objects.equals(this.time, time);
+    }
+
     public Long getId() {
         return id;
     }

@@ -1,6 +1,7 @@
 package roomescape.reservationtime.repository;
 
 import java.sql.Time;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
@@ -68,6 +69,16 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 where r.id = ? 
                 """;
         return jdbcTemplate.queryForObject(sql, Integer.class, id) != 0;
+    }
+
+    @Override
+    public boolean existsByStartAt(final LocalTime time) {
+        String sql = """
+                select count(*)
+                from reservation_time as r
+                where r.start_at = ? 
+                """;
+        return jdbcTemplate.queryForObject(sql, Integer.class, time) != 0;
     }
 
     @Override

@@ -7,45 +7,67 @@ import static org.mockito.ArgumentMatchers.any;
 import java.time.LocalTime;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.boot.test.context.SpringBootTest;
+import roomescape.reservation.repository.FakeReservationRepository;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.dto.request.CreateReservationTimeRequest;
 import roomescape.reservationtime.dto.response.CreateReservationTimeResponse;
 import roomescape.reservationtime.dto.response.FindReservationTimeResponse;
 import roomescape.reservationtime.model.ReservationTime;
+import roomescape.reservationtime.repository.FakeReservationTimeRepository;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.util.DummyDataFixture;
 
-@SpringBootTest
 class ReservationTimeServiceTest extends DummyDataFixture {
-
-    @InjectMocks
     private ReservationTimeService reservationTimeService;
 
-    @Mock
+    private ReservationRepository reservationRepository;
     private ReservationTimeRepository reservationTimeRepository;
 
-    @Mock
-    private ReservationRepository reservationRepository;
+    @BeforeEach
+    void setUp() {
+        reservationRepository = new FakeReservationRepository();
+        reservationTimeRepository = new FakeReservationTimeRepository();
 
-    @Test
-    @DisplayName("예약 시간 생성 시 해당 데이터의 id값을 반환한다.")
-    void createReservationTime() {
-        // given
-        CreateReservationTimeRequest createReservationTimeRequest = new CreateReservationTimeRequest(
-                LocalTime.of(11, 11));
+        reservationTimeService = new ReservationTimeService(reservationTimeRepository, reservationRepository);
+    }
 
-        // stub
-        Mockito.when(reservationTimeRepository.save(any(ReservationTime.class))).thenReturn(getReservationTimeById(1L));
+    @Nested
+    class createReservationTime {
+        @Test
+        @DisplayName("예약 시간 생성 시 해당 데이터의 id값을 반환한다.")
+        void createReservationTime() {
+            // given
+            CreateReservationTimeRequest createReservationTimeRequest = new CreateReservationTimeRequest(
+                    LocalTime.of(11, 11));
 
-        // when & then
-        assertThat(reservationTimeService.createReservationTime(createReservationTimeRequest))
-                .isEqualTo(CreateReservationTimeResponse.from(getReservationTimeById(1L)));
+            // stub
+            Mockito.when(reservationTimeRepository.save(any(ReservationTime.class))).thenReturn(getReservationTimeById(1L));
+
+            // when & then
+            assertThat(reservationTimeService.createReservationTime(createReservationTimeRequest))
+                    .isEqualTo(CreateReservationTimeResponse.from(getReservationTimeById(1L)));
+        }
+
+        @Test
+        @DisplayName("예약 시간 생성 시 이미 존재하는 시간인 경우 예외를 반환한다.")
+        void createReservationTime_WhenAlreadyExistsTime() {
+            // given
+            CreateReservationTimeRequest createReservationTimeRequest = new CreateReservationTimeRequest(
+                    LocalTime.of(10, 00));
+
+            // stub
+            Mockito.when(reservationTimeRepository.save(any(ReservationTime.class))).thenReturn(getReservationTimeById(1L));
+
+            // when & then
+            assertThat(reservationTimeService.createReservationTime(createReservationTimeRequest))
+                    .isEqualTo(CreateReservationTimeResponse.from(getReservationTimeById(1L)));
+        }
+
     }
 
     @Test
