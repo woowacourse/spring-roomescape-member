@@ -12,7 +12,7 @@ public class Reservation {
     private final ReservationTime time;
     private final Theme theme;
 
-    public static Reservation createRequest(
+    public static Reservation createNewReservation(
             final String clientName,
             final LocalDate date,
             final ReservationTime time,
@@ -37,7 +37,7 @@ public class Reservation {
         }
     }
 
-    public static Reservation of(
+    public static Reservation ofSavedReservation(
             final Long id,
             final String clientName,
             final LocalDate date,

@@ -48,9 +48,9 @@ class ReservationControllerSliceTest {
         final ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now().plusHours(3));
         final Theme theme = Theme.of(1L, "테바의 비밀친구", "테바의 은밀한 비밀친구", "대충 테바 사진 링크");
         final List<Reservation> reservations = List.of(
-                Reservation.of(1L, "켈리", LocalDate.now().plusDays(5), reservationTime, theme),
-                Reservation.of(2L, "브라운", LocalDate.now().plusDays(5), reservationTime, theme),
-                Reservation.of(3L, "안나", LocalDate.now().plusDays(5), reservationTime, theme)
+                Reservation.ofSavedReservation(1L, "켈리", LocalDate.now().plusDays(5), reservationTime, theme),
+                Reservation.ofSavedReservation(2L, "브라운", LocalDate.now().plusDays(5), reservationTime, theme),
+                Reservation.ofSavedReservation(3L, "안나", LocalDate.now().plusDays(5), reservationTime, theme)
         );
         given(reservationService.getReservations()).willReturn(reservations);
 
@@ -68,7 +68,7 @@ class ReservationControllerSliceTest {
         final SaveReservationRequest saveReservationRequest = new SaveReservationRequest(LocalDate.now().plusDays(5), "브라운", 1L, 1L);
         final ReservationTime savedReservationTime = new ReservationTime(1L, LocalTime.now().plusHours(3));
         final Theme theme = Theme.of(1L, "테바의 비밀친구", "테바의 은밀한 비밀친구", "대충 테바 사진 링크");
-        final Reservation savedReservation = Reservation.of(1L, "브라운", LocalDate.now().plusDays(5), savedReservationTime, theme);
+        final Reservation savedReservation = Reservation.ofSavedReservation(1L, "브라운", LocalDate.now().plusDays(5), savedReservationTime, theme);
         given(reservationService.saveReservation(saveReservationRequest)).willReturn(savedReservation);
 
         // When & Then

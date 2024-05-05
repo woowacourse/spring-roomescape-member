@@ -56,7 +56,7 @@ class ReservationRepositoryTest {
         final LocalDate reservationDate = LocalDate.now().plusDays(10);
         final ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 10));
         final Theme theme = Theme.of(1L, "테바의 비밀친구", "테바의 은밀한 비밀친구", "대충 테바 사진 링크");
-        final Reservation reservation = Reservation.createRequest(clientName, reservationDate, reservationTime, theme);
+        final Reservation reservation = Reservation.createNewReservation(clientName, reservationDate, reservationTime, theme);
 
         // When
         final Reservation savedReservation = reservationRepository.save(reservation);

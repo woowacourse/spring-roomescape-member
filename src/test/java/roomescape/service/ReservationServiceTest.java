@@ -47,8 +47,8 @@ class ReservationServiceTest {
         final ReservationTime savedReservationTime2 = new ReservationTime(2L, LocalTime.now().plusHours(4));
         final Theme theme = Theme.of(1L, "테바의 비밀친구", "테바의 은밀한 비밀친구", "대충 테바 사진 링크");
         final List<Reservation> savedReservations = List.of(
-                Reservation.of(1L, "켈리", LocalDate.now().plusDays(5), savedReservationTime1, theme),
-                Reservation.of(2L, "켈리", LocalDate.now().plusDays(6), savedReservationTime2, theme)
+                Reservation.ofSavedReservation(1L, "켈리", LocalDate.now().plusDays(5), savedReservationTime1, theme),
+                Reservation.ofSavedReservation(2L, "켈리", LocalDate.now().plusDays(6), savedReservationTime2, theme)
         );
 
         given(reservationRepository.findAll()).willReturn(savedReservations);
@@ -66,7 +66,7 @@ class ReservationServiceTest {
         // Given
         final ReservationTime savedReservationTime = new ReservationTime(1L, LocalTime.now().plusHours(3));
         final Theme savedTheme = Theme.of(1L, "테바의 비밀친구", "테바의 은밀한 비밀친구", "대충 테바 사진 링크");
-        final Reservation savedReservation = Reservation.of(1L, "켈리", LocalDate.now().plusDays(5), savedReservationTime, savedTheme);
+        final Reservation savedReservation = Reservation.ofSavedReservation(1L, "켈리", LocalDate.now().plusDays(5), savedReservationTime, savedTheme);
         final SaveReservationRequest saveReservationRequest = new SaveReservationRequest(LocalDate.now().plusDays(5), "켈리", 1L, 1L);
 
         given(reservationTimeRepository.findById(1L)).willReturn(Optional.of(savedReservationTime));

@@ -39,7 +39,7 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     private RowMapper<Reservation> itemRowMapper() {
-        return ((rs, rowNum) -> Reservation.of(
+        return ((rs, rowNum) -> Reservation.ofSavedReservation(
                 rs.getLong("reservation_id"),
                 rs.getString("reservation_name"),
                 rs.getDate("reservation_date").toLocalDate(),

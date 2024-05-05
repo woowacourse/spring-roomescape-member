@@ -8,7 +8,7 @@ import java.time.LocalDate;
 
 public record SaveReservationRequest(LocalDate date, String name, Long timeId, Long themeId) {
     public Reservation toReservation(final ReservationTime reservationTime, final Theme theme) {
-        return Reservation.createRequest(
+        return Reservation.createNewReservation(
                 name,
                 date,
                 reservationTime,
