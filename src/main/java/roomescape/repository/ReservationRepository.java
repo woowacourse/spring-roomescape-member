@@ -149,6 +149,7 @@ public class ReservationRepository {
             INNER JOIN theme as t
             ON r.theme_id = t.id
             WHERE r.id = ?
+            LIMIT 1
         """;
 
         try {

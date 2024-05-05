@@ -34,7 +34,7 @@ public class ReservationTimeRepository {
     }
 
     public Optional<ReservationTime> findById(final Long id) {
-        final String selectQuery = "SELECT id, start_at FROM reservation_time WHERE id = ?";
+        final String selectQuery = "SELECT id, start_at FROM reservation_time WHERE id = ? LIMIT 1";
         try {
             final ReservationTime time = jdbcTemplate.queryForObject(selectQuery, TIME_ROW_MAPPER, id);
             return Optional.ofNullable(time);

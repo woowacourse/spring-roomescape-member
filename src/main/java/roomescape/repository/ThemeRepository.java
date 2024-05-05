@@ -41,7 +41,7 @@ public class ThemeRepository {
     }
 
     public Optional<Theme> findById(final Long id) {
-        final String selectQuery = "SELECT * FROM theme WHERE id = ?";
+        final String selectQuery = "SELECT * FROM theme WHERE id = ? LIMIT 1";
         try {
             final Theme theme = jdbcTemplate.queryForObject(selectQuery, THEME_ROW_MAPPER, id);
             return Optional.ofNullable(theme);
