@@ -1,6 +1,6 @@
 package roomescape.domain.reservation;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
 
@@ -24,8 +24,10 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public boolean isSameDate(LocalDate date) {
-        return reservationDate.isSame(date);
+    public void validatePast(ReservationTime reservationTime, LocalDateTime now) {
+        if (reservationDate.isBefore(now) || reservationDate.isSame(now) && reservationTime.isBefore(now)) {
+            throw new IllegalArgumentException("예약 일과 예약 시간은 과거일 수 없습니다.");
+        }
     }
 
     public Long getId() {

@@ -1,6 +1,6 @@
 package roomescape.domain.reservationtime;
 
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 public class ReservationTime {
 
@@ -12,8 +12,8 @@ public class ReservationTime {
         this.reservationStartAt = reservationStartAt;
     }
 
-    public boolean isBefore(LocalTime time) {
-        return reservationStartAt.isBefore(time);
+    public boolean isBefore(LocalDateTime dateTime) {
+        return reservationStartAt.isBefore(dateTime);
     }
 
     public Long getId() {

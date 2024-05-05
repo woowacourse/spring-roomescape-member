@@ -1,6 +1,7 @@
 package roomescape.dto.reservation;
 
 import java.util.Objects;
+import roomescape.domain.reservationtime.ReservationTime;
 
 public class AvailableReservationResponse {
 
@@ -14,8 +15,12 @@ public class AvailableReservationResponse {
         this.alreadyBooked = alreadyBooked;
     }
 
-    public static AvailableReservationResponse of(String startAt, Long timeId, boolean alreadyBooked) {
-        return new AvailableReservationResponse(startAt, timeId, alreadyBooked);
+    public static AvailableReservationResponse of(ReservationTime reservationTime, boolean alreadyBooked) {
+        return new AvailableReservationResponse(
+                reservationTime.getStartAt().toStringTime(),
+                reservationTime.getId(),
+                alreadyBooked
+        );
     }
 
     public String getStartAt() {
@@ -40,8 +45,8 @@ public class AvailableReservationResponse {
         }
         AvailableReservationResponse other = (AvailableReservationResponse) o;
         return this.alreadyBooked == other.alreadyBooked
-                && Objects.equals(this.startAt, other.startAt)
-                && Objects.equals(this.timeId, other.timeId);
+               && Objects.equals(this.startAt, other.startAt)
+               && Objects.equals(this.timeId, other.timeId);
     }
 
     @Override
@@ -52,9 +57,9 @@ public class AvailableReservationResponse {
     @Override
     public String toString() {
         return "AvailableReservationResponse{" +
-                "startAt='" + startAt + '\'' +
-                ", timeId=" + timeId +
-                ", alreadyBooked=" + alreadyBooked +
-                '}';
+               "startAt='" + startAt + '\'' +
+               ", timeId=" + timeId +
+               ", alreadyBooked=" + alreadyBooked +
+               '}';
     }
 }

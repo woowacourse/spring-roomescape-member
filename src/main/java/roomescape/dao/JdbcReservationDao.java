@@ -133,7 +133,7 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public boolean exist(ReservationDate reservationDate, ReservationTime reservationTime, Theme theme) {
+    public boolean exist(Reservation reservation) {
         String sql = """
                 SELECT
                 CASE
@@ -145,9 +145,9 @@ public class JdbcReservationDao implements ReservationDao {
         return jdbcTemplate.queryForObject(
                 sql,
                 boolean.class,
-                reservationDate.toStringDate(),
-                reservationTime.getId(),
-                theme.getId()
+                reservation.getDate().toStringDate(),
+                reservation.getReservationTime().getId(),
+                reservation.getTheme().getId()
         );
     }
 

@@ -1,5 +1,6 @@
 package roomescape.domain.reservationtime;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -33,7 +34,12 @@ public class ReservationStartAt {
         }
     }
 
-    public boolean isBefore(LocalTime time) {
+    public boolean isBefore(LocalDateTime dateTime) {
+        LocalTime time = LocalTime.of(dateTime.getHour(), dateTime.getMinute());
+        return isBefore(time);
+    }
+
+    private boolean isBefore(LocalTime time) {
         return value.isBefore(time);
     }
 

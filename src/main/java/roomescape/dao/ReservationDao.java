@@ -5,8 +5,6 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationDate;
-import roomescape.domain.reservationtime.ReservationTime;
-import roomescape.domain.theme.Theme;
 
 @Repository
 public interface ReservationDao {
@@ -21,7 +19,7 @@ public interface ReservationDao {
 
     boolean exist(long id);
 
-    boolean exist(ReservationDate reservationDate, ReservationTime reservationTime, Theme theme);
+    boolean exist(Reservation reservation);
 
     void delete(long id);
 
