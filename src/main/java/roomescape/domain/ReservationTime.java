@@ -2,6 +2,7 @@ package roomescape.domain;
 
 import java.time.LocalTime;
 import java.util.Objects;
+import roomescape.exception.ReservationTimeNotHourlyUnitException;
 
 public class ReservationTime {
 
@@ -9,8 +10,15 @@ public class ReservationTime {
     private final LocalTime startAt;
 
     public ReservationTime(Long id, LocalTime startAt) {
+        validateHourlyUnit(startAt);
         this.id = id;
         this.startAt = startAt;
+    }
+
+    private void validateHourlyUnit(LocalTime startAt) {
+        if (startAt.getMinute() != 0) {
+            throw new ReservationTimeNotHourlyUnitException("예약 시각은 정각 단위여야 합니다");
+        }
     }
 
     public Long getId() {
