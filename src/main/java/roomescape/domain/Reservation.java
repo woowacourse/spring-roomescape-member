@@ -7,8 +7,6 @@ public record Reservation(long id, String name, LocalDate date, ReservationTime 
     public Reservation(long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         this.id = id;
         this.name = validateName(name);
-        //LocalDateTime dateTime = validateDateTime(date, time.startAt());
-        //this.date = dateTime.toLocalDate();
         this.date=date;
         this.time = time;
         this.theme = theme;
@@ -23,12 +21,4 @@ public record Reservation(long id, String name, LocalDate date, ReservationTime 
         }
         return name;
     }
-
-//    private LocalDateTime validateDateTime(LocalDate date, LocalTime time) {
-//        LocalDateTime dateTime = LocalDateTime.of(date, time);
-//        if (dateTime.isBefore(LocalDateTime.now())) {
-//            throw new IllegalArgumentException("Cannot create a reservation for a past date and time.");
-//        }
-//        return dateTime;
-//    }
 }

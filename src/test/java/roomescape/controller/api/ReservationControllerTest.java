@@ -31,7 +31,7 @@ class ReservationControllerTest {
 
     @Test
     @DisplayName("저장된 모든 예약을 조회하고 상태코드 200을 응답한다.")
-    void findAll() {
+    void getAll() {
         assertReservationCountIsEqualTo(5);
 
         List<Reservation> reservations = RestAssured.given()
@@ -40,7 +40,7 @@ class ReservationControllerTest {
                 .statusCode(200).extract()
                 .jsonPath().getList(".", Reservation.class);
 
-        Integer count = reservationDao.findAll().size();
+        Integer count = reservationDao.getAll().size();
         assertThat(reservations.size()).isEqualTo(count);
     }
 
@@ -88,6 +88,6 @@ class ReservationControllerTest {
     }
 
     void assertReservationCountIsEqualTo(int count) {
-        assertThat(count).isEqualTo(reservationDao.findAll().size());
+        assertThat(count).isEqualTo(reservationDao.getAll().size());
     }
 }

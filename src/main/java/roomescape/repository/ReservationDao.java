@@ -1,7 +1,6 @@
 package roomescape.repository;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -12,8 +11,8 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import roomescape.domain.Reservation;
-import roomescape.domain.Theme;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 @Repository
 public class ReservationDao {
@@ -37,11 +36,6 @@ public class ReservationDao {
             )
     );
 
-    private final RowMapper<ReservationTime> reservationTimeRowMapper = (resultSet, __) -> new ReservationTime(
-            resultSet.getLong("id"),
-            LocalTime.parse(resultSet.getString("start_at"))
-    );
-
     public ReservationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
@@ -49,7 +43,7 @@ public class ReservationDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public List<Reservation> findAll() {
+    public List<Reservation> getAll() {
         String query = "SELECT "
                 + "r.id, r.name, r.date, "
                 + "t.id AS time_id, t.start_at, "
@@ -61,16 +55,6 @@ public class ReservationDao {
                 + "INNER JOIN THEME AS theme "
                 + "ON r.theme_id = theme.id";
         return jdbcTemplate.query(query, reservationRowMapper);
-    }
-
-    public Reservation save(Reservation reservation) {
-        SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", reservation.name())
-                .addValue("date", reservation.date())
-                .addValue("time_id", reservation.time().id())
-                .addValue("theme_id", reservation.theme().id());
-        long id = jdbcInsert.executeAndReturnKey(params).longValue();
-        return findById(id);
     }
 
     private Reservation findById(long id) {
@@ -88,32 +72,35 @@ public class ReservationDao {
         return jdbcTemplate.queryForObject(query, reservationRowMapper, id);
     }
 
-    public boolean existsTime(long id) {
-        String query = "SELECT COUNT(*) FROM RESERVATION WHERE TIME_ID = ?";
-        Integer count = jdbcTemplate.queryForObject(query, Integer.class, id);
-        return count != null && count > 0;
+    public Reservation save(Reservation reservation) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("name", reservation.name())
+                .addValue("date", reservation.date())
+                .addValue("time_id", reservation.time().id())
+                .addValue("theme_id", reservation.theme().id());
+        long id = jdbcInsert.executeAndReturnKey(params).longValue();
+        return findById(id);
     }
 
     public void deleteById(long id) {
         jdbcTemplate.update("DELETE FROM RESERVATION WHERE ID = ?", id);
     }
 
-    public boolean existsByDateTime(LocalDate date, long timeId, long themeId) {
+    public boolean existsById(long id) {
+        String query = "SELECT COUNT(*) FROM RESERVATION WHERE id = ?";
+        Integer count = jdbcTemplate.queryForObject(query, Integer.class, id);
+        return count != null && count > 0;
+    }
+
+    public boolean existsByTimeId(long id) {
+        String query = "SELECT COUNT(*) FROM RESERVATION WHERE TIME_ID = ?";
+        Integer count = jdbcTemplate.queryForObject(query, Integer.class, id);
+        return count != null && count > 0;
+    }
+
+    public boolean existsByAttributes(LocalDate date, long timeId, long themeId) {
         String query = "SELECT COUNT(*) FROM RESERVATION WHERE time_id = ? AND date = ? AND theme_id=?";
         Integer count = jdbcTemplate.queryForObject(query, Integer.class, timeId, date, themeId);
         return count != null && count > 0;
     }
-
-    //    public List<RankTheme> getRanking(){
-//        String query="SELECT t.name, t.thumbnail, t.description, COUNT(*) AS count "
-//                + "FROM RESERVATION r "
-//                + "INNER JOIN THEME t ON r.theme_id = t.id "
-//                + "GROUP BY r.theme_id "
-//                + "ORDER BY count DESC "
-//                + "LIMIT 10";
-//        return jdbcTemplate.query(query, themeRowMapper);
-//
-//
-//    }
-
 }
