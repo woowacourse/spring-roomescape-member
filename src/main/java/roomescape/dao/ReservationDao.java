@@ -115,7 +115,7 @@ public class ReservationDao {
         }, keyHolder);
 
         Long id = keyHolder.getKey().longValue();
-        return readReservationById(id).orElseThrow();
+        return readReservationById(id).orElseThrow(() -> new IllegalStateException("예약이 제대로 생성되지 않아 조회할 수 없습니다."));
     }
 
     public void deleteReservation(Long id) {
