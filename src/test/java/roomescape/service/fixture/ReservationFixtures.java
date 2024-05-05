@@ -1,5 +1,7 @@
 package roomescape.service.fixture;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.reservation.ReservationName;
@@ -25,10 +27,10 @@ public class ReservationFixtures {
     }
 
     public static ReservationCreateRequest createReservationCreateRequest(String name, String date, long timeId, long themeId) {
-        return ReservationCreateRequest.of(name, date, timeId, themeId);
+        return ReservationCreateRequest.of(name, date, timeId, themeId, LocalDate.now(), LocalTime.now());
     }
 
     public static ReservationCreateRequest createReservationCreateRequest(long timeId, long themeId) {
-        return ReservationCreateRequest.of("default", "2024-04-02", timeId, themeId);
+        return ReservationCreateRequest.of("default", "2024-04-02", timeId, themeId, LocalDate.now(), LocalTime.now());
     }
 }

@@ -11,6 +11,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -64,7 +66,8 @@ class ReservationControllerTest {
         String expectedName = "daon";
         String expectedDate = "2024-11-29";
         String expectedStartAt = "00:01";
-        ReservationCreateRequest givenRequest = ReservationCreateRequest.of(expectedName, expectedDate, 1L, 1L);
+        ReservationCreateRequest givenRequest = ReservationCreateRequest.of(expectedName, expectedDate, 1L, 1L,
+                LocalDate.now(), LocalTime.now());
         ReservationResponse response = ReservationResponse.of(
                 1L,
                 expectedName,
@@ -100,7 +103,7 @@ class ReservationControllerTest {
     void createReservationByInvalidRequest() throws Exception {
         //given
         ReservationCreateRequest givenRequest
-                = ReservationCreateRequest.of("InvalidName", "InvalidDate", -1L, 1L);
+                = ReservationCreateRequest.of("InvalidName", "InvalidDate", -1L, 1L, LocalDate.now(), LocalTime.now());
         given(reservationService.add(givenRequest))
                 .willThrow(InvalidValueException.class);
         String requestBody = objectMapper.writeValueAsString(givenRequest);

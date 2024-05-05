@@ -107,7 +107,7 @@ class ReservationServiceTest {
         @DisplayName("예약을 추가한다.")
         void add() {
             //given
-            String givenName = "wooteco";
+            String givenName = "wooteco" ;
             String givenDate = tomorrow;
             ReservationTime reservationTime =
                     reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
@@ -221,7 +221,8 @@ class ReservationServiceTest {
             //given
             reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
             themeDao.create(ThemeFixtures.createDefaultTheme());
-            ReservationCreateRequest request = ReservationCreateRequest.of("다온", tomorrow, 1L, 1L);
+            ReservationCreateRequest request = ReservationFixtures.createReservationCreateRequest("다온", tomorrow, 1L,
+                    1L);
             reservationService.add(request);
 
             //when //then
@@ -239,7 +240,7 @@ class ReservationServiceTest {
             //given
             reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
             themeDao.create(ThemeFixtures.createDefaultTheme());
-            reservationService.add(ReservationCreateRequest.of("다온", tomorrow, 1L, 1L));
+            reservationService.add(ReservationFixtures.createReservationCreateRequest("다온", tomorrow, 1L, 1L));
             long givenId = 1L;
 
             //when
@@ -256,7 +257,7 @@ class ReservationServiceTest {
             //given
             reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
             themeDao.create(ThemeFixtures.createDefaultTheme());
-            reservationService.add(ReservationCreateRequest.of("다온", tomorrow, 1L, 1L));
+            reservationService.add(ReservationFixtures.createReservationCreateRequest("다온", tomorrow, 1L, 1L));
             Long givenId = null;
 
             //when //then
@@ -270,7 +271,7 @@ class ReservationServiceTest {
             //given
             reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:00"));
             themeDao.create(ThemeFixtures.createDefaultTheme());
-            reservationService.add(ReservationCreateRequest.of("다온", tomorrow, 1L, 1L));
+            reservationService.add(ReservationFixtures.createReservationCreateRequest("다온", tomorrow, 1L, 1L));
             long givenId = -1L;
 
             //when //then

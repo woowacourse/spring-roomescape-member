@@ -32,7 +32,8 @@ public class ReservationController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<List<AvailableReservationResponse>> readReservationTimes(@RequestParam String date, @RequestParam Long themeId) {
+    public ResponseEntity<List<AvailableReservationResponse>> readReservationTimes(@RequestParam String date,
+                                                                                   @RequestParam Long themeId) {
         return ResponseEntity.ok(reservationService.findTimeByDateAndThemeID(date, themeId));
     }
 

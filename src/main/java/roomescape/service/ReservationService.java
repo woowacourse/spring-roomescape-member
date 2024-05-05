@@ -54,10 +54,10 @@ public class ReservationService {
 
     public ReservationResponse add(ReservationCreateRequest request) {
         Reservation reservation =
-                request.toDomain(findReservationTime(request.getTimeId()), findTheme(request.getThemeId()));
-        validateDate(reservation);
+                request.toDomain(findReservationTime(request.timeId()), findTheme(request.themeId()));
+        validateDate(reservation, request.today());
         validateDuplicate(reservation);
-        validatePastTimeWhenToday(reservation);
+        validatePastTimeWhenToday(reservation, request.today(), request.now());
         return ReservationResponse.from(reservationDao.create(reservation));
     }
 
@@ -72,7 +72,7 @@ public class ReservationService {
                                                LocalDate date) {
         if (reservationDate.isSameDate(date)) {
             return reservationTimes.stream()
-                    .filter(time -> !time.isBeforeTime(LocalTime.now()))
+                    .filter(time -> !time.isBeforeTime(LocalTime.now())) // TODO: 수정
                     .toList();
         }
         return reservationTimes;
@@ -88,8 +88,8 @@ public class ReservationService {
                 .orElseThrow(() -> new InvalidValueException("테마 아이디에 해당하는 테마가 존재하지 않습니다."));
     }
 
-    private void validateDate(Reservation reservation) {
-        if (reservation.isBeforeDate(LocalDate.now())) {
+    private void validateDate(Reservation reservation, LocalDate today) {
+        if (reservation.isBeforeDate(today)) {
             throw new InvalidValueException("예약일은 오늘보다 과거일 수 없습니다.");
         }
     }
@@ -100,8 +100,8 @@ public class ReservationService {
         }
     }
 
-    private void validatePastTimeWhenToday(Reservation reservation) {
-        if (reservation.isSameDate(LocalDate.now()) && reservation.isBeforeTime(LocalTime.now())) {
+    private void validatePastTimeWhenToday(Reservation reservation, LocalDate today, LocalTime now) {
+        if (reservation.isSameDate(today) && reservation.isBeforeTime(now)) {
             throw new InvalidValueException("현재보다 이전 시간을 예약할 수 없습니다.");
         }
     }
