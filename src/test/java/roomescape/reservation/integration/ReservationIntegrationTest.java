@@ -1,5 +1,6 @@
 package roomescape.reservation.integration;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
@@ -83,6 +84,36 @@ class ReservationIntegrationTest {
                 .get("/reservations/times/1?date=" + LocalDate.now())
                 .then()
                 .statusCode(200);
+    }
+
+    @Test
+    @DisplayName("예약을 요청시 예약자명이 존재하지 않으면 예외가 발생한다.")
+    void saveReservation_ShouldReturnBADREQUEST_WhenNameIsNull() {
+        ReservationRequest reservationRequest = new ReservationRequest(LocalDate.now(), null, 1L, 1L);
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(reservationRequest)
+                .when()
+                .post("/reservations")
+                .then()
+                .statusCode(400)
+                .body(containsString("예약자명이 존재하지 않습니다."));
+    }
+
+    @Test
+    @DisplayName("예약을 요청시 예약 일자가 존재하지 않으면 예외가 발생한다.")
+    void saveReservation_ShouldReturnBADREQUEST_WhenDateIsNull() {
+        ReservationRequest reservationRequest = new ReservationRequest(null, "Dobby", 1L, 1L);
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(reservationRequest)
+                .when()
+                .post("/reservations")
+                .then()
+                .statusCode(400)
+                .body(containsString("날짜가 존재하지 않습니다."));
     }
 
 }

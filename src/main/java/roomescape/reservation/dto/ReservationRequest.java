@@ -1,13 +1,14 @@
 package roomescape.reservation.dto;
 
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import roomescape.reservation.domain.Reservation;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.Time;
 
 public record ReservationRequest(
-        LocalDate date,
-        String name,
+        @NotNull(message = "날짜가 존재하지 않습니다.") LocalDate date,
+        @NotNull(message = "예약자명이 존재하지 않습니다.") String name,
         long timeId,
         long themeId
 ) {
