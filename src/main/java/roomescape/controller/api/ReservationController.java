@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.api;
 
 import java.net.URI;
 import java.util.List;
@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import roomescape.domain.RankTheme;
 import roomescape.domain.Reservation;
 import roomescape.controller.request.ReservationRequest;
 import roomescape.service.ReservationService;
@@ -50,9 +51,9 @@ public class ReservationController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Void> handleIllegalArgumentException(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().build();
+    // TODO: ThemeController로 이동, 이름 변경 rank -> trending
+    @GetMapping("/rank")
+    public ResponseEntity<List<RankTheme>> getRanking(){
+        return ResponseEntity.ok(reservationService.getRanking());
     }
-
 }

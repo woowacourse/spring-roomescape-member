@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.api;
 
 import java.net.URI;
 import java.time.LocalDate;
@@ -45,14 +45,10 @@ public class ReservationTimeController {
         return ResponseEntity.noContent().build();
     }
 
+    // TODO: 이름 변경
     @GetMapping("/user")
     public ResponseEntity<List<ReservationTime>> availableTime(@RequestParam String date, @RequestParam long themeId){
         LocalDate parse = LocalDate.parse(date);
         return ResponseEntity.ok(reservationTimeService.available(parse,themeId));
-    }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Void> handleIllegalArgumentException(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().build();
     }
 }
