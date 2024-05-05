@@ -1,6 +1,7 @@
 package roomescape.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +16,8 @@ import roomescape.dto.theme.ThemeResponse;
 import roomescape.dto.theme.ThemesResponse;
 import roomescape.global.dto.response.ApiResponse;
 import roomescape.service.ThemeService;
+
+import java.time.LocalDate;
 
 @RestController
 public class ThemeController {
@@ -34,9 +37,12 @@ public class ThemeController {
 
     @GetMapping("/themes/top")
     @ResponseStatus(HttpStatus.OK)
-    public ApiResponse<ThemesResponse> getTopNThemes(@RequestParam final int count) {
-
-        return ApiResponse.success(themeService.findTopNThemes(count));
+    public ApiResponse<ThemesResponse> getTopNThemesBetweenDate(
+            @RequestParam final int count,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") final LocalDate startAt,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") final LocalDate endAt
+    ) {
+        return ApiResponse.success(themeService.findTopNThemes(count, startAt, endAt));
     }
 
     @PostMapping("/themes")

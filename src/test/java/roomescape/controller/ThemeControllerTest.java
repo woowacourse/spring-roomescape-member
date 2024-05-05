@@ -11,6 +11,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -93,10 +94,13 @@ class ThemeControllerTest {
     @DisplayName("예약 수 상위 10개 테마를 조회했을 때 내림차순으로 정렬된다. 만약 예약 수가 같다면, id 순으로 오름차순 정렬된다.")
     @Sql(scripts = "/reservationData.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
     void readTop10ThemesDescOrder() {
+        LocalDate startAt = LocalDate.now().minusDays(7);
+        LocalDate endAt = LocalDate.now().minusDays(1);
+
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .port(port)
-                .when().get("/themes/top?count=10")
+                .when().get("/themes/top?count=10&startAt=" + startAt + "&endAt=" + endAt)
                 .then().log().all()
                 .statusCode(200)
                 .body("data.themes.size()", is(10))

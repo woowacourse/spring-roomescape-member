@@ -28,10 +28,8 @@ public class ThemeService {
         return new ThemesResponse(response);
     }
 
-    public ThemesResponse findTopNThemes(final int count) {
-        LocalDate today = LocalDate.now();
-        LocalDate startDate = today.minusDays(7);
-        LocalDate endDate = today.minusDays(1);
+    public ThemesResponse findTopNThemes(
+            final int count, final LocalDate startDate, final LocalDate endDate) {
 
         List<ThemeResponse> response = themeDao.findByStartDateAndEndDateWithLimit(startDate, endDate, count)
                 .stream()
