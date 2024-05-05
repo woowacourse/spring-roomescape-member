@@ -41,7 +41,7 @@ class ReservationTimeServiceTest {
     @Test
     void findAllWithAvailability() {
         List<AvailableReservationTimeResponse> allWithAvailability = reservationTimeService.findAllWithAvailability(
-                LocalDate.of(2024, 5, 9), 1L);
+                LocalDate.now().plusDays(5), 1L);
 
         List<AvailableReservationTimeResponse> expectedTimes = List.of(
                 AvailableReservationTimeResponse.from(TestFixtures.TIME_1, true),
