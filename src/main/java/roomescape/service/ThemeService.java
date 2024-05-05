@@ -42,8 +42,8 @@ public class ThemeService {
         themeRepository.deleteById(id);
     }
 
-    public List<ThemeResponse> getTopThemes() {
-        List<Theme> themes = themeRepository.findTopThemesWithinDays(7, 10);
+    public List<ThemeResponse> getMostReservedThemes() {
+        List<Theme> themes = themeRepository.findMostReservedThemesWithinDays(7, 10);
 
         return themes.stream()
                 .map(ThemeResponse::from)

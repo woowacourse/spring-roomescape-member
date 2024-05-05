@@ -8,7 +8,7 @@ public interface ThemeRepository {
 
     Theme findById(Long id);
 
-    List<Theme> findTopThemesWithinDays(int day, int limit);
+    List<Theme> findMostReservedThemesWithinDays(int day, int limit);
 
     Theme save(Theme theme);
 

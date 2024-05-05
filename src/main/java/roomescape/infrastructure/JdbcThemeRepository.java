@@ -47,7 +47,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findTopThemesWithinDays(int day, int limit) {
+    public List<Theme> findMostReservedThemesWithinDays(int day, int limit) {
         String sql = "SELECT "
                 + "    th.id AS theme_id, "
                 + "    th.name AS theme_name, "

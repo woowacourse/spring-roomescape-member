@@ -50,8 +50,8 @@ public class ThemeController {
     }
 
     @GetMapping("/rankings")
-    public ResponseEntity<List<ThemeResponse>> getTopThemes() {
-        List<ThemeResponse> responses = themeService.getTopThemes();
+    public ResponseEntity<List<ThemeResponse>> getMostReservedThemes() {
+        List<ThemeResponse> responses = themeService.getMostReservedThemes();
 
         return ResponseEntity.ok()
                 .body(responses);
