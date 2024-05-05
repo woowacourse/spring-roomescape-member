@@ -45,7 +45,7 @@ public class ThemeDao {
         }
     }
 
-    public List<Theme> readThemesSortedByCountOfReservation(String startDate, String endDate) {
+    public List<Theme> readThemesRankingOfReservation(String startDate, String endDate) {
         String sql = """
                 SELECT theme.id, theme.name, theme.description, theme.thumbnail, COUNT(reservation.theme_id) AS reservation_count
                 FROM theme

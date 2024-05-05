@@ -36,7 +36,7 @@ public class ThemeService {
         LocalDate currentDate = LocalDate.now();
         LocalDate startDate = currentDate.minusDays(MAX_DAYS_TO_SUBTRACT);
         LocalDate endDate = currentDate.minusDays(MIN_DAYS_TO_SUBTRACT);
-        return themeDao.readThemesSortedByCountOfReservation(startDate.format(DATE_FORMATTER), endDate.format(DATE_FORMATTER))
+        return themeDao.readThemesRankingOfReservation(startDate.format(DATE_FORMATTER), endDate.format(DATE_FORMATTER))
                 .stream()
                 .map(ThemeResponse::from)
                 .toList();
