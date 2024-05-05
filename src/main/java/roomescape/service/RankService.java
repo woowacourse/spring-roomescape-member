@@ -16,9 +16,8 @@ public class RankService {
         this.rankDao = rankDao;
     }
 
-    public List<ThemeResponse> getPopularThemeList() {
-        LocalDate currentDate = LocalDate.now();
-        final List<Theme> topTenByDate = rankDao.findTopTenByDate(currentDate.minusWeeks(1), currentDate.minusDays(1));
-        return topTenByDate.stream().map(ThemeResponse::from).toList();
+    public List<ThemeResponse> getPopularThemeList(final LocalDate startDate, final LocalDate endDate, final Long count) {
+        final List<Theme> themes = rankDao.findByDate(startDate, endDate, count);
+        return themes.stream().map(ThemeResponse::from).toList();
     }
 }

@@ -24,15 +24,15 @@ public class RankDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<Theme> findTopTenByDate(final LocalDate fromDate, final LocalDate toDate) {
+    public List<Theme> findByDate(final LocalDate fromDate, final LocalDate toDate, final Long count) {
         String sql = """
                  select theme.id, theme.name, theme.description, theme.thumbnail
                  from theme
                  left join reservation on reservation.theme_id = theme.id
                  and reservation.date between ? and ?
                  group by theme.id
-                 order by count(theme_id) desc limit 10;
+                 order by count(theme_id) desc limit ?;
                 """;
-        return jdbcTemplate.query(sql, rowMapper, fromDate, toDate);
+        return jdbcTemplate.query(sql, rowMapper, fromDate, toDate, count);
     }
 }
