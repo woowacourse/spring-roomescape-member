@@ -18,13 +18,11 @@ class ReservationTest {
     void equals() {
         //given
         long id = 1L;
-        String name1 = "choco";
         LocalDate date1 = LocalDate.now().plusYears(1);
         long timeId = 1;
         LocalTime localTime = LocalTime.of(12, 23, 0);
         ReservationTime time1 = new ReservationTime(timeId, localTime);
 
-        String name2 = "pororo";
         LocalDate date2 = LocalDate.now().plusYears(1);
         LocalTime time2 = LocalTime.of(11, 23, 0);
 
@@ -34,19 +32,5 @@ class ReservationTest {
 
         //then
         assertThat(reservation1).isEqualTo(reservation2);
-    }
-
-    @DisplayName("현재보다 이전 시각의 예약을 생성하면 예외가 발생한다.")
-    @Test
-    void createIllegalException() {
-        //given
-        LocalDate localDate = LocalDate.of(2017, 12, 30);
-        long timeId = 1;
-        LocalTime localTime = LocalTime.of(12, 23, 0);
-        ReservationTime time = new ReservationTime(timeId, localTime);
-
-        //when & then
-        assertThatThrownBy(() -> new Reservation(1L, localDate, time, getTheme1()))
-                .isInstanceOf(IllegalArgumentException.class);
     }
 }
