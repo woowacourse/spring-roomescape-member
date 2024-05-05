@@ -5,12 +5,15 @@ import io.restassured.http.ContentType;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
@@ -69,5 +72,21 @@ class ThemeRestControllerTest {
                 .then().log().all()
                 .statusCode(HttpStatus.SC_OK)
                 .body("size()", is(1));
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = {",description,thumbnail", "name,,thumbnail", "name,description,"})
+    void createTheme_Null_BadRequest(String name, String description, String thumbnail) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("description", description);
+        params.put("thumbnail", thumbnail);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(HttpStatus.SC_BAD_REQUEST);
     }
 }

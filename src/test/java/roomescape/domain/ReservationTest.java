@@ -1,26 +1,34 @@
 package roomescape.domain;
 
 import org.junit.jupiter.api.Test;
-import roomescape.exception.IllegalDateException;
-import roomescape.exception.IllegalTimeException;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import roomescape.exception.RoomEscapeException;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.ReservationFixture.RESERVATION_TIME_NOW;
+import static roomescape.ReservationFixture.THEME;
 
 class ReservationTest {
 
-    @Test
-    public void validateDate() {
-        assertThatThrownBy(() -> new Reservation(1L, "테니", LocalDate.of(2024, 4, 29), new ReservationTime(1L, LocalTime.now()), new Theme(1L, "테니", "설명", "썸네일")))
-                .isInstanceOf(IllegalDateException.class);
+    @ParameterizedTest
+    @CsvSource(value = {",2024-05-04", "name,"})
+    public void reservation_NullNameOrDate_ThrownException(String name, LocalDate date) {
+        assertThatThrownBy(() -> new Reservation(0L, name, date, RESERVATION_TIME_NOW, THEME))
+                .isInstanceOf(RoomEscapeException.class);
     }
 
     @Test
-    public void validateTime() {
-        assertThatThrownBy(() -> new Reservation(1L, "테니", LocalDate.now(), new ReservationTime(1L, LocalTime.now().minusHours(1)), new Theme(1L, "테니", "설명", "썸네일")))
-                .isInstanceOf(IllegalTimeException.class);
+    public void reservation_NullReservationTime_ThrownException() {
+        assertThatThrownBy(() -> new Reservation(0L, "테니", LocalDate.now(), null, THEME))
+                .isInstanceOf(RoomEscapeException.class);
+    }
 
+    @Test
+    public void reservation_NullTheme_ThrownException() {
+        assertThatThrownBy(() -> new Reservation(0L, "테니", LocalDate.now(), RESERVATION_TIME_NOW, null))
+                .isInstanceOf(RoomEscapeException.class);
     }
 }

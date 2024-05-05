@@ -1,5 +1,7 @@
 package roomescape.domain;
 
+import roomescape.exception.RoomEscapeException;
+
 import java.util.Objects;
 
 public class Theme {
@@ -9,10 +11,21 @@ public class Theme {
     private final String thumbnail;
 
     public Theme(Long id, String name, String description, String thumbnail) {
+        checkNull(name, description, thumbnail);
         this.id = id;
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
+    }
+
+    private void checkNull(String name, String description, String thumbnail) {
+        try {
+            Objects.requireNonNull(name, "[ERROR] 테마 이름은 null일 수 없습니다.");
+            Objects.requireNonNull(description, "[ERROR] 설명은 null일 수 없습니다.");
+            Objects.requireNonNull(thumbnail, "[ERROR] 썸네일은 null일 수 없습니다.");
+        } catch (NullPointerException e) {
+            throw new RoomEscapeException(e.getMessage());
+        }
     }
 
     public Long getId() {

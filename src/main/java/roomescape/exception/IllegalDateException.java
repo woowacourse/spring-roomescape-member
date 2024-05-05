@@ -1,6 +1,6 @@
 package roomescape.exception;
 
-public class IllegalDateException extends IllegalArgumentException {
+public class IllegalDateException extends RoomEscapeException {
     public IllegalDateException(String message) {
         super(message);
     }
