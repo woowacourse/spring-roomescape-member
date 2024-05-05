@@ -1,4 +1,4 @@
-package roomescape.repository;
+package roomescape.dao;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,18 +16,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @JdbcTest
-@Import(ThemeRepository.class)
+@Import(ThemeDao.class)
 @Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
-class ThemeRepositoryTest {
+class ThemeDaoTest {
 
     @Autowired
-    private ThemeRepository themeRepository;
+    private ThemeDao themeDao;
 
     @Test
     @DisplayName("데이터베이스에서 모든 테마 정보를 조회한다.")
     void findAllThemes() {
         // given
-        List<Theme> themes = themeRepository.findAll();
+        List<Theme> themes = themeDao.findAll();
 
         // when & then
         assertThat(themes.size()).isEqualTo(0);
@@ -37,7 +37,7 @@ class ThemeRepositoryTest {
     @DisplayName("데이터베이스에 테마 정보를 추가한다.")
     void saveTheme() {
         // given
-        Theme theme = themeRepository.insert(new Theme("name", "description", "thumbnail"));
+        Theme theme = themeDao.insert(new Theme("name", "description", "thumbnail"));
 
         // when & then
         assertThat(theme.getId()).isEqualTo(1);
@@ -47,10 +47,10 @@ class ThemeRepositoryTest {
     @DisplayName("테마 id를 통해 데이터베이스에서 테마를 삭제한다.")
     void deleteTheme() {
         // given
-        Theme theme = themeRepository.insert(new Theme("name", "description", "thumbnail"));
+        Theme theme = themeDao.insert(new Theme("name", "description", "thumbnail"));
 
         // when
-        int deleteCount = themeRepository.deleteById(theme.getId());
+        int deleteCount = themeDao.deleteById(theme.getId());
 
         // then
         assertThat(deleteCount).isEqualTo(1);
@@ -71,7 +71,7 @@ class ThemeRepositoryTest {
         LocalDate endDate = LocalDate.now().minusDays(1);
 
         // when
-        List<Theme> top10Reservations = themeRepository.findByStartDateAndEndDateWithLimit(startDate, endDate, 10);
+        List<Theme> top10Reservations = themeDao.findByStartDateAndEndDateWithLimit(startDate, endDate, 10);
 
         // then
         assertAll(

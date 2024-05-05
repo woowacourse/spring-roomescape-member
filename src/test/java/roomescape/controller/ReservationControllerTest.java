@@ -11,12 +11,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
+import roomescape.dao.ReservationDao;
+import roomescape.dao.ThemeDao;
+import roomescape.dao.TimeDao;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.Time;
-import roomescape.repository.ReservationRepository;
-import roomescape.repository.ThemeRepository;
-import roomescape.repository.TimeRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -31,13 +31,13 @@ import static org.hamcrest.Matchers.is;
 public class ReservationControllerTest {
 
     @Autowired
-    private ReservationRepository reservationRepository;
+    private ReservationDao reservationDao;
 
     @Autowired
-    private TimeRepository timeRepository;
+    private TimeDao timeDao;
 
     @Autowired
-    private ThemeRepository themeRepository;
+    private ThemeDao themeDao;
 
     @LocalServerPort
     private int port;
@@ -45,8 +45,8 @@ public class ReservationControllerTest {
     @Test
     @DisplayName("처음으로 등록하는 예약의 id는 1이다.")
     void firstPost() {
-        timeRepository.insert(new Time(LocalTime.of(17, 30)));
-        themeRepository.insert(new Theme("테마명", "설명", "썸네일URL"));
+        timeDao.insert(new Time(LocalTime.of(17, 30)));
+        themeDao.insert(new Theme("테마명", "설명", "썸네일URL"));
 
         Map<String, String> reservationParams = Map.of(
                 "name", "썬",
@@ -70,13 +70,13 @@ public class ReservationControllerTest {
     @DisplayName("전체 예약정보를 조회한다.")
     void readEmptyReservations() {
         // given
-        Time time = timeRepository.insert(new Time(LocalTime.of(17, 30)));
-        Theme theme = themeRepository.insert(new Theme("테마명", "설명", "썸네일URL"));
+        Time time = timeDao.insert(new Time(LocalTime.of(17, 30)));
+        Theme theme = themeDao.insert(new Theme("테마명", "설명", "썸네일URL"));
 
         // when
-        reservationRepository.insert(new Reservation("예약자1", LocalDate.now(), time, theme));
-        reservationRepository.insert(new Reservation("예약자2", LocalDate.now().plusDays(1), time, theme));
-        reservationRepository.insert(new Reservation("예약자3", LocalDate.now().plusDays(2), time, theme));
+        reservationDao.insert(new Reservation("예약자1", LocalDate.now(), time, theme));
+        reservationDao.insert(new Reservation("예약자2", LocalDate.now().plusDays(1), time, theme));
+        reservationDao.insert(new Reservation("예약자3", LocalDate.now().plusDays(2), time, theme));
 
         // then
         RestAssured.given().log().all()
@@ -91,10 +91,10 @@ public class ReservationControllerTest {
     @DisplayName("예약 정보를 삭제한다.")
     void readReservationsSizeAfterPostAndDelete() {
         // given
-        Time time = timeRepository.insert(new Time(LocalTime.of(17, 30)));
-        Theme theme = themeRepository.insert(new Theme("테마명", "설명", "썸네일URL"));
+        Time time = timeDao.insert(new Time(LocalTime.of(17, 30)));
+        Theme theme = themeDao.insert(new Theme("테마명", "설명", "썸네일URL"));
 
-        Reservation reservation = reservationRepository.insert(new Reservation("예약자1", LocalDate.now(), time, theme));
+        Reservation reservation = reservationDao.insert(new Reservation("예약자1", LocalDate.now(), time, theme));
 
         // when
         RestAssured.given().log().all()
@@ -104,7 +104,7 @@ public class ReservationControllerTest {
                 .statusCode(204);
 
         // then
-        assertThat(reservationRepository.findAll()).hasSize(0);
+        assertThat(reservationDao.findAll()).hasSize(0);
     }
 
     @Test
@@ -112,14 +112,14 @@ public class ReservationControllerTest {
     void readReservationByDateAndThemeId() {
         // given
         LocalDate today = LocalDate.now();
-        Time time1 = timeRepository.insert(new Time(LocalTime.of(17, 00)));
-        Time time2 = timeRepository.insert(new Time(LocalTime.of(17, 30)));
-        Time time3 = timeRepository.insert(new Time(LocalTime.of(18, 30)));
-        Theme theme = themeRepository.insert(new Theme("테마명1", "설명", "썸네일URL"));
+        Time time1 = timeDao.insert(new Time(LocalTime.of(17, 00)));
+        Time time2 = timeDao.insert(new Time(LocalTime.of(17, 30)));
+        Time time3 = timeDao.insert(new Time(LocalTime.of(18, 30)));
+        Theme theme = themeDao.insert(new Theme("테마명1", "설명", "썸네일URL"));
 
-        reservationRepository.insert(new Reservation("예약자1", today.plusDays(1), time1, theme));
-        reservationRepository.insert(new Reservation("예약자1", today.plusDays(1), time2, theme));
-        reservationRepository.insert(new Reservation("예약자1", today.plusDays(1), time3, theme));
+        reservationDao.insert(new Reservation("예약자1", today.plusDays(1), time1, theme));
+        reservationDao.insert(new Reservation("예약자1", today.plusDays(1), time2, theme));
+        reservationDao.insert(new Reservation("예약자1", today.plusDays(1), time3, theme));
 
         // when & then
         RestAssured.given().log().all()

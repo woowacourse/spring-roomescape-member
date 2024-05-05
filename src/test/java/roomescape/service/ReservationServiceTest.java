@@ -7,13 +7,13 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
+import roomescape.dao.ReservationDao;
+import roomescape.dao.ThemeDao;
+import roomescape.dao.TimeDao;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.Time;
 import roomescape.dto.reservation.ReservationRequest;
 import roomescape.global.exception.model.ConflictException;
-import roomescape.repository.ReservationRepository;
-import roomescape.repository.ThemeRepository;
-import roomescape.repository.TimeRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,13 +23,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
 @Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
-@Import({TimeRepository.class, ThemeRepository.class, ReservationService.class, ReservationRepository.class})
+@Import({TimeDao.class, ThemeDao.class, ReservationService.class, ReservationDao.class})
 class ReservationServiceTest {
 
     @Autowired
-    TimeRepository timeRepository;
+    TimeDao timeDao;
     @Autowired
-    ThemeRepository themeRepository;
+    ThemeDao themeDao;
     @Autowired
     private ReservationService reservationService;
 
@@ -37,8 +37,8 @@ class ReservationServiceTest {
     @DisplayName("동일한 날짜와 시간과 테마에 예약을 생성하면 예외가 발생한다")
     void duplicateTimeReservationAddFail() {
         // given
-        Time time = timeRepository.insert(new Time(LocalTime.of(12, 30)));
-        Theme theme = themeRepository.insert(new Theme("테마명", "설명", "썸네일URL"));
+        Time time = timeDao.insert(new Time(LocalTime.of(12, 30)));
+        Theme theme = themeDao.insert(new Theme("테마명", "설명", "썸네일URL"));
 
         // when & then
         reservationService.addReservation(
@@ -53,8 +53,8 @@ class ReservationServiceTest {
     @DisplayName("이미 지난 날짜로 예약을 생성하면 예외가 발생한다")
     void beforeDateReservationFail() {
         // given
-        Time time = timeRepository.insert(new Time(LocalTime.of(12, 30)));
-        Theme theme = themeRepository.insert(new Theme("테마명", "설명", "썸네일URL"));
+        Time time = timeDao.insert(new Time(LocalTime.of(12, 30)));
+        Theme theme = themeDao.insert(new Theme("테마명", "설명", "썸네일URL"));
         LocalDate beforeDate = LocalDate.now().minusDays(1L);
 
         // when & then
@@ -68,8 +68,8 @@ class ReservationServiceTest {
     void beforeTimeReservationFail() {
         // given
         LocalDateTime beforeTime = LocalDateTime.now().minusHours(1L);
-        Time time = timeRepository.insert(new Time(beforeTime.toLocalTime()));
-        Theme theme = themeRepository.insert(new Theme("테마명", "설명", "썸네일URL"));
+        Time time = timeDao.insert(new Time(beforeTime.toLocalTime()));
+        Theme theme = themeDao.insert(new Theme("테마명", "설명", "썸네일URL"));
 
         // when & then
         assertThatThrownBy(() -> reservationService.addReservation(

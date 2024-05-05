@@ -1,4 +1,4 @@
-package roomescape.repository;
+package roomescape.dao;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -20,27 +20,27 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
-@Import({TimeRepository.class, ThemeRepository.class, ReservationRepository.class})
+@Import({TimeDao.class, ThemeDao.class, ReservationDao.class})
 @Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
-public class TimeRepositoryTest {
+public class TimeDaoTest {
 
     @Autowired
-    private TimeRepository timeRepository;
+    private TimeDao timeDao;
 
     @Autowired
-    private ThemeRepository themeRepository;
+    private ThemeDao themeDao;
 
     @Autowired
-    private ReservationRepository reservationRepository;
+    private ReservationDao reservationDao;
 
     @Test
     @DisplayName("등록된 시간의 id를 통해 단건 조회할 수 있다.")
     void findTimeById() {
         //given
-        timeRepository.insert(new Time(1L, LocalTime.of(17, 30)));
+        timeDao.insert(new Time(1L, LocalTime.of(17, 30)));
 
         // when
-        Time foundTime = timeRepository.findById(1L);
+        Time foundTime = timeDao.findById(1L);
 
         // then
         assertThat(foundTime.getId()).isEqualTo(1L);
@@ -50,11 +50,11 @@ public class TimeRepositoryTest {
     @DisplayName("전체 시간 정보를 조회한다.")
     void readDbTimes() {
         // given
-        timeRepository.insert(new Time(LocalTime.of(17, 30)));
-        timeRepository.insert(new Time(LocalTime.of(19, 30)));
+        timeDao.insert(new Time(LocalTime.of(17, 30)));
+        timeDao.insert(new Time(LocalTime.of(19, 30)));
 
         // when
-        List<Time> times = timeRepository.findAll();
+        List<Time> times = timeDao.findAll();
 
         // then
         assertThat(times.size()).isEqualTo(2);
@@ -64,10 +64,10 @@ public class TimeRepositoryTest {
     @DisplayName("하나의 시간만 등록한 경우, DB를 조회 했을 때 조회 결과 개수는 1개이다.")
     void postTimeIntoDb() {
         // given
-        timeRepository.insert(new Time(1L, LocalTime.of(17, 30)));
+        timeDao.insert(new Time(1L, LocalTime.of(17, 30)));
 
         // when
-        List<Time> times = timeRepository.findAll();
+        List<Time> times = timeDao.findAll();
 
         // then
         assertThat(times.size()).isEqualTo(1);
@@ -77,11 +77,11 @@ public class TimeRepositoryTest {
     @DisplayName("하나의 시간만 등록한 경우, 시간 삭제 뒤 DB를 조회 했을 때 조회 결과 개수는 0개이다.")
     void readTimesSizeFromDbAfterPostAndDelete() {
         // given
-        timeRepository.insert(new Time(1L, LocalTime.of(17, 30)));
+        timeDao.insert(new Time(1L, LocalTime.of(17, 30)));
 
         // when
-        timeRepository.deleteById(1L);
-        List<Time> times = timeRepository.findAll();
+        timeDao.deleteById(1L);
+        List<Time> times = timeDao.findAll();
 
         // then
         assertThat(times.size()).isEqualTo(0);
@@ -91,19 +91,19 @@ public class TimeRepositoryTest {
     @DisplayName("테마ID와 날짜를 통해 예약 정보(전체 시간대, 예약 여부)를 조회한다.")
     void readReservationsByThemeIdAndDate() {
         // given
-        Time time1 = timeRepository.insert(new Time(LocalTime.of(17, 30)));
-        Time time2 = timeRepository.insert(new Time(LocalTime.of(17, 30)));
-        Theme theme = themeRepository.insert(new Theme("테마명", "설명", "썸네일URL"));
+        Time time1 = timeDao.insert(new Time(LocalTime.of(17, 30)));
+        Time time2 = timeDao.insert(new Time(LocalTime.of(17, 30)));
+        Theme theme = themeDao.insert(new Theme("테마명", "설명", "썸네일URL"));
 
-        reservationRepository.insert(new Reservation(
+        reservationDao.insert(new Reservation(
                 "브라운", LocalDate.of(2024, 4, 25), time1, theme
         ));
-        reservationRepository.insert(new Reservation(
+        reservationDao.insert(new Reservation(
                 "브라운", LocalDate.of(2024, 4, 26), time1, theme
         ));
 
         // when
-        List<ReservationTimeInfoResponse> reservedTimeInfos = timeRepository.findByDateAndThemeId(
+        List<ReservationTimeInfoResponse> reservedTimeInfos = timeDao.findByDateAndThemeId(
                 LocalDate.of(2024, 4, 25),
                 theme.getId()
         ).reservationTimes();

@@ -1,4 +1,4 @@
-package roomescape.repository;
+package roomescape.dao;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -13,7 +13,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public class ThemeRepository {
+public class ThemeDao {
 
     private static final RowMapper<Theme> ROW_MAPPER = (resultSet, rowNum) -> new Theme(
             resultSet.getLong("id"),
@@ -25,7 +25,7 @@ public class ThemeRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
-    public ThemeRepository(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
+    public ThemeDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("theme")

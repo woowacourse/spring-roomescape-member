@@ -1,6 +1,9 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.dao.ReservationDao;
+import roomescape.dao.ThemeDao;
+import roomescape.dao.TimeDao;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.Time;
@@ -10,9 +13,6 @@ import roomescape.dto.reservation.ReservationTimeInfosResponse;
 import roomescape.dto.reservation.ReservationsResponse;
 import roomescape.global.exception.error.ErrorType;
 import roomescape.global.exception.model.ConflictException;
-import roomescape.repository.ReservationRepository;
-import roomescape.repository.ThemeRepository;
-import roomescape.repository.TimeRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -21,20 +21,20 @@ import java.util.List;
 @Service
 public class ReservationService {
 
-    private final ReservationRepository reservationRepository;
-    private final TimeRepository timeRepository;
-    private final ThemeRepository themeRepository;
+    private final ReservationDao reservationDao;
+    private final TimeDao timeDao;
+    private final ThemeDao themeDao;
 
-    public ReservationService(final ReservationRepository reservationRepository,
-                              final TimeRepository timeRepository,
-                              final ThemeRepository themeRepository) {
-        this.reservationRepository = reservationRepository;
-        this.timeRepository = timeRepository;
-        this.themeRepository = themeRepository;
+    public ReservationService(final ReservationDao reservationDao,
+                              final TimeDao timeDao,
+                              final ThemeDao themeDao) {
+        this.reservationDao = reservationDao;
+        this.timeDao = timeDao;
+        this.themeDao = themeDao;
     }
 
     public ReservationsResponse findAllReservations() {
-        List<ReservationResponse> response = reservationRepository.findAll()
+        List<ReservationResponse> response = reservationDao.findAll()
                 .stream()
                 .map(ReservationResponse::from)
                 .toList();
@@ -43,19 +43,19 @@ public class ReservationService {
     }
 
     public ReservationTimeInfosResponse findReservationsByDateAndThemeId(final LocalDate date, final Long themeId) {
-        return timeRepository.findByDateAndThemeId(date, themeId);
+        return timeDao.findByDateAndThemeId(date, themeId);
     }
 
     public ReservationResponse addReservation(final ReservationRequest reservationRequest) {
         LocalDate today = LocalDate.now();
         LocalDate requestDate = reservationRequest.date();
-        Time time = timeRepository.findById(reservationRequest.timeId());
-        Theme theme = themeRepository.findById(reservationRequest.themeId());
+        Time time = timeDao.findById(reservationRequest.timeId());
+        Theme theme = themeDao.findById(reservationRequest.themeId());
 
         validateDateAndTime(requestDate, today, time);
         validateReservationDuplicate(reservationRequest, theme);
 
-        Reservation savedReservation = reservationRepository.insert(reservationRequest.toReservation(time, theme));
+        Reservation savedReservation = reservationDao.insert(reservationRequest.toReservation(time, theme));
 
         return ReservationResponse.from(savedReservation);
     }
@@ -68,7 +68,7 @@ public class ReservationService {
     }
 
     private void validateReservationDuplicate(final ReservationRequest reservationRequest, final Theme theme) {
-        List<Reservation> duplicateTimeReservation = reservationRepository.findByTimeIdAndDateAndThemeId(
+        List<Reservation> duplicateTimeReservation = reservationDao.findByTimeIdAndDateAndThemeId(
                 reservationRequest.timeId(), reservationRequest.date(), theme.getId());
 
         if (duplicateTimeReservation.size() > 0) {
@@ -77,6 +77,6 @@ public class ReservationService {
     }
 
     public void removeReservationById(final Long id) {
-        reservationRepository.deleteById(id);
+        reservationDao.deleteById(id);
     }
 }

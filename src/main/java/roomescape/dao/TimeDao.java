@@ -1,4 +1,4 @@
-package roomescape.repository;
+package roomescape.dao;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -16,7 +16,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Repository
-public class TimeRepository {
+public class TimeDao {
 
     private static final RowMapper<Time> ROW_MAPPER = (resultSet, rowNum) -> new Time(
             resultSet.getLong("id"),
@@ -26,7 +26,7 @@ public class TimeRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
-    public TimeRepository(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
+    public TimeDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation_time")
