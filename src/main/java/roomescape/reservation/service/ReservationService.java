@@ -36,13 +36,11 @@ public class ReservationService {
     }
 
     public ReservationResponse create(ReservationRequest reservationRequest) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId()).orElseThrow(
-                () -> new IllegalArgumentException(
-                        String.format("잘못된 예약 시간입니다. id=%d를 확인해주세요.", reservationRequest.timeId())));
+        ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId());
+        validateTimeExist(reservationTime, reservationRequest.timeId());
 
-        Theme theme = themeRepository.findById(reservationRequest.themeId()).orElseThrow(
-                () -> new IllegalArgumentException(
-                        String.format("잘못된 테마입니다. id=%d를 확인해주세요.", reservationRequest.themeId())));
+        Theme theme = themeRepository.findById(reservationRequest.themeId());
+        validateThemeExist(theme, reservationRequest.themeId());
 
         LocalDate date = LocalDate.parse(reservationRequest.date());
 
@@ -63,6 +61,20 @@ public class ReservationService {
     public void delete(long reservationId) {
         if (!reservationRepository.deleteById(reservationId)) {
             throw new IllegalArgumentException(String.format("잘못된 예약입니다. id=%d를 확인해주세요.", reservationId));
+        }
+    }
+
+    private void validateTimeExist(ReservationTime reservationTime, long timeId) {
+        if (reservationTime == null) {
+            throw new IllegalArgumentException(
+                    String.format("잘못된 예약 시간입니다. id=%d를 확인해주세요.", timeId));
+        }
+    }
+
+    private void validateThemeExist(Theme theme, long themeId) {
+        if (theme == null) {
+            throw new IllegalArgumentException(
+                    String.format("잘못된 테마입니다. id=%d를 확인해주세요.", themeId));
         }
     }
 }
