@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.dao.dto.AvailableReservationTimeResponse;
+import roomescape.domain.AvailableReservationTime;
 import roomescape.dao.mapper.AvailableReservationTimeMapper;
 import roomescape.dao.mapper.ReservationTimeRowMapper;
 import roomescape.domain.ReservationDate;
@@ -61,7 +61,7 @@ public class ReservationTimeDao {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public List<AvailableReservationTimeResponse> getAvailable(final ReservationDate date, final Long themeId) {
+    public List<AvailableReservationTime> getAvailable(final ReservationDate date, final Long themeId) {
         final String sql = """
                 SELECT
                 t.id AS time_id,

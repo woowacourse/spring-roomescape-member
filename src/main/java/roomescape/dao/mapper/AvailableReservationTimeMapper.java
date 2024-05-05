@@ -5,16 +5,16 @@ import java.sql.SQLException;
 
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
-import roomescape.dao.dto.AvailableReservationTimeResponse;
+import roomescape.domain.AvailableReservationTime;
 
 
 @Component
-public class AvailableReservationTimeMapper implements RowMapper<AvailableReservationTimeResponse> {
+public class AvailableReservationTimeMapper implements RowMapper<AvailableReservationTime> {
 
     @Override
-    public AvailableReservationTimeResponse mapRow(final ResultSet rs, final int rowNum) throws SQLException {
+    public AvailableReservationTime mapRow(final ResultSet rs, final int rowNum) throws SQLException {
 
-        return new AvailableReservationTimeResponse(
+        return new AvailableReservationTime(
                 rs.getBoolean("booked"),
                 rs.getLong("time_id"),
                 rs.getString("start_at")
