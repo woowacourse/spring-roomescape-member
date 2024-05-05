@@ -1,6 +1,8 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.dao.ReservationDao;
+import roomescape.dao.ThemeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -10,8 +12,6 @@ import roomescape.exception.AlreadyExistReservationException;
 import roomescape.exception.IllegalThemeException;
 import roomescape.exception.IllegalTimeException;
 import roomescape.mapper.ReservationMapper;
-import roomescape.repository.ReservationDao;
-import roomescape.repository.ThemeDao;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -53,9 +53,7 @@ public class ReservationService {
         Theme theme = themeDao.findById(request.themeId());
 
         Reservation reservation = reservationMapper.mapToReservation(request, time, theme);
-
         Long saveId = reservationDao.save(reservation);
-
         return reservationMapper.mapToResponse(saveId, reservation);
     }
 

@@ -2,14 +2,14 @@ package roomescape.service;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import roomescape.dao.ReservationDao;
+import roomescape.dao.TimeDao;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.TimeMemberResponse;
 import roomescape.dto.TimeResponse;
 import roomescape.dto.TimeSaveRequest;
 import roomescape.exception.IllegalTimeException;
 import roomescape.mapper.TimeMapper;
-import roomescape.repository.ReservationDao;
-import roomescape.repository.TimeDao;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

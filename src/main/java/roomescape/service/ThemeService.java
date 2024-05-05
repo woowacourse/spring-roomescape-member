@@ -2,14 +2,15 @@ package roomescape.service;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeResponse;
 import roomescape.dto.ThemeSaveRequest;
 import roomescape.exception.IllegalThemeException;
 import roomescape.mapper.ThemeMapper;
-import roomescape.repository.ReservationDao;
-import roomescape.repository.ThemeDao;
+import roomescape.repository.ThemeRepository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -17,11 +18,11 @@ public class ThemeService {
 
     private final ThemeMapper themeMapper = new ThemeMapper();
     private final ThemeDao themeDao;
-    private final ReservationDao reservationDao;
+    private final ThemeRepository themeRepository;
 
-    public ThemeService(ThemeDao themeDao, ReservationDao reservationDao) {
+    public ThemeService(ThemeDao themeDao, ThemeRepository themeRepository) {
         this.themeDao = themeDao;
-        this.reservationDao = reservationDao;
+        this.themeRepository = themeRepository;
     }
 
     public List<ThemeResponse> findAllThemes() {
@@ -32,7 +33,11 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> findBestThemes() {
-        List<Theme> themesByDescOrder = themeDao.findThemesOrderByReservationThemeCountDesc();
+        LocalDate today = LocalDate.now();
+        LocalDate sevenDaysBefore = today.minusDays(7);
+        LocalDate oneDayBefore = today.minusDays(1);
+
+        List<Theme> themesByDescOrder = themeRepository.findBest10Between(sevenDaysBefore, oneDayBefore);
         return themesByDescOrder.stream()
                 .map(themeMapper::mapToResponse)
                 .toList();

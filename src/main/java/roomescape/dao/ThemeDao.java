@@ -1,4 +1,4 @@
-package roomescape.repository;
+package roomescape.dao;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -62,16 +62,9 @@ public class ThemeDao {
         jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id);
     }
 
-    public List<Theme> findThemesOrderByReservationThemeCountDesc() {
-        LocalDate today = LocalDate.now();
-        String sevenDaysBefore = today.minusDays(7).toString();
-        String oneDayBefore = today.minusDays(1).toString();
+    public List<Theme> findThemesOrderByReservationThemeCountDesc(LocalDate startDate, LocalDate endDate) {
         return jdbcTemplate.query("""
-                SELECT
-                th.id,
-                th.name,
-                th.description,
-                th.thumbnail,
+                SELECT th.id, th.name, th.description, th.thumbnail,
                 COUNT(r.theme_id) AS reservation_theme_count
                 FROM theme AS th
                 INNER JOIN reservation AS r ON r.theme_id = th.id
@@ -79,6 +72,6 @@ public class ThemeDao {
                 GROUP BY th.id
                 ORDER BY reservation_theme_count DESC
                 LIMIT 10
-                """, themeRowMapper, sevenDaysBefore, oneDayBefore);
+                """, themeRowMapper, startDate, endDate);
     }
 }

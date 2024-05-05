@@ -1,4 +1,4 @@
-package roomescape.repository;
+package roomescape.dao;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -18,13 +18,14 @@ import java.util.List;
 @Repository
 public class ReservationDao {
 
-    private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> new Reservation(
-            resultSet.getLong("id"),
-            resultSet.getString("reservation_name"),
-            resultSet.getObject("date", LocalDate.class),
-            new ReservationTime(resultSet.getLong("time_id"), resultSet.getObject("start_at", LocalTime.class)),
-            new Theme(resultSet.getLong("theme_id"), resultSet.getString("theme_name"), resultSet.getString("description"), resultSet.getString("thumbnail"))
-    );
+    private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) ->
+            new Reservation(
+                    resultSet.getLong("id"),
+                    resultSet.getString("reservation_name"),
+                    resultSet.getObject("date", LocalDate.class),
+                    new ReservationTime(resultSet.getLong("time_id"), resultSet.getObject("start_at", LocalTime.class)),
+                    new Theme(resultSet.getLong("theme_id"), resultSet.getString("theme_name"), resultSet.getString("description"), resultSet.getString("thumbnail"))
+            );
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -83,5 +84,16 @@ public class ReservationDao {
 
     public List<Long> findTimeIdByDateThemeId(LocalDate date, Long themeId) {
         return jdbcTemplate.queryForList("SELECT time_id FROM reservation WHERE date = ? AND theme_id = ?", Long.class, date, themeId);
+    }
+
+    public List<Long> find10ThemeIdsOrderByReservationThemeCountDescBetween(LocalDate startDate, LocalDate endDate) {
+        return jdbcTemplate.queryForList("""
+                SELECT r.theme_id
+                FROM reservation AS r
+                WHERE r.date >= ? AND r.date <= ?
+                GROUP BY r.theme_id
+                ORDER BY COUNT(r.theme_id) DESC
+                LIMIT 10
+                """, Long.class, startDate.toString(), endDate.toString());
     }
 }
