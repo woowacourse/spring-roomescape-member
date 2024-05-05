@@ -84,7 +84,7 @@ public class ReservationService {
                                                LocalDate date) {
         if (reservationDate.isSameDate(date)) {
             return reservationTimes.stream()
-                    .filter(time -> !time.isBeforeNow())
+                    .filter(time -> !time.isBeforeTime(LocalTime.now()))
                     .toList();
         }
         return reservationTimes;
@@ -92,12 +92,16 @@ public class ReservationService {
 
     private void validateDate(ReservationDate reservationDate, LocalDate date) {
         if (reservationDate.isBeforeDate(date)) {
+    private void validateDate(Reservation reservation) {
+        if (reservation.isBeforeDate(LocalDate.now())) {
             throw new InvalidValueException("예약일은 오늘보다 과거일 수 없습니다.");
         }
     }
 
     private void validatePastTimeWhenToday(Reservation reservation, ReservationTime reservationTime, LocalDate date) {
         if (reservation.isSameDate(date) && reservationTime.isBeforeNow()) {
+    private void validatePastTimeWhenToday(Reservation reservation) {
+        if (reservation.isSameDate(LocalDate.now()) && reservation.isBeforeTime(LocalTime.now())) {
             throw new InvalidValueException("현재보다 이전 시간을 예약할 수 없습니다.");
         }
     }
