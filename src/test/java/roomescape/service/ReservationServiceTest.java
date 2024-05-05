@@ -95,8 +95,8 @@ class ReservationServiceTest {
 
         //then
         assertAll(
-                () -> assertThat(alreadyBooked.isAlreadyBooked()).isTrue(),
-                () -> assertThat(notBooked.isAlreadyBooked()).isFalse()
+                () -> assertThat(alreadyBooked.alreadyBooked()).isTrue(),
+                () -> assertThat(notBooked.alreadyBooked()).isFalse()
         );
     }
 
@@ -122,8 +122,8 @@ class ReservationServiceTest {
 
             //then
             assertAll(
-                    () -> assertThat(result.getName()).isEqualTo(givenName),
-                    () -> assertThat(result.getDate()).isEqualTo(givenDate),
+                    () -> assertThat(result.name()).isEqualTo(givenName),
+                    () -> assertThat(result.date()).isEqualTo(givenDate),
                     () -> assertThat(reservationService.findAll()).hasSize(1)
             );
         }

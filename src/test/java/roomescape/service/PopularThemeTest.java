@@ -32,11 +32,11 @@ class PopularThemeTest {
         //then
         assertAll(
                 () -> assertThat(results).hasSize(10),
-                () -> assertThat(results.get(0).getId()).isSameAs(5L),
-                () -> assertThat(results.get(1).getId()).isSameAs(4L),
-                () -> assertThat(results.get(2).getId()).isSameAs(3L),
-                () -> assertThat(results.get(3).getId()).isSameAs(2L),
-                () -> assertThat(results.get(4).getId()).isSameAs(1L)
+                () -> assertThat(results.get(0).id()).isSameAs(5L),
+                () -> assertThat(results.get(1).id()).isSameAs(4L),
+                () -> assertThat(results.get(2).id()).isSameAs(3L),
+                () -> assertThat(results.get(3).id()).isSameAs(2L),
+                () -> assertThat(results.get(4).id()).isSameAs(1L)
         );
     }
 }

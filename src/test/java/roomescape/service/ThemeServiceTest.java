@@ -58,9 +58,9 @@ class ThemeServiceTest {
         //then
         assertAll(
                 () -> assertThat(results).hasSize(2),
-                () -> assertThat(firstResponse.getName()).isEqualTo("방탈출1"),
-                () -> assertThat(firstResponse.getDescription()).isEqualTo("방탈출 1번"),
-                () -> assertThat(firstResponse.getThumbnail()).isEqualTo("섬네일1")
+                () -> assertThat(firstResponse.name()).isEqualTo("방탈출1"),
+                () -> assertThat(firstResponse.description()).isEqualTo("방탈출 1번"),
+                () -> assertThat(firstResponse.thumbnail()).isEqualTo("섬네일1")
         );
     }
 
@@ -79,10 +79,10 @@ class ThemeServiceTest {
 
         //then
         assertAll(
-                () -> assertThat(result.getId()).isSameAs(1L),
-                () -> assertThat(result.getName()).isEqualTo(givenName),
-                () -> assertThat(result.getDescription()).isEqualTo(givenDescription),
-                () -> assertThat(result.getThumbnail()).isEqualTo(givenThumbnail)
+                () -> assertThat(result.id()).isSameAs(1L),
+                () -> assertThat(result.name()).isEqualTo(givenName),
+                () -> assertThat(result.description()).isEqualTo(givenDescription),
+                () -> assertThat(result.thumbnail()).isEqualTo(givenThumbnail)
         );
     }
 

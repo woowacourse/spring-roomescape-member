@@ -68,7 +68,7 @@ class ReservationTimeServiceTest {
         //then
         assertAll(
                 () -> assertThat(results).hasSize(2),
-                () -> assertThat(firstResponse.getStartAt()).isEqualTo("12:12")
+                () -> assertThat(firstResponse.startAt()).isEqualTo("12:12")
         );
     }
 
@@ -88,7 +88,7 @@ class ReservationTimeServiceTest {
 
             //then
             assertAll(
-                    () -> assertThat(result.getStartAt()).isEqualTo(givenStartAt),
+                    () -> assertThat(result.startAt()).isEqualTo(givenStartAt),
                     () -> assertThat(reservationTimeService.findAll()).hasSize(1)
             );
         }
