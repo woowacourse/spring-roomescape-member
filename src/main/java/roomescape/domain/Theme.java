@@ -16,6 +16,6 @@ public record Theme(Long id, String name, String description, String thumbnail) 
     }
 
     public Theme createWithId(Long id) {
-        return new Theme(id, this.name, this.description, this.thumbnail);
+        return new Theme(id, name, description, thumbnail);
     }
 }

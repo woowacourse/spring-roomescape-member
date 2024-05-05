@@ -14,7 +14,7 @@ public record ReservationTime(Long id, LocalTime startAt) {
     }
 
     public ReservationTime createWithId(Long id) {
-        return new ReservationTime(id, this.startAt);
+        return new ReservationTime(id, startAt);
     }
 
     public boolean isBefore(LocalTime currentTime) {
