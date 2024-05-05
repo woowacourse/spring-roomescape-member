@@ -17,27 +17,27 @@ import roomescape.application.dto.ReservationResponse;
 @RestController
 @RequestMapping("/reservations")
 public class ReservationController {
-    private final ReservationService service;
+    private final ReservationService reservationService;
 
-    public ReservationController(ReservationService service) {
-        this.service = service;
+    public ReservationController(ReservationService reservationService) {
+        this.reservationService = reservationService;
     }
 
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> findAll() {
-        List<ReservationResponse> responses = service.findAll();
+        List<ReservationResponse> responses = reservationService.findAll();
         return ResponseEntity.ok(responses);
     }
 
     @PostMapping
     public ResponseEntity<ReservationResponse> create(@RequestBody ReservationRequest request) {
-        ReservationResponse response = service.create(request);
+        ReservationResponse response = reservationService.create(request);
         return ResponseEntity.created(URI.create("/reservations/" + response.id())).body(response);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable long id) {
-        service.deleteById(id);
+        reservationService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 }

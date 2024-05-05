@@ -2,11 +2,15 @@ package roomescape.infrastructure;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.Reservation;
 import roomescape.domain.ReservationQueryRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.dto.AvailableTimeDto;
+import roomescape.infrastructure.rowmapper.ReservationRowMapper;
 import roomescape.infrastructure.rowmapper.ThemeRowMapper;
 
 @Repository
@@ -15,6 +19,46 @@ public class JdbcReservationQueryRepository implements ReservationQueryRepositor
 
     public JdbcReservationQueryRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    @Override
+    public Optional<Reservation> findById(long id) {
+        String sql = """
+                select r.id as id, r.name as reservation_name, date, time_id, start_at,
+                theme_id, t.name as theme_name, description, thumbnail from reservation as r
+                left join reservation_time as rt on time_id = rt.id
+                left join theme as t on theme_id = t.id
+                where r.id = ?
+                """;
+        try {
+            Reservation reservation = jdbcTemplate.queryForObject(sql, ReservationRowMapper::joinedMapRow, id);
+            return Optional.of(reservation);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public List<Reservation> findAll() {
+        String sql = """
+                select r.id as id, r.name as reservation_name, date, time_id, start_at,
+                theme_id, t.name as theme_name, description, thumbnail from reservation as r
+                left join reservation_time as rt on time_id = rt.id
+                left join theme as t on theme_id = t.id
+                """;
+        return jdbcTemplate.query(sql, ReservationRowMapper::joinedMapRow);
+    }
+
+    @Override
+    public long findReservationCountByTimeId(long timeId) {
+        String sql = "select count(*) from reservation where time_id = ?";
+        return jdbcTemplate.queryForObject(sql, Long.class, timeId);
+    }
+
+    @Override
+    public boolean existBy(LocalDate date, long timeId, long themeId) {
+        String sql = "select count(*) from reservation where date = ? and time_id = ? and theme_id = ?";
+        return jdbcTemplate.queryForObject(sql, Integer.class, date, timeId, themeId) > 0;
     }
 
     @Override

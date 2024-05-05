@@ -13,7 +13,8 @@ import roomescape.application.dto.ReservationRequest;
 import roomescape.application.dto.ReservationResponse;
 import roomescape.domain.PlayerName;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationRepository;
+import roomescape.domain.ReservationQueryRepository;
+import roomescape.domain.ReservationCommandRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
@@ -26,7 +27,10 @@ class ReservationServiceTest {
     private ReservationService reservationService;
 
     @Autowired
-    private ReservationRepository reservationRepository;
+    private ReservationCommandRepository reservationCommandRepository;
+
+    @Autowired
+    private ReservationQueryRepository reservationQueryRepository;
 
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
@@ -48,7 +52,7 @@ class ReservationServiceTest {
 
         reservationService.create(reservationRequest);
 
-        List<Reservation> reservations = reservationRepository.findAll();
+        List<Reservation> reservations = reservationQueryRepository.findAll();
         assertThat(reservations).hasSize(1);
     }
 
@@ -90,7 +94,7 @@ class ReservationServiceTest {
                 time.getId(),
                 theme.getId()
         );
-        reservationRepository.create(request.toReservation(time, theme));
+        reservationCommandRepository.create(request.toReservation(time, theme));
 
         assertThatCode(() -> reservationService.create(request))
                 .isInstanceOf(IllegalStateException.class)
@@ -124,7 +128,7 @@ class ReservationServiceTest {
         Reservation reservation = saveReservation();
         reservationService.deleteById(reservation.getId());
 
-        List<Reservation> reservations = reservationRepository.findAll();
+        List<Reservation> reservations = reservationQueryRepository.findAll();
         assertThat(reservations).isEmpty();
     }
 
@@ -140,6 +144,6 @@ class ReservationServiceTest {
         ReservationTime time = reservationTimeRepository.create(new ReservationTime(LocalTime.of(10, 0)));
         Theme theme = themeRepository.create(new Theme(new ThemeName("test"), "test", "test"));
         Reservation reservation = new Reservation(new PlayerName("test"), LocalDate.of(2024, 1, 1), time, theme);
-        return reservationRepository.create(reservation);
+        return reservationCommandRepository.create(reservation);
     }
 }

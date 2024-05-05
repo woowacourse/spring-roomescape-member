@@ -13,7 +13,7 @@ import roomescape.application.dto.ReservationTimeRequest;
 import roomescape.application.dto.ReservationTimeResponse;
 import roomescape.domain.PlayerName;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationRepository;
+import roomescape.domain.ReservationCommandRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
@@ -32,7 +32,7 @@ class ReservationTimeServiceTest {
     private ThemeRepository themeRepository;
 
     @Autowired
-    private ReservationRepository reservationRepository;
+    private ReservationCommandRepository reservationCommandRepository;
 
     @DisplayName("예약 시간을 생성한다.")
     @Test
@@ -78,7 +78,7 @@ class ReservationTimeServiceTest {
         ReservationTime reservationTime = createTime(10, 0);
         Theme theme = new Theme(1L, new ThemeName("test"), "description", "url");
         Theme savedTheme = themeRepository.create(theme);
-        reservationRepository.create(
+        reservationCommandRepository.create(
                 new Reservation(
                         new PlayerName("test"),
                         LocalDate.of(2024, 12, 25),

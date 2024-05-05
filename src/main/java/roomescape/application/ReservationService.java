@@ -8,7 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.application.dto.ReservationRequest;
 import roomescape.application.dto.ReservationResponse;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationRepository;
+import roomescape.domain.ReservationCommandRepository;
+import roomescape.domain.ReservationQueryRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
@@ -16,16 +17,19 @@ import roomescape.domain.ThemeRepository;
 
 @Service
 public class ReservationService {
-    private final ReservationRepository reservationRepository;
+    private final ReservationCommandRepository reservationCommandRepository;
+    private final ReservationQueryRepository reservationQueryRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
     private final Clock clock;
 
-    public ReservationService(ReservationRepository reservationRepository,
+    public ReservationService(ReservationCommandRepository reservationCommandRepository,
+                              ReservationQueryRepository reservationQueryRepository,
                               ReservationTimeRepository reservationTimeRepository,
                               ThemeRepository themeRepository,
                               Clock clock) {
-        this.reservationRepository = reservationRepository;
+        this.reservationCommandRepository = reservationCommandRepository;
+        this.reservationQueryRepository = reservationQueryRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
         this.clock = clock;
@@ -42,7 +46,7 @@ public class ReservationService {
         validateRequestDateAfterCurrentTime(dateTime);
         validateUniqueReservation(request);
         Reservation reservation = request.toReservation(reservationTime, theme);
-        return ReservationResponse.from(reservationRepository.create(reservation));
+        return ReservationResponse.from(reservationCommandRepository.create(reservation));
     }
 
     private void validateRequestDateAfterCurrentTime(LocalDateTime dateTime) {
@@ -53,13 +57,20 @@ public class ReservationService {
     }
 
     private void validateUniqueReservation(ReservationRequest request) {
-        if (reservationRepository.existBy(request.date(), request.timeId(), request.themeId())) {
+        if (reservationQueryRepository.existBy(request.date(), request.timeId(), request.themeId())) {
             throw new IllegalStateException("이미 존재하는 예약입니다.");
         }
     }
 
+    @Transactional
+    public void deleteById(long id) {
+        Reservation reservation = reservationQueryRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 입니다."));
+        reservationCommandRepository.deleteById(reservation.getId());
+    }
+
     public List<ReservationResponse> findAll() {
-        List<Reservation> reservations = reservationRepository.findAll();
+        List<Reservation> reservations = reservationQueryRepository.findAll();
         return convertToReservationResponses(reservations);
     }
 
@@ -67,12 +78,5 @@ public class ReservationService {
         return reservations.stream()
                 .map(ReservationResponse::from)
                 .toList();
-    }
-
-    @Transactional
-    public void deleteById(long id) {
-        Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 입니다."));
-        reservationRepository.deleteById(reservation.getId());
     }
 }

@@ -4,22 +4,51 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.domain.Reservation;
 import roomescape.domain.ReservationQueryRepository;
+import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.dto.AvailableTimeDto;
 
 @JdbcTest
-@Import(JdbcReservationQueryRepository.class)
-class JdbcReservationQueryRepositoryTest {
+class JdbcReservationQueryRepositoryTest extends JdbcReservationTest {
+    private final ReservationQueryRepository reservationQueryRepository;
 
     @Autowired
-    private ReservationQueryRepository reservationQueryRepository;
+    public JdbcReservationQueryRepositoryTest(JdbcTemplate jdbcTemplate) {
+        super(jdbcTemplate);
+        this.reservationQueryRepository = new JdbcReservationQueryRepository(jdbcTemplate);
+    }
+
+    @DisplayName("id로 예약을 조회한다.")
+    @Test
+    void shouldReturnReservationWhenReservationIdExist() {
+        long id = createReservation().getId();
+        Optional<Reservation> foundReservation = reservationQueryRepository.findById(id);
+        assertThat(foundReservation).isPresent();
+    }
+
+    @DisplayName("id로 예약을 조회시 존재하지 않으면 빈 객체를 반환한다.")
+    @Test
+    void shouldEmptyReservationWhenReservationIdNotExist() {
+        Optional<Reservation> reservation = reservationQueryRepository.findById(99L);
+        assertThat(reservation).isEmpty();
+    }
+
+    @DisplayName("존재하는 모든 예약을 반환한다.")
+    @Test
+    void shouldReturnAllReservationsWhenFindAll() {
+        createReservation();
+        List<Reservation> reservations = reservationQueryRepository.findAll();
+        assertThat(reservations).hasSize(1);
+    }
 
     @DisplayName("날짜와 테마 id가 주어지면, 예약 가능한 시간을 반환한다.")
     @Test
@@ -46,5 +75,24 @@ class JdbcReservationQueryRepositoryTest {
                 .map(Theme::getId)
                 .toList();
         assertThat(themeIds).containsExactly(4L, 3L, 2L);
+    }
+
+    @DisplayName("예약 시간 id를 가진 예약의 개수를 조회한다.")
+    @Test
+    void shouldReturnCountOfReservationWhenReservationTimeUsed() {
+        long id = createReservation().getId();
+        long count = reservationQueryRepository.findReservationCountByTimeId(id);
+        assertThat(count).isOne();
+    }
+
+    @DisplayName("날짜, 시간으로 저장된 예약이 있는지 확인한다.")
+    @Test
+    void shouldReturnIsExistReservationWhenReservationsNameAndDateAndTimeIsSame() {
+        Reservation reservation = createReservation();
+        ReservationTime time = reservation.getTime();
+        Theme theme = reservation.getTheme();
+
+        boolean isExist = reservationQueryRepository.existBy(reservation.getDate(), time.getId(), theme.getId());
+        assertThat(isExist).isTrue();
     }
 }
