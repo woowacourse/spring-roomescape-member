@@ -101,7 +101,8 @@ public class ReservationControllerTest {
     void nameBlankStatusCode400() {
         Map<String, String> reservationParams = Map.of("name", "",
                 "date", LocalDate.now().plusDays(2).toString(),
-                "timeId", "1"
+                "timeId", "1",
+                "themeId", "1"
         );
 
         RestAssured.given().log().all()
