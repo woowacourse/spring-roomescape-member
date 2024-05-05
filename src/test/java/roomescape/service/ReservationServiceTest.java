@@ -19,7 +19,7 @@ import roomescape.fixture.ThemeFixture;
 import roomescape.service.dto.input.ReservationInput;
 import roomescape.service.util.DateTimeFormatter;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReservationServiceTest {
 
     @Autowired
