@@ -62,7 +62,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                     FROM reservation_time AS rt
                     LEFT JOIN reservation AS r
                     ON r.time_id = rt.id AND r.date = ? AND r.theme_id = ?
-                    GROUP BY r.id
+                    GROUP BY rt.id, rt.start_at
                 """;
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
