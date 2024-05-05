@@ -1,4 +1,4 @@
-package roomescape.dao;
+package roomescape.domain.repostiory;
 
 import roomescape.domain.Theme;
 

@@ -1,4 +1,4 @@
-package roomescape.dao;
+package roomescape.infrastructure;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.repostiory.ReservationRepository;
 
 import java.util.List;
 import java.util.Map;

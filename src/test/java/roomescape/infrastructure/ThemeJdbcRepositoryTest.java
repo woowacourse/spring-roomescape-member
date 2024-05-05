@@ -1,4 +1,4 @@
-package roomescape.dao;
+package roomescape.infrastructure;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -10,6 +10,9 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.repostiory.ReservationRepository;
+import roomescape.domain.repostiory.ReservationTimeRepository;
+import roomescape.domain.repostiory.ThemeRepository;
 
 import java.util.List;
 

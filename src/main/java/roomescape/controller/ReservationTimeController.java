@@ -4,10 +4,10 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.service.ReservationTimeService;
-import roomescape.service.dto.ReservationTimeResponse;
 import roomescape.service.dto.AvailableReservationTimeResponse;
 import roomescape.service.dto.ReservationTimeCreateRequest;
 import roomescape.service.dto.ReservationTimeReadRequest;
+import roomescape.service.dto.ReservationTimeResponse;
 
 import java.net.URI;
 import java.util.List;

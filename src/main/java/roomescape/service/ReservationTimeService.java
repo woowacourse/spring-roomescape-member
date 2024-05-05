@@ -2,9 +2,9 @@ package roomescape.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import roomescape.dao.ReservationRepository;
-import roomescape.dao.ReservationTimeRepository;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.repostiory.ReservationRepository;
+import roomescape.domain.repostiory.ReservationTimeRepository;
 import roomescape.exception.InvalidReservationException;
 import roomescape.service.dto.AvailableReservationTimeResponse;
 import roomescape.service.dto.ReservationTimeCreateRequest;
