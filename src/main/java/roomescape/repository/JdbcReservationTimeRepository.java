@@ -9,10 +9,9 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.ReservationTimeRepository;
 
 @Repository
-public class JdbcReservationTimeRepository implements ReservationTimeRepository {
+public class JdbcReservationTimeRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
@@ -26,13 +25,11 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         this.rowMapper = rowMapper;
     }
 
-    @Override
     public List<ReservationTime> findAllReservationTimes() {
         String sql = "SELECT * FROM reservation_time";
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    @Override
     public ReservationTime insertReservationTime(ReservationTime reservationTime) {
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("start_at", reservationTime.getStartAt());
@@ -40,7 +37,6 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         return findReservationTimeById(savedId);
     }
 
-    @Override
     public void deleteReservationTimeById(long id) {
         String sql = "DELETE FROM reservation_time WHERE id = :id";
         SqlParameterSource parameterSource = new MapSqlParameterSource()
@@ -48,7 +44,6 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         jdbcTemplate.update(sql, parameterSource);
     }
 
-    @Override
     public boolean isTimeExistsByStartTime(String startAt) {
         String sql = "SELECT 1 FROM reservation_time WHERE start_at = :startAt";
         SqlParameterSource parameterSource = new MapSqlParameterSource()
@@ -57,7 +52,6 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         return !result.isEmpty();
     }
 
-    @Override
     public boolean isTimeExistsByTimeId(long timeId) {
         String sql = "SELECT 1 FROM reservation_time WHERE id = :timeId";
         SqlParameterSource parameterSource = new MapSqlParameterSource()
@@ -66,7 +60,6 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         return !result.isEmpty();
     }
 
-    @Override
     public ReservationTime findReservationTimeById(long savedId) {
         String sql = """
                 SELECT 
@@ -79,12 +72,11 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         return jdbcTemplate.query(sql, paramMap, rowMapper).get(0);
     }
 
-    @Override
     public List<ReservationTime> findReservedTimeByThemeAndDate(String date, long themeId) {
         String sql = """
                 SELECT 
                 t.id AS time_id, 
-                t.start_at AS time_value 
+                t.start_at AS time_value
                 FROM reservation AS r 
                 INNER JOIN reservation_time AS t ON r.time_id = t.id 
                 INNER JOIN theme AS th ON r.theme_id = th.id
