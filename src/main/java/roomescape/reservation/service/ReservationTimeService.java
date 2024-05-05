@@ -48,9 +48,8 @@ public class ReservationTimeService {
         List<ReservationTime> reservationTimes = reservationTimeDao.findAllReservationTimes();
 
         return reservationTimes.stream()
-                .map(reservationTime -> new AvailableTimeResponse(
-                        reservationTime.getStartAt(),
-                        reservationTime.getId(),
+                .map(reservationTime ->  AvailableTimeResponse. of(
+                        reservationTime,
                         isReservedTime(reservations, reservationTime)
                 ))
                 .toList();
