@@ -67,15 +67,13 @@ class ReservationServiceTest {
     @DisplayName("현재 날짜가 예약 당일이지만, 이미 지난 시간으로 예약을 생성하면 예외가 발생한다")
     void beforeTimeReservationFail() {
         // given
-        LocalDateTime requestTime = LocalDateTime.now();
-        LocalDateTime beforeTime = requestTime.minusHours(1L);
+        LocalDateTime beforeTime = LocalDateTime.now().minusHours(1L);
         Time time = timeRepository.insert(new Time(beforeTime.toLocalTime()));
         Theme theme = themeRepository.insert(new Theme("테마명", "설명", "썸네일URL"));
 
         // when & then
-        // TODO: 00:30분 일때 1시간 전은 23:30분 이기 때문에 이전 시간으로 인식하지 않아 테스트코드 실패하는 문제 해결
         assertThatThrownBy(() -> reservationService.addReservation(
-                new ReservationRequest("예약", LocalDate.now(), time.getId(), theme.getId())))
+                new ReservationRequest("예약", beforeTime.toLocalDate(), time.getId(), theme.getId())))
                 .isInstanceOf(ConflictException.class);
     }
 }
