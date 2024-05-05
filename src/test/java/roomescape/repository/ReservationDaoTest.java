@@ -75,7 +75,7 @@ class ReservationDaoTest {
     }
 
     private void insertReservation(String name, String date, long timeId, long themeId) {
-        Map<String, Object> parameters = new HashMap<>(3);
+        Map<String, Object> parameters = new HashMap<>(4);
         parameters.put("name", name);
         parameters.put("date", date);
         parameters.put("time_id", timeId);
@@ -112,7 +112,7 @@ class ReservationDaoTest {
 
     @DisplayName("특정 id의 예약을 조회한다.")
     @Test
-    void should_find_reservation_by_id() {
+    void should_find_reservation_by_id() { // TODO: test empty optional
         ReservationSavedDto expected = new ReservationSavedDto(1, "n1", LocalDate.of(2000, 1, 1), 1L, 1L);
 
         Optional<ReservationSavedDto> actual = reservationDao.findById(1);
@@ -136,7 +136,7 @@ class ReservationDaoTest {
     void should_find_themeId_between_date_and_order_by_themeId_count_and_limit() {
         List<Long> themeIds = reservationDao.findThemeIdByDateAndOrderByThemeIdCountAndLimit(
                 LocalDate.of(2000, 1, 1), LocalDate.of(2000, 1, 2), 10);
-
+        assertThat(themeIds).hasSizeLessThanOrEqualTo(10);
         assertThat(themeIds).containsExactly(1L, 2L);
     }
 
