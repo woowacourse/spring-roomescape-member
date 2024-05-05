@@ -117,7 +117,7 @@ class ReservationControllerTest extends ControllerTest {
     @DisplayName("올바르지 않은 예약 날짜 형식으로 예약 POST 요청 시 상태코드 400을 반환한다.")
     void createReservationWithInvalidDateFormat() throws Exception {
         // given
-        String invalidDateFormatRequest = "{'date': 'dfdf'}";
+        String invalidDateFormatRequest = "{\"date\": \"dfdf\"}";
 
         // when & then
         mockMvc.perform(post("/reservations")
