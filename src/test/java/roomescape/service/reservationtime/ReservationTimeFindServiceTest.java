@@ -18,12 +18,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @JdbcTest
 class ReservationTimeFindServiceTest {
 
-    private JdbcTemplate jdbcTemplate;
     private ReservationTimeFindService reservationTimeFindService;
 
     @Autowired
     public ReservationTimeFindServiceTest(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
         reservationTimeFindService = new ReservationTimeFindService(
                 new ReservationTimeRepository(jdbcTemplate)
         );

@@ -14,12 +14,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @JdbcTest
 class ThemeDeleteServiceTest {
 
-    private JdbcTemplate jdbcTemplate;
     private ThemeDeleteService themeDeleteService;
 
     @Autowired
     public ThemeDeleteServiceTest(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
         themeDeleteService = new ThemeDeleteService(
                 new ThemeRepository(jdbcTemplate),
                 new ReservationRepository(jdbcTemplate)

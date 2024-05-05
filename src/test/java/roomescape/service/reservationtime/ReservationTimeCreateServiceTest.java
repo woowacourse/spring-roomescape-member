@@ -16,12 +16,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @JdbcTest
 class ReservationTimeCreateServiceTest {
 
-    private JdbcTemplate jdbcTemplate;
     private ReservationTimeCreateService reservationTimeCreateService;
 
     @Autowired
     public ReservationTimeCreateServiceTest(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
         reservationTimeCreateService = new ReservationTimeCreateService(
                 new ReservationTimeRepository(jdbcTemplate)
         );
