@@ -57,12 +57,11 @@ public class ReservationTimeService {
         Set<ReservationTime> reservedTimes = reservationTimeRepository.findReservedTime(date, themeId);
 
         List<AvailableTimeResponse> result = new ArrayList<>();
+        boolean alreadyBooked;
+        
         for (ReservationTime time : times) {
-            if (reservedTimes.contains(time)) {
-                result.add(new AvailableTimeResponse(time.getId(), time.getStartAt(), true));
-                continue;
-            }
-            result.add(new AvailableTimeResponse(time.getId(), time.getStartAt(), false));
+            alreadyBooked = reservedTimes.contains(time);
+            result.add(new AvailableTimeResponse(time.getId(), time.getStartAt(), alreadyBooked));
         }
         return result;
     }
