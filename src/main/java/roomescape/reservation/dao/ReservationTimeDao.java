@@ -63,7 +63,7 @@ public class ReservationTimeDao implements ReservationTimeRepository {
     }
 
     @Override
-    public boolean existsByStartAt(LocalTime time) {
+    public boolean existByStartAt(LocalTime time) {
         String sql = "SELECT id FROM reservation_time WHERE start_at = ?";
         ReservationTime reservationTime = jdbcTemplate.query(sql, rowMapper, time).stream().findFirst().orElse(null);
         return reservationTime != null;

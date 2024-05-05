@@ -26,7 +26,7 @@ public class ReservationTimeService {
 
     public ReservationTimeResponse create(ReservationTimeRequest reservationTimeRequest) {
         LocalTime time = LocalTime.parse(reservationTimeRequest.startAt());
-        if (reservationTimeRepository.existsByStartAt(time)) {
+        if (reservationTimeRepository.existByStartAt(time)) {
             throw new IllegalArgumentException("시간이 중복되었습니다.");
         }
 
