@@ -17,7 +17,7 @@ import roomescape.time.domain.ReservationUserTime;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@Sql(scripts = {"/data.sql", "/sample.sql"})
+@Sql(scripts = {"/schema.sql", "/data.sql"})
 class ReservationTimeDaoTest {
 
     @Autowired

@@ -15,7 +15,7 @@ import roomescape.theme.domain.Theme;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@Sql(scripts = {"/data.sql", "/sample.sql"})
+@Sql(scripts = {"/schema.sql", "/data.sql"})
 class ThemeDaoTest {
 
     @Autowired
