@@ -14,8 +14,15 @@ import java.util.Optional;
 
 @Repository
 public class ThemeDao implements ThemeRepository {
-    private final JdbcTemplate jdbcTemplate;
 
+    private static final RowMapper<Theme> rowMapper = (resultSet, rowNum) -> new Theme(
+            resultSet.getLong("id"),
+            resultSet.getString("name"),
+            resultSet.getString("description"),
+            resultSet.getString("thumbnail")
+    );
+
+    private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
     public ThemeDao(JdbcTemplate jdbcTemplate) {
@@ -23,15 +30,6 @@ public class ThemeDao implements ThemeRepository {
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("theme")
                 .usingGeneratedKeyColumns("id");
-    }
-
-    private static RowMapper<Theme> getThemeRowMapper() {
-        return (rs, rowNum) -> new Theme(
-                rs.getLong("id"),
-                rs.getString("name"),
-                rs.getString("description"),
-                rs.getString("thumbnail")
-        );
     }
 
     @Override
@@ -44,15 +42,14 @@ public class ThemeDao implements ThemeRepository {
     @Override
     public List<Theme> findAll() {
         String sql = "SELECT * FROM theme";
-        return jdbcTemplate.query(sql, getThemeRowMapper());
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
     @Override
     public Optional<Theme> findById(Long id) {
-        String sql = "SELECT * FROM theme WHERE id = ?";
-
         try {
-            Theme theme = jdbcTemplate.queryForObject(sql, getThemeRowMapper(), id);
+            String sql = "SELECT * FROM theme WHERE id = ?";
+            Theme theme = jdbcTemplate.queryForObject(sql, rowMapper, id);
             return Optional.ofNullable(theme);
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();

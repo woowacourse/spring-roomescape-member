@@ -19,8 +19,23 @@ import java.util.Optional;
 @Repository
 public class ReservationDao implements ReservationRepository {
 
-    private final JdbcTemplate jdbcTemplate;
+    private static final RowMapper<Reservation> rowMapper = (resultSet, rowNum) -> new Reservation(
+            resultSet.getLong("id"),
+            resultSet.getString("name"),
+            resultSet.getDate("date").toLocalDate(),
+            new ReservationTime(
+                    resultSet.getLong("time_id"),
+                    resultSet.getTime("start_at").toLocalTime()
+            ),
+            new Theme(
+                    resultSet.getLong("theme_id"),
+                    resultSet.getString("theme_name"),
+                    resultSet.getString("theme_description"),
+                    resultSet.getString("theme_thumbnail")
+            )
+    );
 
+    private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
     public ReservationDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
@@ -28,24 +43,6 @@ public class ReservationDao implements ReservationRepository {
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
-    }
-
-    private static RowMapper<Reservation> getReservationRowMapper() {
-        return (resultSet, rowNum) -> new Reservation(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getDate("date").toLocalDate(),
-                new ReservationTime(
-                        resultSet.getLong("time_id"),
-                        resultSet.getTime("start_at").toLocalTime()
-                ),
-                new Theme(
-                        resultSet.getLong("theme_id"),
-                        resultSet.getString("theme_name"),
-                        resultSet.getString("theme_description"),
-                        resultSet.getString("theme_thumbnail")
-                )
-        );
     }
 
     @Override
@@ -79,30 +76,30 @@ public class ReservationDao implements ReservationRepository {
                         ON r.time_id = t.id
                     INNER JOIN theme AS th
                         ON r.theme_id = th.id""";
-        return jdbcTemplate.query(sql, getReservationRowMapper());
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
     @Override
     public Optional<Reservation> findById(Long id) {
         try {
             String sql = """
-                SELECT
-                    r.id AS reservation_id,
-                    r.name,
-                    r.date,
-                    t.id AS time_id,
-                    t.start_at AS start_at,
-                    th.id AS theme_id,
-                    th.name AS theme_name,
-                    th.description AS theme_description,
-                    th.thumbnail AS theme_thumbnail
-                FROM reservation AS r
-                    INNER JOIN reservation_time AS t
-                        ON r.time_id = t.id
-                    INNER JOIN theme AS th
-                        ON r.theme_id = th.id
-                WHERE r.id = ?""";
-            Reservation reservation = jdbcTemplate.queryForObject(sql, getReservationRowMapper(), id);
+                    SELECT
+                        r.id AS reservation_id,
+                        r.name,
+                        r.date,
+                        t.id AS time_id,
+                        t.start_at AS start_at,
+                        th.id AS theme_id,
+                        th.name AS theme_name,
+                        th.description AS theme_description,
+                        th.thumbnail AS theme_thumbnail
+                    FROM reservation AS r
+                        INNER JOIN reservation_time AS t
+                            ON r.time_id = t.id
+                        INNER JOIN theme AS th
+                            ON r.theme_id = th.id
+                    WHERE r.id = ?""";
+            Reservation reservation = jdbcTemplate.queryForObject(sql, rowMapper, id);
             return Optional.ofNullable(reservation);
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
@@ -128,7 +125,7 @@ public class ReservationDao implements ReservationRepository {
                     INNER JOIN theme AS th
                         ON r.theme_id = th.id
                 WHERE r.date BETWEEN ? AND ?""";
-        return jdbcTemplate.query(sql, getReservationRowMapper(), start, end);
+        return jdbcTemplate.query(sql, rowMapper, start, end);
     }
 
     @Override
@@ -150,7 +147,7 @@ public class ReservationDao implements ReservationRepository {
                     INNER JOIN theme AS th
                         ON r.theme_id = th.id
                 WHERE r.date = ? AND th.id = ?""";
-        return jdbcTemplate.query(sql, getReservationRowMapper(), date, themeId);
+        return jdbcTemplate.query(sql, rowMapper, date, themeId);
     }
 
     @Override

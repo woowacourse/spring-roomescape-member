@@ -16,6 +16,11 @@ import java.util.Optional;
 @Repository
 public class ReservationTimeDao implements ReservationTimeRepository {
 
+    private static final RowMapper<ReservationTime> rowMapper = (resultSet, rowNum) -> new ReservationTime(
+            resultSet.getLong("id"),
+            resultSet.getTime("start_at").toLocalTime()
+    );
+
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
@@ -24,13 +29,6 @@ public class ReservationTimeDao implements ReservationTimeRepository {
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation_time")
                 .usingGeneratedKeyColumns("id");
-    }
-
-    private static RowMapper<ReservationTime> getReservationTimeRowMapper() {
-        return (resultSet, rowNum) -> new ReservationTime(
-                resultSet.getLong("id"),
-                resultSet.getTime("start_at").toLocalTime()
-        );
     }
 
     @Override
@@ -44,14 +42,14 @@ public class ReservationTimeDao implements ReservationTimeRepository {
     @Override
     public List<ReservationTime> findAll() {
         String sql = "SELECT * FROM reservation_time";
-        return jdbcTemplate.query(sql, getReservationTimeRowMapper());
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
     @Override
     public Optional<ReservationTime> findById(Long id) {
         try {
             String sql = "SELECT * FROM reservation_time WHERE id = ?";
-            ReservationTime reservationTime = jdbcTemplate.queryForObject(sql, getReservationTimeRowMapper(), id);
+            ReservationTime reservationTime = jdbcTemplate.queryForObject(sql, rowMapper, id);
             return Optional.ofNullable(reservationTime);
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
