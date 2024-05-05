@@ -2,13 +2,13 @@ package roomescape.reservation.service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.controller.dto.AvailableTimeResponse;
 import roomescape.reservation.controller.dto.ReservationTimeRequest;
 import roomescape.reservation.controller.dto.ReservationTimeResponse;
+import roomescape.reservation.domain.AvailableTimes;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.domain.repository.ReservationTimeRepository;
@@ -56,14 +56,9 @@ public class ReservationTimeService {
         List<ReservationTime> times = reservationTimeRepository.findAll();
         Set<ReservationTime> reservedTimes = reservationTimeRepository.findReservedTime(date, themeId);
 
-        List<AvailableTimeResponse> result = new ArrayList<>();
-        for (ReservationTime time : times) {
-            if (reservedTimes.contains(time)) {
-                result.add(new AvailableTimeResponse(time.getId(), time.getStartAt(), true));
-                continue;
-            }
-            result.add(new AvailableTimeResponse(time.getId(), time.getStartAt(), false));
-        }
-        return result;
+        return AvailableTimes.of(times, reservedTimes).getAvailableTimes()
+                .stream()
+                .map(AvailableTimeResponse::from)
+                .toList();
     }
 }

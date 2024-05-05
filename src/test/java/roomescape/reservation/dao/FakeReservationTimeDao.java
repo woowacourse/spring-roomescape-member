@@ -15,7 +15,7 @@ public class FakeReservationTimeDao implements ReservationTimeRepository {
     private final Map<Long, ReservationTime> reservationTimes = new HashMap<>();
     private final ReservationRepository reservationRepository;
 
-    public FakeReservationTimeDao(final ReservationRepository reservationRepository) {
+    public FakeReservationTimeDao(ReservationRepository reservationRepository) {
         this.reservationRepository = reservationRepository;
     }
 
@@ -56,6 +56,6 @@ public class FakeReservationTimeDao implements ReservationTimeRepository {
 
     @Override
     public Set<ReservationTime> findReservedTime(LocalDate date, long themeId) {
-        return null;
+        return Set.of(new ReservationTime(1L, LocalTime.NOON));
     }
 }

@@ -2,6 +2,11 @@ package roomescape.reservation.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.fixture.ReservationFixture.getNextDayReservation;
+import static roomescape.fixture.ReservationTimeFixture.get1PM;
+import static roomescape.fixture.ReservationTimeFixture.get2PM;
+import static roomescape.fixture.ReservationTimeFixture.getNoon;
+import static roomescape.fixture.ThemeFixture.getTheme1;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -9,29 +14,31 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.reservation.controller.dto.AvailableTimeResponse;
+import roomescape.reservation.controller.dto.ReservationTimeRequest;
+import roomescape.reservation.controller.dto.ReservationTimeResponse;
 import roomescape.reservation.dao.FakeReservationDao;
 import roomescape.reservation.dao.FakeReservationTimeDao;
+import roomescape.reservation.dao.FakeThemeDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.domain.repository.ReservationTimeRepository;
 import roomescape.reservation.domain.repository.ThemeRepository;
-import roomescape.reservation.controller.dto.ReservationTimeRequest;
-import roomescape.reservation.controller.dto.ReservationTimeResponse;
 
 @DisplayName("예약 시간 로직 테스트")
 class ReservationTimeServiceTest {
     ReservationRepository reservationRepository;
     ReservationTimeRepository reservationTimeRepository;
     ThemeRepository themeRepository;
-
     ReservationTimeService reservationTimeService;
 
     @BeforeEach
     void setUp() {
         reservationRepository = new FakeReservationDao();
         reservationTimeRepository = new FakeReservationTimeDao(reservationRepository);
+        themeRepository = new FakeThemeDao(reservationRepository);
         reservationTimeService = new ReservationTimeService(reservationRepository, reservationTimeRepository);
     }
 
@@ -108,5 +115,30 @@ class ReservationTimeServiceTest {
         //when & then
         assertThatThrownBy(() -> reservationTimeService.create(reservationTimeRequest))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("예약 가능한 시간 조회에 성공한다.")
+    @Test
+    void findAvailableTime() {
+        //given
+        ReservationTime time = reservationTimeRepository.save(getNoon());
+        reservationTimeRepository.save(get1PM());
+        reservationTimeRepository.save(get2PM());
+        Theme theme = themeRepository.save(getTheme1());
+        Reservation reservation = reservationRepository.save(getNextDayReservation(time, theme));
+        reservationRepository.saveReservationList(1L, reservation.getId());
+
+        //when
+        List<AvailableTimeResponse> availableTimes
+                = reservationTimeService.findAvailableTimes(reservation.getDate(), theme.getId());
+
+        //then
+        long count = availableTimes.stream()
+                .filter(availableTimeResponse -> !availableTimeResponse.alreadyBooked()).count();
+        long expectedCount = reservationTimeService.findAll().size() -
+                reservationTimeRepository.findReservedTime(reservation.getDate(), theme.getId()).size();
+
+        assertThat(count)
+                .isEqualTo(expectedCount);
     }
 }
