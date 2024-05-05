@@ -48,7 +48,7 @@ public class TimeController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTime(@PathVariable("id") final Long id) {
+    public ResponseEntity<Void> deleteTime(@PathVariable final Long id) {
         final int deleteCount = timeService.deleteTime(id);
         if (deleteCount == 0) {
             return ResponseEntity.notFound()
