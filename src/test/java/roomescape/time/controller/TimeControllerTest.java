@@ -27,7 +27,7 @@ import roomescape.time.service.TimeService;
 @WebMvcTest(TimeController.class)
 class TimeControllerTest {
 
-    private final Time time = new Time(4L, LocalTime.now());
+    private final Time time = new Time(4L, LocalTime.of(12,0));
 
     @Autowired
     private MockMvc mockMvc;
