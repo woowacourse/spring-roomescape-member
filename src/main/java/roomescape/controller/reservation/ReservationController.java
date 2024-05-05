@@ -12,7 +12,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import roomescape.service.ReservationService;
 
 import java.net.URI;
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -42,7 +41,7 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservationsData(@PathVariable("id") final Long id) {
+    public ResponseEntity<Void> deleteReservations(@PathVariable("id") final Long id) {
         final int deletedCount = reservationService.deleteReservation(id);
         if (deletedCount == 0) {
             return ResponseEntity.notFound()
