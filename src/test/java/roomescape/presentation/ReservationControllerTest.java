@@ -28,6 +28,8 @@ import roomescape.application.dto.ReservationRequest;
 import roomescape.application.dto.ReservationResponse;
 import roomescape.application.dto.ReservationTimeResponse;
 import roomescape.application.dto.ThemeResponse;
+import roomescape.exception.RoomescapeErrorCode;
+import roomescape.exception.RoomescapeException;
 
 @WebMvcTest(ReservationController.class)
 class ReservationControllerTest {
@@ -99,13 +101,13 @@ class ReservationControllerTest {
         String reservationRequestJson = objectMapper.writeValueAsString(reservationRequest);
 
         given(reservationService.create(any(ReservationRequest.class)))
-                .willThrow(new IllegalArgumentException("존재하지 않는 예약 시간 입니다."));
+                .willThrow(new RoomescapeException(RoomescapeErrorCode.NOT_FOUND_TIME));
 
         mvc.perform(post("/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(reservationRequestJson))
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string(containsString("존재하지 않는 예약 시간 입니다.")));
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(containsString("존재하지 않는 예약 시간입니다.")));
     }
 
     @DisplayName("이미 존재하는 예약을 생성하려고 하면 409 Conflict 응답을 반환한다.")
@@ -115,7 +117,7 @@ class ReservationControllerTest {
         String reservationRequestJson = objectMapper.writeValueAsString(reservationRequest);
 
         given(reservationService.create(reservationRequest))
-                .willThrow(new IllegalStateException("이미 존재하는 예약입니다."));
+                .willThrow(new RoomescapeException(RoomescapeErrorCode.DUPLICATED_RESERVATION));
 
         mvc.perform(post("/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -136,11 +138,11 @@ class ReservationControllerTest {
     @DisplayName("존재하지 않는 예약의 id로 삭제 요청을 하면 400 Bad Request 응답을 반환한다.")
     @Test
     void shouldReturn400BadRequestWhenReservationIdNotExist() throws Exception {
-        doThrow(new IllegalArgumentException("존재하지 않는 예약입니다."))
+        doThrow(new RoomescapeException(RoomescapeErrorCode.NOT_FOUND_RESERVATION))
                 .when(reservationService).deleteById(1L);
 
         mvc.perform(delete("/reservations/1"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
 
         then(reservationService).should(times(1)).deleteById(any(Long.class));
     }

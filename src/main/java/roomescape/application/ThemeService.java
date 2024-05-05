@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.application.dto.ThemeRequest;
 import roomescape.application.dto.ThemeResponse;
+import roomescape.exception.RoomescapeErrorCode;
+import roomescape.exception.RoomescapeException;
 import roomescape.domain.ReservationQueryRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
@@ -38,7 +40,7 @@ public class ThemeService {
     @Transactional
     public void deleteById(long id) {
         Theme theme = themeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마 입니다."));
+                .orElseThrow(() -> new RoomescapeException(RoomescapeErrorCode.NOT_FOUND_THEME));
         themeRepository.deleteById(theme.getId());
     }
 

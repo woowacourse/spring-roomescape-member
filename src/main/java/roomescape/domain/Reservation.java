@@ -2,6 +2,8 @@ package roomescape.domain;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import roomescape.exception.RoomescapeErrorCode;
+import roomescape.exception.RoomescapeException;
 
 public class Reservation {
     private final Long id;
@@ -16,7 +18,7 @@ public class Reservation {
 
     public Reservation(Long id, PlayerName name, LocalDate date, ReservationTime time, Theme theme) {
         if (date == null) {
-            throw new IllegalArgumentException("예약 날짜는 필수입니다.");
+            throw new RoomescapeException(RoomescapeErrorCode.BAD_REQUEST, "예약 날짜는 필수입니다.");
         }
         this.id = id;
         this.name = name;

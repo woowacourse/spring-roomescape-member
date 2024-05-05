@@ -9,17 +9,18 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import roomescape.application.dto.ReservationRequest;
 import roomescape.application.dto.ReservationResponse;
 import roomescape.domain.PlayerName;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationQueryRepository;
 import roomescape.domain.ReservationCommandRepository;
+import roomescape.domain.ReservationQueryRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeName;
 import roomescape.domain.ThemeRepository;
+import roomescape.exception.RoomescapeErrorCode;
+import roomescape.exception.RoomescapeException;
 
 @ServiceTest
 class ReservationServiceTest {
@@ -56,12 +57,13 @@ class ReservationServiceTest {
         assertThat(reservations).isEmpty();
     }
 
-    @DisplayName("예약 삭제 요청시 예약이 존재하지 않으면 IllegalArgumentException 예외를 반환한다.")
+    @DisplayName("예약 삭제 요청시 예약이 존재하지 않으면 예외를 반환한다.")
     @Test
     void shouldThrowsIllegalArgumentExceptionWhenReservationDoesNotExist() {
         assertThatCode(() -> reservationService.deleteById(99L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("존재하지 않는 예약 입니다.");
+                .isInstanceOf(RoomescapeException.class)
+                .extracting("errorCode")
+                .isEqualTo(RoomescapeErrorCode.NOT_FOUND_RESERVATION);
     }
 
     private Reservation saveReservation() {

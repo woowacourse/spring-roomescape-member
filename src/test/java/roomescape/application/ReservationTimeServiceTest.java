@@ -19,6 +19,8 @@ import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeName;
 import roomescape.domain.ThemeRepository;
+import roomescape.exception.RoomescapeErrorCode;
+import roomescape.exception.RoomescapeException;
 
 @ServiceTest
 class ReservationTimeServiceTest {
@@ -50,8 +52,9 @@ class ReservationTimeServiceTest {
         LocalTime startAt = createTime(10, 0).getStartAt();
         ReservationTimeRequest request = new ReservationTimeRequest(startAt);
         assertThatCode(() -> reservationTimeService.create(request))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage(String.format("이미 존재하는 예약시간이 있습니다. 해당 시간:%s", startAt));
+                .isInstanceOf(RoomescapeException.class)
+                .extracting("errorCode")
+                .isEqualTo(RoomescapeErrorCode.DUPLICATED_TIME);
     }
 
     @DisplayName("예약 시간 조회를 요청하면 저장되어있는 모든 예약 시간대를 반환한다.")
@@ -72,7 +75,7 @@ class ReservationTimeServiceTest {
         assertThat(reservationTimeRepository.findAll()).isEmpty();
     }
 
-    @DisplayName("예약에 사용된 예약 시간을 삭제 요청하면, IllegalStateException 예외가 발생한다.")
+    @DisplayName("예약에 사용된 예약 시간을 삭제 요청하면, 예외가 발생한다.")
     @Test
     void shouldThrowsExceptionReservationWhenReservedInTime() {
         ReservationTime reservationTime = createTime(10, 0);
@@ -87,16 +90,17 @@ class ReservationTimeServiceTest {
         );
 
         assertThatCode(() -> reservationTimeService.deleteById(reservationTime.getId()))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessageStartingWith("해당 예약 시간에 연관된 예약이 존재하여 삭제할 수 없습니다. 삭제 요청한 시간");
+                .isInstanceOf(RoomescapeException.class)
+                .extracting("errorCode")
+                .isEqualTo(RoomescapeErrorCode.ALREADY_RESERVED);
     }
 
     @DisplayName("존재하지 않는 예약 시간을 삭제 요청하면, IllegalArgumentException 예외가 발생한다.")
     @Test
     void shouldThrowsIllegalArgumentExceptionWhenReservationTimeDoesNotExist() {
         assertThatCode(() -> reservationTimeService.deleteById(99L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("존재하지 않는 예약 시간 입니다.");
+                .isInstanceOf(RoomescapeException.class)
+                .hasMessage(RoomescapeErrorCode.NOT_FOUND_TIME.getMessage());
     }
 
     private ReservationTime createTime(int hour, int minute) {

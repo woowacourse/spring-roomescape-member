@@ -9,6 +9,8 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationCommandRepository;
 import roomescape.domain.ReservationFactory;
 import roomescape.domain.ReservationQueryRepository;
+import roomescape.exception.RoomescapeErrorCode;
+import roomescape.exception.RoomescapeException;
 
 @Service
 public class ReservationService {
@@ -33,7 +35,7 @@ public class ReservationService {
     @Transactional
     public void deleteById(long id) {
         Reservation reservation = reservationQueryRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 입니다."));
+                .orElseThrow(() -> new RoomescapeException(RoomescapeErrorCode.NOT_FOUND_RESERVATION));
         reservationCommandRepository.deleteById(reservation.getId());
     }
 

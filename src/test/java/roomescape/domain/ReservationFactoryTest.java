@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.application.ReservationService;
 import roomescape.application.ServiceTest;
 import roomescape.application.dto.ReservationRequest;
+import roomescape.exception.RoomescapeErrorCode;
+import roomescape.exception.RoomescapeException;
 
 @ServiceTest
 class ReservationFactoryTest {
@@ -52,29 +54,31 @@ class ReservationFactoryTest {
         );
     }
 
-    @DisplayName("존재하지 않는 예약 시간으로 예약을 생성시 IllegalArgumentException 예외를 반환한다.")
+    @DisplayName("존재하지 않는 예약 시간으로 예약을 생성시 예외를 반환한다.")
     @Test
     void shouldReturnIllegalArgumentExceptionWhenNotFoundReservationTime() {
         Theme savedTheme = themeRepository.create(ThemeFixture.defaultValue());
         ReservationRequest request = ReservationRequestFixture.of(99L, savedTheme.getId());
 
         assertThatCode(() -> reservationService.create(request))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("존재하지 않는 예약 시간 입니다.");
+                .isInstanceOf(RoomescapeException.class)
+                .extracting("errorCode")
+                .isEqualTo(RoomescapeErrorCode.NOT_FOUND_TIME);
     }
 
     @Test
-    @DisplayName("존재하지 않는 테마로 예약을 생성시 IllegalArgumentException 예외를 반환한다.")
+    @DisplayName("존재하지 않는 테마로 예약을 생성시 예외를 반환한다.")
     void shouldThrowIllegalArgumentExceptionWhenNotFoundTheme() {
         ReservationTime time = reservationTimeRepository.create(ReservationTimeFixture.defaultValue());
         ReservationRequest request = ReservationRequestFixture.of(time.getId(), 1L);
 
         assertThatCode(() -> reservationService.create(request))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("존재하지 않는 테마 입니다.");
+                .isInstanceOf(RoomescapeException.class)
+                .extracting("errorCode")
+                .isEqualTo(RoomescapeErrorCode.NOT_FOUND_THEME);
     }
 
-    @DisplayName("중복된 예약을 하는 경우 IllegalStateException 예외를 반환한다.")
+    @DisplayName("중복된 예약을 하는 경우 예외를 반환한다.")
     @Test
     void shouldReturnIllegalStateExceptionWhenDuplicatedReservationCreate() {
         ReservationTime time = reservationTimeRepository.create(ReservationTimeFixture.defaultValue());
@@ -84,11 +88,12 @@ class ReservationFactoryTest {
         reservationCommandRepository.create(request.toReservation(time, theme));
 
         assertThatCode(() -> reservationService.create(request))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("이미 존재하는 예약입니다.");
+                .isInstanceOf(RoomescapeException.class)
+                .extracting("errorCode")
+                .isEqualTo(RoomescapeErrorCode.DUPLICATED_RESERVATION);
     }
 
-    @DisplayName("과거 시간을 예약하는 경우 IllegalArgumentException 예외를 반환한다.")
+    @DisplayName("과거 시간을 예약하는 경우 예외를 반환한다.")
     @Test
     void shouldThrowsIllegalArgumentExceptionWhenReservationDateIsBeforeCurrentDate() {
         ReservationTime time = reservationTimeRepository.create(ReservationTimeFixture.defaultValue());
@@ -96,7 +101,8 @@ class ReservationFactoryTest {
         ReservationRequest reservationRequest = ReservationRequestFixture.of(LocalDate.of(1999, 1, 1), time.getId(), theme.getId());
 
         assertThatCode(() -> reservationService.create(reservationRequest))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("현재 시간보다 과거로 예약할 수 없습니다.");
+                .isInstanceOf(RoomescapeException.class)
+                .extracting("errorCode")
+                .isEqualTo(RoomescapeErrorCode.BAD_REQUEST);
     }
 }

@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
+import roomescape.exception.RoomescapeErrorCode;
+import roomescape.exception.RoomescapeException;
 
 class PlayerNameTest {
 
@@ -15,8 +17,9 @@ class PlayerNameTest {
     @NullAndEmptySource
     void shouldThrowExceptionWhenNameIsNullOrEmpty(String input) {
         assertThatCode(() -> new PlayerName(input))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("예약자명은 필수 입력값 입니다.");
+                .isInstanceOf(RoomescapeException.class)
+                .extracting("errorCode")
+                .isEqualTo(RoomescapeErrorCode.BAD_REQUEST);
     }
 
     @DisplayName("이름이 20자를 초과하면 예외가 발생한다.")
@@ -24,8 +27,9 @@ class PlayerNameTest {
     void shouldThrowExceptionWhenNameLengthExceededMaxLength() {
         String input = "-".repeat(21);
         assertThatCode(() -> new PlayerName(input))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("예약자명은 20자 이하여야 합니다.");
+                .isInstanceOf(RoomescapeException.class)
+                .extracting("errorCode")
+                .isEqualTo(RoomescapeErrorCode.BAD_REQUEST);
     }
 
     @DisplayName("이름이 올바르게 생성된다.")

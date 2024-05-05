@@ -12,6 +12,8 @@ import roomescape.application.dto.ThemeResponse;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeName;
 import roomescape.domain.ThemeRepository;
+import roomescape.exception.RoomescapeErrorCode;
+import roomescape.exception.RoomescapeException;
 
 @ServiceTest
 class ThemeServiceTest {
@@ -51,8 +53,9 @@ class ThemeServiceTest {
     @Test
     void shouldThrowIllegalArgumentExceptionWhenDeleteWithNonExistId() {
         assertThatCode(() -> themeService.deleteById(1L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("존재하지 않는 테마 입니다.");
+                .isInstanceOf(RoomescapeException.class)
+                .extracting("errorCode")
+                .isEqualTo(RoomescapeErrorCode.NOT_FOUND_THEME);
     }
 
     private Theme createTheme() {
