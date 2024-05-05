@@ -28,14 +28,6 @@ public class ThemeService {
         this.reservationRepository = reservationRepository;
     }
 
-    public List<ThemeResponse> findAll() {
-        List<Theme> themes = themeRepository.findAll();
-
-        return themes.stream()
-                .map(ThemeResponse::from)
-                .toList();
-    }
-
     public ThemeResponse save(ThemeRequest themeRequest) {
         Theme theme = themeRequest.toEntity();
 
@@ -44,8 +36,12 @@ public class ThemeService {
         return ThemeResponse.from(savedTheme);
     }
 
-    public void deleteById(Long id) {
-        themeRepository.deleteById(id);
+    public List<ThemeResponse> findAll() {
+        List<Theme> themes = themeRepository.findAll();
+
+        return themes.stream()
+                .map(ThemeResponse::from)
+                .toList();
     }
 
     public List<ThemeResponse> findTopThemes() {
@@ -72,5 +68,9 @@ public class ThemeService {
                 .limit(limitCount)
                 .map(Map.Entry::getKey)
                 .toList();
+    }
+
+    public void deleteById(Long id) {
+        themeRepository.deleteById(id);
     }
 }

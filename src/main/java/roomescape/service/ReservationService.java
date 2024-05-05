@@ -29,14 +29,6 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public List<ReservationResponse> findAll() {
-        List<Reservation> reservations = reservationRepository.findAll();
-
-        return reservations.stream()
-                .map(ReservationResponse::from)
-                .toList();
-    }
-
     public ReservationResponse save(ReservationRequest reservationRequest) {
         ReservationTime requestedReservationTime = reservationTimeRepository.findById(reservationRequest.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("예약할 수 없는 시간입니다. timeId: " + reservationRequest.timeId()));
@@ -49,6 +41,14 @@ public class ReservationService {
 
         Reservation savedReservation = reservationRepository.save(requestedReservation);
         return ReservationResponse.from(savedReservation);
+    }
+
+    public List<ReservationResponse> findAll() {
+        List<Reservation> reservations = reservationRepository.findAll();
+
+        return reservations.stream()
+                .map(ReservationResponse::from)
+                .toList();
     }
 
     private void rejectPastTimeReservation(Reservation reservation) {

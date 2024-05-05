@@ -30,20 +30,6 @@ public class H2ThemeRepository implements ThemeRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public List<Theme> findAll() {
-        return jdbcTemplate.query("select * from theme", rowMapper);
-    }
-
-    public Optional<Theme> findById(Long id) {
-        String sql = "select * from theme where id = ?";
-
-        try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
-    }
-
     public Theme save(Theme theme) {
         Long reservationTimeId = jdbcInsert.executeAndReturnKey(Map.of(
                         "name", theme.getName(),
@@ -56,6 +42,20 @@ public class H2ThemeRepository implements ThemeRepository {
                 theme.getName(),
                 theme.getDescription(),
                 theme.getThumbnail());
+    }
+
+    public List<Theme> findAll() {
+        return jdbcTemplate.query("select * from theme", rowMapper);
+    }
+
+    public Optional<Theme> findById(Long id) {
+        String sql = "select * from theme where id = ?";
+
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public void deleteById(Long id) {

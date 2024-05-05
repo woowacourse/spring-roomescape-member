@@ -25,6 +25,16 @@ public class ReservationTimeService {
         this.reservationRepository = reservationRepository;
     }
 
+    public ReservationTimeResponse save(ReservationTimeRequest reservationTimeRequest) {
+        ReservationTime reservationTime = reservationTimeRequest.toEntity();
+
+        rejectDuplicateReservationTime(reservationTime);
+
+        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
+
+        return ReservationTimeResponse.from(savedReservationTime);
+    }
+
     public List<ReservationTimeResponse> findAll() {
         List<ReservationTime> savedReservationTimes = reservationTimeRepository.findAll();
 
@@ -48,16 +58,6 @@ public class ReservationTimeService {
         return bookedReservations.stream()
                 .map(Reservation::getTime)
                 .toList();
-    }
-
-    public ReservationTimeResponse save(ReservationTimeRequest reservationTimeRequest) {
-        ReservationTime reservationTime = reservationTimeRequest.toEntity();
-
-        rejectDuplicateReservationTime(reservationTime);
-
-        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
-
-        return ReservationTimeResponse.from(savedReservationTime);
     }
 
     private void rejectDuplicateReservationTime(ReservationTime reservationTime) {
