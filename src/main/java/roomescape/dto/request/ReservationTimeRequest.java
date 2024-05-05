@@ -8,6 +8,8 @@ public record ReservationTimeRequest(
         LocalTime startAt
 ) {
     public ReservationTime toEntity() {
-        return new ReservationTime(startAt);
+        return ReservationTime.builder()
+                .startAt(startAt)
+                .build();
     }
 }

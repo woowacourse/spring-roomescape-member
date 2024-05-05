@@ -23,7 +23,7 @@ public class ReservationBuilderImpl implements ReservationBuilder {
     @Override
     public ReservationBuilder name(final String name) {
         this.name = name;
-        return null;
+        return this;
     }
 
     @Override
