@@ -19,6 +19,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
+import roomescape.domain.policy.FixedDateWeeklyRankingPolicy;
 import roomescape.web.dto.response.ThemeResponse;
 
 @SpringBootTest
@@ -59,8 +60,7 @@ class ThemeServiceTest {
         creatReservation(1, savedReservationTime, savedTheme3);
 
         // when
-        List<ThemeResponse> popularTheme = themeService.findAllPopularTheme(
-                period -> LocalDate.of(2023, FEBRUARY, 8).minusDays(period));
+        List<ThemeResponse> popularTheme = themeService.findAllPopularTheme(new FixedDateWeeklyRankingPolicy());
 
         // then
         Assertions.assertThat(popularTheme)
@@ -100,8 +100,7 @@ class ThemeServiceTest {
         creatReservation(1, savedReservationTime, savedTheme11);
 
         // when
-        List<ThemeResponse> popularTheme = themeService.findAllPopularTheme(
-                period -> LocalDate.of(2023, FEBRUARY, 8).minusDays(period));
+        List<ThemeResponse> popularTheme = themeService.findAllPopularTheme(new FixedDateWeeklyRankingPolicy());
 
         // then
         Assertions.assertThat(popularTheme)

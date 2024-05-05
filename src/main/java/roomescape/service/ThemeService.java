@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.dao.DataIntegrityViolationException;
@@ -7,9 +8,9 @@ import org.springframework.stereotype.Service;
 
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
+import roomescape.domain.policy.RankingPolicy;
 import roomescape.exception.theme.NotFoundThemeException;
 import roomescape.exception.theme.ReservationReferencedThemeException;
-import roomescape.service.policy.BaseDate;
 import roomescape.web.dto.request.ThemeRequest;
 import roomescape.web.dto.response.ThemeResponse;
 
@@ -28,12 +29,13 @@ public class ThemeService {
                 .toList();
     }
 
-    public List<ThemeResponse> findAllPopularTheme(BaseDate baseDate) {
-        String startDate = baseDate.getStartDateBefore(7).toString();
-        String endDate = baseDate.getStartDateBefore(1).toString();
-        int popularLength = 10;
+    public List<ThemeResponse> findAllPopularTheme(RankingPolicy rankingPolicy) {
+        LocalDate startDate = rankingPolicy.getStartDateAsString();
+        LocalDate endDate = rankingPolicy.getEndDateAsString();
+        int limit = rankingPolicy.exposureSize();
 
-        List<Theme> themes = themeRepository.findThemesByPeriodWithLimit(startDate, endDate, popularLength);
+        List<Theme> themes = themeRepository.findThemesByPeriodWithLimit(startDate.toString(), endDate.toString(),
+                limit);
         return themes.stream()
                 .map(ThemeResponse::from)
                 .toList();

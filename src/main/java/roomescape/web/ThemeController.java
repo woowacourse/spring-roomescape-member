@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import roomescape.domain.policy.WeeklyRankingPolicy;
 import roomescape.service.ThemeService;
-import roomescape.service.policy.CurrentBaseDate;
 import roomescape.web.dto.request.ThemeRequest;
 import roomescape.web.dto.response.ThemeResponse;
 
@@ -36,7 +36,7 @@ public class ThemeController {
 
     @GetMapping("/ranking")
     public ResponseEntity<List<ThemeResponse>> findAllPopularTheme() {
-        List<ThemeResponse> response = themeService.findAllPopularTheme(new CurrentBaseDate());
+        List<ThemeResponse> response = themeService.findAllPopularTheme(new WeeklyRankingPolicy());
         return ResponseEntity.ok().body(response);
     }
 
