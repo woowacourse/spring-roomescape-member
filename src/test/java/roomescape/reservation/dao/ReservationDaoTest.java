@@ -61,6 +61,6 @@ class ReservationDaoTest {
     @Test
     @DisplayName("존재하는 예약시간인지 확인한다.")
     void countReservationTime() {
-        Assertions.assertThat(reservationDao.countByTimeId(1)).isEqualTo(1);
+        Assertions.assertThat(reservationDao.findByTimeId(1)).isPresent();
     }
 }

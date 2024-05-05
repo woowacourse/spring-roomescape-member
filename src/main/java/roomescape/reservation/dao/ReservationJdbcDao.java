@@ -2,7 +2,9 @@ package roomescape.reservation.dao;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import javax.sql.DataSource;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -57,52 +59,49 @@ public class ReservationJdbcDao implements ReservationDao {
 
     @Override
     public List<Reservation> findAllReservationOrderByDateAndTimeStartAt() {
-        String findAllReservationSql =
-                """
-                        SELECT r.id, r.name, r.date, 
-                            t.id AS time_id, t.start_at, 
-                            th.id AS theme_id, th.name AS themeName, th.description, th.thumbnail 
-                        FROM reservation r 
-                        INNER JOIN reservation_time t ON r.time_id = t.id 
-                        INNER JOIN theme th ON r.theme_id = th.id 
-                        ORDER BY r.date ASC, t.start_at ASC
-                        """;
+        String findAllReservationSql = """
+                SELECT r.id, r.name, r.date, 
+                    t.id AS time_id, t.start_at, 
+                    th.id AS theme_id, th.name AS themeName, th.description, th.thumbnail 
+                FROM reservation r 
+                INNER JOIN reservation_time t ON r.time_id = t.id 
+                INNER JOIN theme th ON r.theme_id = th.id 
+                ORDER BY r.date ASC, t.start_at ASC
+                """;
 
         return jdbcTemplate.query(findAllReservationSql, RESERVATION_ROW_MAPPER);
     }
 
     @Override
     public List<Reservation> findAllByThemeIdAndDate(long themeId, LocalDate date) {
-        String findAllByThemeIdAndDateSql =
-                """
-                        SELECT r.id, r.name, r.date, 
-                            t.id AS timeId, t.start_at, 
-                            th.id AS themeId, th.name AS themeName, th.description, th.thumbnail 
-                        FROM reservation r 
-                        INNER JOIN reservation_time t ON r.time_id = t.id 
-                        INNER JOIN theme th ON r.theme_id = th.id 
-                        WHERE r.date = ? AND r.theme_id = ?
-                        ORDER BY r.date ASC, t.start_at ASC
-                        """;
+        String findAllByThemeIdAndDateSql = """
+                SELECT r.id, r.name, r.date, 
+                    t.id AS timeId, t.start_at, 
+                    th.id AS themeId, th.name AS themeName, th.description, th.thumbnail 
+                FROM reservation r 
+                INNER JOIN reservation_time t ON r.time_id = t.id 
+                INNER JOIN theme th ON r.theme_id = th.id 
+                WHERE r.date = ? AND r.theme_id = ?
+                ORDER BY r.date ASC, t.start_at ASC
+                """;
 
         return jdbcTemplate.query(findAllByThemeIdAndDateSql, RESERVATION_ROW_MAPPER, date, themeId);
     }
 
     @Override
     public List<Theme> findThemeByDateOrderByThemeIdCountLimit(LocalDate startDate, LocalDate endDate, int limitCount) {
-        String findThemesInOrderSql =
-                """
-                        SELECT th.id, th.name, th.thumbnail, th.description
-                        FROM theme th
-                        INNER JOIN (
-                            SELECT theme_id
-                            FROM reservation
-                            WHERE date BETWEEN ? AND ?
-                            GROUP BY theme_id
-                            ORDER BY COUNT(theme_id) DESC
-                            LIMIT ?
-                        ) r ON th.id = r.theme_id;
-                        """;
+        String findThemesInOrderSql = """
+                SELECT th.id, th.name, th.thumbnail, th.description
+                FROM theme th
+                INNER JOIN (
+                    SELECT theme_id
+                    FROM reservation
+                    WHERE date BETWEEN ? AND ?
+                    GROUP BY theme_id
+                    ORDER BY COUNT(theme_id) DESC
+                    LIMIT ?
+                ) r ON th.id = r.theme_id;
+                """;
 
         return jdbcTemplate.query(findThemesInOrderSql, (resultSet, rowNum)
                         -> new Theme(
@@ -115,14 +114,29 @@ public class ReservationJdbcDao implements ReservationDao {
     }
 
     @Override
-    public void deleteById(long reservationId) {
-        String deleteReservationSql = "DELETE FROM reservation WHERE id = ?";
-        jdbcTemplate.update(deleteReservationSql, reservationId);
+    public Optional<Reservation> findByTimeId(long timeId) {
+        System.out.println("=== " + timeId);
+        String findByTimeIdSql = """
+                SELECT r.id, r.name, r.date,
+                       t.id AS time_id, t.start_at,
+                       th.id AS theme_id, th.name AS themeName, th.description, th.thumbnail
+                FROM reservation r
+                INNER JOIN reservation_time t ON r.time_id = t.id
+                INNER JOIN theme th ON r.theme_id = th.id
+                WHERE t.id = ?
+                """;
+
+        try {
+            Reservation reservation = jdbcTemplate.queryForObject(findByTimeIdSql, RESERVATION_ROW_MAPPER, timeId);
+            return Optional.of(reservation);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
-    public int countByTimeId(long timeId) {
-        String findByTimeIdSql = "SELECT COUNT(*) FROM reservation WHERE time_id = ?";
-        return jdbcTemplate.queryForObject(findByTimeIdSql, Integer.class, timeId);
+    public void deleteById(long reservationId) {
+        String deleteReservationSql = "DELETE FROM reservation WHERE id = ?";
+        jdbcTemplate.update(deleteReservationSql, reservationId);
     }
 }

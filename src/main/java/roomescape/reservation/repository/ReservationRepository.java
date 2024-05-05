@@ -2,6 +2,7 @@ package roomescape.reservation.repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Repository;
 import roomescape.exception.model.RoomEscapeException;
 import roomescape.reservation.dao.ReservationDao;
@@ -50,11 +51,11 @@ public class ReservationRepository {
         return reservationDao.findThemeByDateOrderByThemeIdCountLimit(beforeWeek, today, limitCount);
     }
 
-    public void deleteById(long reservationId) {
-        reservationDao.deleteById(reservationId);
+    public Optional<Reservation> findByTimeId(long timeId) {
+        return reservationDao.findByTimeId(timeId);
     }
 
-    public int countByTimeId(long timeId) {
-        return reservationDao.countByTimeId(timeId);
+    public void deleteById(long reservationId) {
+        reservationDao.deleteById(reservationId);
     }
 }
