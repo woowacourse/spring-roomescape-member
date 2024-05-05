@@ -62,14 +62,14 @@ public class ThemeDao implements ThemeRepository {
     @Override
     public List<Theme> findPopularThemes(int datePeriod, int themeCount) {
         String sql = """
-            SELECT theme.id, theme.name, theme.description, theme.thumbnail, COUNT(*) AS reservation_count FROM theme
-            INNER JOIN reservation AS re ON re.theme_id = theme.id
-            INNER JOIN reservation_list AS rl ON rl.reservation_id = re.id
-            WHERE re.date BETWEEN DATEADD('DAY', ?, CURRENT_DATE()) AND CURRENT_DATE()
-            GROUP BY theme.id, theme.name
-            ORDER BY reservation_count DESC
-            LIMIT ?
-            """;
+                SELECT theme.id, theme.name, theme.description, theme.thumbnail, COUNT(*) AS reservation_count FROM theme
+                INNER JOIN reservation AS re ON re.theme_id = theme.id
+                INNER JOIN reservation_list AS rl ON rl.reservation_id = re.id
+                WHERE re.date BETWEEN DATEADD('DAY', ?, CURRENT_DATE()) AND CURRENT_DATE()
+                GROUP BY theme.id, theme.name
+                ORDER BY reservation_count DESC
+                LIMIT ?
+                """;
 
         return jdbcTemplate.query(sql, rowMapper, -datePeriod, themeCount);
     }
