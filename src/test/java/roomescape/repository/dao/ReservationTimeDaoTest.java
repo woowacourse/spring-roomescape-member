@@ -1,4 +1,4 @@
-package roomescape.repository;
+package roomescape.repository.dao;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -9,7 +9,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.model.ReservationTime;
-import roomescape.repository.dao.ReservationTimeDao;
 
 import java.time.LocalTime;
 import java.util.HashMap;

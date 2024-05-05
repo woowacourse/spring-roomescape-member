@@ -1,4 +1,4 @@
-package roomescape.dao;
+package roomescape.repository.dao;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,7 +14,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class DBConnectionTest {
+class DatabaseConnectionTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
