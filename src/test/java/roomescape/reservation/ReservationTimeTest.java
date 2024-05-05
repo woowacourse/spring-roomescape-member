@@ -67,7 +67,7 @@ class ReservationTimeTest {
     @Test
     void availableTime() {
         RestAssured.given().log().all()
-                .when().get("/times/available?themeId=1&date=2999-12-12")
+                .when().get("/times/availability?themeId=1&date=2999-12-12")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
