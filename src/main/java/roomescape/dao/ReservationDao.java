@@ -1,112 +1,108 @@
 package roomescape.dao;
 
+import java.util.List;
+import java.util.Optional;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTheme;
 import roomescape.domain.ReservationTime;
 
-import java.sql.PreparedStatement;
-import java.util.List;
-import java.util.Optional;
-
 @Repository
 public class ReservationDao {
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert insertActor;
 
     public ReservationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.insertActor = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation")
+                .usingGeneratedKeyColumns("id");
     }
 
     public List<Reservation> findAll() {
         String findAllSql = """
-                SELECT 
-                    r.id as reservation_id, 
-                    r.name,     
-                    r.date, 
-                    t.id as time_id, 
-                    t.start_at as time_value, 
-                    tm.id as theme_id, 
-                    tm.name as theme_name, 
-                    tm.description,     
-                    tm.thumbnail 
-                FROM reservation AS r 
-                INNER JOIN reservation_time AS t 
-                ON r.time_id = t.id 
-                INNER JOIN theme AS tm 
-                ON r.theme_id = tm.id
-        """;
-        return jdbcTemplate.query(findAllSql,getReservationRowMapper());
+                        SELECT 
+                            r.id as reservation_id, 
+                            r.name,     
+                            r.date, 
+                            t.id as time_id, 
+                            t.start_at as time_value, 
+                            tm.id as theme_id, 
+                            tm.name as theme_name, 
+                            tm.description,     
+                            tm.thumbnail 
+                        FROM reservation AS r 
+                        INNER JOIN reservation_time AS t 
+                        ON r.time_id = t.id 
+                        INNER JOIN theme AS tm 
+                        ON r.theme_id = tm.id
+                """;
+        return jdbcTemplate.query(findAllSql, getReservationRowMapper());
     }
 
     public Long insert(String name, String date, Long timeId, Long themeId) {
-        String insertSql = "INSERT INTO reservation(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(
-                    insertSql,
-                    new String[]{"id"});
-            ps.setString(1, name);
-            ps.setString(2, date);
-            ps.setLong(3, timeId);
-            ps.setLong(4, themeId);
-            return ps;
-        }, keyHolder);
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("name", name)
+                .addValue("date", date)
+                .addValue("time_id", timeId)
+                .addValue("theme_id", themeId);
 
-        return keyHolder.getKey().longValue();
+        return insertActor.executeAndReturnKey(parameters).longValue();
     }
 
     public void deleteById(Long id) {
-        String deleteFromIdSql = "DELETE FROM reservation WHERE id = ?";
-        jdbcTemplate.update(deleteFromIdSql, id);
+        String sql = "DELETE FROM reservation WHERE id = ?";
+        jdbcTemplate.update(sql, id);
     }
 
     public Optional<Reservation> findById(Long id) {
-        String findByIdSql = """
-                SELECT 
-                    r.id as reservation_id, 
-                    r.name,     
-                    r.date, 
-                    t.id as time_id, 
-                    t.start_at as time_value, 
-                    tm.id as theme_id, 
-                    tm.name as theme_name, 
-                    tm.description,     
-                    tm.thumbnail 
-                FROM reservation AS r 
-                INNER JOIN reservation_time AS t 
-                ON r.time_id = t.id 
-                INNER JOIN theme AS tm 
-                ON r.theme_id = tm.id
-                WHERE t.id = ?
-        """;
-        List<Reservation> reservations = jdbcTemplate.query(findByIdSql, getReservationRowMapper(), id);
+        String sql = """
+                        SELECT 
+                            r.id as reservation_id, 
+                            r.name,     
+                            r.date, 
+                            t.id as time_id, 
+                            t.start_at as time_value, 
+                            tm.id as theme_id, 
+                            tm.name as theme_name, 
+                            tm.description,     
+                            tm.thumbnail 
+                        FROM reservation AS r 
+                        INNER JOIN reservation_time AS t 
+                        ON r.time_id = t.id 
+                        INNER JOIN theme AS tm 
+                        ON r.theme_id = tm.id
+                        WHERE t.id = ?
+                """;
+        List<Reservation> reservations = jdbcTemplate.query(sql, getReservationRowMapper(), id);
         return Optional.ofNullable(DataAccessUtils.singleResult(reservations));
     }
 
     public int countByTimeId(Long timeId) {
-        String findByIdSql = "SELECT count(*) FROM reservation WHERE time_id =?";
-        return jdbcTemplate.queryForObject(findByIdSql, Integer.class, timeId);
+        String sql = "SELECT count(*) FROM reservation WHERE time_id =?";
+        return jdbcTemplate.queryForObject(sql, Integer.class, timeId);
     }
 
     public int countByThemeId(Long themeId) {
-        String findByIdSql = "SELECT count(*) FROM reservation WHERE theme_id =?";
-        return jdbcTemplate.queryForObject(findByIdSql, Integer.class, themeId);
+        String sql = "SELECT count(*) FROM reservation WHERE theme_id =?";
+        return jdbcTemplate.queryForObject(sql, Integer.class, themeId);
     }
 
     public int count(String date, Long timeId, Long themeId) {
-        String findByIdSql = "SELECT count(*) FROM reservation WHERE time_id = ? AND theme_id = ? AND date = ?";
-        return jdbcTemplate.queryForObject(findByIdSql, Integer.class, timeId, themeId, date);
+        String sql = "SELECT count(*) FROM reservation WHERE time_id = ? AND theme_id = ? AND date = ?";
+        return jdbcTemplate.queryForObject(sql, Integer.class, timeId, themeId, date);
     }
 
     public List<Long> findBestThemeIdInWeek(String from, String to) {
-        String findBestThemeIdSql = "SELECT theme_id, count(*) AS total FROM reservation WHERE date BETWEEN ? AND ? GROUP BY theme_id ORDER BY total DESC";
-        return jdbcTemplate.query(findBestThemeIdSql, (rs, rowNum) -> rs.getLong("theme_id"), from, to);
+        String sql = "SELECT theme_id, count(*) AS total FROM reservation WHERE date BETWEEN ? AND ? GROUP BY theme_id ORDER BY total DESC";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getLong("theme_id"), from, to);
     }
 
     private RowMapper<Reservation> getReservationRowMapper() {
