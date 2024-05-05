@@ -22,7 +22,7 @@ class ThemeControllerTest extends ControllerTest {
     ThemeService themeService;
 
     @BeforeEach
-    void setUp() {
+    void setData() {
         themeService.create(new ThemeRequest("name", "description", "thumbnail"));
     }
 

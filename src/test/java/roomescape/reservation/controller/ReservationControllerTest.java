@@ -1,5 +1,7 @@
 package roomescape.reservation.controller;
 
+import static org.hamcrest.Matchers.containsString;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.HashMap;
@@ -35,7 +37,7 @@ class ReservationControllerTest extends ControllerTest {
     ThemeResponse themeResponse;
 
     @BeforeEach
-    void setUp() {
+    void setData() {
         reservationTimeResponse = reservationTimeService.create(new ReservationTimeRequest("12:00"));
         themeResponse = themeService.create(new ThemeRequest("name", "description", "thumbnail"));
         reservationService.create(new ReservationRequest(
@@ -45,6 +47,27 @@ class ReservationControllerTest extends ControllerTest {
                         themeResponse.id()
                 )
         );
+    }
+
+    @DisplayName("인기 테마 페이지 조회에 성공한다.")
+    @Test
+    void popularPage() {
+        RestAssured.given().log().all()
+                .when().get("/")
+                .then().log().all()
+                .statusCode(200)
+                .body(containsString("인기 테마"));
+    }
+
+    @DisplayName("예약 조회 시 200을 반환한다.")
+    @Test
+    void find() {
+        //given & when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200);
     }
 
     @DisplayName("예약 생성 시 200을 반환한다.")
@@ -66,6 +89,86 @@ class ReservationControllerTest extends ControllerTest {
                 .statusCode(201);
     }
 
+    @DisplayName("예약 생성 시, 빈 이름에 대해 400을 반환한다.")
+    @ParameterizedTest
+    @ValueSource(strings = {"", "           "})
+    void createNameBadRequest(String name) {
+        //given
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", name);
+        reservation.put("date", "2100-12-01");
+        reservation.put("timeId", reservationTimeResponse.id());
+        reservation.put("themeId", themeResponse.id());
+
+        //when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @DisplayName("예약 생성 시, 잘못된 날짜 형식에 대해 400을 반환한다.")
+    @ParameterizedTest
+    @ValueSource(strings = {"", "20-12-31", "2020-1-30", "2020-11-0", "-1"})
+    void createBadRequest(String date) {
+        //given
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", "브라운");
+        reservation.put("date", date);
+        reservation.put("timeId", reservationTimeResponse.id());
+        reservation.put("themeId", themeResponse.id());
+
+        //when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @DisplayName("예약 생성 시, 빈 시간 id에 대해 400을 반환한다.")
+    @ParameterizedTest
+    @ValueSource(strings = {"", "           "})
+    void createTimeIdBadRequest(String timeId) {
+        //given
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", "siso");
+        reservation.put("date", "2100-12-01");
+        reservation.put("timeId", timeId);
+        reservation.put("themeId", themeResponse.id());
+
+        //when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @DisplayName("예약 생성 시, 빈 테마 id에 대해 400을 반환한다.")
+    @ParameterizedTest
+    @ValueSource(strings = {"", "           "})
+    void createThemeIdBadRequest(String themeId) {
+        //given
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", "siso");
+        reservation.put("date", "2100-12-01");
+        reservation.put("timeId", reservationTimeResponse.id());
+        reservation.put("themeId", themeId);
+
+        //when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
     @DisplayName("예약 삭제 시 204를 반환한다.")
     @Test
     void delete() {
@@ -80,61 +183,12 @@ class ReservationControllerTest extends ControllerTest {
                 .statusCode(204);
     }
 
-    @DisplayName("예약 조회 시 200을 반환한다.")
-    @Test
-    void find() {
-        //given & when & then
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200);
-    }
-
     @DisplayName("존재하지 않은 예약 삭제 시 400를 반환한다.")
     @Test
     void reservationNotFound() {
         //given & when & then
         RestAssured.given().log().all()
                 .when().delete("/reservations/6")
-                .then().log().all()
-                .statusCode(400);
-    }
-
-    @DisplayName("예약 생성 시, 잘못된 날짜 형식에 대해 400을 반환한다.")
-    @ParameterizedTest
-    @ValueSource(strings = {"", "20-12-31", "2020-1-30", "2020-11-0", "-1"})
-    void createBadRequest(String date) {
-        //given
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
-        reservation.put("date", date);
-        reservation.put("timeId", reservationTimeResponse.id());
-
-        //when & then
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservation)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(400);
-    }
-
-    @DisplayName("예약 생성 시, 빈 이름에 대해 400을 반환한다.")
-    @ParameterizedTest
-    @ValueSource(strings = {"", "           "})
-    void createNameBadRequest(String name) {
-        //given
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", name);
-        reservation.put("date", "2100-12-01");
-        reservation.put("timeId", reservationTimeResponse.id());
-
-        //when & then
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservation)
-                .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400);
     }

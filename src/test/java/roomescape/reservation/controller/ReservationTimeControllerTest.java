@@ -22,7 +22,7 @@ class ReservationTimeControllerTest extends ControllerTest {
     ReservationTimeService reservationTimeService;
 
     @BeforeEach
-    void setUp() {
+    void setData() {
         reservationTimeService.create(new ReservationTimeRequest("12:00"));
     }
 
