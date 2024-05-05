@@ -62,7 +62,7 @@ class ThemeServiceUnitTest {
         final Theme theme = themeService.saveTheme(saveThemeRequest);
 
         // Then
-        assertThat(theme.getId()).isEqualTo(1L);
+        assertThat(theme.getId()).isEqualTo(savedTheme.getId());
     }
 
     @DisplayName("테마 정보를 삭제한다.")

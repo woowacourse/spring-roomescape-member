@@ -58,9 +58,9 @@ public class InMemoryThemeRepository implements ThemeRepository {
         final String sql = "INSERT INTO theme(name, description, thumbnail) VALUES(:name, :description, :thumbnail)";
 
         final MapSqlParameterSource param = new MapSqlParameterSource()
-                .addValue("name", theme.getName().getValue())
-                .addValue("description", theme.getDescription().getValue())
-                .addValue("thumbnail", theme.getThumbnail().getValue());
+                .addValue("name", theme.getName().value())
+                .addValue("description", theme.getDescription().value())
+                .addValue("thumbnail", theme.getThumbnail().value());
         final KeyHolder keyHolder = new GeneratedKeyHolder();
         template.update(sql, param, keyHolder);
 
@@ -93,8 +93,8 @@ public class InMemoryThemeRepository implements ThemeRepository {
                 """;
 
         final MapSqlParameterSource param = new MapSqlParameterSource()
-                .addValue("startAt", startAt.getValue())
-                .addValue("endAt", endAt.getValue())
+                .addValue("startAt", startAt.value())
+                .addValue("endAt", endAt.value())
                 .addValue("maximumThemeCount", maximumThemeCount);
 
         return template.query(sql, param, itemRowMapper());

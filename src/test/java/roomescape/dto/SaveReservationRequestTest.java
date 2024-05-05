@@ -34,8 +34,8 @@ class SaveReservationRequestTest {
 
         // Then
         assertAll(
-                () -> assertThat(reservation.getDate().getValue()).isEqualTo(request.date()),
-                () -> assertThat(reservation.getClientName().getValue()).isEqualTo(request.name()),
+                () -> assertThat(reservation.getDate().value()).isEqualTo(request.date()),
+                () -> assertThat(reservation.getClientName().value()).isEqualTo(request.name()),
                 () -> assertThat(reservation.getTime().getId()).isEqualTo(reservationTime.getId()),
                 () -> assertThat(reservation.getTime().getStartAt()).isEqualTo(reservationTime.getStartAt())
         );

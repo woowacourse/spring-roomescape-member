@@ -52,11 +52,14 @@ public class Theme {
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (!(o instanceof final Theme theme)) return false;
-        return Objects.equals(id, theme.id);
+        return Objects.equals(id, theme.id)
+                && Objects.equals(name, theme.name)
+                && Objects.equals(description, theme.description)
+                && Objects.equals(thumbnail, theme.thumbnail);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(id, name, description, thumbnail);
     }
 }

@@ -1,14 +1,11 @@
 package roomescape.domain;
 
-public class ThemeDescription {
+public record ThemeDescription(String value) {
 
     private static final int MAXIMUM_ENABLE_NAME_LENGTH = 80;
 
-    private final String value;
-
-    public ThemeDescription(final String value) {
+    public ThemeDescription {
         validateValue(value);
-        this.value = value;
     }
 
     private void validateValue(final String value) {
@@ -21,9 +18,5 @@ public class ThemeDescription {
         if (stripedValue.isEmpty() || stripedValue.length() > MAXIMUM_ENABLE_NAME_LENGTH) {
             throw new IllegalArgumentException("테마 설명은 1글자 이상 80글자 이하여야 합니다.");
         }
-    }
-
-    public String getValue() {
-        return value;
     }
 }

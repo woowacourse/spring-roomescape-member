@@ -98,11 +98,15 @@ public class Reservation {
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (!(o instanceof final Reservation that)) return false;
-        return Objects.equals(id, that.id);
+        return Objects.equals(id, that.id)
+                && Objects.equals(clientName, that.clientName)
+                && Objects.equals(date, that.date)
+                && Objects.equals(time, that.time)
+                && Objects.equals(theme, that.theme);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(id, clientName, date, time, theme);
     }
 }

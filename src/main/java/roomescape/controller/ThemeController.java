@@ -60,7 +60,7 @@ public class ThemeController {
     @GetMapping("/available-reservation-times")
     public List<AvailableReservationTimeResponse> getAvailableReservationTimes(@RequestParam("date") final LocalDate date, @RequestParam("theme-id") final Long themeId) {
         return themeService.getAvailableReservationTimes(date, themeId)
-                .getValues()
+                .values()
                 .entrySet()
                 .stream()
                 .map(entry -> AvailableReservationTimeResponse.of(entry.getKey(), entry.getValue()))

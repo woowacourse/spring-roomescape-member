@@ -52,8 +52,8 @@ class ReservationServiceIntegrationTest {
         assertAll(
                 () -> assertThat(reservations).hasSize(17),
                 () -> assertThat(reservation.getId()).isEqualTo(17L),
-                () -> assertThat(reservation.getClientName().getValue()).isEqualTo("켈리"),
-                () -> assertThat(reservation.getDate().getValue()).isEqualTo(date),
+                () -> assertThat(reservation.getClientName().value()).isEqualTo("켈리"),
+                () -> assertThat(reservation.getDate().value()).isEqualTo(date),
                 () -> assertThat(reservation.getTime().getStartAt()).isEqualTo(LocalTime.of(9, 30))
         );
     }

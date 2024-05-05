@@ -61,8 +61,8 @@ class ThemeRepositoryTest {
         assertAll(
                 () -> assertThat(themes).hasSize(16),
                 () -> assertThat(savedTheme.getId()).isEqualTo(16L),
-                () -> assertThat(savedTheme.getName().getValue()).isEqualTo(theme.getName().getValue()),
-                () -> assertThat(savedTheme.getDescription().getValue()).isEqualTo(theme.getDescription().getValue()),
+                () -> assertThat(savedTheme.getName().value()).isEqualTo(theme.getName().value()),
+                () -> assertThat(savedTheme.getDescription().value()).isEqualTo(theme.getDescription().value()),
                 () -> assertThat(savedTheme.getThumbnail()).isEqualTo(theme.getThumbnail())
         );
     }

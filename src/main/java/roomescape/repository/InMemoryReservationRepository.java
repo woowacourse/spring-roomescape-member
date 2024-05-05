@@ -54,8 +54,8 @@ public class InMemoryReservationRepository implements ReservationRepository {
     public Reservation save(final Reservation reservation) {
         final String sql = "INSERT INTO reservation(name, date, time_id, theme_id) VALUES (:name, :date, :timeId, :themeId)";
         final MapSqlParameterSource param = new MapSqlParameterSource()
-                .addValue("name", reservation.getClientName().getValue())
-                .addValue("date", reservation.getDate().getValue())
+                .addValue("name", reservation.getClientName().value())
+                .addValue("date", reservation.getDate().value())
                 .addValue("timeId", reservation.getTime().getId())
                 .addValue("themeId", reservation.getTheme().getId());
         final KeyHolder keyHolder = new GeneratedKeyHolder();

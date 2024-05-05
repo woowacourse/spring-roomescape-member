@@ -35,7 +35,7 @@ class ReservationTimeAvailabilitiesTest {
         final ReservationTimeAvailabilities reservationTimeAvailabilities = ReservationTimeAvailabilities.of(reservationTimes, reservations);
 
         // Then
-        final Map<ReservationTime, Boolean> values = reservationTimeAvailabilities.getValues();
+        final Map<ReservationTime, Boolean> values = reservationTimeAvailabilities.values();
         assertThat(values.get(reservationTime1)).isTrue();
         assertThat(values.get(reservationTime2)).isTrue();
         assertThat(values.get(reservationTime3)).isTrue();
