@@ -65,7 +65,8 @@ public class JdbcTemplateReservationTimeRepository implements ReservationTimeRep
     @Override
     public List<ReservationTime> findUsedTimeByDateAndTheme(LocalDate date, Theme theme) {
         String sql = """
-                SELECT rt.id, start_at
+                SELECT
+                    rt.id, start_at
                 FROM reservation_time rt
                 JOIN reservation r
                     ON rt.id = r.time_id

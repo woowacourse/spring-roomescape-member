@@ -29,7 +29,20 @@ public class JdbcTemplateThemeRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findAndOrderByPopularity(LocalDate start, LocalDate end, int count) {
-        String sql = "SELECT th.id AS id, th.name AS name, description, thumbnail, COUNT(*) AS count FROM theme th JOIN reservation r ON r.theme_id = th.id WHERE PARSEDATETIME(r.date,'yyyy-MM-dd') >= PARSEDATETIME(?,'yyyy-MM-dd') AND PARSEDATETIME(r.date,'yyyy-MM-dd') <= PARSEDATETIME(?,'yyyy-MM-dd') GROUP BY th.id ORDER BY count DESC LIMIT ?";
+        String sql = """
+                SELECT
+                    th.id AS id, th.name AS name, description, thumbnail, COUNT(*) AS count
+                FROM theme th
+                JOIN reservation r
+                    ON r.theme_id = th.id
+                WHERE
+                    PARSEDATETIME(r.date,'yyyy-MM-dd') >= PARSEDATETIME(?,'yyyy-MM-dd')
+                AND
+                    PARSEDATETIME(r.date,'yyyy-MM-dd') <= PARSEDATETIME(?,'yyyy-MM-dd')
+                GROUP BY th.id
+                ORDER BY count DESC
+                LIMIT ?
+                """;
         return jdbcTemplate.query(sql, themeRowMapper, start, end, count);
     }
 

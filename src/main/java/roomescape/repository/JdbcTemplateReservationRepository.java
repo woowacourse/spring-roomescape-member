@@ -46,7 +46,7 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
     @Override
     public List<Reservation> findAll() {
         String query = """
-                   SELECT 
+                SELECT
                    r.id AS reservation_id,
                    r.name AS reservation_name,
                    r.date AS reservation_date,
@@ -57,10 +57,11 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
                    t2.description AS description,
                    t2.thumbnail AS thumbnail
                 FROM reservation AS r
-                INNER JOIN reservation_time t 
-                ON r.time_id = t.id
-                INNER JOIN theme t2  
-                ON t2.id = r.theme_id""";
+                INNER JOIN reservation_time t
+                    ON r.time_id = t.id
+                INNER JOIN theme t2
+                    ON t2.id = r.theme_id
+                """;
         return jdbcTemplate.query(query, reservationRowMapper);
     }
 
