@@ -89,7 +89,7 @@ public class ReservationJdbcDao implements ReservationDao {
     }
 
     @Override
-    public List<Theme> findThemeByDateOrderByThemeIdCount(LocalDate startDate, LocalDate endDate) {
+    public List<Theme> findThemeByDateOrderByThemeIdCountLimit(LocalDate startDate, LocalDate endDate, int limitCount) {
         String findThemesInOrderSql =
                 """
                         SELECT th.id, th.name, th.thumbnail, th.description
@@ -100,6 +100,7 @@ public class ReservationJdbcDao implements ReservationDao {
                             WHERE date BETWEEN ? AND ?
                             GROUP BY theme_id
                             ORDER BY COUNT(theme_id) DESC
+                            LIMIT ?
                         ) r ON th.id = r.theme_id;
                         """;
 
@@ -110,7 +111,7 @@ public class ReservationJdbcDao implements ReservationDao {
                         resultSet.getString("description"),
                         resultSet.getString("thumbnail")
                 )
-                , startDate.toString(), endDate.toString());
+                , startDate.toString(), endDate.toString(), limitCount);
     }
 
     @Override

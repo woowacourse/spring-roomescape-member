@@ -13,7 +13,7 @@ public interface ReservationDao {
 
     List<Reservation> findAllByThemeIdAndDate(long themeId, LocalDate date);
 
-    List<Theme> findThemeByDateOrderByThemeIdCount(LocalDate startDate, LocalDate endDate);
+    List<Theme> findThemeByDateOrderByThemeIdCountLimit(LocalDate startDate, LocalDate endDate, int limitCount);
 
     void deleteById(long reservationId);
 

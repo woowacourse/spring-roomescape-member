@@ -46,8 +46,8 @@ public class ReservationRepository {
         return reservationDao.findAllByThemeIdAndDate(themeId, date);
     }
 
-    public List<Theme> findThemeByDateOrderByThemeIdCount(LocalDate beforeWeek, LocalDate today) {
-        return reservationDao.findThemeByDateOrderByThemeIdCount(beforeWeek, today);
+    public List<Theme> findThemeByDateOrderByThemeIdCountLimit(LocalDate beforeWeek, LocalDate today, int limitCount) {
+        return reservationDao.findThemeByDateOrderByThemeIdCountLimit(beforeWeek, today, limitCount);
     }
 
     public void deleteById(long reservationId) {

@@ -35,10 +35,13 @@ public class ThemeService {
         LocalDate today = LocalDate.now()
                 .minusDays(NUMBER_OF_ONE_DAY);
         LocalDate beforeOneWeek = today.minusDays(NUMBER_OF_ONE_WEEK);
+        System.out.println(beforeOneWeek + " " + today);
+        List<Theme> rankedThemes = reservationRepository.findThemeByDateOrderByThemeIdCountLimit(beforeOneWeek, today,
+                TOP_THEMES_LIMIT);
 
-        List<Theme> rankedThemes = reservationRepository.findThemeByDateOrderByThemeIdCount(beforeOneWeek, today);
+        System.out.println(rankedThemes.size());
+
         return rankedThemes.stream()
-                .limit(TOP_THEMES_LIMIT)
                 .map(ThemeRankResponse::fromTheme)
                 .toList();
     }
