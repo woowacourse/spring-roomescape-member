@@ -1,23 +1,11 @@
-package roomescape.integration;
+package roomescape.web.controller;
 
 import io.restassured.RestAssured;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.server.LocalServerPort;
+import roomescape.support.RestAssuredTestSupport;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class AdminPageIntegrationTest {
-
-    @LocalServerPort
-    private int port;
-
-    @BeforeEach
-    void setUp() {
-        RestAssured.port = port;
-    }
+class AdminPageControllerTest extends RestAssuredTestSupport {
 
     @Test
     @DisplayName("\"/admin\"으로 GET 요청을 보낼 수 있다.")
