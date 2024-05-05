@@ -14,6 +14,7 @@ import roomescape.repository.ThemeDao;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 class ReservationServiceImpl implements ReservationService {
@@ -63,12 +64,12 @@ class ReservationServiceImpl implements ReservationService {
 
     private ReservationTime findReservationTimeById(ReservationRequest reservationRequest) {
         return reservationTimeDao.findById(reservationRequest.timeId())
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 잘못된 예약 가능 시간 번호를 입력하였습니다."));
+                .orElseThrow(() -> new NoSuchElementException("[ERROR] 잘못된 예약 가능 시간 번호를 입력하였습니다."));
     }
 
     private Theme findThemeById(ReservationRequest reservationRequest) {
         return themeDao.findById(reservationRequest.themeId())
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 잘못된 테마 번호를 입력하였습니다."));
+                .orElseThrow(() -> new NoSuchElementException("[ERROR] 잘못된 테마 번호를 입력하였습니다."));
     }
 
     private void validateCreatedReservation(Reservation reservation) {
@@ -87,6 +88,6 @@ class ReservationServiceImpl implements ReservationService {
 
     private void checkReservationExist(long id) {
         reservationDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 삭제할 예약 데이터가 없습니다."));
+                .orElseThrow(() -> new NoSuchElementException("[ERROR] 삭제할 예약 데이터가 없습니다."));
     }
 }

@@ -9,6 +9,7 @@ import roomescape.repository.ThemeDao;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 class ThemeServiceImpl implements ThemeService {
@@ -48,12 +49,23 @@ class ThemeServiceImpl implements ThemeService {
 
     @Override
     public void delete(final long id) {
-        themeDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 잘못된 테마 번호 입력입니다."));
+        validateDeleteCondition(id);
+        themeDao.delete(id);
+    }
 
+    private void validateDeleteCondition(long id) {
+        validateThemeExist(id);
+        validateHasThemeReservation(id);
+    }
+
+    private void validateHasThemeReservation(long id) {
         if (!reservationDao.findByThemeId(id).isEmpty()) {
             throw new IllegalArgumentException("[ERROR] 해당 테마를 사용 중인 예약이 있어 삭제할 수 없습니다.");
         }
-        themeDao.delete(id);
+    }
+
+    private void validateThemeExist(long id) {
+        themeDao.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("[ERROR] 잘못된 테마 번호 입력입니다."));
     }
 }

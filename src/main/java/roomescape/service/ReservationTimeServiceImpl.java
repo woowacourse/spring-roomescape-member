@@ -9,6 +9,7 @@ import roomescape.repository.ReservationDao;
 import roomescape.repository.ReservationTimeDao;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 class ReservationTimeServiceImpl implements ReservationTimeService {
@@ -50,6 +51,6 @@ class ReservationTimeServiceImpl implements ReservationTimeService {
 
     private void validateIdExists(final long id) {
         reservationTimeDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 삭제할 예약 시간이 없습니다."));
+                .orElseThrow(() -> new NoSuchElementException("[ERROR] 삭제할 예약 시간이 없습니다."));
     }
 }
