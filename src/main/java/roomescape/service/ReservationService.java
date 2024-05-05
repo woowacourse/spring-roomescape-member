@@ -30,8 +30,7 @@ public class ReservationService {
         validateDuplicated(reservationRequest);
         ReservationTime reservationTime = findTimeById(reservationRequest.timeId());
         Theme theme = findThemeById(reservationRequest.themeId());
-        Reservation reservation = new Reservation(reservationRequest.name(), reservationRequest.date(), reservationTime,
-                theme);
+        Reservation reservation = reservationRequest.toReservation(reservationTime, theme);
         Reservation newReservation = reservationRepository.save(reservation);
         return new ReservationResponse(newReservation);
     }
