@@ -10,6 +10,8 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -117,8 +119,10 @@ public class ReservationTimeResponseControllerTest {
     @DisplayName("예약이 존재하는 시간은 예약할 수 없다.")
     @Test
     void getUnavailableForReservationTimes() {
+        ZoneId kst = ZoneId.of("Asia/Seoul");
+
         RestAssured.given().log().all()
-                .param("date", "2024-01-01")
+                .param("date", LocalDate.now(kst).minusDays(1).toString())
                 .param("themeId", "1")
                 .when().get("/times/user")
                 .then().log().all()

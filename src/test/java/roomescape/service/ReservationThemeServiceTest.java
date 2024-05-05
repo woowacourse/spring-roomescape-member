@@ -67,7 +67,7 @@ public class ReservationThemeServiceTest {
     void getBestThemesTest() {
         List<ReservationTheme> reservationThemes = reservationThemeService.getBestThemes();
 
-        assertThat(reservationThemes.size()).isEqualTo(0);
+        assertThat(reservationThemes.size()).isEqualTo(1);
     }
 
     @DisplayName("이미 존재하는 테마 이름이면 예외를 발생한다.")

@@ -103,6 +103,6 @@ public class ReservationThemeResponseControllerTest {
                 .when().get("/best-themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("size()", is(1));
     }
 }

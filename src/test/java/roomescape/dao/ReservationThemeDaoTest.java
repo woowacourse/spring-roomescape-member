@@ -13,6 +13,7 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.ReservationTheme;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -84,7 +85,9 @@ public class ReservationThemeDaoTest {
     @DisplayName("최근 일주일간 가장 많이 예약된 테마를 조회한다.")
     @Test
     void findBestThemesBetweenDates() {
-        List<ReservationTheme> bestTheme = reservationThemeDao.findBestThemesBetweenDates("2023-12-28", "2024-01-02", 10);
+        List<ReservationTheme> bestTheme = reservationThemeDao.findBestThemesBetweenDates(
+                LocalDate.now().minusWeeks(1).toString(),
+                LocalDate.now().minusDays(1).toString(), 10);
 
         assertThat(bestTheme.size()).isEqualTo(1);
     }

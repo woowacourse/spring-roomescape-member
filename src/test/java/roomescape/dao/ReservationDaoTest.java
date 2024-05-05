@@ -14,6 +14,7 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Reservation;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -105,7 +106,7 @@ public class ReservationDaoTest {
     @DisplayName("특정 날짜, 시간, 테마에 대한 모든 예약의 개수를 조회한다.")
     @Test
     void countTest() {
-        int count = reservationDao.count("2024-01-01", 1L, 1L);
+        int count = reservationDao.count(LocalDate.now().minusDays(1).toString(), 1L, 1L);
 
         assertThat(count).isEqualTo(1);
     }

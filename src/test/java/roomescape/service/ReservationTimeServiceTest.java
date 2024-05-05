@@ -9,6 +9,7 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeRequestDto;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -64,7 +65,7 @@ public class ReservationTimeServiceTest {
     @DisplayName("예약이 가능한 시간인지 확인한다.")
     @Test
     void isBookedTest() {
-        boolean actualIsBooked = reservationTimeService.isBooked("2024-01-01", 1L, 1L);
+        boolean actualIsBooked = reservationTimeService.isBooked(LocalDate.now().minusDays(1).toString(), 1L, 1L);
 
         assertThat(actualIsBooked).isEqualTo(true);
     }
