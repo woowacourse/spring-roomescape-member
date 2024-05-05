@@ -1,9 +1,12 @@
 package roomescape.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.util.List;
 import java.util.Map;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +16,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.domain.Theme;
+import roomescape.dto.ThemeResponse;
+import roomescape.repository.ThemeDao;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -20,6 +26,9 @@ class ThemeRestControllerTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private ThemeDao themeDao;
 
     @LocalServerPort
     private Integer port;
@@ -52,13 +61,22 @@ class ThemeRestControllerTest {
                 "thumbnail", "썸네일"
         );
 
-        // when & then
+        // when
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/themes")
                 .then().log().all()
                 .statusCode(HttpStatus.SC_CREATED);
+
+        Theme theme = themeDao.findById(1);
+
+        // then
+        assertAll(
+                () -> assertThat(theme.getName()).isEqualTo("테니"),
+                () -> assertThat(theme.getDescription()).isEqualTo("설명"),
+                () -> assertThat(theme.getThumbnail()).isEqualTo("썸네일")
+        );
     }
 
     @Test

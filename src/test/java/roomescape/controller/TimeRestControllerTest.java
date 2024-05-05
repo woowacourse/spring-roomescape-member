@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,8 +18,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.domain.ReservationTime;
 import roomescape.dto.TimeMemberResponse;
 import roomescape.dto.TimeResponse;
+import roomescape.repository.TimeDao;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -26,6 +29,9 @@ class TimeRestControllerTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private TimeDao timeDao;
 
     @LocalServerPort
     private Integer port;
@@ -104,9 +110,10 @@ class TimeRestControllerTest {
                 .then().log().all()
                 .statusCode(201);
 
+        ReservationTime time = timeDao.findById(1);
+
         // then
-        Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation_time", Integer.class);
-        assertThat(countAfterDelete).isEqualTo(1);
+        assertThat(time.getStartAt()).isEqualTo(LocalTime.of(10, 0));
     }
 
     @Test

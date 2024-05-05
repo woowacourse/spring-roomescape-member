@@ -1,9 +1,12 @@
 package roomescape.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import org.apache.http.HttpStatus;
@@ -14,7 +17,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.domain.Reservation;
 import roomescape.dto.ReservationResponse;
+import roomescape.repository.ReservationDao;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -22,6 +27,9 @@ class ReservationControllerTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private ReservationDao reservationDao;
 
     @LocalServerPort
     private Integer port;
@@ -73,9 +81,19 @@ class ReservationControllerTest {
                 .statusCode(201)
                 .header("Location", "/reservations/1");
 
+        Reservation reservation = reservationDao.findById(1);
+
         // then
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-        assertThat(count).isEqualTo(1);
+        assertAll(
+                () -> assertThat(reservation.getName()).isEqualTo("테니"),
+                () -> assertThat(reservation.getDate()).isEqualTo(LocalDate.of(2024, 8, 30)),
+                () -> assertThat(reservation.getTime().getId()).isEqualTo(1),
+                () -> assertThat(reservation.getTime().getStartAt()).isEqualTo(LocalTime.of(10,0)),
+                () -> assertThat(reservation.getTheme().getId()).isEqualTo(1),
+                () -> assertThat(reservation.getTheme().getName()).isEqualTo("테마이름"),
+                () -> assertThat(reservation.getTheme().getDescription()).isEqualTo("설명"),
+                () -> assertThat(reservation.getTheme().getThumbnail()).isEqualTo("썸네일")
+        );
     }
 
     @Test
