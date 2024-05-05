@@ -4,6 +4,8 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -14,6 +16,7 @@ import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 
 import java.lang.reflect.Field;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -120,18 +123,53 @@ public class TimeControllerTest {
         assertThat(isJdbcTemplateInjected).isFalse();
     }
 
-    @Test
-    @DisplayName("시간의 입력 형식이 올바르지 않으면 4xx 상태코드를 리턴한다.")
-    void invalidTimeFormat() {
-        Map<String, String> invalidTimeParam = Map.of(
-                "startAt", "hihi");
+    @ParameterizedTest
+    @MethodSource("validateRequestDataFormatSource")
+    @DisplayName("예약 시간 생성 시, 시간 요청 데이터에 시간 포맷이 아닌 값이 입력되어오면 400 에러를 발생한다.")
+    void validateRequestDataFormat(Map<String, String> request) {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .port(port)
-                .body(invalidTimeParam)
+                .body(request)
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(400);
+    }
+
+    static Stream<Map<String, String>> validateRequestDataFormatSource() {
+        return Stream.of(
+                Map.of(
+                        "startAt", "24:59"
+                ),
+                Map.of(
+                        "startAt", "hihi")
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("validateBlankRequestSource")
+    @DisplayName("예약 시간 생성 시, 요청 값에 공백 또는 null이 포함되어 있으면 400 에러를 발생한다.")
+    void validateBlankRequest(Map<String, String> request) {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .port(port)
+                .body(request)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    static Stream<Map<String, String>> validateBlankRequestSource() {
+        return Stream.of(
+                Map.of(
+                ),
+                Map.of(
+                        "startAt", ""
+                ),
+                Map.of(
+                        "startAt", " "
+                )
+        );
     }
 }

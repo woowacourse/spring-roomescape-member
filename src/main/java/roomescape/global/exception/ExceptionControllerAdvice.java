@@ -10,10 +10,18 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.global.dto.response.ApiResponse;
 import roomescape.global.exception.error.ErrorType;
 import roomescape.global.exception.model.ConflictException;
+import roomescape.global.exception.model.ValidateException;
 
 @RestControllerAdvice
 public class ExceptionControllerAdvice {
     private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    @ExceptionHandler(value = ValidateException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiResponse<Object> handleDateTimeParseException(final ValidateException e) {
+        logger.error(e.getMessage(), e);
+        return ApiResponse.fail(ErrorType.BAD_REQUEST);
+    }
 
     @ExceptionHandler(value = HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)

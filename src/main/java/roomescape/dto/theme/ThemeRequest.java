@@ -1,15 +1,19 @@
 package roomescape.dto.theme;
 
-import org.springframework.lang.NonNull;
+import io.micrometer.common.util.StringUtils;
+import roomescape.global.exception.error.ErrorType;
+import roomescape.global.exception.model.ValidateException;
 
 public record ThemeRequest(
-        @NonNull
         String name,
 
-        @NonNull
         String description,
 
-        @NonNull
         String thumbnail
 ) {
+    public ThemeRequest {
+        if (StringUtils.isBlank(thumbnail) || StringUtils.isBlank(name) || StringUtils.isBlank(description)) {
+            throw new ValidateException(ErrorType.BAD_REQUEST, "공백 또는 null이 포함된 요청입니다.");
+        }
+    }
 }

@@ -4,12 +4,15 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
@@ -98,5 +101,38 @@ class ThemeControllerTest {
                 .statusCode(200)
                 .body("data.themes.size()", is(10))
                 .body("data.themes.id", contains(1, 4, 2, 6, 3, 5, 7, 8, 9, 10));
+    }
+
+
+    @ParameterizedTest
+    @MethodSource("requestValidateSource")
+    @DisplayName("테마 생성 시, 요청 값에 공백 또는 null이 포함되어 있으면 400 에러를 발생한다.")
+    void validateBlankRequest(Map<String, String> invalidRequestBody) {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .port(port)
+                .body(invalidRequestBody)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    static Stream<Map<String, String>> requestValidateSource() {
+        return Stream.of(
+                Map.of(
+                        "name", "테마명",
+                        "thumbnail", "http://testsfasdgasd.com"
+                ),
+                Map.of(
+                        "name", "",
+                        "description", "설명",
+                        "thumbnail", "http://testsfasdgasd.com"
+                ),
+                Map.of(
+                        "name", " ",
+                        "description", "설명",
+                        "thumbnail", "http://testsfasdgasd.com"
+                )
+        );
     }
 }

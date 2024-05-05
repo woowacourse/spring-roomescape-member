@@ -5,6 +5,8 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -15,6 +17,7 @@ import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -164,5 +167,59 @@ public class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(200)
                 .body("data.reservationTimes.size()", is(1));
+    }
+
+    @ParameterizedTest
+    @MethodSource("requestValidateSource")
+    @DisplayName("예약 생성 시, 요청 값에 공백 또는 null이 포함되어 있으면 400 에러를 발생한다.")
+    void validateBlankRequest(Map<String, String> invalidRequestBody) {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .port(port)
+                .body(invalidRequestBody)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    @DisplayName("예약 생성 시, 정수 요청 데이터에 문자가 입력되어오면 400 에러를 발생한다.")
+    void validateRequestDataFormat() {
+        Map<String, String> invalidTypeRequestBody = Map.of(
+                "name", "썬",
+                "date", LocalDate.now().plusDays(1L).toString(),
+                "timeId", "1",
+                "themeId", "한글"
+        );
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .port(port)
+                .body(invalidTypeRequestBody)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    static Stream<Map<String, String>> requestValidateSource() {
+        return Stream.of(
+                Map.of(
+                        "name", "썬",
+                        "date", LocalDate.now().plusDays(1L).toString(),
+                        "themeId", "1"
+                ),
+                Map.of(
+                        "name", " ",
+                        "date", LocalDate.now().plusDays(1L).toString(),
+                        "timeId", "1",
+                        "themeId", "1"
+                ),
+                Map.of(
+                        "name", "",
+                        "date", LocalDate.now().plusDays(1L).toString(),
+                        "timeId", " ",
+                        "themeId", "1"
+                )
+        );
     }
 }
