@@ -1,13 +1,13 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.service.dto.request.ReservationTimeRequest;
-import roomescape.service.dto.response.AvailableReservationTimeResponse;
-import roomescape.service.dto.response.ReservationTimeResponse;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.repository.ReservationRepository;
 import roomescape.domain.repository.ReservationTimeRepository;
+import roomescape.service.dto.request.ReservationTimeRequest;
+import roomescape.service.dto.response.AvailableReservationTimeResponse;
+import roomescape.service.dto.response.ReservationTimeResponse;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -33,7 +33,7 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    public List<AvailableReservationTimeResponse> findAllWithAvailability(LocalDate date, long themeId) {
+    public List<AvailableReservationTimeResponse> findAllWithAvailability(LocalDate date, Long themeId) {
         List<ReservationTime> savedReservationTimes = reservationTimeRepository.findAll();
         List<ReservationTime> bookedReservationTimes = getBookedReservationTimes(date, themeId);
 
@@ -42,7 +42,7 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    private List<ReservationTime> getBookedReservationTimes(LocalDate date, long themeId) {
+    private List<ReservationTime> getBookedReservationTimes(LocalDate date, Long themeId) {
         List<Reservation> bookedReservations = reservationRepository.findByDateAndThemeId(date, themeId);
 
         return bookedReservations.stream()

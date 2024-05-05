@@ -20,7 +20,7 @@ public class ReservationTime {
         return this.startAt.equals(reservationTime.startAt);
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 

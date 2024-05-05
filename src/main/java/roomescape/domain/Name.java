@@ -7,7 +7,7 @@ public record Name(String value) {
     private static final int NAME_LENGTH_MAX = 10;
 
     public Name {
-        Objects.requireNonNull(value, "name must not be null");
+        Objects.requireNonNull(value);
         validateLength(value);
     }
 

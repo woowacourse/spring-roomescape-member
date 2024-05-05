@@ -8,9 +8,9 @@ import java.util.Optional;
 public interface ThemeRepository {
     List<Theme> findAll();
 
-    Optional<Theme> findById(long id);
+    Optional<Theme> findById(Long id);
 
     Theme save(Theme theme);
 
-    void deleteById(long id);
+    void deleteById(Long id);
 }
