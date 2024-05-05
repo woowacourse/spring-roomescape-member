@@ -41,7 +41,7 @@ public class TimeDao {
     }
 
     public ReservationTime findById(long id) {
-        String sql = "SELECT * FROM reservation_time WHERE id = ?";
+        String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
         try {
             return jdbcTemplate.queryForObject(sql, timeRowMapper, id);
         } catch (EmptyResultDataAccessException e) {
@@ -50,7 +50,7 @@ public class TimeDao {
     }
 
     public List<ReservationTime> findAll() {
-        List<ReservationTime> reservationTimes = jdbcTemplate.query("SELECT * FROM reservation_time", timeRowMapper);
+        List<ReservationTime> reservationTimes = jdbcTemplate.query("SELECT id, start_at FROM reservation_time", timeRowMapper);
         return Collections.unmodifiableList(reservationTimes);
     }
 
@@ -60,7 +60,7 @@ public class TimeDao {
 
     public boolean existByTime(LocalTime time) {
         int count = jdbcTemplate.queryForObject("""
-                SELECT count(*) 
+                SELECT count(1) 
                 FROM reservation_time
                 WHERE start_at = ?
                 """, Integer.class, time);

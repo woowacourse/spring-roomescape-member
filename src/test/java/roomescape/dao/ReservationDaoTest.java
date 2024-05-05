@@ -14,6 +14,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -56,5 +57,17 @@ class ReservationDaoTest {
 
         List<Long> themeIds = reservationDao.find10ThemeIdsOrderByReservationThemeCountDescBetween(sevenDaysBefore, yesterday);
         assertThat(themeIds).doesNotContain(13L);
+    }
+
+    @Test
+    void deleteById_Null() {
+        assertThatCode(() -> reservationDao.deleteById(null))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void deleteById_NotExistId() {
+        assertThatCode(() -> reservationDao.deleteById(0L))
+                .doesNotThrowAnyException();
     }
 }

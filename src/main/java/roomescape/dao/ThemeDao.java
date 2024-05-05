@@ -44,7 +44,7 @@ public class ThemeDao {
     }
 
     public Theme findById(long id) {
-        String sql = "SELECT * FROM theme WHERE id = ?";
+        String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
         try {
             return jdbcTemplate.queryForObject(sql, themeRowMapper, id);
         } catch (EmptyResultDataAccessException e) {
@@ -53,7 +53,7 @@ public class ThemeDao {
     }
 
     public List<Theme> findAll() {
-        List<Theme> themes = jdbcTemplate.query("SELECT * FROM theme", themeRowMapper);
+        List<Theme> themes = jdbcTemplate.query("SELECT id, name, description, thumbnail FROM theme", themeRowMapper);
         return Collections.unmodifiableList(themes);
     }
 
