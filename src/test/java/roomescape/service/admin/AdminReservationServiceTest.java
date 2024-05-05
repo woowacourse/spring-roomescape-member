@@ -57,12 +57,12 @@ class AdminReservationServiceTest {
         Theme theme = new Theme(1L, "dummy", "description", "url");
 
         Reservation reservation = new Reservation(null, "lib", AFTER_ONE_DAYS_DATE, reservationTime, theme);
-        ReservationTime savedTime = fakeReservationTimeDao.insert(reservationTime);
-        Theme savedTheme = fakeThemeDao.insert(theme);
-        Reservation savedReservation = fakeReservationDao.insert(reservation);
+        fakeReservationTimeDao.insert(reservationTime);
+        fakeThemeDao.insert(theme);
+        fakeReservationDao.insert(reservation);
 
         ReservationAddRequest conflictRequest = new ReservationAddRequest(AFTER_ONE_DAYS_DATE, "dodo",
-                savedTime.getId(), savedTheme.getId());
+                1L, 1L);
 
         assertThatThrownBy(() -> adminReservationService.addReservation(conflictRequest))
                 .isInstanceOf(IllegalArgumentException.class)
