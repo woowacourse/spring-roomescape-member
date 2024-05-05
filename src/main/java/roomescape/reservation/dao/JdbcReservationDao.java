@@ -20,7 +20,7 @@ public class JdbcReservationDao implements ReservationDao {
             new Reservation(
                     resultSet.getLong("reservation_id"),
                     new UserName(resultSet.getString("name")),
-                    resultSet.getDate("date").toLocalDate(),
+                    resultSet.getDate("reservation_date").toLocalDate(),
                     new ReservationTime(
                             resultSet.getLong("time_id"),
                             resultSet.getTime("time_value").toLocalTime()
@@ -47,7 +47,7 @@ public class JdbcReservationDao implements ReservationDao {
     public Reservation save(Reservation reservation) {
         SqlParameterSource parameterSource = new BeanPropertySqlParameterSource(reservation);
         Number id = jdbcInsert.executeAndReturnKey(parameterSource);
-        return new Reservation(id.longValue(), reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
+        return new Reservation(id.longValue(), reservation.getName(), reservation.getReservationDate(), reservation.getTime(), reservation.getTheme());
     }
 
     @Override
@@ -56,7 +56,7 @@ public class JdbcReservationDao implements ReservationDao {
                 SELECT
                     r.id as reservation_id,
                     r.name,
-                    r.date,
+                    r.reservation_date,
                     t.id as time_id,
                     t.start_at as time_value,
                     h.id as theme_id,
@@ -77,7 +77,7 @@ public class JdbcReservationDao implements ReservationDao {
                 SELECT
                     r.id as reservation_id,
                     r.name,
-                    r.date,
+                    r.reservation_date,
                     t.id as time_id,
                     t.start_at as time_value,
                     h.id as theme_id,
@@ -87,18 +87,19 @@ public class JdbcReservationDao implements ReservationDao {
                 FROM reservation as r
                 inner join reservation_time as t on r.time_id = t.id
                 inner join theme as h on r.theme_id = h.id
-                WHERE r.date = ? and r.theme_id = ?
+                WHERE r.reservation_date = ? and r.theme_id = ?
                 """;
 
         return jdbcTemplate.query(sql, RESERVATION_MAPPER, date, themeId);
     }
 
     @Override
-    public boolean existByTimeId(Long timeId) {
-        String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE time_id = ?)";
-        Boolean result = jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
+    public boolean existByTimeIdAndDate(Long timeId, LocalDate date) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE time_id = ? AND reservation_date = ?)";
+        Boolean result = jdbcTemplate.queryForObject(sql, Boolean.class, timeId, date);
         return Boolean.TRUE.equals(result);
     }
+
     @Override
     public void delete(Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";

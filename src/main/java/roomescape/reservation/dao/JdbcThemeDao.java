@@ -61,7 +61,7 @@ public class JdbcThemeDao implements ThemeDao {
                 SELECT t.id, t.name, t.description, t.thumbnail, COUNT(*) as reservation_count
                 FROM reservation as r
                 INNER JOIN theme as t on r.theme_id = t.id
-                WHERE r.date BETWEEN ? AND ?
+                WHERE r.reservation_date BETWEEN ? AND ?
                 GROUP BY t.id
                 ORDER BY reservation_count desc
                 LIMIT(?)

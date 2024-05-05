@@ -50,7 +50,7 @@ public class Reservation {
         return userName.getValue();
     }
 
-    public LocalDate getDate() {
+    public LocalDate getReservationDate() {
         return date;
     }
 
