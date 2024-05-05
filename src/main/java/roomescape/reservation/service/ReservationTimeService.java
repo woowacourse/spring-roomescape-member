@@ -42,7 +42,7 @@ public class ReservationTimeService {
     }
 
     public void delete(long timeId) {
-        if (!reservationRepository.findAllByTimeId(timeId).isEmpty()) {
+        if (reservationRepository.existByTimeId(timeId)) {
             throw new IllegalArgumentException("예약이 존재해 시간을 삭제할 수 없습니다.");
         }
 

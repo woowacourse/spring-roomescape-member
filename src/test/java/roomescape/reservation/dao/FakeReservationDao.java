@@ -41,22 +41,14 @@ public class FakeReservationDao implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAllByTimeId(final long timeId) {
-        return reservations.values().stream()
-                .filter(reservation -> reservation.getTime().getId() == timeId)
-                .toList();
+    public boolean existByTimeId(long timeId) {
+        return false;
     }
 
     @Override
-    public Reservation findBy(final LocalDate date, final long timeId, final long themeId) {
-        return reservations.values().stream()
-                .filter(reservation -> reservation.getDate().equals(date) &&
-                        reservation.getTime().getId() == timeId &&
-                        reservation.getTheme().getId() == themeId)
-                .findFirst()
-                .orElse(null);
+    public boolean existBy(LocalDate date, long timeId, long themeId) {
+        return false;
     }
-
     @Override
     public void saveReservationList(final long memberId, final long reservationId) {
         reservationList.put(memberId, reservationId);

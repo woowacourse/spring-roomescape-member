@@ -12,9 +12,9 @@ public interface ReservationRepository {
 
     boolean deleteById(long reservationId);
 
-    List<Reservation> findAllByTimeId(long timeId);
+    boolean existByTimeId(long timeId);
 
-    Reservation findBy(LocalDate date, long timeId, long themeId);
+    boolean existBy(LocalDate date, long timeId, long themeId);
 
     void saveReservationList(long memberId, long reservationId);
 }

@@ -73,9 +73,7 @@ public class ReservationService {
     }
 
     private void validateReservationDuplicate(ReservationRequest reservationRequest, LocalDate date) {
-        Reservation sameDateTimereservation = reservationRepository.findBy(date, reservationRequest.timeId(),
-                reservationRequest.themeId());
-        if (sameDateTimereservation != null) {
+        if (reservationRepository.existBy(date, reservationRequest.timeId(), reservationRequest.themeId())) {
             throw new IllegalArgumentException("예약 시간이 중복되었습니다.");
         }
     }
