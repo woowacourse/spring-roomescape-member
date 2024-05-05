@@ -63,17 +63,6 @@ public class ThemeDao {
         return jdbcTemplate.query(sql, rowMapper, startDate, endDate, count);
     }
 
-    public boolean isExistThemeByName(String name) {
-        String sql = """
-                SELECT EXISTS (
-                    SELECT 1
-                    FROM theme
-                    WHERE name = ?
-                )
-                """;
-        return jdbcTemplate.queryForObject(sql, Boolean.class, name);
-    }
-
     public Theme createTheme(Theme theme) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         try {

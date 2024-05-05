@@ -80,16 +80,6 @@ class TimeDaoTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @DisplayName("특정 시간에 시작하는 예약 시간이 있는지 알 수 있다.")
-    @Test
-    void isExistTimeByStartAtTest() {
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00:00");
-
-        boolean actual = timeDao.isExistTimeByStartAt(LocalTime.of(19, 0));
-
-        assertThat(actual).isTrue();
-    }
-
     @DisplayName("예약 시간을 생성할 수 있다.")
     @Test
     void createTimeTest() {

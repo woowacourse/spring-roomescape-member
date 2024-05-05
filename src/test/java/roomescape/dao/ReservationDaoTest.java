@@ -57,25 +57,6 @@ class ReservationDaoTest {
         assertThat(actual).containsAll(expected);
     }
 
-    @DisplayName("해당 날짜, 시간, 테마의 예약이 있는지 알 수 있다.")
-    @Test
-    void isExistReservationByDateAndTimeIdAndThemeIdTest() {
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00:00");
-        jdbcTemplate.update(
-                "INSERT INTO theme (name, description, thumbnail) values (?, ?, ?)",
-                "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg");
-        jdbcTemplate.update(
-                "INSERT INTO reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)",
-                "브라운", "2024-08-15", 1, 1);
-
-        assertThat(reservationDao.isExistReservationByDateAndTimeIdAndThemeId(
-                        LocalDate.of(2024, 8, 15), 1L, 1L)).isTrue();
-        assertThat(reservationDao.isExistReservationByDateAndTimeIdAndThemeId(
-                        LocalDate.of(2024, 8, 16), 1L, 1L)).isFalse();
-        assertThat(reservationDao.isExistReservationByDateAndTimeIdAndThemeId(
-                        LocalDate.of(2024, 8, 15), 2L, 1L)).isFalse();
-    }
-
     @DisplayName("예약을 생성할 수 있다.")
     @Test
     void createReservationTest() {

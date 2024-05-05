@@ -69,17 +69,6 @@ public class ReservationDao {
         }
     }
 
-    public boolean isExistReservationByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
-        String sql = """
-                SELECT EXISTS (
-                    SELECT 1
-                    FROM reservation
-                    WHERE date = ? AND time_id = ? AND theme_id = ?
-                )
-                """;
-        return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
-    }
-
     public Reservation createReservation(Reservation reservation) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         try {

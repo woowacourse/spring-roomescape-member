@@ -90,17 +90,6 @@ class ThemeDaoTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @DisplayName("해당 테마 이름이 있는지 알 수 있다.")
-    @Test
-    void isExistThemeByNameTest() {
-        jdbcTemplate.update(
-                "INSERT INTO theme (name, description, thumbnail) values (?, ?, ?)",
-                "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg");
-
-        assertThat(themeDao.isExistThemeByName("레벨2 탈출")).isTrue();
-        assertThat(themeDao.isExistThemeByName("레벨3 탈출")).isFalse();
-    }
-
     @DisplayName("테마를 생성할 수 있다.")
     @Test
     void createThemeTest() {

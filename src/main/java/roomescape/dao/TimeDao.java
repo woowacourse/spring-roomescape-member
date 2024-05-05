@@ -57,17 +57,6 @@ public class TimeDao {
         return jdbcTemplate.query(sql, rowMapper, date, themeId);
     }
 
-    public boolean isExistTimeByStartAt(LocalTime startAt) {
-        String sql = """
-                SELECT EXISTS (
-                    SELECT 1
-                    FROM reservation_time
-                    WHERE start_at = ?
-                )
-                """;
-        return jdbcTemplate.queryForObject(sql, Boolean.class, startAt);
-    }
-
     public ReservationTime createTime(ReservationTime time) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         try {
