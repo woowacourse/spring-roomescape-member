@@ -17,6 +17,18 @@ import roomescape.service.response.AvailableReservationTimeResponse;
 @Repository
 public class ReservationTimeRepository {
 
+    private static final RowMapper<ReservationTime> RESERVATION_TIME_ROW_MAPPER =
+            (resultSet, rowNum) -> new ReservationTime(
+                    resultSet.getLong("id"),
+                    LocalTime.parse(resultSet.getString("start_at"))
+            );
+    private static final RowMapper<AvailableReservationTimeResponse> AVAILABLE_RESERVATION_TIME_RESPONSE_ROW_MAPPER =
+            (resultSet, rowNum) -> new AvailableReservationTimeResponse(
+                    resultSet.getLong("id"),
+                    resultSet.getString("start_at"),
+                    resultSet.getBoolean("already_booked")
+            );
+
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
@@ -52,13 +64,13 @@ public class ReservationTimeRepository {
     }
 
     public List<ReservationTime> findAll() {
-        return jdbcTemplate.query("SELECT id, start_at FROM reservation_time", reservationTimeRowMapper());
+        return jdbcTemplate.query("SELECT id, start_at FROM reservation_time", RESERVATION_TIME_ROW_MAPPER);
     }
 
     public Optional<ReservationTime> findById(Long id) {
         String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, reservationTimeRowMapper(), id));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, RESERVATION_TIME_ROW_MAPPER, id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -83,22 +95,6 @@ public class ReservationTimeRepository {
                         ORDER BY convert(t.start_at, TIME) ASC;
                 """;
 
-        return jdbcTemplate.query(sql, getAvailableReservationTimeResponseRowMapper(), date, themeId);
-    }
-
-    private RowMapper<ReservationTime> reservationTimeRowMapper() {
-        return (resultSet, rowNum) -> {
-            LocalTime startAt = LocalTime.parse(resultSet.getString("start_at"));
-            return new ReservationTime(resultSet.getLong("id"), startAt);
-        };
-    }
-
-    private RowMapper<AvailableReservationTimeResponse> getAvailableReservationTimeResponseRowMapper() {
-        return (resultSet, rowNum) ->
-                new AvailableReservationTimeResponse(
-                        resultSet.getLong("id"),
-                        resultSet.getString("start_at"),
-                        resultSet.getBoolean("already_booked")
-                );
+        return jdbcTemplate.query(sql, AVAILABLE_RESERVATION_TIME_RESPONSE_ROW_MAPPER, date, themeId);
     }
 }

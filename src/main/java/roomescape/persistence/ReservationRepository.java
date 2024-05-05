@@ -17,6 +17,22 @@ import roomescape.domain.Theme;
 @Repository
 public class ReservationRepository {
 
+    private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER =
+            (resultSet, rowNum) -> new Reservation(
+                    resultSet.getLong("reservation_id"),
+                    new Name(resultSet.getString("name")),
+                    LocalDate.parse(resultSet.getString("date")),
+                    new ReservationTime(
+                            resultSet.getLong("time_id"),
+                            LocalTime.parse(resultSet.getString("start_at"))),
+                    new Theme(
+                            resultSet.getLong("theme_id"),
+                            resultSet.getString("theme_name"),
+                            resultSet.getString("description"),
+                            resultSet.getString("thumbnail")
+                    )
+            );
+
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
@@ -103,7 +119,7 @@ public class ReservationRepository {
                 ON r.theme_id = th.id
                 """;
 
-        return jdbcTemplate.query(sql, reservationRowMapper());
+        return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER);
     }
 
     public Reservation findById(Long id) {
@@ -126,24 +142,6 @@ public class ReservationRepository {
                 WHERE r.id = ?
                 """;
 
-        return jdbcTemplate.queryForObject(sql, reservationRowMapper(), id);
-    }
-
-    private RowMapper<Reservation> reservationRowMapper() {
-        return (resultSet, rowNum) -> {
-            LocalTime startAt = LocalTime.parse(resultSet.getString("start_at"));
-            return new Reservation(
-                    resultSet.getLong("reservation_id"),
-                    new Name(resultSet.getString("name")),
-                    LocalDate.parse(resultSet.getString("date")),
-                    new ReservationTime(resultSet.getLong("time_id"), startAt),
-                    new Theme(
-                            resultSet.getLong("theme_id"),
-                            resultSet.getString("theme_name"),
-                            resultSet.getString("description"),
-                            resultSet.getString("thumbnail")
-                    )
-            );
-        };
+        return jdbcTemplate.queryForObject(sql, RESERVATION_ROW_MAPPER, id);
     }
 }

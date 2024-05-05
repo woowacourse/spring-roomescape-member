@@ -14,6 +14,14 @@ import roomescape.domain.Theme;
 @Repository
 public class ThemeRepository {
 
+    private static final RowMapper<Theme> THEME_ROW_MAPPER = (resultSet, rowNum) ->
+            new Theme(
+                    resultSet.getLong("id"),
+                    resultSet.getString("name"),
+                    resultSet.getString("description"),
+                    resultSet.getString("thumbnail")
+            );
+
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
@@ -50,27 +58,19 @@ public class ThemeRepository {
                 LIMIT ?
                 """;
 
-        return jdbcTemplate.query(sql, getThemeRowMapper(), startDate, endDate, limitCount);
+        return jdbcTemplate.query(sql, THEME_ROW_MAPPER, startDate, endDate, limitCount);
     }
 
     public List<Theme> findAll() {
-        return jdbcTemplate.query("SELECT id, name, description, thumbnail FROM theme", getThemeRowMapper());
+        return jdbcTemplate.query("SELECT id, name, description, thumbnail FROM theme", THEME_ROW_MAPPER);
     }
 
     public Optional<Theme> findById(Long id) {
         String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
         try {
-            return Optional.of(jdbcTemplate.queryForObject(sql, getThemeRowMapper(), id));
+            return Optional.of(jdbcTemplate.queryForObject(sql, THEME_ROW_MAPPER, id));
         } catch (Exception exception) {
             return Optional.empty();
         }
-    }
-
-    private RowMapper<Theme> getThemeRowMapper() {
-        return (resultSet, rowNum) -> new Theme(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getString("description"),
-                resultSet.getString("thumbnail"));
     }
 }
