@@ -35,7 +35,7 @@ public class ReservationTimeService {
         List<ReservationTime> bookedTimes = reservationTimeRepository.findReservedTimeByThemeAndDate(
                 requestDto.getDate(), requestDto.getThemeId());
 
-        ReservationTimeStatus reservationStatus = ReservationTimeStatus.create(allTimes, bookedTimes);
+        ReservationTimeStatus reservationStatus = new ReservationTimeStatus(allTimes, bookedTimes);
         return new AvailableTimeResponseDtos(reservationStatus);
     }
 

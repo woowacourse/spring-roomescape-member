@@ -26,7 +26,7 @@ class ReservationTimeStatusTest {
                 reservationTime3, AVAILABLE
         );
 
-        ReservationTimeStatus actualTimeStatus = ReservationTimeStatus.create(allTimes, bookedTimes);
+        ReservationTimeStatus actualTimeStatus = new ReservationTimeStatus(allTimes, bookedTimes);
 
         assertThat(actualTimeStatus.getTimesStatus()).isEqualTo(expectedTimeStatus);
     }
