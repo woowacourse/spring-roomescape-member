@@ -160,7 +160,7 @@ class ThemeRepositoryTest {
     @DisplayName("존재하지 않는 테마를 삭제할 경우 아무런 영향이 없다.")
     void deleteNotExist() {
         // given
-        final Long notExistId = 1L;
+        final long notExistId = 1L;
 
         // when & then
         assertThat(themeRepository.findById(notExistId)).isEmpty();
