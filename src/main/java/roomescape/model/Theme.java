@@ -58,4 +58,14 @@ public class Theme {
     public int hashCode() {
         return Objects.hash(themeId, name, description, thumbnail);
     }
+
+    @Override
+    public String toString() {
+        return "Theme{" +
+                "themeId=" + themeId +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", thumbnail='" + thumbnail + '\'' +
+                '}';
+    }
 }
