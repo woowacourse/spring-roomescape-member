@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -41,6 +42,31 @@ public class ReservationDao implements ReservationRepository {
                         resultSet.getString("member_name")
                 )
         );
+    };
+
+    private final ResultSetExtractor<Optional<ReservationMember>> optionalResultSetExtractor = (ResultSet resultSet) -> {
+        if (resultSet.next()) {
+            ReservationMember reservationMember = new ReservationMember(
+                    new Reservation(
+                            resultSet.getLong("reservation_id"),
+                            resultSet.getDate("date").toLocalDate(),
+                            new ReservationTime(resultSet.getLong("time_id"),
+                                    resultSet.getTime("time_value").toLocalTime()
+                            ),
+                            new Theme(resultSet.getLong("theme_id"),
+                                    resultSet.getString("theme_name"),
+                                    resultSet.getString("description"),
+                                    resultSet.getString("thumbnail"))
+                    ),
+                    new Member(
+                            resultSet.getLong("member_id"),
+                            resultSet.getString("member_name")
+                    )
+            );
+            return Optional.of(reservationMember);
+        } else {
+            return Optional.empty();
+        }
     };
 
     public ReservationDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
@@ -111,9 +137,11 @@ public class ReservationDao implements ReservationRepository {
                 INNER JOIN theme AS th ON r.theme_id = th.id 
                 INNER JOIN reservation_list AS rl ON rl.reservation_id = r.id 
                 INNER JOIN member AS m ON m.id = rl.member_id 
-                WHERE date = ? AND time_id = ? AND theme_id = ?;
+                WHERE date = ? AND time_id = ? AND theme_id = ?
+                LIMIT 1;
                 """;
-        return jdbcTemplate.query(sql, rowMapper, date, timeId, themeId).stream().findFirst();
+
+        return jdbcTemplate.query(sql, optionalResultSetExtractor, date, timeId, themeId);
     }
 
     @Override
