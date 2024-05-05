@@ -46,29 +46,6 @@ class ReservationServiceTest {
         );
     }
 
-    @DisplayName("예약 생성에 성공한다.")
-    @Test
-    void create() {
-        //given
-        String name = "choco";
-        String date = "2100-04-18";
-        long timeId = 1L;
-        long themeId = 1L;
-        reservationTimeRepository.save(new ReservationTime(timeId, LocalTime.MIDNIGHT));
-        themeRepository.save(new Theme(themeId, "name", "description", "thumbnail"));
-        ReservationRequest reservationRequest = new ReservationRequest(name, date, timeId, themeId);
-
-        //when
-        ReservationResponse reservationResponse = reservationService.create(reservationRequest);
-
-        //then
-        assertAll(
-                () -> assertThat(reservationResponse.name()).isEqualTo(name),
-                () -> assertThat(reservationResponse.date()).isEqualTo(date),
-                () -> assertThat(reservationResponse.time().id()).isEqualTo(timeId)
-        );
-    }
-
     @DisplayName("예약 조회에 성공한다.")
     @Test
     void find() {
@@ -97,6 +74,90 @@ class ReservationServiceTest {
         );
     }
 
+    @DisplayName("예약 생성에 성공한다.")
+    @Test
+    void create() {
+        //given
+        String name = "choco";
+        String date = "2100-04-18";
+        long timeId = 1L;
+        long themeId = 1L;
+        reservationTimeRepository.save(new ReservationTime(timeId, LocalTime.MIDNIGHT));
+        themeRepository.save(new Theme(themeId, "name", "description", "thumbnail"));
+        ReservationRequest reservationRequest = new ReservationRequest(name, date, timeId, themeId);
+
+        //when
+        ReservationResponse reservationResponse = reservationService.create(reservationRequest);
+
+        //then
+        assertAll(
+                () -> assertThat(reservationResponse.name()).isEqualTo(name),
+                () -> assertThat(reservationResponse.date()).isEqualTo(date),
+                () -> assertThat(reservationResponse.time().id()).isEqualTo(timeId)
+        );
+    }
+
+    @DisplayName("존재하지 않는 시간으로 예약할 시 예외가 발생한다.")
+    @Test
+    void NotExistTimeReservation() {
+        //given
+        String name = "choco";
+        String date = "2099-04-18";
+        long timeId = 2L;
+        long themeId = 1L;
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(timeId, LocalTime.MIDNIGHT));
+        Theme theme = new Theme(themeId, "name", "description", "thumbnail");
+        themeRepository.save(theme);
+        reservationRepository.save(new Reservation(1L, "choco", LocalDate.parse(date), time, theme));
+
+        ReservationRequest reservationRequest = new ReservationRequest(name, date, timeId, themeId);
+
+        //when & then
+        assertThatThrownBy(() -> reservationService.create(reservationRequest))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("존재하지 않는 테마로 예약할 시 예외가 발생한다.")
+    @Test
+    void NotExistThemeReservation() {
+        //given
+        String name = "choco";
+        String date = "2099-04-18";
+        long timeId = 1L;
+        long themeId = 2L;
+
+        Theme theme = new Theme(themeId, "name", "description", "thumbnail");
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(timeId, LocalTime.MIDNIGHT));
+        themeRepository.save(theme);
+
+        ReservationRequest reservationRequest = new ReservationRequest(name, date, timeId, themeId);
+
+        //when & then
+        assertThatThrownBy(() -> reservationService.create(reservationRequest))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("날짜, 시간, 테마가 중복되게 예약할 시 예외가 발생한다.")
+    @Test
+    void duplicateReservation() {
+        //given
+        String name = "choco";
+        String date = "2099-04-18";
+        long timeId = 1L;
+        long themeId = 1L;
+
+        Theme theme = new Theme(themeId, "name", "description", "thumbnail");
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(timeId, LocalTime.MIDNIGHT));
+        themeRepository.save(theme);
+        reservationRepository.save(new Reservation(1L, "choco", LocalDate.parse(date), time, theme));
+
+        ReservationRequest reservationRequest = new ReservationRequest(name, date, timeId, themeId);
+
+        //when & then
+        assertThatThrownBy(() -> reservationService.create(reservationRequest))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
     @DisplayName("예약 삭제에 성공한다.")
     @Test
     void delete() {
@@ -119,23 +180,11 @@ class ReservationServiceTest {
         assertThat(reservationRepository.findAll()).hasSize(0);
     }
 
-    @DisplayName("일자와 시간 중복 시 예외가 발생한다.")
+    @DisplayName("존재하지 않는 예약 삭제 시 예외가 발생한다.")
     @Test
-    void duplicatedReservation() {
-        //given
-        String name = "choco";
-        String date = "2099-04-18";
-        long timeId = 1L;
-        long themeId = 1L;
-        ReservationTime time = reservationTimeRepository.save(new ReservationTime(timeId, LocalTime.MIDNIGHT));
-        Theme theme = new Theme(themeId, "name", "description", "thumbnail");
-        themeRepository.save(theme);
-        reservationRepository.save(new Reservation(1L, "choco", LocalDate.parse(date), time, theme));
-
-        ReservationRequest reservationRequest = new ReservationRequest(name, date, timeId, themeId);
-
-        //when & then
-        assertThatThrownBy(() -> reservationService.create(reservationRequest))
+    void deleteNotExistReservation() {
+        // give & when & then
+        assertThatThrownBy(() -> reservationService.delete(1L))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }
