@@ -1,8 +1,11 @@
 package roomescape.reservation.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -10,6 +13,8 @@ import org.junit.jupiter.api.Test;
 import roomescape.reservation.dao.FakeReservationDao;
 import roomescape.reservation.dao.FakeReservationTimeDao;
 import roomescape.reservation.dao.FakeThemeDao;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.domain.repository.ReservationTimeRepository;
@@ -25,11 +30,12 @@ class ThemeServiceTest {
     ThemeService themeService;
 
     @BeforeEach
-    void setUp() {
-        themeRepository = new FakeThemeDao(reservationRepository);
-        themeService = new ThemeService(themeRepository);
-        reservationTimeRepository = new FakeReservationTimeDao(reservationRepository);
+    void setData() {
         reservationRepository = new FakeReservationDao(reservationTimeRepository, themeRepository);
+        reservationTimeRepository = new FakeReservationTimeDao(reservationRepository);
+        themeRepository = new FakeThemeDao(reservationRepository);
+
+        themeService = new ThemeService(themeRepository);
     }
 
     @DisplayName("테마 조회에 성공한다.")
@@ -90,5 +96,41 @@ class ThemeServiceTest {
 
         //then
         assertThat(themeRepository.findAll()).hasSize(0);
+    }
+
+    @DisplayName("존재하지 않는 테마를 삭제할 경우 예외가 발생한다.")
+    @Test
+    void deleteNotExistTheme() {
+        // given & when & then
+        assertThatThrownBy(() -> themeService.delete(1L))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("인기 테마 찾기에 성공한다.")
+    @Test
+    void findPopularThemes() {
+        //given
+        String name1 = "name1";
+        String description1 = "description1";
+        String thumbnail1 = "thumbnail1";
+        themeService.create(new ThemeRequest(name1, description1, thumbnail1));
+
+        String name2 = "name2";
+        String description2 = "description2";
+        String thumbnail2 = "thumbnail2";
+        themeService.create(new ThemeRequest(name2, description2, thumbnail2));
+
+        reservationRepository.save(new Reservation(1L, "siso", LocalDate.of(2100, 5, 5),
+                new ReservationTime(1L, LocalTime.now()),
+                new Theme(1L, name1, description1, thumbnail1)));
+
+        //when
+        List<ThemeResponse> themeResponses = themeService.findPopularThemes();
+
+        //then
+        assertAll(
+                () -> assertThat(themeResponses.size()).isEqualTo(1),
+                () -> assertThat(themeResponses.get(0)).isEqualTo(new ThemeResponse(1L, name1, description1, thumbnail1))
+        );
     }
 }

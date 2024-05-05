@@ -28,7 +28,8 @@ public class FakeThemeDao implements ThemeRepository {
 
     @Override
     public Theme save(final Theme theme) {
-        themes.put((long) themes.size() + 1, theme);
+        long id = (long) themes.size() + 1;
+        themes.put(id, new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail()));
         return new Theme((long) themes.size(), theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 

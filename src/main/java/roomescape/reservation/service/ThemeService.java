@@ -37,6 +37,5 @@ public class ThemeService {
         return themeRepository.findPopularThemes().stream()
                 .map(ThemeResponse::from)
                 .toList();
-
     }
 }
