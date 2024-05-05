@@ -30,6 +30,14 @@ class PopularThemeTest {
         //when
         List<ThemeResponse> results = themeService.findPopulars(startDate, endDate);
 
+        /*
+        *   테마 통계
+        *   5번 방탈출 - 5개
+        *   4번 방탈출 - 4개
+        *   3번 방탈출 - 3개
+        *   2번 방탈출 - 2개
+        *   1번 방탈출 - 1개
+        * */
         //then
         assertAll(
                 () -> assertThat(results).hasSize(10),
