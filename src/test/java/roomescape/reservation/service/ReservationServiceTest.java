@@ -3,6 +3,7 @@ package roomescape.reservation.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static roomescape.fixture.ReservationTimeFixture.getNoon;
 import static roomescape.fixture.ThemeFixture.getTheme1;
 
 import java.time.LocalDate;
@@ -77,11 +78,10 @@ class ReservationServiceTest {
         String name = "choco";
         LocalDate date = LocalDate.now().plusYears(1);
         long timeId = 1L;
-        long themeId = 1L;
         LocalTime localTime = LocalTime.MIDNIGHT;
         ReservationTime reservationTime = new ReservationTime(timeId, localTime);
 
-        Theme theme = new Theme(themeId, "name", "description", "thumbnail");
+        Theme theme = getTheme1();
         reservationRepository.save(new Reservation(id, date, reservationTime, theme));
 
         //when
@@ -125,14 +125,11 @@ class ReservationServiceTest {
         //given
         String name = "choco";
         String date = "2099-04-18";
-        long timeId = 1L;
-        long themeId = 1L;
-        ReservationTime time = reservationTimeRepository.save(new ReservationTime(timeId, LocalTime.MIDNIGHT));
-        Theme theme = new Theme(themeId, "name", "description", "thumbnail");
-        themeRepository.save(theme);
+        ReservationTime time = reservationTimeRepository.save(getNoon());
+        Theme theme = themeRepository.save(getTheme1());
         reservationRepository.save(new Reservation(1L, LocalDate.parse(date), time, theme));
 
-        ReservationRequest reservationRequest = new ReservationRequest(name, date, timeId, themeId);
+        ReservationRequest reservationRequest = new ReservationRequest(name, date, time.getId(), theme.getId());
 
         //when & then
         assertThatThrownBy(() -> reservationService.create(reservationRequest))

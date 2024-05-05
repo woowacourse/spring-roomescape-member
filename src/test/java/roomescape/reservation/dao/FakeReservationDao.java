@@ -31,7 +31,7 @@ public class FakeReservationDao implements ReservationRepository {
     public List<ReservationMember> findAll() {
         return reservations.values()
                 .stream()
-                .map(reservation -> new ReservationMember(reservation, null))
+                .map(reservation -> new ReservationMember(reservation, getMemberChoco()))
                 .toList();
     }
 
