@@ -9,7 +9,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 class ReservationTest {
@@ -45,29 +44,26 @@ class ReservationTest {
                 .hasMessage("이름은 255자를 넘을 수 없습니다.");
     }
 
-    @ParameterizedTest
-    @NullSource
+    @Test
     @DisplayName("날짜가 없으면 예외가 발생한다.")
-    void validateDate(LocalDate date) {
-        assertThatThrownBy(() -> new Reservation("name", date, RESERVATION_TIME, THEME))
+    void validateDate() {
+        assertThatThrownBy(() -> new Reservation("name", null, RESERVATION_TIME, THEME))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("날짜는 필수 값입니다.");
     }
 
-    @ParameterizedTest
-    @NullSource
+    @Test
     @DisplayName("예약 시간이 없으면 예외가 발생한다.")
-    void validateTime(ReservationTime time) {
-        assertThatThrownBy(() -> new Reservation("name", DATE, time, THEME))
+    void validateTime() {
+        assertThatThrownBy(() -> new Reservation("name", DATE, null, THEME))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약 시간은 필수 값입니다.");
     }
 
-    @ParameterizedTest
-    @NullSource
+    @Test
     @DisplayName("테마가 없으면 예외가 발생한다.")
-    void validateTheme(Theme theme) {
-        assertThatThrownBy(() -> new Reservation("name", DATE, RESERVATION_TIME, theme))
+    void validateTheme() {
+        assertThatThrownBy(() -> new Reservation("name", DATE, RESERVATION_TIME, null))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("테마는 필수 값입니다.");
     }

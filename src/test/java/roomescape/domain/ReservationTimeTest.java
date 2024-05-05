@@ -6,8 +6,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullSource;
 
 class ReservationTimeTest {
 
@@ -18,11 +16,10 @@ class ReservationTimeTest {
                 .doesNotThrowAnyException();
     }
 
-    @ParameterizedTest
+    @Test
     @DisplayName("시작 시간이 없으면 예외가 발생한다.")
-    @NullSource
-    void validateStartAt(LocalTime startAt) {
-        assertThatThrownBy(() -> new ReservationTime(startAt))
+    void validateStartAt() {
+        assertThatThrownBy(() -> new ReservationTime(null))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("시작 시간은 필수 값입니다.");
     }
