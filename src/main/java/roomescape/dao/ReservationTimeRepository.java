@@ -16,5 +16,5 @@ public interface ReservationTimeRepository {
 
     boolean existsByStartAt(String startAt);
 
-    List<ReservationTime> findByDateAndTheme(String date, long themeId);
+    List<ReservationTime> getReferenceByDateAndTheme(String date, long themeId);
 }

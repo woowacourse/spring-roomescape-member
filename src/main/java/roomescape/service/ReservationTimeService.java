@@ -54,7 +54,7 @@ public class ReservationTimeService {
     }
 
     public List<ReservationTimeResponse> findAvailableTimes(ReservationTimeReadRequest reservationTimeReadRequest) {
-        return reservationTimeRepository.findByDateAndTheme(reservationTimeReadRequest.date(),
+        return reservationTimeRepository.getReferenceByDateAndTheme(reservationTimeReadRequest.date(),
                         reservationTimeReadRequest.themeId()).stream()
                 .map(ReservationTimeResponse::new)
                 .toList();

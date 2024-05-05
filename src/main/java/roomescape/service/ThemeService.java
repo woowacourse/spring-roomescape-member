@@ -56,7 +56,7 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> findPopularThemes() {
-        List<Theme> themes = themeRepository.findByReservationTermAndCount(START_DATE, END_DATE, MAXIMUM_COUNT);
+        List<Theme> themes = themeRepository.getReferenceByReservationTermAndCount(START_DATE, END_DATE, MAXIMUM_COUNT);
         return themes.stream().map(ThemeResponse::new).toList();
     }
 }

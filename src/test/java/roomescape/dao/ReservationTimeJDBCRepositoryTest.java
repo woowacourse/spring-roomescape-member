@@ -100,7 +100,7 @@ class ReservationTimeJDBCRepositoryTest {
     @Test
     void findAvailableTimesByThemeAndDate() {
         //when
-        List<ReservationTime> result = reservationTimeRepository.findByDateAndTheme("2222-05-04", 1);
+        List<ReservationTime> result = reservationTimeRepository.getReferenceByDateAndTheme("2222-05-04", 1);
 
         //then
         assertThat(result).hasSize(1);
