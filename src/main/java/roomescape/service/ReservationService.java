@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
@@ -52,31 +53,18 @@ public class ReservationService {
     }
 
     public ReservationResponse add(ReservationCreateRequest request) {
-        LocalDate today = LocalDate.now();
-        validateNotExistReservationTime(request.getTimeId());
-        ReservationTime reservationTime = reservationTimeDao.readById(request.getTimeId());
-        Theme theme = themeDao.readById(request.getThemeId());
-        Reservation reservation = request.toDomain(reservationTime, theme);
-        validateDate(reservation.getDate(), today);
-        validateDuplicate(reservation.getDate(), reservation.getReservationTime(), reservation.getTheme());
-        Reservation result = reservationDao.create(reservation);
-        validatePastTimeWhenToday(reservation, reservationTime, today);
-        return ReservationResponse.from(result);
+        Reservation reservation =
+                request.toDomain(findReservationTime(request.getTimeId()), findTheme(request.getThemeId()));
+        validateDate(reservation);
+        validateDuplicate(reservation);
+        validatePastTimeWhenToday(reservation);
+        return ReservationResponse.from(reservationDao.create(reservation));
     }
 
     public void delete(Long id) {
         validateNull(id);
         validateNotExistReservation(id);
         reservationDao.delete(id);
-    }
-
-    private void validateDuplicate(
-            ReservationDate reservationDate,
-            ReservationTime reservationTime,
-            Theme theme) {
-        if (reservationDao.exist(reservationDate, reservationTime, theme)) {
-            throw new InvalidValueException("중복된 예약을 생성할 수 없습니다.");
-        }
     }
 
     private List<ReservationTime> filterByDate(ReservationDate reservationDate,
@@ -90,16 +78,28 @@ public class ReservationService {
         return reservationTimes;
     }
 
-    private void validateDate(ReservationDate reservationDate, LocalDate date) {
-        if (reservationDate.isBeforeDate(date)) {
+    private ReservationTime findReservationTime(Long timeId) {
+        return reservationTimeDao.readById(timeId)
+                .orElseThrow(() -> new InvalidValueException("예약 시간 아이디에 해당하는 예약 시간이 존재하지 않습니다."));
+    }
+
+    private Theme findTheme(Long themeId) {
+        return themeDao.readById(themeId)
+                .orElseThrow(() -> new InvalidValueException("테마 아이디에 해당하는 테마가 존재하지 않습니다."));
+    }
+
     private void validateDate(Reservation reservation) {
         if (reservation.isBeforeDate(LocalDate.now())) {
             throw new InvalidValueException("예약일은 오늘보다 과거일 수 없습니다.");
         }
     }
 
-    private void validatePastTimeWhenToday(Reservation reservation, ReservationTime reservationTime, LocalDate date) {
-        if (reservation.isSameDate(date) && reservationTime.isBeforeNow()) {
+    private void validateDuplicate(Reservation reservation) {
+        if (reservationDao.exist(reservation.getDate(), reservation.getReservationTime(), reservation.getTheme())) {
+            throw new InvalidValueException("중복된 예약을 생성할 수 없습니다.");
+        }
+    }
+
     private void validatePastTimeWhenToday(Reservation reservation) {
         if (reservation.isSameDate(LocalDate.now()) && reservation.isBeforeTime(LocalTime.now())) {
             throw new InvalidValueException("현재보다 이전 시간을 예약할 수 없습니다.");
@@ -115,12 +115,6 @@ public class ReservationService {
     private void validateNotExistReservation(Long id) {
         if (!reservationDao.exist(id)) {
             throw new InvalidValueException("해당 아이디를 가진 예약이 존재하지 않습니다.");
-        }
-    }
-
-    private void validateNotExistReservationTime(Long id) {
-        if (!reservationTimeDao.exist(id)) {
-            throw new InvalidValueException("예약 시간 아이디에 해당하는 예약 시간이 존재하지 않습니다.");
         }
     }
 }

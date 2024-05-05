@@ -1,14 +1,14 @@
 package roomescape.dao;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
+import java.util.Optional;
+import javax.sql.DataSource;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemeDescription;
@@ -20,53 +20,38 @@ public class WebThemeDao implements ThemeDao {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public WebThemeDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public WebThemeDao(DataSource dataSource) {
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
     @Override
     public List<Theme> readAll() {
-        String sql = """
-                SELECT
-                id, name, description, thumbnail
-                FROM theme
-                """;
-        return jdbcTemplate.query(
-                sql,
-                (resultSet, rowNum) -> getTheme(resultSet)
-        );
+        String sql = "SELECT id, name, description, thumbnail FROM theme" ;
+        return jdbcTemplate.query(sql, themeRowMapper());
     }
 
     @Override
-    public Theme readById(Long id) {
-        String sql = """
-                SELECT id, name, description, thumbnail
-                FROM theme
-                WHERE id = ?
-                """;
-        return jdbcTemplate.queryForObject(sql, (resultSet, rowNum) -> getTheme(resultSet), id);
+    public Optional<Theme> readById(Long id) {
+        String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ? " ;
+        try {
+            Theme theme = jdbcTemplate.queryForObject(sql, themeRowMapper(), id);
+            return Optional.of(theme);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public Theme create(Theme theme) {
-        String sql = """
-                INSERT
-                INTO theme
-                    (name, description, thumbnail)
-                VALUES
-                    (?, ?, ?)
-                """;
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(
-                connection -> {
-                    PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-                    ps.setString(1, theme.getName().getValue());
-                    ps.setString(2, theme.getDescription().getValue());
-                    ps.setString(3, theme.getThumbnail().getValue());
-                    return ps;
-                },
-                keyHolder);
-        long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
+        jdbcInsert.withTableName("theme").usingGeneratedKeyColumns("id");
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", theme.getName().getValue());
+        params.put("description", theme.getDescription().getValue());
+        params.put("thumbnail", theme.getThumbnail().getValue());
+
+        Long id = jdbcInsert.executeAndReturnKey(params).longValue();
         return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 
@@ -93,8 +78,8 @@ public class WebThemeDao implements ThemeDao {
         jdbcTemplate.update(sql, id);
     }
 
-    private Theme getTheme(ResultSet resultSet) throws SQLException {
-        return new Theme(
+    private RowMapper<Theme> themeRowMapper() {
+        return (resultSet, rowNum) -> new Theme(
                 resultSet.getLong("id"),
                 ThemeName.from(resultSet.getString("name")),
                 ThemeDescription.from(resultSet.getString("description")),

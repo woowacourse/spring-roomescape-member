@@ -30,7 +30,7 @@ public class ThemeService {
     public List<ThemeResponse> findPopulars(LocalDate startDate, LocalDate endDate) {
         List<Long> themeIds = reservationDao.readPopularThemeIds(startDate, endDate);
         return themeIds.stream()
-                .map(themeDao::readById)
+                .map(this::findTheme)
                 .map(ThemeResponse::from)
                 .toList();
     }
@@ -46,6 +46,11 @@ public class ThemeService {
         validateNotExistTheme(id);
         validateExistReservationByThemeId(id);
         themeDao.delete(id);
+    }
+
+    private Theme findTheme(Long themeId) {
+        return themeDao.readById(themeId)
+                .orElseThrow(() -> new InvalidValueException("존재하지 않는 테마입니다."));
     }
 
     private void validateNull(Long id) {

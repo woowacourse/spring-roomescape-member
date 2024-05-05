@@ -1,15 +1,14 @@
 package roomescape.dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Time;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
+import java.util.Optional;
+import javax.sql.DataSource;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.reservationtime.ReservationStartAt;
 import roomescape.domain.reservationtime.ReservationTime;
@@ -19,53 +18,36 @@ public class WebReservationTimeDao implements ReservationTimeDao {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public WebReservationTimeDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public WebReservationTimeDao(DataSource dataSource) {
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
     @Override
     public List<ReservationTime> readAll() {
-        String sql = """
-                SELECT
-                id, start_at
-                FROM reservation_time
-                """;
-        return jdbcTemplate.query(
-                sql,
-                (resultSet, rowNum) -> getReservationTime(resultSet)
-        );
+        String sql = "SELECT id, start_at FROM reservation_time" ;
+        return jdbcTemplate.query(sql, reservationTimeRowMapper());
     }
 
     @Override
-    public ReservationTime readById(long id) {
-        String sql = """
-                SELECT
-                id, start_at
-                FROM reservation_time
-                WHERE id = ?
-                """;
-        return jdbcTemplate.queryForObject(
-                sql,
-                (resultSet, rowNum) -> getReservationTime(resultSet),
-                id
-        );
+    public Optional<ReservationTime> readById(long id) {
+        String sql = "SELECT  id, start_at FROM reservation_time WHERE id = ? " ;
+        try {
+            ReservationTime reservationTime = jdbcTemplate.queryForObject(sql, reservationTimeRowMapper(), id);
+            return Optional.of(reservationTime);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public ReservationTime create(ReservationTime reservationTime) {
-        String sql = """
-                INSERT
-                INTO reservation_time
-                    (start_at)
-                VALUES
-                    (?)
-                """;
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(
-                connection -> getPreparedStatement(reservationTime, connection, sql),
-                keyHolder
-        );
-        long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
+        jdbcInsert.withTableName("reservation_time").usingGeneratedKeyColumns("id");
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("start_at", reservationTime.getStartAt().getValue());
+
+        Long id = jdbcInsert.executeAndReturnKey(params).longValue();
         return new ReservationTime(id, reservationTime.getStartAt());
     }
 
@@ -105,18 +87,10 @@ public class WebReservationTimeDao implements ReservationTimeDao {
         jdbcTemplate.update(sql, id);
     }
 
-    private ReservationTime getReservationTime(ResultSet resultSet) throws SQLException {
-        return new ReservationTime(
+    private RowMapper<ReservationTime> reservationTimeRowMapper() {
+        return (resultSet, rowNum) -> new ReservationTime(
                 resultSet.getLong("id"),
                 ReservationStartAt.from(resultSet.getString("start_at"))
         );
-    }
-
-    private PreparedStatement getPreparedStatement(ReservationTime reservationTime,
-                                                   Connection connection,
-                                                   String sql) throws SQLException {
-        PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
-        preparedStatement.setTime(1, Time.valueOf(reservationTime.getStartAt().getValue()));
-        return preparedStatement;
     }
 }

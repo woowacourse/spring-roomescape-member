@@ -1,16 +1,13 @@
 package roomescape.dao;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
+import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationDate;
@@ -27,8 +24,8 @@ public class WebReservationDao implements ReservationDao {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public WebReservationDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public WebReservationDao(DataSource dataSource) {
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
     @Override
@@ -51,10 +48,7 @@ public class WebReservationDao implements ReservationDao {
                 INNER JOIN
                     theme th ON r.theme_id = th.id;
                 """;
-        return jdbcTemplate.query(
-                sql,
-                (resultSet, rowNum) -> getReservation(resultSet, getReservationTime(resultSet), getTheme(resultSet))
-        );
+        return jdbcTemplate.query(sql, reservationRowMapper());
     }
 
     @Override
@@ -90,19 +84,16 @@ public class WebReservationDao implements ReservationDao {
 
     @Override
     public Reservation create(Reservation reservation) {
-        String sql = """
-                INSERT
-                INTO reservation
-                    (name, date, time_id, theme_id)
-                VALUES
-                    (?, ?, ?, ?)
-                """;
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(
-                connection -> getPreparedStatement(reservation, connection, sql),
-                keyHolder
-        );
-        long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
+        jdbcInsert.withTableName("reservation").usingGeneratedKeyColumns("id");
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", reservation.getName().getValue());
+        params.put("date", reservation.getDate().getValue());
+        params.put("time_id", reservation.getReservationTime().getId());
+        params.put("theme_id", reservation.getTheme().getId());
+
+        Long id = jdbcInsert.executeAndReturnKey(params).longValue();
         return new Reservation(
                 id,
                 reservation.getName(),
@@ -180,41 +171,17 @@ public class WebReservationDao implements ReservationDao {
         return jdbcTemplate.queryForObject(sql, Boolean.class, themeId);
     }
 
-    private Reservation getReservation(ResultSet resultSet, ReservationTime reservationTime, Theme theme)
-            throws SQLException {
-        return new Reservation(
+    private RowMapper<Reservation> reservationRowMapper() {
+        return (resultSet, rowNum) -> new Reservation(
                 resultSet.getLong("id"),
                 new ReservationName(resultSet.getString("name")),
                 ReservationDate.from(resultSet.getString("date")),
-                reservationTime,
-                theme
+                new ReservationTime(resultSet.getLong("time_id"),
+                        ReservationStartAt.from(resultSet.getString("time_value"))),
+                new Theme(resultSet.getLong("theme_id"),
+                        ThemeName.from(resultSet.getString("theme_name")),
+                        ThemeDescription.from(resultSet.getString("theme_description")),
+                        ThemeThumbnail.from(resultSet.getString("theme_thumbnail")))
         );
-    }
-
-    private ReservationTime getReservationTime(ResultSet resultSet) throws SQLException {
-        return new ReservationTime(
-                resultSet.getLong("time_id"),
-                ReservationStartAt.from(resultSet.getString("time_value"))
-        );
-    }
-
-    private Theme getTheme(ResultSet resultSet) throws SQLException {
-        return new Theme(
-                resultSet.getLong("theme_id"),
-                ThemeName.from(resultSet.getString("theme_name")),
-                ThemeDescription.from(resultSet.getString("theme_description")),
-                ThemeThumbnail.from(resultSet.getString("theme_thumbnail"))
-        );
-    }
-
-    private PreparedStatement getPreparedStatement(Reservation reservation,
-                                                   Connection connection,
-                                                   String sql) throws SQLException {
-        PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
-        preparedStatement.setString(1, reservation.getName().getValue());
-        preparedStatement.setDate(2, Date.valueOf(reservation.getDate().getValue()));
-        preparedStatement.setLong(3, reservation.getReservationTime().getId());
-        preparedStatement.setLong(4, reservation.getTheme().getId());
-        return preparedStatement;
     }
 }
