@@ -1,7 +1,6 @@
 package roomescape.web.controller;
 
 import java.net.URI;
-import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,9 +10,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.core.dto.BookedTimeResponse;
-import roomescape.core.dto.ReservationTimeRequest;
-import roomescape.core.dto.ReservationTimeResponse;
+import roomescape.core.dto.reservationtime.BookedTimesResponse;
+import roomescape.core.dto.reservationtime.ReservationTimeRequest;
+import roomescape.core.dto.reservationtime.ReservationTimeResponse;
+import roomescape.core.dto.reservationtime.ReservationTimesResponse;
 import roomescape.core.service.ReservationTimeService;
 
 @RestController
@@ -34,14 +34,14 @@ public class ReservationTimeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationTimeResponse>> findAll() {
+    public ResponseEntity<ReservationTimesResponse> findAll() {
         return ResponseEntity.ok(reservationTimeService.findAll());
     }
 
     @GetMapping(params = {"date", "themeId"})
-    public ResponseEntity<List<BookedTimeResponse>> findBookable(@RequestParam("date") String date,
-                                                                 @RequestParam("themeId") Long themeId) {
-        return ResponseEntity.ok(reservationTimeService.findBookable(date, themeId));
+    public ResponseEntity<BookedTimesResponse> findAllWithBookable(@RequestParam("date") String date,
+                                                                   @RequestParam("themeId") Long themeId) {
+        return ResponseEntity.ok(reservationTimeService.findAllWithBookable(date, themeId));
     }
 
     @DeleteMapping("/{id}")

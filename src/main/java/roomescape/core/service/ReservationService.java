@@ -1,13 +1,13 @@
 package roomescape.core.service;
 
-import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.core.domain.Reservation;
 import roomescape.core.domain.ReservationTime;
 import roomescape.core.domain.Theme;
-import roomescape.core.dto.ReservationRequest;
-import roomescape.core.dto.ReservationResponse;
+import roomescape.core.dto.reservation.ReservationRequest;
+import roomescape.core.dto.reservation.ReservationResponse;
+import roomescape.core.dto.reservation.ReservationsResponse;
 import roomescape.core.repository.ReservationRepository;
 import roomescape.core.repository.ReservationTimeRepository;
 import roomescape.core.repository.ThemeRepository;
@@ -58,11 +58,11 @@ public class ReservationService {
     }
 
     @Transactional(readOnly = true)
-    public List<ReservationResponse> findAll() {
-        return reservationRepository.findAll()
+    public ReservationsResponse findAll() {
+        return new ReservationsResponse(reservationRepository.findAll()
                 .stream()
                 .map(ReservationResponse::new)
-                .toList();
+                .toList());
     }
 
     @Transactional

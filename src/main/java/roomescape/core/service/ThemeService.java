@@ -1,11 +1,11 @@
 package roomescape.core.service;
 
-import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.core.domain.Theme;
-import roomescape.core.dto.ThemeRequest;
-import roomescape.core.dto.ThemeResponse;
+import roomescape.core.dto.theme.ThemeRequest;
+import roomescape.core.dto.theme.ThemeResponse;
+import roomescape.core.dto.theme.ThemesResponse;
 import roomescape.core.repository.ReservationRepository;
 import roomescape.core.repository.ThemeRepository;
 
@@ -36,19 +36,19 @@ public class ThemeService {
     }
 
     @Transactional(readOnly = true)
-    public List<ThemeResponse> findAll() {
-        return themeRepository.findAll()
+    public ThemesResponse findAll() {
+        return new ThemesResponse(themeRepository.findAll()
                 .stream()
                 .map(ThemeResponse::new)
-                .toList();
+                .toList());
     }
 
     @Transactional(readOnly = true)
-    public List<ThemeResponse> findPopularTheme() {
-        return reservationRepository.findPopularTheme()
+    public ThemesResponse findPopularTheme() {
+        return new ThemesResponse(reservationRepository.findPopularTheme()
                 .stream()
                 .map(ThemeResponse::new)
-                .toList();
+                .toList());
     }
 
     @Transactional

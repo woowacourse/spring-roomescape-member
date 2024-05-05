@@ -6,9 +6,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.core.domain.Reservation;
 import roomescape.core.domain.ReservationTime;
-import roomescape.core.dto.BookedTimeResponse;
-import roomescape.core.dto.ReservationTimeRequest;
-import roomescape.core.dto.ReservationTimeResponse;
+import roomescape.core.dto.reservationtime.BookedTimeResponse;
+import roomescape.core.dto.reservationtime.BookedTimesResponse;
+import roomescape.core.dto.reservationtime.ReservationTimeRequest;
+import roomescape.core.dto.reservationtime.ReservationTimeResponse;
+import roomescape.core.dto.reservationtime.ReservationTimesResponse;
 import roomescape.core.repository.ReservationRepository;
 import roomescape.core.repository.ReservationTimeRepository;
 
@@ -40,25 +42,25 @@ public class ReservationTimeService {
     }
 
     @Transactional(readOnly = true)
-    public List<ReservationTimeResponse> findAll() {
-        return reservationTimeRepository.findAll()
+    public ReservationTimesResponse findAll() {
+        return new ReservationTimesResponse(reservationTimeRepository.findAll()
                 .stream()
                 .map(ReservationTimeResponse::new)
-                .toList();
+                .toList());
     }
 
     @Transactional(readOnly = true)
-    public List<BookedTimeResponse> findBookable(final String date, final long themeId) {
+    public BookedTimesResponse findAllWithBookable(final String date, final long themeId) {
         final List<Reservation> reservations = reservationRepository.findAllByDateAndThemeId(date, themeId);
         final List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
 
-        return reservationTimes.stream()
-                .map(reservationTime -> checkBookable(reservationTime, reservations))
-                .toList();
+        return new BookedTimesResponse(reservationTimes.stream()
+                .map(reservationTime -> findBookedTimes(reservationTime, reservations))
+                .toList());
     }
 
-    private BookedTimeResponse checkBookable(final ReservationTime reservationTime,
-                                             final List<Reservation> reservations) {
+    private BookedTimeResponse findBookedTimes(final ReservationTime reservationTime,
+                                               final List<Reservation> reservations) {
         return new BookedTimeResponse(reservationTime, isAlreadyBooked(reservationTime, reservations));
     }
 

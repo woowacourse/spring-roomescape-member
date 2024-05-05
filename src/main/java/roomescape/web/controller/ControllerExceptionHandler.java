@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ControllerExceptionHandler {
     @ExceptionHandler
-    public ResponseEntity<String> handleReservationTimeException(final IllegalArgumentException exception) {
+    public ResponseEntity<String> handleIllegalArgumentException(final IllegalArgumentException exception) {
         return ResponseEntity.badRequest().body(exception.getMessage());
     }
 
