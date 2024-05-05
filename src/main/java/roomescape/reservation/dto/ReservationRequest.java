@@ -10,6 +10,6 @@ public record ReservationRequest(
         long themeId
 ) {
     public Reservation fromRequest() {
-        return new Reservation(name, date, timeId, themeId);
+        return Reservation.saveReservationOf(name, date, timeId, themeId);
     }
 }

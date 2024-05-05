@@ -10,6 +10,7 @@ import roomescape.theme.domain.Theme;
 import roomescape.time.domain.Time;
 
 public class Reservation {
+    
     private static final Pattern ILLEGAL_NAME_REGEX = Pattern.compile(".*[^\\w\\s가-힣].*");
 
     private long id;
@@ -18,17 +19,26 @@ public class Reservation {
     private Time time;
     private Theme theme;
 
-    public Reservation(String name, LocalDate date, long timeId, long themeId) {
-        this(0, name, date, new Time(timeId), new Theme(themeId));
-        validate();
-    }
-
-    public Reservation(long id, String name, LocalDate date, Time time, Theme theme) {
+    private Reservation(long id, String name, LocalDate date, Time time, Theme theme) {
+        validate(name);
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
+    }
+
+    private Reservation(String name, LocalDate date, long timeId, long themeId) {
+        this(0, name, date, new Time(timeId), new Theme(themeId));
+    }
+
+    public static Reservation reservationOf(long id, String name, LocalDate date, Time time, Theme theme) {
+        return new Reservation(id, name, date, time, theme);
+    }
+
+    public static Reservation saveReservationOf(String name, LocalDate date, long timeId, long themeId) {
+        validateAtSave(date);
+        return new Reservation(name, date, timeId, themeId);
     }
 
     public long getId() {
@@ -84,16 +94,19 @@ public class Reservation {
         }
     }
 
-    private void validate() {
+    private static void validate(String name) {
         if (name == null || name.isBlank()) {
             throw new RoomEscapeException(ReservationExceptionCode.NAME_IS_NULL_OR_BLANK_EXCEPTION);
-        }
-        if (date.isBefore(LocalDate.now())) {
-            throw new RoomEscapeException(ReservationExceptionCode.RESERVATION_DATE_IS_PAST_EXCEPTION);
         }
         if (ILLEGAL_NAME_REGEX.matcher(name)
                 .matches()) {
             throw new RoomEscapeException(ReservationExceptionCode.ILLEGAL_NAME_FORM_EXCEPTION);
+        }
+    }
+
+    private static void validateAtSave(LocalDate date) {
+        if (date.isBefore(LocalDate.now())) {
+            throw new RoomEscapeException(ReservationExceptionCode.RESERVATION_DATE_IS_PAST_EXCEPTION);
         }
     }
 

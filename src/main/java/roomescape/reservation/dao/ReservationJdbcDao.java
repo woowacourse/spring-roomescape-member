@@ -17,7 +17,7 @@ import roomescape.time.domain.Time;
 public class ReservationJdbcDao implements ReservationDao {
 
     public static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (resultSet, rowNum)
-            -> new Reservation(
+            -> Reservation.reservationOf(
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getDate("date")

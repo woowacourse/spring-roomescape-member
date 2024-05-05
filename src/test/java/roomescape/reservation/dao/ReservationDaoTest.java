@@ -27,7 +27,7 @@ class ReservationDaoTest {
     @Test
     @DisplayName("데이터를 정상적으로 저장한다.")
     void saveReservation() {
-        Reservation reservation = new Reservation("범블비", LocalDate.now(), 1L, 1L);
+        Reservation reservation = Reservation.saveReservationOf("범블비", LocalDate.now(), 1L, 1L);
         reservationDao.save(reservation);
 
         Assertions.assertThat(reservation.getId()).isEqualTo(3);
@@ -44,7 +44,8 @@ class ReservationDaoTest {
     @Test
     @DisplayName("지난 7일 기준 예약이 많은 테마 순으로 조회한다.")
     void getTopReservationThemes() {
-        List<Theme> themes = reservationDao.findThemeByDateOrderByThemeIdCount(LocalDate.now().minusWeeks(1), LocalDate.now());
+        List<Theme> themes = reservationDao.findThemeByDateOrderByThemeIdCount(LocalDate.now().minusWeeks(1),
+                LocalDate.now());
 
         Assertions.assertThat(themes.get(0).getId()).isEqualTo(1);
     }

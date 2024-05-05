@@ -26,7 +26,7 @@ import roomescape.time.domain.Time;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
-    private final Reservation reservation = new Reservation(1L, "polla", LocalDate.now().plusDays(1),
+    private final Reservation reservation = Reservation.reservationOf(1L, "polla", LocalDate.now().plusDays(1),
             new Time(1L, LocalTime.now()), new Theme(1L, "pollaBang", "폴라 방탈출", "thumbnail"));
 
     @InjectMocks

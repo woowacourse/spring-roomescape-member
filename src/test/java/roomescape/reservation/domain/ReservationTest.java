@@ -21,7 +21,7 @@ class ReservationTest {
     @Test
     @DisplayName("전달된 id와 같은 값의 id인지 확인.")
     void hasSameId() {
-        Reservation reservation = new Reservation(1L, "폴라", date, new Time(time),
+        Reservation reservation = Reservation.reservationOf(1L, "폴라", date, new Time(time),
                 new Theme("polla", "폴라 방탈출", "thumbnail"));
 
         assertAll(() -> Assertions.assertThat(reservation.hasSameId(2L))
@@ -34,10 +34,11 @@ class ReservationTest {
     void validation_ShouldThrowException_WhenNameIsNull() {
         assertAll(() -> {
                     Throwable nameIsEmpty = assertThrows(
-                            RoomEscapeException.class, () -> new Reservation(" ", date, 1L, 1L));
+                            RoomEscapeException.class, () -> Reservation.saveReservationOf(" ", date, 1L, 1L));
                     assertEquals("null 혹은 빈칸으로 이루어진 이름으로 예약을 시도하였습니다.", nameIsEmpty.getMessage());
 
-                    Throwable nameIsNull = assertThrows(RoomEscapeException.class, () -> new Reservation(null, date, 1L, 1L));
+                    Throwable nameIsNull = assertThrows(RoomEscapeException.class,
+                            () -> Reservation.saveReservationOf(null, date, 1L, 1L));
                     assertEquals("null 혹은 빈칸으로 이루어진 이름으로 예약을 시도하였습니다.", nameIsNull.getMessage());
                 }
         );
@@ -48,7 +49,7 @@ class ReservationTest {
     void validation_ShouldThrowException_WhenReservationDateIsPast() {
         assertAll(() -> {
                     Throwable pastDateReservation = assertThrows(RoomEscapeException.class,
-                            () -> new Reservation("pollari", LocalDate.now().minusDays(1), 1L, 1L));
+                            () -> Reservation.saveReservationOf("pollari", LocalDate.now().minusDays(1), 1L, 1L));
                     assertEquals("지난 날짜의 예약을 시도하였습니다.", pastDateReservation.getMessage());
                 }
         );
@@ -59,7 +60,7 @@ class ReservationTest {
     void validation_ShouldThrowException_WhenNameContainsSymbol() {
         assertAll(() -> {
                     Throwable pastDateReservation = assertThrows(RoomEscapeException.class,
-                            () -> new Reservation("@특수문자", LocalDate.now(), 1L, 1L));
+                            () -> Reservation.saveReservationOf("@특수문자", LocalDate.now(), 1L, 1L));
                     assertEquals("특수문자가 포함된 이름으로 예약을 시도하였습니다.", pastDateReservation.getMessage());
                 }
         );
