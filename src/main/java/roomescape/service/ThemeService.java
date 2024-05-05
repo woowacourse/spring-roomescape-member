@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import roomescape.domain.RankTheme;
 import roomescape.domain.Theme;
 import roomescape.repository.ThemeDao;
 
@@ -26,5 +27,9 @@ public class ThemeService {
 
     public void delete(long themeId){
         themeDao.delete(themeId);
+    }
+
+    public List<RankTheme> getTop10() {
+        return themeDao.getTop10();
     }
 }

@@ -22,7 +22,7 @@ class ReservationTimeServiceTest {
     @Test
     @DisplayName("이미 존재하는 예약 시간을 생성할 경우, 예외를 발생한다.")
     void createException() {
-        assertThatThrownBy(() -> reservationTimeService.save(new ReservationTime(0, LocalTime.of(11, 0))))
+        assertThatThrownBy(() -> reservationTimeService.create(new ReservationTime(0, LocalTime.of(11, 0))))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("StartAt already exists");
     }

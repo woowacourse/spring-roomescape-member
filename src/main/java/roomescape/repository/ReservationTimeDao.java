@@ -31,7 +31,7 @@ public class ReservationTimeDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public List<ReservationTime> findAll() {
+    public List<ReservationTime> getAll() {
         return jdbcTemplate.query("SELECT * FROM RESERVATION_TIME", reservationTimeRowMapper);
     }
 
@@ -62,10 +62,10 @@ public class ReservationTimeDao {
     }
 
     public List<ReservationTime> available(LocalDate parse, long themeId) {
-        String query="SELECT rt.id, rt.start_at " +
+        String query = "SELECT rt.id, rt.start_at " +
                 "FROM reservation_time rt " +
                 "LEFT JOIN reservation r ON rt.id = r.time_id AND r.date = ? AND r.theme_id = ? " +
                 "WHERE r.id IS NULL";
-        return jdbcTemplate.query(query,reservationTimeRowMapper,parse,themeId);
+        return jdbcTemplate.query(query, reservationTimeRowMapper, parse, themeId);
     }
 }

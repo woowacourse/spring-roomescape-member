@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,13 +28,13 @@ public class ReservationTimeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationTime>> findAll() {
-        return ResponseEntity.ok(reservationTimeService.findAll());
+    public ResponseEntity<List<ReservationTime>> getAll() {
+        return ResponseEntity.ok(reservationTimeService.getAll());
     }
 
     @PostMapping
     public ResponseEntity<ReservationTime> create(@RequestBody ReservationTime reservationTime) {
-        ReservationTime createdTime = reservationTimeService.save(reservationTime);
+        ReservationTime createdTime = reservationTimeService.create(reservationTime);
         return ResponseEntity.created(URI.create("/times/" + createdTime.id())).body(createdTime);
     }
 

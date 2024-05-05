@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import roomescape.domain.RankTheme;
 import roomescape.domain.Theme;
 import roomescape.service.ThemeService;
 
@@ -40,5 +41,10 @@ public class ThemeController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         themeService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/rank")
+    public ResponseEntity<List<RankTheme>> rank(){
+        return ResponseEntity.ok(themeService.getTop10());
     }
 }
