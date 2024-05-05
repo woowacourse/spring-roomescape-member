@@ -1,10 +1,10 @@
 package roomescape.dao;
 
-import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -99,7 +99,14 @@ public class JdbcReservationDao implements ReservationDao {
                 """;
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
-                connection -> getPreparedStatement(reservation, connection, sql),
+                connection -> {
+                    PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                    ps.setString(1, reservation.getName().getValue());
+                    ps.setDate(2, Date.valueOf(reservation.getDate().getValue()));
+                    ps.setLong(3, reservation.getReservationTime().getId());
+                    ps.setLong(4, reservation.getTheme().getId());
+                    return ps;
+                },
                 keyHolder
         );
         long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
@@ -205,16 +212,5 @@ public class JdbcReservationDao implements ReservationDao {
                 ThemeDescription.from(resultSet.getString("theme_description")),
                 ThemeThumbnail.from(resultSet.getString("theme_thumbnail"))
         );
-    }
-
-    private PreparedStatement getPreparedStatement(Reservation reservation,
-                                                   Connection connection,
-                                                   String sql) throws SQLException {
-        PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
-        preparedStatement.setString(1, reservation.getName().getValue());
-        preparedStatement.setDate(2, Date.valueOf(reservation.getDate().getValue()));
-        preparedStatement.setLong(3, reservation.getReservationTime().getId());
-        preparedStatement.setLong(4, reservation.getTheme().getId());
-        return preparedStatement;
     }
 }

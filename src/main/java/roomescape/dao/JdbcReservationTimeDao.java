@@ -1,9 +1,9 @@
 package roomescape.dao;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Time;
 import java.util.List;
 import java.util.Objects;
@@ -62,7 +62,11 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
                 """;
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
-                connection -> getPreparedStatement(reservationTime, connection, sql),
+                connection -> {
+                    PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                    ps.setTime(1, Time.valueOf(reservationTime.getStartAt().getValue()));
+                    return ps;
+                },
                 keyHolder
         );
         long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
@@ -110,13 +114,5 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
                 resultSet.getLong("id"),
                 ReservationStartAt.from(resultSet.getString("start_at"))
         );
-    }
-
-    private PreparedStatement getPreparedStatement(ReservationTime reservationTime,
-                                                   Connection connection,
-                                                   String sql) throws SQLException {
-        PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
-        preparedStatement.setTime(1, Time.valueOf(reservationTime.getStartAt().getValue()));
-        return preparedStatement;
     }
 }
