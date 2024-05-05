@@ -3,28 +3,29 @@ package roomescape.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
-public class ExceptionHandler {
+public class RoomescapeExceptionHandler {
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(value = IllegalArgumentException.class)
+    @ExceptionHandler(value = IllegalArgumentException.class)
     public ResponseEntity<String> handleArgumentException(final IllegalArgumentException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(value = PastTimeReservationException.class)
+    @ExceptionHandler(value = PastTimeReservationException.class)
     public ResponseEntity<String> handlePastTimeReservationException(final PastTimeReservationException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(value = ExistReservationException.class)
+    @ExceptionHandler(value = ExistReservationException.class)
     public ResponseEntity<String> handleExistReservationException(
             final ExistReservationException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(value = AlreadyExistsException.class)
+    @ExceptionHandler(value = AlreadyExistsException.class)
     public ResponseEntity<String> handleAlreadyExistsException(final AlreadyExistsException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
     }
