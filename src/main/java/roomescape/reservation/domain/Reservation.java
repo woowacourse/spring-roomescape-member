@@ -7,15 +7,13 @@ import roomescape.reservation.handler.exception.ExceptionCode;
 
 public class Reservation {
 
-    public static final int MAX_NAME_LENGTH = 10;
     private final Long id;
-    private final String name;
+    private final Name name;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        validateName(name);
+    public Reservation(Long id, Name name, LocalDate date, ReservationTime time, Theme theme) {
         validateDateTime(date, time);
 
         this.id = id;
@@ -25,11 +23,8 @@ public class Reservation {
         this.theme = theme;
     }
 
-
-    private void validateName(String name) {
-        if (name.isEmpty() || name.length() > MAX_NAME_LENGTH) {
-            throw new CustomException(ExceptionCode.INVALID_NAME_LENGTH);
-        }
+    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+        this(id, new Name(name), date, time, theme);
     }
 
     private void validateDateTime(LocalDate date, ReservationTime time) {
@@ -52,7 +47,7 @@ public class Reservation {
     }
 
     public String getName() {
-        return name;
+        return name.getValue();
     }
 
     public LocalDate getDate() {
