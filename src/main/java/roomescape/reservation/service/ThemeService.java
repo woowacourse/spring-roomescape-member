@@ -3,11 +3,16 @@ package roomescape.reservation.service;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.dao.ThemeDao;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.dto.request.ThemeRequest;
 import roomescape.reservation.dto.response.ThemeResponse;
+import roomescape.reservation.handler.exception.CustomBadRequest;
+import roomescape.reservation.handler.exception.CustomException;
+import roomescape.reservation.handler.exception.CustomInternalServerError;
 
 @Service
 public class ThemeService {
@@ -22,8 +27,12 @@ public class ThemeService {
     }
 
     public ThemeResponse createTheme(ThemeRequest themeRequest) {
-        Theme theme = themeDao.save(themeRequest.toEntity());
-        return ThemeResponse.from(theme);
+        try {
+            Theme theme = themeDao.save(themeRequest.toEntity());
+            return ThemeResponse.from(theme);
+        } catch (DataAccessException e) {
+            throw new CustomException(CustomInternalServerError.FAIl_TO_CREATE);
+        }
     }
 
     public List<ThemeResponse> findAllThemes() {
@@ -48,6 +57,12 @@ public class ThemeService {
     }
 
     public void deleteTheme(Long id) {
-        themeDao.delete(id);
+        try {
+            themeDao.delete(id);
+        } catch (DataIntegrityViolationException e) {
+            throw new CustomException(CustomBadRequest.THEME_IN_USE);
+        } catch (DataAccessException e) {
+            throw new CustomException(CustomInternalServerError.FAIL_TO_REMOVE);
+        }
     }
 }

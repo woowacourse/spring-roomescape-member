@@ -1,8 +1,8 @@
 package roomescape.reservation.dao;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.time.LocalDate;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -14,6 +14,7 @@ import roomescape.reservation.domain.Theme;
 
 @Repository
 public class JdbcThemeDao implements ThemeDao {
+
     private static final RowMapper<Theme> THEME_MAPPER = (resultSet, row) ->
             new Theme(
                     resultSet.getLong("id"),

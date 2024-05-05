@@ -3,7 +3,7 @@ package roomescape.reservation.domain;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import roomescape.reservation.handler.exception.CustomException;
-import roomescape.reservation.handler.exception.ExceptionCode;
+import roomescape.reservation.handler.exception.CustomBadRequest;
 
 public class Reservation {
 
@@ -27,14 +27,14 @@ public class Reservation {
 
     private void validateName(String name) {
         if (name.isEmpty() || name.length() > 10) {
-            throw new CustomException(ExceptionCode.INVALID_NAME_LENGTH);
+            throw new CustomException(CustomBadRequest.INVALID_NAME_LENGTH);
         }
     }
 
     private void validateDateTime(LocalDate date, ReservationTime time) {
         LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
         if (LocalDateTime.now().isAfter(reservationDateTime)) {
-            throw new CustomException(ExceptionCode.PAST_TIME_SLOT_RESERVATION);
+            throw new CustomException(CustomBadRequest.PAST_TIME_SLOT_RESERVATION);
         }
     }
 

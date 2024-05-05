@@ -1,11 +1,17 @@
 package roomescape.reservation.handler.exception;
 
+import org.springframework.http.HttpStatus;
+
 public class CustomException extends RuntimeException {
 
-    private final ExceptionCode exceptionCode;
+    private final CustomExceptionCode customExceptionCode;
 
-    public CustomException(ExceptionCode exceptionCode) {
-        super(exceptionCode.getErrorMessage());
-        this.exceptionCode = exceptionCode;
+    public CustomException(CustomExceptionCode customExceptionCode) {
+        super(customExceptionCode.getErrorMessage());
+        this.customExceptionCode = customExceptionCode;
+    }
+
+    public HttpStatus getHttpStatus() {
+        return customExceptionCode.getHttpStatus();
     }
 }

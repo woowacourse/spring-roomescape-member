@@ -1,6 +1,7 @@
 package roomescape.reservation.service;
 
 import java.util.List;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.dao.ReservationDao;
@@ -12,7 +13,8 @@ import roomescape.reservation.dto.request.ReservationTimeRequest;
 import roomescape.reservation.dto.response.AvailableTimeResponse;
 import roomescape.reservation.dto.response.ReservationTimeResponse;
 import roomescape.reservation.handler.exception.CustomException;
-import roomescape.reservation.handler.exception.ExceptionCode;
+import roomescape.reservation.handler.exception.CustomBadRequest;
+import roomescape.reservation.handler.exception.CustomInternalServerError;
 
 @Service
 public class ReservationTimeService {
@@ -27,9 +29,12 @@ public class ReservationTimeService {
 
     public ReservationTimeResponse createReservationTime(ReservationTimeRequest reservationTimeRequest) {
         ReservationTime reservationTime = reservationTimeRequest.toEntity();
-
-        ReservationTime savedReservationTime = reservationTimeDao.save(reservationTime);
-        return ReservationTimeResponse.from(savedReservationTime);
+        try {
+            ReservationTime savedReservationTime = reservationTimeDao.save(reservationTime);
+            return ReservationTimeResponse.from(savedReservationTime);
+        } catch (DataAccessException e) {
+            throw new CustomException(CustomInternalServerError.FAIl_TO_CREATE);
+        }
     }
 
     public List<ReservationTimeResponse> findAllReservationTimes() {
@@ -65,7 +70,9 @@ public class ReservationTimeService {
         try {
             reservationTimeDao.delete(id);
         } catch (DataIntegrityViolationException e) {
-            throw new CustomException(ExceptionCode.TIME_IN_USE);
+            throw new CustomException(CustomBadRequest.TIME_IN_USE);
+        } catch (DataAccessException e) {
+            throw new CustomException(CustomInternalServerError.FAIL_TO_REMOVE);
         }
     }
 }

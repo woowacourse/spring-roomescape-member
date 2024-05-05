@@ -1,6 +1,7 @@
 package roomescape.reservation.service;
 
 import java.util.List;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.dao.ReservationTimeDao;
@@ -10,8 +11,9 @@ import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.dto.request.ReservationRequest;
 import roomescape.reservation.dto.response.ReservationResponse;
+import roomescape.reservation.handler.exception.CustomBadRequest;
 import roomescape.reservation.handler.exception.CustomException;
-import roomescape.reservation.handler.exception.ExceptionCode;
+import roomescape.reservation.handler.exception.CustomInternalServerError;
 
 @Service
 public class ReservationService {
@@ -34,20 +36,24 @@ public class ReservationService {
                         reservation.isSameTime(reservationTime) && reservation.isSameDate(reservationRequest.date()))
                 .findAny()
                 .ifPresent(time -> {
-                    throw new CustomException(ExceptionCode.DUPLICATE_RESERVATION);
+                    throw new CustomException(CustomBadRequest.DUPLICATE_RESERVATION);
                 });
 
         Theme theme = themeDao.findById(reservationRequest.themeId())
-                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_THEME));
+                .orElseThrow(() -> new CustomException(CustomBadRequest.NOT_FOUND_THEME));
 
         Reservation reservation = reservationRequest.toEntity(reservationTime, theme);
-        Reservation savedReservation = reservationDao.save(reservation);
-        return ReservationResponse.from(savedReservation);
+        try {
+            Reservation savedReservation = reservationDao.save(reservation);
+            return ReservationResponse.from(savedReservation);
+        } catch (DataAccessException e) {
+            throw new CustomException(CustomInternalServerError.FAIl_TO_CREATE);
+        }
     }
 
     private ReservationTime findReservationTime(ReservationRequest reservationRequest) {
         return reservationTimeDao.findById(reservationRequest.timeId())
-                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_RESERVATION_TIME));
+                .orElseThrow(() -> new CustomException(CustomBadRequest.NOT_FOUND_RESERVATION_TIME));
 
     }
 
@@ -59,6 +65,10 @@ public class ReservationService {
     }
 
     public void deleteReservation(Long id) {
-        reservationDao.delete(id);
+        try {
+            reservationDao.delete(id);
+        } catch (DataAccessException e) {
+            throw new CustomException(CustomInternalServerError.FAIL_TO_REMOVE);
+        }
     }
 }
