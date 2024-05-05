@@ -16,6 +16,7 @@ import roomescape.repository.H2ReservationTimeRepository;
 import roomescape.repository.H2ThemeRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
+import roomescape.service.exception.TimeDuplicatedException;
 import roomescape.service.exception.TimeNotFoundException;
 import roomescape.service.exception.TimeUsedException;
 
@@ -107,6 +108,20 @@ class TimeServiceTest {
 
         // then
         assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("이미 예약된 시간을 추가할 경우 예외가 발생한다.")
+    void addTimeDuplicated() {
+        // given
+        TimeRequest timeRequest = sampleTimes.get(0);
+
+        // when
+        timeService.addTime(timeRequest);
+
+        // then
+        assertThatThrownBy(() -> timeService.addTime(timeRequest))
+                .isInstanceOf(TimeDuplicatedException.class);
     }
 
     @Test

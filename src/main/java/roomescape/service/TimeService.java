@@ -8,10 +8,12 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.exception.InvalidDateException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.service.exception.TimeDuplicatedException;
 import roomescape.service.exception.TimeNotFoundException;
 import roomescape.service.exception.TimeUsedException;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Set;
@@ -73,17 +75,24 @@ public class TimeService {
                 .collect(Collectors.toSet());
     }
 
-    // TODO: validate duplicate
     public TimeResponse addTime(final TimeRequest timeRequest) {
         final ReservationTime parsedTime = timeRequest.toDomain();
+        validateDuplicate(parsedTime.getStartAt());
+
         final ReservationTime savedTime = timeRepository.save(parsedTime);
 
         return TimeResponse.from(savedTime, false);
     }
 
+    private void validateDuplicate(LocalTime startAt) {
+        if (timeRepository.existByStartAt(startAt)) {
+            throw new TimeDuplicatedException("이미 존재하는 예약 시간 입니다.");
+        }
+    }
+
     public int deleteTime(final Long id) {
         validateUsed(id);
-        
+
         final int deletedCount = timeRepository.delete(id);
         validateNotFound(deletedCount);
 

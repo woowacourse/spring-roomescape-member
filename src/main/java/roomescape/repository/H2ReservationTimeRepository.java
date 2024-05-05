@@ -11,6 +11,7 @@ import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,6 +52,15 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
         return jdbcTemplate.query(sql, this::mapRowTime, id)
                 .stream()
                 .findAny();
+    }
+
+    @Override
+    public boolean existByStartAt(LocalTime startAt) {
+        final String sql = "SELECT * FROM RESERVATION_TIME WHERE START_AT = ? LIMIT 1";
+        final String formattedStartAt = startAt.format(DateTimeFormatter.ofPattern("HH:mm"));
+
+        return !jdbcTemplate.query(sql, this::mapRowTime, formattedStartAt)
+                .isEmpty();
     }
 
 

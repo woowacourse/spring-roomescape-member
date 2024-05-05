@@ -80,6 +80,20 @@ class ReservationTimeRepositoryTest {
     }
 
     @Test
+    @DisplayName("시간이 이미 존재하는지 확인한다.")
+    void existByStartAt() {
+        // given
+        final ReservationTime time = sampleTimes.get(0);
+        timeRepository.save(time);
+
+        // when
+        final boolean actual = timeRepository.existByStartAt(time.getStartAt());
+
+        // then
+        assertThat(actual).isTrue();
+    }
+
+    @Test
     @DisplayName("예약 시간을 저장한다.")
     void save() {
         // given
