@@ -1,7 +1,7 @@
 package roomescape.exception;
 
 import com.fasterxml.jackson.databind.JsonMappingException.Reference;
-import com.fasterxml.jackson.databind.exc.MismatchedInputException;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
@@ -36,8 +36,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     public ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException e, HttpHeaders headers,
                                                                HttpStatusCode status, WebRequest request) {
-        if (e.getCause() instanceof MismatchedInputException mismatchedInputException) {
-            String errorMessage = getMismatchedInputExceptionMessage(mismatchedInputException);
+        if (e.getCause() instanceof InvalidFormatException invalidFormatException) {
+            String errorMessage = getMismatchedInputExceptionMessage(invalidFormatException);
             return ResponseEntity.badRequest()
                     .body(new ErrorResponse(errorMessage));
         }
@@ -45,7 +45,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .body(new ErrorResponse(e.getMessage()));
     }
 
-    private String getMismatchedInputExceptionMessage(MismatchedInputException e) {
+    private String getMismatchedInputExceptionMessage(InvalidFormatException e) {
         String type = e.getTargetType().toString();
         String fieldNames = e.getPath()
                 .stream()
