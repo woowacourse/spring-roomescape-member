@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Reservation;
-import roomescape.service.dto.response.ReservationResponse;
 import roomescape.service.dto.request.SaveReservationRequest;
+import roomescape.service.dto.response.ReservationResponse;
 import roomescape.service.reservation.ReservationCreateService;
 import roomescape.service.reservation.ReservationDeleteService;
 import roomescape.service.reservation.ReservationFindService;
@@ -35,7 +35,11 @@ public class ReservationController {
     @GetMapping("/reservations")
     public ResponseEntity<List<ReservationResponse>> getReservations() {
         List<Reservation> reservations = reservationFindService.findReservations();
-        return ResponseEntity.ok(ReservationResponse.listOf(reservations));
+        return ResponseEntity.ok(
+                reservations.stream()
+                        .map(ReservationResponse::new)
+                        .toList()
+        );
     }
 
     @PostMapping("/reservations")

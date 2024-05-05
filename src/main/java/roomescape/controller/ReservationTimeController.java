@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.ReservationTime;
+import roomescape.service.dto.request.SaveReservationTimeRequest;
 import roomescape.service.dto.response.ReservationTimeIsBookedResponse;
 import roomescape.service.dto.response.ReservationTimeResponse;
-import roomescape.service.dto.request.SaveReservationTimeRequest;
 import roomescape.service.reservationtime.ReservationTimeCreateService;
 import roomescape.service.reservationtime.ReservationTimeDeleteService;
 import roomescape.service.reservationtime.ReservationTimeFindService;
@@ -39,14 +39,23 @@ public class ReservationTimeController {
     @GetMapping("/times")
     public ResponseEntity<List<ReservationTimeResponse>> getReservationTimes() {
         List<ReservationTime> reservationTimes = reservationTimeFindService.findReservationTimes();
-        return ResponseEntity.ok(ReservationTimeResponse.listOf(reservationTimes));
+        return ResponseEntity.ok(
+                reservationTimes.stream()
+                        .map(ReservationTimeResponse::new)
+                        .toList()
+        );
     }
 
     @GetMapping("/times/available")
     public ResponseEntity<List<ReservationTimeIsBookedResponse>> getReservationTimesIsBooked(@RequestParam LocalDate date,
                                                                                              @RequestParam Long themeId) {
         Map<ReservationTime, Boolean> isBooked = reservationTimeFindService.findIsBooked(date, themeId);
-        return ResponseEntity.ok(ReservationTimeIsBookedResponse.listOf(isBooked));
+        return ResponseEntity.ok(
+                isBooked.keySet().stream()
+                        .map(reservationTime -> new ReservationTimeIsBookedResponse(
+                                reservationTime,
+                                isBooked.get(reservationTime))
+                        ).toList());
     }
 
     @PostMapping("/times")
