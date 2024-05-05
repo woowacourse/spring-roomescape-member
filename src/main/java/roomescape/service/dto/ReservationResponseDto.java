@@ -10,12 +10,21 @@ public class ReservationResponseDto {
     private final String date;
     private final ReservationTimeResponseDto time;
 
+    public ReservationResponseDto(long id, String name, ThemeResponseDto theme, String date,
+                                  ReservationTimeResponseDto time) {
+        this.id = id;
+        this.name = name;
+        this.theme = theme;
+        this.date = date;
+        this.time = time;
+    }
+
     public ReservationResponseDto(Reservation reservation) {
-        this.id = reservation.getId();
-        this.name = reservation.getName();
-        this.theme = new ThemeResponseDto(reservation.getTheme());
-        this.date = reservation.getDate().toString();
-        this.time = new ReservationTimeResponseDto(reservation.getReservationTime());
+        this(reservation.getId(),
+                reservation.getName(),
+                new ThemeResponseDto(reservation.getTheme()),
+                reservation.getDate().toString(),
+                new ReservationTimeResponseDto(reservation.getReservationTime()));
     }
 
     public long getId() {

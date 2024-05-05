@@ -1,94 +1,130 @@
 package roomescape.controller;
 
-import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import java.util.List;
+import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import roomescape.domain.Reservation;
-import roomescape.service.ReservationService;
-import roomescape.service.dto.ReservationRequestDto;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import roomescape.repository.DatabaseCleanupListener;
 import roomescape.service.dto.ReservationResponseDto;
+import roomescape.service.dto.ReservationTimeResponseDto;
+import roomescape.service.dto.ThemeResponseDto;
 
-@WebMvcTest(ReservationApiController.class)
+@TestExecutionListeners(value = {
+        DatabaseCleanupListener.class,
+        DependencyInjectionTestExecutionListener.class
+})
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class ReservationApiControllerTest {
 
-    @MockBean
-    private ReservationService reservationService;
+    @LocalServerPort
+    private int port;
 
-    @Autowired
-    private MockMvc mockMvc;
+    @BeforeEach
+    void setUp() {
+        RestAssured.port = port;
+        initializeTimesData();
+        initializeThemeData();
+    }
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    private final Reservation reservation1 = new Reservation(
-            1L, "재즈",
-            1L, "테마이름", "테마내용", "테마썸네일",
-            "2024-04-22",
-            2L, "17:30");
-    private final Reservation reservation2 = new Reservation(
-            2L, "안돌",
-            1L, "테마이름", "테마내용", "테마썸네일",
-            "2023-09-08",
-            1L, "15:30");
-
-    @DisplayName("/reservations GET 요청 시 모든 예약 목록과 200 상태 코드를 응답한다.")
-    @Test
-    void return_200_status_code_and_saved_all_reservations_when_get_request() throws Exception {
-        List<ReservationResponseDto> responseDtos = List.of(
-                new ReservationResponseDto(reservation1),
-                new ReservationResponseDto(reservation2)
+    private void initializeThemeData() {
+        Map<String, String> params = Map.of(
+                "name", "공포",
+                "description", "공포는 무서워",
+                "thumbnail", "hi.jpg"
         );
 
-        given(reservationService.findAllReservations()).willReturn(responseDtos);
-
-        mockMvc.perform(get("/reservations"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()", is(2)));
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201);
     }
 
-    @DisplayName("/reservations POST 요청 시 저장된 예약과 201 상태 코드를 응답한다.")
-    @Test
-    void return_200_status_code_and_saved_reservation_when_post_request() throws Exception {
-        ReservationRequestDto requestDto = new ReservationRequestDto("재즈", 1L, "2024-04-22", 2L);
-        String requestBody = objectMapper.writeValueAsString(requestDto);
-        ReservationResponseDto responseDto = new ReservationResponseDto(reservation1);
+    private static void initializeTimesData() {
+        Map<String, String> params = Map.of(
+                "startAt", "10:00"
+        );
 
-        given(reservationService.createReservation(any())).willReturn(responseDto);
-
-        mockMvc.perform(post("/reservations")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id", is(1)))
-                .andExpect(jsonPath("$.name", is("재즈")))
-                .andExpect(jsonPath("$.theme.id", is(1)))
-                .andExpect(jsonPath("$.theme.name", is("테마이름")))
-                .andExpect(jsonPath("$.theme.description", is("테마내용")))
-                .andExpect(jsonPath("$.theme.thumbnail", is("테마썸네일")))
-                .andExpect(jsonPath("$.date", is("2024-04-22")))
-                .andExpect(jsonPath("$.time.id", is(2)))
-                .andExpect(jsonPath("$.time.startAt", is("17:30")));
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(201);
     }
 
-    @DisplayName("/reservations/{id} DELETE 요청 시 204 상태 코드를 응답한다.")
+    private final Map<String, Object> reservationCreate = Map.of(
+            "name", "재즈",
+            "date", "2100-08-05",
+            "timeId", 1,
+            "themeId", 1
+    );
+
+    @DisplayName("예약을 생성하는데 성공하면 응답과 201 상태 코드를 반환한다.")
     @Test
-    void return_200_status_code_when_delete_request() throws Exception {
-        mockMvc.perform(delete("/reservations/{id}", 1))
-                .andExpect(status().isNoContent());
+    void return_200_when_create_reservation() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationCreate)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+    }
+
+    @DisplayName("예약 목록을 조회하는데 성공하면 응답과 200 상태 코드를 반환한다.")
+    @Test
+    void return_200_when_find_all_reservations() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationCreate)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        List<ReservationResponseDto> actualResponse = RestAssured.given().log().all()
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .extract()
+                .jsonPath()
+                .getList(".", ReservationResponseDto.class);
+
+        ReservationResponseDto expectedResponse = new ReservationResponseDto(
+                1L, "재즈",
+                new ThemeResponseDto(1L, "공포", "공포는 무서워", "hi.jpg"),
+                "2100-08-05",
+                new ReservationTimeResponseDto(1L, "10:00")
+        );
+
+        assertThat(actualResponse)
+                .usingRecursiveComparison()
+                .isEqualTo(List.of(expectedResponse));
+    }
+
+    @DisplayName("예약을 삭제하는데 성공하면 응답과 204 상태 코드를 반환한다.")
+    @Test
+    void return_204_when_delete_reservation() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationCreate)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .when().delete("/reservations/1")
+                .then().log().all()
+                .statusCode(204);
     }
 }

@@ -9,11 +9,15 @@ public class ThemeResponseDto {
     private final String description;
     private final String thumbnail;
 
+    public ThemeResponseDto(long id, String name, String description, String thumbnail) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.thumbnail = thumbnail;
+    }
+
     public ThemeResponseDto(Theme theme) {
-        this.id = theme.getId();
-        this.name = theme.getName();
-        this.description = theme.getDescription();
-        this.thumbnail = theme.getThumbnail();
+        this(theme.getId(), theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 
     public long getId() {

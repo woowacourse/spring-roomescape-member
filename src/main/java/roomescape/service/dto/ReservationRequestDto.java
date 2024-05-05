@@ -3,9 +3,9 @@ package roomescape.service.dto;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
-import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
+import roomescape.domain.ReservationName;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
@@ -69,9 +69,13 @@ public class ReservationRequestDto {
     }
 
     public Reservation toReservation() {
-        return new Reservation(null, new Name(name), new Theme(themeId, null, null, null),
-                new ReservationDate(date), new ReservationTime(timeId,
-                (LocalTime) null));
+        return new Reservation(
+                null,
+                new ReservationName(name),
+                new Theme(themeId, null, null, null),
+                new ReservationDate(date),
+                new ReservationTime(timeId, (LocalTime) null)
+        );
     }
 
     public String getName() {
