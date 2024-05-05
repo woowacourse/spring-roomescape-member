@@ -1,36 +1,23 @@
 package roomescape.service.dto;
 
-import java.time.LocalTime;
-import java.util.ArrayList;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonCreator.Mode;
 import java.util.List;
-import java.util.Map;
-import roomescape.domain.ReservationStatus;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.ReservationTimeStatus;
+import roomescape.domain.ReservationTimeStatuses;
 
 public class AvailableTimeResponseDtos {
 
     private final List<AvailableTimeResponseDto> availableTimeResponses;
 
-    public AvailableTimeResponseDtos(ReservationTimeStatus timeStatus) {
-        availableTimeResponses = new ArrayList<>();
-        addAvailableTimeResponses(timeStatus);
-        sortAscendingByStartAt();
+    @JsonCreator(mode = Mode.PROPERTIES)
+    public AvailableTimeResponseDtos(List<AvailableTimeResponseDto> availableTimeResponses) {
+        this.availableTimeResponses = availableTimeResponses;
     }
 
-    private void addAvailableTimeResponses(ReservationTimeStatus timeStatus) {
-        Map<ReservationTime, ReservationStatus> timesStatus = timeStatus.getTimesStatus();
-        for (Map.Entry<ReservationTime, ReservationStatus> entry : timesStatus.entrySet()) {
-            availableTimeResponses.add(new AvailableTimeResponseDto(entry.getKey(), entry.getValue().getStatus()));
-        }
-    }
-
-    private void sortAscendingByStartAt() {
-        availableTimeResponses.sort((o1, o2) -> {
-            LocalTime startAt1 = LocalTime.parse(o1.getTimeResponseDto().getStartAt());
-            LocalTime startAt2 = LocalTime.parse(o2.getTimeResponseDto().getStartAt());
-            return startAt1.compareTo(startAt2);
-        });
+    public AvailableTimeResponseDtos(ReservationTimeStatuses reservationTimeStatuses) {
+        this(reservationTimeStatuses.getTimeStatuses().stream()
+                .map(AvailableTimeResponseDto::new)
+                .toList());
     }
 
     public List<AvailableTimeResponseDto> getAvailableTimeResponses() {

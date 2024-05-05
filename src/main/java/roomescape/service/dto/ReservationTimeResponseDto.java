@@ -7,9 +7,13 @@ public class ReservationTimeResponseDto {
     private final long id;
     private final String startAt;
 
+    public ReservationTimeResponseDto(long id, String startAt) {
+        this.id = id;
+        this.startAt = startAt;
+    }
+
     public ReservationTimeResponseDto(ReservationTime reservationTime) {
-        this.id = reservationTime.getId();
-        this.startAt = reservationTime.getStartAt().toString();
+        this(reservationTime.getId(), reservationTime.getStartAt().toString());
     }
 
     public long getId() {

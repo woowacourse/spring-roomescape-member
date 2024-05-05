@@ -1,15 +1,24 @@
 package roomescape.service.dto;
 
-import roomescape.domain.ReservationTime;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonCreator.Mode;
+import roomescape.domain.ReservationTimeStatus;
 
 public class AvailableTimeResponseDto {
 
     private final ReservationTimeResponseDto timeResponseDto;
-    private final boolean isBooked;
+    private final boolean booked;
 
-    public AvailableTimeResponseDto(ReservationTime reservationTime, boolean isBooked) {
-        this.timeResponseDto = new ReservationTimeResponseDto(reservationTime);
-        this.isBooked = isBooked;
+    @JsonCreator(mode = Mode.PROPERTIES)
+    public AvailableTimeResponseDto(ReservationTimeResponseDto timeResponseDto, boolean booked) {
+        this.timeResponseDto = timeResponseDto;
+        this.booked = booked;
+    }
+
+    public AvailableTimeResponseDto(ReservationTimeStatus reservationTimeStatus) {
+        this(new ReservationTimeResponseDto(reservationTimeStatus.getReservationTime()),
+                reservationTimeStatus.getReservationStatus().getStatus()
+        );
     }
 
     public ReservationTimeResponseDto getTimeResponseDto() {
@@ -17,6 +26,6 @@ public class AvailableTimeResponseDto {
     }
 
     public boolean isBooked() {
-        return isBooked;
+        return booked;
     }
 }
