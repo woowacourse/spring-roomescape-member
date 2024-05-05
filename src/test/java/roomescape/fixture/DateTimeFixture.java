@@ -6,6 +6,7 @@ import java.time.LocalTime;
 public class DateTimeFixture {
 
     public static final LocalDate SEVEN_DAYS_AGO = LocalDate.now().minusDays(7);
+    public static final LocalDate YESTERDAY = LocalDate.now().minusDays(1);
     public static final LocalDate TODAY = LocalDate.now();
     public static final LocalDate TOMORROW = LocalDate.now().plusDays(1);
     public static final LocalDate DAY_AFTER_TOMORROW = LocalDate.now().plusDays(2);

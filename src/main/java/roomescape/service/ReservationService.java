@@ -52,14 +52,14 @@ public class ReservationService {
         return new ReservationResponse(saved);
     }
 
-    private Theme getTheme(long themeId) {
-        return themeRepository.findById(themeId)
-                .orElseThrow(() -> new NoSuchRecordException("해당하는 테마가 존재하지 않습니다 ID: " + themeId));
-    }
-
     private ReservationTime getReservationTime(long timeId) {
         return reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new NoSuchRecordException("해당하는 예약시간이 존재하지 않습니다 ID: " + timeId));
+    }
+
+    private Theme getTheme(long themeId) {
+        return themeRepository.findById(themeId)
+                .orElseThrow(() -> new NoSuchRecordException("해당하는 테마가 존재하지 않습니다 ID: " + themeId));
     }
 
     public void removeReservation(long id) {
