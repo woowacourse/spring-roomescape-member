@@ -48,42 +48,46 @@ public class ReservationDaoImpl implements ReservationDao {
 
     @Override
     public List<Reservation> findAll() {
-        String sql = "SELECT"
-                + "    r.id as reservation_id, "
-                + "    r.name, "
-                + "    r.date, "
-                + "    t.id as time_id, "
-                + "    t.start_at as time_value , "
-                + "    theme.id as theme_id, "
-                + "    theme.name as theme_name, "
-                + "    theme.description as theme_description, "
-                + "    theme.thumbnail as theme_thumbnail "
-                + "FROM reservation as r "
-                + "INNER JOIN reservation_time as t "
-                + "ON r.time_id = t.id "
-                + "INNER JOIN theme "
-                + "ON r.theme_id = theme.id";
+        String sql = """
+                    SELECT
+                        r.id as reservation_id,
+                        r.name,
+                        r.date,
+                        t.id as time_id,
+                        t.start_at as time_value ,
+                        theme.id as theme_id,
+                        theme.name as theme_name,
+                        theme.description as theme_description,
+                        theme.thumbnail as theme_thumbnail
+                    FROM reservation as r 
+                    INNER JOIN reservation_time as t 
+                    ON r.time_id = t.id 
+                    INNER JOIN theme 
+                    ON r.theme_id = theme.id
+                """;
         return jdbcTemplate.query(sql, rowMapper);
     }
 
     @Override
     public Optional<Reservation> findById(Long id) {
-        String sql = "SELECT"
-                + "    r.id as reservation_id, "
-                + "    r.name, "
-                + "    r.date, "
-                + "    t.id as time_id, "
-                + "    t.start_at as time_value, "
-                + "    theme.id as theme_id, "
-                + "    theme.name as theme_name, "
-                + "    theme.description as theme_description, "
-                + "    theme.thumbnail as theme_thumbnail "
-                + "FROM reservation as r "
-                + "INNER JOIN reservation_time as t "
-                + "ON r.time_id = t.id "
-                + "INNER JOIN theme "
-                + "ON r.theme_id = theme.id "
-                + "WHERE r.id = ?";
+        String sql = """
+                SELECT
+                    r.id as reservation_id,
+                    r.name,
+                    r.date,
+                    t.id as time_id,
+                    t.start_at as time_value,
+                    theme.id as theme_id,
+                    theme.name as theme_name,
+                    theme.description as theme_description,
+                    theme.thumbnail as theme_thumbnail
+                FROM reservation as r
+                INNER JOIN reservation_time as t
+                ON r.time_id = t.id
+                INNER JOIN theme
+                ON r.theme_id = theme.id
+                WHERE r.id = ?
+                """;
         try {
             return Optional.of(jdbcTemplate.queryForObject(sql, rowMapper, id));
         } catch (EmptyResultDataAccessException e) {
@@ -106,39 +110,47 @@ public class ReservationDaoImpl implements ReservationDao {
 
     @Override
     public boolean existByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
-        String sql = "select exists ( "
-                + "    select 1 "
-                + "    from reservation "
-                + "    where date = ? and time_id = ? and theme_id = ?"
-                + ")";
+        String sql = """
+                select exists (
+                    select 1
+                    from reservation
+                    where date = ? and time_id = ? and theme_id = ?
+                )
+                """;
+
         return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
     }
 
     @Override
     public List<ReservationTime> findByDateAndTheme(LocalDate date, Long themeId) {
-        String sql = "select t.id, t.start_at "
-                + "   from reservation as r "
-                + "   inner join reservation_time as t "
-                + "   on r.time_id = t.id "
-                + "   where date = ? and theme_id = ?";
+        String sql = """
+                select t.id, t.start_at
+                from reservation as r
+                inner join reservation_time as t
+                on r.time_id = t.id
+                where date = ? and theme_id = ?
+                """;
+
         return jdbcTemplate.query(sql, timeRowMapper, date, themeId);
     }
 
     @Override
     public List<Theme> findThemeOrderByReservationCount() {
-        String sql = "select "
-                + "   th.id as theme_id, "
-                + "   th.name as theme_name, "
-                + "   th.description as theme_description, "
-                + "   th.thumbnail as theme_thumbnail, "
-                + "   count(th.id) as reservation_count "
-                + "   from reservation as r "
-                + "   inner join theme as th "
-                + "   on r.theme_id = th.id "
-                + "   where r.date between dateadd('day', -7, current_date()) and dateadd('day', -1, current_date()) "
-                + "   group by th.id "
-                + "   order by reservation_count desc "
-                + "   limit 10";
+        String sql = """
+                select
+                    th.id as theme_id,
+                    th.name as theme_name,
+                    th.description as theme_description,
+                    th.thumbnail as theme_thumbnail,
+                    count(th.id) as reservation_count
+                from reservation as r
+                inner join theme as th
+                on r.theme_id = th.id
+                where r.date between dateadd('day', -7, current_date()) and dateadd('day', -1, current_date())
+                group by th.id
+                order by reservation_count desc
+                limit 10
+                """;
 
         return jdbcTemplate.query(sql, themeRowMapper);
     }

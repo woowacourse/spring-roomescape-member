@@ -54,11 +54,14 @@ public class ReservationTimeDaoImpl implements ReservationTimeDao {
 
     @Override
     public boolean existByStartAt(LocalTime startAt) {
-        String sql = "select exists ( "
-                + "    select 1 "
-                + "    from reservation_time "
-                + "    where start_at = ?"
-                + ")";
+        String sql = """
+                select exists (
+                    select 1
+                    from reservation_time
+                    where start_at = ?
+                )
+                """;
+
         return jdbcTemplate.queryForObject(sql, Boolean.class, startAt);
     }
 
