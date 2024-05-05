@@ -42,8 +42,8 @@ public class FakeThemeDao implements ThemeRepository {
     }
 
     @Override
-    public Optional<Theme> findById(final long themeId) {
-        return Optional.of(themes.get(themeId));
+    public Theme findById(final long themeId) {
+        return themes.get(themeId);
     }
 
     @Override

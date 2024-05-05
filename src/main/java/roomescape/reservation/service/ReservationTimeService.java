@@ -58,7 +58,7 @@ public class ReservationTimeService {
 
         List<AvailableTimeResponse> result = new ArrayList<>();
         boolean alreadyBooked;
-        
+
         for (ReservationTime time : times) {
             alreadyBooked = reservedTimes.contains(time);
             result.add(new AvailableTimeResponse(time.getId(), time.getStartAt(), alreadyBooked));
