@@ -1,5 +1,7 @@
 package roomescape.domain;
 
+import java.time.LocalTime;
+
 public class Reservation {
     private static final long NO_ID = 0;
 
@@ -40,7 +42,7 @@ public class Reservation {
         return schedule.getDate();
     }
 
-    public String getTime() {
+    public LocalTime getTime() {
         return schedule.getTime();
     }
 

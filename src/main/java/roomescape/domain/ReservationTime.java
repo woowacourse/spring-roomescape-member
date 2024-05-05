@@ -3,12 +3,10 @@ package roomescape.domain;
 import roomescape.exception.InvalidReservationException;
 
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Objects;
 
 public class ReservationTime {
-    private final static String TIME_FORMAT = "HH:mm";
     private final static long NO_ID = 0;
 
     private final long id;
@@ -60,7 +58,7 @@ public class ReservationTime {
         return id;
     }
 
-    public String getStartAt() {
-        return startAt.format(DateTimeFormatter.ofPattern(TIME_FORMAT));
+    public LocalTime getStartAt() {
+        return startAt;
     }
 }

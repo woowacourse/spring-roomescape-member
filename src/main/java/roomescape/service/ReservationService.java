@@ -14,7 +14,6 @@ import roomescape.service.dto.ReservationResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -57,7 +56,7 @@ public class ReservationService {
     }
 
     private void validateIfBefore(final ReservationDate date, final ReservationTime time) {
-        LocalDateTime value = LocalDateTime.of(LocalDate.parse(date.getValue()), LocalTime.parse(time.getStartAt()));
+        LocalDateTime value = LocalDateTime.of(LocalDate.parse(date.getValue()), time.getStartAt());
         if (value.isBefore(LocalDateTime.now())) {
             throw new InvalidReservationException("현재보다 이전으로 일정을 설정할 수 없습니다.");
         }

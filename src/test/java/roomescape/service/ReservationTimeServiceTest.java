@@ -71,9 +71,10 @@ class ReservationTimeServiceTest {
     @Test
     void duplicatedTime() {
         //given
-        ReservationTime target = reservationTimeRepository.save(new ReservationTime("10:00"));
+        String time = "10:00";
+        reservationTimeRepository.save(new ReservationTime(time));
 
-        ReservationTimeCreateRequest reservationTimeCreateRequest = new ReservationTimeCreateRequest(target.getStartAt());
+        ReservationTimeCreateRequest reservationTimeCreateRequest = new ReservationTimeCreateRequest(time);
 
         //when&then
         assertThatThrownBy(() -> reservationTimeService.create(reservationTimeCreateRequest))
