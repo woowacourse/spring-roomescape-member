@@ -8,7 +8,6 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.DateTimeFormat;
-import roomescape.exception.RoomescapeException;
 
 public record ReservationRequest(
         @NotBlank(message = "이름을 입력해주세요.")
@@ -22,11 +21,7 @@ public record ReservationRequest(
         Long themeId) {
 
     public Reservation toReservation(ReservationTime reservationTime, Theme theme) {
-        try {
-            return new Reservation(new PlayerName(name), parsedDate(), reservationTime, theme);
-        } catch (IllegalArgumentException e) {
-            throw new RoomescapeException("예약을 생성할 수 없습니다.");
-        }
+        return new Reservation(new PlayerName(name), parsedDate(), reservationTime, theme);
     }
 
     public LocalDate parsedDate() {

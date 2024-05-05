@@ -4,7 +4,6 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalTime;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.DateTimeFormat;
-import roomescape.exception.RoomescapeException;
 
 public record ReservationTimeRequest(
         @NotNull(message = "시간을 입력해주세요.")
@@ -12,11 +11,7 @@ public record ReservationTimeRequest(
         String startAt) {
 
     public ReservationTime toReservationTime() {
-        try {
-            return new ReservationTime(parsedStartAt());
-        } catch (IllegalArgumentException e) {
-            throw new RoomescapeException("예약 시간을 생성할 수 없습니다.");
-        }
+        return new ReservationTime(parsedStartAt());
     }
 
     public LocalTime parsedStartAt() {

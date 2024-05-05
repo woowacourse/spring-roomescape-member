@@ -1,23 +1,21 @@
 package roomescape.application.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import org.hibernate.validator.constraints.Length;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeName;
-import roomescape.exception.RoomescapeException;
 
 public record ThemeRequest(
         @NotBlank(message = "테마 이름을 입력해주세요.")
         String name,
         @NotBlank(message = "테마 설명을 입력해주세요.")
+        @Length(max = 200, message = "테마 설명은 1000자 이하여야 합니다.")
         String description,
+        @Length(max = 200, message = "썸네일 URL은 200자 이하여야 합니다.")
         @NotBlank(message = "썸네일 URL을 입력해주세요.")
         String thumbnail) {
 
     public Theme toTheme() {
-        try {
-            return new Theme(new ThemeName(name), description, thumbnail);
-        } catch (IllegalArgumentException e) {
-            throw new RoomescapeException("테마를 생성할 수 없습니다.");
-        }
+        return new Theme(new ThemeName(name), description, thumbnail);
     }
 }
