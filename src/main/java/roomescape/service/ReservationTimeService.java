@@ -1,0 +1,83 @@
+package roomescape.service;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import org.springframework.stereotype.Service;
+import roomescape.domain.Reservation.Reservation;
+import roomescape.domain.ReservationTime.ReservationTime;
+import roomescape.dto.ReservationTimeRequest;
+import roomescape.dto.ReservationTimeResponse;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
+
+@Service
+public class ReservationTimeService {
+
+    private final ReservationRepository reservationRepository;
+    private final ReservationTimeRepository reservationTimeRepository;
+
+    public ReservationTimeService(ReservationRepository reservationRepository,
+                                  ReservationTimeRepository reservationTimeRepository) {
+        this.reservationRepository = reservationRepository;
+        this.reservationTimeRepository = reservationTimeRepository;
+    }
+
+    public Long addReservationTime(ReservationTimeRequest reservationTimeRequest) {
+        validateTimeDuplicate(reservationTimeRequest.startAt());
+        ReservationTime reservationTime = reservationTimeRequest.toEntity();
+        return reservationTimeRepository.save(reservationTime);
+    }
+
+    public List<ReservationTimeResponse> getAllReservationTimes() {
+        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
+        return reservationTimes.stream()
+                .map(ReservationTimeResponse::from)
+                .toList();
+    }
+
+    public ReservationTimeResponse getReservationTime(Long id) {
+        validateIdExist(id);
+        ReservationTime reservationTime = reservationTimeRepository.findById(id);
+        return ReservationTimeResponse.from(reservationTime);
+    }
+
+    public List<ReservationTimeResponse> getAvailableTimes(LocalDate date, Long themeId) {
+        List<Long> bookedTimeIds = getTimeIdForDateAndTheme(date, themeId);
+        List<ReservationTime> availableTimes = reservationTimeRepository.findByIdsNotIn(bookedTimeIds);
+        return availableTimes.stream()
+                .map(ReservationTimeResponse::from)
+                .toList();
+    }
+
+    public void deleteReservationTime(Long id) {
+        validateIdExist(id);
+        validateDeletable(id);
+        reservationRepository.delete(id);
+    }
+
+    private List<Long> getTimeIdForDateAndTheme(LocalDate date, Long themeId) {
+        List<Reservation> reservations = reservationRepository.findByDateAndThemeId(date, themeId);
+        return reservations.stream()
+                .map(reservation -> reservation.getTime().getId())
+                .toList();
+    }
+
+    private void validateIdExist(Long id) {
+        if (!reservationTimeRepository.existId(id)) {
+            throw new IllegalArgumentException("[ERROR] id가 존재하지 않습니다 : " + id);
+        }
+    }
+
+    private void validateTimeDuplicate(LocalTime time) {
+        if (reservationTimeRepository.existTime(time)) {
+            throw new IllegalArgumentException("[ERROR] 이미 등록된 시간 입니다. : " + time);
+        }
+    }
+
+    private void validateDeletable(Long id) {
+        if (reservationRepository.existTimeId(id)) {
+            throw new IllegalArgumentException("[ERROR] 해당 시간에 예약이 존재합니다.");
+        }
+    }
+}

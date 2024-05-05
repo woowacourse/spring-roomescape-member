@@ -27,3 +27,6 @@ dependencies {
 test {
     useJUnitPlatform()
 }
+compileJava {
+    options.compilerArgs << '-parameters'
+}
