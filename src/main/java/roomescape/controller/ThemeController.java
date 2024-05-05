@@ -48,7 +48,7 @@ public class ThemeController {
     public ResponseEntity<ThemeResponse> addTheme(@RequestBody SaveThemeRequest request) {
         Theme theme = themeCreateService.createTheme(request);
         return ResponseEntity.created(URI.create("/themes/" + theme.getId()))
-                .body(ThemeResponse.of(theme));
+                .body(new ThemeResponse(theme));
     }
 
     @DeleteMapping("/themes/{id}")

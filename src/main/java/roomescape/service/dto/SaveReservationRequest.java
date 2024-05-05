@@ -21,6 +21,4 @@ public record SaveReservationRequest(String name, LocalDate date, Long timeId, L
     public static Reservation toEntity(SaveReservationRequest request, ReservationTime reservationTime, Theme theme) {
         return new Reservation(request.name(), request.date(), reservationTime, theme);
     }
-
-
 }
