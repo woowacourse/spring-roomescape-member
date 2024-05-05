@@ -1,7 +1,6 @@
 package roomescape.application;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,17 +26,13 @@ public class ReservationTimeService {
 
     @Transactional
     public ReservationTimeResponse create(ReservationTimeRequest request) {
-        if (existsByStartAt(request.startAt())) {
+        if (reservationTimeRepository.existsByStartAt(request.startAt())) {
             throw new DuplicatedEntityException(
                     String.format("이미 존재하는 예약시간이 있습니다. 해당 시간:%s", request.startAt())
             );
         }
         ReservationTime reservationTime = reservationTimeRepository.create(request.toReservationTime());
         return ReservationTimeResponse.from(reservationTime);
-    }
-
-    private boolean existsByStartAt(LocalTime startAt) {
-        return reservationTimeRepository.existsByStartAt(startAt);
     }
 
     public List<ReservationTimeResponse> findAll() {
