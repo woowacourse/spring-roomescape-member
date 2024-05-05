@@ -74,7 +74,7 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public Boolean exist(long id) {
+    public boolean exist(long id) {
         String sql = """
                 SELECT
                 CASE
@@ -83,11 +83,11 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
                     ELSE FALSE
                 END
                 """;
-        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
+        return jdbcTemplate.queryForObject(sql, boolean.class, id);
     }
 
     @Override
-    public Boolean exist(ReservationTime reservationTime) {
+    public boolean exist(ReservationTime reservationTime) {
         String sql = """
                 SELECT
                 CASE
@@ -96,7 +96,7 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
                     ELSE FALSE
                 END
                 """;
-        return jdbcTemplate.queryForObject(sql, Boolean.class, reservationTime.getStartAt().toStringTime());
+        return jdbcTemplate.queryForObject(sql, boolean.class, reservationTime.getStartAt().toStringTime());
     }
 
     @Override
