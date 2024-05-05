@@ -29,7 +29,7 @@ public class ThemeRepository {
     }
 
     public Theme save(Theme theme) {
-        String sql = "INSERT INTO theme (name, description, thumbnail) values (?, ? ,?)";
+        String sql = "INSERT INTO theme (name, description, thumbnail) VALUES (?, ? ,?)";
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(con -> {
@@ -46,7 +46,7 @@ public class ThemeRepository {
     }
 
     public Optional<Theme> findById(Long id) {
-        String sql = "SELECT id, name, description, thumbnail FROM theme where id = ?";
+        String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
         List<Theme> themes = jdbcTemplate.query(sql, themeRowMapper, id);
         return themes.isEmpty() ? Optional.empty() : Optional.of(themes.get(0));
     }
@@ -57,12 +57,12 @@ public class ThemeRepository {
     }
 
     public List<Theme> findTop10ByOrderByReservationCountBetween(LocalDate start, LocalDate end) {
-        String sql = "select t.id, t.name, t.description, t.thumbnail " +
-                "from theme as t inner join reservation as r " +
-                "on t.id = r.theme_id " +
-                "where r.date between ? and ? " +
-                "group by t.id " +
-                "order by count(t.id) desc";
+        String sql = "SELECT t.id, t.name, t.description, t.thumbnail " +
+                "FROM theme AS t INNER JOIN reservation AS r " +
+                "ON t.id = r.theme_id " +
+                "WHERE r.date BETWEEN ? AND ? " +
+                "GROUP BY t.id " +
+                "ORDER BY count(t.id) DESC";
         return jdbcTemplate.query(sql, themeRowMapper, Date.valueOf(start), Date.valueOf(end));
     }
 
