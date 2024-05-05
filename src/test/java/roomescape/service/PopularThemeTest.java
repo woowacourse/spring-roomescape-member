@@ -21,7 +21,7 @@ class PopularThemeTest {
     private ThemeService themeService;
 
     @Test
-    @DisplayName("시작일부터 종료일까지 예약이 많이된 상위 10개의 테마를 응답한다.")
+    @DisplayName("전달한 날짜 기준 이전 일주일 간 예약이 많이된 상위 10개의 테마를 응답한다.")
     void findPopulars() {
         //given
         LocalDate today = LocalDate.of(2024, 5, 2);
