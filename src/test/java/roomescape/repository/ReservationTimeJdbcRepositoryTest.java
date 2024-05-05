@@ -13,6 +13,8 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.UserName;
+import roomescape.exception.ExistingEntryException;
+import roomescape.exception.ReferencedRowExistsException;
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -38,7 +40,7 @@ class ReservationTimeJdbcRepositoryTest {
         //when & then
         assertThatThrownBy(() ->
                 reservationTimeRepository.save(reservationTime2)
-        ).isInstanceOf(IllegalArgumentException.class)
+        ).isInstanceOf(ExistingEntryException.class)
                 .hasMessage("이미 추가된 예약 시간입니다.");
     }
 
@@ -60,7 +62,7 @@ class ReservationTimeJdbcRepositoryTest {
         //when & then
         assertThatThrownBy(() ->
                 reservationTimeRepository.deleteById(1L)
-        ).isInstanceOf(IllegalArgumentException.class)
+        ).isInstanceOf(ReferencedRowExistsException.class)
                 .hasMessage("현 예약 시간에 예약이 존재합니다.");
     }
 }

@@ -6,6 +6,7 @@ import roomescape.domain.Theme;
 import roomescape.dto.ThemeCreateRequest;
 import roomescape.dto.ThemeResponse;
 import roomescape.dto.ThemeResponses;
+import roomescape.exception.NotExistingEntryException;
 import roomescape.repository.ThemeRepository;
 
 @Service
@@ -45,7 +46,7 @@ public class ThemeService {
 
     public void delete(Long id) {
         if (themeRepository.deleteById(id) == 0) {
-            throw new IllegalArgumentException("삭제할 테마가 존재하지 않습니다");
+            throw new NotExistingEntryException("삭제할 테마가 존재하지 않습니다");
         }
     }
 }

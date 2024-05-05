@@ -15,6 +15,8 @@ import roomescape.dto.AvailableTimeResponses;
 import roomescape.dto.ReservationCreateRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationResponses;
+import roomescape.exception.NotExistingEntryException;
+import roomescape.exception.ReservingPastTimeException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -80,13 +82,13 @@ public class ReservationService {
         LocalTime nowTime = LocalTime.now(ZoneId.of("Asia/Seoul"));
 
         if (date.isBefore(nowDate) || (date.isEqual(nowDate) && time.isBefore(nowTime))) {
-            throw new IllegalArgumentException("지나간 날짜 또는 시간은 예약할 수 없습니다.");
+            throw new ReservingPastTimeException("지나간 날짜 또는 시간은 예약할 수 없습니다.");
         }
     }
 
     public void delete(Long id) {
         if (reservationRepository.deleteById(id) == 0) {
-            throw new IllegalArgumentException("삭제할 예약이 존재하지 않습니다");
+            throw new NotExistingEntryException("삭제할 예약이 존재하지 않습니다");
         }
     }
 }

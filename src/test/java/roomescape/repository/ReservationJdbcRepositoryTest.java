@@ -16,6 +16,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.UserName;
+import roomescape.exception.ExistingEntryException;
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -82,7 +83,7 @@ class ReservationJdbcRepositoryTest {
         //when & then
         assertThatThrownBy(() ->
                 reservationRepository.save(reservation2)
-        ).isInstanceOf(IllegalArgumentException.class)
+        ).isInstanceOf(ExistingEntryException.class)
                 .hasMessage("이미 예약된 시간입니다.");
     }
 }

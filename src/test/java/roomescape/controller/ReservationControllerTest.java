@@ -35,7 +35,7 @@ class ReservationControllerTest {
         RestAssured.given().log().all()
                 .when().get("reservations")
                 .then().log().all()
-                .statusCode(200).body("size()", is(0));
+                .statusCode(200).body("responses.size()", is(0));
     }
 
     @TestFactory
@@ -92,7 +92,7 @@ class ReservationControllerTest {
                     RestAssured.given().log().all()
                             .when().get("/reservations")
                             .then().log().all()
-                            .statusCode(200).body("size()", is(1));
+                            .statusCode(200).body("responses.size()", is(1));
                 }),
 
                 dynamicTest("id가 1인 예약을 삭제한다", () -> {
@@ -106,7 +106,7 @@ class ReservationControllerTest {
                     RestAssured.given().log().all()
                             .when().get("/reservations")
                             .then().log().all()
-                            .statusCode(200).body("size()", is(0));
+                            .statusCode(200).body("responses.size()", is(0));
                 })
         );
     }
@@ -449,7 +449,7 @@ class ReservationControllerTest {
                     RestAssured.given().log().all()
                             .when().get("/reservations/available?date=2025-08-05&themeId=1")
                             .then().log().all()
-                            .statusCode(200).body("size()", is(1));
+                            .statusCode(200).body("responses.size()", is(1));
                 })
         );
     }

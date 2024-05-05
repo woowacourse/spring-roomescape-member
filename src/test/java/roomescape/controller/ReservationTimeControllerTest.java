@@ -45,7 +45,7 @@ public class ReservationTimeControllerTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200).extract()
-                .jsonPath().getList(".", ReservationTime.class);
+                .jsonPath().getList("responses.", ReservationTime.class);
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(*) from reservation_time", Integer.class);
 

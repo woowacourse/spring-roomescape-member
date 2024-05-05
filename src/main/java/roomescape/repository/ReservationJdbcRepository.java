@@ -15,6 +15,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.UserName;
+import roomescape.exception.ExistingEntryException;
 
 @Repository
 public class ReservationJdbcRepository implements ReservationRepository {
@@ -102,7 +103,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
                     reservation.getTheme()
             );
         } catch (DuplicateKeyException e) {
-            throw new IllegalArgumentException("이미 예약된 시간입니다.");
+            throw new ExistingEntryException("이미 예약된 시간입니다.");
         }
     }
 

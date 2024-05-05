@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.dto.ReservationTimeCreateRequest;
 import roomescape.dto.ReservationTimeResponse;
+import roomescape.exception.NotExistingEntryException;
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -55,7 +56,7 @@ class ReservationTimeServiceTest {
     void checkReservationTimeDeleteFail() {
         //given & when & then
         assertThatThrownBy(() -> reservationTimeService.delete(0L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(NotExistingEntryException.class)
                 .hasMessage("삭제할 예약 시간이 존재하지 않습니다");
     }
 }

@@ -6,6 +6,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeCreateRequest;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.ReservationTimeResponses;
+import roomescape.exception.NotExistingEntryException;
 import roomescape.repository.ReservationTimeRepository;
 
 @Service
@@ -33,7 +34,7 @@ public class ReservationTimeService {
 
     public void delete(Long id) {
         if (reservationTimeRepository.deleteById(id) == 0) {
-            throw new IllegalArgumentException("삭제할 예약 시간이 존재하지 않습니다");
+            throw new NotExistingEntryException("삭제할 예약 시간이 존재하지 않습니다");
         }
     }
 }

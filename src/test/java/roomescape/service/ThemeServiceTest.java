@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.dto.ThemeCreateRequest;
 import roomescape.dto.ThemeResponse;
+import roomescape.exception.NotExistingEntryException;
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -62,7 +63,7 @@ class ThemeServiceTest {
     void checkReservationTimeDeleteFail() {
         //given & when & then
         assertThatThrownBy(() -> themeService.delete(0L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(NotExistingEntryException.class)
                 .hasMessage("삭제할 테마가 존재하지 않습니다");
     }
 }

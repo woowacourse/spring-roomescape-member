@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
+import roomescape.exception.InvalidInputException;
 
 public class Reservation {
 
@@ -25,7 +26,7 @@ public class Reservation {
 
     private void validate(LocalDate date) {
         if (date == null) {
-            throw new IllegalArgumentException("예약 날짜가 입력되지 않았습니다.");
+            throw new InvalidInputException("예약 날짜가 입력되지 않았습니다.");
         }
     }
 

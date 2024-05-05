@@ -21,6 +21,7 @@ import roomescape.domain.UserName;
 import roomescape.dto.AvailableTimeResponse;
 import roomescape.dto.ReservationCreateRequest;
 import roomescape.dto.ReservationResponse;
+import roomescape.exception.NotExistingEntryException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -129,7 +130,7 @@ class ReservationServiceTest {
 
         //when & then
         assertThatThrownBy(() -> reservationService.delete(0L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(NotExistingEntryException.class)
                 .hasMessage("삭제할 예약이 존재하지 않습니다");
     }
 }

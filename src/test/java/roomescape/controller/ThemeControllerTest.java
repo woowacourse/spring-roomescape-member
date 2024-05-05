@@ -49,7 +49,7 @@ public class ThemeControllerTest {
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200).extract()
-                .jsonPath().getList(".", Theme.class);
+                .jsonPath().getList("responses.", Theme.class);
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(*) from theme", Integer.class);
 

@@ -12,6 +12,8 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.ExistingEntryException;
+import roomescape.exception.ReferencedRowExistsException;
 
 @Repository
 public class ReservationTimeJdbcRepository implements ReservationTimeRepository {
@@ -20,8 +22,8 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
     private final SimpleJdbcInsert simpleJdbcInsert;
 
     private static final RowMapper<ReservationTime> reservationTimeRowMapper = (resultSet, rowNum) -> new ReservationTime(
-                resultSet.getLong("id"),
-                LocalTime.parse(resultSet.getString("start_at"))
+            resultSet.getLong("id"),
+            LocalTime.parse(resultSet.getString("start_at"))
     );
 
     public ReservationTimeJdbcRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
@@ -48,7 +50,7 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
             Long id = simpleJdbcInsert.executeAndReturnKey(parameterSource).longValue();
             return new ReservationTime(id, reservationTime.getStartAt());
         } catch (DuplicateKeyException e) {
-            throw new IllegalArgumentException("이미 추가된 예약 시간입니다.");
+            throw new ExistingEntryException("이미 추가된 예약 시간입니다.");
         }
     }
 
@@ -57,7 +59,7 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
         try {
             return jdbcTemplate.update(sql, id);
         } catch (DataIntegrityViolationException e) {
-            throw new IllegalArgumentException("현 예약 시간에 예약이 존재합니다.");
+            throw new ReferencedRowExistsException("현 예약 시간에 예약이 존재합니다.");
         }
     }
 }

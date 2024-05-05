@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.time.LocalTime;
+import roomescape.exception.InvalidInputException;
 
 public class ReservationTime {
 
@@ -19,7 +20,7 @@ public class ReservationTime {
 
     private void validate(LocalTime startAt) {
         if (startAt == null) {
-            throw new IllegalArgumentException("예약 시간이 입력되지 않았습니다.");
+            throw new InvalidInputException("예약 시간이 입력되지 않았습니다.");
         }
     }
 

@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import roomescape.exception.InvalidInputException;
 
 public class Theme {
     private final Long id;
@@ -23,13 +24,13 @@ public class Theme {
 
     private void validate(String name, String description, String thumbnail) {
         if (name.isBlank()) {
-            throw new IllegalArgumentException("테마명이 입력되지 않았습니다.");
+            throw new InvalidInputException("테마명이 입력되지 않았습니다.");
         }
         if (description.isBlank()) {
-            throw new IllegalArgumentException("테마 설명이 입력되지 않았습니다.");
+            throw new InvalidInputException("테마 설명이 입력되지 않았습니다.");
         }
         if (thumbnail.isBlank()) {
-            throw new IllegalArgumentException("테마 이미지가 입력되지 않았습니다.");
+            throw new InvalidInputException("테마 이미지가 입력되지 않았습니다.");
         }
     }
 

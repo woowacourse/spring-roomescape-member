@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.exception.InvalidInputException;
 
 class ReservationTimeTest {
 
@@ -12,7 +13,7 @@ class ReservationTimeTest {
     void checkNullReservationTime() {
         //given & when & then
         assertThatThrownBy(() -> new ReservationTime(null))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InvalidInputException.class)
                 .hasMessage("예약 시간이 입력되지 않았습니다.");
     }
 }

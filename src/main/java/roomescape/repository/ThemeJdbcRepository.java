@@ -11,6 +11,8 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
+import roomescape.exception.ExistingEntryException;
+import roomescape.exception.ReferencedRowExistsException;
 
 @Repository
 public class ThemeJdbcRepository implements ThemeRepository {
@@ -75,7 +77,7 @@ public class ThemeJdbcRepository implements ThemeRepository {
                     theme.getThumbnail()
             );
         } catch (DuplicateKeyException e) {
-            throw new IllegalArgumentException("이미 동일한 이름을 가진 테마가 존재합니다.");
+            throw new ExistingEntryException("이미 동일한 이름을 가진 테마가 존재합니다.");
         }
     }
 
@@ -84,7 +86,7 @@ public class ThemeJdbcRepository implements ThemeRepository {
         try {
             return jdbcTemplate.update(sql, id);
         } catch (DataIntegrityViolationException e) {
-            throw new IllegalArgumentException("현 테마에 예약이 존재합니다.");
+            throw new ReferencedRowExistsException("현 테마에 예약이 존재합니다.");
         }
     }
 }
