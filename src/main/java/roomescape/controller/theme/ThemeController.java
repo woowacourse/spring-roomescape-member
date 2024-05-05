@@ -13,7 +13,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import roomescape.service.ThemeService;
 
 import java.net.URI;
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -56,8 +55,8 @@ public class ThemeController {
     @GetMapping("/popular")
     public List<PopularThemeResponse> getPopularThemes(
             @RequestParam final int days,
-            @RequestParam final int count
+            @RequestParam final int limit
     ) {
-        return themeService.getPopularThemes(new PopularThemeRequest(days, count));
+        return themeService.getPopularThemes(new PopularThemeRequest(days, limit));
     }
 }

@@ -1,4 +1,4 @@
 package roomescape.controller.theme;
 
-public record PopularThemeRequest(int days, int count) {
+public record PopularThemeRequest(int days, int limit) {
 }

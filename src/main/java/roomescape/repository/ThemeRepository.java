@@ -12,7 +12,7 @@ public interface ThemeRepository {
 
     Optional<Theme> findById(long id);
 
-    List<Theme> findPopularThemes(LocalDate start, LocalDate end, int count);
+    List<Theme> findPopularThemes(LocalDate from, LocalDate to, int limit);
 
     Theme save(Theme theme);
 

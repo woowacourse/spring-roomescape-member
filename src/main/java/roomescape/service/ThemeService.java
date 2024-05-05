@@ -51,7 +51,7 @@ public class ThemeService {
         final List<Theme> popularThemes = themeRepository.findPopularThemes(
                 startFilterDate,
                 endFilterDate,
-                popularThemeRequest.count()
+                popularThemeRequest.limit()
         );
         return popularThemes.stream()
                 .map(PopularThemeResponse::from)

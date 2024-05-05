@@ -65,9 +65,9 @@ public class H2ThemeRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findPopularThemes(
-            final LocalDate start,
-            final LocalDate end,
-            final int count
+            final LocalDate from,
+            final LocalDate to,
+            final int limit
     ) {
         final String sql = """
                 SELECT T.ID, T.NAME, T.THUMBNAIL, T.DESCRIPTION, COUNT(T.ID) AS FREQUENCY
@@ -79,7 +79,7 @@ public class H2ThemeRepository implements ThemeRepository {
                 LIMIT ?
                 """;
 
-        return jdbcTemplate.query(sql, this::mapRowThemeWithTableName, start, end, count);
+        return jdbcTemplate.query(sql, this::mapRowThemeWithTableName, from, to, limit);
     }
 
     @Override
