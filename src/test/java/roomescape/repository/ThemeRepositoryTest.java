@@ -29,8 +29,10 @@ class ThemeRepositoryTest {
     void findAll() {
         // given
         final List<Theme> expected = List.of(
-                new Theme(1L, "spring", "Escape from spring cold", "https://img.freepik.com/free-photo/spring-landscape-with-tulips-daisies_123827-29597.jpg?size=626&ext=jpg&ga=GA1.1.553209589.1714348800&semt=sph"),
-                new Theme(2L, "summer", "Escape from hottest weather", "https://www.lifewire.com/thmb/unRdFjROthGxGQXL9SZIbc5BzeA=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/summerbeach-5b4650c946e0fb005bfb3207.jpg")
+                new Theme(1L, "", "", ""),
+                new Theme(2L, "", "", ""),
+                new Theme(3L, "", "", ""),
+                new Theme(4L, "", "", "")
         );
 
         // when
