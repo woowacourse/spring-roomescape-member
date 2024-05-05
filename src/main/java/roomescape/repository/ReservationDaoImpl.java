@@ -16,13 +16,13 @@ import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
 
 @Repository
-public class ReservationDAO implements ReservationRepository {
+public class ReservationDaoImpl implements ReservationDao {
 
     private final JdbcTemplate jdbcTemplate;
 
     private final SimpleJdbcInsert insertActor;
 
-    public ReservationDAO(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+    public ReservationDaoImpl(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.insertActor = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation")

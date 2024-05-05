@@ -9,9 +9,9 @@ import java.util.NoSuchElementException;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
-import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationDao;
 
-class FakeReservationRepository implements ReservationRepository {
+class FakeReservationDao implements ReservationDao {
 
     private final List<Reservation> reservations = new ArrayList<>(List.of(
             new Reservation(1L, "브라운", LocalDate.of(2030, 8, 5),

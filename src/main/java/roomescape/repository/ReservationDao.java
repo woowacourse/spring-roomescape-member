@@ -6,7 +6,7 @@ import java.util.List;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 
-public interface ReservationRepository {
+public interface ReservationDao {
     List<Reservation> getAllReservations();
 
     Reservation addReservation(Reservation reservation);

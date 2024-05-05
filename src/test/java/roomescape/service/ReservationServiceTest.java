@@ -21,12 +21,12 @@ import roomescape.model.ReservationTime;
 
 class ReservationServiceTest {
 
-    private final FakeReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
+    private final FakeReservationTimeDao reservationTimeRepository = new FakeReservationTimeDao();
 
     private final ReservationService reservationService = new ReservationService(
-            new FakeReservationRepository(),
+            new FakeReservationDao(),
             reservationTimeRepository,
-            new FakeThemeRepository());
+            new FakeThemeDao());
 
     @DisplayName("모든 예약 시간을 반환한다")
     @Test
@@ -73,7 +73,7 @@ class ReservationServiceTest {
         ReservationRequest request = new ReservationRequest("에버", LocalDate.of(2000, 1, 11), 1L, 1L);
         assertThatThrownBy(() -> reservationService.addReservation(request))
                 .isInstanceOf(BadRequestException.class)
-                .hasMessageContaining("[ERROR] 현재(",") 이전 시간으로 예약할 수 없습니다.");
+                .hasMessageContaining("[ERROR] 현재(", ") 이전 시간으로 예약할 수 없습니다.");
     }
 
     @DisplayName("현재로 예약하면 예외가 발생하지 않는다.")

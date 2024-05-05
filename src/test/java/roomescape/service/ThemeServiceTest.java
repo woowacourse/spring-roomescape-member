@@ -12,7 +12,7 @@ import roomescape.model.Theme;
 
 class ThemeServiceTest {
 
-    private final ThemeService themeService = new ThemeService(new FakeThemeRepository());
+    private final ThemeService themeService = new ThemeService(new FakeThemeDao());
 
     @DisplayName("테마를 조회한다.")
     @Test

@@ -23,7 +23,7 @@ import roomescape.model.Theme;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class ThemeDAOTest {
+class ThemeDaoImplTest {
 
     @Autowired
     private DataSource dataSource;
@@ -32,7 +32,7 @@ class ThemeDAOTest {
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    private ThemeRepository themeRepository;
+    private ThemeDao themeDao;
 
     private SimpleJdbcInsert themeInsertActor;
     private SimpleJdbcInsert reservationInsertActor;
@@ -67,7 +67,7 @@ class ThemeDAOTest {
     @DisplayName("모든 테마를 조회한다.")
     @Test
     void should_find_all_themes() {
-        List<Theme> allThemes = themeRepository.findAllThemes();
+        List<Theme> allThemes = themeDao.findAllThemes();
         assertThat(allThemes).hasSize(2);
     }
 
@@ -75,15 +75,15 @@ class ThemeDAOTest {
     @Test
     void should_add_theme() {
         Theme theme = new Theme("브라운", "공포", "공포.jpg");
-        themeRepository.addTheme(theme);
-        assertThat(themeRepository.findAllThemes()).hasSize(3);
+        themeDao.addTheme(theme);
+        assertThat(themeDao.findAllThemes()).hasSize(3);
     }
 
     @DisplayName("테마를 삭제한다.")
     @Test
     void should_delete_theme() {
-        themeRepository.deleteTheme(1);
-        assertThat(themeRepository.findAllThemes()).hasSize(1);
+        themeDao.deleteTheme(1);
+        assertThat(themeDao.findAllThemes()).hasSize(1);
     }
 
     @DisplayName("특정 기간의 테마를 인기순으로 정렬하여 조회한다.")
@@ -107,7 +107,7 @@ class ThemeDAOTest {
 
         LocalDate before = LocalDate.of(2030, 1, 1);
         LocalDate after = LocalDate.of(2030, 1, 7);
-        List<Theme> themes = themeRepository.findThemeRankingByDate(before, after, 10);
+        List<Theme> themes = themeDao.findThemeRankingByDate(before, after, 10);
         assertThat(themes).hasSize(10);
         assertThat(themes).containsExactly(
                 new Theme(10L, "name10", "description10", "thumbnail10"),

@@ -16,33 +16,33 @@ import roomescape.exception.NotFoundException;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
-import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeRepository;
-import roomescape.repository.ThemeRepository;
+import roomescape.repository.ReservationDao;
+import roomescape.repository.ReservationTimeDao;
+import roomescape.repository.ThemeDao;
 
 @Service
 public class ReservationService {
 
-    private final ReservationRepository reservationRepository;
-    private final ReservationTimeRepository reservationTimeRepository;
-    private final ThemeRepository themeRepository;
+    private final ReservationDao reservationDao;
+    private final ReservationTimeDao reservationTimeDao;
+    private final ThemeDao themeDao;
 
-    public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository,
-                              ThemeRepository themeRepository) {
-        this.reservationRepository = reservationRepository;
-        this.reservationTimeRepository = reservationTimeRepository;
-        this.themeRepository = themeRepository;
+    public ReservationService(ReservationDao reservationDao,
+                              ReservationTimeDao reservationTimeDao,
+                              ThemeDao themeDao) {
+        this.reservationDao = reservationDao;
+        this.reservationTimeDao = reservationTimeDao;
+        this.themeDao = themeDao;
     }
 
     public List<Reservation> findAllReservations() {
-        return reservationRepository.getAllReservations();
+        return reservationDao.getAllReservations();
     }
 
     //todo : 메소드로 묶기
     public Reservation addReservation(ReservationRequest request) {
-        ReservationTime reservationTime = reservationTimeRepository.findReservationById(request.getTimeId());
-        Theme theme = themeRepository.findThemeById(request.getThemeId());
+        ReservationTime reservationTime = reservationTimeDao.findReservationById(request.getTimeId());
+        Theme theme = themeDao.findThemeById(request.getThemeId());
 
         LocalDateTime reservationDateTime = LocalDateTime.of(request.getDate(), reservationTime.getStartAt());
 
@@ -52,25 +52,25 @@ public class ReservationService {
             throw new BadRequestException("현재(%s) 이전 시간으로 예약할 수 없습니다.".formatted(now));
         }
         Long countReservation =
-                reservationRepository.countReservationByDateAndTimeId(request.getDate(), request.getTimeId());
+                reservationDao.countReservationByDateAndTimeId(request.getDate(), request.getTimeId());
         if (countReservation == null || countReservation > 0) {
             throw new DuplicatedException("이미 해당 시간(%s)에 예약이 존재합니다.".formatted(requestDateTime.toString()));
         }
         Reservation reservation = new Reservation(request.getName(), request.getDate(), reservationTime, theme);
-        return reservationRepository.addReservation(reservation);
+        return reservationDao.addReservation(reservation);
     }
 
     public void deleteReservation(long id) {
-        Long count = reservationRepository.countReservationById(id);
+        Long count = reservationDao.countReservationById(id);
         if (count == null || count <= 0) {
             throw new NotFoundException("해당 id:[%s] 값으로 예약된 내역이 존재하지 않습니다.".formatted(id));
         }
-        reservationRepository.deleteReservation(id);
+        reservationDao.deleteReservation(id);
     }
 
     public List<MemberReservationTimeResponse> getMemberReservationTimes(LocalDate date, long themeId) {
-        List<ReservationTime> allTimes = reservationTimeRepository.findAllReservationTimes();
-        List<ReservationTime> bookedTimes = reservationRepository.findReservationTimeByDateAndTheme(date, themeId);
+        List<ReservationTime> allTimes = reservationTimeDao.findAllReservationTimes();
+        List<ReservationTime> bookedTimes = reservationDao.findReservationTimeByDateAndTheme(date, themeId);
         List<ReservationTime> notBookedTimes = filterNotBookedTimes(allTimes, bookedTimes);
         List<MemberReservationTimeResponse> bookedResponse = mapToResponse(bookedTimes, true);
         List<MemberReservationTimeResponse> notBookedResponse = mapToResponse(notBookedTimes, false);

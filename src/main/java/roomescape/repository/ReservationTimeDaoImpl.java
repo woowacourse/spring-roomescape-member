@@ -14,13 +14,13 @@ import org.springframework.stereotype.Repository;
 import roomescape.model.ReservationTime;
 
 @Repository
-public class ReservationTimeDAO implements ReservationTimeRepository {
+public class ReservationTimeDaoImpl implements ReservationTimeDao {
 
     private final JdbcTemplate jdbcTemplate;
 
     private final SimpleJdbcInsert insertActor;
 
-    public ReservationTimeDAO(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+    public ReservationTimeDaoImpl(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.insertActor = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation_time")

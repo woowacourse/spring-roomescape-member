@@ -7,9 +7,9 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicLong;
 
 import roomescape.model.Theme;
-import roomescape.repository.ThemeRepository;
+import roomescape.repository.ThemeDao;
 
-public class FakeThemeRepository implements ThemeRepository {
+public class FakeThemeDao implements ThemeDao {
 
     private final List<Theme> themes = new ArrayList<>(List.of(
             new Theme(1L, "에버", "공포", "공포.jpg"),

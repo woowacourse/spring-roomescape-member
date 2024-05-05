@@ -5,7 +5,7 @@ import java.util.List;
 
 import roomescape.model.Theme;
 
-public interface ThemeRepository {
+public interface ThemeDao {
 
     List<Theme> findAllThemes();
 

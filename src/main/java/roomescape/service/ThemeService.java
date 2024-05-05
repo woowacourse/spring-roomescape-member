@@ -7,33 +7,33 @@ import org.springframework.stereotype.Service;
 
 import roomescape.controller.request.ThemeRequest;
 import roomescape.model.Theme;
-import roomescape.repository.ThemeRepository;
+import roomescape.repository.ThemeDao;
 
 @Service
 public class ThemeService {
 
-    private final ThemeRepository themeRepository;
+    private final ThemeDao themeDao;
 
-    public ThemeService(ThemeRepository themeRepository) {
-        this.themeRepository = themeRepository;
+    public ThemeService(ThemeDao themeDao) {
+        this.themeDao = themeDao;
     }
 
     public List<Theme> findAllThemes() {
-        return themeRepository.findAllThemes();
+        return themeDao.findAllThemes();
     }
 
     public Theme addTheme(ThemeRequest themeRequest) {
         Theme theme = new Theme(themeRequest.getName(), themeRequest.getDescription(), themeRequest.getThumbnail());
-        return themeRepository.addTheme(theme);
+        return themeDao.addTheme(theme);
     }
 
     public void deleteTheme(long id) {
-        themeRepository.deleteTheme(id);
+        themeDao.deleteTheme(id);
     }
 
     public List<Theme> findPopularThemes() {
         LocalDate before = LocalDate.now().minusDays(8);
         LocalDate after = LocalDate.now().minusDays(1);
-        return themeRepository.findThemeRankingByDate(before, after, 10);
+        return themeDao.findThemeRankingByDate(before, after, 10);
     }
 }

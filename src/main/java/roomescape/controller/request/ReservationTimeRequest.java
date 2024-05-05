@@ -2,8 +2,6 @@ package roomescape.controller.request;
 
 import java.time.LocalTime;
 
-import roomescape.exception.BadRequestException;
-
 public class ReservationTimeRequest {
 
     private LocalTime startAt;
