@@ -30,12 +30,15 @@ public class ReservationCreateService {
     public Reservation createReservation(ReservationSaveRequest request) {
         ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간 입니다."));
+
+        validateDateIsFuture(toLocalDateTime(request.date(), reservationTime));
+
         Theme theme = themeRepository.findById(request.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마 입니다."));
+
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(request.date(), request.timeId(), request.themeId())) {
             throw new IllegalArgumentException("해당 시간에 이미 예약된 테마입니다.");
         }
-        validateDateIsFuture(toLocalDateTime(request.date(), reservationTime));
 
         Reservation reservation = ReservationSaveRequest.toEntity(request, reservationTime, theme);
         return reservationRepository.save(reservation);
