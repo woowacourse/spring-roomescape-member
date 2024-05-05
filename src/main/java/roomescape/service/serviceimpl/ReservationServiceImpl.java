@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.service.serviceimpl;
 
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
@@ -10,6 +10,7 @@ import roomescape.dto.response.SelectableTimeResponse;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ReservationTimeDao;
 import roomescape.repository.ThemeDao;
+import roomescape.service.ReservationService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

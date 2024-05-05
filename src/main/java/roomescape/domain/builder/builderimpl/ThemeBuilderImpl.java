@@ -1,6 +1,7 @@
-package roomescape.domain.builder;
+package roomescape.domain.builder.builderimpl;
 
 import roomescape.domain.Theme;
+import roomescape.domain.builder.ThemeBuilder;
 
 public class ThemeBuilderImpl implements ThemeBuilder {
     private Long id;

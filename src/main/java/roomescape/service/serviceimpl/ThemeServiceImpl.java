@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.service.serviceimpl;
 
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
@@ -6,6 +6,7 @@ import roomescape.dto.request.ThemeRequest;
 import roomescape.dto.response.ThemeResponse;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ThemeDao;
+import roomescape.service.ThemeService;
 
 import java.time.LocalDate;
 import java.util.List;

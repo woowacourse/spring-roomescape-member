@@ -1,4 +1,4 @@
-package roomescape.repository;
+package roomescape.repository.daoimpl;
 
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
+import roomescape.repository.ReservationDao;
 
 import javax.sql.DataSource;
 import java.time.LocalDate;

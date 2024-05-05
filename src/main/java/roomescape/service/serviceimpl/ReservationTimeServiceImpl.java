@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.service.serviceimpl;
 
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
@@ -7,6 +7,7 @@ import roomescape.dto.request.ReservationTimeRequest;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ReservationTimeDao;
+import roomescape.service.ReservationTimeService;
 
 import java.util.List;
 import java.util.NoSuchElementException;

@@ -1,7 +1,7 @@
 package roomescape.domain;
 
 import roomescape.domain.builder.ThemeBuilder;
-import roomescape.domain.builder.ThemeBuilderImpl;
+import roomescape.domain.builder.builderimpl.ThemeBuilderImpl;
 
 import java.util.Objects;
 

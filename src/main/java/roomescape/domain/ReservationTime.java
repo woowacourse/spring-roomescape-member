@@ -1,7 +1,7 @@
 package roomescape.domain;
 
 import roomescape.domain.builder.ReservationTimeBuilder;
-import roomescape.domain.builder.ReservationTimeBuilderImpl;
+import roomescape.domain.builder.builderimpl.ReservationTimeBuilderImpl;
 
 import java.time.LocalTime;
 

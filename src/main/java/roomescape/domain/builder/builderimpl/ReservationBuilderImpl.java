@@ -1,9 +1,10 @@
-package roomescape.domain.builder;
+package roomescape.domain.builder.builderimpl;
 
 import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.builder.ReservationBuilder;
 
 import java.time.LocalDate;
 
