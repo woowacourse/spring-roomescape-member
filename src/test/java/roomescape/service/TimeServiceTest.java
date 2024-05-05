@@ -16,6 +16,7 @@ import roomescape.repository.H2ReservationTimeRepository;
 import roomescape.repository.H2ThemeRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
+import roomescape.service.exception.TimeNotFoundException;
 import roomescape.service.exception.TimeUsedException;
 
 import java.time.LocalDate;
@@ -110,13 +111,19 @@ class TimeServiceTest {
 
     @Test
     @DisplayName("예약 시간을 삭제한다.")
-    void deleteTime() {
+    void deleteTimePresent() {
         // given
         final Long id = timeService.addTime(sampleTimes.get(0)).id();
 
         // when & then
         assertThat(timeService.deleteTime(id)).isOne();
-        assertThat(timeService.deleteTime(id)).isZero();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 예약 시간을 삭제할 경우 예외가 발생한다.")
+    void deleteTimeNotExist() {
+        assertThatThrownBy(() -> timeService.deleteTime(1L))
+                .isInstanceOf(TimeNotFoundException.class);
     }
 
     @Test

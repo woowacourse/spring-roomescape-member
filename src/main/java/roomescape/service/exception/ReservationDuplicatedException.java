@@ -1,8 +1,8 @@
 package roomescape.service.exception;
 
-import roomescape.exception.DuplicateException;
+import roomescape.exception.ConflictException;
 
-public class ReservationDuplicatedException extends DuplicateException {
+public class ReservationDuplicatedException extends ConflictException {
 
     public ReservationDuplicatedException(final String message) {
         super(message);

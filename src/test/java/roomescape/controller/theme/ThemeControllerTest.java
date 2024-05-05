@@ -9,9 +9,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import roomescape.controller.ControllerTest;
 import roomescape.service.ThemeService;
+import roomescape.service.exception.ThemeNotFoundException;
 
 import java.util.List;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -84,12 +86,14 @@ class ThemeControllerTest extends ControllerTest {
     @DisplayName("존재하지 않는 테마를 삭제하면 404 를 응답한다.")
     void deleteTheme404() throws Exception {
         // given
+        final String message = "테마가 존재하지 않습니다.";
         Mockito.when(themeService.deleteTheme(Mockito.anyLong()))
-                .thenReturn(0);
+                .thenThrow(new ThemeNotFoundException(message));
 
         // when & then
         mvc.perform(delete("/themes/1"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(containsString(message)));
     }
 
     @Test

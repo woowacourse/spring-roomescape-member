@@ -1,8 +1,8 @@
 package roomescape.domain.exception;
 
-import roomescape.exception.CustomException;
+import roomescape.exception.BadRequestException;
 
-public class InvalidNameException extends CustomException {
+public class InvalidNameException extends BadRequestException {
 
     public InvalidNameException(final String message) {
         super(message);

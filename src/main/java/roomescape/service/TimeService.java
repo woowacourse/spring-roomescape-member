@@ -8,6 +8,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.exception.InvalidDateException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.service.exception.TimeNotFoundException;
 import roomescape.service.exception.TimeUsedException;
 
 import java.time.LocalDate;
@@ -69,6 +70,10 @@ public class TimeService {
         if (reservationRepository.existsByTimeId(id)) {
             throw new TimeUsedException("예약된 시간은 삭제할 수 없습니다.");
         }
-        return timeRepository.delete(id);
+        final int deletedCount = timeRepository.delete(id);
+        if (deletedCount == 0) {
+            throw new TimeNotFoundException("예약 시간이 존재하지 않습니다.");
+        }
+        return deletedCount;
     }
 }

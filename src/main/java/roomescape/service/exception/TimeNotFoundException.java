@@ -1,8 +1,8 @@
 package roomescape.service.exception;
 
-import roomescape.exception.CustomException;
+import roomescape.exception.NotFoundException;
 
-public class TimeNotFoundException extends CustomException {
+public class TimeNotFoundException extends NotFoundException {
 
     public TimeNotFoundException(final String message) {
         super(message);

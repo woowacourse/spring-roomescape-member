@@ -9,15 +9,23 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice(annotations = RestController.class)
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(CustomException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidNameException(final CustomException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse(e.getMessage()));
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidNameException(final BadRequestException e) {
+        return createErrorResponse(HttpStatus.BAD_REQUEST, e);
     }
 
-    @ExceptionHandler(DuplicateException.class)
-    public ResponseEntity<ErrorResponse> handleDuplicatedException(final DuplicateException e) {
-        return ResponseEntity.status(HttpStatus.CONFLICT)
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotFoundException(final NotFoundException e) {
+        return createErrorResponse(HttpStatus.NOT_FOUND, e);
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicatedException(final ConflictException e) {
+        return createErrorResponse(HttpStatus.CONFLICT, e);
+    }
+
+    public ResponseEntity<ErrorResponse> createErrorResponse(final HttpStatus httpStatus, final Exception e) {
+        return ResponseEntity.status(httpStatus)
                 .body(new ErrorResponse(e.getMessage()));
     }
 }

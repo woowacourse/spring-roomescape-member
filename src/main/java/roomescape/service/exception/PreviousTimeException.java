@@ -1,8 +1,8 @@
 package roomescape.service.exception;
 
-import roomescape.exception.CustomException;
+import roomescape.exception.BadRequestException;
 
-public class PreviousTimeException extends CustomException {
+public class PreviousTimeException extends BadRequestException {
 
     public PreviousTimeException(final String message) {
         super(message);

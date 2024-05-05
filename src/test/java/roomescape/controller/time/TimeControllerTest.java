@@ -11,6 +11,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import roomescape.controller.ControllerTest;
 import roomescape.service.TimeService;
 import roomescape.service.exception.TimeDuplicatedException;
+import roomescape.service.exception.TimeNotFoundException;
 import roomescape.service.exception.TimeUsedException;
 
 import java.net.URI;
@@ -137,12 +138,14 @@ class TimeControllerTest extends ControllerTest {
     @DisplayName("존재하지 않는 예약 시간을 삭제하면 404 를 응답한다.")
     void deleteTime404() throws Exception {
         // given
+        final String message = "예약 시간이 존재하지 않습니다.";
         Mockito.when(timeService.deleteTime(1L))
-                .thenReturn(0);
+                .thenThrow(new TimeNotFoundException(message));
 
         // when & then
         mvc.perform(delete("/times/1"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(containsString(message)));
     }
 
     @Test

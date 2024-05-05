@@ -1,8 +1,8 @@
 package roomescape.service.exception;
 
-import roomescape.exception.DuplicateException;
+import roomescape.exception.ConflictException;
 
-public class TimeDuplicatedException extends DuplicateException {
+public class TimeDuplicatedException extends ConflictException {
 
     public TimeDuplicatedException(String message) {
         super(message);

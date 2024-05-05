@@ -86,7 +86,7 @@ class ReservationControllerTest extends ControllerTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 시간으로 예약을 추가하면 400 을 응답한다.")
+    @DisplayName("존재하지 않는 시간으로 예약을 추가하면 404 을 응답한다.")
     void addReservation400TimeNotFound() throws Exception {
         // given
         final ReservationRequest request = new ReservationRequest("Seyang", "2024-05-05", 1L, 1L);
@@ -100,12 +100,12 @@ class ReservationControllerTest extends ControllerTest {
         mvc.perform(post("/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isNotFound())
                 .andExpect(content().string(containsString(message)));
     }
 
     @Test
-    @DisplayName("존재하지 않는 테마로 예약을 추가하면 400 을 응답한다.")
+    @DisplayName("존재하지 않는 테마로 예약을 추가하면 404 을 응답한다.")
     void addReservation400ThemeNotFound() throws Exception {
         // given
         final ReservationRequest request = new ReservationRequest("Seyang", "2024-05-05", 1L, 1L);
@@ -119,7 +119,7 @@ class ReservationControllerTest extends ControllerTest {
         mvc.perform(post("/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isNotFound())
                 .andExpect(content().string(containsString(message)));
 
     }

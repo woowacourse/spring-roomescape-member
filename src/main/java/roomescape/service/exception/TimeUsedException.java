@@ -1,8 +1,8 @@
 package roomescape.service.exception;
 
-import roomescape.exception.CustomException;
+import roomescape.exception.BadRequestException;
 
-public class TimeUsedException extends CustomException {
+public class TimeUsedException extends BadRequestException {
 
     public TimeUsedException(final String message) {
         super(message);

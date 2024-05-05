@@ -16,6 +16,7 @@ import roomescape.repository.H2ReservationTimeRepository;
 import roomescape.repository.H2ThemeRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.service.exception.ThemeNotFoundException;
 import roomescape.service.exception.ThemeUsedException;
 
 import java.time.LocalDate;
@@ -84,13 +85,19 @@ class ThemeServiceTest {
 
     @Test
     @DisplayName("테마를 삭제한다.")
-    void deleteTheme() {
+    void deleteThemePresent() {
         // given
         final Long id = themeService.addTheme(sampleThemes.get(0)).id();
 
         // when & then
         assertThat(themeService.deleteTheme(id)).isOne();
-        assertThat(themeService.deleteTheme(id)).isZero();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 테마를 삭제할 경우 예외가 발생한다.")
+    void deleteThemeNotExist() {
+        assertThatThrownBy(() -> themeService.deleteTheme(1L))
+                .isInstanceOf(ThemeNotFoundException.class);
     }
 
     @Test
