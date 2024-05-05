@@ -4,13 +4,10 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
-import roomescape.domain.exception.EntityNotFoundException;
 
 public interface ReservationTimeRepository {
 
     Optional<ReservationTime> findById(long id);
-
-    ReservationTime getById(long id) throws EntityNotFoundException;
 
     ReservationTime create(ReservationTime reservationTime);
 

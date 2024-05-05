@@ -26,7 +26,7 @@ import roomescape.application.dto.response.ReservationResponse;
 import roomescape.application.dto.response.ReservationTimeResponse;
 import roomescape.application.dto.response.ThemeResponse;
 import roomescape.application.exception.DuplicatedEntityException;
-import roomescape.domain.exception.EntityNotFoundException;
+import roomescape.application.exception.EntityNotFoundException;
 
 @WebMvcTest(ReservationController.class)
 class ReservationControllerTest extends ControllerTest {

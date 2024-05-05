@@ -8,6 +8,7 @@ import roomescape.application.dto.request.ReservationTimeRequest;
 import roomescape.application.dto.response.AvailableTimeResponse;
 import roomescape.application.dto.response.ReservationTimeResponse;
 import roomescape.application.exception.DuplicatedEntityException;
+import roomescape.application.exception.EntityNotFoundException;
 import roomescape.application.exception.EntityReferenceOnDeleteException;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
@@ -44,7 +45,8 @@ public class ReservationTimeService {
 
     @Transactional
     public void deleteById(long id) {
-        ReservationTime findReservationTime = reservationTimeRepository.getById(id);
+        ReservationTime findReservationTime = reservationTimeRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 예약 시간입니다."));
         if (reservationRepository.existsByTimeId(id)) {
             throw new EntityReferenceOnDeleteException(String.format(
                     "해당 예약 시간에 연관된 예약이 존재하여 삭제할 수 없습니다. 삭제 요청한 시간:%s",

@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.application.dto.request.ReservationRequest;
 import roomescape.application.dto.response.ReservationResponse;
 import roomescape.application.exception.DuplicatedEntityException;
+import roomescape.application.exception.EntityNotFoundException;
 import roomescape.application.exception.ReserveOnPastException;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
@@ -15,7 +16,6 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
-import roomescape.domain.exception.EntityNotFoundException;
 
 @Service
 public class ReservationService {
@@ -36,11 +36,13 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse create(ReservationRequest request) {
-        Theme theme = themeRepository.getById(request.themeId());
-        ReservationTime reservationTime = reservationTimeRepository.getById(request.timeId());
+        Theme theme = themeRepository.findById(request.themeId())
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 테마 입니다."));
+        ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 예약 시간 입니다."));
 
         if (reservationRepository.existsBy(request.parsedDate(), request.timeId(), request.themeId())) {
-            throw new DuplicatedEntityException("이미 존재하는 예약입니다.");
+            throw new DuplicatedEntityException("이미 존재하는 예약입니다."); 
         }
         Reservation reservation = request.toReservation(reservationTime, theme);
         if (reservation.isBefore(LocalDateTime.now(clock))) {

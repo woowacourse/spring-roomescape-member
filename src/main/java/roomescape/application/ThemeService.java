@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.application.dto.request.ThemeRequest;
 import roomescape.application.dto.response.ThemeResponse;
+import roomescape.application.exception.EntityNotFoundException;
 import roomescape.application.exception.EntityReferenceOnDeleteException;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
@@ -35,7 +36,8 @@ public class ThemeService {
 
     @Transactional
     public void deleteById(long id) {
-        Theme theme = themeRepository.getById(id);
+        Theme theme = themeRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 테마 입니다."));
         if (themeRepository.existsByTimeId(id)) {
             throw new EntityReferenceOnDeleteException(String.format(
                     "해당 테마와 연관된 예약이 존재하여 삭제할 수 없습니다. 삭제 요청한 테마:%s",

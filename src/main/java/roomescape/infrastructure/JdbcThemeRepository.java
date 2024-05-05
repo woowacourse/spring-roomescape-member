@@ -10,7 +10,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
-import roomescape.domain.exception.EntityNotFoundException;
 import roomescape.infrastructure.rowmapper.ThemeRowMapper;
 
 @Repository
@@ -52,11 +51,6 @@ public class JdbcThemeRepository implements ThemeRepository {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
-    }
-
-    @Override
-    public Theme getById(long id) throws EntityNotFoundException {
-        return findById(id).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 테마 입니다."));
     }
 
     @Override

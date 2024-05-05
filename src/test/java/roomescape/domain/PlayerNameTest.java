@@ -7,8 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
-import roomescape.domain.exception.EntityCreationException;
-import roomescape.domain.exception.EntityNotFoundException;
+import roomescape.application.exception.EntityCreationException;
 
 class PlayerNameTest {
 
@@ -17,7 +16,7 @@ class PlayerNameTest {
     @NullAndEmptySource
     void shouldThrowExceptionWhenNameIsNullOrEmpty(String input) {
         assertThatCode(() -> new PlayerName(input))
-                .isInstanceOf(EntityCreationException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약자명은 필수 입력값 입니다.");
     }
 
@@ -26,7 +25,7 @@ class PlayerNameTest {
     void shouldThrowExceptionWhenNameLengthExceededMaxLength() {
         String input = "-".repeat(21);
         assertThatCode(() -> new PlayerName(input))
-                .isInstanceOf(EntityCreationException.class);
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("이름이 올바르게 생성된다.")

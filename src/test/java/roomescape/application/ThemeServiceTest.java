@@ -14,7 +14,7 @@ import roomescape.application.exception.EntityReferenceOnDeleteException;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeName;
 import roomescape.domain.ThemeRepository;
-import roomescape.domain.exception.EntityNotFoundException;
+import roomescape.application.exception.EntityNotFoundException;
 
 @ServiceTest
 class ThemeServiceTest {

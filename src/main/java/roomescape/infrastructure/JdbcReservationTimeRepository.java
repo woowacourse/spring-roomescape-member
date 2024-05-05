@@ -12,7 +12,6 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.TimeSlot;
-import roomescape.domain.exception.EntityNotFoundException;
 import roomescape.infrastructure.rowmapper.ReservationTimeRowMapper;
 
 @Repository
@@ -38,11 +37,6 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
-    }
-
-    @Override
-    public ReservationTime getById(long id) throws EntityNotFoundException {
-        return findById(id).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 예약 시간 입니다."));
     }
 
     @Override
