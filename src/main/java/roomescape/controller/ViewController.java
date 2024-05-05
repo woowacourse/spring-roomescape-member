@@ -13,7 +13,7 @@ public class ViewController {
 
     @GetMapping("/admin/time")
     public String reservationTimeAdminPage() {
-        return "/admin/time";
+        return "admin/time";
     }
 
     @GetMapping("/admin/reservation")
