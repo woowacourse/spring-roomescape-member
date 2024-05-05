@@ -57,7 +57,7 @@ class H2ReservationRepositoryTest extends BasicAcceptanceTest {
     @Test
     void findByDateAndThemeId() {
         List<Reservation> byDateAndThemeId = reservationRepository.findByDateAndThemeId(
-                LocalDate.of(2024, 5, 12), 1L
+                LocalDate.now().plusDays(8), 1L
         );
 
         assertThat(byDateAndThemeId).isEqualTo(List.of(TestFixtures.RESERVATION_4));
@@ -67,8 +67,8 @@ class H2ReservationRepositoryTest extends BasicAcceptanceTest {
     @Test
     void findByPeriod() {
         List<Reservation> byPeriod = reservationRepository.findByPeriod(
-                LocalDate.of(2024, 5, 10),
-                LocalDate.of(2024, 5, 12)
+                LocalDate.now().plusDays(6),
+                LocalDate.now().plusDays(8)
         );
 
         List<Reservation> expectedReservations = List.of(

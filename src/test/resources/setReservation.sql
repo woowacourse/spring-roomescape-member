@@ -41,7 +41,7 @@ VALUES ('name1', 'description1', 'thumbnail1'),
        ('name3', 'description3', 'thumbnail3');
 
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('first', '2024-05-09', 1, 1),
-       ('second', '2024-05-10', 2, 2),
-       ('third', '2024-05-11', 2, 3),
-       ('fourth', '2024-05-12', 3, 1);
+VALUES ('first', DATEADD(DAY, 5, CURRENT_DATE), 1, 1),
+       ('second', DATEADD(DAY, 6, CURRENT_DATE), 2, 2),
+       ('third', DATEADD(DAY, 7, CURRENT_DATE), 2, 3),
+       ('fourth', DATEADD(DAY, 8, CURRENT_DATE), 3, 1);
