@@ -28,7 +28,9 @@ public class ReservationTimeController {
     private final ReservationTimeFindService reservationTimeFindService;
     private final ReservationTimeDeleteService reservationTimeDeleteService;
 
-    public ReservationTimeController(ReservationTimeCreateService reservationTimeCreateService, ReservationTimeFindService reservationTimeFindService, ReservationTimeDeleteService reservationTimeDeleteService) {
+    public ReservationTimeController(ReservationTimeCreateService reservationTimeCreateService,
+                                     ReservationTimeFindService reservationTimeFindService,
+                                     ReservationTimeDeleteService reservationTimeDeleteService) {
         this.reservationTimeCreateService = reservationTimeCreateService;
         this.reservationTimeFindService = reservationTimeFindService;
         this.reservationTimeDeleteService = reservationTimeDeleteService;

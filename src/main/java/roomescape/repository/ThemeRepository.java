@@ -41,7 +41,8 @@ public class ThemeRepository {
             ps.setString(3, theme.getThumbnail());
             return ps;
         }, keyHolder);
-        return new Theme(keyHolder.getKey().longValue(), theme.getName(), theme.getDescription(), theme.getThumbnail());
+        return new Theme(keyHolder.getKey().longValue(), theme.getName(),
+                theme.getDescription(), theme.getThumbnail());
     }
 
     public Optional<Theme> findById(Long id) {

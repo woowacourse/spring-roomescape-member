@@ -10,7 +10,8 @@ public class ThemeDeleteService {
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
 
-    public ThemeDeleteService(ThemeRepository themeRepository, ReservationRepository reservationRepository) {
+    public ThemeDeleteService(ThemeRepository themeRepository,
+                              ReservationRepository reservationRepository) {
         this.themeRepository = themeRepository;
         this.reservationRepository = reservationRepository;
     }

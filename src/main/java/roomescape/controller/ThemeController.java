@@ -24,7 +24,9 @@ public class ThemeController {
     private final ThemeFindService themeFindService;
     private final ThemeDeleteService themeDeleteService;
 
-    public ThemeController(ThemeCreateService themeCreateService, ThemeFindService themeFindService, ThemeDeleteService themeDeleteService) {
+    public ThemeController(ThemeCreateService themeCreateService,
+                           ThemeFindService themeFindService,
+                           ThemeDeleteService themeDeleteService) {
         this.themeCreateService = themeCreateService;
         this.themeFindService = themeFindService;
         this.themeDeleteService = themeDeleteService;

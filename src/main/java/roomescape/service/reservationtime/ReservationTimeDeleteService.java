@@ -10,7 +10,8 @@ public class ReservationTimeDeleteService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;
 
-    public ReservationTimeDeleteService(ReservationTimeRepository reservationTimeRepository, ReservationRepository reservationRepository) {
+    public ReservationTimeDeleteService(ReservationTimeRepository reservationTimeRepository,
+                                        ReservationRepository reservationRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
         this.reservationRepository = reservationRepository;
     }
