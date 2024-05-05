@@ -52,7 +52,7 @@ public class ThemeDao implements ThemeRepository {
 
     @Override
     public List<Theme> findAll() {
-        String sql = "SELECT id, name, description, thumbnail FROM theme";
+        String sql = "SELECT id, name, description, thumbnail FROM theme;";
         return jdbcTemplate.query(sql, rowMapper);
     }
 
@@ -72,21 +72,22 @@ public class ThemeDao implements ThemeRepository {
 
     @Override
     public Optional<Theme> findById(long themeId) {
-        String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
+        String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?;";
         return jdbcTemplate.query(sql, optionalResultSetExtractor, themeId);
     }
 
     @Override
     public List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, int limit) {
-        String sql =
-                "SELECT theme.id, theme.name, theme.description, theme.thumbnail, COUNT(*) AS reservation_count " +
-                        "FROM theme " +
-                        "INNER JOIN reservation AS re ON re.theme_id = theme.id " +
-                        "INNER JOIN reservation_list AS rl ON rl.reservation_id = re.id " +
-                        "WHERE re.date BETWEEN ? AND ? " +
-                        "GROUP BY theme.id, theme.name " +
-                        "ORDER BY reservation_count DESC " +
-                        "LIMIT ?";
+        String sql = """
+                SELECT theme.id, theme.name, theme.description, theme.thumbnail, COUNT(*) AS reservation_count 
+                FROM theme 
+                INNER JOIN reservation AS re ON re.theme_id = theme.id 
+                INNER JOIN reservation_list AS rl ON rl.reservation_id = re.id 
+                WHERE re.date BETWEEN ? AND ? 
+                GROUP BY theme.id, theme.name 
+                ORDER BY reservation_count DESC 
+                LIMIT ?;
+                """;
 
         return jdbcTemplate.query(sql, rowMapper, startDate, endDate, limit);
     }

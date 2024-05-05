@@ -67,56 +67,58 @@ public class ReservationDao implements ReservationRepository {
 
     @Override
     public List<ReservationMember> findAll() {
-        String sql =
-                "SELECT r.id AS reservation_id, r.date, t.id AS time_id, t.start_at AS time_value, " +
-                        "th.id AS theme_id, th.name AS theme_name, th.description, th.thumbnail, m.id AS member_id, m.name AS member_name "
-                        +
-                        "FROM reservation AS r " +
-                        "INNER JOIN reservation_time AS t ON r.time_id = t.id " +
-                        "INNER JOIN theme AS th ON r.theme_id = th.id " +
-                        "INNER JOIN reservation_list AS rl ON rl.reservation_id = r.id " +
-                        "INNER JOIN member AS m ON m.id = rl.member_id";
+        String sql = """
+                SELECT r.id AS reservation_id, r.date, t.id AS time_id, t.start_at AS time_value, 
+                th.id AS theme_id, th.name AS theme_name, th.description, th.thumbnail, m.id AS member_id, m.name AS member_name 
+                FROM reservation AS r 
+                INNER JOIN reservation_time AS t ON r.time_id = t.id 
+                INNER JOIN theme AS th ON r.theme_id = th.id 
+                INNER JOIN reservation_list AS rl ON rl.reservation_id = r.id 
+                INNER JOIN member AS m ON m.id = rl.member_id;
+                """;
+
         return jdbcTemplate.query(sql, rowMapper);
     }
 
     @Override
     public boolean deleteById(long reservationId) {
-        String sql = "DELETE FROM reservation WHERE id = ?";
+        String sql = "DELETE FROM reservation WHERE id = ?;";
         int updateId = jdbcTemplate.update(sql, reservationId);
         return updateId != 0;
     }
 
     @Override
     public boolean existsByTimeId(long timeId) {
-        String sql =
-                "SELECT 1 " +
-                        "FROM reservation as r " +
-                        "INNER JOIN reservation_time as t ON r.time_id = t.id " +
-                        "INNER JOIN theme as th ON r.theme_id = th.id " +
-                        "WHERE t.id = ? " +
-                        "LIMIT 1";
+        String sql = """
+                SELECT 1
+                FROM reservation as r 
+                INNER JOIN reservation_time as t ON r.time_id = t.id 
+                INNER JOIN theme as th ON r.theme_id = th.id 
+                WHERE t.id = ? 
+                LIMIT 1;
+                """;
 
         return jdbcTemplate.query(sql, ResultSet::next, timeId);
     }
 
     @Override
     public Optional<ReservationMember> findBy(LocalDate date, long timeId, long themeId) {
-        String sql =
-                "SELECT r.id AS reservation_id, r.date, t.id AS time_id, t.start_at AS time_value, " +
-                        "th.id AS theme_id, th.name AS theme_name, th.description, th.thumbnail, m.id AS member_id, m.name AS member_name "
-                        +
-                        "FROM reservation AS r " +
-                        "INNER JOIN reservation_time AS t ON r.time_id = t.id " +
-                        "INNER JOIN theme AS th ON r.theme_id = th.id " +
-                        "INNER JOIN reservation_list AS rl ON rl.reservation_id = r.id " +
-                        "INNER JOIN member AS m ON m.id = rl.member_id " +
-                        "WHERE date = ? AND time_id = ? AND theme_id = ? ";
+        String sql = """
+                SELECT r.id AS reservation_id, r.date, t.id AS time_id, t.start_at AS time_value, 
+                th.id AS theme_id, th.name AS theme_name, th.description, th.thumbnail, m.id AS member_id, m.name AS member_name 
+                FROM reservation AS r 
+                INNER JOIN reservation_time AS t ON r.time_id = t.id 
+                INNER JOIN theme AS th ON r.theme_id = th.id 
+                INNER JOIN reservation_list AS rl ON rl.reservation_id = r.id 
+                INNER JOIN member AS m ON m.id = rl.member_id 
+                WHERE date = ? AND time_id = ? AND theme_id = ?;
+                """;
         return jdbcTemplate.query(sql, rowMapper, date, timeId, themeId).stream().findFirst();
     }
 
     @Override
     public void saveReservationList(long memberId, long reservationId) {
-        String sql = "INSERT INTO reservation_list(member_id, reservation_id) VALUES (?, ?)";
+        String sql = "INSERT INTO reservation_list(member_id, reservation_id) VALUES (?, ?);";
         jdbcTemplate.update(sql, memberId, reservationId);
     }
 }

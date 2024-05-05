@@ -57,38 +57,41 @@ public class ReservationTimeDao implements ReservationTimeRepository {
 
     @Override
     public List<ReservationTime> findAll() {
-        String sql = "SELECT id, start_at FROM reservation_time";
+        String sql = "SELECT id, start_at FROM reservation_time;";
         return jdbcTemplate.query(sql, rowMapper);
     }
 
     @Override
     public Optional<ReservationTime> findById(long timeId) {
-        String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
+        String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?;";
         return jdbcTemplate.query(sql, optionalResultSetExtractor, timeId);
     }
 
     @Override
     public boolean deleteById(long timeId) {
-        String sql = "DELETE FROM reservation_time WHERE id = ?";
+        String sql = "DELETE FROM reservation_time WHERE id = ?;";
         int deleteId = jdbcTemplate.update(sql, timeId);
         return deleteId != 0;
     }
 
     @Override
     public boolean existsByStartAt(LocalTime time) {
-        String sql = "SELECT * FROM reservation_time WHERE start_at = ?";
+        String sql = "SELECT * FROM reservation_time WHERE start_at = ?;";
         List<ReservationTime> times = jdbcTemplate.query(sql, rowMapper, time);
         return !times.isEmpty();
     }
 
     @Override
     public Set<ReservationTime> findReservedTime(LocalDate date, long themeId) {
-        String sql = "SELECT * FROM reservation_time " +
-                "INNER JOIN reservation as re " +
-                "ON re.time_id = reservation_time.id " +
-                "INNER JOIN reservation_list as rl " +
-                "ON re.id = rl.reservation_id " +
-                "WHERE re.date = ? AND re.theme_id = ?";
+        String sql = """
+                SELECT * FROM reservation_time 
+                INNER JOIN reservation as re 
+                ON re.time_id = reservation_time.id 
+                INNER JOIN reservation_list as rl 
+                ON re.id = rl.reservation_id 
+                WHERE re.date = ? AND re.theme_id = ?;
+                """;
+
         return new HashSet<>(jdbcTemplate.query(sql, rowMapper, date, themeId));
     }
 }
