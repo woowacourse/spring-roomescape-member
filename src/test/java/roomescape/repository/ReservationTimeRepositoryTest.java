@@ -124,7 +124,7 @@ class ReservationTimeRepositoryTest {
     @DisplayName("존재하지 않는 예약 시간 번호로 삭제할 경우 아무런 영향이 없다.")
     void deleteNotExist() {
         // given
-        final Long notExistId = 1L;
+        final long notExistId = 1L;
 
         // when & then
         assertThat(timeRepository.findById(notExistId)).isEmpty();
