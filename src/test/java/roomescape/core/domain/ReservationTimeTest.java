@@ -31,7 +31,7 @@ class ReservationTimeTest {
     @Test
     @DisplayName("예약 시간이 현재 시간보다 이전인지 확인할 수 있다.")
     void isPast() {
-        final String startAt = LocalTime.now().minusHours(1).format(DateTimeFormatter.ofPattern("HH:mm"));
+        final String startAt = LocalTime.now().minusMinutes(1).format(DateTimeFormatter.ofPattern("HH:mm"));
         final ReservationTime reservationTime = new ReservationTime(startAt);
 
         final boolean isPast = reservationTime.isPast();

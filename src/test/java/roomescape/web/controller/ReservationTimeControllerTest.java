@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -32,22 +33,9 @@ class ReservationTimeControllerTest {
         RestAssured.port = port;
     }
 
-    @Test
-    @DisplayName("시간 생성 시, startAt 값이 null이면 예외가 발생한다.")
-    void validateTimeCreateWithNull() {
-        Map<String, Object> params = new HashMap<>();
-        params.put("startAt", null);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(400);
-    }
-
     @ParameterizedTest
-    @ValueSource(strings = {"", " ", "10:89"})
+    @NullAndEmptySource
+    @ValueSource(strings = {" ", "10:89"})
     @DisplayName("시간 생성 시, startAt 값의 형식이 올바르지 않으면 예외가 발생한다.")
     void validateTimeCreateWithEmpty(final String startAt) {
         Map<String, Object> params = new HashMap<>();
