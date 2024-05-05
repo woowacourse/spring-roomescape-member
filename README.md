@@ -11,21 +11,35 @@
 
 #### Response Body
 
+| Name              | Type   | Description                          |
+|-------------------|--------|--------------------------------------|
+| id                | Number | 예약 ID(고유한 값)                         |
+| name              | String | 예약자 이름                               |
+| date              | String | 예약한 날짜 `연-월-일`로 표현된다(ex. 2024-05-05) |
+| time              | Object | 예약 시간                                |
+| time.id           | Number | 예약 시간 ID(고유한 값)                      |
+| time.startAt      | String | 예약한 시간 `시간:분`으로 표현된다(ex. 13:00)      |
+| theme             | Object | 예약 테마                                |
+| theme.id          | Number | 예약 테마 ID(고유한 값)                      |
+| theme.name        | String | 예약한 테마 이름                            |
+| theme.description | String | 예약한 테마 설명                            |
+| theme.thumbnail   | String | 예약한 테마 썸네일 이미지 url                   |
+
 ``` json
 [
     {
-        "id": long,
-        "name": String,
-        "date": String,
+        "id": 1,
+        "name": "브라운",
+        "date": "2024-05-05",
         "time": {
-            "id" : long,
-            "startAt" : String
+            "id" : 1,
+            "startAt" : "13:00"
         }
         "theme": {
-            "id": long,
-            "name": String,
-            "description": String,
-            "thumbnail": String
+            "id": 1,
+            "name": "방탈출 1",
+            "description": "공포 테마 방탈출입니다.",
+            "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
         }
     },
     {
@@ -36,19 +50,25 @@
 
 ### 이용 가능한 예약 시간 조회
 
-| HTTP Method | GET                                              |
-|-------------|--------------------------------------------------|
-| End Point   | /reservations/user?date={date}&themeId={themeId} |
-| Status Code | 200 OK                                           |
+| HTTP Method | GET                                                                      |
+|-------------|--------------------------------------------------------------------------|
+| End Point   | /reservations/user?date={date}&themeId={themeId}&today={today}&now={now} |
+| Status Code | 200 OK                                                                   |
 
 #### Response Body
+
+| Name          | Type    | Description                    |
+|---------------|---------|--------------------------------|
+| startAt       | String  | 예약 시간 `시간:분`으로 표현된다(ex. 13:00) |
+| timeId        | Number  | 예약 시간 ID(고유한 값)                |
+| alreadyBooked | boolean | 예약 여부                          |
 
 ``` json
 [
   {
-    "startAt": String,
-    "timeId": long,
-    "alreadyBooked": boolean
+    "startAt": "12:00",
+    "timeId": 1,
+    "alreadyBooked": true
   },
   {
    ...
@@ -65,33 +85,63 @@
 
 #### Request Body
 
+| Name    | Type   | Description                        |
+|---------|--------|------------------------------------|
+| name    | String | 예약자 이름                             |
+| date    | String | 예약한 날짜 `연-월-일`로 입력(ex. 2024-05-05) |
+| timeId  | Number | 예약 시간 ID(고유한 값)                    |
+| themeId | Number | 예약 테마 ID(고유한 값)                    |
+| today   | Date   | 현재 날짜 `연-월-일`로 입력(ex. 2024-05-05)  |
+| now     | Time   | 현재 시각 `시간:분`으로 입력(ex 13:00)        |
+
 ``` json
 {
-    "name" : String,
-    "date" : String,
-    "timeId" : long
-    "themeId" : long
+    "name" : "브라운",
+    "date" : "2024-05-05",
+    "timeId" : 1,
+    "themeId" : 1,
+    "today": "2024-05-05",
+    "now": "13:00"
 }
 ```
 
 #### Response Body
 
+| Name              | Type   | Description                          |
+|-------------------|--------|--------------------------------------|
+| id                | Number | 예약 ID(고유한 값)                         |
+| name              | String | 예약자 이름                               |
+| date              | String | 예약한 날짜 `연-월-일`로 표현된다(ex. 2024-05-05) |
+| time              | Object | 예약 시간                                |
+| time.id           | Number | 예약 시간 ID(고유한 값)                      |
+| time.startAt      | String | 예약한 시간 `시간:분`으로 표현된다(ex. 13:00)      |
+| theme             | Object | 예약 테마                                |
+| theme.id          | Number | 예약 테마 ID(고유한 값)                      |
+| theme.name        | String | 예약한 테마 이름                            |
+| theme.description | String | 예약한 테마 설명                            |
+| theme.thumbnail   | String | 예약한 테마 썸네일 이미지 url                   |
+
 ``` json
-{
-    "id": long,
-    "name": String,
-    "date": String,
-    "time": {
-        "id" : long,
-        "startAt" : String
+[
+    {
+        "id": 1,
+        "name": "브라운",
+        "date": "2024-05-05",
+        "time": {
+            "id" : 1,
+            "startAt" : "13:00"
+        }
+        "theme": {
+            "id": 1,
+            "name": "방탈출 1",
+            "description": "공포 테마 방탈출입니다.",
+            "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+        }
+    },
+    {
+        ...
     }
-    "theme": {
-        "id": long,
-        "name": String,
-        "description": String,
-        "thumbnail": String
-    }
-}
+]
 ```
 
 ### 예약 취소
@@ -103,8 +153,12 @@
 
 #### Path Variable
 
+| Name | Type   | Description      |
+|------|--------|------------------|
+| id   | Number | 삭제할 예약 ID(고유한 값) |
+
 ```
-id : long
+id : 1
 ```
 
 ### 시간 조회
@@ -116,11 +170,16 @@ id : long
 
 #### Response Body
 
+| Name    | Type   | Description                     |
+|---------|--------|---------------------------------|
+| id      | Number | 예약 시간 ID(고유한 값)                 |
+| startAt | String | 예약한 시간 `시간:분`으로 표현된다(ex. 13:00) |
+
 ``` json
 [
     {
-        "id": long,
-        "startAt": String,
+        "id": 1,
+        "startAt": "13:00",
     },
     {
         ...
@@ -137,18 +196,27 @@ id : long
 
 #### Request Body
 
+| Name    | Type   | Description                     |
+|---------|--------|---------------------------------|
+| startAt | String | 예약 가능한 시간 `시간:분`으로 입력(ex 13:00) |
+
 ``` json
 {
-    "startAt" : String
+    "startAt" : "13:00"
 }
 ```
 
 #### Response Body
 
+| Name    | Type   | Description                     |
+|---------|--------|---------------------------------|
+| id      | Number | 예약 시간 ID(고유한 값)                 |
+| startAt | String | 예약한 시간 `시간:분`으로 표현된다(ex. 13:00) |
+
 ``` json
 {
-    "id": long,
-    "startAt": String
+    "id": 1,
+    "startAt": "13:00"
 }
 ```
 
@@ -161,8 +229,12 @@ id : long
 
 #### Path Variable
 
+| Name | Type   | Description      |
+|------|--------|------------------|
+| id   | Number | 삭제할 시간 ID(고유한 값) |
+
 ```
-id : long
+id : 1
 ```
 
 ### 테마 조회
@@ -174,13 +246,20 @@ id : long
 
 #### Response Body
 
+| Name        | Type   | Description        |
+|-------------|--------|--------------------|
+| id          | Number | 예약 테마 ID(고유한 값)    |
+| name        | String | 예약한 테마 이름          |
+| description | String | 예약한 테마 설명          |
+| thumbnail   | String | 예약한 테마 썸네일 이미지 url |
+
 ``` json
 [
     {
-        "id": long,
-        "name": String,
-        "description": String,
-        "thumbnail": String,
+        "id": 1,
+        "name": "방탈출 1번",
+        "description": "공포 테마 방탈출입니다.",
+        "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg",
     },
     {
         ...
@@ -195,15 +274,25 @@ id : long
 | End Point   | /themes/populars |
 | Status Code | 200 OK           |
 
+#### Path Variable
+
+| Name  | Type | Description                       |
+|-------|------|-----------------------------------|
+| today | Date | 현재 날짜 `연-월-일`로 입력(ex. 2024-05-05) |
+
+```
+today: "2024-05-05"
+```
+
 #### Response Body
 
 ``` json
 [
     {
-        "id": long,
-        "name": String,
-        "description": String,
-        "thumbnail": String,
+        "id": 1,
+        "name": "방탈출 1번",
+        "description": "공포 테마 방탈출입니다.",
+        "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
     },
     {
         ...
@@ -220,22 +309,35 @@ id : long
 
 #### Request Body
 
+| Name        | Type   | Description        |
+|-------------|--------|--------------------|
+| name        | String | 예약한 테마 이름          |
+| description | String | 예약한 테마 설명          |
+| thumbnail   | String | 예약한 테마 썸네일 이미지 url |
+
 ``` json
 {
-    "name": String,
-    "description": String,
-    "thumbnail": String,
+    "name": "방탈출 1번",
+    "description": "공포 테마 방탈출입니다.",
+    "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg",
 }
 ```
 
 #### Response Body
 
+| Name        | Type   | Description        |
+|-------------|--------|--------------------|
+| id          | Number | 예약 테마 ID(고유한 값)    |
+| name        | String | 예약한 테마 이름          |
+| description | String | 예약한 테마 설명          |
+| thumbnail   | String | 예약한 테마 썸네일 이미지 url |
+
 ``` json
 {
-    "id": long,
-    "name": String,
-    "description": String,
-    "thumbnail": String,
+    "id": 1,
+    "name": "방탈출 1번",
+    "description": "공포 테마 방탈출입니다.",
+    "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg",
 }
 ```
 
@@ -248,8 +350,12 @@ id : long
 
 #### Path Variable
 
+| Name | Type   | Description      |
+|------|--------|------------------|
+| id   | Number | 삭제할 테마 ID(고유한 값) |
+
 ```
-id : long
+id : 1
 ```
 
 ---
