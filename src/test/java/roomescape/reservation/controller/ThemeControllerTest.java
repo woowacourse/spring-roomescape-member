@@ -1,6 +1,5 @@
 package roomescape.reservation.controller;
 
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
@@ -14,7 +13,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.reservation.dto.ThemeRequest;
-import roomescape.reservation.dto.ThemeResponse;
 import roomescape.reservation.service.ThemeService;
 import roomescape.util.ControllerTest;
 

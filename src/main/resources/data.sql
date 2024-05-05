@@ -1,9 +1,12 @@
 INSERT INTO theme(name, description, thumbnail)
-VALUES ('테마1', '설명1', 'https://www.urbanbrush.net/web/wp-content/uploads/edd/2022/08/urbanbrush-20220801083851022216.jpg');
+VALUES ('테마1', '설명1',
+        'https://www.urbanbrush.net/web/wp-content/uploads/edd/2022/08/urbanbrush-20220801083851022216.jpg');
 INSERT INTO theme(name, description, thumbnail)
-VALUES ('테마2', '설명2', 'https://www.urbanbrush.net/web/wp-content/uploads/edd/2022/12/urbanbrush-20221209202526239031.jpg');
+VALUES ('테마2', '설명2',
+        'https://www.urbanbrush.net/web/wp-content/uploads/edd/2022/12/urbanbrush-20221209202526239031.jpg');
 INSERT INTO theme(name, description, thumbnail)
-VALUES ('테마3', '설명3', 'https://previews.123rf.com/images/yusakp/yusakp1405/yusakp140500013/28097632-%EA%B7%80%EC%97%AC%EC%9A%B4-%EA%BF%80%EB%B2%8C%EC%9D%98-%EB%B2%A1%ED%84%B0-%EC%9D%BC%EB%9F%AC%EC%8A%A4%ED%8A%B8-%EB%A0%88%EC%9D%B4-%EC%85%98.jpg');
+VALUES ('테마3', '설명3',
+        'https://previews.123rf.com/images/yusakp/yusakp1405/yusakp140500013/28097632-%EA%B7%80%EC%97%AC%EC%9A%B4-%EA%BF%80%EB%B2%8C%EC%9D%98-%EB%B2%A1%ED%84%B0-%EC%9D%BC%EB%9F%AC%EC%8A%A4%ED%8A%B8-%EB%A0%88%EC%9D%B4-%EC%85%98.jpg');
 
 INSERT INTO reservation_time(start_at)
 VALUES ('11:59');
