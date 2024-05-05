@@ -1,25 +1,28 @@
 package roomescape.reservation.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
-import roomescape.reservation.domain.Description;
-import roomescape.reservation.domain.Theme;
-import roomescape.reservation.domain.ThemeName;
+import roomescape.config.DatabaseCleaner;
 import roomescape.reservation.dto.ThemeSaveRequest;
-import roomescape.reservation.repository.ThemeRepository;
 
 @SpringBootTest
-@Transactional
 class ThemeServiceTest {
 
     @Autowired
+    private DatabaseCleaner databaseCleaner;
+
+    @Autowired
     private ThemeService themeService;
+
+    @AfterEach
+    void init() {
+        databaseCleaner.cleanUp();
+    }
 
     @Test
     @DisplayName("중복된 테마 이름을 추가할 수 없다.")

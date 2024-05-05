@@ -4,11 +4,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import roomescape.config.DatabaseCleaner;
 import roomescape.reservation.domain.Description;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
@@ -18,8 +19,10 @@ import roomescape.reservation.repository.ReservationTimeRepository;
 import roomescape.reservation.repository.ThemeRepository;
 
 @SpringBootTest
-@Transactional
 class ReservationServiceTest {
+
+    @Autowired
+    private DatabaseCleaner databaseCleaner;
 
     @Autowired
     private ThemeRepository themeRepository;
@@ -29,6 +32,11 @@ class ReservationServiceTest {
 
     @Autowired
     private ReservationService reservationService;
+
+    @AfterEach
+    void init() {
+        databaseCleaner.cleanUp();
+    }
 
     @Test
     @DisplayName("존재하지 않는 예약 시간에 예약을 하면 예외가 발생한다.")
