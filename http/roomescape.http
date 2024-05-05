@@ -1,9 +1,7 @@
-# RESERVATION
-
-### GET
+### RESERVATION getAll
 GET http://localhost:8080/reservations
 
-### POST
+### RESERVATION create
 POST http://localhost:8080/reservations
 Content-Type: application/json
 
@@ -13,14 +11,19 @@ Content-Type: application/json
   "timeId": 1
 }
 
-
-### GET
+### RESERVATION_TIME getAll
 GET http://localhost:8080/times
 
-### POST
+### RESERVATION_TIME create
 POST http://localhost:8080/times
 Content-Type: application/json
 
 {
   "startAt": "10:00"
 }
+
+### THEME getAll
+GET http://localhost:8080/themes
+
+### THEME top10
+GET http://localhost:8080/themes/rank
