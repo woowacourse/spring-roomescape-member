@@ -2,6 +2,7 @@ package roomescape.infrastructure;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -32,7 +33,7 @@ public class JdbcReservationQueryRepository implements ReservationQueryRepositor
                 """;
         try {
             Reservation reservation = jdbcTemplate.queryForObject(sql, ReservationRowMapper::joinedMapRow, id);
-            return Optional.of(reservation);
+            return Optional.of(Objects.requireNonNull(reservation));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -57,20 +58,23 @@ public class JdbcReservationQueryRepository implements ReservationQueryRepositor
 
     @Override
     public boolean existBy(LocalDate date, long timeId, long themeId) {
-        String sql = "select count(*) from reservation where date = ? and time_id = ? and theme_id = ?";
-        return jdbcTemplate.queryForObject(sql, Integer.class, date, timeId, themeId) > 0;
+        String sql = "select exists(select 1 from reservation where date = ? and time_id = ? and theme_id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
     }
 
     @Override
     public List<AvailableTimeDto> findAvailableReservationTimes(LocalDate date, long themeId) {
         String sql = """
-                select id, start_at, start_at in (
-                    select start_at
-                    from reservation as r
-                    left join reservation_time as rt on r.time_id = rt.id
-                    where date = ? and r.theme_id = ?
-                ) as is_booked
-                from reservation_time;
+                select  id, 
+                        start_at, 
+                        start_at in (
+                            select start_at
+                            from reservation as r
+                            left join reservation_time as rt 
+                            on r.time_id = rt.id
+                            where date = ? and r.theme_id = ?
+                        ) as is_booked
+                from    reservation_time;
                 """;
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> new AvailableTimeDto(
@@ -83,8 +87,14 @@ public class JdbcReservationQueryRepository implements ReservationQueryRepositor
     @Override
     public List<Theme> findPopularThemesDateBetween(LocalDate startDate, LocalDate endDate, int limit) {
         String sql = """
-                select t.id, t.name, t.description, t.thumbnail, count(r.id) as reservation_count
-                from theme as t left join reservation as r on t.id = r.theme_id
+                select  t.id, 
+                        t.name, 
+                        t.description, 
+                        t.thumbnail, 
+                        count(r.id) as reservation_count
+                from    theme as t 
+                left join reservation as r 
+                on t.id = r.theme_id
                 where r.date between ? and ?
                 group by t.id
                 order by reservation_count desc
