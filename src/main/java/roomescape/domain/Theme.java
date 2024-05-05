@@ -68,7 +68,10 @@ public class Theme {
         if (o == null || getClass() != o.getClass()) return false;
 
         final Theme theme = (Theme) o;
-        return Objects.equals(id, theme.id) && Objects.equals(name, theme.name) && Objects.equals(description, theme.description) && Objects.equals(thumbnail, theme.thumbnail);
+        return Objects.equals(id, theme.id) &&
+                Objects.equals(name, theme.name) &&
+                Objects.equals(description, theme.description) &&
+                Objects.equals(thumbnail, theme.thumbnail);
     }
 
     @Override
