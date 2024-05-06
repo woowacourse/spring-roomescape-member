@@ -38,7 +38,7 @@ class ReservationControllerTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(7));
+                .body("size()", is(9));
     }
 
     @DisplayName("예약 컨트롤러는 예약 생성 시 생성된 값을 반환한다.")
@@ -55,7 +55,7 @@ class ReservationControllerTest {
                 .when().get("/reservations")
                 .then()
                 .statusCode(200)
-                .body("size()", is(7));
+                .body("size()", is(9));
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -69,7 +69,7 @@ class ReservationControllerTest {
                 .when().get("/reservations")
                 .then()
                 .statusCode(200)
-                .body("size()", is(8));
+                .body("size()", is(10));
     }
 
     @DisplayName("예약 컨트롤러는 잘못된 형식의 날짜로 예약 생성 요청 시 400을 응답한다.")
@@ -113,6 +113,12 @@ class ReservationControllerTest {
     @DisplayName("예약 컨트롤러는 id 값에 따라 예약을 삭제한다.")
     @Test
     void deleteReservation() {
+        RestAssured.given()
+                .when().get("/reservations")
+                .then()
+                .statusCode(200)
+                .body("size()", is(9));
+
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
                 .then().log().all()
@@ -122,6 +128,6 @@ class ReservationControllerTest {
                 .when().get("/reservations")
                 .then()
                 .statusCode(200)
-                .body("size()", is(6));
+                .body("size()", is(8));
     }
 }

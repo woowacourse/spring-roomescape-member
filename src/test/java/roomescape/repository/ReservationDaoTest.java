@@ -80,7 +80,7 @@ class ReservationDaoTest {
         List<Reservation> reservations = reservationRepository.findAll();
 
         // then
-        assertThat(reservations.size()).isEqualTo(7);
+        assertThat(reservations.size()).isEqualTo(9);
     }
 
     @DisplayName("예약 DAO는 주어진 기간 동안의 모든 예약을 반환한다.")
