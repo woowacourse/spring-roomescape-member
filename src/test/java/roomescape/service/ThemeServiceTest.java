@@ -2,6 +2,7 @@ package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -10,24 +11,22 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
+import roomescape.exception.ReservationBusinessException;
+import roomescape.repository.ThemeJdbcRepository;
 import roomescape.service.dto.PopularThemeRequest;
 import roomescape.service.dto.ThemeResponse;
 import roomescape.service.dto.ThemeSaveRequest;
-import roomescape.exception.ReservationBusinessException;
-import roomescape.repository.ThemeJdbcRepository;
 
-@SpringBootTest(webEnvironment = WebEnvironment.NONE)
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
+@SpringBootTest
+@Transactional
 class ThemeServiceTest {
 
     @Autowired
@@ -51,7 +50,11 @@ class ThemeServiceTest {
         final ThemeResponse themeResponse = themeService.saveTheme(themeSaveRequest);
 
         // then
-        assertThat(themeResponse).isEqualTo(new ThemeResponse(1L, "감자", "설명", "섬네일"));
+        assertAll(
+                () -> assertThat(themeResponse.name()).isEqualTo("감자"),
+                () -> assertThat(themeResponse.description()).isEqualTo("설명"),
+                () -> assertThat(themeResponse.thumbnail()).isEqualTo("섬네일")
+        );
     }
 
     @DisplayName("테마 조회")
@@ -66,7 +69,7 @@ class ThemeServiceTest {
 
         // then
         assertThat(themeResponses).hasSize(1)
-                .containsExactly(new ThemeResponse(1L, "감자", "설명", "섬네일"));
+                .containsExactly(themeResponse);
     }
 
     @DisplayName("테마 삭제")
