@@ -51,7 +51,7 @@ public class ReservationService {
         LocalDate date = LocalDate.parse(reservationRequest.date());
 
         if (reservationRepository.existReservationListBy(date, reservationTime.getId(), theme.getId())) {
-            throw new IllegalArgumentException("예약 시간이 중복되었습니다.");
+            throw new IllegalArgumentException("예약이 다른 사람과 중복되었습니다. 다른 예약 시간을 선택해주세요.");
         }
 
         Member member = memberRepository.save(new Member(reservationRequest.name()));

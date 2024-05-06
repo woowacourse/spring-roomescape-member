@@ -65,7 +65,7 @@ public class ThemeDao implements ThemeRepository {
 
     @Override
     public boolean deleteById(long themeId) {
-        String sql = "DELETE FROM theme WHERE id NOT IN (SELECT DISTINCT theme_id FROM reservation) AND id = ?;";
+        String sql = "DELETE FROM theme WHERE id = ?;";
         int updateId = jdbcTemplate.update(sql, themeId);
         return updateId != 0;
     }

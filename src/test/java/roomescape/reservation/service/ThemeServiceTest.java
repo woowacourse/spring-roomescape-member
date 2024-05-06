@@ -1,20 +1,23 @@
 package roomescape.reservation.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static roomescape.fixture.ReservationFixture.getNextDayReservation;
+import static roomescape.fixture.ReservationTimeFixture.getNoon;
+import static roomescape.fixture.ThemeFixture.getTheme1;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.reservation.dao.FakeMemberDao;
+import roomescape.reservation.controller.dto.ThemeRequest;
+import roomescape.reservation.controller.dto.ThemeResponse;
 import roomescape.reservation.dao.FakeReservationDao;
 import roomescape.reservation.dao.FakeThemeDao;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.domain.repository.ThemeRepository;
-import roomescape.reservation.controller.dto.ThemeRequest;
-import roomescape.reservation.controller.dto.ThemeResponse;
 
 @DisplayName("테마 로직 테스트")
 class ThemeServiceTest {
@@ -26,30 +29,23 @@ class ThemeServiceTest {
     void setUp() {
         reservationRepository = new FakeReservationDao();
         themeRepository = new FakeThemeDao(reservationRepository);
-        themeService = new ThemeService(themeRepository);
+        themeService = new ThemeService(themeRepository, reservationRepository);
     }
 
     @DisplayName("테마 조회에 성공한다.")
     @Test
     void findAll() {
         //given
-        long id = 1;
-        String name = "name";
-        String description = "description";
-        String thumbnail = "thumbnail";
-        Theme theme = new Theme(id, name, description, thumbnail);
-        themeRepository.save(theme);
+        Theme theme = themeRepository.save(getTheme1());
 
         //when
         List<ThemeResponse> themes = themeService.findAllThemes();
 
         //then
-        assertAll(
-                () -> assertThat(themes).hasSize(1),
-                () -> assertThat(themes.get(0).name()).isEqualTo(name),
-                () -> assertThat(themes.get(0).description()).isEqualTo(description),
-                () -> assertThat(themes.get(0).thumbnail()).isEqualTo(thumbnail)
-        );
+        assertAll(() -> assertThat(themes).hasSize(1),
+                () -> assertThat(themes.get(0).name()).isEqualTo(theme.getName()),
+                () -> assertThat(themes.get(0).description()).isEqualTo(theme.getDescription()),
+                () -> assertThat(themes.get(0).thumbnail()).isEqualTo(theme.getThumbnail()));
     }
 
     @DisplayName("테마 생성에 성공한다.")
@@ -65,28 +61,34 @@ class ThemeServiceTest {
         ThemeResponse themeResponse = themeService.create(themeRequest);
 
         //then
-        assertAll(
-                () -> assertThat(themeResponse.name()).isEqualTo(name),
+        assertAll(() -> assertThat(themeResponse.name()).isEqualTo(name),
                 () -> assertThat(themeResponse.thumbnail()).isEqualTo(thumbnail),
-                () -> assertThat(themeResponse.description()).isEqualTo(description)
-        );
+                () -> assertThat(themeResponse.description()).isEqualTo(description));
     }
 
     @DisplayName("테마 삭제에 성공한다.")
     @Test
     void delete() {
         //given
-        long id = 1;
-        String name = "name";
-        String description = "description";
-        String thumbnail = "thumbnail";
-        Theme theme = new Theme(id, name, description, thumbnail);
+        Theme theme = getTheme1();
         themeRepository.save(theme);
 
         //when
-        themeService.delete(id);
+        themeService.delete(theme.getId());
 
         //then
         assertThat(themeRepository.findAll()).hasSize(0);
+    }
+
+    @DisplayName("예약이 존재하는 테마 삭제 시, 예외가 발생한다.")
+    @Test
+    void deleteThemeWithReservation() {
+        //given
+        Theme theme = themeRepository.save(getTheme1());
+        reservationRepository.save(getNextDayReservation(getNoon(), theme));
+
+        //when & then
+        assertThatThrownBy(() -> themeService.delete(theme.getId()))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }

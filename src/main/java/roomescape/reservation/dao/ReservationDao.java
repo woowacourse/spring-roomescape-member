@@ -128,6 +128,20 @@ public class ReservationDao implements ReservationRepository {
     }
 
     @Override
+    public boolean existsByThemeId(final long themeId) {
+        String sql = """
+                SELECT 1
+                FROM reservation as r 
+                INNER JOIN reservation_time as t ON r.time_id = t.id 
+                INNER JOIN theme as th ON r.theme_id = th.id 
+                WHERE th.id = ? 
+                LIMIT 1;
+                """;
+
+        return jdbcTemplate.query(sql, ResultSet::next, themeId);
+    }
+
+    @Override
     public boolean existReservationListBy(LocalDate date, long timeId, long themeId) {
         String sql = """
                 SELECT 1
