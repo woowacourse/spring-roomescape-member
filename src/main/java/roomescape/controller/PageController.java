@@ -11,6 +11,11 @@ public class PageController {
         return "index";
     }
 
+    @GetMapping("/login")
+    public String adminLoginPage() {
+        return "login";
+    }
+
     @GetMapping("/reservation")
     public String reservationPage() {
         return "reservation";
