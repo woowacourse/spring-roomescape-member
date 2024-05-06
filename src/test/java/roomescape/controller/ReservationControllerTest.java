@@ -9,12 +9,10 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import org.apache.http.HttpStatus;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.Reservation;
@@ -30,8 +28,6 @@ class ReservationControllerTest {
 
     @Autowired
     private ReservationDao reservationDao;
-
-
 
     @DisplayName("모든 예약을 조회한다.")
     @Test

@@ -9,18 +9,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.http.HttpStatus;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.TimeMemberResponse;
 import roomescape.dto.TimeResponse;
-import roomescape.repository.TimeDao;
+import roomescape.repository.JdbcTimeDao;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -30,7 +28,7 @@ class TimeRestControllerTest {
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    private TimeDao timeDao;
+    private JdbcTimeDao jdbcTimeDao;
 
 
 
@@ -89,7 +87,7 @@ class TimeRestControllerTest {
                 .then().log().all()
                 .statusCode(201);
 
-        ReservationTime time = timeDao.findById(1);
+        ReservationTime time = jdbcTimeDao.findById(1);
 
         // then
         assertThat(time.getStartAt()).isEqualTo(LocalTime.of(10, 0));
@@ -108,7 +106,7 @@ class TimeRestControllerTest {
                 .then().log().all()
                 .statusCode(HttpStatus.SC_NO_CONTENT);
 
-        List<ReservationTime> allTimes = timeDao.findAll();
+        List<ReservationTime> allTimes = jdbcTimeDao.findAll();
 
         // then
         assertThat(allTimes).isEmpty();
