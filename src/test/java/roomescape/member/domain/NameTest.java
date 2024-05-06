@@ -1,10 +1,10 @@
-package roomescape.global;
+package roomescape.member.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.global.Name;
+import roomescape.member.domain.Name;
 
 @DisplayName("이름 도메인 검증")
 class NameTest {

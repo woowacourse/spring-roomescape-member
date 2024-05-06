@@ -1,7 +1,6 @@
 package roomescape.member.domain;
 
 import java.util.Objects;
-import roomescape.global.Name;
 
 public class Member {
     private Long id;
