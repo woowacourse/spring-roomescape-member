@@ -80,14 +80,19 @@ public class ReservationService {
                 .map(reservationTime -> new AvailableTimeResponse(
                         reservationTime.getStartAt(),
                         reservationTime.getId(),
-                        isReservedTime(reservedTimes, reservationTime)
+                        isReservable(reservedTimes, reservationTime) && !isPast(date, reservationTime)
                 ))
                 .toList();
     }
 
-    private boolean isReservedTime(List<ReservationTime> reservedTimes, ReservationTime reservationTime) {
+    private boolean isReservable(List<ReservationTime> reservedTimes, ReservationTime reservationTime) {
         return reservedTimes.stream()
                 .noneMatch(reservedTime -> reservedTime.equals(reservationTime));
+    }
+
+    private boolean isPast(LocalDate date, ReservationTime reservationTime) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(date, reservationTime.getStartAt());
+        return reservationDateTime.isBefore(LocalDateTime.now(clock));
     }
 
     public void deleteReservation(Long id) {
