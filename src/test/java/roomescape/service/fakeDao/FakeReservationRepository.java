@@ -9,20 +9,20 @@ import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.repository.ReservationDao;
+import roomescape.repository.ReservationRepository;
 
-public class FakeReservationDao implements ReservationDao {
+public class FakeReservationRepository implements ReservationRepository {
 
     Map<Long, Reservation> reservations;
     AtomicLong reservationAtomicLong = new AtomicLong(0);
     AtomicLong reservationTimeAtomicLong = new AtomicLong(0);
     AtomicLong themeAtomicLong = new AtomicLong(0);
 
-    public FakeReservationDao() {
+    public FakeReservationRepository() {
         this.reservations = new HashMap<>();
     }
 
-    FakeReservationDao(List<Reservation> reservations) {
+    FakeReservationRepository(List<Reservation> reservations) {
         this.reservations = new HashMap<>();
         for (int i = 0; i < reservations.size(); i++) {
             this.reservations.put(reservations.get(i).getId(), reservations.get(i));

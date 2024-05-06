@@ -6,29 +6,29 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationAddRequest;
-import roomescape.repository.ReservationDao;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeDao;
 import roomescape.repository.ThemeDao;
 
 @Service
 public class AdminReservationService {
 
-    private final ReservationDao reservationDao;
+    private final ReservationRepository reservationRepository;
     private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
 
-    public AdminReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao, ThemeDao themeDao) {
-        this.reservationDao = reservationDao;
+    public AdminReservationService(ReservationRepository reservationRepository, ReservationTimeDao reservationTimeDao, ThemeDao themeDao) {
+        this.reservationRepository = reservationRepository;
         this.reservationTimeDao = reservationTimeDao;
         this.themeDao = themeDao;
     }
 
     public List<Reservation> findAllReservation() {
-        return reservationDao.findAll();
+        return reservationRepository.findAll();
     }
 
     public Reservation addReservation(ReservationAddRequest reservationAddRequest) {
-        if (reservationDao.existByDateAndTimeIdAndThemeId(reservationAddRequest.date(),
+        if (reservationRepository.existByDateAndTimeIdAndThemeId(reservationAddRequest.date(),
                 reservationAddRequest.timeId(), reservationAddRequest.themeId())) {
             throw new IllegalArgumentException("예약 날짜와 예약시간 그리고 테마가 겹치는 예약은 할 수 없습니다.");
         }
@@ -37,7 +37,7 @@ public class AdminReservationService {
         Theme theme = getTheme(reservationAddRequest);
 
         Reservation reservationRequest = reservationAddRequest.toEntity(reservationTime, theme);
-        return reservationDao.insert(reservationRequest);
+        return reservationRepository.insert(reservationRequest);
     }
 
     private Theme getTheme(ReservationAddRequest reservationAddRequest) {
@@ -51,9 +51,9 @@ public class AdminReservationService {
     }
 
     public void removeReservation(Long id) {
-        if (reservationDao.findById(id).isEmpty()) {
+        if (reservationRepository.findById(id).isEmpty()) {
             throw new IllegalArgumentException("해당 id를 가진 예약이 존재하지 않습니다.");
         }
-        reservationDao.deleteById(id);
+        reservationRepository.deleteById(id);
     }
 }

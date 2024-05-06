@@ -3,18 +3,18 @@ package roomescape.service.user;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
-import roomescape.repository.ReservationDao;
+import roomescape.repository.ReservationRepository;
 
 @Service
 public class UserThemeService {
 
-    private final ReservationDao reservationDao;
+    private final ReservationRepository reservationRepository;
 
-    public UserThemeService(ReservationDao reservationDao) {
-        this.reservationDao = reservationDao;
+    public UserThemeService(ReservationRepository reservationRepository) {
+        this.reservationRepository = reservationRepository;
     }
 
     public List<Theme> getThemeRanking() {
-        return reservationDao.findThemeOrderByReservationCount();
+        return reservationRepository.findThemeOrderByReservationCount();
     }
 }

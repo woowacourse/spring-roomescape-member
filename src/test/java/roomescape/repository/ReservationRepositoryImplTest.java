@@ -24,12 +24,12 @@ import roomescape.domain.Theme;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class ReservationDaoImplTest {
+class ReservationRepositoryImplTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
     @Autowired
-    private ReservationDaoImpl reservationDaoImpl;
+    private ReservationRepositoryImpl reservationRepository;
 
     @BeforeEach
     void setUp() {
@@ -50,7 +50,7 @@ class ReservationDaoImplTest {
     void should_findAll() {
         int expectedSize = 1;
 
-        int actualSize = reservationDaoImpl.findAll().size();
+        int actualSize = reservationRepository.findAll().size();
 
         assertThat(actualSize).isEqualTo(expectedSize);
     }
@@ -63,8 +63,8 @@ class ReservationDaoImplTest {
         Theme theme = new Theme(1L, "리비", "머리 쓰는 중", "url");
         Reservation expectedReservation = new Reservation(1L, "브라운", AFTER_TWO_DAYS_DATE, reservationTime, theme);
 
-        List<Reservation> all = reservationDaoImpl.findAll();
-        assertThat(reservationDaoImpl.findById(1L)).isPresent();
+        List<Reservation> all = reservationRepository.findAll();
+        assertThat(reservationRepository.findById(1L)).isPresent();
     }
 
     @DisplayName("예약을 추가할 수 있습니다.")
@@ -74,7 +74,7 @@ class ReservationDaoImplTest {
         Theme theme = new Theme(1L, "리비", "머리 쓰는 중", "url");
         Reservation reservation = new Reservation(null, "도도", AFTER_THREE_DAYS_DATE, reservationTime, theme);
 
-        Reservation savedReservation = reservationDaoImpl.insert(reservation);
+        Reservation savedReservation = reservationRepository.insert(reservation);
 
         assertThat(savedReservation.getId()).isNotNull();
     }
@@ -84,7 +84,7 @@ class ReservationDaoImplTest {
     void should_deleteById() {
         int expectedCount = 0;
 
-        reservationDaoImpl.deleteById(1L);
+        reservationRepository.deleteById(1L);
         int actualCount = jdbcTemplate.queryForObject("select count(*) from reservation where id = 1", Integer.class);
 
         assertThat(actualCount).isEqualTo(expectedCount);
@@ -93,13 +93,13 @@ class ReservationDaoImplTest {
     @DisplayName("예약날짜와 예약 시간 ID와 테마 ID가 동일한 경우를 알 수 있습니다.")
     @Test
     void should_return_true_when_reservation_date_and_time_id_and_theme_id_equal() {
-        assertThat(reservationDaoImpl.existByDateAndTimeIdAndThemeId(AFTER_TWO_DAYS_DATE, 1L, 1L)).isTrue();
+        assertThat(reservationRepository.existByDateAndTimeIdAndThemeId(AFTER_TWO_DAYS_DATE, 1L, 1L)).isTrue();
     }
 
     @DisplayName("예약날짜와 예약 시간 ID와 테마 ID가 동일하지 않은 경우를 알 수 있습니다.")
     @Test
     void should_return_false_when_reservation_date_and_time_id_and_theme_id_not_equal() {
-        assertThat(reservationDaoImpl.existByDateAndTimeIdAndThemeId(AFTER_THREE_DAYS_DATE, 1L, 1L)).isFalse();
+        assertThat(reservationRepository.existByDateAndTimeIdAndThemeId(AFTER_THREE_DAYS_DATE, 1L, 1L)).isFalse();
     }
 
     @DisplayName("인기 테마 목록을 불러올 수 있습니다.")
@@ -114,7 +114,7 @@ class ReservationDaoImplTest {
         jdbcTemplate.update("insert into reservation (name, date, time_id, theme_id) values(?,?,?,?)", "리비",
                 BEFORE_ONE_DAYS_DATE, 1L, 1L);
 
-        List<Theme> themeRaking = reservationDaoImpl.findThemeOrderByReservationCount();
+        List<Theme> themeRaking = reservationRepository.findThemeOrderByReservationCount();
 
         assertAll(
                 () -> assertThat(themeRaking).hasSize(2),

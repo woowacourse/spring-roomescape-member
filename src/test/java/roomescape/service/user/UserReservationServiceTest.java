@@ -14,20 +14,20 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.BookableTimeResponse;
 import roomescape.dto.BookableTimesRequest;
-import roomescape.service.fakeDao.FakeReservationDao;
+import roomescape.service.fakeDao.FakeReservationRepository;
 import roomescape.service.fakeDao.FakeReservationTimeDao;
 
 class UserReservationServiceTest {
 
     UserReservationService userReservationService;
-    FakeReservationDao fakeReservationDao;
+    FakeReservationRepository fakeReservationRepository;
     FakeReservationTimeDao fakeReservationTimeDao;
 
     @BeforeEach
     void setUp() {
-        fakeReservationDao = new FakeReservationDao();
+        fakeReservationRepository = new FakeReservationRepository();
         fakeReservationTimeDao = new FakeReservationTimeDao();
-        userReservationService = new UserReservationService(fakeReservationDao, fakeReservationTimeDao);
+        userReservationService = new UserReservationService(fakeReservationRepository, fakeReservationTimeDao);
     }
 
     @DisplayName("예약 가능 시각을 알 수 있습니다.")
@@ -36,7 +36,7 @@ class UserReservationServiceTest {
         ReservationTime reservationTime = new ReservationTime(null, TEN_HOUR);
         Theme theme = new Theme(null, "테마1", "설명", "썸네일");
         fakeReservationTimeDao.insert(reservationTime);
-        fakeReservationDao.insert(
+        fakeReservationRepository.insert(
                 new Reservation(null, "dodo", AFTER_ONE_DAYS_DATE, reservationTime, theme));
 
         List<BookableTimeResponse> bookableTimes = userReservationService.findBookableTimes(
@@ -52,7 +52,7 @@ class UserReservationServiceTest {
         Theme theme = new Theme(null, "테마1", "설명", "썸네일");
         fakeReservationTimeDao.insert(reservationTime);
         fakeReservationTimeDao.insert(new ReservationTime(1L, LocalTime.of(11, 0)));
-        fakeReservationDao.insert(
+        fakeReservationRepository.insert(
                 new Reservation(null, "dodo", AFTER_ONE_DAYS_DATE, reservationTime, theme));
 
         List<BookableTimeResponse> bookableTimes = userReservationService.findBookableTimes(
