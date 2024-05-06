@@ -9,7 +9,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
-import roomescape.domain.RankTheme;
 import roomescape.domain.Theme;
 
 @Repository
@@ -23,12 +22,6 @@ public class ThemeDao {
             resultSet.getString("name"),
             resultSet.getString("description"),
             resultSet.getString("thumbnail")
-    );
-
-    private final RowMapper<RankTheme> rankThemeRowMapper = (resultSet, __) -> new RankTheme(
-            resultSet.getString("name"),
-            resultSet.getString("thumbnail"),
-            resultSet.getString("description")
     );
 
     public ThemeDao(JdbcTemplate jdbcTemplate) {
@@ -57,7 +50,7 @@ public class ThemeDao {
         jdbcTemplate.update(query, themeID);
     }
 
-    public List<RankTheme> getTop10() {
+    public List<Theme> getTop10() {
         String query = "SELECT t.id, t.name, t.description, t.thumbnail, COUNT(r.id) AS reservation_count " +
                 "FROM theme t " +
                 "INNER JOIN reservation r ON t.id = r.theme_id " +
@@ -66,7 +59,18 @@ public class ThemeDao {
                 "GROUP BY t.id, t.name, t.description, t.thumbnail " +
                 "ORDER BY reservation_count DESC " +
                 "LIMIT 10";
+        return jdbcTemplate.query(query, themeRowMapper);
+    }
 
-        return jdbcTemplate.query(query, rankThemeRowMapper);
+    public boolean existsById(Long id) {
+        String query = "SELECT COUNT(*) FROM THEME WHERE ID = ?";
+        Integer count = jdbcTemplate.queryForObject(query, Integer.class, id);
+        return count != null && count > 0;
+    }
+
+    public boolean existsByName(String name) {
+        String query = "SELECT COUNT(*) FROM THEME WHERE name = ?";
+        Integer count = jdbcTemplate.queryForObject(query, Integer.class, name);
+        return count != null && count > 0;
     }
 }
