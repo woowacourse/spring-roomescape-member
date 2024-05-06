@@ -40,16 +40,7 @@ public class ReservationTimeService {
     }
 
     public List<AvailableTimeResponse> findAvailableTimes(final LocalDate date, final Long themeId) {
-        final List<ReservationTime> reservationTimes = reservationTimeDAO.selectAll();
-        final List<Long> reservedTimeIds = reservationDAO.findReservedTimeIds(date, themeId);
-
-        return reservationTimes.stream()
-                .map(reservationTime -> AvailableTimeResponse.from(reservationTime, isReservedTime(reservationTime, reservedTimeIds)))
-                .toList();
-    }
-
-    private boolean isReservedTime(final ReservationTime reservationTime, final List<Long> reservedTimeIds) {
-        return reservedTimeIds.contains(reservationTime.getId());
+        return reservationTimeDAO.findAvailableTimes(date, themeId);
     }
 
     public void delete(final Long id) {

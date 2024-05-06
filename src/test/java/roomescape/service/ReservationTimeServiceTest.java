@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.dto.AvailableTimeResponse;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ThemeRequest;
@@ -17,6 +18,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -61,14 +63,13 @@ class ReservationTimeServiceTest {
     @Test
     @DisplayName("이미 예약된 예약 시간을 삭제하려 하면 예외가 발생한다.")
     void invalidDelete() {
-        LocalTime localTime = LocalTime.now();
-
-        ReservationTime savedReservationTime = reservationTimeService.save(new ReservationTimeRequest(localTime.plusHours(1)));
+        ReservationTime savedReservationTime = reservationTimeService.save(new ReservationTimeRequest(LocalTime.now().plusHours(1)));
         Theme savedTheme = themeService.save(new ThemeRequest("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
-        reservationService.save(new ReservationRequest("abc", LocalDate.now(), savedReservationTime.getId(), savedTheme.getId()));
+        reservationService.save(new ReservationRequest("abc", LocalDate.now().plusDays(1), savedReservationTime.getId(), savedTheme.getId()));
 
         assertThatThrownBy(() -> reservationTimeService.delete(savedReservationTime.getId()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("해당 시간에 대한 예약이 존재하여 삭제할 수 없습니다.");
     }
 
     @Test
@@ -80,5 +81,24 @@ class ReservationTimeServiceTest {
         assertThatThrownBy(() -> reservationTimeService.save(new ReservationTimeRequest(localTime)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("중복된 시간을 예약할 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("예약 가능한 시간들을 조회할 수 있다.")
+    void findAvailableTimes() {
+        ReservationTime firstReservationTime = reservationTimeService.save(new ReservationTimeRequest(LocalTime.of(15, 30)));
+        reservationTimeService.save(new ReservationTimeRequest(LocalTime.of(16, 30)));
+        reservationTimeService.save(new ReservationTimeRequest(LocalTime.of(17, 30)));
+        Theme savedTheme = themeService.save(new ThemeRequest("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        final LocalDate tomorrow = LocalDate.now().plusDays(1);
+        reservationService.save(new ReservationRequest("abc", tomorrow, firstReservationTime.getId(), savedTheme.getId()));
+
+        final List<AvailableTimeResponse> availableTimes = reservationTimeService.findAvailableTimes(tomorrow, savedTheme.getId());
+
+        assertAll(
+                () -> assertThat(availableTimes.get(0).alreadyBooked()).isTrue(),
+                () -> assertThat(availableTimes.get(1).alreadyBooked()).isFalse(),
+                () -> assertThat(availableTimes.get(2).alreadyBooked()).isFalse()
+        );
     }
 }

@@ -43,7 +43,7 @@ class ReservationServiceTest {
     @Test
     @DisplayName("예약을 저장할 수 있다.")
     void save() {
-        final Reservation savedReservation = reservationService.save(new ReservationRequest("뽀로로", LocalDate.now(), 1L, 1L));
+        final Reservation savedReservation = reservationService.save(new ReservationRequest("뽀로로", LocalDate.now().plusDays(1), 1L, 1L));
 
         assertThat(savedReservation).isNotNull();
     }
@@ -51,7 +51,7 @@ class ReservationServiceTest {
     @Test
     @DisplayName("전체 예약을 조회할 수 있다.")
     void findAll() {
-        reservationService.save(new ReservationRequest("뽀로로", LocalDate.now(), 1L, 1L));
+        reservationService.save(new ReservationRequest("뽀로로", LocalDate.now().plusDays(1), 1L, 1L));
 
         final List<Reservation> reservations = reservationService.findAll();
 
@@ -61,7 +61,7 @@ class ReservationServiceTest {
     @Test
     @DisplayName("예약을 삭제할 수 있다.")
     void delete() {
-        reservationService.save(new ReservationRequest("뽀로로", LocalDate.now(), 1L, 1L));
+        reservationService.save(new ReservationRequest("뽀로로", LocalDate.now().plusDays(1), 1L, 1L));
 
         reservationService.delete(1L);
         final List<Reservation> reservations = reservationService.findAll();
@@ -72,7 +72,7 @@ class ReservationServiceTest {
     @Test
     @DisplayName("예약 날짜와 예약 시간이 중복되면 예외가 발생한다.")
     void invalidSave() {
-        LocalDate date = LocalDate.now();
+        LocalDate date = LocalDate.now().plusDays(1);
         reservationService.save(new ReservationRequest("abc", date, 1L, 1L));
 
         assertThatThrownBy(() -> reservationService.save(new ReservationRequest("abcde", date, 1L, 1L)))
