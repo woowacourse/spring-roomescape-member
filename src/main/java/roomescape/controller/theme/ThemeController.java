@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 import roomescape.controller.reservation.dto.PopularThemeResponse;
 import roomescape.controller.theme.dto.CreateThemeRequest;
+import roomescape.controller.theme.dto.PopularThemeRequest;
 import roomescape.controller.theme.dto.ThemeResponse;
 import roomescape.service.ThemeService;
 
 import java.net.URI;
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -53,8 +53,9 @@ public class ThemeController {
                 .build();
     }
 
-    @GetMapping("/popular")
-    public List<PopularThemeResponse> getPopularThemes() {
-        return themeService.getPopularThemes(LocalDate.now());
+    @GetMapping(value = "/popular", params = {"from", "until", "limit"})
+    public List<PopularThemeResponse> getPopularThemes(@Valid final PopularThemeRequest popularThemeRequest) {
+        return themeService.getPopularThemes(popularThemeRequest.from(), popularThemeRequest.until(),
+                popularThemeRequest.limit());
     }
 }

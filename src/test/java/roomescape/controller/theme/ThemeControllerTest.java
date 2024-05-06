@@ -12,6 +12,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -86,8 +88,12 @@ class ThemeControllerTest {
     @Test
     @DisplayName("인기 테마 조회")
     void getPopularThemes() {
+        final LocalDate now = LocalDate.now();
+        final String from = now.minusDays(8).format(DateTimeFormatter.ISO_DATE);
+        final String until = now.minusDays(1).format(DateTimeFormatter.ISO_DATE);
+
         RestAssured.given().log().all()
-                .when().get("/themes/popular")
+                .when().get("/themes/popular?from=" + from + "&until=" + until + "&limit=10")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(2));

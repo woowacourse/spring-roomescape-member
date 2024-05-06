@@ -274,7 +274,7 @@ HTTP/1.1 204
 **request**
 
 ```http request
-GET /themes/popular HTTP/1.1
+GET /themes/popular?from={}&until={}&limit={} HTTP/1.1
 ```
 
 **response**

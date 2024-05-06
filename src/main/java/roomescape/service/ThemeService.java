@@ -5,6 +5,7 @@ import roomescape.controller.reservation.dto.PopularThemeResponse;
 import roomescape.controller.theme.dto.CreateThemeRequest;
 import roomescape.controller.theme.dto.ThemeResponse;
 import roomescape.domain.Theme;
+import roomescape.domain.exception.InvalidRequestException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.service.exception.ThemeUsedException;
@@ -43,8 +44,12 @@ public class ThemeService {
         themeRepository.delete(findTheme.getId());
     }
 
-    public List<PopularThemeResponse> getPopularThemes(final LocalDate today) {
-        final List<Theme> reservations = reservationRepository.findPopularThemes(today);
+    public List<PopularThemeResponse> getPopularThemes(final LocalDate from, final LocalDate until,
+                                                       final int limit) {
+        if (from.isAfter(until)) {
+            throw new InvalidRequestException("유효하지 않은 날짜 범위입니다.");
+        }
+        final List<Theme> reservations = reservationRepository.findPopularThemes(from, until, limit);
         return reservations.stream()
                 .map(PopularThemeResponse::from)
                 .toList();

@@ -27,5 +27,5 @@ public interface ReservationRepository {
 
     void deleteById(Long id);
 
-    List<Theme> findPopularThemes(LocalDate today);
+    List<Theme> findPopularThemes(LocalDate from, LocalDate until, Integer limit);
 }

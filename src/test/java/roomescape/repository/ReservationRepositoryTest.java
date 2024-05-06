@@ -41,14 +41,14 @@ class ReservationRepositoryTest {
                         "al",
                         LocalDate.of(2025, 1, 20),
                         new ReservationTime(1L, LocalTime.parse("10:15")),
-                        new Theme(1L, null, null, null)
+                        new Theme(1L, "", "", "")
                 ),
                 new Reservation(
                         2L,
                         "be",
                         LocalDate.of(2025, 2, 19),
                         new ReservationTime(2L, LocalTime.parse("11:20")),
-                        new Theme(2L, null, null, null)
+                        new Theme(2L, "", "", "")
                 )
         );
 
@@ -69,7 +69,7 @@ class ReservationRepositoryTest {
                 "be",
                 LocalDate.of(2025, 2, 19),
                 new ReservationTime(2L, LocalTime.parse("00:00")),
-                new Theme(2L, null, null, null)
+                new Theme(2L, "", "", "")
         );
 
         // when
@@ -129,14 +129,14 @@ class ReservationRepositoryTest {
                 "cha",
                 LocalDate.of(2024, 3, 1),
                 new ReservationTime(2L, LocalTime.parse("00:00")),
-                new Theme(2L, null, null, null)
+                new Theme(2L, "", "", "")
         );
         Reservation expected = new Reservation(
                 3L,
                 "cha",
                 LocalDate.of(2024, 3, 1),
                 new ReservationTime(2L, LocalTime.parse("00:00")),
-                new Theme(2L, null, null, null)
+                new Theme(2L, "", "", "")
         );
 
         // when
@@ -155,7 +155,7 @@ class ReservationRepositoryTest {
                 "cha",
                 LocalDate.of(2025, 3, 1),
                 new ReservationTime(4L, LocalTime.parse("00:00")),
-                new Theme(2L, null, null, null)
+                new Theme(2L, "", "", "")
         );
 
         // when & then
@@ -173,5 +173,32 @@ class ReservationRepositoryTest {
         assertThat(reservationRepository.findById(id)).isPresent();
         assertThatCode(() -> reservationRepository.deleteById(id))
                 .doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("최근 일주일간 인기 테마를 조회한다.")
+    void findPopularThemes() {
+        //given
+        List<Theme> expected = List.of(new Theme(1L, "", "", ""),
+                new Theme(2L, "", "", ""));
+        final LocalDate from = LocalDate.now().minusDays(7);
+        final LocalDate until = LocalDate.now().minusDays(1);
+
+        //when & then
+        final List<Theme> actual = reservationRepository.findPopularThemes(from, until, 10);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("한달 전 인기 테마를 조회한다.")
+    void findPopularThemesAMonthAgo() {
+        //given
+        List<Theme> expected = List.of();
+        final LocalDate from = LocalDate.now().minusMonths(1).minusDays(7);
+        final LocalDate until = LocalDate.now().minusMonths(1).minusDays(1);
+
+        //when & then
+        final List<Theme> actual = reservationRepository.findPopularThemes(from, until, 10);
+        assertThat(actual).isEqualTo(expected);
     }
 }

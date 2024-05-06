@@ -6,9 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.service.exception.ThemeUsedException;
+import roomescape.domain.exception.InvalidRequestException;
 import roomescape.repository.H2ReservationRepository;
 import roomescape.repository.H2ThemeRepository;
+import roomescape.service.exception.ThemeUsedException;
+
+import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -26,5 +29,13 @@ class ThemeServiceTest {
     void invalidDelete() {
         assertThatThrownBy(() -> themeService.deleteTheme(2L))
                 .isInstanceOf(ThemeUsedException.class);
+    }
+
+    @Test
+    @DisplayName("인기 테마 조회시 from이 until보다 앞일 경우 예외가 발생한다.")
+    void invalidPopularDate() {
+        final LocalDate now = LocalDate.now();
+        assertThatThrownBy(() -> themeService.getPopularThemes(now.minusDays(1), now.minusDays(8), 10))
+                .isInstanceOf(InvalidRequestException.class);
     }
 }
