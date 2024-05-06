@@ -15,13 +15,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(value = BadRequestException.class)
-    public ResponseEntity<String> handleBadRequestException(BadRequestException exception) {
-        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(value = DuplicatedException.class)
-    public ResponseEntity<String> handleDuplicatedException(DuplicatedException exception) {
+    @ExceptionHandler(value = {BadRequestException.class, DuplicatedException.class})
+    public ResponseEntity<String> handleBadRequestException(RuntimeException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
