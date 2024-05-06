@@ -6,8 +6,6 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import roomescape.member.domain.repository.MemberRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.dto.ReservationMember;
 import roomescape.reservation.domain.repository.ReservationRepository;
@@ -51,12 +49,13 @@ public class FakeReservationDao implements ReservationRepository {
     }
 
     @Override
-    public Optional<ReservationMember> findBy(final LocalDate date, final long timeId, final long themeId) {
-        return Optional.of(new ReservationMember(reservations.values().stream()
-                .filter(reservation -> reservation.getDate().equals(date) &&
-                        reservation.getTime().getId() == timeId &&
-                        reservation.getTheme().getId() == themeId)
-                .findFirst().orElseThrow(), getMemberChoco()));
+    public boolean existReservationListBy(final LocalDate date, final long timeId, final long themeId) {
+        Reservation reservation1 = reservations.values().stream()
+                .filter(reservation -> reservation.getDate().equals(date) && reservation.getTime().getId()
+                        .equals(timeId) && reservation.getTheme().getId().equals(themeId))
+                .findFirst().orElseThrow();
+
+        return reservationList.containsValue(reservation1.getId());
     }
 
     @Override

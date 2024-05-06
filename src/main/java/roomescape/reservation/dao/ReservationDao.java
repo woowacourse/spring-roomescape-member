@@ -128,20 +128,23 @@ public class ReservationDao implements ReservationRepository {
     }
 
     @Override
-    public Optional<ReservationMember> findBy(LocalDate date, long timeId, long themeId) {
+    public boolean existReservationListBy(LocalDate date, long timeId, long themeId) {
         String sql = """
-                SELECT r.id AS reservation_id, r.date, t.id AS time_id, t.start_at AS time_value, 
-                th.id AS theme_id, th.name AS theme_name, th.description, th.thumbnail, m.id AS member_id, m.name AS member_name 
-                FROM reservation AS r 
-                INNER JOIN reservation_time AS t ON r.time_id = t.id 
-                INNER JOIN theme AS th ON r.theme_id = th.id 
-                INNER JOIN reservation_list AS rl ON rl.reservation_id = r.id 
-                INNER JOIN member AS m ON m.id = rl.member_id 
-                WHERE date = ? AND time_id = ? AND theme_id = ?
-                LIMIT 1;
+                SELECT 1
+                FROM reservation_list as rl
+                WHERE rl.reservation_id = (
+                    SELECT r.id
+                    FROM reservation AS r 
+                    INNER JOIN reservation_time AS t ON r.time_id = t.id 
+                    INNER JOIN theme AS th ON r.theme_id = th.id 
+                    INNER JOIN reservation_list AS rl ON rl.reservation_id = r.id 
+                    INNER JOIN member AS m ON m.id = rl.member_id 
+                    WHERE date = ? AND time_id = ? AND theme_id = ?
+                    LIMIT 1
+                );
                 """;
 
-        return jdbcTemplate.query(sql, optionalResultSetExtractor, date, timeId, themeId);
+        return jdbcTemplate.query(sql, ResultSet::next, date, timeId, themeId);
     }
 
     @Override

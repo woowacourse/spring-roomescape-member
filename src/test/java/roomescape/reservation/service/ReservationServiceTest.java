@@ -3,6 +3,8 @@ package roomescape.reservation.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static roomescape.fixture.MemberFixture.getMemberChoco;
+import static roomescape.fixture.ReservationFixture.getNextDayReservation;
 import static roomescape.fixture.ReservationTimeFixture.getNoon;
 import static roomescape.fixture.ThemeFixture.getTheme1;
 
@@ -12,6 +14,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.member.domain.Member;
 import roomescape.member.domain.repository.MemberRepository;
 import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
@@ -54,7 +57,7 @@ class ReservationServiceTest {
         //given
         String name = "choco";
         String date = "2100-04-18";
-        ReservationTime time = reservationTimeRepository.save(new ReservationTime(1L, LocalTime.NOON));
+        ReservationTime time = reservationTimeRepository.save(new ReservationTime(1L, LocalTime.MIDNIGHT));
         Theme theme = themeRepository.save(getTheme1());
         reservationRepository.save(new Reservation(LocalDate.parse(date), time, theme));
         ReservationRequest reservationRequest = new ReservationRequest(name, date, time.getId(), theme.getId());
@@ -123,13 +126,14 @@ class ReservationServiceTest {
     @Test
     void duplicatedReservation() {
         //given
-        String name = "choco";
-        String date = "2099-04-18";
+        Member member = memberRepository.save(getMemberChoco());
         ReservationTime time = reservationTimeRepository.save(getNoon());
         Theme theme = themeRepository.save(getTheme1());
-        reservationRepository.save(new Reservation(1L, LocalDate.parse(date), time, theme));
+        Reservation reservation = reservationRepository.save(getNextDayReservation(time, theme));
+        reservationRepository.saveReservationList(member.getId(), reservation.getId());
 
-        ReservationRequest reservationRequest = new ReservationRequest(name, date, time.getId(), theme.getId());
+        ReservationRequest reservationRequest = new ReservationRequest(member.getName(),
+                reservation.getDate().toString(), time.getId(), theme.getId());
 
         //when & then
         assertThatThrownBy(() -> reservationService.create(reservationRequest))
