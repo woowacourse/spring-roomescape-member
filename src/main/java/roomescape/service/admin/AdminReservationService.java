@@ -7,19 +7,19 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationAddRequest;
 import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeDao;
+import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeDao;
 
 @Service
 public class AdminReservationService {
 
     private final ReservationRepository reservationRepository;
-    private final ReservationTimeDao reservationTimeDao;
+    private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeDao themeDao;
 
-    public AdminReservationService(ReservationRepository reservationRepository, ReservationTimeDao reservationTimeDao, ThemeDao themeDao) {
+    public AdminReservationService(ReservationRepository reservationRepository, ReservationTimeRepository reservationTimeRepository, ThemeDao themeDao) {
         this.reservationRepository = reservationRepository;
-        this.reservationTimeDao = reservationTimeDao;
+        this.reservationTimeRepository = reservationTimeRepository;
         this.themeDao = themeDao;
     }
 
@@ -46,7 +46,7 @@ public class AdminReservationService {
     }
 
     private ReservationTime getReservationTime(Long reservationTimeId) {
-        return reservationTimeDao.findById(reservationTimeId)
+        return reservationTimeRepository.findById(reservationTimeId)
                 .orElseThrow(() -> new IllegalArgumentException("존재 하지 않는 예약시각으로 예약할 수 없습니다."));
     }
 

@@ -13,22 +13,22 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationAddRequest;
 import roomescape.service.fakeDao.FakeReservationRepository;
-import roomescape.service.fakeDao.FakeReservationTimeDao;
+import roomescape.service.fakeDao.FakeReservationTimeRepository;
 import roomescape.service.fakeDao.FakeThemeDao;
 
 class AdminReservationServiceTest {
 
     AdminReservationService adminReservationService;
     FakeReservationRepository fakeReservationRepository;
-    FakeReservationTimeDao fakeReservationTimeDao;
+    FakeReservationTimeRepository fakeReservationTimeRepository;
     FakeThemeDao fakeThemeDao;
 
     @BeforeEach
     void setUp() {
         fakeReservationRepository = new FakeReservationRepository();
-        fakeReservationTimeDao = new FakeReservationTimeDao();
+        fakeReservationTimeRepository = new FakeReservationTimeRepository();
         fakeThemeDao = new FakeThemeDao();
-        adminReservationService = new AdminReservationService(fakeReservationRepository, fakeReservationTimeDao, fakeThemeDao);
+        adminReservationService = new AdminReservationService(fakeReservationRepository, fakeReservationTimeRepository, fakeThemeDao);
     }
 
     @DisplayName("없는 id의 예약을 삭제하면 예외를 발생합니다.")
@@ -57,7 +57,7 @@ class AdminReservationServiceTest {
         Theme theme = new Theme(1L, "dummy", "description", "url");
 
         Reservation reservation = new Reservation(null, "lib", AFTER_ONE_DAYS_DATE, reservationTime, theme);
-        fakeReservationTimeDao.insert(reservationTime);
+        fakeReservationTimeRepository.insert(reservationTime);
         fakeThemeDao.insert(theme);
         fakeReservationRepository.insert(reservation);
 

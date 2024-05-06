@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
 
 @Repository
-public class ReservationTimeDaoImpl implements ReservationTimeDao {
+public class ReservationTimeRepositoryImpl implements ReservationTimeRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -22,7 +22,7 @@ public class ReservationTimeDaoImpl implements ReservationTimeDao {
             rs.getTime("start_at").toLocalTime()
     ));
 
-    public ReservationTimeDaoImpl(JdbcTemplate jdbcTemplate) {
+    public ReservationTimeRepositoryImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("RESERVATION_TIME")
