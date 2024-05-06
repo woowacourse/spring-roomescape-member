@@ -24,7 +24,7 @@ class ThemeControllerTest extends ControllerTest {
 
     @Test
     void 테마를_생성한다() throws Exception {
-        Theme theme = ThemeFixture.theme(1L, "레모네와 함께 탐험", "설명", "https://lemone.com");
+        Theme theme = ThemeFixture.theme(1L, "레모네와 함께 탐험", "설명", "https://lemone.png");
         when(themeService.save(any())).thenReturn(theme);
         ThemeRequest request = new ThemeRequest(theme.getName(), theme.getDescription(), theme.getThumbnail());
         String content = objectMapper.writeValueAsString(request);
@@ -64,4 +64,19 @@ class ThemeControllerTest extends ControllerTest {
         result.andExpect(status().isNoContent())
                 .andDo(print());
     }
+
+    @Test
+    void 썸네일_URL이_올바르지_않으면_Bad_Request_상태를_반환한다() throws Exception {
+        String content = "{\"name\":\"테마테카\", \"description\": \"테마 설명\", \"thumbnail\":\"잘못된 링크\"}";
+        ResultActions result = SimpleMockMvc.post(mockMvc, "/themes", content);
+
+        result.andExpectAll(
+                        status().isBadRequest(),
+                        jsonPath("$.fieldErrors[0].field").value("thumbnail"),
+                        jsonPath("$.fieldErrors[0].rejectedValue").value("잘못된 링크"),
+                        jsonPath("$.fieldErrors[0].reason").value("URL 형식에 맞지 않습니다.")
+                )
+                .andDo(print());
+    }
+
 }
