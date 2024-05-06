@@ -14,11 +14,11 @@ import roomescape.domain.reservationtime.ReservationStartAt;
 import roomescape.domain.reservationtime.ReservationTime;
 
 @Repository
-public class WebReservationTimeDao implements ReservationTimeDao {
+public class JdbcReservationTimeDao implements ReservationTimeDao {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public WebReservationTimeDao(DataSource dataSource) {
+    public JdbcReservationTimeDao(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
