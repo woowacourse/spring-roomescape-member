@@ -60,5 +60,4 @@ class ReservationTest {
         assertThat(result).isTrue();
     }
 
-    //TODO: 거짓 반환 케이스
 }
