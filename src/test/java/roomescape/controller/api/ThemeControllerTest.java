@@ -33,7 +33,7 @@ class ThemeControllerTest {
         RestAssured.port = port;
     }
 
-    @DisplayName("테마 이름은 비어있을 수 없다.")
+    @DisplayName("인기 테마 조회")
     @Test
     @Sql(scripts = {"/test.sql"}, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
     void themeNameBlank() {
