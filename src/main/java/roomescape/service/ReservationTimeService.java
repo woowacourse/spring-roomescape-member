@@ -47,7 +47,6 @@ public class ReservationTimeService {
         return reservationTimeRepository.findReservationById(id);
     }
 
-    // getReservationStatus
     public List<IsReservedTimeResponse> getIsReservedTime(LocalDate date, long themeId) {
         List<ReservationTime> allTimes = reservationTimeRepository.findAllReservationTimes();
         List<ReservationTime> bookedTimes = reservationTimeRepository.findAllReservedTimes(date, themeId);

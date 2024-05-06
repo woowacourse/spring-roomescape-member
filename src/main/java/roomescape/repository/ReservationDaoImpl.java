@@ -101,7 +101,8 @@ public class ReservationDaoImpl implements ReservationDao {
     @Override
     public Long countReservationByDateAndTimeId(LocalDate date, long timeId) {
         String sql = "SELECT count(id) FROM reservation WHERE date = ? AND time_id = ?";
-        Long countReservation = jdbcTemplate.queryForObject(sql, (resultSet, ignored) -> resultSet.getLong(1), date, timeId);
+        Long countReservation = jdbcTemplate.queryForObject(sql, (resultSet, ignored) -> resultSet.getLong(1), date,
+                timeId);
         validateNullResult(countReservation);
         return countReservation;
     }

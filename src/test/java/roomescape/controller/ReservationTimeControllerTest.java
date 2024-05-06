@@ -1,6 +1,7 @@
 package roomescape.controller;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -78,14 +79,16 @@ class ReservationTimeControllerTest {
                 .statusCode(200).extract()
                 .jsonPath().getList(".", IsReservedTimeResponse.class);
 
-        Assertions.assertThat(responses).hasSize(6);
-        Assertions.assertThat(responses).containsOnly(
-                new IsReservedTimeResponse(1, LocalTime.of(10, 0), true),
-                new IsReservedTimeResponse(2, LocalTime.of(11, 0), false),
-                new IsReservedTimeResponse(3, LocalTime.of(12, 0), false),
-                new IsReservedTimeResponse(4, LocalTime.of(13, 0), false),
-                new IsReservedTimeResponse(5, LocalTime.of(14, 0), false),
-                new IsReservedTimeResponse(6, LocalTime.of(15, 0), false)
-        );
+        assertSoftly(softly -> {
+            softly.assertThat(responses).hasSize(6);
+            softly.assertThat(responses).containsExactly(
+                    new IsReservedTimeResponse(1, LocalTime.of(10, 0), true),
+                    new IsReservedTimeResponse(2, LocalTime.of(11, 0), false),
+                    new IsReservedTimeResponse(3, LocalTime.of(12, 0), false),
+                    new IsReservedTimeResponse(4, LocalTime.of(13, 0), false),
+                    new IsReservedTimeResponse(5, LocalTime.of(14, 0), false),
+                    new IsReservedTimeResponse(6, LocalTime.of(15, 0), false)
+            );
+        });
     }
 }
