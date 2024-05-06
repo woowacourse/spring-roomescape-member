@@ -3,6 +3,7 @@ package roomescape.global.exception;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -41,9 +42,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value = HttpMessageNotReadableException.class)
-    public ResponseEntity<ExceptionResponse> handle(HttpMessageNotReadableException exception) {
+    public ResponseEntity<ExceptionResponse> handle(HttpMessageNotReadableException e) {
         String message = "유효하지 않은 요청 형식입니다.";
-        if (exception.getCause() instanceof MismatchedInputException mismatchedInputException) {
+        if (e.getCause() instanceof MismatchedInputException mismatchedInputException) {
             String fieldName = mismatchedInputException.getPath().get(0).getFieldName();
             message = fieldName + " 필드에 유효하지 않은 값이 입력되었습니다.";
         }
@@ -52,16 +53,18 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value = ConflictException.class)
-    public ResponseEntity<ExceptionResponse> handle(ConflictException exception) {
-        return new ResponseEntity(new ExceptionResponse(exception.getMessage()), HttpStatus.CONFLICT);
+    public ResponseEntity<ExceptionResponse> handle(ConflictException e) {
+        return new ResponseEntity(new ExceptionResponse(e.getMessage()), HttpStatus.CONFLICT);
     }
 
-    // TODO: 존재하지 않는 자원에 접근하려 시도한 경우 처리 (timeId를 2793487329로 주는 경우 등) EmptyResultDataAccessException
-    //      message:
+    @ExceptionHandler(value = EmptyResultDataAccessException.class)
+    public ResponseEntity<ExceptionResponse> handle(EmptyResultDataAccessException e) {
+        return new ResponseEntity<>(new ExceptionResponse("존재하지 않는 자원의 id로 접근할 수 없습니다."), HttpStatus.NOT_FOUND);
+    }
 
     @ExceptionHandler(value = Exception.class)
-    public ResponseEntity<ExceptionResponse> handle(Exception exception) {
-        logger.error(exception.getMessage());
+    public ResponseEntity<ExceptionResponse> handle(Exception e) {
+        logger.error(e.getMessage());
 
         return new ResponseEntity(new ExceptionResponse("서버 내부에서 에러가 발생했습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
     }

@@ -1,11 +1,5 @@
 package roomescape.service;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.theme.Theme;
@@ -17,6 +11,13 @@ import roomescape.global.exception.model.ConflictException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.TimeRepository;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ReservationService {
@@ -71,8 +72,7 @@ public class ReservationService {
     }
 
     private void validateDateAndTime(LocalDate requestDate, LocalDate today, Time time) {
-        if (requestDate.isBefore(today) || (requestDate.isEqual(today) && time.getStartAt()
-                .isBefore(LocalTime.now()))) {
+        if (requestDate.isBefore(today) || (requestDate.isEqual(today) && time.getStartAt().isBefore(LocalTime.now()))) {
             throw new ConflictException("지난 날짜나 시간은 예약이 불가능합니다.");
         }
     }

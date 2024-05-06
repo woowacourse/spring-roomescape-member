@@ -1,10 +1,5 @@
 package roomescape.service;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,6 +15,12 @@ import roomescape.global.exception.model.ConflictException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.TimeRepository;
+
+import javax.sql.DataSource;
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
 @Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
@@ -79,13 +80,13 @@ class ReservationServiceTest {
     void beforeTimeReservationFail() {
         // given
         LocalTime requestTime = LocalTime.now();
-        LocalTime beforeTime = requestTime.minusHours(1L);
+        LocalTime beforeTime = requestTime.minusMinutes(1L);
         Time time = timeRepository.save(new Time(beforeTime));
         Theme theme = themeRepository.save(new Theme("테마명", "설명", "썸네일URL"));
 
         // when & then
         assertThatThrownBy(() -> reservationService.createReservation(
-                new ReservationRequest("예약", LocalDate.now(), time.getId(), theme.getId())))
-                .isInstanceOf(ConflictException.class);
+                new ReservationRequest("예약", LocalDate.now(), time.getId(), theme.getId()))
+        ).isInstanceOf(ConflictException.class);
     }
 }

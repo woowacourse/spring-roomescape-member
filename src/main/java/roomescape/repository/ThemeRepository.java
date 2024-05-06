@@ -32,7 +32,6 @@ public class ThemeRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
-    // TODO: 예외 처리 필요. Optional?
     public Theme findById(Long id) {
         String sql = "SELECT * FROM theme WHERE id = ?";
 
