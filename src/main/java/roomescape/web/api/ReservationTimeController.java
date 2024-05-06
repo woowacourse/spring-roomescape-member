@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.service.ReservationTimeService;
 import roomescape.service.dto.request.ReservationTimeRequest;
 import roomescape.service.dto.response.AvailableReservationTimeResponse;
 import roomescape.service.dto.response.ReservationTimeResponse;
-import roomescape.service.ReservationTimeService;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -44,8 +44,8 @@ public class ReservationTimeController {
             @RequestParam("date") LocalDate date,
             @RequestParam("themeId") Long themeId
     ) {
-        List<AvailableReservationTimeResponse> reservationTimeResponses = reservationTimeService.findAllWithAvailability(
-                date, themeId);
+        List<AvailableReservationTimeResponse> reservationTimeResponses =
+                reservationTimeService.findAllWithAvailability(date, themeId);
 
         return ResponseEntity.ok(reservationTimeResponses);
     }

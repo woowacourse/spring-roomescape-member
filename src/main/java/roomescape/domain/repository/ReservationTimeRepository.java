@@ -3,10 +3,16 @@ package roomescape.domain.repository;
 import roomescape.domain.ReservationTime;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 public interface ReservationTimeRepository {
     ReservationTime save(ReservationTime reservationTime);
+
+    default ReservationTime getById(Long id) {
+        return findById(id)
+                .orElseThrow(() -> new NoSuchElementException(String.format("존재하지 않는 시간입니다. timeId: %d", id)));
+    }
 
     List<ReservationTime> findAll();
 
