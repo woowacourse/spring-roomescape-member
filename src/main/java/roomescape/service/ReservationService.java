@@ -32,7 +32,6 @@ public class ReservationService {
     }
 
     public Reservation saveReservation(ReservationDto reservationDto) {
-        String name = reservationDto.getName();
         LocalDate date = reservationDto.getDate();
         long timeId = reservationDto.getTimeId();
         long themeId = reservationDto.getThemeId();
@@ -42,7 +41,7 @@ public class ReservationService {
                 .orElseThrow(() -> new BadRequestException("[ERROR] 데이터가 저장되지 않습니다."));
 
         validate(date, time);
-        Reservation reservation = new Reservation(name, date, time, theme);
+        Reservation reservation = Reservation.from(reservationDto, time, theme);
         return reservationRepository.saveReservation(reservation);
     }
 

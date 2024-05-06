@@ -11,6 +11,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
+import roomescape.service.dto.ReservationDto;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -127,12 +128,13 @@ class ReservationRepositoryTest {
     @DisplayName("예약을 저장한 후 저장된 예약을 반환한다.")
     @Test
     void should_save_reservation() {
-        ReservationTime time = new ReservationTime(1, LocalTime.of(1, 0));
-        Theme theme = new Theme(1, "n1", "d1", "t1");
-        Reservation before = new Reservation("n3", LocalDate.of(2000, 1, 3), time, theme);
+        ReservationDto reservationDto = new ReservationDto("n3", LocalDate.of(2000, 1, 3), 1L, 1L);
+        ReservationTime time = new ReservationTime(1L, LocalTime.of(1, 0));
+        Theme theme = new Theme(1L, "n1", "d1", "t1");
+        Reservation before = Reservation.from(reservationDto, time, theme);
         Reservation actual = reservationRepository.saveReservation(before);
 
-        Reservation after = new Reservation(3, "n3", LocalDate.of(2000, 1, 3), time, theme);
+        Reservation after = new Reservation(3L, "n3", LocalDate.of(2000, 1, 3), time, theme);
         assertThat(actual).isEqualTo(after);
     }
 

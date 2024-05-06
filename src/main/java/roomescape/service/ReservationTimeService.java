@@ -27,7 +27,7 @@ public class ReservationTimeService {
     public ReservationTime saveReservationTime(ReservationTimeDto reservationTimeDto) {
         LocalTime startAt = reservationTimeDto.getStartAt();
         validateDuplication(startAt);
-        ReservationTime reservationTime = new ReservationTime(reservationTimeDto.getStartAt());
+        ReservationTime reservationTime = ReservationTime.from(reservationTimeDto);
         return reservationTimeRepository.saveReservationTime(reservationTime)
                 .orElseThrow(() -> new BadRequestException("[ERROR] 데이터가 저장되지 않습니다."));
     }

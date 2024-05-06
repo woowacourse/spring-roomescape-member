@@ -1,23 +1,49 @@
 package roomescape.model;
 
+import roomescape.service.dto.ReservationTimeDto;
+
 import java.time.LocalTime;
 import java.util.Objects;
 
 public class ReservationTime {
 
-    private long id; // Long
+    private long id;
     private LocalTime startAt;
+
+    public ReservationTime(long id, LocalTime startAt) {
+        validate(id, startAt);
+        this.id = id;
+        this.startAt = startAt;
+    }
+
+    private ReservationTime(LocalTime startAt) {
+        validateNull(startAt);
+        this.id = 0;
+        this.startAt = startAt;
+    }
 
     private ReservationTime() {
     }
 
-    public ReservationTime(LocalTime startAt) {
-        this.startAt = startAt;
+    public static ReservationTime from(ReservationTimeDto reservationTimeDto) {
+        return new ReservationTime(reservationTimeDto.getStartAt());
     }
 
-    public ReservationTime(long id, LocalTime startAt) {
-        this.id = id;
-        this.startAt = startAt;
+    private void validate(long id, LocalTime startAt) {
+        validateRange(id);
+        validateNull(startAt);
+    }
+
+    private void validateRange(long id) {
+        if (id <= 0) {
+            throw new IllegalStateException("[ERROR] id는 0 이하일 수 없습니다.");
+        }
+    }
+
+    private void validateNull(LocalTime value) {
+        if (value == null) {
+            throw new IllegalStateException("[ERROR] 데이터는 null 혹은 빈 문자열일 수 없습니다.");
+        }
     }
 
     public long getId() {

@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.model.ReservationTime;
+import roomescape.service.dto.ReservationTimeDto;
 
 import java.time.LocalTime;
 import java.util.HashMap;
@@ -58,7 +59,8 @@ class ReservationTimeDaoTest {
     @DisplayName("예약 시간을 저장한다.")
     @Test
     void should_save_reservation_time() {
-        ReservationTime time = new ReservationTime(LocalTime.of(3, 0));
+        ReservationTimeDto reservationTimeDto = new ReservationTimeDto(LocalTime.of(3, 0));
+        ReservationTime time = ReservationTime.from(reservationTimeDto);
         reservationTimeDao.save(time);
         assertThat(reservationTimeDao.findAll()).hasSize(INITIAL_TIME_COUNT + 1);
     }

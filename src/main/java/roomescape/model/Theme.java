@@ -11,24 +11,50 @@ public class Theme {
     private String description;
     private String thumbnail;
 
-    private Theme() {
-    }
-
     public Theme(long id, String name, String description, String thumbnail) {
+        validate(id, name, description, thumbnail);
         this.id = id;
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
     }
 
-    public Theme(String name, String description, String thumbnail) {
+    private Theme(String name, String description, String thumbnail) {
+        validate(name, description, thumbnail);
+        this.id = 0;
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
     }
 
+    private Theme() {
+    }
+
     public static Theme from(ThemeDto themeDto) {
         return new Theme(themeDto.getName(), themeDto.getDescription(), themeDto.getThumbnail());
+    }
+
+    private void validate(long id, String name, String description, String thumbnail) {
+        validateRange(id);
+        validate(name, description, thumbnail);
+    }
+
+    private void validate(String name, String description, String thumbnail) {
+        validateNull(name);
+        validateNull(description);
+        validateNull(thumbnail);
+    }
+
+    private void validateRange(long id) {
+        if (id <= 0) {
+            throw new IllegalStateException("[ERROR] id는 0 이하일 수 없습니다.");
+        }
+    }
+
+    private void validateNull(String value) {
+        if (value == null || value.isBlank()) {
+            throw new IllegalStateException("[ERROR] 데이터는 null 혹은 빈 문자열일 수 없습니다.");
+        }
     }
 
     public long getId() {

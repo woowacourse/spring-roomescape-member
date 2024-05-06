@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.model.Theme;
+import roomescape.service.dto.ThemeDto;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -96,7 +97,8 @@ class ThemeRepositoryTest {
     @DisplayName("테마를 저장한 후 저장된 테마를 반환한다.")
     @Test
     void should_save_theme_and_return() {
-        Theme before = new Theme("n3", "d3", "t3");
+        ThemeDto themeDto = new ThemeDto("n3", "d3", "t3");
+        Theme before = Theme.from(themeDto);
 
         Optional<Theme> actual = themeRepository.saveTheme(before);
 

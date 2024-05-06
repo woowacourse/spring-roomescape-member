@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.model.Theme;
+import roomescape.service.dto.ThemeDto;
 
 import java.util.HashMap;
 import java.util.List;
@@ -59,7 +60,8 @@ class ThemeDaoTest {
     @DisplayName("테마를 저장한다.")
     @Test
     void should_save_theme() {
-        Theme theme = new Theme("n3", "d3", "t3");
+        ThemeDto themeDto = new ThemeDto("n3", "d3", "t3");
+        Theme theme = Theme.from(themeDto);
         themeDao.save(theme);
         assertThat(themeDao.findAll()).hasSize(INITIAL_THEME_COUNT + 1);
     }
