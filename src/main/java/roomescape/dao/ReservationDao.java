@@ -1,5 +1,6 @@
 package roomescape.dao;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.support.DataAccessUtils;
@@ -47,14 +48,17 @@ public class ReservationDao {
         return jdbcTemplate.query(findAllSql, getReservationRowMapper());
     }
 
-    public Long insert(String name, String date, Long timeId, Long themeId) {
+    public Reservation insert(ReservationInsertCondition insertCondition) {
         SqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("name", name)
-                .addValue("date", date)
-                .addValue("time_id", timeId)
-                .addValue("theme_id", themeId);
+                .addValue("name", insertCondition.getName())
+                .addValue("date", insertCondition.getDate().toString())
+                .addValue("time_id", insertCondition.getTimeId())
+                .addValue("theme_id", insertCondition.getThemeId());
 
-        return insertActor.executeAndReturnKey(parameters).longValue();
+        Long id = insertActor.executeAndReturnKey(parameters).longValue();
+
+        return new Reservation(id, insertCondition.getName(), insertCondition.getDate(), insertCondition.getTime(),
+                insertCondition.getTheme());
     }
 
     public void deleteById(Long id) {
@@ -98,6 +102,11 @@ public class ReservationDao {
     public int count(String date, Long timeId, Long themeId) {
         String sql = "SELECT count(*) FROM reservation WHERE time_id = ? AND theme_id = ? AND date = ?";
         return jdbcTemplate.queryForObject(sql, Integer.class, timeId, themeId, date);
+    }
+
+    public Boolean hasSameReservation(LocalDate date, Long timeId, Long themeId) {
+        String sql = "SELECT EXISTS(SELECT * FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, date.toString(), timeId, themeId);
     }
 
     public List<Long> findBestThemeIdInWeek(String from, String to) {
