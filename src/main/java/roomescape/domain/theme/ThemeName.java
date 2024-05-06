@@ -6,9 +6,17 @@ public class ThemeName {
     private final String name;
 
     public ThemeName(String name) {
+        validateBlank(name);
         validateLength(name);
         this.name = name;
     }
+
+    private void validateBlank(String name) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("테마명이 존재하지 않습니다.");
+        }
+    }
+
 
     private void validateLength(String name) {
         if (name.length() < MIN_LENGTH || name.length() > MAX_LENGTH) {
