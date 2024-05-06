@@ -16,9 +16,10 @@ class AdminReservationTimeServiceTest {
     @DisplayName("모든 예약 시간을 찾습니다")
     @Test
     void findAllReservationTime() {
-        AdminReservationTimeService adminReservationTimeService = new AdminReservationTimeService(new FakeReservationTimeRepository(
-                Arrays.asList(new ReservationTime(1L, LocalTime.of(10, 0)))
-        ));
+        AdminReservationTimeService adminReservationTimeService = new AdminReservationTimeService(
+                new FakeReservationTimeRepository(
+                        Arrays.asList(new ReservationTime(1L, LocalTime.of(10, 0)))
+                ));
         int expectedSize = 1;
 
         int actualSize = adminReservationTimeService.findAllReservationTime().size();
@@ -29,12 +30,14 @@ class AdminReservationTimeServiceTest {
     @DisplayName("예약시간을 추가하고 저장된 예약시간을 반환합니다.")
     @Test
     void should_add_reservation_time() {
-        AdminReservationTimeService adminReservationTimeService = new AdminReservationTimeService(new FakeReservationTimeRepository());
+        AdminReservationTimeService adminReservationTimeService = new AdminReservationTimeService(
+                new FakeReservationTimeRepository());
         ReservationTime expectedReservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
 
-        ReservationTime actualReservationTime = adminReservationTimeService.addReservationTime(new ReservationTimeAddRequest(
-                LocalTime.of(10, 0)
-        ));
+        ReservationTime actualReservationTime = adminReservationTimeService.addReservationTime(
+                new ReservationTimeAddRequest(
+                        LocalTime.of(10, 0)
+                ));
 
         assertThat(actualReservationTime).isEqualTo(expectedReservationTime);
     }
@@ -42,9 +45,10 @@ class AdminReservationTimeServiceTest {
     @DisplayName("중복되는 예약 시각을 추가할 경우 예외가 발생합니다.")
     @Test
     void should_throw_IllegalArgumentException_when_reservation_time_is_duplicated() {
-        AdminReservationTimeService adminReservationTimeService = new AdminReservationTimeService(new FakeReservationTimeRepository(
-                Arrays.asList(new ReservationTime(1L, LocalTime.of(10, 0)))
-        ));
+        AdminReservationTimeService adminReservationTimeService = new AdminReservationTimeService(
+                new FakeReservationTimeRepository(
+                        Arrays.asList(new ReservationTime(1L, LocalTime.of(10, 0)))
+                ));
 
         ReservationTimeAddRequest reservationTimeAddRequest = new ReservationTimeAddRequest(LocalTime.of(10, 0));
 
@@ -59,7 +63,8 @@ class AdminReservationTimeServiceTest {
         FakeReservationTimeRepository fakeReservationTimeDao = new FakeReservationTimeRepository(
                 Arrays.asList(new ReservationTime(1L, LocalTime.of(10, 0)))
         );
-        AdminReservationTimeService adminReservationTimeService = new AdminReservationTimeService(fakeReservationTimeDao);
+        AdminReservationTimeService adminReservationTimeService = new AdminReservationTimeService(
+                fakeReservationTimeDao);
 
         adminReservationTimeService.removeReservationTime(1L);
 
@@ -70,7 +75,8 @@ class AdminReservationTimeServiceTest {
     @Test
     void should_throw_exception_when_remove_reservation_time_with_non_exist_id() {
         FakeReservationTimeRepository fakeReservationTimeDao = new FakeReservationTimeRepository();
-        AdminReservationTimeService adminReservationTimeService = new AdminReservationTimeService(fakeReservationTimeDao);
+        AdminReservationTimeService adminReservationTimeService = new AdminReservationTimeService(
+                fakeReservationTimeDao);
 
         assertThatThrownBy(() -> adminReservationTimeService.removeReservationTime(1L)).isInstanceOf(
                         IllegalArgumentException.class)

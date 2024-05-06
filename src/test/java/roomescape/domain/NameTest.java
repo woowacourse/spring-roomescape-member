@@ -3,7 +3,6 @@ package roomescape.domain;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import org.assertj.core.api.NotThrownAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +12,7 @@ class NameTest {
     @DisplayName("이름이 정상적인 값일 경우 예외가 발생하지 않습니다.")
     @Test
     void should_not_throw_exception_when_name_is_right() {
-        assertThatCode(()-> new Name("dodo"))
+        assertThatCode(() -> new Name("dodo"))
                 .doesNotThrowAnyException();
     }
 

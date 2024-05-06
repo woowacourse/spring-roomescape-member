@@ -1,12 +1,21 @@
 package roomescape.domain;
 
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.fixture.LocalDateFixture.AFTER_ONE_DAYS_DATE;
 
 import java.time.LocalDate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class ReservationDateTest {
+
+    @DisplayName("날짜가 정상적인 값일 경우 예외가 발생하지 않습니다.")
+    @Test
+    void should_not_throw_exception_when_reservation_date_is_right() {
+        assertThatCode(() -> new ReservationDate(AFTER_ONE_DAYS_DATE))
+                .doesNotThrowAnyException();
+    }
 
     @DisplayName("date가 null이면 ReservationDate생성 시 예외가 발생한다")
     @Test

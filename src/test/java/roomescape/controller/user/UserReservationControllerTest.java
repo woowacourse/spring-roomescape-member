@@ -1,7 +1,7 @@
 package roomescape.controller.user;
 
 import static org.hamcrest.Matchers.is;
-import static roomescape.fixture.LocalDateFixture.*;
+import static roomescape.fixture.LocalDateFixture.AFTER_TWO_DAYS_DATE;
 
 import io.restassured.RestAssured;
 import java.time.LocalDate;
@@ -40,7 +40,7 @@ class UserReservationControllerTest {
     @Test
     void should_response_bookable_time() {
         RestAssured.given().log().all()
-                .when().get("/bookable-times?date="+ AFTER_TWO_DAYS_DATE+"&themeId=1")
+                .when().get("/bookable-times?date=" + AFTER_TWO_DAYS_DATE + "&themeId=1")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));

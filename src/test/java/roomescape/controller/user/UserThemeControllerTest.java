@@ -1,11 +1,9 @@
 package roomescape.controller.user;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.*;
 import static roomescape.fixture.LocalDateFixture.AFTER_TWO_DAYS_DATE;
 
 import io.restassured.RestAssured;
-import java.time.LocalDate;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

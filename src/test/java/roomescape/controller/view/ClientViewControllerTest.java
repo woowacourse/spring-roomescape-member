@@ -1,7 +1,5 @@
 package roomescape.controller.view;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

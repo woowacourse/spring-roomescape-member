@@ -15,7 +15,7 @@ public class Name {
         if (name == null) {
             throw new NullPointerException("이름은 비어있을 수 없습니다.");
         }
-        if (name.trim().isEmpty()){
+        if (name.trim().isEmpty()) {
             throw new IllegalArgumentException("이름의 길이는 공백을 제외한 1이상이어야합니다.");
         }
     }
