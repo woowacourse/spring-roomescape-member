@@ -8,8 +8,8 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
-import roomescape.dto.ReservationResponse;
-import roomescape.dto.ReservationSaveRequest;
+import roomescape.service.dto.ReservationResponse;
+import roomescape.service.dto.ReservationSaveRequest;
 import roomescape.exception.ReservationBusinessException;
 
 @Service

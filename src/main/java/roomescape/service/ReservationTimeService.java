@@ -7,10 +7,10 @@ import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.ThemeRepository;
-import roomescape.dto.ReservationTimeBookedRequest;
-import roomescape.dto.ReservationTimeBookedResponse;
-import roomescape.dto.ReservationTimeResponse;
-import roomescape.dto.ReservationTimeSaveRequest;
+import roomescape.service.dto.ReservationTimeBookedRequest;
+import roomescape.service.dto.ReservationTimeBookedResponse;
+import roomescape.service.dto.ReservationTimeResponse;
+import roomescape.service.dto.ReservationTimeSaveRequest;
 import roomescape.exception.ReservationBusinessException;
 
 @Service
