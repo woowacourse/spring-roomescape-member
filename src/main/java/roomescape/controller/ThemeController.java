@@ -40,7 +40,7 @@ public class ThemeController {
 
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> getThemes() {
-        List<Theme> themes = themeService.getThemes();
+        List<Theme> themes = themeService.findThemes();
         List<ThemeResponse> responses = themes.stream()
                 .map(ThemeResponse::from)
                 .toList();

@@ -56,7 +56,7 @@ public class ReservationService {
                 .orElseThrow(() -> new IllegalArgumentException("테마가 존재하지 않습니다."));
     }
 
-    public List<Reservation> getReservations() {
+    public List<Reservation> findReservations() {
         return reservationRepository.findAll();
     }
 

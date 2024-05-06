@@ -92,7 +92,7 @@ class ThemeControllerTest extends ControllerTest {
     @Test
     void 전체_테마를_조회한다() throws Exception {
         List<Theme> themes = List.of(ThemeFixture.theme(), ThemeFixture.theme());
-        when(themeService.getThemes()).thenReturn(themes);
+        when(themeService.findThemes()).thenReturn(themes);
 
         ResultActions result = SimpleMockMvc.get(mockMvc, "/themes");
 

@@ -48,7 +48,7 @@ class ThemeServiceTest {
 
         themeService.delete(theme.getId());
 
-        assertThat(themeService.getThemes()).isEmpty();
+        assertThat(themeService.findThemes()).isEmpty();
     }
 
     @Test

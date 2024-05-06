@@ -28,7 +28,7 @@ public class ThemeService {
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
-    public List<Theme> getThemes() {
+    public List<Theme> findThemes() {
         return themeRepository.findAll();
     }
 

@@ -33,7 +33,7 @@ public class ReservationTimeService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
     }
 
-    public List<ReservationTime> getReservationTimes() { // todo 메서드명 변경
+    public List<ReservationTime> findReservationTimes() {
         return reservationTimeRepository.findAll();
     }
 
