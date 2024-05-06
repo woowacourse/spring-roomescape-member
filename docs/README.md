@@ -58,7 +58,7 @@ Content-Type: application/json
 #### Request
 
 ```http request
-GET /times/available HTTP/1.1
+GET /times/available?date=2025-02-03&themeId=1 HTTP/1.1
 ```
 
 #### Response
