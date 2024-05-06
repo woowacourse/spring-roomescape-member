@@ -2,7 +2,7 @@ package roomescape.domain.reservation;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import roomescape.exception.InvalidValueException;
+import roomescape.domain.exception.InvalidValueException;
 
 public class ReservationDate {
 

@@ -18,15 +18,16 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.dao.JdbcReservationDao;
 import roomescape.dao.JdbcReservationTimeDao;
 import roomescape.dao.JdbcThemeDao;
+import roomescape.domain.exception.InvalidValueException;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.domain.theme.Theme;
 import roomescape.dto.reservationtime.ReservationTimeCreateRequest;
 import roomescape.dto.reservationtime.ReservationTimeResponse;
-import roomescape.exception.InvalidValueException;
 import roomescape.fixture.ReservationFixtures;
 import roomescape.fixture.ReservationTimeFixtures;
 import roomescape.fixture.ThemeFixtures;
+import roomescape.service.exception.InvalidRequestException;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class ReservationTimeServiceTest {
@@ -115,7 +116,7 @@ class ReservationTimeServiceTest {
 
             //when //then
             assertThatThrownBy(() -> reservationTimeService.add(request))
-                    .isInstanceOf(InvalidValueException.class);
+                    .isInstanceOf(InvalidRequestException.class);
         }
     }
 
@@ -147,7 +148,7 @@ class ReservationTimeServiceTest {
 
             //when //then
             assertThatThrownBy(() -> reservationTimeService.delete(givenId))
-                    .isInstanceOf(InvalidValueException.class);
+                    .isInstanceOf(InvalidRequestException.class);
         }
 
         @Test
@@ -162,7 +163,7 @@ class ReservationTimeServiceTest {
 
             //when //then
             assertThatThrownBy(() -> reservationTimeService.delete(1L))
-                    .isInstanceOf(InvalidValueException.class);
+                    .isInstanceOf(InvalidRequestException.class);
         }
     }
 }

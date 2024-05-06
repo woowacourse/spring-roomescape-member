@@ -1,6 +1,6 @@
 package roomescape.domain.reservation;
 
-import roomescape.exception.InvalidValueException;
+import roomescape.domain.exception.InvalidValueException;
 
 public class ReservationName {
 

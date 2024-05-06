@@ -19,13 +19,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import roomescape.domain.exception.InvalidValueException;
 import roomescape.dto.reservation.ReservationCreateRequest;
 import roomescape.dto.reservation.ReservationResponse;
-import roomescape.exception.InvalidValueException;
 import roomescape.fixture.ReservationFixtures;
 import roomescape.fixture.ReservationTimeFixtures;
 import roomescape.fixture.ThemeFixtures;
 import roomescape.service.ReservationService;
+import roomescape.service.exception.InvalidRequestException;
 
 @WebMvcTest(ReservationController.class)
 class ReservationControllerTest {
@@ -41,9 +42,9 @@ class ReservationControllerTest {
     @DisplayName("전체 예약을 조회한다.")
     void getAllReservationsTest() throws Exception {
         //given
-        String firstName = "daon" ;
-        String secondDate = "2022-02-05" ;
-        String secondStartAt = "23:22" ;
+        String firstName = "daon";
+        String secondDate = "2022-02-05";
+        String secondStartAt = "23:22";
         List<ReservationResponse> expectedResponses = getExpectedResponses(firstName, secondDate, secondStartAt);
         given(reservationService.findAll()).willReturn(expectedResponses);
 
@@ -62,9 +63,9 @@ class ReservationControllerTest {
     @DisplayName("예약을 성공적으로 추가한다.")
     void addReservationTest() throws Exception {
         //given
-        String expectedName = "daon" ;
-        String expectedDate = "2024-11-29" ;
-        String expectedStartAt = "00:01" ;
+        String expectedName = "daon";
+        String expectedDate = "2024-11-29";
+        String expectedStartAt = "00:01";
         ReservationCreateRequest givenRequest =
                 ReservationFixtures.createReservationCreateRequest(expectedName, expectedDate, 1L, 1L);
         ReservationResponse response = ReservationFixtures.createReservationResponse(
@@ -99,12 +100,30 @@ class ReservationControllerTest {
 
     @Test
     @DisplayName("InvalidValueException이 발생하면 Bad Request 응답을 반환한다.")
-    void createReservationByInvalidRequest() throws Exception {
+    void createReservationByInvalidValue() throws Exception {
         //given
         ReservationCreateRequest givenRequest
                 = ReservationFixtures.createReservationCreateRequest("InvalidName", "InvalidDate", -1L, -1L);
         given(reservationService.add(givenRequest))
                 .willThrow(InvalidValueException.class);
+        String requestBody = objectMapper.writeValueAsString(givenRequest);
+
+        //when //then
+        mockMvc.perform(post("/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("InvalidRequestException이 발생하면 Bad Request 응답을 반환한다.")
+    void createReservationByInvalidRequest() throws Exception {
+        //given
+        ReservationCreateRequest givenRequest
+                = ReservationFixtures.createReservationCreateRequest("InvalidName", "InvalidDate", -1L, -1L);
+        given(reservationService.add(givenRequest))
+                .willThrow(InvalidRequestException.class);
         String requestBody = objectMapper.writeValueAsString(givenRequest);
 
         //when //then

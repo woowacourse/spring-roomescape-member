@@ -14,19 +14,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import roomescape.domain.exception.InvalidValueException;
+import roomescape.dto.reservation.ReservationCreateRequest;
 import roomescape.dto.reservationtime.ReservationTimeCreateRequest;
 import roomescape.dto.reservationtime.ReservationTimeResponse;
-import roomescape.exception.InvalidValueException;
+import roomescape.fixture.ReservationFixtures;
 import roomescape.fixture.ReservationTimeFixtures;
 import roomescape.service.ReservationTimeService;
+import roomescape.service.exception.InvalidRequestException;
 
 @WebMvcTest(ReservationTimeController.class)
 class ReservationTimeControllerTest {
@@ -93,15 +93,32 @@ class ReservationTimeControllerTest {
                 .andExpect(status().isNoContent());
     }
 
-    @ParameterizedTest
-    @NullAndEmptySource
-    @ValueSource(strings = {"1212", "anytime"})
+    @Test
     @DisplayName("InvalidValueException이 발생하면 Bad Request 응답을 반환한다.")
-    void createReservationTimeByInvalidStartAt(String given) throws Exception {
+    void createReservationTimeByInvalidValue() throws Exception {
         //given
-        ReservationTimeCreateRequest givenRequest = ReservationTimeFixtures.createReservationTimeCreateRequest(given);
+        ReservationTimeCreateRequest givenRequest =
+                ReservationTimeFixtures.createReservationTimeCreateRequest("InvalidStartAt");
         given(reservationTimeService.add(givenRequest))
                 .willThrow(InvalidValueException.class);
+        String requestBody = objectMapper.writeValueAsString(givenRequest);
+
+        //when //then
+        mockMvc.perform(post("/times")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("InvalidRequestException이 발생하면 Bad Request 응답을 반환한다.")
+    void createReservationByInvalidRequest() throws Exception {
+        //given
+        ReservationTimeCreateRequest givenRequest =
+                ReservationTimeFixtures.createReservationTimeCreateRequest("InvalidStartAt");
+        given(reservationTimeService.add(givenRequest))
+                .willThrow(InvalidRequestException.class);
         String requestBody = objectMapper.writeValueAsString(givenRequest);
 
         //when //then

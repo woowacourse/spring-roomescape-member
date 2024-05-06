@@ -16,11 +16,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.dao.JdbcThemeDao;
+import roomescape.domain.exception.InvalidValueException;
 import roomescape.domain.theme.Theme;
 import roomescape.dto.theme.ThemeCreateRequest;
 import roomescape.dto.theme.ThemeResponse;
-import roomescape.exception.InvalidValueException;
 import roomescape.fixture.ThemeFixtures;
+import roomescape.service.exception.InvalidRequestException;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class ThemeServiceTest {
@@ -151,6 +152,6 @@ class ThemeServiceTest {
 
         //when //then
         assertThatThrownBy(() -> themeService.delete(givenId))
-                .isInstanceOf(InvalidValueException.class);
+                .isInstanceOf(InvalidRequestException.class);
     }
 }

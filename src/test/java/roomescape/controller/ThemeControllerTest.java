@@ -16,11 +16,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import roomescape.domain.exception.InvalidValueException;
 import roomescape.dto.theme.ThemeCreateRequest;
 import roomescape.dto.theme.ThemeResponse;
-import roomescape.exception.InvalidValueException;
 import roomescape.fixture.ThemeFixtures;
 import roomescape.service.ThemeService;
+import roomescape.service.exception.InvalidRequestException;
 
 @WebMvcTest(ThemeController.class)
 class ThemeControllerTest {
@@ -79,12 +80,30 @@ class ThemeControllerTest {
 
     @Test
     @DisplayName("InvalidValueException이 발생하면 Bad Request 응답을 반환한다.")
-    void createThemeByInvalidRequest() throws Exception {
+    void createThemeByInvalidValue() throws Exception {
         //given
         ThemeCreateRequest givenRequest
                 = ThemeFixtures.createThemeCreateRequest("InvalidName", "InvalidDescription", "InvalidThumbnail");
         given(themeService.add(givenRequest))
                 .willThrow(InvalidValueException.class);
+        String requestBody = objectMapper.writeValueAsString(givenRequest);
+
+        //when //then
+        mockMvc.perform(post("/themes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("InvalidRequestException이 발생하면 Bad Request 응답을 반환한다.")
+    void createReservationByInvalidRequest() throws Exception {
+        //given
+        ThemeCreateRequest givenRequest
+                = ThemeFixtures.createThemeCreateRequest("InvalidName", "InvalidDescription", "InvalidThumbnail");
+        given(themeService.add(givenRequest))
+                .willThrow(InvalidRequestException.class);
         String requestBody = objectMapper.writeValueAsString(givenRequest);
 
         //when //then

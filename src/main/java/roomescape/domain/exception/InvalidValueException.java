@@ -1,4 +1,4 @@
-package roomescape.exception;
+package roomescape.domain.exception;
 
 public class InvalidValueException extends RuntimeException {
 

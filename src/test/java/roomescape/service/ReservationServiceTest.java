@@ -27,10 +27,11 @@ import roomescape.domain.theme.Theme;
 import roomescape.dto.reservation.AvailableReservationResponse;
 import roomescape.dto.reservation.ReservationCreateRequest;
 import roomescape.dto.reservation.ReservationResponse;
-import roomescape.exception.InvalidValueException;
+import roomescape.domain.exception.InvalidValueException;
 import roomescape.fixture.ReservationFixtures;
 import roomescape.fixture.ReservationTimeFixtures;
 import roomescape.fixture.ThemeFixtures;
+import roomescape.service.exception.InvalidRequestException;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class ReservationServiceTest {
@@ -138,7 +139,7 @@ class ReservationServiceTest {
 
             //when //then
             assertThatThrownBy(() -> reservationService.add(givenRequest))
-                    .isInstanceOf(InvalidValueException.class);
+                    .isInstanceOf(InvalidRequestException.class);
         }
 
         @ParameterizedTest
@@ -197,7 +198,7 @@ class ReservationServiceTest {
 
             //when //then
             assertThatThrownBy(() -> reservationService.add(request))
-                    .isInstanceOf(InvalidValueException.class);
+                    .isInstanceOf(InvalidRequestException.class);
         }
 
         @Test
@@ -212,7 +213,7 @@ class ReservationServiceTest {
 
             //when //then
             assertThatThrownBy(() -> reservationService.add(request))
-                    .isInstanceOf(InvalidValueException.class);
+                    .isInstanceOf(InvalidRequestException.class);
         }
 
         @Test
@@ -227,7 +228,7 @@ class ReservationServiceTest {
 
             //when //then
             assertThatThrownBy(() -> reservationService.add(request))
-                    .isInstanceOf(InvalidValueException.class);
+                    .isInstanceOf(InvalidRequestException.class);
         }
     }
 
@@ -262,7 +263,7 @@ class ReservationServiceTest {
 
             //when //then
             assertThatThrownBy(() -> reservationService.delete(givenId))
-                    .isInstanceOf(InvalidValueException.class);
+                    .isInstanceOf(InvalidRequestException.class);
         }
     }
 }

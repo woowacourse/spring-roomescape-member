@@ -3,7 +3,7 @@ package roomescape.domain.reservationtime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import roomescape.exception.InvalidValueException;
+import roomescape.domain.exception.InvalidValueException;
 
 public class ReservationStartAt {
 

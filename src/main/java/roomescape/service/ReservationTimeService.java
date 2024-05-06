@@ -7,7 +7,7 @@ import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.dto.reservationtime.ReservationTimeCreateRequest;
 import roomescape.dto.reservationtime.ReservationTimeResponse;
-import roomescape.exception.InvalidValueException;
+import roomescape.service.exception.InvalidRequestException;
 
 @Service
 public class ReservationTimeService {
@@ -36,7 +36,7 @@ public class ReservationTimeService {
 
     private void validateDuplicateStartAt(ReservationTime reservationTime) {
         if (reservationTimeDao.exist(reservationTime)) {
-            throw new InvalidValueException("동일한 예약 시간이 존재합니다.");
+            throw new InvalidRequestException("동일한 예약 시간이 존재합니다.");
         }
     }
 
@@ -48,13 +48,13 @@ public class ReservationTimeService {
 
     private void validateNotExist(Long id) {
         if (!reservationTimeDao.exist(id)) {
-            throw new InvalidValueException("해당 아이디를 가진 예약 시간이 존재하지 않습니다.");
+            throw new InvalidRequestException("해당 아이디를 가진 예약 시간이 존재하지 않습니다.");
         }
     }
 
     private void validateExistReservationByTimeId(Long id) {
         if (reservationDao.existByTimeId(id)) {
-            throw new InvalidValueException("해당 예약시간을 사용하는 예약이 존재합니다.");
+            throw new InvalidRequestException("해당 예약시간을 사용하는 예약이 존재합니다.");
         }
     }
 }

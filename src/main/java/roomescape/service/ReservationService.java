@@ -14,7 +14,7 @@ import roomescape.domain.theme.Theme;
 import roomescape.dto.reservation.AvailableReservationResponse;
 import roomescape.dto.reservation.ReservationCreateRequest;
 import roomescape.dto.reservation.ReservationResponse;
-import roomescape.exception.InvalidValueException;
+import roomescape.service.exception.InvalidRequestException;
 
 @Service
 public class ReservationService {
@@ -61,35 +61,35 @@ public class ReservationService {
 
     private ReservationTime findReservationTime(Long timeId) {
         return reservationTimeDao.readById(timeId)
-                .orElseThrow(() -> new InvalidValueException("예약 시간 아이디에 해당하는 예약 시간이 존재하지 않습니다."));
+                .orElseThrow(() -> new InvalidRequestException("예약 시간 아이디에 해당하는 예약 시간이 존재하지 않습니다."));
     }
 
     private Theme findTheme(Long themeId) {
         return themeDao.readById(themeId)
-                .orElseThrow(() -> new InvalidValueException("테마 아이디에 해당하는 테마가 존재하지 않습니다."));
+                .orElseThrow(() -> new InvalidRequestException("테마 아이디에 해당하는 테마가 존재하지 않습니다."));
     }
 
     private void validateDate(Reservation reservation, LocalDate today) {
         if (reservation.isBeforeDate(today)) {
-            throw new InvalidValueException("예약일은 오늘보다 과거일 수 없습니다.");
+            throw new InvalidRequestException("예약일은 오늘보다 과거일 수 없습니다.");
         }
     }
 
     private void validateDuplicate(Reservation reservation) {
         if (reservationDao.exist(reservation.getDate(), reservation.getReservationTime(), reservation.getTheme())) {
-            throw new InvalidValueException("중복된 예약을 생성할 수 없습니다.");
+            throw new InvalidRequestException("중복된 예약을 생성할 수 없습니다.");
         }
     }
 
     private void validatePastTimeWhenToday(Reservation reservation, LocalDate today, LocalTime now) {
         if (reservation.isSameDate(today) && reservation.isBeforeTime(now)) {
-            throw new InvalidValueException("현재보다 이전 시간을 예약할 수 없습니다.");
+            throw new InvalidRequestException("현재보다 이전 시간을 예약할 수 없습니다.");
         }
     }
 
     private void validateNotExistReservation(Long id) {
         if (!reservationDao.exist(id)) {
-            throw new InvalidValueException("해당 아이디를 가진 예약이 존재하지 않습니다.");
+            throw new InvalidRequestException("해당 아이디를 가진 예약이 존재하지 않습니다.");
         }
     }
 }
