@@ -42,14 +42,4 @@ public class ReservationController {
         reservationService.deleteReservation(id);
         return ResponseEntity.noContent().build();
     }
-
-    @ExceptionHandler(value = NullPointerException.class)
-    public ResponseEntity<String> handleNullPointerException(NullPointerException e) {
-        return ResponseEntity.badRequest().body("날짜를 선택해야 합니다.");
-    }
-
-    @ExceptionHandler(value = IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
 }

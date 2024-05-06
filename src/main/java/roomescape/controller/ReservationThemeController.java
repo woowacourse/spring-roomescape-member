@@ -49,9 +49,4 @@ public class ReservationThemeController {
         List<WeeklyThemeResponse> reservationThemes = reservationThemeService.getWeeklyBestThemes();
         return ResponseEntity.ok().body(reservationThemes);
     }
-
-    @ExceptionHandler(value = IllegalStateException.class)
-    public ResponseEntity<String> handleIllegalStateException() {
-        return ResponseEntity.badRequest().body("예약이 존재하는 테마는 삭제할 수 없습니다.");
-    }
 }
