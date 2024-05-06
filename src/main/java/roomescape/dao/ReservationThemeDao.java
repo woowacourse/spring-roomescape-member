@@ -36,13 +36,19 @@ public class ReservationThemeDao {
         return Optional.ofNullable(DataAccessUtils.singleResult(reservationThemes));
     }
 
-    public Long insert(String name, String description, String thumbnail) {
+    public ReservationTheme insert(ThemeInsertCondition insertCondition) {
+        String name = insertCondition.getName();
+        String description = insertCondition.getDescription();
+        String thumbnail = insertCondition.getThumbnail();
+
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", name)
                 .addValue("description", description)
                 .addValue("thumbnail", thumbnail);
 
-        return insertActor.executeAndReturnKey(parameters).longValue();
+        Long id = insertActor.executeAndReturnKey(parameters).longValue();
+
+        return new ReservationTheme(id, name, description, thumbnail);
     }
 
     public void deleteById(Long id) {

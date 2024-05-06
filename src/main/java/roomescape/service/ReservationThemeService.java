@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationThemeDao;
+import roomescape.dao.ThemeInsertCondition;
 import roomescape.domain.ReservationTheme;
 import roomescape.dto.theme.ThemeRequest;
 import roomescape.dto.theme.ThemeResponse;
@@ -27,9 +28,10 @@ public class ReservationThemeService {
     }
 
     public ThemeResponse insertTheme(ThemeRequest themeRequest) {
-        Long id = reservationThemeDao.insert(themeRequest.name(), themeRequest.description(), themeRequest.thumbnail());
-        ReservationTheme inserted = new ReservationTheme(id, themeRequest.name(), themeRequest.description(),
-                themeRequest.thumbnail());
+        ThemeInsertCondition insertCondition = new ThemeInsertCondition(themeRequest.name(),
+                themeRequest.description(), themeRequest.thumbnail());
+        ReservationTheme inserted = reservationThemeDao.insert(insertCondition);
+
         return new ThemeResponse(inserted);
     }
 
