@@ -16,5 +16,5 @@ public interface ThemeRepository {
 
     void deleteById(long id);
 
-    List<Theme> findPopularThemes(LocalDate now);
+    List<Theme> findPopularThemesForWeekLimit10(LocalDate now);
 }

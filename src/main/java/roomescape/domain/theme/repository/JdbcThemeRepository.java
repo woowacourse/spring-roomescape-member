@@ -77,7 +77,8 @@ public class JdbcThemeRepository implements ThemeRepository {
         jdbcTemplate.update(query, id);
     }
 
-    public List<Theme> findPopularThemes(LocalDate now) {
+    @Override
+    public List<Theme> findPopularThemesForWeekLimit10(LocalDate now) {
         LocalDate baseDate = now.minusDays(POPULAR_THEMES_SELECTION_DAYS);
         String query = """
                 SELECT * FROM theme AS t

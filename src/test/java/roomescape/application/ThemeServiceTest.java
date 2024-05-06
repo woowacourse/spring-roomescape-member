@@ -55,6 +55,6 @@ class ThemeServiceTest {
     void 아이디가_없으면_예외가_발생한다() {
         assertThatThrownBy(() -> themeService.delete(0L))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("삭제하고자 하는 id가 존재하지 않습니다.");
+                .hasMessageContaining("존재하지 않는 테마입니다.");
     }
 }

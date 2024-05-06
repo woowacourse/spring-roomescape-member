@@ -130,7 +130,7 @@ class ThemeControllerTest extends ControllerTest {
     @Test
     void 인기_테마를_조회한다() throws Exception {
         List<Theme> popularThemes = List.of(ThemeFixture.theme(), ThemeFixture.theme());
-        when(themeService.getPopularThemes()).thenReturn(popularThemes);
+        when(themeService.findPopularThemes()).thenReturn(popularThemes);
 
         ResultActions result = SimpleMockMvc.get(mockMvc, "/themes/popular");
 

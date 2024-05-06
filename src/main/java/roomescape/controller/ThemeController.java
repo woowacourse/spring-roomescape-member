@@ -55,7 +55,7 @@ public class ThemeController {
 
     @GetMapping("/popular")
     public ResponseEntity<List<ThemeResponse>> getPopularThemes() {
-        List<Theme> popularThemes = themeService.getPopularThemes();
+        List<Theme> popularThemes = themeService.findPopularThemes();
         List<ThemeResponse> themeResponses = popularThemes.stream()
                 .map(ThemeResponse::from)
                 .toList();

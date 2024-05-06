@@ -28,10 +28,6 @@ public class ThemeService {
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
-    public List<Theme> findThemes() {
-        return themeRepository.findAll();
-    }
-
     public Theme save(ThemeCreationRequest request) {
         validateDuplicateName(request.name());
         Theme theme = request.toTheme();
@@ -44,18 +40,19 @@ public class ThemeService {
         }
     }
 
+    public List<Theme> findThemes() {
+        return themeRepository.findAll();
+    }
+
     public void delete(long id) {
-        validateIdIsExist(id);
+        if (themeRepository.findById(id).isEmpty()) {
+            throw new IllegalArgumentException("존재하지 않는 테마입니다.");
+        }
         themeRepository.deleteById(id);
     }
 
-    private void validateIdIsExist(long id) {
-        themeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("삭제하고자 하는 id가 존재하지 않습니다."));
-    }
-
-    public List<Theme> getPopularThemes() {
-        return themeRepository.findPopularThemes(LocalDate.now(clock));
+    public List<Theme> findPopularThemes() {
+        return themeRepository.findPopularThemesForWeekLimit10(LocalDate.now(clock));
     }
 
     public List<AvailableTimeResponse> getAvailableTimes(long id, LocalDate date) {
