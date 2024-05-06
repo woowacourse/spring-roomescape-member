@@ -46,7 +46,7 @@ public class ThemeService {
 
     @Transactional(readOnly = true)
     public List<ThemeResponse> findAllPopular() {
-        List<Theme> allOrderByReservationCountInLastWeek = themeRepository.findAllOrderByReservationCountDaysAgo(7);
+        List<Theme> allOrderByReservationCountInLastWeek = themeRepository.findAllOrderByReservationCountDaysAgo(7, 10);
         return allOrderByReservationCountInLastWeek.stream()
                 .map(ThemeResponse::from)
                 .toList();

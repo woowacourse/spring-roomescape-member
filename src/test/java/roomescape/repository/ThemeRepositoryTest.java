@@ -119,7 +119,7 @@ class ThemeRepositoryTest extends RepositoryTest {
                 "냥", "2030-05-03", 1L, 2L);
 
         // when
-        List<Theme> allOrderByReservationCountInLastWeek = themeRepository.findAllOrderByReservationCountDaysAgo(7);
+        List<Theme> allOrderByReservationCountInLastWeek = themeRepository.findAllOrderByReservationCountDaysAgo(7, 10);
 
         // then
         assertThat(allOrderByReservationCountInLastWeek).extracting(Theme::getName)

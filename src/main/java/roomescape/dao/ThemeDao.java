@@ -59,7 +59,7 @@ public class ThemeDao implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findAllOrderByReservationCountDaysAgo(int days) {
+    public List<Theme> findAllOrderByReservationCountDaysAgo(int days, int limit) {
         String sql = """
                 SELECT
                     th.id AS id, 
@@ -78,9 +78,9 @@ public class ThemeDao implements ThemeRepository {
                 ORDER BY
                     reservation_count DESC
                 LIMIT
-                    10
+                    ?
                 """;
-        return jdbcTemplate.query(sql, this::rowMapper, days);
+        return jdbcTemplate.query(sql, this::rowMapper, days, limit);
     }
 
     private Theme rowMapper(ResultSet resultSet, int rowNumber) throws SQLException {
