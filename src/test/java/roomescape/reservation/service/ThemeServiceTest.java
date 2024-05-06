@@ -7,6 +7,7 @@ import static roomescape.fixture.ReservationFixture.getNextDayReservation;
 import static roomescape.fixture.ReservationTimeFixture.getNoon;
 import static roomescape.fixture.ThemeFixture.getTheme1;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -89,6 +90,20 @@ class ThemeServiceTest {
 
         //when & then
         assertThatThrownBy(() -> themeService.delete(theme.getId()))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+
+    @DisplayName("startDate가 endDate보다 앞설 경우 예외가 발생한다.")
+    @Test
+    void endDatePriorToStartDate() {
+        //given
+        int limit = 10;
+        LocalDate startDate = LocalDate.now().minusDays(1);
+        LocalDate endDate = LocalDate.now();
+
+        //when & then
+        assertThatThrownBy(() -> themeService.findPopularThemes(startDate, endDate, limit))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

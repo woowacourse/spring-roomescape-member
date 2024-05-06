@@ -1,6 +1,7 @@
 package roomescape.reservation.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import java.net.URI;
 import java.time.LocalDate;
@@ -49,7 +50,7 @@ public class ThemeController {
     public ResponseEntity<List<ThemeResponse>> findPopular(
             @RequestParam(value = "startDate", required = false, defaultValue = "#{T(java.time.LocalDate).now().minusDays(7)}") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(value = "endDate", required = false, defaultValue = "#{T(java.time.LocalDate).now()}") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-            @RequestParam(value = "limit", required = false, defaultValue = "10") int limit) {
+            @RequestParam(value = "limit", required = false, defaultValue = "10") @Min(value = 1) @Max(value = 20) int limit) {
         return ResponseEntity.ok(themeService.findPopularThemes(startDate, endDate, limit));
     }
 }

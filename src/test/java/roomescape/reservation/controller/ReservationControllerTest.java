@@ -42,7 +42,7 @@ class ReservationControllerTest extends ControllerTest {
         themeResponse = themeService.create(new ThemeRequest("name", "description", "thumbnail"));
     }
 
-    @DisplayName("예약 생성 시 200을 반환한다.")
+    @DisplayName("예약 생성 시 201을 반환한다.")
     @Test
     void create() {
         //given

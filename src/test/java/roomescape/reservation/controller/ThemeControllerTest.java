@@ -1,9 +1,11 @@
 package roomescape.reservation.controller;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.startsWith;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,10 +23,6 @@ import roomescape.util.ControllerTest;
 class ThemeControllerTest extends ControllerTest {
     @Autowired
     ThemeService themeService;
-
-    @BeforeEach
-    void setUp() {
-    }
 
     @DisplayName("테마 생성 시, 201을 반환한다.")
     @Test
@@ -86,6 +84,25 @@ class ThemeControllerTest extends ControllerTest {
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/themes")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @DisplayName("적절하지 않은 limit에 대해 400을 반환한다.")
+    @ParameterizedTest
+    @ValueSource(ints = {0, -1, 100})
+    void invalidLimit(int limit) {
+        //given
+        String startDate = "2024-05-03";
+        String endDate = "2024-05-06";
+
+        //when & then
+        RestAssured.given().log().all()
+                .queryParam("startDate", startDate)
+                .queryParam("endDate", endDate)
+                .queryParam("limit", limit)
+                .contentType(ContentType.JSON)
+                .when().get("/themes/popular")
                 .then().log().all()
                 .statusCode(400);
     }

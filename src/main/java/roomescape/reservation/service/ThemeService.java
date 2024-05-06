@@ -43,6 +43,10 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> findPopularThemes(LocalDate startDate, LocalDate endDate, int limit) {
+        if (startDate.isAfter(endDate)) {
+            throw new IllegalArgumentException(
+                    String.format("%s(startDate)는 %s(endDate)보다 앞서야 합니다.", startDate, endDate));
+        }
         return themeRepository.findPopularThemes(startDate, endDate, limit).stream()
                 .map(ThemeResponse::from)
                 .toList();
