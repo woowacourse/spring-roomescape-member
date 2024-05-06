@@ -18,12 +18,12 @@ public record ReservationResponse(
         RoomThemeResponse theme)
 {
 
-    public static ReservationResponse fromReservation(Reservation reservation) {
+    public static ReservationResponse from(Reservation reservation) {
         return new ReservationResponse(
                 reservation.getId(),
                 reservation.getName(),
                 reservation.getDate(),
-                ReservationTimeResponse.fromReservationTime(reservation.getTime()),
-                RoomThemeResponse.fromRoomTheme(reservation.getTheme()));
+                ReservationTimeResponse.from(reservation.getTime()),
+                RoomThemeResponse.from(reservation.getTheme()));
     }
 }

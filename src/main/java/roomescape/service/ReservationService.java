@@ -35,7 +35,7 @@ public class ReservationService {
     public List<ReservationResponse> findAll() {
         return reservationDao.findAll()
                 .stream()
-                .map(ReservationResponse::fromReservation)
+                .map(ReservationResponse::from)
                 .toList();
     }
 
@@ -49,7 +49,7 @@ public class ReservationService {
         validateDuplicatedDateTime(reservation.getDate(), reservationTime.getId(), roomTheme.getId());
 
         Reservation savedReservation = reservationDao.save(reservation);
-        return ReservationResponse.fromReservation(savedReservation);
+        return ReservationResponse.from(savedReservation);
     }
 
     public boolean deleteById(long id) {

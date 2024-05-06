@@ -14,7 +14,7 @@ public record RoomThemeResponse(
         @NotBlank
         String thumbnail)
 {
-    public static RoomThemeResponse fromRoomTheme(RoomTheme roomTheme) {
+    public static RoomThemeResponse from(RoomTheme roomTheme) {
         return new RoomThemeResponse(
                 roomTheme.getId(),
                 roomTheme.getName(),

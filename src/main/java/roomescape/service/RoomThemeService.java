@@ -18,21 +18,21 @@ public class RoomThemeService {
     public List<RoomThemeResponse> findAll() {
         return roomThemeDao.findAll()
                 .stream()
-                .map(RoomThemeResponse::fromRoomTheme)
+                .map(RoomThemeResponse::from)
                 .toList();
     }
 
     public List<RoomThemeResponse> findByRanking() {
         return roomThemeDao.findAllRanking()
                 .stream()
-                .map(RoomThemeResponse::fromRoomTheme)
+                .map(RoomThemeResponse::from)
                 .toList();
     }
 
     public RoomThemeResponse save(RoomThemeCreateRequest roomThemeCreateRequest) {
         RoomTheme roomTheme = roomThemeCreateRequest.toRoomTheme();
         RoomTheme savedRoomTheme = roomThemeDao.save(roomTheme);
-        return RoomThemeResponse.fromRoomTheme(savedRoomTheme);
+        return RoomThemeResponse.from(savedRoomTheme);
     }
 
     public boolean deleteById(Long id) {

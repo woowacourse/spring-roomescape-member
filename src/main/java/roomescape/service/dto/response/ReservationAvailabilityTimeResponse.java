@@ -13,7 +13,7 @@ public record ReservationAvailabilityTimeResponse(
         LocalTime startAt,
         boolean booked)
 {
-    public static ReservationAvailabilityTimeResponse fromReservationTime(ReservationTime reservationTime, boolean booked) {
+    public static ReservationAvailabilityTimeResponse from(ReservationTime reservationTime, boolean booked) {
         return new ReservationAvailabilityTimeResponse(
                 reservationTime.getId(),
                 reservationTime.getStartAt(),

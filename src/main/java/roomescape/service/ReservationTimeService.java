@@ -28,7 +28,7 @@ public class ReservationTimeService {
     public List<ReservationTimeResponse> findAll() {
         return reservationTimeDao.findAll()
                 .stream()
-                .map(ReservationTimeResponse::fromReservationTime)
+                .map(ReservationTimeResponse::from)
                 .toList();
     }
 
@@ -38,7 +38,7 @@ public class ReservationTimeService {
         validateDuplicatedTime(reservationTime.getStartAt());
 
         ReservationTime savedReservationTime = reservationTimeDao.save(reservationTime);
-        return ReservationTimeResponse.fromReservationTime(savedReservationTime);
+        return ReservationTimeResponse.from(savedReservationTime);
     }
 
     public boolean deleteById(long id) {
@@ -61,7 +61,7 @@ public class ReservationTimeService {
         return reservationTimes.stream()
                 .map(reservationTime -> {
                     boolean isBooked = isReservationBooked(reservations, timeRequest.date(), reservationTime);
-                    return ReservationAvailabilityTimeResponse.fromReservationTime(reservationTime, isBooked);
+                    return ReservationAvailabilityTimeResponse.from(reservationTime, isBooked);
                 })
                 .toList();
     }
