@@ -1,12 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const today = new Date();
-
-    const year = today.getFullYear();
-    const month = (today.getMonth() + 1).toString().padStart(2, '0');
-    const day = today.getDate().toString().padStart(2, '0');
-
-    const dateString = year + '-' + month + '-' + day;
-    requestRead(`/themes/populars/${dateString}`) // 인기 테마 목록 조회 API endpoint
+    const requrl = new URLSearchParams({date: getToday()});
+    requestRead(`/themes/populars?${requrl}`) // 인기 테마 목록 조회 API endpoint
         .then(render)
         .catch(error => console.error('Error fetching times:', error));
 });
@@ -40,4 +34,14 @@ function requestRead(endpoint) {
             if (response.status === 200) return response.json();
             throw new Error('Read failed');
         });
+}
+
+function getToday() {
+    const today = new Date();
+
+    const year = today.getFullYear();
+    const month = (today.getMonth() + 1).toString().padStart(2, '0');
+    const day = today.getDate().toString().padStart(2, '0');
+
+    return year + '-' + month + '-' + day;
 }

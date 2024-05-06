@@ -269,20 +269,10 @@ id : 1
 
 ### 인기 테마 조회
 
-| HTTP Method | GET              |
-|-------------|------------------|
-| End Point   | /themes/populars |
-| Status Code | 200 OK           |
-
-#### Path Variable
-
-| Name  | Type | Description                       |
-|-------|------|-----------------------------------|
-| today | Date | 현재 날짜 `연-월-일`로 입력(ex. 2024-05-05) |
-
-```
-today: "2024-05-05"
-```
+| HTTP Method | GET                          |
+|-------------|------------------------------|
+| End Point   | /themes/populars?date={date} |
+| Status Code | 200 OK                       |
 
 #### Response Body
 

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.theme.ThemeCreateRequest;
 import roomescape.dto.theme.ThemeResponse;
@@ -32,9 +33,9 @@ public class ThemeController {
         return ResponseEntity.ok(themeService.findAll());
     }
 
-    @GetMapping("/populars/{today}")
-    public ResponseEntity<List<ThemeResponse>> readPopularThemes(@PathVariable LocalDate today) {
-        return ResponseEntity.ok(themeService.findPopulars(today));
+    @GetMapping("/populars")
+    public ResponseEntity<List<ThemeResponse>> readPopularThemes(@RequestParam LocalDate date) {
+        return ResponseEntity.ok(themeService.findPopulars(date));
     }
 
     @PostMapping
