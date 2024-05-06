@@ -105,9 +105,9 @@ public class ReservationDao {
         return jdbcTemplate.queryForObject(sql, Integer.class, timeId, themeId, date);
     }
 
-    public Boolean hasSameReservation(LocalDate date, Long timeId, Long themeId) {
+    public Boolean hasSameReservation(String date, Long timeId, Long themeId) {
         String sql = "SELECT EXISTS(SELECT * FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, date.toString(), timeId, themeId);
+        return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
     }
 
     public List<Long> findBestThemeIdInWeek(String from, String to) {

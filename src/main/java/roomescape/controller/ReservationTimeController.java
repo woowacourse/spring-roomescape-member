@@ -41,11 +41,8 @@ public class ReservationTimeController {
     @GetMapping("/{date}/{themeId}")
     public ResponseEntity<List<BookableTimeResponse>> getTimesByDateAndTheme(@PathVariable String date,
                                                                              @PathVariable Long themeId) {
-        List<TimeResponse> reservationTimes = reservationTimeService.getAllReservationTimes();
-        List<BookableTimeResponse> bookableTimeRespons = reservationTimes.stream()
-                .map(time -> new BookableTimeResponse(time.id(), time.startAt(),
-                        reservationTimeService.isBooked(date, time.id(), themeId))).toList();
-        return ResponseEntity.ok().body(bookableTimeRespons);
+        List<BookableTimeResponse> bookableTimes = reservationTimeService.getAllBookableTimes(date, themeId);
+        return ResponseEntity.ok().body(bookableTimes);
     }
 
     @DeleteMapping("/{id}")

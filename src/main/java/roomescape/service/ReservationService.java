@@ -48,7 +48,7 @@ public class ReservationService {
     }
 
     private void validateDuplicate(ReservationRequest request) {
-        if (reservationDao.hasSameReservation(request.date(), request.timeId(), request.themeId())) {
+        if (reservationDao.hasSameReservation(request.date().toString(), request.timeId(), request.themeId())) {
             throw new IllegalArgumentException("이미 해당 시간에 예약이 존재합니다.");
         }
     }
