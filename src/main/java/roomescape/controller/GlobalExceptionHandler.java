@@ -28,4 +28,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleDateTimeParseException(DateTimeParseException e) {
         return new ResponseEntity<>(e.getParsedString() + "은(는) 올바른 시간 형식이 아닙니다.", HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(value = Exception.class)
+    public ResponseEntity<String> handleException(Exception e) {
+        return new ResponseEntity<>("서버에서 예상치 못한 에러가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }
