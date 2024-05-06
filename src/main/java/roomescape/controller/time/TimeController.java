@@ -1,7 +1,7 @@
 package roomescape.controller.time;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,13 +36,13 @@ public class TimeController {
 
     @GetMapping(value = "/availability", params = {"date", "themeId"})
     public List<AvailabilityTimeResponse> getAvailableTimes(
-            @Validated final AvailabilityTimeRequest availabilityTimeRequest) {
+            @Valid final AvailabilityTimeRequest availabilityTimeRequest) {
         return timeService.getTimeAvailable(availabilityTimeRequest);
     }
 
     @PostMapping
     public ResponseEntity<AvailabilityTimeResponse> addTime(@RequestBody
-                                                            @Validated final CreateTimeRequest createTimeRequest) {
+                                                            @Valid final CreateTimeRequest createTimeRequest) {
         final AvailabilityTimeResponse time = timeService.addTime(createTimeRequest);
         final URI uri = UriComponentsBuilder.fromPath("/reservations/{id}")
                 .buildAndExpand(time.id())
