@@ -36,10 +36,10 @@ public class ReservationTimeController {
 
     @GetMapping
     public ResponseEntity<List<ReservationTimeResponseDto>> findAll() {
-        final List<ReservationTimeResponseDto> responseDto = reservationTimeService.findAll().stream()
-                                                                                   .map(ReservationTimeResponseDto::new)
-                                                                                   .toList();
-        return ResponseEntity.ok(responseDto);
+        final List<ReservationTimeResponseDto> responseDtos = reservationTimeService.findAll().stream()
+                                                                                    .map(ReservationTimeResponseDto::new)
+                                                                                    .toList();
+        return ResponseEntity.ok(responseDtos);
     }
 
     @DeleteMapping("/{id}")

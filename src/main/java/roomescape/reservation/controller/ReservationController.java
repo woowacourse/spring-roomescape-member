@@ -27,10 +27,10 @@ public class ReservationController {
 
     @GetMapping
     public ResponseEntity<List<ReservationResponseDto>> findAll() {
-        List<ReservationResponseDto> responseDtoList = reservationService.findAll().stream()
-                                                                         .map(ReservationResponseDto::new)
-                                                                         .toList();
-        return ResponseEntity.ok(responseDtoList);
+        List<ReservationResponseDto> responseDtos = reservationService.findAll().stream()
+                                                                      .map(ReservationResponseDto::new)
+                                                                      .toList();
+        return ResponseEntity.ok(responseDtos);
     }
 
     @PostMapping
