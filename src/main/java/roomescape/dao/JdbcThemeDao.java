@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -38,13 +39,17 @@ public class JdbcThemeDao implements ThemeDao {
     }
 
     @Override
-    public Theme readById(Long id) {
+    public Optional<Theme> readById(Long id) {
         String sql = """
                 SELECT id, name, description, thumbnail
                 FROM theme
                 WHERE id = ?
                 """;
-        return jdbcTemplate.queryForObject(sql, (resultSet, rowNum) -> getTheme(resultSet), id);
+        List<Theme> themes = jdbcTemplate.query(sql, (resultSet, rowNum) -> getTheme(resultSet), id);
+        if (themes.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(themes.get(0));
     }
 
     @Override

@@ -1,6 +1,7 @@
 package roomescape.dao;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.reservationtime.ReservationTime;
 
@@ -9,7 +10,7 @@ public interface ReservationTimeDao {
 
     List<ReservationTime> readAll();
 
-    ReservationTime readById(long id);
+    Optional<ReservationTime> readById(long id);
 
     ReservationTime create(ReservationTime reservationTime);
 

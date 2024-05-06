@@ -1,13 +1,14 @@
 package roomescape.dao;
 
 import java.util.List;
+import java.util.Optional;
 import roomescape.domain.theme.Theme;
 
 public interface ThemeDao {
 
     List<Theme> readAll();
 
-    Theme readById(Long id);
+    Optional<Theme> readById(Long id);
 
     Theme create(Theme theme);
 

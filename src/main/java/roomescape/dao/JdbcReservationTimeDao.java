@@ -7,6 +7,7 @@ import java.sql.Statement;
 import java.sql.Time;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -37,18 +38,22 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public ReservationTime readById(long id) {
+    public Optional<ReservationTime> readById(long id) {
         String sql = """
                 SELECT
                 id, start_at
                 FROM reservation_time
                 WHERE id = ?
                 """;
-        return jdbcTemplate.queryForObject(
+        List<ReservationTime> reservationTimes = jdbcTemplate.query(
                 sql,
                 (resultSet, rowNum) -> getReservationTime(resultSet),
                 id
         );
+        if (reservationTimes.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(reservationTimes.get(0));
     }
 
     @Override

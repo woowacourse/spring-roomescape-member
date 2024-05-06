@@ -31,7 +31,8 @@ public class ReservationCreateRequest {
                 new ReservationName(name),
                 ReservationDate.from(date),
                 reservationTime,
-                theme);
+                theme
+        );
     }
 
     public String getName() {
@@ -60,9 +61,9 @@ public class ReservationCreateRequest {
         }
         ReservationCreateRequest other = (ReservationCreateRequest) o;
         return Objects.equals(this.name, other.name)
-                && Objects.equals(this.date, other.date)
-                && Objects.equals(this.timeId, other.timeId)
-                && Objects.equals(this.themeId, other.themeId);
+               && Objects.equals(this.date, other.date)
+               && Objects.equals(this.timeId, other.timeId)
+               && Objects.equals(this.themeId, other.themeId);
     }
 
     @Override
@@ -73,10 +74,10 @@ public class ReservationCreateRequest {
     @Override
     public String toString() {
         return "ReservationCreateRequest{" +
-                "name='" + name + '\'' +
-                ", date='" + date + '\'' +
-                ", timeId=" + timeId +
-                ", themeId=" + themeId +
-                '}';
+               "name='" + name + '\'' +
+               ", date='" + date + '\'' +
+               ", timeId=" + timeId +
+               ", themeId=" + themeId +
+               '}';
     }
 }

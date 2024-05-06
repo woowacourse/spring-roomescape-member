@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -58,33 +59,79 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public List<Long> readTimeIdsByDateAndThemeId(ReservationDate reservationDate, Long themeId) {
+    public Optional<Reservation> readById(Long id) {
         String sql = """
                 SELECT
-                time_id
+                    r.id AS reservation_id,
+                    r.name,
+                    r.`date`,
+                    t.id AS time_id,
+                    t.start_at AS time_value,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail AS theme_thumbnail
                 FROM
-                reservation
-                WHERE date = ? AND theme_id = ?
+                    reservation r
+                INNER JOIN
+                    reservation_time t ON r.time_id = t.id
+                INNER JOIN
+                    theme th ON r.theme_id = th.id
+                WHERE r.id = ?
                 """;
-        return jdbcTemplate.query(sql,
-                (resultSet, rowNum) -> resultSet.getLong("time_id"),
-                reservationDate.toStringDate(),
-                themeId);
+        List<Reservation> reservations = jdbcTemplate.query(
+                sql,
+                (resultSet, rowNum) -> getReservation(resultSet, getReservationTime(resultSet), getTheme(resultSet)),
+                id
+        );
+        if (reservations.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(reservations.get(0));
     }
 
     @Override
-    public List<Long> readPopularThemeIds(LocalDate startDate, LocalDate endDate) {
+    public List<ReservationTime> readTimesByDateAndThemeId(ReservationDate reservationDate, Long themeId) {
         String sql = """
                 SELECT
-                theme_id
-                FROM reservation
-                WHERE date BETWEEN ? AND ?
+                    t.id AS time_id,
+                    t.start_at AS time_value,
+                FROM
+                    reservation r
+                INNER JOIN
+                    reservation_time t ON r.time_id = t.id
+                WHERE r.`date` = ? AND r.theme_id = ?
+                """;
+        return jdbcTemplate.query(
+                sql,
+                (resultSet, rowNum) -> getReservationTime(resultSet),
+                reservationDate.toStringDate(),
+                themeId
+        );
+    }
+
+    @Override
+    public List<Theme> readPopularThemes(LocalDate startDate, LocalDate endDate) {
+        String sql = """
+                SELECT
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail AS theme_thumbnail
+                FROM
+                    reservation r
+                INNER JOIN
+                    theme th ON r.theme_id = th.id
+                WHERE r.`date` BETWEEN ? AND ?
                 GROUP BY theme_id
                 ORDER BY COUNT(*) DESC, theme_id
                 LIMIT 10;
                 """;
-        return jdbcTemplate.query(sql,
-                (resultSet, rowNum) -> resultSet.getLong("theme_id"), startDate, endDate
+        return jdbcTemplate.query(
+                sql,
+                (resultSet, rowNum) -> getTheme(resultSet),
+                startDate,
+                endDate
         );
     }
 
@@ -120,20 +167,7 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public boolean exist(long id) {
-        String sql = """
-                SELECT
-                CASE
-                    WHEN EXISTS (SELECT 1 FROM reservation WHERE id = ?)
-                    THEN TRUE
-                    ELSE FALSE
-                END
-                """;
-        return jdbcTemplate.queryForObject(sql, boolean.class, id);
-    }
-
-    @Override
-    public boolean exist(Reservation reservation) {
+    public boolean hasSame(Reservation reservation) {
         String sql = """
                 SELECT
                 CASE
@@ -152,13 +186,13 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public void delete(long id) {
+    public void delete(Reservation reservation) {
         String sql = """
                 DELETE
                 FROM reservation
                 WHERE id = ?
                 """;
-        jdbcTemplate.update(sql, id);
+        jdbcTemplate.update(sql, reservation.getId());
     }
 
     @Override

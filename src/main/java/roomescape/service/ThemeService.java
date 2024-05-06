@@ -27,9 +27,8 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> findPopulars(LocalDate startDate, LocalDate endDate) {
-        List<Long> themeIds = reservationDao.readPopularThemeIds(startDate, endDate);
-        return themeIds.stream()
-                .map(themeDao::readById)
+        List<Theme> themes = reservationDao.readPopularThemes(startDate, endDate);
+        return themes.stream()
                 .map(ThemeResponse::from)
                 .toList();
     }
