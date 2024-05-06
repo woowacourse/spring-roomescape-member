@@ -5,11 +5,9 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import roomescape.application.ReservationService;
 import roomescape.application.ServiceTest;
 import roomescape.application.dto.ReservationRequest;
 import roomescape.exception.RoomescapeErrorCode;
@@ -19,13 +17,10 @@ import roomescape.exception.RoomescapeException;
 class ReservationFactoryTest {
 
     @Autowired
-    private ReservationService reservationService;
+    private ReservationFactory reservationFactory;
 
     @Autowired
     private ReservationCommandRepository reservationCommandRepository;
-
-    @Autowired
-    private ReservationQueryRepository reservationQueryRepository;
 
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
@@ -33,20 +28,16 @@ class ReservationFactoryTest {
     @Autowired
     private ThemeRepository themeRepository;
 
-    @DisplayName("정상적인 예약 요청을 받아서 저장한다.")
+    @DisplayName("정상적인 예약 요청을 받으면 에러가 발생하지 않는다.")
     @Test
     void shouldReturnReservationResponseWhenValidReservationRequestSave() {
         ReservationTime time = reservationTimeRepository.create(ReservationTimeFixture.defaultValue());
         Theme theme = themeRepository.create(ThemeFixture.defaultValue());
         ReservationRequest reservationRequest = ReservationRequestFixture.defaultValue(time, theme);
 
-        reservationService.create(reservationRequest);
+        Reservation reservation = reservationFactory.create(reservationRequest);
 
-        List<Reservation> reservations = reservationQueryRepository.findAll();
-        Reservation reservation = reservations.get(0);
         assertAll(
-                () -> assertThat(reservations).hasSize(1),
-                () -> assertThat(reservation.getId()).isNotNull(),
                 () -> assertThat(reservation.getName()).isEqualTo(reservationRequest.name()),
                 () -> assertThat(reservation.getTheme().getId()).isEqualTo(reservationRequest.themeId()),
                 () -> assertThat(reservation.getDate()).isEqualTo(reservationRequest.date()),
@@ -60,7 +51,7 @@ class ReservationFactoryTest {
         Theme savedTheme = themeRepository.create(ThemeFixture.defaultValue());
         ReservationRequest request = ReservationRequestFixture.of(99L, savedTheme.getId());
 
-        assertThatCode(() -> reservationService.create(request))
+        assertThatCode(() -> reservationFactory.create(request))
                 .isInstanceOf(RoomescapeException.class)
                 .extracting("errorCode")
                 .isEqualTo(RoomescapeErrorCode.NOT_FOUND_TIME);
@@ -72,7 +63,7 @@ class ReservationFactoryTest {
         ReservationTime time = reservationTimeRepository.create(ReservationTimeFixture.defaultValue());
         ReservationRequest request = ReservationRequestFixture.of(time.getId(), 1L);
 
-        assertThatCode(() -> reservationService.create(request))
+        assertThatCode(() -> reservationFactory.create(request))
                 .isInstanceOf(RoomescapeException.class)
                 .extracting("errorCode")
                 .isEqualTo(RoomescapeErrorCode.NOT_FOUND_THEME);
@@ -87,7 +78,7 @@ class ReservationFactoryTest {
 
         reservationCommandRepository.create(request.toReservation(time, theme));
 
-        assertThatCode(() -> reservationService.create(request))
+        assertThatCode(() -> reservationFactory.create(request))
                 .isInstanceOf(RoomescapeException.class)
                 .extracting("errorCode")
                 .isEqualTo(RoomescapeErrorCode.DUPLICATED_RESERVATION);
@@ -100,7 +91,7 @@ class ReservationFactoryTest {
         Theme theme = themeRepository.create(ThemeFixture.defaultValue());
         ReservationRequest reservationRequest = ReservationRequestFixture.of(LocalDate.of(1999, 1, 1), time.getId(), theme.getId());
 
-        assertThatCode(() -> reservationService.create(reservationRequest))
+        assertThatCode(() -> reservationFactory.create(reservationRequest))
                 .isInstanceOf(RoomescapeException.class)
                 .extracting("errorCode")
                 .isEqualTo(RoomescapeErrorCode.BAD_REQUEST);
