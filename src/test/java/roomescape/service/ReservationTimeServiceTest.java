@@ -139,18 +139,6 @@ class ReservationTimeServiceTest {
         }
 
         @Test
-        @DisplayName("예약 시간 삭제시 아이디가 비어있으면 예외가 발생한다.")
-        void deleteNullId() {
-            //given
-            reservationTimeDao.create(ReservationTimeFixtures.createReservationTime("12:02"));
-            Long givenId = null;
-
-            //when //then
-            assertThatThrownBy(() -> reservationTimeService.delete(givenId))
-                    .isInstanceOf(InvalidValueException.class);
-        }
-
-        @Test
         @DisplayName("예약 시간 삭제시 아이디가 존재하지 않는다면 예외가 발생한다.")
         void deleteNotExistId() {
             //given

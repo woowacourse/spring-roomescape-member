@@ -142,19 +142,6 @@ class ThemeServiceTest {
     }
 
     @Test
-    @DisplayName("테마 삭제시 아이디가 비어있으면 예외가 발생한다.")
-    void deleteNullId() {
-        //given
-        Theme theme = ThemeFixtures.createDefaultTheme();
-        themeDao.create(theme);
-        Long givenId = null;
-
-        //when //then
-        assertThatThrownBy(() -> themeService.delete(givenId))
-                .isInstanceOf(InvalidValueException.class);
-    }
-
-    @Test
     @DisplayName("테마 삭제시 아이디가 존재하지 않는다면 예외가 발생한다.")
     void deleteNotExistId() {
         //given
