@@ -36,10 +36,10 @@
 
 ### 이용 가능한 예약 시간 조회
 
-| HTTP Method | GET                                              |
-|-------------|--------------------------------------------------|
-| End Point   | /reservations/user?date={date}&themeId={themeId} |
-| Status Code | 200 OK                                           |
+| HTTP Method | GET                                                         |
+|-------------|-------------------------------------------------------------|
+| End Point   | /reservations/available-times?date={date}&themeId={themeId} |
+| Status Code | 200 OK                                                      |
 
 #### Response Body
 

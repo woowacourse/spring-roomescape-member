@@ -35,7 +35,7 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.findAll());
     }
 
-    @GetMapping("/user")
+    @GetMapping("/available-times")
     public ResponseEntity<List<AvailableReservationResponse>> readReservationTimes(@RequestParam String date,
                                                                                    @RequestParam Long themeId) {
         LocalDateTime now = LocalDateTime.now(KST_ZONE);
