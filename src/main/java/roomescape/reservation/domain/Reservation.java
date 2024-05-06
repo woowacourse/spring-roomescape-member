@@ -1,0 +1,72 @@
+package roomescape.reservation.domain;
+
+import java.time.LocalDate;
+import java.util.Objects;
+
+public class Reservation {
+    private Long id;
+    private LocalDate date;
+    private ReservationTime time;
+    private Theme theme;
+
+    public Reservation(Long id, LocalDate date, ReservationTime time, Theme theme) {
+        validate(date, time);
+        this.id = id;
+        this.date = date;
+        this.time = time;
+        this.theme = theme;
+    }
+
+    public Reservation(LocalDate date, ReservationTime time, Theme theme) {
+        this(null, date, time, theme);
+    }
+
+    private void validate(LocalDate date, ReservationTime time) {
+        if (date == null || time == null) {
+            throw new IllegalArgumentException("날짜 및 시간은 null을 허용하지 않습니다.");
+        }
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public ReservationTime getTime() {
+        return time;
+    }
+
+    public Theme getTheme() {
+        return theme;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Reservation that = (Reservation) o;
+        return Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
+    }
+
+    @Override
+    public String toString() {
+        return "Reservation{" +
+                "id=" + id +
+                ", date=" + date +
+                ", time=" + time +
+                ", theme=" + theme +
+                '}';
+    }
+}
