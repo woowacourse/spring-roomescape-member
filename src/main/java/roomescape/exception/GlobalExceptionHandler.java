@@ -31,4 +31,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest()
                 .body(new ErrorResponse("올바르지 않은 형식입니다."));
     }
+
+    @ExceptionHandler(value = Exception.class)
+    public ResponseEntity<ErrorResponse> handleException(Exception e) {
+        return ResponseEntity.internalServerError()
+                .body(new ErrorResponse("서버 에러입니다."));
+    }
 }
