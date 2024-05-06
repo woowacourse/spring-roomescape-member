@@ -12,6 +12,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import roomescape.global.exception.model.ConflictException;
 
 import java.util.List;
@@ -20,8 +21,13 @@ import java.util.List;
 public class GlobalExceptionHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    // TODO: 존재하지 않는 API 경로로 요청을 보내는 경우 처리. 400? 404?
-    //      message: 유효하지 않은 요청 경로입니다.
+    @ExceptionHandler(value = NoResourceFoundException.class)
+    public ResponseEntity<ExceptionResponse> handle(NoResourceFoundException exception) {
+        logger.error(exception.getMessage());
+        ExceptionResponse exceptionResponse = new ExceptionResponse("유효하지 않은 API 경로입니다.");
+
+        return new ResponseEntity(exceptionResponse, HttpStatus.NOT_FOUND);
+    }
 
     @ExceptionHandler(value = HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ExceptionResponse> handle(HttpRequestMethodNotSupportedException exception) {
