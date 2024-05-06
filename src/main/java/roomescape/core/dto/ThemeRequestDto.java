@@ -1,8 +1,13 @@
 package roomescape.core.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class ThemeRequestDto {
+    @NotBlank(message = "테마 이름은 null이나 빈 값일 수 없습니다.")
     private String name;
+    @NotBlank(message = "테마 설명은 null이나 빈 값일 수 없습니다.")
     private String description;
+    @NotBlank(message = "테마 이미지는 null이나 빈 값일 수 없습니다.")
     private String thumbnail;
 
     public ThemeRequestDto() {

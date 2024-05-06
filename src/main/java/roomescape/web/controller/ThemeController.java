@@ -1,5 +1,6 @@
 package roomescape.web.controller;
 
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +25,7 @@ public class ThemeController {
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponseDto> create(@RequestBody final ThemeRequestDto request) {
-        validateRequest(request);
+    public ResponseEntity<ThemeResponseDto> create(@RequestBody @Valid final ThemeRequestDto request) {
         final ThemeResponseDto response = themeService.create(request);
         return ResponseEntity.created(URI.create("/themes/" + response.getId()))
                 .body(response);
@@ -45,22 +45,5 @@ public class ThemeController {
     public ResponseEntity<Void> delete(@PathVariable("id") final long id) {
         themeService.delete(id);
         return ResponseEntity.noContent().build();
-    }
-
-    private void validateRequest(final ThemeRequestDto request) {
-        final String name = request.getName();
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("Name cannot be null or empty");
-        }
-
-        final String description = request.getDescription();
-        if (description == null || description.isBlank()) {
-            throw new IllegalArgumentException("Description cannot be null or empty");
-        }
-
-        final String thumbnail = request.getThumbnail();
-        if (thumbnail == null || thumbnail.isBlank()) {
-            throw new IllegalArgumentException("Thumbnail cannot be null or empty");
-        }
     }
 }
