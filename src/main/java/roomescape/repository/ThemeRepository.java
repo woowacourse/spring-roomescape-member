@@ -44,4 +44,12 @@ public class ThemeRepository {
         }
         return result;
     }
+
+    public boolean isExistThemeById(long id) {
+        return themeDao.isExistById(id);
+    }
+
+    public boolean isExistThemeByName(String name) {
+        return themeDao.isExistByName(name);
+    }
 }

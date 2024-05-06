@@ -55,12 +55,29 @@ class ReservationTimeServiceTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @DisplayName("예약 시간을 추가한다")
+    @DisplayName("존재하지 않는 시간을 조회하려는 경우 예외가 발생한다.")
+    @Test
+    void should_throw_exception_when_not_exist_time() {
+        assertThatThrownBy(() -> reservationTimeService.findReservationTime(999L))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("[ERROR] 존재하지 않는 시간입니다.");
+    }
+
+    @DisplayName("예약 시간을 추가한다.")
     @Test
     void should_save_reservation_time() {
         ReservationTimeDto timeDto = new ReservationTimeDto(LocalTime.of(4, 0));
         reservationTimeService.saveReservationTime(timeDto);
         assertThat(reservationTimeService.findAllReservationTimes()).hasSize(INITIAL_TIME_COUNT + 1);
+    }
+
+    @DisplayName("중복된 시간을 추가하려는 경우 예외가 발생한다.")
+    @Test
+    void should_throw_exception_when_duplicated_time() {
+        ReservationTimeDto timeDto = new ReservationTimeDto(LocalTime.of(1, 0));
+        assertThatThrownBy(() -> reservationTimeService.saveReservationTime(timeDto))
+                .isInstanceOf(DuplicatedException.class)
+                .hasMessage("[ERROR] 중복된 시간은 추가할 수 없습니다.");
     }
 
     @DisplayName("예약 시간을 삭제한다.")
@@ -99,6 +116,6 @@ class ReservationTimeServiceTest {
         ReservationTimeDto timeDto = new ReservationTimeDto(LocalTime.of(1, 0));
         assertThatThrownBy(() -> reservationTimeService.saveReservationTime(timeDto))
                 .isInstanceOf(DuplicatedException.class)
-                .hasMessage("[ERROR] 중복되는 시간은 추가할 수 없습니다.");
+                .hasMessage("[ERROR] 중복된 시간은 추가할 수 없습니다.");
     }
 }

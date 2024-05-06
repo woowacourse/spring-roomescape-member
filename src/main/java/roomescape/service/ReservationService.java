@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 @Service
@@ -32,37 +33,27 @@ public class ReservationService {
     }
 
     public Reservation saveReservation(ReservationDto reservationDto) {
-        LocalDate date = reservationDto.getDate();
-        long timeId = reservationDto.getTimeId();
-        long themeId = reservationDto.getThemeId();
-        ReservationTime time = reservationRepository.findReservationTimeById(timeId)
-                .orElseThrow(() -> new BadRequestException("[ERROR] 데이터가 저장되지 않습니다."));
-        Theme theme = reservationRepository.findThemeById(themeId)
-                .orElseThrow(() -> new BadRequestException("[ERROR] 데이터가 저장되지 않습니다."));
+        ReservationTime time = findReservationTime(reservationDto);
+        Theme theme = findTheme(reservationDto);
 
-        validate(date, time);
+        LocalDate date = reservationDto.getDate();
+        validateIsFuture(date, time.getStartAt());
+        validateDuplication(date, time.getId());
+
         Reservation reservation = Reservation.from(reservationDto, time, theme);
         return reservationRepository.saveReservation(reservation);
     }
 
-    private void validate(LocalDate date, ReservationTime time) {
-        validateDateTime(date, time.getStartAt());
-        validateDuplication(date, time.getId());
+    private ReservationTime findReservationTime(ReservationDto reservationDto) {
+        long timeId = reservationDto.getTimeId();
+        Optional<ReservationTime> time = reservationRepository.findReservationTimeById(timeId);
+        return time.orElseThrow(() -> new BadRequestException("[ERROR] 존재하지 않는 데이터입니다."));
     }
 
-    private void validateDateTime(LocalDate date, LocalTime time) {
-        LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
-        LocalDateTime dateTime = LocalDateTime.of(date, time).truncatedTo(ChronoUnit.SECONDS);
-        if (dateTime.isBefore(now)) {
-            throw new BadRequestException("[ERROR] 현재 이전 예약은 할 수 없습니다.");
-        }
-    }
-
-    private void validateDuplication(LocalDate date, long timeId) {
-        boolean isExist = reservationRepository.isExistReservationByDateAndTimeId(date, timeId);
-        if (isExist) {
-            throw new DuplicatedException("[ERROR] 중복되는 예약은 추가할 수 없습니다.");
-        }
+    private Theme findTheme(ReservationDto reservationDto) {
+        long themeId = reservationDto.getThemeId();
+        Optional<Theme> theme = reservationRepository.findThemeById(themeId);
+        return theme.orElseThrow(() -> new BadRequestException("[ERROR] 존재하지 않는 데이터입니다."));
     }
 
     public void deleteReservation(long id) {
@@ -70,17 +61,11 @@ public class ReservationService {
         reservationRepository.deleteReservationById(id);
     }
 
-    private void validateExistence(long id) {
-        boolean isNotExist = !reservationRepository.isExistReservationById(id);
-        if (isNotExist) {
-            throw new NotFoundException("[ERROR] 존재하지 않는 예약입니다.");
-        }
-    }
-
     public List<MemberReservationTimeResponse> findReservationTimesInformation(LocalDate date, long themeId) {
         // TODO: themeId <= 0 예외 처리
         List<ReservationTime> bookedTimes = reservationRepository.findReservationTimeBooked(date, themeId);
         List<ReservationTime> notBookedTimes = reservationRepository.findReservationTimeNotBooked(date, themeId);
+        // TODO: map to response 로직 컨트롤러로
         List<MemberReservationTimeResponse> bookedResponse = mapToResponse(bookedTimes, true);
         List<MemberReservationTimeResponse> notBookedResponse = mapToResponse(notBookedTimes, false);
         return concat(bookedResponse, notBookedResponse);
@@ -95,5 +80,27 @@ public class ReservationService {
     private List<MemberReservationTimeResponse> concat(List<MemberReservationTimeResponse> first,
                                                        List<MemberReservationTimeResponse> second) {
         return Stream.concat(first.stream(), second.stream()).toList();
+    }
+
+    private void validateIsFuture(LocalDate date, LocalTime time) {
+        LocalDateTime timeToBook = LocalDateTime.of(date, time).truncatedTo(ChronoUnit.SECONDS);
+        LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+        if (timeToBook.isBefore(now)) {
+            throw new BadRequestException("[ERROR] 현재 이전 예약은 할 수 없습니다.");
+        }
+    }
+
+    private void validateDuplication(LocalDate date, long timeId) {
+        boolean isExist = reservationRepository.isExistReservationByDateAndTimeId(date, timeId);
+        if (isExist) {
+            throw new DuplicatedException("[ERROR] 중복되는 예약은 추가할 수 없습니다.");
+        }
+    }
+
+    private void validateExistence(long id) {
+        boolean isNotExist = !reservationRepository.isExistReservationById(id);
+        if (isNotExist) {
+            throw new NotFoundException("[ERROR] 존재하지 않는 예약입니다.");
+        }
     }
 }

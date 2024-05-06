@@ -3,6 +3,8 @@ package roomescape.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.exception.DuplicatedException;
+import roomescape.exception.NotFoundException;
 import roomescape.model.Theme;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.dao.ReservationDao;
@@ -17,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ThemeServiceTest {
 
@@ -50,11 +53,28 @@ class ThemeServiceTest {
         assertThat(themeService.findAllThemes()).hasSize(INITIAL_THEME_COUNT + 1);
     }
 
+    @DisplayName("중복된 이름의 테마를 저장하려는 경우 예외가 발생한다.")
+    @Test
+    void should_throw_exception_when_duplicated_name() {
+        ThemeDto themeDto = new ThemeDto("n1", "d", "t");
+        assertThatThrownBy(() -> themeService.saveTheme(themeDto))
+                .isInstanceOf(DuplicatedException.class)
+                .hasMessage("[ERROR] 테마의 이름은 중복될 수 없습니다.");
+    }
+
     @DisplayName("테마를 삭제한다.")
     @Test
     void should_delete_theme() {
         themeService.deleteTheme(1L);
         assertThat(themeService.findAllThemes()).hasSize(INITIAL_THEME_COUNT - 1);
+    }
+
+    @DisplayName("존재하지 않는 테마를 삭제하려는 경우 예외가 발생한다.")
+    @Test
+    void should_throw_exception_when_not_exist_id() {
+        assertThatThrownBy(() -> themeService.deleteTheme(999L))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("[ERROR] 존재하지 않는 테마입니다.");
     }
 
     @DisplayName("최근 일주일 간 가장 인기 있는 테마 10개를 조회한다.")

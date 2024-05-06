@@ -62,4 +62,16 @@ public class JdbcThemeDao implements ThemeDao {
         String sql = "delete from theme where id = ?";
         jdbcTemplate.update(sql, id);
     }
+
+    @Override
+    public Boolean isExistById(long id) {
+        String sql = "select exists(select id from theme where id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
+    }
+
+    @Override
+    public Boolean isExistByName(String name) {
+        String sql = "select exists (select id from theme where name = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, name);
+    }
 }

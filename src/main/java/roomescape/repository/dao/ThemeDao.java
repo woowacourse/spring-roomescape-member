@@ -14,4 +14,8 @@ public interface ThemeDao {
     Optional<Theme> findById(long id);
 
     void deleteById(long id);
+
+    Boolean isExistById(long id);
+
+    Boolean isExistByName(String name);
 }

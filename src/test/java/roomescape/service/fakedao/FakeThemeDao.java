@@ -40,6 +40,16 @@ public class FakeThemeDao implements ThemeDao {
     }
 
     @Override
+    public Boolean isExistById(long id) {
+        return themes.stream().anyMatch(theme -> theme.getId() == id);
+    }
+
+    @Override
+    public Boolean isExistByName(String name) {
+        return themes.stream().anyMatch(theme -> theme.getName().equals(name));
+    }
+
+    @Override
     public Optional<Theme> findById(long id) {
         return themes.stream()
                 .filter(theme -> theme.getId() == id)

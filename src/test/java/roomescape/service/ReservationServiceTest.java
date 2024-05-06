@@ -66,28 +66,6 @@ class ReservationServiceTest {
         assertThat(reservationService.findAllReservations()).hasSize(INITIAL_RESERVATION_COUNT + 1);
     }
 
-    @DisplayName("예약을 삭제한다.")
-    @Test
-    void should_delete_reservation() {
-        reservationService.deleteReservation(1L);
-        assertThat(reservationService.findAllReservations()).hasSize(INITIAL_RESERVATION_COUNT - 1);
-    }
-
-    @DisplayName("존재하는 예약을 삭제하려 하면 예외가 발생하지 않는다.")
-    @Test
-    void should_not_throw_exception_when_exist_reservation_time() {
-        assertThatCode(() -> reservationService.deleteReservation(1L))
-                .doesNotThrowAnyException();
-    }
-
-    @DisplayName("존재하지 않는 예약을 삭제하려 하면 예외가 발생한다.")
-    @Test
-    void should_throw_exception_when_not_exist_reservation_time() {
-        assertThatThrownBy(() -> reservationService.deleteReservation(999L))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("[ERROR] 존재하지 않는 예약입니다.");
-    }
-
     @DisplayName("현재 이전으로 예약하려 하면 예외가 발생한다.")
     @Test
     void should_throw_exception_when_previous_date() {
@@ -120,6 +98,28 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.saveReservation(reservationDto))
                 .isInstanceOf(DuplicatedException.class)
                 .hasMessage("[ERROR] 중복되는 예약은 추가할 수 없습니다.");
+    }
+
+    @DisplayName("예약을 삭제한다.")
+    @Test
+    void should_delete_reservation() {
+        reservationService.deleteReservation(1L);
+        assertThat(reservationService.findAllReservations()).hasSize(INITIAL_RESERVATION_COUNT - 1);
+    }
+
+    @DisplayName("존재하는 예약을 삭제하려 하면 예외가 발생하지 않는다.")
+    @Test
+    void should_not_throw_exception_when_exist_reservation_time() {
+        assertThatCode(() -> reservationService.deleteReservation(1L))
+                .doesNotThrowAnyException();
+    }
+
+    @DisplayName("존재하지 않는 예약을 삭제하려 하면 예외가 발생한다.")
+    @Test
+    void should_throw_exception_when_not_exist_reservation_time() {
+        assertThatThrownBy(() -> reservationService.deleteReservation(999L))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("[ERROR] 존재하지 않는 예약입니다.");
     }
 
     @DisplayName("예약 가능 상태를 담은 시간 정보를 반환한다.")
