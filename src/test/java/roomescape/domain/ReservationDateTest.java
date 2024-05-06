@@ -7,6 +7,7 @@ import static roomescape.fixture.LocalDateFixture.AFTER_ONE_DAYS_DATE;
 import java.time.LocalDate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.exception.ClientIllegalArgumentException;
 
 class ReservationDateTest {
 
@@ -21,7 +22,7 @@ class ReservationDateTest {
     @Test
     void should_throw_NPE_when_date_is_null() {
         assertThatThrownBy(() -> new ReservationDate(null))
-                .isInstanceOf(NullPointerException.class)
+                .isInstanceOf(ClientIllegalArgumentException.class)
                 .hasMessage("날짜는 null일 수 없습니다");
     }
 
@@ -30,7 +31,7 @@ class ReservationDateTest {
     void should_throw_IllegalArgument_when_date_is_past() {
         LocalDate pastDate = LocalDate.now().minusDays(1);
         assertThatThrownBy(() -> new ReservationDate(pastDate))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ClientIllegalArgumentException.class)
                 .hasMessage(pastDate + ": 예약 날짜는 현재 보다 이전일 수 없습니다");
     }
 }

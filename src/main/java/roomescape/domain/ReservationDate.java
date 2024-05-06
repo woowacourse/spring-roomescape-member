@@ -2,6 +2,7 @@ package roomescape.domain;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import roomescape.exception.ClientIllegalArgumentException;
 
 public class ReservationDate {
 
@@ -19,13 +20,13 @@ public class ReservationDate {
 
     private void validateNonNull(LocalDate date) {
         if (date == null) {
-            throw new NullPointerException("날짜는 null일 수 없습니다");
+            throw new ClientIllegalArgumentException("날짜는 null일 수 없습니다");
         }
     }
 
     private void validateNonPastDate(LocalDate date) {
         if (date.isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException(date + ": 예약 날짜는 현재 보다 이전일 수 없습니다");
+            throw new ClientIllegalArgumentException(date + ": 예약 날짜는 현재 보다 이전일 수 없습니다");
         }
     }
 

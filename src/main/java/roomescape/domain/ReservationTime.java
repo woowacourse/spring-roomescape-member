@@ -2,6 +2,7 @@ package roomescape.domain;
 
 import java.time.LocalTime;
 import java.util.Objects;
+import roomescape.exception.ClientIllegalArgumentException;
 
 public class ReservationTime {
     private final Long id;
@@ -15,7 +16,7 @@ public class ReservationTime {
 
     private void validateNonNull(LocalTime startAt) {
         if (startAt == null) {
-            throw new NullPointerException("예약 가능 시각은 null일 수 없습니다");
+            throw new ClientIllegalArgumentException("예약 가능 시각은 null일 수 없습니다");
         }
     }
 

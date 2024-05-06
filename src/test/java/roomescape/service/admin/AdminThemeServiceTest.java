@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.exception.ClientIllegalArgumentException;
 import roomescape.repository.ThemeRepository;
 import roomescape.service.fakeDao.FakeThemeRepository;
 
@@ -16,7 +17,7 @@ class AdminThemeServiceTest {
         AdminThemeService adminThemeService = new AdminThemeService(themeRepository);
 
         assertThatThrownBy(() -> adminThemeService.removeTheme(1L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ClientIllegalArgumentException.class)
                 .hasMessage("해당 id를 가진 테마가 존재하지 않습니다.");
     }
 }

@@ -6,6 +6,7 @@ import static roomescape.fixture.LocalTimeFixture.TEN_HOUR;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.exception.ClientIllegalArgumentException;
 
 class ReservationTimeTest {
 
@@ -20,7 +21,7 @@ class ReservationTimeTest {
     @Test
     void should_throw_NPE_when_time_is_null() {
         assertThatThrownBy(() -> new ReservationTime(null, null))
-                .isInstanceOf(NullPointerException.class)
+                .isInstanceOf(ClientIllegalArgumentException.class)
                 .hasMessage("예약 가능 시각은 null일 수 없습니다");
     }
 }

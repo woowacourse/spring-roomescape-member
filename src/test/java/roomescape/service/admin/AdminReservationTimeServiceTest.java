@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeAddRequest;
+import roomescape.exception.ClientIllegalArgumentException;
 import roomescape.service.fakeDao.FakeReservationTimeRepository;
 
 class AdminReservationTimeServiceTest {
@@ -53,7 +54,7 @@ class AdminReservationTimeServiceTest {
         ReservationTimeAddRequest reservationTimeAddRequest = new ReservationTimeAddRequest(LocalTime.of(10, 0));
 
         assertThatThrownBy(() -> adminReservationTimeService.addReservationTime(reservationTimeAddRequest))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ClientIllegalArgumentException.class)
                 .hasMessage("이미 존재하는 예약시간은 추가할 수 없습니다.");
     }
 
@@ -79,7 +80,7 @@ class AdminReservationTimeServiceTest {
                 fakeReservationTimeDao);
 
         assertThatThrownBy(() -> adminReservationTimeService.removeReservationTime(1L)).isInstanceOf(
-                        IllegalArgumentException.class)
+                        ClientIllegalArgumentException.class)
                 .hasMessage("해당 id를 가진 예약시간이 존재하지 않습니다.");
     }
 }

@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.exception.ClientIllegalArgumentException;
 
 class NameTest {
 
@@ -20,7 +21,7 @@ class NameTest {
     @Test
     void should_throw_NPE_when_name_is_null() {
         assertThatThrownBy(() -> new Name(null))
-                .isInstanceOf(NullPointerException.class)
+                .isInstanceOf(ClientIllegalArgumentException.class)
                 .hasMessage("이름은 비어있을 수 없습니다.");
     }
 
@@ -28,7 +29,7 @@ class NameTest {
     @Test
     void should_throw_IllegalArgumentException_when_name_is_blank() {
         assertThatThrownBy(() -> new Name(" "))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ClientIllegalArgumentException.class)
                 .hasMessage("이름의 길이는 공백을 제외한 1이상이어야합니다.");
     }
 }
