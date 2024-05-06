@@ -1,5 +1,6 @@
 package roomescape.global.exception;
 
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -8,19 +9,18 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.global.exception.model.ConflictException;
 
 import java.util.List;
 
-// TODO: @RestControllerAdvice 사용 고려
-@ControllerAdvice
-public class ExceptionController {
+@RestControllerAdvice
+public class GlobalExceptionHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @ExceptionHandler
-    public ResponseEntity<String> handle(MethodArgumentNotValidException exception) {
+    public ResponseEntity<ExceptionResponse> handle(MethodArgumentNotValidException exception) {
         logger.error(exception.getMessage());
         BindingResult bindingResult = exception.getBindingResult();
         List<FieldError> fieldErrors = bindingResult.getFieldErrors();
@@ -30,15 +30,21 @@ public class ExceptionController {
     }
 
     @ExceptionHandler(value = HttpMessageNotReadableException.class)
-    public ResponseEntity<String> handleDateTimeParseException(HttpMessageNotReadableException exception) {
+    public ResponseEntity<ExceptionResponse> handleDateTimeParseException(HttpMessageNotReadableException exception) {
         logger.error(exception.getMessage());
-        ExceptionResponse exceptionResponse = new ExceptionResponse("유효하지 않은 요청 형식입니다.");
+
+        String message = "유효하지 않은 요청 형식입니다.";
+        if (exception.getCause() instanceof MismatchedInputException mismatchedInputException) {
+            String fieldName = mismatchedInputException.getPath().get(0).getFieldName();
+            message = fieldName + " 필드에 유효하지 않은 값이 입력되었습니다.";
+        }
+        ExceptionResponse exceptionResponse = new ExceptionResponse(message);
 
         return new ResponseEntity(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(value = ConflictException.class)
-    public ResponseEntity<String> handleConflictException(ConflictException exception) {
+    public ResponseEntity<ExceptionResponse> handleConflictException(ConflictException exception) {
         logger.error(exception.getMessage());
         ExceptionResponse exceptionResponse = new ExceptionResponse("요청한 값에 충돌이 발생했습니다.");
 
@@ -55,7 +61,7 @@ public class ExceptionController {
     //      message:
 
     @ExceptionHandler(value = Exception.class)
-    public ResponseEntity<String> handleException(Exception exception) {
+    public ResponseEntity<ExceptionResponse> handleException(Exception exception) {
         logger.error(exception.getMessage());
         ExceptionResponse exceptionResponse = new ExceptionResponse("서버 내부에서 에러가 발생했습니다.");
 
