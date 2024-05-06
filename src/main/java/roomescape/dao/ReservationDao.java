@@ -89,14 +89,14 @@ public class ReservationDao {
         return Optional.ofNullable(DataAccessUtils.singleResult(reservations));
     }
 
-    public int countByTimeId(Long timeId) {
-        String sql = "SELECT count(*) FROM reservation WHERE time_id =?";
-        return jdbcTemplate.queryForObject(sql, Integer.class, timeId);
+    public Boolean hasTime(Long timeId) {
+        String sql = "SELECT EXISTS(SELECT * FROM reservation WHERE time_id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
     }
 
-    public int countByThemeId(Long themeId) {
-        String sql = "SELECT count(*) FROM reservation WHERE theme_id =?";
-        return jdbcTemplate.queryForObject(sql, Integer.class, themeId);
+    public Boolean hasTheme(Long themeId) {
+        String sql = "SELECT EXISTS(SELECT * FROM reservation WHERE theme_id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, themeId);
     }
 
     public int count(String date, Long timeId, Long themeId) {
