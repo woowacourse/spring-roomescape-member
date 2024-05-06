@@ -1,4 +1,4 @@
-package roomescape.service.fixture;
+package roomescape.fixture;
 
 import java.time.LocalDate;
 

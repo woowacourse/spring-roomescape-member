@@ -1,8 +1,8 @@
 package roomescape.service.user;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static roomescape.service.fixture.LocalDateFixture.AFTER_ONE_DAYS_DATE;
-import static roomescape.service.fixture.LocalTimeFixture.TEN_HOUR;
+import static roomescape.fixture.LocalDateFixture.AFTER_ONE_DAYS_DATE;
+import static roomescape.fixture.LocalTimeFixture.TEN_HOUR;
 
 import java.time.LocalTime;
 import java.util.List;

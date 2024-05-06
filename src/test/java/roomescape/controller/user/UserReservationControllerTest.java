@@ -1,8 +1,7 @@
 package roomescape.controller.user;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.*;
-import static roomescape.service.fixture.LocalDateFixture.*;
+import static roomescape.fixture.LocalDateFixture.*;
 
 import io.restassured.RestAssured;
 import java.time.LocalDate;
@@ -14,8 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.service.fixture.LocalDateFixture;
-import roomescape.service.fixture.LocalTimeFixture;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)

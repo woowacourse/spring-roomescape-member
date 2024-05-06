@@ -49,7 +49,7 @@ public class FakeReservationTimeDao implements ReservationTimeDao {
         Long id = atomicLong.incrementAndGet();
         ReservationTime addReservationTime = new ReservationTime(id, reservationTime.getStartAt());
         reservationTimes.put(id, addReservationTime);
-        return reservationTime;
+        return addReservationTime;
     }
 
     @Override

@@ -1,7 +1,7 @@
 package roomescape.service.admin;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static roomescape.service.fixture.LocalDateFixture.*;
+import static roomescape.fixture.LocalDateFixture.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
