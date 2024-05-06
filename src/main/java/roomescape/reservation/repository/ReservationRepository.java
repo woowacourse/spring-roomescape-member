@@ -58,4 +58,8 @@ public class ReservationRepository {
     public void deleteById(long reservationId) {
         reservationDao.deleteById(reservationId);
     }
+
+    public Optional<Reservation> findByThemeId(long themeId) {
+        return reservationDao.findByThemeId(themeId);
+    }
 }

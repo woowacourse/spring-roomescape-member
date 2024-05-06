@@ -115,7 +115,6 @@ public class ReservationJdbcDao implements ReservationDao {
 
     @Override
     public Optional<Reservation> findByTimeId(long timeId) {
-        System.out.println("=== " + timeId);
         String findByTimeIdSql = """
                 SELECT r.id, r.name, r.date,
                        t.id AS time_id, t.start_at,
@@ -128,6 +127,26 @@ public class ReservationJdbcDao implements ReservationDao {
 
         try {
             Reservation reservation = jdbcTemplate.queryForObject(findByTimeIdSql, RESERVATION_ROW_MAPPER, timeId);
+            return Optional.of(reservation);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<Reservation> findByThemeId(long themeId) {
+        String findByThemeIdSql = """
+                SELECT r.id, r.name, r.date,
+                       t.id AS time_id, t.start_at,
+                       th.id AS theme_id, th.name AS themeName, th.description, th.thumbnail
+                FROM reservation r
+                INNER JOIN reservation_time t ON r.time_id = t.id
+                INNER JOIN theme th ON r.theme_id = th.id
+                WHERE th.id = ?
+                """;
+
+        try {
+            Reservation reservation = jdbcTemplate.queryForObject(findByThemeIdSql, RESERVATION_ROW_MAPPER, themeId);
             return Optional.of(reservation);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
