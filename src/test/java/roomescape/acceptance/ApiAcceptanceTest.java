@@ -10,12 +10,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.dto.*;
+import roomescape.dto.ReservationTimeResponse;
+import roomescape.dto.ReservationTimeSaveRequest;
+import roomescape.dto.ThemeResponse;
+import roomescape.dto.ThemeSaveRequest;
 
 import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static roomescape.TestFixture.*;
+import static roomescape.TestFixture.THEME_THUMBNAIL;
 
 @Sql("/test-schema.sql")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -47,18 +50,6 @@ abstract class ApiAcceptanceTest {
                 .when().post("/times")
                 .then().extract()
                 .as(ReservationTimeResponse.class)
-                .id();
-    }
-
-    protected Long saveReservation(Long timeId, Long themeId) {
-        ReservationSaveRequest request = new ReservationSaveRequest(USER_MIA, MIA_RESERVATION_DATE, timeId, themeId);
-        return RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(request)
-                .when().post("/reservations")
-                .then().log().all()
-                .extract()
-                .as(ReservationResponse.class)
                 .id();
     }
 

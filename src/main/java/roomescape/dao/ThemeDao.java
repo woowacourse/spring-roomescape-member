@@ -12,6 +12,7 @@ import roomescape.repository.ThemeRepository;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -59,7 +60,7 @@ public class ThemeDao implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findAllOrderByReservationCountDaysAgo(int days, int limit) {
+    public List<Theme> findAllByDateBetweenAndOrderByReservationCount(LocalDate startDate, LocalDate endDate, int limit) {
         String sql = """
                 SELECT
                     th.id AS id, 
@@ -72,7 +73,7 @@ public class ThemeDao implements ThemeRepository {
                 LEFT OUTER JOIN
                     reservation r
                 ON
-                    r.theme_id = th.id  AND  r.date - CURRENT_DATE() >= ?
+                    r.theme_id = th.id  AND  r.date >= ? AND r.date <= ?
                 GROUP BY
                     th.id, th.name, th.description, th.thumbnail
                 ORDER BY
@@ -80,7 +81,7 @@ public class ThemeDao implements ThemeRepository {
                 LIMIT
                     ?
                 """;
-        return jdbcTemplate.query(sql, this::rowMapper, days, limit);
+        return jdbcTemplate.query(sql, this::rowMapper, startDate, endDate, limit);
     }
 
     private Theme rowMapper(ResultSet resultSet, int rowNumber) throws SQLException {

@@ -2,6 +2,7 @@ package roomescape.repository;
 
 import roomescape.domain.Theme;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,5 +16,5 @@ public interface ThemeRepository {
 
     void deleteById(Long id);
 
-    List<Theme> findAllOrderByReservationCountDaysAgo(int days, int limit);
+    List<Theme> findAllByDateBetweenAndOrderByReservationCount(LocalDate startDate, LocalDate endDate, int limit);
 }

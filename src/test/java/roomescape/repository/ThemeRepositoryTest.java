@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import roomescape.domain.Theme;
 
 import java.sql.Time;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -112,17 +113,23 @@ class ThemeRepositoryTest extends RepositoryTest {
         jdbcTemplate.update(insertThemeSql,
                 WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL,
                 HORROR_THEME_NAME, HORROR_THEME_DESCRIPTION, THEME_THUMBNAIL);
+
+        long secondRankThemeId = 1;
+        long firstRankThemeId = 2;
         String insertReservationSql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)";
         jdbcTemplate.update(insertReservationSql,
-                USER_MIA, MIA_RESERVATION_DATE, 1L, 1L,
-                USER_TOMMY, TOMMY_RESERVATION_DATE, 2L, 1L,
-                "냥", "2030-05-03", 1L, 2L);
+                USER_MIA, LocalDate.now().minusDays(7), 1L, firstRankThemeId,
+                USER_TOMMY, LocalDate.now().minusDays(6), 2L, firstRankThemeId,
+                "냥", LocalDate.now().minusDays(1), 1L, secondRankThemeId);
+
+        LocalDate startDate = LocalDate.now().minusDays(7);
+        LocalDate endDate = LocalDate.now().minusDays(1);
 
         // when
-        List<Theme> allOrderByReservationCountInLastWeek = themeRepository.findAllOrderByReservationCountDaysAgo(7, 10);
+        List<Theme> allOrderByReservationCountInLastWeek = themeRepository.findAllByDateBetweenAndOrderByReservationCount(startDate, endDate, 10);
 
         // then
-        assertThat(allOrderByReservationCountInLastWeek).extracting(Theme::getName)
-                .containsExactly(WOOTECO_THEME_NAME, HORROR_THEME_NAME);
+        assertThat(allOrderByReservationCountInLastWeek).extracting(Theme::getId)
+                .containsExactly(firstRankThemeId, secondRankThemeId);
     }
 }

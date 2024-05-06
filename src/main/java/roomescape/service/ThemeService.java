@@ -7,6 +7,7 @@ import roomescape.dto.ThemeResponse;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ThemeRepository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -46,7 +47,9 @@ public class ThemeService {
 
     @Transactional(readOnly = true)
     public List<ThemeResponse> findAllPopular() {
-        List<Theme> allOrderByReservationCountInLastWeek = themeRepository.findAllOrderByReservationCountDaysAgo(7, 10);
+        LocalDate startDate = LocalDate.now().minusDays(7);
+        LocalDate endDate = LocalDate.now().minusDays(1);
+        List<Theme> allOrderByReservationCountInLastWeek = themeRepository.findAllByDateBetweenAndOrderByReservationCount(startDate, endDate, 10);
         return allOrderByReservationCountInLastWeek.stream()
                 .map(ThemeResponse::from)
                 .toList();

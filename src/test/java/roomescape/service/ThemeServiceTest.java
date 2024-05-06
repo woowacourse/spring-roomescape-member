@@ -12,6 +12,7 @@ import roomescape.dto.ThemeResponse;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ThemeRepository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -127,7 +128,9 @@ class ThemeServiceTest {
         // given
         List<Theme> expectedThemes = List.of(WOOTECO_THEME(1L), HORROR_THEME(2L));
 
-        BDDMockito.given(themeRepository.findAllOrderByReservationCountDaysAgo(7, 10))
+        LocalDate startDate = LocalDate.now().minusDays(7);
+        LocalDate endDate = LocalDate.now().minusDays(1);
+        BDDMockito.given(themeRepository.findAllByDateBetweenAndOrderByReservationCount(startDate, endDate, 10))
                 .willReturn(expectedThemes);
 
         // when
