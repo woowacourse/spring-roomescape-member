@@ -31,7 +31,7 @@ public class ThemeService {
     }
 
     public void delete(long id) {
-        requireNotAlreadyExists(id);
+        requireExists(id);
         themeDao.delete(id);
     }
 
@@ -43,15 +43,15 @@ public class ThemeService {
         return themeDao.existsByName(name);
     }
 
-    private void requireNotAlreadyExists(long id) {
-        if (existsById(id)) {
-            throw new EntityExistsException("Theme with id " + id + " already exists");
+    private void requireExists(long id) {
+        if (!existsById(id)) {
+            throw new EntityExistsException("Theme with id " + id + " does not exists.");
         }
     }
 
     private void requireNameNotAlreadyExists(String name) {
         if (existsByName(name)) {
-            throw new EntityExistsException("Theme with name " + name + " already exists");
+            throw new EntityExistsException("Theme with name " + name + " already exists.");
         }
     }
 }

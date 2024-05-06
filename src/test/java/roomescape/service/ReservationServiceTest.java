@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
 import roomescape.controller.request.ReservationRequest;
+import roomescape.exception.EntityExistsException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -23,8 +24,8 @@ class ReservationServiceTest {
     @DisplayName("중복된 예약을 생성하면 예외가 발생한다.")
     void createDuplicateException() {
         assertThatThrownBy(
-                () -> reservationService.create(new ReservationRequest("User1", LocalDate.parse("2024-04-24"), 1L, 1L)))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Reservation already exists");
+                () -> reservationService.create(new ReservationRequest("User1", LocalDate.parse("2024-05-01"), 1L, 1L)))
+                .isInstanceOf(EntityExistsException.class)
+                .hasMessage("Reservation already exists.");
     }
 }

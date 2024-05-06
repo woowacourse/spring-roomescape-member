@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import roomescape.domain.ReservationTime;
+import roomescape.exception.EntityExistsException;
 import roomescape.exception.ForeignKeyViolationException;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ReservationTimeDao;
@@ -53,7 +54,7 @@ public class ReservationTimeService {
 
     private void requireStartAtNotAlreadyExists(ReservationTime reservationTime) {
         if (existsByStartAt(reservationTime.startAt())) {
-            throw new IllegalArgumentException("StartAt already exists");
+            throw new EntityExistsException("StartAt already exists");
         }
     }
 }
