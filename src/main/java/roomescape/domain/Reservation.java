@@ -20,11 +20,7 @@ public class Reservation {
     }
 
     public Reservation(Long id, Reservation reservation) {
-        this.id = id;
-        this.name = reservation.name;
-        this.date = reservation.date;
-        this.time = reservation.time;
-        this.theme = reservation.theme;
+        this(id, reservation.name, reservation.date, reservation.time, reservation.theme);
     }
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
