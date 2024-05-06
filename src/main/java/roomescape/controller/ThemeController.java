@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Positive;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.application.ReservationTimeService;
 import roomescape.application.ThemeService;
@@ -43,33 +45,30 @@ public class ThemeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ThemeResponse>> getThemes() {
+    public List<ThemeResponse> getThemes() {
         List<Theme> themes = themeService.findThemes();
-        List<ThemeResponse> responses = themes.stream()
+        return themes.stream()
                 .map(ThemeResponse::from)
                 .toList();
-        return ResponseEntity.ok(responses);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTheme(@PathVariable @Positive long id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteTheme(@PathVariable @Positive long id) {
         themeService.delete(id);
-        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<ThemeResponse>> getPopularThemes() {
+    public List<ThemeResponse> getPopularThemes() {
         List<Theme> popularThemes = themeService.findPopularThemes();
-        List<ThemeResponse> themeResponses = popularThemes.stream()
+        return popularThemes.stream()
                 .map(ThemeResponse::from)
                 .toList();
-        return ResponseEntity.ok(themeResponses);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<List<AvailableTimeResponse>> getAvailableTimes(@PathVariable @Positive long id,
-                                                                         @RequestParam LocalDate date) {
-        List<AvailableTimeResponse> responses = reservationTimeService.findAvailableTimes(id, date);
-        return ResponseEntity.ok(responses);
+    public List<AvailableTimeResponse> getAvailableTimes(@PathVariable @Positive long id,
+                                                         @RequestParam LocalDate date) {
+        return reservationTimeService.findAvailableTimes(id, date);
     }
 }
