@@ -9,16 +9,16 @@ public class ReservationTimeRequest {
     private LocalTime startAt;
 
     public ReservationTimeRequest(LocalTime startAt) {
-        validateTime(startAt);
+        validateNull(startAt);
         this.startAt = startAt;
     }
 
     private ReservationTimeRequest() {
     }
 
-    private void validateTime(LocalTime startAt) {
+    private void validateNull(LocalTime startAt) {
         if (startAt == null) {
-            throw new BadRequestException("[ERROR] 유효하지 않은 요청입니다.");
+            throw new BadRequestException("[ERROR] 요청된 데이터에 null 혹은 비어있는 값이 존재합니다.");
         }
     }
 

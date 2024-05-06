@@ -12,23 +12,29 @@ public class ReservationRequest {
     private final long themeId;
 
     public ReservationRequest(String name, LocalDate date, Long timeId, Long themeId) {
-        validateNull(date, timeId, themeId);
-        validateName(name);
+        validate(name, date, timeId, themeId);
         this.name = name;
         this.date = date;
         this.timeId = timeId;
         this.themeId = themeId;
     }
 
-    private void validateNull(LocalDate date, Long timeId, Long themeId) {
-        if (date == null || timeId == null || themeId == null) {
-            throw new BadRequestException("[ERROR] 유효하지 않은 요청입니다.");
+    private void validate(String name, LocalDate date, Long timeId, Long themeId) {
+        validateName(name);
+        validateNull(date);
+        validateNull(timeId);
+        validateNull(themeId);
+    }
+
+    private void validateNull(Object value) {
+        if (value == null) {
+            throw new BadRequestException("[ERROR] 요청된 데이터에 null 혹은 비어있는 값이 존재합니다.");
         }
     }
 
     private void validateName(String name) {
-        if (name == null || name.isEmpty()) {
-            throw new BadRequestException("[ERROR] 유효하지 않은 요청입니다.");
+        if (name == null || name.isBlank()) {
+            throw new BadRequestException("[ERROR] 요청된 데이터에 null 혹은 비어있는 값이 존재합니다.");
         }
     }
 
