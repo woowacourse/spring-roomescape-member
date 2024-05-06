@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import roomescape.dto.theme.ThemeRequest;
 import roomescape.dto.theme.ThemeResponse;
+import roomescape.dto.theme.WeeklyThemeResponse;
 import roomescape.service.ReservationThemeService;
 
 @Controller
@@ -44,8 +45,8 @@ public class ReservationThemeController {
     }
 
     @GetMapping("/weeklyBest")
-    public ResponseEntity<List<ThemeResponse>> weeklyTheme() {
-        List<ThemeResponse> reservationThemes = reservationThemeService.getWeeklyBestThemes();
+    public ResponseEntity<List<WeeklyThemeResponse>> weeklyTheme() {
+        List<WeeklyThemeResponse> reservationThemes = reservationThemeService.getWeeklyBestThemes();
         return ResponseEntity.ok().body(reservationThemes);
     }
 

@@ -1,6 +1,5 @@
 package roomescape.dao;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.support.DataAccessUtils;
@@ -100,19 +99,9 @@ public class ReservationDao {
         return jdbcTemplate.queryForObject(sql, Boolean.class, themeId);
     }
 
-    public int count(String date, Long timeId, Long themeId) {
-        String sql = "SELECT count(*) FROM reservation WHERE time_id = ? AND theme_id = ? AND date = ?";
-        return jdbcTemplate.queryForObject(sql, Integer.class, timeId, themeId, date);
-    }
-
     public Boolean hasSameReservation(String date, Long timeId, Long themeId) {
         String sql = "SELECT EXISTS(SELECT * FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
-    }
-
-    public List<Long> findBestThemeIdInWeek(String from, String to) {
-        String sql = "SELECT theme_id, count(*) AS total FROM reservation WHERE date BETWEEN ? AND ? GROUP BY theme_id ORDER BY total DESC";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getLong("theme_id"), from, to);
     }
 
     private RowMapper<Reservation> getReservationRowMapper() {

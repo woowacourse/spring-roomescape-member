@@ -9,6 +9,7 @@ import roomescape.dao.condition.ThemeInsertCondition;
 import roomescape.domain.ReservationTheme;
 import roomescape.dto.theme.ThemeRequest;
 import roomescape.dto.theme.ThemeResponse;
+import roomescape.dto.theme.WeeklyThemeResponse;
 
 @Service
 public class ReservationThemeService {
@@ -42,17 +43,13 @@ public class ReservationThemeService {
         reservationThemeDao.deleteById(id);
     }
 
-    public List<ThemeResponse> getWeeklyBestThemes() {
+    public List<WeeklyThemeResponse> getWeeklyBestThemes() {
         LocalDate now = LocalDate.now();
         LocalDate from = now.minusWeeks(1);
         LocalDate to = now.minusDays(1);
 
-        List<Long> bestTheme = reservationDao.findBestThemeIdInWeek(from.toString(), to.toString());
-        return bestTheme.stream()
-                .map(themeId -> reservationThemeDao.findById(themeId)
-                        .orElseThrow(IllegalArgumentException::new))
-                .map(ThemeResponse::new)
-                .limit(10)
+        return reservationThemeDao.findBestThemesInWeek(from, to).stream()
+                .map(WeeklyThemeResponse::new)
                 .toList();
     }
 }

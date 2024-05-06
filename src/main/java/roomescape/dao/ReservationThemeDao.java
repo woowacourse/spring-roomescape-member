@@ -1,5 +1,6 @@
 package roomescape.dao;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.support.DataAccessUtils;
@@ -57,10 +58,28 @@ public class ReservationThemeDao {
         jdbcTemplate.update(sql, id);
     }
 
-
     public Boolean isExist(Long id) {
         String sql = "SELECT EXISTS(SELECT * FROM theme WHERE id = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, id);
+    }
+
+    public List<ReservationTheme> findBestThemesInWeek(LocalDate from, LocalDate to) {
+        String sql = """
+                SELECT
+                    t.id AS id,
+                    COUNT(r.theme_id) AS total,
+                    t.name AS name,
+                    t.description AS description,
+                    t.thumbnail AS thumbnail
+                FROM theme AS t
+                INNER JOIN reservation AS r
+                ON t.id = r.theme_id
+                WHERE r.date BETWEEN ? AND ?
+                GROUP BY t.id
+                ORDER BY total DESC
+                LIMIT 10
+                """;
+        return jdbcTemplate.query(sql, getReservationThemeRowMapper(), from.toString(), to.toString());
     }
 
     private RowMapper<ReservationTheme> getReservationThemeRowMapper() {
