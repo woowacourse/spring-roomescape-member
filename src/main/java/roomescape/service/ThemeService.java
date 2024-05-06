@@ -6,7 +6,7 @@ import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeResponse;
 import roomescape.dto.ThemeSaveRequest;
-import roomescape.exception.IllegalThemeException;
+import roomescape.exception.RoomEscapeException;
 import roomescape.mapper.ThemeMapper;
 import roomescape.repository.ThemeRepository;
 
@@ -54,7 +54,7 @@ public class ThemeService {
         try {
             themeDao.deleteById(id);
         } catch (DataIntegrityViolationException e) {
-            throw new IllegalThemeException("[ERROR] 예약이 존재하는 테마는 삭제할 수 없습니다.");
+            throw new RoomEscapeException("[ERROR] 예약이 존재하는 테마는 삭제할 수 없습니다.");
         }
     }
 }

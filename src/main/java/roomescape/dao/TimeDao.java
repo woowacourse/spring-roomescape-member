@@ -7,7 +7,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
-import roomescape.exception.IllegalTimeException;
+import roomescape.exception.RoomEscapeException;
 
 import java.sql.PreparedStatement;
 import java.time.LocalTime;
@@ -45,7 +45,7 @@ public class TimeDao {
         try {
             return jdbcTemplate.queryForObject(sql, timeRowMapper, id);
         } catch (EmptyResultDataAccessException e) {
-            throw new IllegalTimeException("[ERROR] 예약 시간을 찾을 수 없습니다");
+            throw new RoomEscapeException("[ERROR] 예약 시간을 찾을 수 없습니다");
         }
     }
 

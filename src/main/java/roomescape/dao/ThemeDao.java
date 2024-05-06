@@ -7,7 +7,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
-import roomescape.exception.IllegalThemeException;
+import roomescape.exception.RoomEscapeException;
 
 import java.sql.PreparedStatement;
 import java.util.Collections;
@@ -48,7 +48,7 @@ public class ThemeDao {
         try {
             return jdbcTemplate.queryForObject(sql, themeRowMapper, id);
         } catch (EmptyResultDataAccessException e) {
-            throw new IllegalThemeException("[ERROR] 테마를 찾을 수 없습니다");
+            throw new RoomEscapeException("[ERROR] 테마를 찾을 수 없습니다");
         }
     }
 

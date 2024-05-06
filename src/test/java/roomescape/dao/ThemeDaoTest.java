@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.exception.IllegalThemeException;
+import roomescape.exception.RoomEscapeException;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -31,6 +31,6 @@ class ThemeDaoTest {
     @DisplayName("해당 ID를 가진 테마가 존재하지 않는다면 예외가 발생한다.")
     void findTimeById_AbsenceId_ExceptionThrown() {
         assertThatThrownBy(() -> themeDao.findById(0L))
-                .isInstanceOf(IllegalThemeException.class);
+                .isInstanceOf(RoomEscapeException.class);
     }
 }
