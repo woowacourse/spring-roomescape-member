@@ -22,61 +22,47 @@ public class GlobalExceptionHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @ExceptionHandler(value = NoResourceFoundException.class)
-    public ResponseEntity<ExceptionResponse> handle(NoResourceFoundException exception) {
-        logger.error(exception.getMessage());
-        ExceptionResponse exceptionResponse = new ExceptionResponse("유효하지 않은 API 경로입니다.");
-
-        return new ResponseEntity(exceptionResponse, HttpStatus.NOT_FOUND);
+    public ResponseEntity<ExceptionResponse> handle(NoResourceFoundException e) {
+        return new ResponseEntity(new ExceptionResponse("유효하지 않은 API 경로입니다."), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(value = HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<ExceptionResponse> handle(HttpRequestMethodNotSupportedException exception) {
-        logger.error(exception.getMessage());
-        ExceptionResponse exceptionResponse = new ExceptionResponse("유효하지 않은 HTTP 요청 메서드입니다.");
-
-        return new ResponseEntity(exceptionResponse, HttpStatus.BAD_REQUEST);
+    public ResponseEntity<ExceptionResponse> handle(HttpRequestMethodNotSupportedException e) {
+        return new ResponseEntity(new ExceptionResponse("유효하지 않은 HTTP 요청 메서드입니다."), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
-    public ResponseEntity<ExceptionResponse> handle(MethodArgumentNotValidException exception) {
-        logger.error(exception.getMessage());
-        BindingResult bindingResult = exception.getBindingResult();
+    public ResponseEntity<ExceptionResponse> handle(MethodArgumentNotValidException e) {
+        BindingResult bindingResult = e.getBindingResult();
         List<FieldError> fieldErrors = bindingResult.getFieldErrors();
-        ExceptionResponse exceptionResponse = new ExceptionResponse("유효하지 않은 요청 형식입니다.", fieldErrors);
 
-        return new ResponseEntity(exceptionResponse, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity(
+                new ExceptionResponse("유효하지 않은 요청 형식입니다.", fieldErrors), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(value = HttpMessageNotReadableException.class)
-    public ResponseEntity<ExceptionResponse> handleDateTimeParseException(HttpMessageNotReadableException exception) {
-        logger.error(exception.getMessage());
-
+    public ResponseEntity<ExceptionResponse> handle(HttpMessageNotReadableException exception) {
         String message = "유효하지 않은 요청 형식입니다.";
         if (exception.getCause() instanceof MismatchedInputException mismatchedInputException) {
             String fieldName = mismatchedInputException.getPath().get(0).getFieldName();
             message = fieldName + " 필드에 유효하지 않은 값이 입력되었습니다.";
         }
-        ExceptionResponse exceptionResponse = new ExceptionResponse(message);
 
-        return new ResponseEntity(exceptionResponse, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity(new ExceptionResponse(message), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(value = ConflictException.class)
-    public ResponseEntity<ExceptionResponse> handleConflictException(ConflictException exception) {
-        logger.error(exception.getMessage());
-        ExceptionResponse exceptionResponse = new ExceptionResponse(exception.getMessage());
-
-        return new ResponseEntity(exceptionResponse, HttpStatus.CONFLICT);
+    public ResponseEntity<ExceptionResponse> handle(ConflictException exception) {
+        return new ResponseEntity(new ExceptionResponse(exception.getMessage()), HttpStatus.CONFLICT);
     }
 
     // TODO: 존재하지 않는 자원에 접근하려 시도한 경우 처리 (timeId를 2793487329로 주는 경우 등) EmptyResultDataAccessException
     //      message:
 
     @ExceptionHandler(value = Exception.class)
-    public ResponseEntity<ExceptionResponse> handleException(Exception exception) {
+    public ResponseEntity<ExceptionResponse> handle(Exception exception) {
         logger.error(exception.getMessage());
-        ExceptionResponse exceptionResponse = new ExceptionResponse("서버 내부에서 에러가 발생했습니다.");
 
-        return new ResponseEntity(exceptionResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity(new ExceptionResponse("서버 내부에서 에러가 발생했습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
