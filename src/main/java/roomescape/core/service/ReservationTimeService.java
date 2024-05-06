@@ -28,14 +28,6 @@ public class ReservationTimeService {
         return new ReservationTimeResponseDto(id, reservationTime);
     }
 
-    private void validateDuplicatedStartAt(final ReservationTime reservationTime) {
-        final Integer reservationTimeCount = reservationTimeRepository.countByStartAt(
-                reservationTime.getStartAtString());
-        if (reservationTimeCount > 0) {
-            throw new IllegalArgumentException("해당 시간이 이미 존재합니다.");
-        }
-    }
-
     @Transactional(readOnly = true)
     public List<ReservationTimeResponseDto> findAll() {
         return reservationTimeRepository.findAll()
@@ -51,5 +43,13 @@ public class ReservationTimeService {
             throw new IllegalArgumentException("해당 시간에 예약한 내역이 존재하여 삭제할 수 없습니다.");
         }
         reservationTimeRepository.deleteById(id);
+    }
+
+    private void validateDuplicatedStartAt(final ReservationTime reservationTime) {
+        final Integer reservationTimeCount = reservationTimeRepository.countByStartAt(
+                reservationTime.getStartAtString());
+        if (reservationTimeCount > 0) {
+            throw new IllegalArgumentException("해당 시간이 이미 존재합니다.");
+        }
     }
 }

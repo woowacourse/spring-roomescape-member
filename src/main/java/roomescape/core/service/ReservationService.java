@@ -40,6 +40,24 @@ public class ReservationService {
         return new ReservationResponseDto(id, reservation);
     }
 
+    @Transactional(readOnly = true)
+    public List<ReservationResponseDto> findAll() {
+        return reservationRepository.findAll()
+                .stream()
+                .map(ReservationResponseDto::new)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<BookingTimeResponseDto> findBookable(final String date, final long themeId) {
+        return reservationRepository.findAllByDateAndThemeId(date, themeId);
+    }
+
+    @Transactional
+    public void delete(final long id) {
+        reservationRepository.deleteById(id);
+    }
+
     private void validateDateTimeIsNotPast(final Reservation reservation, final ReservationTime reservationTime) {
         if (reservation.isDatePast()) {
             throw new IllegalArgumentException("지난 날짜에는 예약할 수 없습니다.");
@@ -58,23 +76,5 @@ public class ReservationService {
         if (exist) {
             throw new IllegalArgumentException("예약 내역이 존재합니다.");
         }
-    }
-
-    @Transactional(readOnly = true)
-    public List<ReservationResponseDto> findAll() {
-        return reservationRepository.findAll()
-                .stream()
-                .map(ReservationResponseDto::new)
-                .toList();
-    }
-
-    @Transactional(readOnly = true)
-    public List<BookingTimeResponseDto> findBookable(final String date, final long themeId) {
-        return reservationRepository.findAllByDateAndThemeId(date, themeId);
-    }
-
-    @Transactional
-    public void delete(final long id) {
-        reservationRepository.deleteById(id);
     }
 }

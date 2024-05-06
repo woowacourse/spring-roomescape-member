@@ -28,13 +28,6 @@ public class ThemeService {
         return new ThemeResponseDto(id, theme);
     }
 
-    private void validateDuplicatedName(final Theme theme) {
-        final Integer themeCount = themeRepository.countByName(theme.getName());
-        if (themeCount > 0) {
-            throw new IllegalArgumentException("해당 이름의 테마가 이미 존재합니다.");
-        }
-    }
-
     @Transactional(readOnly = true)
     public List<ThemeResponseDto> findAll() {
         return themeRepository.findAll()
@@ -57,5 +50,12 @@ public class ThemeService {
                 .stream()
                 .map(ThemeResponseDto::new)
                 .toList();
+    }
+
+    private void validateDuplicatedName(final Theme theme) {
+        final Integer themeCount = themeRepository.countByName(theme.getName());
+        if (themeCount > 0) {
+            throw new IllegalArgumentException("해당 이름의 테마가 이미 존재합니다.");
+        }
     }
 }
