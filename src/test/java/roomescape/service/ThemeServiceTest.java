@@ -29,10 +29,13 @@ class ThemeServiceTest {
         given(themeDao.findThemes()).willReturn(List.of(
                 new Theme(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg"),
                 new Theme(2L, "레벨3 탈출", "레벨3 탈출하기", "https://img.jpg")));
-
-        assertThat(themeService.findThemes()).isEqualTo(List.of(
+        List<ThemeResponse> expected = List.of(
                 new ThemeResponse(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg"),
-                new ThemeResponse(2L, "레벨3 탈출", "레벨3 탈출하기", "https://img.jpg")));
+                new ThemeResponse(2L, "레벨3 탈출", "레벨3 탈출하기", "https://img.jpg"));
+
+        List<ThemeResponse> actual = themeService.findThemes();
+
+        assertThat(actual).isEqualTo(expected);
     }
 
     @DisplayName("인기 테마를 조회할 수 있다.")
@@ -45,10 +48,13 @@ class ThemeServiceTest {
         given(themeDao.findThemesSortedByCountOfReservation(startDate, endDate, count)).willReturn(List.of(
                 new Theme(2L, "레벨3 탈출", "레벨3 탈출하기", "https://img.jpg"),
                 new Theme(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg")));
-
-        assertThat(themeService.findPopularThemes()).isEqualTo(List.of(
+        List<ThemeResponse> expected = List.of(
                 new ThemeResponse(2L, "레벨3 탈출", "레벨3 탈출하기", "https://img.jpg"),
-                new ThemeResponse(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg")));
+                new ThemeResponse(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg"));
+
+        List<ThemeResponse> actual = themeService.findPopularThemes();
+
+        assertThat(actual).isEqualTo(expected);
     }
 
     @DisplayName("테마를 생성할 수 있다.")
@@ -59,6 +65,8 @@ class ThemeServiceTest {
                 .willReturn(new Theme(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg"));
         ThemeResponse expected = new ThemeResponse(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg");
 
-        assertThat(themeService.createTheme(request)).isEqualTo(expected);
+        ThemeResponse actual = themeService.createTheme(request);
+
+        assertThat(actual).isEqualTo(expected);
     }
 }

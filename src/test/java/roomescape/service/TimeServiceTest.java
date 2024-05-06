@@ -31,10 +31,13 @@ class TimeServiceTest {
         given(timeDao.findTimes()).willReturn(List.of(
                 new ReservationTime(1L, LocalTime.of(19, 0)),
                 new ReservationTime(2L, LocalTime.of(10, 0))));
-
-        assertThat(timeService.findTimes()).isEqualTo(List.of(
+        List<TimeResponse> expected = List.of(
                 new TimeResponse(1L, LocalTime.of(19, 0)),
-                new TimeResponse(2L, LocalTime.of(10, 0))));
+                new TimeResponse(2L, LocalTime.of(10, 0)));
+
+        List<TimeResponse> actual = timeService.findTimes();
+
+        assertThat(actual).isEqualTo(expected);
     }
 
     @DisplayName("예약 시간의 예약 가능 여부를 조회할 수 있다.")
@@ -47,10 +50,13 @@ class TimeServiceTest {
                 new ReservationTime(2L, LocalTime.of(10, 0))));
         given(timeDao.findTimesExistsReservationDateAndThemeId(date, themeId)).willReturn(List.of(
                 new ReservationTime(1L, LocalTime.of(19, 0))));
-
-        assertThat(timeService.findAvailableTimes(date, themeId)).isEqualTo(List.of(
+        List<AvailableTimeResponse> expected = List.of(
                 new AvailableTimeResponse(new TimeResponse(1L, LocalTime.of(19, 0)), true),
-                new AvailableTimeResponse(new TimeResponse(2L, LocalTime.of(10, 0)), false)));
+                new AvailableTimeResponse(new TimeResponse(2L, LocalTime.of(10, 0)), false));
+
+        List<AvailableTimeResponse> actual = timeService.findAvailableTimes(date, themeId);
+
+        assertThat(actual).isEqualTo(expected);
     }
 
     @DisplayName("예약 시간을 생성할 수 있다.")
@@ -59,7 +65,10 @@ class TimeServiceTest {
         TimeCreateRequest request = new TimeCreateRequest(LocalTime.of(19, 0));
         given(timeDao.createTime(request.createReservationTime()))
                 .willReturn(new ReservationTime(1L, LocalTime.of(19, 0)));
+        TimeResponse expected = new TimeResponse(1L, LocalTime.of(19, 0));
 
-        assertThat(timeService.createTime(request)).isEqualTo(new TimeResponse(1L, LocalTime.of(19, 0)));
+        TimeResponse actual = timeService.createTime(request);
+
+        assertThat(actual).isEqualTo(expected);
     }
 }

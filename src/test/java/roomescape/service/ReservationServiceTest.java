@@ -49,8 +49,7 @@ class ReservationServiceTest {
                         2L, "브리", LocalDate.of(2024, 8, 20),
                         new ReservationTime(1L, LocalTime.of(19, 0)),
                         new Theme(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg"))));
-
-        assertThat(reservationService.findReservations()).isEqualTo(List.of(
+        List<ReservationResponse> expected = List.of(
                 new ReservationResponse(
                         1L, "브라운", LocalDate.of(2024, 8, 15),
                         new TimeResponse(1L, LocalTime.of(19, 0)),
@@ -58,7 +57,11 @@ class ReservationServiceTest {
                 new ReservationResponse(
                         2L, "브리", LocalDate.of(2024, 8, 20),
                         new TimeResponse(1L, LocalTime.of(19, 0)),
-                        new ThemeResponse(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg"))));
+                        new ThemeResponse(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg")));
+
+        List<ReservationResponse> actual = reservationService.findReservations();
+
+        assertThat(actual).isEqualTo(expected);
     }
 
     @DisplayName("에약을 생성할 수 있다.")
@@ -74,12 +77,14 @@ class ReservationServiceTest {
                 1L, "브라운", LocalDate.of(2024, 8, 15),
                 new ReservationTime(1L, LocalTime.of(19, 0)),
                 new Theme(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg")));
-
-        assertThat(reservationService.createReservation(request)).isEqualTo(new ReservationResponse(
+        ReservationResponse expected = new ReservationResponse(
                 1L, "브라운", LocalDate.of(2024, 8, 15),
                 new TimeResponse(1L, LocalTime.of(19, 0)),
-                new ThemeResponse(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg")));
+                new ThemeResponse(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg"));
 
+        ReservationResponse actual = reservationService.createReservation(request);
+
+        assertThat(actual).isEqualTo(expected);
     }
 
     @DisplayName("예약 생성 시, timeId에 해당하는 예약 시간이 없다면 예외를 던진다.")
