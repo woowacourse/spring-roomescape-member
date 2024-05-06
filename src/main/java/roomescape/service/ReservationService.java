@@ -41,14 +41,7 @@ public class ReservationService {
         List<ReservationTime> reservationTimes = reservationTimeDao.readAll();
         List<Long> ids = reservationDao.readTimeIdsByDateAndThemeId(reservationDate, themeId);
         List<ReservationTime> filteredTimes = filterByDate(reservationDate, reservationTimes, today, now);
-        return filteredTimes.stream()
-                .map(time ->
-                        AvailableReservationResponse.of(
-                                time.getStartAt().toStringTime(),
-                                time.getId(),
-                                ids.contains(time.getId())
-                        ))
-                .toList();
+        return changeToAvailableReservationResponse(filteredTimes, ids);
     }
 
     public ReservationResponse add(ReservationCreateRequest request) {
@@ -75,6 +68,13 @@ public class ReservationService {
                     .toList();
         }
         return reservationTimes;
+    }
+
+    private List<AvailableReservationResponse> changeToAvailableReservationResponse(List<ReservationTime> filteredTimes,
+                                                                                    List<Long> ids) {
+        return filteredTimes.stream()
+                .map(time -> AvailableReservationResponse.of(time, ids.contains(time.getId())))
+                .toList();
     }
 
     private ReservationTime findReservationTime(Long timeId) {
