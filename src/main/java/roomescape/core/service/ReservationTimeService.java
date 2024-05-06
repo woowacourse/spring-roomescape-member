@@ -52,9 +52,8 @@ public class ReservationTimeService {
     }
 
     private void validateDuplicatedStartAt(final ReservationTime reservationTime) {
-        final Integer reservationTimeCount = reservationTimeRepository.countByStartAt(
-                reservationTime.getStartAtString());
-        if (reservationTimeCount > 0) {
+        final boolean exist = reservationTimeRepository.existByStartAt(reservationTime.getStartAtString());
+        if (exist) {
             throw new IllegalArgumentException("해당 시간이 이미 존재합니다.");
         }
     }

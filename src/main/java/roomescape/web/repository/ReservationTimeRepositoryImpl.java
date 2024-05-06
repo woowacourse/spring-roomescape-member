@@ -57,14 +57,9 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
     }
 
     @Override
-    public Integer countByStartAt(final String startAt) {
-        final String query = """
-                SELECT count(*)
-                FROM reservation_time AS t
-                WHERE t.start_at = ?
-                """;
-
-        return jdbcTemplate.queryForObject(query, Integer.class, startAt);
+    public boolean existByStartAt(final String startAt) {
+        final String query = "SELECT EXISTS(SELECT 1 FROM reservation_time WHERE start_at = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, startAt));
     }
 
     @Override

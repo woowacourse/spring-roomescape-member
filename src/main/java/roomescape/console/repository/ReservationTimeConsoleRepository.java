@@ -42,8 +42,8 @@ public class ReservationTimeConsoleRepository implements ReservationTimeReposito
     }
 
     @Override
-    public Integer countByStartAt(final String startAt) {
-        return null;
+    public boolean existByStartAt(final String startAt) {
+        return false;
     }
 
     @Override
