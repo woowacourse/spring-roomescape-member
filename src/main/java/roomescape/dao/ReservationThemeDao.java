@@ -32,7 +32,15 @@ public class ReservationThemeDao {
     }
 
     public Optional<ReservationTheme> findById(Long id) {
-        String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
+        String sql = """
+                SELECT 
+                    id, 
+                    name, 
+                    description, 
+                    thumbnail 
+                FROM theme 
+                WHERE id = ?
+                """;
         List<ReservationTheme> reservationThemes = jdbcTemplate.query(sql, getReservationThemeRowMapper(), id);
 
         return Optional.ofNullable(DataAccessUtils.singleResult(reservationThemes));
