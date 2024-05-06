@@ -1,14 +1,14 @@
 package roomescape.service;
 
+import java.time.LocalDate;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ThemeRequest;
+import roomescape.dto.response.ThemeDeleteResponse;
 import roomescape.dto.response.ThemeResponse;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ThemeDao;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @Service
 public class ThemeService {
@@ -43,13 +43,10 @@ public class ThemeService {
                 .toList();
     }
 
-    public void delete(final long id) {
-        themeDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 잘못된 테마 번호 입력입니다."));
-
+    public ThemeDeleteResponse delete(final long id) {
         if (!reservationDao.findByThemeId(id).isEmpty()) {
             throw new IllegalArgumentException("[ERROR] 해당 테마를 사용 중인 예약이 있어 삭제할 수 없습니다.");
         }
-        themeDao.delete(id);
+        return new ThemeDeleteResponse(themeDao.delete(id));
     }
 }

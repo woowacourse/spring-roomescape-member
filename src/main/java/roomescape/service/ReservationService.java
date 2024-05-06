@@ -7,6 +7,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ReservationRequest;
+import roomescape.dto.response.ReservationDeleteResponse;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.dto.response.SelectableTimeResponse;
 import roomescape.repository.ReservationDao;
@@ -83,13 +84,7 @@ public class ReservationService {
         return !reservationDao.findByDateAndTimeIdAndThemeId(date, timeId, themeId).isEmpty();
     }
 
-    public void delete(final long id) {
-        findReservationById(id);
-        reservationDao.delete(id);
-    }
-
-    private Reservation findReservationById(final long id) {
-        return reservationDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 삭제할 예약 데이터가 없습니다."));
+    public ReservationDeleteResponse delete(final long id) {
+        return new ReservationDeleteResponse(reservationDao.delete(id));
     }
 }

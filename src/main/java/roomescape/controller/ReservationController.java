@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.request.ReservationRequest;
+import roomescape.dto.response.ReservationDeleteResponse;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.dto.response.SelectableTimeResponse;
 import roomescape.service.ReservationService;
@@ -47,8 +48,7 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") long id) {
-        reservationService.delete(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<ReservationDeleteResponse> delete(@PathVariable("id") long id) {
+        return ResponseEntity.ok().body(reservationService.delete(id));
     }
 }

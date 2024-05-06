@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.request.ReservationTimeRequest;
+import roomescape.dto.response.ReservationTimeDeleteResponse;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ReservationTimeDao;
@@ -42,10 +43,9 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    public void delete(final long id) {
+    public ReservationTimeDeleteResponse delete(final long id) {
         validateAlreadyHasReservation(id);
-        validateIdExists(id);
-        reservationTimeDao.delete(id);
+        return new ReservationTimeDeleteResponse(reservationTimeDao.delete(id));
     }
 
     private void validateAlreadyHasReservation(final long id) {
@@ -54,10 +54,4 @@ public class ReservationTimeService {
             throw new IllegalArgumentException("[ERROR] 해당 시간에 예약이 존재하여 삭제할 수 없습니다.");
         }
     }
-
-    private void validateIdExists(final long id) {
-        reservationTimeDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 삭제할 예약 시간이 없습니다."));
-    }
-
 }

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import roomescape.dto.request.ReservationTimeRequest;
+import roomescape.dto.response.ReservationTimeDeleteResponse;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.service.ReservationTimeService;
 
@@ -39,8 +40,7 @@ public class ReservationTimeController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") long id) {
-        reservationTimeService.delete(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<ReservationTimeDeleteResponse> delete(@PathVariable("id") long id) {
+        return ResponseEntity.ok(reservationTimeService.delete(id));
     }
 }
