@@ -1,5 +1,6 @@
 package roomescape.controller.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import roomescape.model.ReservationTime;
 
 import java.time.LocalTime;
@@ -22,6 +23,7 @@ public class ReservationTimeResponse {
         return id;
     }
 
+    @JsonFormat(pattern = "HH:mm")
     public LocalTime getStartAt() {
         return startAt;
     }
