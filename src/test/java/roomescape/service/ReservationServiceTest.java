@@ -79,8 +79,8 @@ class ReservationServiceTest {
         ReservationTime miaReservationTime = new ReservationTime(1L, MIA_RESERVATION_TIME);
         Reservation miaReservation = MIA_RESERVATION(miaReservationTime, WOOTECO_THEME(1L));
 
-        BDDMockito.given(reservationRepository.findAllByDateAndTimeAndThemeId(any(), any(), anyLong()))
-                .willReturn(List.of(miaReservation));
+        BDDMockito.given(reservationRepository.existByDateAndTimeIdAndThemeId(any(), anyLong(), anyLong()))
+                .willReturn(true);
 
         // when & then
         assertThatThrownBy(() -> reservationService.create(miaReservation))

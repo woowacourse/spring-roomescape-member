@@ -13,8 +13,6 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 public class ReservationService {
-    private static final int MAX_RESERVATIONS_PER_TIME = 1;
-
     private final ReservationRepository reservationRepository;
 
     public ReservationService(ReservationRepository reservationRepository) {
@@ -24,11 +22,7 @@ public class ReservationService {
     @Transactional
     public ReservationResponse create(Reservation reservation) {
         validateReservationDate(reservation);
-
-        List<Reservation> reservationsInSameDateTime = reservationRepository.findAllByDateAndTimeAndThemeId(
-                reservation.getDate(), reservation.getTime(), reservation.getThemeId());
-        validateDuplicatedReservation(reservationsInSameDateTime);
-
+        validateDuplicatedReservation(reservation);
         Reservation savedReservation = reservationRepository.save(reservation);
         return ReservationResponse.from(savedReservation);
     }
@@ -39,8 +33,10 @@ public class ReservationService {
         }
     }
 
-    private void validateDuplicatedReservation(List<Reservation> reservationsInSameDateTime) {
-        if (reservationsInSameDateTime.size() >= MAX_RESERVATIONS_PER_TIME) {
+    private void validateDuplicatedReservation(Reservation reservation) {
+        boolean existReservationInSameTime = reservationRepository.existByDateAndTimeIdAndThemeId(
+                reservation.getDate(), reservation.getReservationTimeId(), reservation.getThemeId());
+        if (existReservationInSameTime) {
             throw new BadRequestException("해당 시간대에 예약이 모두 찼습니다.");
         }
     }

@@ -46,26 +46,20 @@ class ReservationRepositoryTest extends RepositoryTest {
     }
 
     @Test
-    @DisplayName("동일 시간대의 예약 목록을 조회한다.")
-    void findAllByDateAndTime() {
+    @DisplayName("동일 시간대의 예약이 존재하는지 조회한다.")
+    void existByDateAndTimeIdAndThemeId() {
         // given
         Long timeId = 1L;
         Long themeId = 1L;
-        String insertSql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?), (?, ?, ?, ?)";
-        jdbcTemplate.update(
-                insertSql,
-                USER_MIA, Date.valueOf(MIA_RESERVATION_DATE), timeId, themeId,
-                USER_TOMMY, Date.valueOf(MIA_RESERVATION_DATE), timeId, themeId
-        );
+        String insertSql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
+        jdbcTemplate.update(insertSql, USER_MIA, Date.valueOf(MIA_RESERVATION_DATE), timeId, themeId);
 
         // when
-        List<Reservation> reservations = reservationRepository.findAllByDateAndTimeAndThemeId(
-                MIA_RESERVATION_DATE, new ReservationTime(MIA_RESERVATION_TIME), themeId);
+        boolean existByDateAndTimeIdAndThemeId = reservationRepository.existByDateAndTimeIdAndThemeId(
+                MIA_RESERVATION_DATE, timeId, themeId);
 
         // then
-        assertThat(reservations).hasSize(2)
-                .extracting(Reservation::getName)
-                .containsExactly(USER_MIA, USER_TOMMY);
+        assertThat(existByDateAndTimeIdAndThemeId).isTrue();
     }
 
     @Test

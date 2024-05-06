@@ -14,7 +14,6 @@ import javax.sql.DataSource;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Time;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -59,32 +58,20 @@ public class ReservationDao implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAllByDateAndTimeAndThemeId(LocalDate date, ReservationTime time, Long themeId) {
+    public boolean existByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
         String sql = """
-                SELECT 
-                    r.id AS reservation_id,
-                    r.name,
-                    r.date,
-                    t.id AS time_id,
-                    t.start_at AS time_value,
-                    th.id AS theme_id,
-                    th.name AS theme_name,
-                    th.description AS theme_description,
-                    th.thumbnail AS theme_thumbnail
-                FROM 
-                    reservation AS r 
-                INNER JOIN 
-                    reservation_time AS t 
-                ON 
-                    r.time_id = t.id
-                INNER JOIN 
-                    theme AS th
-                ON
-                    r.theme_id = th.id
-                WHERE 
-                    `date` = ? AND t.start_at = ? AND th.id = ?
+                SELECT EXISTS (
+                    SELECT 
+                        1
+                    FROM 
+                        reservation AS r
+                    WHERE 
+                        `date` = ? AND r.time_id = ? AND r.theme_id = ?
+                ) AS is_exist;
                 """;
-        return jdbcTemplate.query(sql, this::mapRowToObject, Date.valueOf(date), Time.valueOf(time.getStartAt()), themeId);
+        return jdbcTemplate.queryForObject(sql,
+                (resultSet, rowNumber) -> resultSet.getBoolean("is_exist"),
+                Date.valueOf(date), timeId, themeId);
     }
 
     @Override
