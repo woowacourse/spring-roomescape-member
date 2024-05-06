@@ -74,7 +74,7 @@ public class ReservationDao {
 
     public boolean existByDateTimeTheme(LocalDate date, LocalTime time, Long themeId) {
         int count = jdbcTemplate.queryForObject("""
-                SELECT count(*) 
+                SELECT count(1) 
                 FROM reservation as r 
                 INNER JOIN reservation_time as t ON r.time_id = t.id
                 WHERE r.date = ? AND t.start_at = ? AND r.theme_id = ?
