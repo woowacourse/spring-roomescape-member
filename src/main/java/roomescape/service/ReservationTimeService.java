@@ -26,14 +26,12 @@ public class ReservationTimeService {
     }
 
     public ReservationTime create(ReservationTime reservationTime) {
-        requireStartAtNotExists(reservationTime);
+        requireStartAtNotAlreadyExists(reservationTime);
         return reservationTimeDao.save(reservationTime);
     }
 
     public void delete(long id) {
-        if (reservationDao.existsByTimeId(id)) {
-            throw new IllegalArgumentException("Cannot delete a reservation that refers to that time");
-        }
+        requireExistsById(id);
         reservationTimeDao.delete(id);
     }
 
@@ -41,11 +39,17 @@ public class ReservationTimeService {
         return reservationTimeDao.exists(startAt);
     }
 
-    public List<ReservationTime> available(LocalDate parse, long themeId) {
-        return reservationTimeDao.available(parse,themeId);
+    public List<ReservationTime> getAvailableTimes(LocalDate date, long themeId) {
+        return reservationTimeDao.getAvailableTimes(date, themeId);
     }
 
-    private void requireStartAtNotExists(ReservationTime reservationTime) {
+    private void requireExistsById(long id) {
+        if (reservationDao.existsByTimeId(id)) {
+            throw new IllegalArgumentException("Cannot delete a reservation that refers to that time");
+        }
+    }
+
+    private void requireStartAtNotAlreadyExists(ReservationTime reservationTime) {
         if (existsByStartAt(reservationTime.startAt())) {
             throw new IllegalArgumentException("StartAt already exists");
         }

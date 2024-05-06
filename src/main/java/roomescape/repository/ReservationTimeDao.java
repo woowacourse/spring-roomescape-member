@@ -61,11 +61,11 @@ public class ReservationTimeDao {
         jdbcTemplate.update("DELETE FROM RESERVATION_TIME WHERE ID = ?", id);
     }
 
-    public List<ReservationTime> available(LocalDate parse, long themeId) {
+    public List<ReservationTime> getAvailableTimes(LocalDate date, long themeId) {
         String query = "SELECT rt.id, rt.start_at " +
                 "FROM reservation_time rt " +
                 "LEFT JOIN reservation r ON rt.id = r.time_id AND r.date = ? AND r.theme_id = ? " +
                 "WHERE r.id IS NULL";
-        return jdbcTemplate.query(query, reservationTimeRowMapper, parse, themeId);
+        return jdbcTemplate.query(query, reservationTimeRowMapper, date, themeId);
     }
 }

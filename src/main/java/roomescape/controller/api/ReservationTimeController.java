@@ -44,10 +44,12 @@ public class ReservationTimeController {
         return ResponseEntity.noContent().build();
     }
 
-    // TODO: 이름 변경
     @GetMapping("/user")
-    public ResponseEntity<List<ReservationTime>> availableTime(@RequestParam String date, @RequestParam long themeId){
+    public ResponseEntity<List<ReservationTime>> getAvailableTimes(
+            @RequestParam String date,
+            @RequestParam long themeId
+    ) {
         LocalDate parse = LocalDate.parse(date);
-        return ResponseEntity.ok(reservationTimeService.available(parse,themeId));
+        return ResponseEntity.ok(reservationTimeService.getAvailableTimes(parse, themeId));
     }
 }
