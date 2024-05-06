@@ -26,50 +26,38 @@ public class ReservationService {
     }
 
     public Reservation save(final ReservationRequest reservationRequest) {
-        validateReservation(reservationRequest);
-        final ReservationTime reservationTime = reservationTimeDAO.findById(reservationRequest.timeId());
+        final LocalDate requestReservationDate = reservationRequest.date();
+        final ReservationTime requestReservationTime = reservationTimeDAO.findById(reservationRequest.timeId());
+
+        validateReservation(requestReservationDate, requestReservationTime);
+
         final Theme theme = themeDAO.findById(reservationRequest.themeId());
-        final Reservation reservation = reservationRequest.toEntity(reservationTime, theme);
+        final Reservation reservation = reservationRequest.toEntity(requestReservationTime, theme);
 
         return reservationDAO.insert(reservation);
     }
 
-    private void validateReservation(final ReservationRequest reservationRequest) {
-        validateDuplicatedReservation(reservationRequest);
-        validatePast(reservationRequest);
+    private void validateReservation(final LocalDate requestReservationDate, final ReservationTime requestReservationTime) {
+        validateDuplicatedReservation(requestReservationDate, requestReservationTime);
+        validatePast(requestReservationDate, requestReservationTime);
     }
 
-    private void validateDuplicatedReservation(final ReservationRequest reservationRequest) {
-        final LocalTime reservationTime = findRequestTime(reservationRequest);
-        final List<Reservation> reservations = reservationDAO.selectAll();
-
-        if (hasDuplicatedReservation(reservations, reservationTime, reservationRequest)) {
-            throw new IllegalArgumentException("예약 날짜와 예약 시간이 중복될 수 없습니다.");
+    private void validateDuplicatedReservation(final LocalDate requestReservationDate, final ReservationTime requestReservationTime) {
+        if (reservationDAO.existReservationOf(requestReservationDate, requestReservationTime)) {
+            throw new IllegalArgumentException("해당 날짜와 시간에 예약이 이미 존재합니다.");
         }
     }
 
-    private boolean hasDuplicatedReservation(final List<Reservation> reservations, final LocalTime reservationTime, final ReservationRequest reservationRequest) {
-        return reservations.stream()
-                .anyMatch(reservation -> reservation.isDuplicatedReservation(reservationTime, reservationRequest));
-    }
-
-    private void validatePast(final ReservationRequest reservationRequest) {
-        final LocalDate date = reservationRequest.date();
-        final LocalTime reservationTime = findRequestTime(reservationRequest);
-
+    private void validatePast(final LocalDate requestReservationDate, final ReservationTime requestReservationTime) {
         final LocalDate today = LocalDate.now();
-        if (date.isBefore(today)) {
+        final LocalTime reservationTime = requestReservationTime.getStartAt();
+
+        if (requestReservationDate.isBefore(today)) {
             throw new IllegalArgumentException("지나간 날짜에 예약을 등록할 수 없습니다.");
         }
-        if (date.isEqual(today) && reservationTime.isBefore(LocalTime.now())) {
+        if (requestReservationDate.isEqual(today) && reservationTime.isBefore(LocalTime.now())) {
             throw new IllegalArgumentException("지나간 시간에 예약을 등록할 수 없습니다.");
         }
-    }
-
-    private LocalTime findRequestTime(final ReservationRequest reservationRequest) {
-        final Long timeId = reservationRequest.timeId();
-        final ReservationTime time = reservationTimeDAO.findById(timeId);
-        return time.getStartAt();
     }
 
     public List<Reservation> findAll() {

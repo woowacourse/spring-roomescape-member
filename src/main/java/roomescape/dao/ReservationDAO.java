@@ -93,6 +93,17 @@ public class ReservationDAO {
         return !reservations.isEmpty();
     }
 
+    public Boolean existReservationOf(final LocalDate date, final ReservationTime time) {
+        final String sql = """
+                    SELECT CASE WHEN EXISTS (
+                        SELECT 1
+                        FROM reservation
+                        WHERE date = ? AND time_id = ?
+                    ) THEN TRUE ELSE FALSE END AS reservation_exists;
+                """;
+        return jdbcTemplate.queryForObject(sql, Boolean.class, date, time.getId());
+    }
+
     public List<Long> findReservedTimeIds(final LocalDate date, final Long themeId) {
         final String sql = "SELECT time_id FROM reservation WHERE date = ? AND theme_id = ?";
         return jdbcTemplate.query(sql, (resultSet, rowNum) -> resultSet.getLong("time_id"), date, themeId);

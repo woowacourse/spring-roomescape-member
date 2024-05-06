@@ -76,13 +76,25 @@ class ReservationServiceTest {
         reservationService.save(new ReservationRequest("abc", date, 1L, 1L));
 
         assertThatThrownBy(() -> reservationService.save(new ReservationRequest("abcde", date, 1L, 1L)))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("해당 날짜와 시간에 예약이 이미 존재합니다.");
     }
 
     @Test
     @DisplayName("예약 날짜가 현재 날짜보다 이전이라면 예외가 발생한다.")
     void invalidDate() {
         assertThatThrownBy(() -> reservationService.save(new ReservationRequest("abc", LocalDate.of(2024, 3, 30), 1L, 1L)))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("지나간 날짜에 예약을 등록할 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("예약 날짜는 같지만 시간이 현재 시간보다 이전이라면 예외가 발생한다.")
+    void invalidTime() {
+        final ReservationTime savedTime = reservationTimeDAO.insert(new ReservationTime(LocalTime.now().minusHours(1)));
+
+        assertThatThrownBy(() -> reservationService.save(new ReservationRequest("abc", LocalDate.now(), savedTime.getId(), 1L)))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("지나간 시간에 예약을 등록할 수 없습니다.");
     }
 }

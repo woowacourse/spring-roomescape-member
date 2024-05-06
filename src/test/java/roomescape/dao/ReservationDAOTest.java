@@ -65,4 +65,26 @@ class ReservationDAOTest {
 
         assertThat(reservations).hasSize(0);
     }
+
+    @Test
+    @DisplayName("해당 날짜와 시간에 예약이 존재하는지 여부를 알 수 있다.")
+    void existReservationOf_true() {
+        reservationDAO.insert(reservation);
+        final LocalDate date = reservation.getDate();
+        final ReservationTime time = reservation.getTime();
+
+        final boolean result = reservationDAO.existReservationOf(date, time);
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    @DisplayName("해당 날짜와 시간에 예약이 존재하는지 여부를 알 수 있다.")
+    void existReservationOf_false() {
+        reservationDAO.insert(reservation);
+
+        final boolean result = reservationDAO.existReservationOf(LocalDate.now(), new ReservationTime(LocalTime.now().minusHours(1)));
+
+        assertThat(result).isFalse();
+    }
 }
