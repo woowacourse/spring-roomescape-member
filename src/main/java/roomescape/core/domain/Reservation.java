@@ -5,21 +5,21 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 public class Reservation {
-    private Long id;
-    private String name;
-    private LocalDate date;
-    private ReservationTime time;
-    private Theme theme;
+    private static final Long DEFAULT_ID = 0L;
 
-    public Reservation() {
-    }
+    private final Long id;
+    private final String name;
+    private final LocalDate date;
+    private final ReservationTime time;
+    private final Theme theme;
 
     public Reservation(final String name, final String date, final ReservationTime time, final Theme theme) {
-        this(null, name, date, time, theme);
+        this(DEFAULT_ID, name, date, time, theme);
     }
 
     public Reservation(final Long id, final String name, final String date, final ReservationTime time,
                        final Theme theme) {
+        validateEmpty(id, name, date, time, theme);
         this.id = id;
         this.name = name;
         this.date = parseDate(date);
@@ -27,11 +27,30 @@ public class Reservation {
         this.theme = theme;
     }
 
+    private void validateEmpty(final Long id, final String name, final String date, final ReservationTime time,
+                               final Theme theme) {
+        if (id == null) {
+            throw new IllegalArgumentException("예약 id는 null일 수 없습니다.");
+        }
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("예약 이름은 null이나 빈 값일 수 없습니다.");
+        }
+        if (date == null || date.isBlank()) {
+            throw new IllegalArgumentException("예약 날짜는 null이나 빈 값일 수 없습니다.");
+        }
+        if (time == null) {
+            throw new IllegalArgumentException("예약 시간은 null일 수 없습니다.");
+        }
+        if (theme == null) {
+            throw new IllegalArgumentException("예약 테마는 null일 수 없습니다.");
+        }
+    }
+
     private LocalDate parseDate(final String date) {
         try {
             return LocalDate.parse(date);
         } catch (final DateTimeParseException e) {
-            throw new IllegalArgumentException("날짜 형식이 잘못되었습니다.");
+            throw new IllegalArgumentException("예약 날짜 형식이 잘못되었습니다.");
         }
     }
 
