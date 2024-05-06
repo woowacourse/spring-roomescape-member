@@ -60,15 +60,11 @@ class ReservationApiControllerTest {
         reservation.put("themeId", themeId);
 
         RestAssured.given()
-                   .log()
-                   .all()
                    .contentType(ContentType.JSON)
                    .body(reservation)
                    .when()
                    .post("/reservations")
                    .then()
-                   .log()
-                   .all()
                    .statusCode(201);
     }
 
@@ -87,15 +83,11 @@ class ReservationApiControllerTest {
         reservation.put("themeId", themeId);
 
         RestAssured.given()
-                   .log()
-                   .all()
                    .contentType(ContentType.JSON)
                    .body(reservation)
                    .when()
                    .post("/reservations")
                    .then()
-                   .log()
-                   .all()
                    .statusCode(400);
     }
 

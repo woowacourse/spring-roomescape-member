@@ -23,6 +23,7 @@ import roomescape.service.ThemeService;
 import roomescape.service.dto.input.ReservationInput;
 import roomescape.service.dto.input.ReservationTimeInput;
 
+//@formatter:off
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class ReservationTimeApiControllerTest {
 
@@ -55,20 +56,13 @@ class ReservationTimeApiControllerTest {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
 
-        RestAssured.given()
-                   .contentType(ContentType.JSON)
-                   .body(params)
-                   .when()
-                   .post("/times")
-                   .then()
-                   .statusCode(201);
+        RestAssured.given().contentType(ContentType.JSON).body(params)
+                   .when().post("/times")
+                   .then().statusCode(201);
 
         RestAssured.given()
-                   .when()
-                   .get("/times")
-                   .then()
-                   .statusCode(200)
-                   .body("size()", is(1));
+                   .when().get("/times")
+                   .then().statusCode(200).body("size()", is(1));
     }
 
     @Test
@@ -77,22 +71,16 @@ class ReservationTimeApiControllerTest {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "");
 
-        RestAssured.given()
-                   .contentType(ContentType.JSON)
-                   .body(params)
-                   .when()
-                   .post("/times")
-                   .then()
-                   .statusCode(400);
+        RestAssured.given().contentType(ContentType.JSON).body(params)
+                   .when().post("/times").then().statusCode(400);
     }
 
     @Test
     @DisplayName("특정 시간이 존재하지 않는데, 그 시간을 삭제하려 할 때 404을 반환한다.")
     void return_404_when_not_exist_id() {
         RestAssured.given()
-                   .delete("/times/-1")
-                   .then()
-                   .statusCode(404);
+                   .when().delete("/times/-1")
+                   .then().statusCode(404);
     }
 
     @Test
@@ -105,9 +93,8 @@ class ReservationTimeApiControllerTest {
         reservationService.createReservation(new ReservationInput("제리", "2025-04-30", timeId, themeId));
 
         RestAssured.given()
-                   .delete("/times/" + timeId)
-                   .then()
-                   .statusCode(409);
+                   .when().delete("/times/" + timeId)
+                   .then().statusCode(409);
     }
 
     @Test
@@ -118,12 +105,8 @@ class ReservationTimeApiControllerTest {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
 
-        RestAssured.given()
-                   .contentType(ContentType.JSON)
-                   .body(params)
-                   .when()
-                   .post("/times")
-                   .then()
-                   .statusCode(409);
+        RestAssured.given().contentType(ContentType.JSON).body(params)
+                   .when().post("/times")
+                   .then().statusCode(409);
     }
 }

@@ -24,8 +24,6 @@ class AdminPageControllerTest {
     @DisplayName("/admin/theme 요청시 테마 관리 페이지를 응답한다.")
     void response_theme_page() {
         RestAssured.given()
-                   .log()
-                   .all()
                    .contentType(ContentType.JSON)
                    .when()
                    .get("/admin/theme")

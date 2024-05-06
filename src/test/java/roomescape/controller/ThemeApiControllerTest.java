@@ -24,6 +24,7 @@ import roomescape.service.dto.input.ReservationInput;
 import roomescape.service.dto.input.ReservationTimeInput;
 import roomescape.service.dto.input.ThemeInput;
 
+//@formatter:off
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class ThemeApiControllerTest {
 
@@ -59,13 +60,9 @@ class ThemeApiControllerTest {
         params.put("description", "우테코 레벨2를 탈출하는 내용입니다.");
         params.put("thumbnail", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
 
-        RestAssured.given()
-                   .contentType(ContentType.JSON)
-                   .body(params)
-                   .when()
-                   .post("/themes")
-                   .then()
-                   .statusCode(201);
+        RestAssured.given().contentType(ContentType.JSON).body(params)
+                   .when().post("/themes")
+                   .then().statusCode(201);
     }
 
     @Test
@@ -79,20 +76,16 @@ class ThemeApiControllerTest {
         themeService.createTheme(input);
 
         RestAssured.given()
-                   .when()
-                   .get("/themes")
-                   .then()
-                   .statusCode(200)
-                   .body("size()", is(1));
+                   .when().get("/themes")
+                   .then().statusCode(200).body("size()", is(1));
     }
 
     @Test
     @DisplayName("특정 테마가 존재하지 않는데, 그 테마를 삭제하려 할 때 404을 반환한다.")
     void return_404_when_not_exist_id() {
         RestAssured.given()
-                   .delete("/themes/-1")
-                   .then()
-                   .statusCode(404);
+                   .when().delete("/themes/-1")
+                   .then().statusCode(404);
     }
 
     @Test
@@ -105,8 +98,7 @@ class ThemeApiControllerTest {
         reservationService.createReservation(new ReservationInput("제리", "2025-04-30", timeId, themeId));
 
         RestAssured.given()
-                   .delete("/themes/" + themeId)
-                   .then()
-                   .statusCode(409);
+                   .when().delete("/themes/" + themeId)
+                   .then().statusCode(409);
     }
 }

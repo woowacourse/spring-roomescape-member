@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
+//@formatter:off
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class UserPageControllerTest {
 
@@ -23,28 +24,18 @@ class UserPageControllerTest {
     @Test
     @DisplayName("/reservation 요청시 사용자 예약 페이지를 응답한다.")
     void response_user_reservation_page() {
-        RestAssured.given()
-                   .log()
-                   .all()
-                   .contentType(ContentType.JSON)
-                   .when()
-                   .get("/reservation")
-                   .then()
-                   .statusCode(200);
+        RestAssured.given().contentType(ContentType.JSON)
+                   .when().get("/reservation")
+                   .then().statusCode(200);
     }
 
 
     @Test
     @DisplayName("/ 요청시 인기 테마 페이지를 응답한다.")
     void response_popular_theme_page() {
-        RestAssured.given()
-                   .log()
-                   .all()
-                   .contentType(ContentType.JSON)
-                   .when()
-                   .get("/")
-                   .then()
-                   .statusCode(200);
+        RestAssured.given().contentType(ContentType.JSON)
+                   .when().get("/")
+                   .then().statusCode(200);
     }
 
 }
