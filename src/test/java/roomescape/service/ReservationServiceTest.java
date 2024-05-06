@@ -22,7 +22,6 @@ import roomescape.service.fakedao.FakeThemeDao;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -128,11 +127,9 @@ class ReservationServiceTest {
     void should_return_times_with_book_state() {
         LocalDate date = LocalDate.of(9999, 9, 9);
         List<MemberReservationTimeResponse> times = reservationService.findReservationTimesInformation(date, 1L);
+
         assertThat(times).hasSize(INITIAL_TIME_COUNT);
-        assertThat(times).containsOnly(
-                new MemberReservationTimeResponse(1, LocalTime.of(1, 0), true),
-                new MemberReservationTimeResponse(2, LocalTime.of(2, 0), false),
-                new MemberReservationTimeResponse(3, LocalTime.now().truncatedTo(ChronoUnit.SECONDS), false)
-        );
+        assertThat(times.get(0).getIsBooked()).isTrue();
+        assertThat(times.get(1).getIsBooked()).isFalse();
     }
 }

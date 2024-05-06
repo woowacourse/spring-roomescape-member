@@ -92,7 +92,7 @@ public class ReservationService {
         List<ReservationTime> notBookedTimes = reservationRepository.findReservationTimeNotBooked(date, themeId);
         List<MemberReservationTimeResponse> bookedResponse = mapToResponse(bookedTimes, true);
         List<MemberReservationTimeResponse> notBookedResponse = mapToResponse(notBookedTimes, false);
-        return concat(notBookedResponse, bookedResponse);
+        return concat(bookedResponse, notBookedResponse);
     }
 
     private List<MemberReservationTimeResponse> mapToResponse(List<ReservationTime> times, boolean isBooked) {
@@ -101,8 +101,8 @@ public class ReservationService {
                 .toList();
     }
 
-    private List<MemberReservationTimeResponse> concat(List<MemberReservationTimeResponse> notBookedTimes,
-                                                       List<MemberReservationTimeResponse> bookedTimes) {
-        return Stream.concat(notBookedTimes.stream(), bookedTimes.stream()).toList();
+    private List<MemberReservationTimeResponse> concat(List<MemberReservationTimeResponse> first,
+                                                       List<MemberReservationTimeResponse> second) {
+        return Stream.concat(first.stream(), second.stream()).toList();
     }
 }

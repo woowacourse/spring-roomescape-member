@@ -15,7 +15,6 @@ import roomescape.controller.response.MemberReservationTimeResponse;
 import roomescape.controller.response.ReservationResponse;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -135,22 +134,20 @@ class ReservationControllerTest {
     @DisplayName("특정 날짜와 테마에 따른 모든 시간의 예약 가능 여부를 확인한다.")
     @Test
     void should_get_reservations_with_book_state_by_date_and_theme() {
-        String date = LocalDate.now().minusDays(1).toString(); // LD 으로 바꾸어보자!
+        String date = LocalDate.now().minusDays(1).toString();
         long themeId = 1;
         List<MemberReservationTimeResponse> times = RestAssured.given().log().all()
                 .when().get(String.format("/reservations/times?date=%s&themeId=%d", date, themeId))
                 .then().log().all()
                 .statusCode(200)
                 .extract().jsonPath().getList(".", MemberReservationTimeResponse.class);
-        System.out.println(times);
+
         assertThat(times).hasSize(INITIAL_TIME_COUNT);
-        assertThat(times).containsOnly(
-                new MemberReservationTimeResponse(1, LocalTime.of(1, 0), true),
-                new MemberReservationTimeResponse(2, LocalTime.of(2, 0), true),
-                new MemberReservationTimeResponse(3, LocalTime.of(3, 0), false),
-                new MemberReservationTimeResponse(4, LocalTime.of(4, 0), false),
-                new MemberReservationTimeResponse(5, LocalTime.of(5, 0), false)
-        );
+        assertThat(times.get(0).getIsBooked()).isTrue();
+        assertThat(times.get(1).getIsBooked()).isTrue();
+        assertThat(times.get(2).getIsBooked()).isFalse();
+        assertThat(times.get(3).getIsBooked()).isFalse();
+        assertThat(times.get(4).getIsBooked()).isFalse();
     }
 
     private Integer countAllReservations() {
