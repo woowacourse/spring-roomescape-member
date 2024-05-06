@@ -6,20 +6,20 @@ import java.util.Objects;
 
 public class Reservation {
     private final Long id;
-    private final ReservationName name;
+    private final UserName name;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
     public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        this(null, new ReservationName(name), date, time, theme);
+        this(null, new UserName(name), date, time, theme);
     }
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        this(Objects.requireNonNull(id), new ReservationName(name), date, time, theme);
+        this(Objects.requireNonNull(id), new UserName(name), date, time, theme);
     }
 
-    private Reservation(Long id, ReservationName name, LocalDate date, ReservationTime time, Theme theme) {
+    private Reservation(Long id, UserName name, LocalDate date, ReservationTime time, Theme theme) {
         this.id = id;
         this.name = Objects.requireNonNull(name);
         this.date = Objects.requireNonNull(date);
