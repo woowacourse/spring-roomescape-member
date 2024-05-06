@@ -15,18 +15,11 @@ public class ReservationDate {
 
     private void validate(LocalDate date) {
         validateNonNull(date);
-        validateNonPastDate(date);
     }
 
     private void validateNonNull(LocalDate date) {
         if (date == null) {
             throw new ClientIllegalArgumentException("날짜는 null일 수 없습니다");
-        }
-    }
-
-    private void validateNonPastDate(LocalDate date) {
-        if (date.isBefore(LocalDate.now())) {
-            throw new ClientIllegalArgumentException(date + ": 예약 날짜는 현재 보다 이전일 수 없습니다");
         }
     }
 
