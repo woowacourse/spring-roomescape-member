@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 class ReservationTest {
 
     @Test
-    @DisplayName("예약 날짜에 null 값이 입력되는지 확인한다.")
+    @DisplayName("예약 날짜에 null 값이 입력되면 에러가 발생한다.")
     void checkNullReservationDate() {
         //given
         ReservationTime reservationTime = new ReservationTime(LocalTime.parse("20:00"));

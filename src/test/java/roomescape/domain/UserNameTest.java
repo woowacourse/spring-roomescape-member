@@ -9,7 +9,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 class UserNameTest {
 
     @ParameterizedTest
-    @DisplayName("예약자명이 1글자 이상, 20글자 이하로 입력되었는지 확인한다.")
+    @DisplayName("예약자명이 1글자 이상, 20글자 이하로 입력되면 에러가 발생한다.")
     @ValueSource(strings = {"", " ", "aaaaaaaaaaaaaaaaaaaaa"})
     void checkUserNameLength(String userName) {
         //given & when & then
@@ -19,7 +19,7 @@ class UserNameTest {
     }
 
     @ParameterizedTest
-    @DisplayName("예약자명에 한글, 영문, 숫자 외의 문자가 포함되었는지 확인한다.")
+    @DisplayName("예약자명에 한글, 영문, 숫자 외의 문자가 포함되면 에러가 발생한다.")
     @ValueSource(strings = {"chorong!", "ma_son", "cho rong"})
     void checkUserNameFormat(String userName) {
         //given & when & then
