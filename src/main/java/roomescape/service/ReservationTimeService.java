@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import roomescape.domain.ReservationTime;
+import roomescape.exception.ForeignKeyViolationException;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ReservationTimeDao;
 
@@ -25,6 +26,10 @@ public class ReservationTimeService {
         return reservationTimeDao.getAll();
     }
 
+    public List<ReservationTime> getAvailableTimes(LocalDate date, long themeId) {
+        return reservationTimeDao.getAvailableTimes(date, themeId);
+    }
+
     public ReservationTime create(ReservationTime reservationTime) {
         requireStartAtNotAlreadyExists(reservationTime);
         return reservationTimeDao.save(reservationTime);
@@ -39,13 +44,10 @@ public class ReservationTimeService {
         return reservationTimeDao.exists(startAt);
     }
 
-    public List<ReservationTime> getAvailableTimes(LocalDate date, long themeId) {
-        return reservationTimeDao.getAvailableTimes(date, themeId);
-    }
-
     private void requireExistsById(long id) {
         if (reservationDao.existsByTimeId(id)) {
-            throw new IllegalArgumentException("Cannot delete a reservation that refers to that time");
+            throw new ForeignKeyViolationException(
+                    "Cannot delete a time with id " + id + " as being referred by reservation");
         }
     }
 

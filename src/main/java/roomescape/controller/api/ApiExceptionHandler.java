@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import roomescape.exception.EntityExistsException;
 import roomescape.exception.EntityNotFoundException;
+import roomescape.exception.ForeignKeyViolationException;
 
 @ControllerAdvice(basePackages = "roomescape.controller.api")
 public class ApiExceptionHandler {
@@ -22,6 +23,11 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException exception) {
+        return ResponseEntity.badRequest().body(exception.getMessage());
+    }
+
+    @ExceptionHandler(ForeignKeyViolationException.class)
+    public ResponseEntity<String> handleForeignKeyViolationException(ForeignKeyViolationException exception) {
         return ResponseEntity.badRequest().body(exception.getMessage());
     }
 }
