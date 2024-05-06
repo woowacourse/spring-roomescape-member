@@ -1,7 +1,7 @@
 CREATE TABLE reservation_time
 (
-    id       BIGINT       NOT NULL AUTO_INCREMENT,
-    start_at VARCHAR(255) NOT NULL,
+    id       BIGINT NOT NULL AUTO_INCREMENT,
+    start_at TIME   NOT NULL,
     PRIMARY KEY (id)
 );
 
@@ -16,8 +16,8 @@ CREATE TABLE theme
 
 CREATE TABLE reservation
 (
-    id       BIGINT       NOT NULL AUTO_INCREMENT,
-    date     VARCHAR(255) NOT NULL,
+    id       BIGINT NOT NULL AUTO_INCREMENT,
+    date     DATE   NOT NULL,
     time_id  BIGINT,
     theme_id BIGINT,                             -- 컬럼 추가
     PRIMARY KEY (id),
@@ -39,6 +39,6 @@ CREATE TABLE reservation_list
     member_id      BIGINT,
     reservation_id BIGINT,
     FOREIGN KEY (member_id) REFERENCES member (id),
-    FOREIGN KEY (reservation_id) REFERENCES reservation (id) ON DELETE CASCADE ,
+    FOREIGN KEY (reservation_id) REFERENCES reservation (id) ON DELETE CASCADE,
     PRIMARY KEY (id)
 );
