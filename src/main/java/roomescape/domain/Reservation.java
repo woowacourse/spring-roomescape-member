@@ -22,7 +22,9 @@ public class Reservation {
 
     public Reservation(Long id, String name, Long themeId, String themeName, String description, String thumbnail,
                        String date, Long timeId, String time) {
-        this(id, new ReservationName(name), new Theme(themeId, themeName, description, thumbnail),
+        this(id,
+                new ReservationName(name),
+                new Theme(themeId, themeName, description, thumbnail),
                 new ReservationDate(date),
                 new ReservationTime(timeId, time));
     }
