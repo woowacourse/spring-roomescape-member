@@ -53,7 +53,7 @@ public class ReservationDao {
         return Collections.unmodifiableList(reservations);
     }
 
-    private Reservation findById(final long id) {
+    public Reservation findById(final long id) {
         String sql = """
                 SELECT
                 r.id as reservation_id,
@@ -84,10 +84,10 @@ public class ReservationDao {
         return count > 0;
     }
 
-    public Reservation save(Reservation reservation) {
+    public long save(Reservation reservation) {
         SqlParameterSource parameterSource = new BeanPropertySqlParameterSource(reservation);
         Number newId = simpleJdbcInsert.executeAndReturnKey(parameterSource);
-        return findById(newId.longValue());
+        return newId.longValue();
     }
 
     public void deleteById(Long id) {

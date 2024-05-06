@@ -43,10 +43,10 @@ public class TimeDao {
         }
     }
 
-    public ReservationTime save(ReservationTime reservationTime) {
+    public long save(ReservationTime reservationTime) {
         SqlParameterSource parameterSource = new BeanPropertySqlParameterSource(reservationTime);
         Number newId = simpleJdbcInsert.executeAndReturnKey(parameterSource);
-        return findById(newId.longValue());
+        return newId.longValue();
     }
 
     public boolean existByTime(LocalTime time) {
@@ -54,7 +54,8 @@ public class TimeDao {
                 SELECT count(*) 
                 FROM reservation_time
                 WHERE start_at = ?
-                """, Integer.class, time);
+                """;
+        int count = jdbcTemplate.queryForObject(sql, Integer.class, time);
         return count > 0;
     }
 

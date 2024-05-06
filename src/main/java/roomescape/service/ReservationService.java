@@ -27,14 +27,17 @@ public class ReservationService {
         this.themeDao = themeDao;
     }
 
-    public List<ReservationResponse> findAllReservations() {
+    public List<ReservationResponse> findAll() {
         List<Reservation> reservations = reservationDao.findAll();
         return ReservationResponse.fromReservations(reservations);
     }
 
-    public ReservationResponse saveReservation(ReservationCreateRequest request) {
-        ReservationTime time = timeDao.findById(request.timeId());
+    public long save(ReservationCreateRequest request) {
+        if (request.date().isBefore(LocalDate.now())) {
+            throw new IllegalReservationException("[ERROR] 과거 날짜는 예약할 수 없습니다.");
+        }
 
+        ReservationTime time = timeDao.findById(request.timeId());
         if (request.date().isEqual(LocalDate.now()) && time.isPast()) {
             throw new IllegalReservationException("[ERROR] 과거 시간은 예약할 수 없습니다.");
         }
@@ -46,11 +49,10 @@ public class ReservationService {
             throw new ExistReservationException("[ERROR] 같은 날짜, 테마, 시간에 중복된 예약을 생성할 수 없습니다.");
         }
 
-        Reservation newReservation = reservationDao.save(reservation);
-        return ReservationResponse.fromReservation(newReservation);
+        return reservationDao.save(reservation);
     }
 
-    public void deleteReservationById(Long id) {
+    public void deleteById(Long id) {
         reservationDao.deleteById(id);
     }
 }

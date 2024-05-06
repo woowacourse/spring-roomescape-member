@@ -3,7 +3,7 @@ package roomescape.repository;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -37,33 +37,18 @@ public class ThemeDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Theme save(Theme theme) {
-        SqlParameterSource parameterSource = new BeanPropertySqlParameterSource(theme);
-        Number newId = simpleJdbcInsert.executeAndReturnKey(parameterSource);
-        return findById(newId.longValue());
-    }
-
-    public Theme findById(long id) {
-        String sql = "SELECT * FROM theme WHERE id = ?";
-        Optional<Theme> optionalTheme = Optional.ofNullable(jdbcTemplate.queryForObject(sql, timeRowMapper, id));
-        if (optionalTheme.isEmpty()) {
-            throw new IllegalArgumentException("[ERROR] 존재하지 않는 테마입니다.");
-        }
-        return optionalTheme.get();
-    }
-
     public List<Theme> findAll() {
         List<Theme> themes = jdbcTemplate.query("SELECT * FROM theme", timeRowMapper);
         return Collections.unmodifiableList(themes);
     }
 
-    public boolean existByName(final String name) {
-        int count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM theme WHERE name = ?", Integer.class, name);
-        return count > 0;
-    }
-
-    public void deleteById(Long id) {
-        jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id);
+    public Theme findById(long id) {
+        String sql = "SELECT * FROM theme WHERE id = ?";
+        try {
+            return jdbcTemplate.queryForObject(sql, themeRowMapper, id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new IllegalArgumentException("[ERROR] 존재하지 않는 테마입니다.");
+        }
     }
 
     public List<Theme> findThemesByDescOrder() {
@@ -83,5 +68,20 @@ public class ThemeDao {
                 ORDER BY reservation_count DESC
                 LIMIT 10
                 """, themeRowMapper, nowDate, weekBeforeDate);
+    }
+
+    public long save(Theme theme) {
+        SqlParameterSource parameterSource = new BeanPropertySqlParameterSource(theme);
+        Number newId = simpleJdbcInsert.executeAndReturnKey(parameterSource);
+        return newId.longValue();
+    }
+
+    public boolean existByName(final String name) {
+        int count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM theme WHERE name = ?", Integer.class, name);
+        return count > 0;
+    }
+
+    public void deleteById(Long id) {
+        jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id);
     }
 }

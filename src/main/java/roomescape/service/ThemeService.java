@@ -29,18 +29,16 @@ public class ThemeService {
         List<Theme> themesByDescOrder = themeDao.findThemesByDescOrder();
 
         return ThemeResponse.fromThemes(themesByDescOrder);
-
     }
 
-    public ThemeResponse save(ThemeCreateRequest request) {
+    public long save(ThemeCreateRequest request) {
         Theme theme = ThemeCreateRequest.toTheme(request);
 
         if (themeDao.existByName(theme.getName())) {
             throw new IllegalThemeException("[ERROR] 중복된 테마는 생성할 수 없습니다.");
         }
 
-        Theme newTheme = themeDao.save(theme);
-        return ThemeResponse.fromTheme(newTheme);
+        return themeDao.save(theme);
     }
 
     public void deleteThemeById(Long id) {

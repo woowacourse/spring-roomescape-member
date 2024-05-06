@@ -1,13 +1,12 @@
 package roomescape.service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.TimeMemberResponse;
 import roomescape.dto.TimeCreateRequest;
+import roomescape.dto.TimeMemberResponse;
 import roomescape.dto.TimeResponse;
 import roomescape.exception.ExistReservationException;
 import roomescape.exception.IllegalTimeException;
@@ -32,26 +31,21 @@ public class ReservationTimeService {
 
     public List<TimeMemberResponse> findAllWithBooking(LocalDate date, Long themeId) {
         List<ReservationTime> allTimes = timeDao.findAll();
-        List<TimeMemberResponse> allTimeResponsesWithBooking = new ArrayList<>();
         List<Long> bookedTimeIds = reservationDao.findTimeIdsByDateAndThemeId(date, themeId);
 
-        for (ReservationTime time : allTimes) {
-            boolean alreadyBooked = bookedTimeIds.contains(time.getId());
-            allTimeResponsesWithBooking.add(TimeMemberResponse.of(time, alreadyBooked));
-        }
-
-        return allTimeResponsesWithBooking;
+        return allTimes.stream()
+                .map(time -> TimeMemberResponse.of(time, bookedTimeIds.contains(time.getId())))
+                .toList();
     }
 
-    public TimeResponse save(TimeCreateRequest request) {
+    public long save(TimeCreateRequest request) {
         ReservationTime reservationTime = TimeCreateRequest.toTime(request);
 
         if (timeDao.existByTime(reservationTime.getStartAt())) {
             throw new IllegalTimeException("[ERROR] 중복된 시간은 생성할 수 없습니다.");
         }
 
-        ReservationTime newReservationTime = timeDao.save(reservationTime);
-        return TimeResponse.fromTime(newReservationTime);
+        return timeDao.save(reservationTime);
     }
 
     public void deleteTimeById(Long id) {
