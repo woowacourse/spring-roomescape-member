@@ -82,7 +82,7 @@ public class ReservationService {
         LocalTime nowTime = LocalTime.now(ZoneId.of("Asia/Seoul"));
 
         if (date.isBefore(nowDate) || (date.isEqual(nowDate) && time.isBefore(nowTime))) {
-            throw new ReservingPastTimeException("현재 시간 기준 과거의 날짜 또는 시간은 예약할 수 없습니다.");
+            throw new ReservingPastTimeException("과거의 날짜 또는 시간은 예약할 수 없습니다. 현재 시간 이후로 예약해주세요.");
         }
     }
 
