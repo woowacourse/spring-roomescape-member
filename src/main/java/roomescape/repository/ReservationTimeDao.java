@@ -61,14 +61,12 @@ public class ReservationTimeDao {
     }
 
     public boolean existsById(long id) {
-        String query = "SELECT COUNT(*) FROM RESERVATION_TIME WHERE ID = ?";
-        Integer count = jdbcTemplate.queryForObject(query, Integer.class, id);
-        return count != null && count > 0;
+        String query = "SELECT EXISTS (SELECT 1 FROM RESERVATION_TIME WHERE ID = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, id));
     }
 
     public boolean existsByStartAt(LocalTime startAt) {
-        String query = "SELECT COUNT(*) FROM RESERVATION_TIME WHERE START_AT = ?";
-        Integer count = jdbcTemplate.queryForObject(query, Integer.class, startAt);
-        return count != null && count > 0;
+        String query = "SELECT EXISTS (SELECT 1 FROM RESERVATION_TIME WHERE START_AT = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, startAt));
     }
 }

@@ -87,26 +87,22 @@ public class ReservationDao {
     }
 
     public boolean existsById(long id) {
-        String query = "SELECT COUNT(*) FROM RESERVATION WHERE id = ?";
-        Integer count = jdbcTemplate.queryForObject(query, Integer.class, id);
-        return count != null && count > 0;
+        String query = "SELECT EXISTS (SELECT 1 FROM RESERVATION WHERE id = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, id));
     }
 
-    public boolean existsByTimeId(long id) {
-        String query = "SELECT COUNT(*) FROM RESERVATION WHERE TIME_ID = ?";
-        Integer count = jdbcTemplate.queryForObject(query, Integer.class, id);
-        return count != null && count > 0;
+    public boolean existsByTimeId(long timeId) {
+        String query = "SELECT EXISTS (SELECT 1 FROM RESERVATION WHERE TIME_ID = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, timeId));
     }
 
     public boolean existsByThemeId(long themeId) {
-        String query = "SELECT COUNT(*) FROM RESERVATION WHERE THEME_ID = ?";
-        Integer count = jdbcTemplate.queryForObject(query, Integer.class, themeId);
-        return count != null && count > 0;
+        String query = "SELECT EXISTS (SELECT 1 FROM RESERVATION WHERE THEME_ID = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, themeId));
     }
 
     public boolean existsByAttributes(LocalDate date, long timeId, long themeId) {
-        String query = "SELECT COUNT(*) FROM RESERVATION WHERE time_id = ? AND date = ? AND theme_id=?";
-        Integer count = jdbcTemplate.queryForObject(query, Integer.class, timeId, date, themeId);
-        return count != null && count > 0;
+        String query = "SELECT EXISTS (SELECT 1 FROM RESERVATION WHERE DATE = ? AND TIME_ID = ? AND THEME_ID = ?) ";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, date, timeId, themeId));
     }
 }

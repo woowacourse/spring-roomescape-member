@@ -63,14 +63,12 @@ public class ThemeDao {
     }
 
     public boolean existsById(Long id) {
-        String query = "SELECT COUNT(*) FROM THEME WHERE ID = ?";
-        Integer count = jdbcTemplate.queryForObject(query, Integer.class, id);
-        return count != null && count > 0;
+        String query = "SELECT EXISTS (SELECT 1 FROM THEME WHERE ID = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, id));
     }
 
     public boolean existsByName(String name) {
-        String query = "SELECT COUNT(*) FROM THEME WHERE name = ?";
-        Integer count = jdbcTemplate.queryForObject(query, Integer.class, name);
-        return count != null && count > 0;
+        String query = "SELECT EXISTS (SELECT 1 FROM THEME WHERE name = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, name));
     }
 }
