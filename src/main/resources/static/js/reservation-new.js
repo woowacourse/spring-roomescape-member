@@ -23,10 +23,6 @@ function render(data) {
   data.forEach(item => {
     const row = tableBody.insertRow();
 
-    /*
-    TODO: [2단계] 관리자 기능 - 예약 목록 조회 API 호출 후 렌더링
-          response 명세에 맞춰 값 설정
-    */
     row.insertCell(0).textContent = item.id;            // 예약 id
     row.insertCell(1).textContent = item.name;          // 예약자명
     row.insertCell(2).textContent = item.theme.name;    // 테마명
@@ -174,6 +170,7 @@ function requestCreate(reservation) {
   return fetch(RESERVATION_API_ENDPOINT, requestOptions)
       .then(response => {
         if (response.status === 201) return response.json();
+        response.text().then(data => alert(data));
         throw new Error('Create failed');
       });
 }
@@ -185,7 +182,10 @@ function requestDelete(id) {
 
   return fetch(`${RESERVATION_API_ENDPOINT}/${id}`, requestOptions)
       .then(response => {
-        if (response.status !== 204) throw new Error('Delete failed');
+        if (response.status !== 204) {
+          response.text().then(data => alert(data));
+          throw new Error('Delete failed');
+        }
       });
 }
 
