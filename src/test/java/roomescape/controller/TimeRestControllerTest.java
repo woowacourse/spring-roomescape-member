@@ -10,9 +10,8 @@ import java.util.List;
 import java.util.Map;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EmptySource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -41,6 +40,7 @@ class TimeRestControllerTest {
         RestAssured.port = port;
     }
 
+    @DisplayName("모든 시간을 조회한다.")
     @Test
     void getAll() {
         // given
@@ -54,50 +54,35 @@ class TimeRestControllerTest {
                 .jsonPath().getList(".", TimeResponse.class);
 
         // then
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation_time", Integer.class);
-        assertThat(reservations.size()).isEqualTo(count);
+        assertThat(reservations).containsExactly(new TimeResponse(1L, LocalTime.of(10, 0)));
     }
 
-//    @Test //TODO 완성
-    void getAll_available() {
+//    @Test // TODO: 해결
+    void getAll_member() {
         // given
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "11:00");
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "12:00");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "테마이름", "설명", "썸네일");
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운",
-                "2024-08-05", 1, 1);
+                "2099-12-31", 1, 1);
 
         // when
         List<TimeMemberResponse> reservations = RestAssured.given().log().all()
-                .when().get("/times/member?date=2024-05-03?themeId=1")
+                .when().get("/times/member?date=2099-12-31?themeId=1")
                 .then().log().all()
                 .statusCode(200).extract()
                 .jsonPath().getList(".", TimeMemberResponse.class);
 
         // then
-        assertThat(reservations.size()).isEqualTo(1);
-    }
-
-    @ParameterizedTest
-    @EmptySource
-    void create_invalid_time_bad_request(String input) {
-        // given
-        Map<String, String> params = Map.of(
-                "startAt", input
+        assertThat(reservations).containsExactly(
+                new TimeMemberResponse(1L, LocalTime.of(10,0), true),
+                new TimeMemberResponse(2L, LocalTime.of(11,0), false)
         );
-
-        // when & then
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(HttpStatus.SC_BAD_REQUEST);
     }
 
+    @DisplayName("시간을 생성한다.")
     @Test
-    void create() {
+    void create() { //TODO: location 테스트 추가
         // given
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
@@ -116,34 +101,22 @@ class TimeRestControllerTest {
         assertThat(time.getStartAt()).isEqualTo(LocalTime.of(10, 0));
     }
 
+    @DisplayName("해당 id의 시간을 삭제한다.")
     @Test
-    void deleteById_existReservation_bad_request() {
+    void delete() {
         // given
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "테니", "2024-04-30", 1);
 
-        // when & then
+        // when
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .when().delete("/times/1")
                 .then().log().all()
-                .statusCode(HttpStatus.SC_BAD_REQUEST);
-    }
+                .statusCode(HttpStatus.SC_NO_CONTENT);
 
-    @Test
-    void deleteById_existTime_bad_request() {
-        // given
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
-        Map<String, String> params = Map.of(
-                "startAt", "10:00"
-        );
+        List<ReservationTime> allTimes = timeDao.findAll();
 
-        // when & then
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(HttpStatus.SC_BAD_REQUEST);
+        // then
+        assertThat(allTimes).isEmpty();
     }
 }

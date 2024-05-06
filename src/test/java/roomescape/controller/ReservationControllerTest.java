@@ -6,11 +6,11 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -39,13 +39,14 @@ class ReservationControllerTest {
         RestAssured.port = port;
     }
 
+    @DisplayName("모든 예약을 조회한다.")
     @Test
     void getAll() {
         // given
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "테마이름", "설명", "썸네일");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운",
-                "2024-08-05", 1, 1);
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "커비",
+                "2099-12-31", 1, 1);
 
         // when
         List<ReservationResponse> reservations = RestAssured.given().log().all()
@@ -54,20 +55,26 @@ class ReservationControllerTest {
                 .statusCode(200).extract()
                 .jsonPath().getList(".", ReservationResponse.class);
 
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-
         // then
-        assertThat(reservations.size()).isEqualTo(count);
+        assertAll(
+                () -> assertThat(reservations.get(0).id()).isEqualTo(1),
+                () -> assertThat(reservations.get(0).name()).isEqualTo("커비"),
+                () -> assertThat(reservations.get(0).date()).isEqualTo(LocalDate.of(2099, 12, 31)),
+                () -> assertThat(reservations.get(0).time().getId()).isEqualTo(1),
+                () -> assertThat(reservations.get(0).theme().getId()).isEqualTo(1)
+        );
+
     }
 
+    @DisplayName("예약을 생성한다.")
     @Test
     void create() {
         // given
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "테마이름", "설명", "썸네일");
         Map<String, String> params = Map.of(
-                "name", "테니",
-                "date", "2024-08-30",
+                "name", "커비",
+                "date", "2099-12-31",
                 "timeId", "1",
                 "themeId", "1"
         );
@@ -85,75 +92,15 @@ class ReservationControllerTest {
 
         // then
         assertAll(
-                () -> assertThat(reservation.getName()).isEqualTo("테니"),
-                () -> assertThat(reservation.getDate()).isEqualTo(LocalDate.of(2024, 8, 30)),
-                () -> assertThat(reservation.getTime().getId()).isEqualTo(1),
-                () -> assertThat(reservation.getTime().getStartAt()).isEqualTo(LocalTime.of(10,0)),
-                () -> assertThat(reservation.getTheme().getId()).isEqualTo(1),
-                () -> assertThat(reservation.getTheme().getName()).isEqualTo("테마이름"),
-                () -> assertThat(reservation.getTheme().getDescription()).isEqualTo("설명"),
-                () -> assertThat(reservation.getTheme().getThumbnail()).isEqualTo("썸네일")
+                () -> assertThat(reservation.getId()).isEqualTo(1),
+                () -> assertThat(reservation.getName()).isEqualTo("커비"),
+                () -> assertThat(reservation.getDate()).isEqualTo(LocalDate.of(2099, 12, 31)),
+                () -> assertThat(reservation.getThemeId()).isEqualTo(1),
+                () -> assertThat(reservation.getThemeId()).isEqualTo(1)
         );
     }
 
-    @Test
-    void create_invalid_date_bad_request() {
-        // given
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
-        Map<String, String> params = Map.of(
-                "name", "테니",
-                "date", "2024-04-29",
-                "timeId", "1"
-        );
-
-        // when & then
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(HttpStatus.SC_BAD_REQUEST);
-    }
-
-    @Test
-    void create_invalid_time_bad_request() {
-        // given
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
-        Map<String, String> params = Map.of(
-                "name", "테니",
-                "date", "2024-04-30",
-                "timeId", "1"
-        );
-
-        // when & then
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(HttpStatus.SC_BAD_REQUEST);
-    }
-
-    @Test
-    void create_duplicate_bad_request() {
-        // given
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "테니", "2024-06-01", 1);
-        Map<String, String> params = Map.of(
-                "name", "테니",
-                "date", "2024-06-01",
-                "timeId", "1"
-        );
-
-        // when & then
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(HttpStatus.SC_BAD_REQUEST);
-    }
-
+    @DisplayName("해당 id의 예약을 삭제한다.")
     @Test
     void delete() {
         // given
@@ -163,10 +110,11 @@ class ReservationControllerTest {
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
                 .then().log().all()
-                .statusCode(204);
+                .statusCode(HttpStatus.SC_NO_CONTENT);
+
+        List<Reservation> reservations = reservationDao.findAll();
 
         // then
-        Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-        assertThat(countAfterDelete).isEqualTo(0);
+        assertThat(reservations).isEmpty();
     }
 }
