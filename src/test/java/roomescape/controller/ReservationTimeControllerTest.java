@@ -1,7 +1,6 @@
 package roomescape.controller;
 
 import java.time.LocalTime;
-import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,7 +17,7 @@ class ReservationTimeControllerTest {
     @DisplayName("모든 예약 시간을 조회한다")
     @Test
     void should_get_reservation_times() {
-        List<ReservationTime> reservationTimes = RestAssured.given().log().all()
+        RestAssured.given().log().all()
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200).extract()
@@ -43,7 +42,7 @@ class ReservationTimeControllerTest {
     @Test
     void should_remove_reservation_time() {
         RestAssured.given().log().all()
-                .when().delete("/times/6")
+                .when().delete("/times/5")
                 .then().log().all()
                 .statusCode(200);
     }

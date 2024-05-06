@@ -42,7 +42,7 @@ class ThemeControllerTest {
     @Test
     void should_remove_theme() {
         RestAssured.given().log().all()
-                .when().delete("/themes/10")
+                .when().delete("/themes/11")
                 .then().log().all()
                 .statusCode(204);
     }
