@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.dao.ReservationDAO;
 import roomescape.dao.ThemeDAO;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeRequest;
@@ -14,9 +15,11 @@ public class ThemeService {
     private static final int NUMBER_TO_MAKE_DAY_AGO = 1;
     private static final int TOP_RANKING_LIMIT = 10;
 
+    private final ReservationDAO reservationDAO;
     private final ThemeDAO themeDAO;
 
-    public ThemeService(final ThemeDAO themeDAO) {
+    public ThemeService(final ReservationDAO reservationDAO, final ThemeDAO themeDAO) {
+        this.reservationDAO = reservationDAO;
         this.themeDAO = themeDAO;
     }
 
@@ -30,6 +33,9 @@ public class ThemeService {
     }
 
     public void delete(final Long id) {
+        if (reservationDAO.existTheme(id)) {
+            throw new IllegalArgumentException("해당 테마에 대한 예약이 존재하여 삭제할 수 없습니다.");
+        }
         themeDAO.deleteById(id);
     }
 

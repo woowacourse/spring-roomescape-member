@@ -46,5 +46,4 @@ public class ThemeDAOTest {
 
         assertThat(themes).hasSize(0);
     }
-
 }

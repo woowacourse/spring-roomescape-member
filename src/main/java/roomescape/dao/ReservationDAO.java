@@ -69,28 +69,26 @@ public class ReservationDAO {
         jdbcTemplate.update(sql, id);
     }
 
-    public boolean hasReservationTime(final Long timeId) {
+    public Boolean existReservationTime(final Long timeId) {
         final String sql = """
-                SELECT  
-                    r.id AS reservation_id, 
-                    r.name, 
-                    r.date, 
-                    rt.id AS time_id, 
-                    rt.start_at AS time_value, 
-                    t.id AS theme_id, 
-                    t.name AS theme_name, 
-                    t.description AS theme_description, 
-                    t.thumbnail AS theme_thumbnail 
-                FROM reservation AS r 
-                INNER JOIN reservation_time AS rt 
-                ON r.time_id = rt.id 
-                INNER JOIN theme AS t 
-                ON r.theme_id = t.id 
-                WHERE time_id = ?;
+                SELECT CASE WHEN EXISTS (
+                    SELECT 1
+                    FROM reservation
+                    WHERE time_id = ?
+                ) THEN TRUE ELSE FALSE END;
                 """;
-        List<Reservation> reservations = jdbcTemplate.query(sql, reservationRowMapper(), timeId);
+        return jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
+    }
 
-        return !reservations.isEmpty();
+    public Boolean existTheme(final Long themeId) {
+        final String sql = """
+                SELECT CASE WHEN EXISTS (
+                    SELECT 1
+                    FROM reservation
+                    WHERE theme_id = ?
+                ) THEN TRUE ELSE FALSE END;
+                """;
+        return jdbcTemplate.queryForObject(sql, Boolean.class, themeId);
     }
 
     public Boolean existReservationOf(final LocalDate date, final ReservationTime time) {
@@ -99,7 +97,7 @@ public class ReservationDAO {
                     SELECT 1
                     FROM reservation
                     WHERE date = ? AND time_id = ?
-                ) THEN TRUE ELSE FALSE END AS reservation_exists;
+                ) THEN TRUE ELSE FALSE END;
                 """;
         return jdbcTemplate.queryForObject(sql, Boolean.class, date, time.getId());
     }

@@ -44,7 +44,7 @@ public class ReservationTimeService {
     }
 
     public void delete(final Long id) {
-        if (reservationDAO.hasReservationTime(id)) {
+        if (reservationDAO.existReservationTime(id)) {
             throw new IllegalArgumentException("해당 시간에 대한 예약이 존재하여 삭제할 수 없습니다.");
         }
         reservationTimeDAO.deleteById(id);

@@ -91,7 +91,7 @@ class ReservationServiceTest {
     @Test
     @DisplayName("예약 날짜는 같지만 시간이 현재 시간보다 이전이라면 예외가 발생한다.")
     void invalidTime() {
-        final ReservationTime savedTime = reservationTimeDAO.insert(new ReservationTime(LocalTime.now().minusHours(1)));
+        final ReservationTime savedTime = reservationTimeDAO.insert(new ReservationTime(LocalTime.now().minusMinutes(1)));
 
         assertThatThrownBy(() -> reservationService.save(new ReservationRequest("abc", LocalDate.now(), savedTime.getId(), 1L)))
                 .isInstanceOf(IllegalArgumentException.class)
