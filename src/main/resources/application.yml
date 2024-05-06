@@ -9,6 +9,10 @@ spring:
     url: jdbc:h2:mem:database
     driverClassName: org.h2.Driver
 
+server:
+  tomcat:
+    keep-alive-timeout: 60000
+
 logging:
   level:
     org.springframework:
