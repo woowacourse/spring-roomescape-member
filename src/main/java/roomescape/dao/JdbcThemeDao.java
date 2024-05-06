@@ -1,13 +1,13 @@
 package roomescape.dao;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.theme.Theme;
@@ -47,13 +47,13 @@ public class JdbcThemeDao implements ThemeDao {
 
     @Override
     public Theme create(Theme theme) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", theme.getName().getValue());
-        params.put("description", theme.getDescription().getValue());
-        params.put("thumbnail", theme.getThumbnail().getValue());
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("name", theme.getName().getValue())
+                .addValue("description", theme.getDescription().getValue())
+                .addValue("thumbnail", theme.getThumbnail().getValue());
 
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
-        return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
+        return new Theme(id, theme);
     }
 
     @Override

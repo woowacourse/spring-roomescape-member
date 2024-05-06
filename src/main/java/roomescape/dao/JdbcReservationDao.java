@@ -1,12 +1,12 @@
 package roomescape.dao;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.reservation.Reservation;
@@ -88,20 +88,14 @@ public class JdbcReservationDao implements ReservationDao {
 
     @Override
     public Reservation create(Reservation reservation) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", reservation.getName().getValue());
-        params.put("date", reservation.getDate().getValue());
-        params.put("time_id", reservation.getReservationTime().getId());
-        params.put("theme_id", reservation.getTheme().getId());
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("name", reservation.getName().getValue())
+                .addValue("date", reservation.getDate().getValue())
+                .addValue("time_id", reservation.getReservationTime().getId())
+                .addValue("theme_id", reservation.getTheme().getId());
 
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
-        return new Reservation(
-                id,
-                reservation.getName(),
-                reservation.getDate(),
-                reservation.getReservationTime(),
-                reservation.getTheme()
-        );
+        return new Reservation(id, reservation);
     }
 
     @Override

@@ -24,6 +24,10 @@ public class Reservation {
         this.theme = theme;
     }
 
+    public Reservation(Long id, Reservation reservation) {
+        this(id, reservation.reservationName, reservation.reservationDate, reservation.reservationTime, reservation.theme);
+    }
+
     public boolean isSameDate(LocalDate date) {
         return reservationDate.isSameDate(date);
     }

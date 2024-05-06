@@ -1,13 +1,13 @@
 package roomescape.dao;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.reservationtime.ReservationStartAt;
@@ -28,13 +28,13 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
 
     @Override
     public List<ReservationTime> readAll() {
-        String sql = "SELECT id, start_at FROM reservation_time" ;
+        String sql = "SELECT id, start_at FROM reservation_time";
         return jdbcTemplate.query(sql, reservationTimeRowMapper());
     }
 
     @Override
     public Optional<ReservationTime> readById(long id) {
-        String sql = "SELECT  id, start_at FROM reservation_time WHERE id = ? " ;
+        String sql = "SELECT  id, start_at FROM reservation_time WHERE id = ? ";
         try {
             ReservationTime reservationTime = jdbcTemplate.queryForObject(sql, reservationTimeRowMapper(), id);
             return Optional.of(reservationTime);
@@ -45,11 +45,11 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
 
     @Override
     public ReservationTime create(ReservationTime reservationTime) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("start_at", reservationTime.getStartAt().getValue());
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("start_at", reservationTime.getStartAt().getValue());
 
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
-        return new ReservationTime(id, reservationTime.getStartAt());
+        return new ReservationTime(id, reservationTime);
     }
 
     @Override
