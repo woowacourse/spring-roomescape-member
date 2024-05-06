@@ -1,5 +1,6 @@
 package roomescape.web.controller;
 
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +25,8 @@ public class ReservationTimeController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTimeResponseDto> create(@RequestBody final ReservationTimeRequestDto request) {
-        validateRequest(request);
+    public ResponseEntity<ReservationTimeResponseDto> create(
+            @RequestBody @Valid final ReservationTimeRequestDto request) {
         final ReservationTimeResponseDto response = reservationTimeService.create(request);
         return ResponseEntity.created(URI.create("/times/" + response.getId()))
                 .body(response);
@@ -40,12 +41,5 @@ public class ReservationTimeController {
     public ResponseEntity<Void> delete(@PathVariable("id") final long id) {
         reservationTimeService.delete(id);
         return ResponseEntity.noContent().build();
-    }
-
-    public void validateRequest(final ReservationTimeRequestDto request) {
-        final String startAt = request.getStartAt();
-        if (startAt == null || startAt.isBlank()) {
-            throw new IllegalArgumentException("StartAt cannot be null or empty");
-        }
     }
 }

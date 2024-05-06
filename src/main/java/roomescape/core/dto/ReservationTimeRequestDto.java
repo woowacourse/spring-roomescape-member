@@ -1,6 +1,9 @@
 package roomescape.core.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class ReservationTimeRequestDto {
+    @NotBlank(message = "예약 시간은 null이나 빈 값일 수 없습니다.")
     private String startAt;
 
     public ReservationTimeRequestDto() {
