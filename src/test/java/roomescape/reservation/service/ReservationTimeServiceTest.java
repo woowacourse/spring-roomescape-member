@@ -8,7 +8,6 @@ import static roomescape.fixture.ReservationTimeFixture.get2PM;
 import static roomescape.fixture.ReservationTimeFixture.getNoon;
 import static roomescape.fixture.ThemeFixture.getTheme1;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,9 +60,7 @@ class ReservationTimeServiceTest {
     @Test
     void findAll() {
         //given
-        long id = 1L;
-        LocalTime localTime = LocalTime.MIDNIGHT;
-        reservationTimeRepository.save(new ReservationTime(id, localTime));
+        reservationTimeRepository.save(getNoon());
 
         //when
         List<ReservationTimeResponse> reservationTimes = reservationTimeService.findAll();
@@ -76,12 +73,10 @@ class ReservationTimeServiceTest {
     @Test
     void delete() {
         //given
-        long id = 1L;
-        LocalTime localTime = LocalTime.MIDNIGHT;
-        reservationTimeRepository.save(new ReservationTime(id, localTime));
+        ReservationTime time = reservationTimeRepository.save(getNoon());
 
         //when
-        reservationTimeService.delete(id);
+        reservationTimeService.delete(time.getId());
 
         //then
         assertThat(reservationTimeRepository.findAll()).hasSize(0);
@@ -91,16 +86,11 @@ class ReservationTimeServiceTest {
     @Test
     void deleteTimeWithReservation() {
         //given
-        long id = 1L;
-        LocalTime localTime = LocalTime.MIDNIGHT;
-        ReservationTime saveTime = reservationTimeRepository.save(new ReservationTime(id, localTime));
-
-        Reservation reservation = new Reservation(1L, LocalDate.now().plusYears(1), saveTime,
-                new Theme("name", "description", "thumbnail"));
-        reservationRepository.save(reservation);
+        ReservationTime time = reservationTimeRepository.save(getNoon());
+        Reservation reservation = reservationRepository.save(getNextDayReservation(time, getTheme1()));
 
         //when & then
-        assertThatThrownBy(() -> reservationTimeService.delete(id))
+        assertThatThrownBy(() -> reservationTimeService.delete(reservation.getId()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 

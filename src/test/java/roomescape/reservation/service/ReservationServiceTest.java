@@ -9,7 +9,6 @@ import static roomescape.fixture.ReservationTimeFixture.getNoon;
 import static roomescape.fixture.ThemeFixture.getTheme1;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -57,7 +56,7 @@ class ReservationServiceTest {
         //given
         String name = "choco";
         String date = "2100-04-18";
-        ReservationTime time = reservationTimeRepository.save(new ReservationTime(1L, LocalTime.MIDNIGHT));
+        ReservationTime time = reservationTimeRepository.save(getNoon());
         Theme theme = themeRepository.save(getTheme1());
         reservationRepository.save(new Reservation(LocalDate.parse(date), time, theme));
         ReservationRequest reservationRequest = new ReservationRequest(name, date, time.getId(), theme.getId());
@@ -77,15 +76,9 @@ class ReservationServiceTest {
     @Test
     void find() {
         //given
-        long id = 1;
-        String name = "choco";
-        LocalDate date = LocalDate.now().plusYears(1);
-        long timeId = 1L;
-        LocalTime localTime = LocalTime.MIDNIGHT;
-        ReservationTime reservationTime = new ReservationTime(timeId, localTime);
-
+        ReservationTime time = getNoon();
         Theme theme = getTheme1();
-        reservationRepository.save(new Reservation(id, date, reservationTime, theme));
+        Reservation reservation = reservationRepository.save(getNextDayReservation(time, theme));
 
         //when
         List<ReservationResponse> reservations = reservationService.findAllReservations();
@@ -93,10 +86,9 @@ class ReservationServiceTest {
         //then
         assertAll(
                 () -> assertThat(reservations).hasSize(1),
-                () -> assertThat(reservations.get(0).name()).isEqualTo(name),
-                () -> assertThat(reservations.get(0).date()).isEqualTo(date),
-                () -> assertThat(reservations.get(0).time().id()).isEqualTo(timeId),
-                () -> assertThat(reservations.get(0).time().startAt()).isEqualTo(localTime)
+                () -> assertThat(reservations.get(0).date()).isEqualTo(reservation.getDate()),
+                () -> assertThat(reservations.get(0).time().id()).isEqualTo(time.getId()),
+                () -> assertThat(reservations.get(0).time().startAt()).isEqualTo(time.getStartAt())
         );
     }
 
@@ -104,19 +96,13 @@ class ReservationServiceTest {
     @Test
     void delete() {
         //given
-        long id = 1;
-        String name = "choco";
-        LocalDate date = LocalDate.now().plusYears(1);
-        long timeId = 1L;
-        long themeId = 1L;
-        LocalTime localTime = LocalTime.MIDNIGHT;
-        ReservationTime reservationTime = new ReservationTime(timeId, localTime);
-
-        Theme theme = new Theme(themeId, "name", "description", "thumbnail");
-        reservationRepository.save(new Reservation(id, date, reservationTime, theme));
+        ReservationTime time = getNoon();
+        Theme theme = getTheme1();
+        Reservation reservation = getNextDayReservation(time, theme);
+        reservationRepository.save(reservation);
 
         //when
-        reservationService.delete(id);
+        reservationService.delete(reservation.getId());
 
         //then
         assertThat(reservationRepository.findAll()).hasSize(0);
