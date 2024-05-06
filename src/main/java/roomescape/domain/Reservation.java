@@ -20,6 +20,16 @@ public class Reservation {
         this.theme = theme;
     }
 
+    public void validateDateTime() {
+        if (date.isPastDate()) {
+            throw new IllegalStateException("예약 날짜는 오늘보다 이전일 수 없습니다.");
+        }
+
+        if (date.isPresentDate() && time.isPastOrPresentTime()) {
+            throw new IllegalStateException("예약 시간은 현재 시간보다 이전이거나 같을 수 없습니다.");
+        }
+    }
+
     public Long getId() {
         return id;
     }

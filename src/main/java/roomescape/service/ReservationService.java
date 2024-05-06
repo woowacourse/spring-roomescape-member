@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.persistence.ReservationRepository;
@@ -34,7 +33,8 @@ public class ReservationService {
         ReservationTime reservationTime = getReservationTime(createDto.timeId());
         Theme theme = getTheme(createDto.themeId());
         Reservation reservation = createDto.toDomain(reservationTime, theme);
-        validate(reservation, reservationTime);
+        reservation.validateDateTime();
+        validateDuplicateReservation(reservation);
 
         Reservation createdReservation = reservationRepository.create(reservation);
         return ReservationResponse.from(createdReservation);
@@ -50,17 +50,7 @@ public class ReservationService {
                 .orElseThrow(() -> new NoSuchElementException("해당되는 테마가 없습니다."));
     }
 
-    private void validate(Reservation reservation, ReservationTime reservationTime) {
-        ReservationDate reservationDate = reservation.getDate();
-
-        if (reservationDate.isPastDate()) {
-            throw new IllegalStateException("예약 날짜는 오늘보다 이전일 수 없습니다.");
-        }
-
-        if (reservationDate.isPresentDate() && reservationTime.isPastOrPresentTime()) {
-            throw new IllegalStateException("예약 시간은 현재 시간보다 이전이거나 같을 수 없습니다.");
-        }
-
+    private void validateDuplicateReservation(Reservation reservation) {
         if (reservationRepository.hasDuplicateReservation(reservation)) {
             throw new IllegalStateException("중복된 예약이 존재합니다.");
         }

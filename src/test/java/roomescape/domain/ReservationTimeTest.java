@@ -12,9 +12,9 @@ class ReservationTimeTest {
     @ParameterizedTest
     @CsvSource(value = {"1,true", "0,true", "-1,false"})
     @DisplayName("예약 시간이 현재 시간보다 이전이거나 같은지 확인한다.")
-    void isPastOrPresentTime(int minute, boolean expected) {
+    void isPastOrPresentTime(int minusMinute, boolean expected) {
         // given
-        LocalTime startAt = LocalTime.now().minusMinutes(minute);
+        LocalTime startAt = LocalTime.now().minusMinutes(minusMinute);
         ReservationTime reservationTime = new ReservationTime(startAt);
 
         // when

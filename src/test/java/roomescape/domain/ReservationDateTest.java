@@ -12,9 +12,9 @@ class ReservationDateTest {
     @ParameterizedTest
     @CsvSource(value = {"1,true", "0,false"})
     @DisplayName("현재 날짜보다 이전인지 확인한다.")
-    void isPastDate(int day, boolean expected) {
+    void isPastDate(int minusDay, boolean expected) {
         // given
-        LocalDate date = LocalDate.now().minusDays(day);
+        LocalDate date = LocalDate.now().minusDays(minusDay);
         ReservationDate reservationDate = new ReservationDate(date);
 
         // when
@@ -27,9 +27,9 @@ class ReservationDateTest {
     @ParameterizedTest
     @CsvSource(value = {"1,false", "0,true"})
     @DisplayName("현재 날짜와 같은지 확인한다.")
-    void isPresentDate(int day, boolean expected) {
+    void isPresentDate(int minusDay, boolean expected) {
         // given
-        LocalDate date = LocalDate.now().minusDays(day);
+        LocalDate date = LocalDate.now().minusDays(minusDay);
         ReservationDate reservationDate = new ReservationDate(date);
 
         // when
