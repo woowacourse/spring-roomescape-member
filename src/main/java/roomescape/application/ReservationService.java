@@ -13,6 +13,7 @@ import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.time.ReservationTime;
 import roomescape.domain.time.repository.ReservationTimeRepository;
+import roomescape.dto.reservation.ReservationResponse;
 
 @Service
 public class ReservationService {
@@ -32,12 +33,12 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public Reservation reserve(ReservationCreationRequest request) {
+    public ReservationResponse reserve(ReservationCreationRequest request) {
         ReservationTime time = getTime(request.timeId());
         validateReservationInAdvance(request.date(), time.getStartAt());
         Theme theme = getTheme(request.themeId());
-        Reservation reservation = request.toReservation(time, theme);
-        return reservationRepository.save(reservation);
+        Reservation reservation = reservationRepository.save(request.toReservation(time, theme));
+        return ReservationResponse.from(reservation);
     }
 
     private void validateReservationInAdvance(LocalDate date, LocalTime time) {
@@ -58,8 +59,11 @@ public class ReservationService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
     }
 
-    public List<Reservation> findReservations() {
-        return reservationRepository.findAll();
+    public List<ReservationResponse> findReservations() {
+        return reservationRepository.findAll()
+                .stream()
+                .map(ReservationResponse::from)
+                .toList();
     }
 
     public void cancel(long id) {

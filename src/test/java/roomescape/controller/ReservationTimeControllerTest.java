@@ -16,8 +16,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 import roomescape.application.ReservationTimeService;
-import roomescape.domain.time.ReservationTime;
 import roomescape.dto.reservationtime.ReservationTimeRequest;
+import roomescape.dto.reservationtime.ReservationTimeResponse;
 import roomescape.fixture.ReservationFixture;
 import roomescape.support.ControllerTest;
 import roomescape.support.SimpleMockMvc;
@@ -28,17 +28,17 @@ class ReservationTimeControllerTest extends ControllerTest {
 
     @Test
     void 예약_시간을_생성한다() throws Exception {
-        ReservationTime reservationTime = ReservationFixture.reservationTime();
-        when(reservationTimeService.register(any())).thenReturn(reservationTime);
-        ReservationTimeRequest request = new ReservationTimeRequest(reservationTime.getStartAt());
+        ReservationTimeResponse response = ReservationTimeResponse.from(ReservationFixture.reservationTime());
+        when(reservationTimeService.register(any())).thenReturn(response);
+        ReservationTimeRequest request = new ReservationTimeRequest(response.startAt());
         String content = objectMapper.writeValueAsString(request);
 
         ResultActions result = SimpleMockMvc.post(mockMvc, "/times", content);
 
         result.andExpectAll(
                         status().isCreated(),
-                        jsonPath("$.id").value(reservationTime.getId()),
-                        jsonPath("$.startAt").value(reservationTime.getStartAt().toString())
+                        jsonPath("$.id").value(ReservationFixture.reservationTime().getId()),
+                        jsonPath("$.startAt").value(ReservationFixture.reservationTime().getStartAt().toString())
                 )
                 .andDo(print());
     }
@@ -75,8 +75,9 @@ class ReservationTimeControllerTest extends ControllerTest {
 
     @Test
     void 전체_예약_시간을_조회한다() throws Exception {
-        List<ReservationTime> reservationTimes = IntStream.range(0, 3)
+        List<ReservationTimeResponse> reservationTimes = IntStream.range(0, 3)
                 .mapToObj(ReservationFixture::reservationTime)
+                .map(ReservationTimeResponse::from)
                 .toList();
         when(reservationTimeService.findReservationTimes()).thenReturn(reservationTimes);
 
@@ -84,9 +85,9 @@ class ReservationTimeControllerTest extends ControllerTest {
 
         result.andExpectAll(
                         status().isOk(),
-                        jsonPath("$[0].id").value(reservationTimes.get(0).getId()),
-                        jsonPath("$[1].id").value(reservationTimes.get(1).getId()),
-                        jsonPath("$[2].id").value(reservationTimes.get(2).getId())
+                        jsonPath("$[0].id").value(reservationTimes.get(0).id()),
+                        jsonPath("$[1].id").value(reservationTimes.get(1).id()),
+                        jsonPath("$[2].id").value(reservationTimes.get(2).id())
                 )
                 .andDo(print());
     }

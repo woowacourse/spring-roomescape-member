@@ -11,11 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DuplicateKeyException;
 import roomescape.application.dto.ReservationCreationRequest;
-import roomescape.domain.reservation.Reservation;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.time.ReservationTime;
 import roomescape.domain.time.repository.ReservationTimeRepository;
+import roomescape.dto.reservation.ReservationResponse;
 import roomescape.fixture.ReservationFixture;
 import roomescape.fixture.ThemeFixture;
 import roomescape.support.annotation.FixedClock;
@@ -47,11 +47,11 @@ public class ReservationServiceTest {
         LocalDate date = LocalDate.of(2024, 4, 21);
         ReservationCreationRequest request = new ReservationCreationRequest("prin", date, time.getId(), theme.getId());
 
-        Reservation reservation = reservationService.reserve(request);
+        ReservationResponse response = reservationService.reserve(request);
 
-        assertThat(reservation.getName()).isEqualTo("prin");
-        assertThat(reservation.getDate()).isEqualTo(date);
-        assertThat(reservation.getTime()).isEqualTo(time.getStartAt());
+        assertThat(response.name()).isEqualTo("prin");
+        assertThat(response.date()).isEqualTo(date);
+        assertThat(response.time().startAt()).isEqualTo(time.getStartAt());
     }
 
     @Test
@@ -79,9 +79,9 @@ public class ReservationServiceTest {
     void 예약을_취소한다() {
         LocalDate date = LocalDate.of(2024, 4, 21);
         ReservationCreationRequest request = new ReservationCreationRequest("prin", date, time.getId(), theme.getId());
-        Reservation reservation = reservationService.reserve(request);
+        ReservationResponse response = reservationService.reserve(request);
 
-        reservationService.cancel(reservation.getId());
+        reservationService.cancel(response.id());
 
         assertThat(reservationService.findReservations()).isEmpty();
     }

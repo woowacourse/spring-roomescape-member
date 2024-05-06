@@ -18,9 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 import roomescape.application.ReservationTimeService;
 import roomescape.application.ThemeService;
-import roomescape.domain.theme.Theme;
 import roomescape.dto.reservationtime.AvailableTimeResponse;
 import roomescape.dto.theme.ThemeRequest;
+import roomescape.dto.theme.ThemeResponse;
 import roomescape.fixture.ThemeFixture;
 import roomescape.support.ControllerTest;
 import roomescape.support.SimpleMockMvc;
@@ -33,19 +33,19 @@ class ThemeControllerTest extends ControllerTest {
 
     @Test
     void 테마를_생성한다() throws Exception {
-        Theme theme = ThemeFixture.theme(1L, "레모네와 함께 탐험", "설명", "https://lemone.com");
-        when(themeService.save(any())).thenReturn(theme);
-        ThemeRequest request = new ThemeRequest(theme.getName(), theme.getDescription(), theme.getThumbnail());
+        ThemeResponse response = ThemeResponse.from(ThemeFixture.theme(1L, "레모네와 함께 탐험", "설명", "https://lemone.com"));
+        when(themeService.save(any())).thenReturn(response);
+        ThemeRequest request = new ThemeRequest(response.name(), response.description(), response.thumbnail());
         String content = objectMapper.writeValueAsString(request);
 
         ResultActions result = SimpleMockMvc.post(mockMvc, "/themes", content);
 
         result.andExpectAll(
                 status().isCreated(),
-                jsonPath("$.id").value(theme.getId()),
-                jsonPath("$.name").value(theme.getName()),
-                jsonPath("$.description").value(theme.getDescription()),
-                jsonPath("$.thumbnail").value(theme.getThumbnail())
+                jsonPath("$.id").value(response.id()),
+                jsonPath("$.name").value(response.name()),
+                jsonPath("$.description").value(response.description()),
+                jsonPath("$.thumbnail").value(response.thumbnail())
         ).andDo(print());
     }
 
@@ -97,15 +97,18 @@ class ThemeControllerTest extends ControllerTest {
 
     @Test
     void 전체_테마를_조회한다() throws Exception {
-        List<Theme> themes = List.of(ThemeFixture.theme(), ThemeFixture.theme());
+        List<ThemeResponse> themes = List.of(
+                ThemeResponse.from(ThemeFixture.theme()),
+                ThemeResponse.from(ThemeFixture.theme())
+        );
         when(themeService.findThemes()).thenReturn(themes);
 
         ResultActions result = SimpleMockMvc.get(mockMvc, "/themes");
 
         result.andExpectAll(
                 status().isOk(),
-                jsonPath("$[0].id").value(themes.get(0).getId()),
-                jsonPath("$[1].id").value(themes.get(1).getId())
+                jsonPath("$[0].id").value(themes.get(0).id()),
+                jsonPath("$[1].id").value(themes.get(1).id())
         ).andDo(print());
     }
 
@@ -135,15 +138,18 @@ class ThemeControllerTest extends ControllerTest {
 
     @Test
     void 인기_테마를_조회한다() throws Exception {
-        List<Theme> popularThemes = List.of(ThemeFixture.theme(), ThemeFixture.theme());
+        List<ThemeResponse> popularThemes = List.of(
+                ThemeResponse.from(ThemeFixture.theme()),
+                ThemeResponse.from(ThemeFixture.theme())
+        );
         when(themeService.findPopularThemes()).thenReturn(popularThemes);
 
         ResultActions result = SimpleMockMvc.get(mockMvc, "/themes/popular");
 
         result.andExpectAll(
                 status().isOk(),
-                jsonPath("$[0].id").value(popularThemes.get(0).getId()),
-                jsonPath("$[1].id").value(popularThemes.get(1).getId())
+                jsonPath("$[0].id").value(popularThemes.get(0).id()),
+                jsonPath("$[1].id").value(popularThemes.get(1).id())
         ).andDo(print());
     }
 

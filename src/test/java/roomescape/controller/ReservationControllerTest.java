@@ -17,8 +17,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 import roomescape.application.ReservationService;
-import roomescape.domain.reservation.Reservation;
 import roomescape.dto.reservation.ReservationRequest;
+import roomescape.dto.reservation.ReservationResponse;
 import roomescape.fixture.ReservationFixture;
 import roomescape.support.ControllerTest;
 import roomescape.support.SimpleMockMvc;
@@ -29,21 +29,21 @@ class ReservationControllerTest extends ControllerTest {
 
     @Test
     void 예약을_생성한다() throws Exception {
-        Reservation reservation = ReservationFixture.reservation();
-        when(reservationService.reserve(any())).thenReturn(reservation);
-        ReservationRequest request = new ReservationRequest(reservation.getName(), reservation.getDate(),
-                reservation.getTimeId(), reservation.getTheme().getId());
+        ReservationResponse response = ReservationResponse.from(ReservationFixture.reservation());
+        when(reservationService.reserve(any())).thenReturn(response);
+        ReservationRequest request = new ReservationRequest(response.name(), response.date(), response.time().id(),
+                response.theme().id());
         String content = objectMapper.writeValueAsString(request);
 
         ResultActions result = SimpleMockMvc.post(mockMvc, "/reservations", content);
 
         result.andExpectAll(
                         status().isCreated(),
-                        jsonPath("$.id").value(reservation.getId()),
-                        jsonPath("$.name").value(reservation.getName()),
-                        jsonPath("$.date").value(reservation.getDate().toString()),
-                        jsonPath("$.time.id").value(reservation.getTimeId()),
-                        jsonPath("$.time.startAt").value(reservation.getTime().toString())
+                        jsonPath("$.id").value(response.id()),
+                        jsonPath("$.name").value(response.name()),
+                        jsonPath("$.date").value(response.date().toString()),
+                        jsonPath("$.time.id").value(response.time().id()),
+                        jsonPath("$.time.startAt").value(response.time().startAt().toString())
                 )
                 .andDo(print());
     }
@@ -160,8 +160,9 @@ class ReservationControllerTest extends ControllerTest {
 
     @Test
     void 전체_예약을_조회한다() throws Exception {
-        List<Reservation> reservations = IntStream.range(0, 3)
+        List<ReservationResponse> reservations = IntStream.range(0, 3)
                 .mapToObj(ReservationFixture::reservation)
+                .map(ReservationResponse::from)
                 .toList();
         when(reservationService.findReservations()).thenReturn(reservations);
 
@@ -169,9 +170,9 @@ class ReservationControllerTest extends ControllerTest {
 
         result.andExpectAll(
                         status().isOk(),
-                        jsonPath("$[0].id").value(reservations.get(0).getId()),
-                        jsonPath("$[1].id").value(reservations.get(1).getId()),
-                        jsonPath("$[2].id").value(reservations.get(2).getId())
+                        jsonPath("$[0].id").value(reservations.get(0).id()),
+                        jsonPath("$[1].id").value(reservations.get(1).id()),
+                        jsonPath("$[2].id").value(reservations.get(2).id())
                 )
                 .andDo(print());
     }

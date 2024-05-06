@@ -8,6 +8,7 @@ import roomescape.application.dto.ThemeCreationRequest;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.repository.ThemeRepository;
+import roomescape.dto.theme.ThemeResponse;
 
 @Service
 public class ThemeService {
@@ -23,13 +24,16 @@ public class ThemeService {
         this.reservationRepository = reservationRepository;
     }
 
-    public Theme save(ThemeCreationRequest request) {
-        Theme theme = request.toTheme();
-        return themeRepository.save(theme);
+    public ThemeResponse save(ThemeCreationRequest request) {
+        Theme theme = themeRepository.save(request.toTheme());
+        return ThemeResponse.from(theme);
     }
 
-    public List<Theme> findThemes() {
-        return themeRepository.findAll();
+    public List<ThemeResponse> findThemes() {
+        return themeRepository.findAll()
+                .stream()
+                .map(ThemeResponse::from)
+                .toList();
     }
 
     public void delete(long id) {
@@ -46,7 +50,10 @@ public class ThemeService {
         }
     }
 
-    public List<Theme> findPopularThemes() {
-        return themeRepository.findPopularThemesForWeekLimit10(LocalDate.now(clock));
+    public List<ThemeResponse> findPopularThemes() {
+        return themeRepository.findPopularThemesForWeekLimit10(LocalDate.now(clock))
+                .stream()
+                .map(ThemeResponse::from)
+                .toList();
     }
 }

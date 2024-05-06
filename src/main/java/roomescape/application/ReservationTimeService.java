@@ -9,6 +9,7 @@ import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.time.ReservationTime;
 import roomescape.domain.time.repository.ReservationTimeRepository;
 import roomescape.dto.reservationtime.AvailableTimeResponse;
+import roomescape.dto.reservationtime.ReservationTimeResponse;
 
 @Service
 public class ReservationTimeService {
@@ -23,13 +24,16 @@ public class ReservationTimeService {
         this.reservationRepository = reservationRepository;
     }
 
-    public ReservationTime register(ReservationTimeCreationRequest request) {
-        ReservationTime reservationTime = request.toReservationTime();
-        return reservationTimeRepository.save(reservationTime);
+    public ReservationTimeResponse register(ReservationTimeCreationRequest request) {
+        ReservationTime reservationTime = reservationTimeRepository.save(request.toReservationTime());
+        return ReservationTimeResponse.from(reservationTime);
     }
 
-    public List<ReservationTime> findReservationTimes() {
-        return reservationTimeRepository.findAll();
+    public List<ReservationTimeResponse> findReservationTimes() {
+        return reservationTimeRepository.findAll()
+                .stream()
+                .map(ReservationTimeResponse::from)
+                .toList();
     }
 
     public void delete(long id) {
