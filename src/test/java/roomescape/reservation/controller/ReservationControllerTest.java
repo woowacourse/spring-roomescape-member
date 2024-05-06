@@ -5,7 +5,6 @@ import io.restassured.http.ContentType;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -33,19 +32,12 @@ class ReservationControllerTest extends ControllerTest {
     @Autowired
     ThemeService themeService;
 
-    ReservationTimeResponse reservationTimeResponse;
-    ThemeResponse themeResponse;
-
-    @BeforeEach
-    void setUp() {
-        reservationTimeResponse = reservationTimeService.create(new ReservationTimeRequest("12:00"));
-        themeResponse = themeService.create(new ThemeRequest("name", "description", "thumbnail"));
-    }
-
     @DisplayName("사용자 예약 생성 시 201을 반환한다.")
     @Test
     void create() {
         //given
+        ReservationTimeResponse reservationTimeResponse = reservationTimeService.create(new ReservationTimeRequest("12:00"));
+        ThemeResponse themeResponse = themeService.create(new ThemeRequest("name", "description", "thumbnail"));
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", "2099-08-05");
@@ -65,6 +57,9 @@ class ReservationControllerTest extends ControllerTest {
     @Test
     void delete() {
         //given
+        ReservationTimeResponse reservationTimeResponse = reservationTimeService.create(new ReservationTimeRequest("12:00"));
+        ThemeResponse themeResponse = themeService.create(new ThemeRequest("name", "description", "thumbnail"));
+
         ReservationResponse reservationResponse = reservationService.createMemberReservation(
                 new MemberReservationRequest(
                         "choco",
@@ -110,6 +105,9 @@ class ReservationControllerTest extends ControllerTest {
     @ValueSource(strings = {"", "20-12-31", "2020-1-30", "2020-11-0", "-1"})
     void createBadRequest(String date) {
         //given
+        ReservationTimeResponse reservationTimeResponse = reservationTimeService.create(new ReservationTimeRequest("12:00"));
+        ThemeResponse themeResponse = themeService.create(new ThemeRequest("name", "description", "thumbnail"));
+
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", date);
@@ -130,6 +128,9 @@ class ReservationControllerTest extends ControllerTest {
     @ValueSource(strings = {"", "           "})
     void createNameBadRequest(String name) {
         //given
+        ReservationTimeResponse reservationTimeResponse = reservationTimeService.create(new ReservationTimeRequest("12:00"));
+        ThemeResponse themeResponse = themeService.create(new ThemeRequest("name", "description", "thumbnail"));
+
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", name);
         reservation.put("date", "2100-12-01");
@@ -149,6 +150,9 @@ class ReservationControllerTest extends ControllerTest {
     @Test
     void createReservationAfterNow() {
         //given
+        ReservationTimeResponse reservationTimeResponse = reservationTimeService.create(new ReservationTimeRequest("12:00"));
+        ThemeResponse themeResponse = themeService.create(new ThemeRequest("name", "description", "thumbnail"));
+
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "choco");
         reservation.put("date", LocalDate.now().minusDays(2).toString());
