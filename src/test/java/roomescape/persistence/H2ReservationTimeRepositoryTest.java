@@ -120,7 +120,7 @@ public class H2ReservationTimeRepositoryTest {
 
         // when, then
         assertThatThrownBy(() -> reservationTimeRepository.deleteById(savedReservationTime.getId()))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IllegalStateException.class)
                 .hasMessage("해당 시간은 예약이 존재하여 삭제할 수 없습니다. ");
     }
 

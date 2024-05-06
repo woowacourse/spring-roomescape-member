@@ -89,7 +89,7 @@ class H2ThemeRepositoryTest {
 
         // when, then
         assertThatThrownBy(() -> themeRepository.deleteById(savedTheme.getId()))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IllegalStateException.class)
                 .hasMessage("해당 테마를 참조하는 예약이 존재합니다.");
     }
 
