@@ -14,7 +14,9 @@ public record ReservationResponse(
         @NotNull
         @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate date,
+        @NotNull
         ReservationTimeResponse time,
+        @NotNull
         RoomThemeResponse theme)
 {
 
