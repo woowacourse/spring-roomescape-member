@@ -15,33 +15,36 @@ import roomescape.time.domain.Time;
 
 class ReservationTest {
 
-    private static final LocalDate date = LocalDate.now().plusDays(1);
-    private static final LocalTime time = LocalTime.of(9, 0);
+    private static final LocalTime TIME = LocalTime.of(9, 0);
+    private static final LocalDate TODAY = LocalDate.now();
 
     @Test
     @DisplayName("전달된 id와 같은 값의 id인지 확인.")
     void hasSameId() {
-        Reservation reservation = Reservation.reservationOf(1L, "폴라", date, new Time(time),
+        Reservation reservation = Reservation.reservationOf(1L, "폴라", TODAY, new Time(TIME),
                 new Theme("polla", "폴라 방탈출", "thumbnail"));
 
-        assertAll(() -> Assertions.assertThat(reservation.hasSameId(2L))
-                .isFalse(), () -> Assertions.assertThat(reservation.hasSameId(1L))
-                .isTrue());
+        assertAll(
+                () -> Assertions.assertThat(reservation.hasSameId(2L)).isFalse(),
+                () -> Assertions.assertThat(reservation.hasSameId(1L)).isTrue()
+        );
     }
 
     @Test
-    @DisplayName("이름이 Null 혹은 빈값인 경우 에러를 발생한다.")
+    @DisplayName("이름이 Null 인 경우 에러를 발생한다.")
     void validation_ShouldThrowException_WhenNameIsNull() {
-        assertAll(() -> {
-                    Throwable nameIsEmpty = assertThrows(
-                            RoomEscapeException.class, () -> Reservation.saveReservationOf(" ", date, 1L, 1L));
-                    assertEquals("null 혹은 빈칸으로 이루어진 이름으로 예약을 시도하였습니다.", nameIsEmpty.getMessage());
+        Throwable nameIsNull = assertThrows(RoomEscapeException.class,
+                () -> Reservation.saveReservationOf(null, TODAY, 1L, 1L));
+        assertEquals("null 혹은 빈칸으로 이루어진 이름으로 예약을 시도하였습니다.", nameIsNull.getMessage());
+    }
 
-                    Throwable nameIsNull = assertThrows(RoomEscapeException.class,
-                            () -> Reservation.saveReservationOf(null, date, 1L, 1L));
-                    assertEquals("null 혹은 빈칸으로 이루어진 이름으로 예약을 시도하였습니다.", nameIsNull.getMessage());
-                }
-        );
+    @Test
+    @DisplayName("이름이 빈값인 경우 에러를 발생한다.")
+    void validation_ShouldThrowException_WhenNameIsEmpty() {
+        Throwable nameIsEmpty = assertThrows(
+                RoomEscapeException.class, () -> Reservation.saveReservationOf(" ", TODAY, 1L, 1L));
+
+        assertEquals("null 혹은 빈칸으로 이루어진 이름으로 예약을 시도하였습니다.", nameIsEmpty.getMessage());
     }
 
     @Test
@@ -49,7 +52,7 @@ class ReservationTest {
     void validation_ShouldThrowException_WhenReservationDateIsPast() {
         assertAll(() -> {
                     Throwable pastDateReservation = assertThrows(RoomEscapeException.class,
-                            () -> Reservation.saveReservationOf("pollari", LocalDate.now().minusDays(1), 1L, 1L));
+                            () -> Reservation.saveReservationOf("pollari", TODAY.minusDays(1), 1L, 1L));
                     assertEquals("지난 날짜의 예약을 시도하였습니다.", pastDateReservation.getMessage());
                 }
         );
@@ -60,7 +63,7 @@ class ReservationTest {
     void validation_ShouldThrowException_WhenNameContainsSymbol() {
         assertAll(() -> {
                     Throwable pastDateReservation = assertThrows(RoomEscapeException.class,
-                            () -> Reservation.saveReservationOf("@특수문자", LocalDate.now(), 1L, 1L));
+                            () -> Reservation.saveReservationOf("@특수문자", TODAY, 1L, 1L));
                     assertEquals("특수문자가 포함된 이름으로 예약을 시도하였습니다.", pastDateReservation.getMessage());
                 }
         );

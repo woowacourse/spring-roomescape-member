@@ -17,6 +17,8 @@ import roomescape.theme.domain.Theme;
 @Sql(scripts = "/data-test.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 class ReservationDaoTest {
 
+    private static final LocalDate TODAY = LocalDate.now();
+
     private final ReservationJdbcDao reservationDao;
 
     @Autowired
@@ -27,7 +29,7 @@ class ReservationDaoTest {
     @Test
     @DisplayName("데이터를 정상적으로 저장한다.")
     void saveReservation() {
-        Reservation reservation = Reservation.saveReservationOf("범블비", LocalDate.now(), 1L, 1L);
+        Reservation reservation = Reservation.saveReservationOf("범블비", TODAY, 1L, 1L);
         reservationDao.save(reservation);
 
         Assertions.assertThat(reservation.getId()).isEqualTo(3);
@@ -44,8 +46,8 @@ class ReservationDaoTest {
     @Test
     @DisplayName("지난 7일 기준 예약이 많은 테마 순으로 조회한다.")
     void getTopReservationThemes() {
-        List<Theme> themes = reservationDao.findThemeByDateOrderByThemeIdCountLimit(LocalDate.now().minusWeeks(1),
-                LocalDate.now(), 10);
+        List<Theme> themes = reservationDao.findThemeByDateOrderByThemeIdCountLimit(LocalDate.of(2024, 4, 24),
+                LocalDate.of(2024, 5, 1), 10);
 
         Assertions.assertThat(themes.get(0).getId()).isEqualTo(1);
     }

@@ -18,6 +18,8 @@ import roomescape.reservation.dto.ReservationRequest;
 @Sql(scripts = "/data-test.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 class ReservationIntegrationTest {
 
+    private static final LocalDate TODAY = LocalDate.now();
+
     @LocalServerPort
     private int port;
 
@@ -29,7 +31,7 @@ class ReservationIntegrationTest {
     @Test
     @DisplayName("정상적인 요청에 대하여 예약을 정상적으로 등록, 조회, 삭제한다.")
     void adminReservationPageWork() {
-        ReservationRequest reservationRequest = new ReservationRequest(LocalDate.now().plusDays(1), "polla", 1L, 1L);
+        ReservationRequest reservationRequest = new ReservationRequest(TODAY.plusDays(1), "polla", 1L, 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -59,7 +61,7 @@ class ReservationIntegrationTest {
     @Test
     @DisplayName("예약을 요청시 존재하지 않은 예약 시간의 id일 경우 예외가 발생한다.")
     void notExistTime() {
-        ReservationRequest reservationRequest = new ReservationRequest(LocalDate.now(), "polla", 99L, 1L);
+        ReservationRequest reservationRequest = new ReservationRequest(TODAY, "polla", 0L, 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -74,7 +76,7 @@ class ReservationIntegrationTest {
     void findReservationTimeList() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .when().get("/reservations/1?date=" + LocalDate.now())
+                .when().get("/reservations/1?date=" + TODAY)
                 .then().log().all()
                 .statusCode(200);
     }

@@ -4,8 +4,7 @@ import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.util.HashMap;
-import java.util.Map;
+import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
+import roomescape.time.dto.TimeRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "/data-test.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
@@ -28,12 +28,11 @@ public class TimeIntegrationTest {
     @Test
     @DisplayName("시간을 잘 등록하고 삭제하고 확인이 가능하다.")
     void reservationTimePageWorks() {
-        Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10:00");
+        TimeRequest timeRequest = new TimeRequest(LocalTime.of(10, 0));
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
+                .body(timeRequest)
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201);
