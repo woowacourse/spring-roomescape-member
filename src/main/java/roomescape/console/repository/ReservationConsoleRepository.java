@@ -36,7 +36,7 @@ public class ReservationConsoleRepository implements ReservationRepository {
     }
 
     @Override
-    public List<BookingTimeResponseDto> findAllByDateAndThemeId(String date, long themeId) {
+    public List<BookingTimeResponseDto> findAllByDateNotOrThemeIdNot(String date, long themeId) {
         return List.of();
     }
 

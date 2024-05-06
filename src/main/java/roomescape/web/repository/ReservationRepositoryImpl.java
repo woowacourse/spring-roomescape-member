@@ -77,7 +77,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
-    public List<BookingTimeResponseDto> findAllByDateAndThemeId(final String date, final long themeId) {
+    public List<BookingTimeResponseDto> findAllByDateNotOrThemeIdNot(final String date, final long themeId) {
         final String query = """
                 SELECT t.id, t.start_at, r.id IS NOT NULL AS already_booked
                 FROM reservation_time AS t 

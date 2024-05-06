@@ -39,7 +39,7 @@ public class ReservationTimeService {
 
     @Transactional(readOnly = true)
     public List<BookingTimeResponseDto> findBookable(final String date, final long themeId) {
-        return reservationRepository.findAllByDateAndThemeId(date, themeId);
+        return reservationRepository.findAllByDateNotOrThemeIdNot(date, themeId);
     }
 
     @Transactional

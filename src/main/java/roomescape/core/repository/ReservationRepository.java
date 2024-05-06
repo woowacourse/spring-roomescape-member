@@ -9,7 +9,7 @@ public interface ReservationRepository {
 
     List<Reservation> findAll();
 
-    List<BookingTimeResponseDto> findAllByDateAndThemeId(final String date, final long themeId);
+    List<BookingTimeResponseDto> findAllByDateNotOrThemeIdNot(final String date, final long themeId);
 
     boolean existByTimeId(final long timeId);
 
