@@ -1,5 +1,6 @@
 package roomescape.domain;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface ThemeRepository {
@@ -8,7 +9,7 @@ public interface ThemeRepository {
 
     Theme findById(Long id);
 
-    List<Theme> findTopThemesWithinDays(int day, int limit);
+    List<Theme> findTopThemesWithinDays(LocalDate date, int limit);
 
     Theme save(Theme theme);
 

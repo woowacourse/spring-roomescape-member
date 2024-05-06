@@ -47,7 +47,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findTopThemesWithinDays(int day, int limit) {
+    public List<Theme> findTopThemesWithinDays(LocalDate date, int limit) {
         String sql = "SELECT "
                 + "    th.id AS theme_id, "
                 + "    th.name AS theme_name, "
@@ -60,7 +60,7 @@ public class JdbcThemeRepository implements ThemeRepository {
                 + "GROUP BY th.id "
                 + "ORDER BY total_reservations DESC "
                 + "LIMIT ?";
-        return jdbcTemplate.query(sql, themeRowMapper, LocalDate.now().minusDays(day), limit);
+        return jdbcTemplate.query(sql, themeRowMapper, date, limit);
     }
 
     @Override
@@ -71,7 +71,7 @@ public class JdbcThemeRepository implements ThemeRepository {
                 "thumbnail", theme.getThumbnail()
         );
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
-        
+
         return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 

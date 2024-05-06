@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationRepository;
@@ -11,7 +12,7 @@ import roomescape.dto.ThemeResponse;
 @Service
 public class ThemeService {
 
-    private static final int TOP_THEMES_PERIOD = 7;
+    private static final LocalDate TOP_THEMES_PERIOD = LocalDate.now().minusDays(7);
     private static final int TOP_THEMES_LIMIT = 10;
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
