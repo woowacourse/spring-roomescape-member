@@ -6,13 +6,13 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.reservation.controller.dto.ReservationTimeRequest;
+import roomescape.reservation.controller.dto.ReservationTimeResponse;
 import roomescape.reservation.service.ReservationTimeService;
 import roomescape.util.ControllerTest;
 
@@ -20,11 +20,6 @@ import roomescape.util.ControllerTest;
 class ReservationTimeControllerTest extends ControllerTest {
     @Autowired
     ReservationTimeService reservationTimeService;
-
-    @BeforeEach
-    void setUp() {
-        reservationTimeService.create(new ReservationTimeRequest("12:00"));
-    }
 
     @DisplayName("시간 생성 시, 201을 반환한다.")
     @Test
@@ -45,7 +40,10 @@ class ReservationTimeControllerTest extends ControllerTest {
     @DisplayName("시간 조회 시, 200을 반환한다.")
     @Test
     void findAll() {
-        //given & when & then
+        //given
+        reservationTimeService.create(new ReservationTimeRequest("12:00"));
+
+        //when & then
         RestAssured.given().log().all()
                 .when().get("/times")
                 .then().log().all()
@@ -56,9 +54,12 @@ class ReservationTimeControllerTest extends ControllerTest {
     @DisplayName("시간 삭제 시, 200을 반환한다.")
     @Test
     void delete() {
-        //given & when & then
+        //given
+        ReservationTimeResponse timeResponse = reservationTimeService.create(new ReservationTimeRequest("12:00"));
+
+        //when & then
         RestAssured.given().log().all()
-                .when().delete("/times/1")
+                .when().delete("/times/" + timeResponse.id())
                 .then().log().all()
                 .statusCode(200);
     }

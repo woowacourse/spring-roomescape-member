@@ -39,6 +39,7 @@ class ThemeServiceTest {
         String thumbnail = "thumbnail";
         Theme theme = new Theme(id, name, description, thumbnail);
         themeRepository.save(theme);
+        
         //when
         List<ThemeResponse> themes = themeService.findAllThemes();
 

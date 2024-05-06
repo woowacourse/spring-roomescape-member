@@ -13,6 +13,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.reservation.controller.dto.ThemeRequest;
+import roomescape.reservation.controller.dto.ThemeResponse;
 import roomescape.reservation.service.ThemeService;
 import roomescape.util.ControllerTest;
 
@@ -23,7 +24,6 @@ class ThemeControllerTest extends ControllerTest {
 
     @BeforeEach
     void setUp() {
-        themeService.create(new ThemeRequest("name", "description", "thumbnail"));
     }
 
     @DisplayName("테마 생성 시, 201을 반환한다.")
@@ -47,7 +47,10 @@ class ThemeControllerTest extends ControllerTest {
     @DisplayName("테마 조회 시, 200을 반환한다.")
     @Test
     void findAll() {
-        //given & when & then
+        //given
+        themeService.create(new ThemeRequest("name", "description", "thumbnail"));
+
+        //when & then
         RestAssured.given().log().all()
                 .when().get("/themes")
                 .then().log().all()
@@ -58,9 +61,12 @@ class ThemeControllerTest extends ControllerTest {
     @DisplayName("테마 삭제 시, 204를 반환한다.")
     @Test
     void delete() {
-        //given & when & then
+        //given
+        ThemeResponse themeResponse = themeService.create(new ThemeRequest("name", "description", "thumbnail"));
+
+        //when & then
         RestAssured.given().log().all()
-                .when().delete("/themes/1")
+                .when().delete("/themes/" + themeResponse.id())
                 .then().log().all()
                 .statusCode(204);
     }

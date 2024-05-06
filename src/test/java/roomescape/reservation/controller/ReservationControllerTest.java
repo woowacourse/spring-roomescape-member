@@ -2,6 +2,7 @@ package roomescape.reservation.controller;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +12,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.reservation.controller.dto.ReservationRequest;
+import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.controller.dto.ReservationTimeRequest;
 import roomescape.reservation.controller.dto.ReservationTimeResponse;
 import roomescape.reservation.controller.dto.ThemeRequest;
@@ -38,13 +40,6 @@ class ReservationControllerTest extends ControllerTest {
     void setUp() {
         reservationTimeResponse = reservationTimeService.create(new ReservationTimeRequest("12:00"));
         themeResponse = themeService.create(new ThemeRequest("name", "description", "thumbnail"));
-        reservationService.create(new ReservationRequest(
-                        "choco",
-                        "2099-04-23",
-                        reservationTimeResponse.id(),
-                        themeResponse.id()
-                )
-        );
     }
 
     @DisplayName("예약 생성 시 200을 반환한다.")
@@ -70,12 +65,17 @@ class ReservationControllerTest extends ControllerTest {
     @Test
     void delete() {
         //given
-        long id = reservationService.findAllReservations().stream()
-                .findFirst().orElseThrow().id();
+        ReservationResponse reservationResponse = reservationService.create(new ReservationRequest(
+                        "choco",
+                        LocalDate.now().toString(),
+                        reservationTimeResponse.id(),
+                        themeResponse.id()
+                )
+        );
 
         //when &then
         RestAssured.given().log().all()
-                .when().delete("/reservations/" + id)
+                .when().delete("/reservations/" + reservationResponse.id())
                 .then().log().all()
                 .statusCode(204);
     }
@@ -94,9 +94,12 @@ class ReservationControllerTest extends ControllerTest {
     @DisplayName("존재하지 않은 예약 삭제 시 400를 반환한다.")
     @Test
     void reservationNotFound() {
-        //given & when & then
+        //given
+        long invalidId = 6L;
+
+        //when & then
         RestAssured.given().log().all()
-                .when().delete("/reservations/6")
+                .when().delete("/reservations/" + invalidId)
                 .then().log().all()
                 .statusCode(400);
     }
@@ -110,6 +113,7 @@ class ReservationControllerTest extends ControllerTest {
         reservation.put("name", "브라운");
         reservation.put("date", date);
         reservation.put("timeId", reservationTimeResponse.id());
+        reservation.put("themeId", themeResponse.id());
 
         //when & then
         RestAssured.given().log().all()
@@ -129,6 +133,7 @@ class ReservationControllerTest extends ControllerTest {
         reservation.put("name", name);
         reservation.put("date", "2100-12-01");
         reservation.put("timeId", reservationTimeResponse.id());
+        reservation.put("themeId", themeResponse.id());
 
         //when & then
         RestAssured.given().log().all()
