@@ -32,7 +32,7 @@ public class MemberService {
         Member member = memberRequest.toMember();
 
         if (memberRepository.existsByEmail(member.getEmail())) {
-            throw new IllegalArgumentException("해당 이메일은 이미 존재합니다.");
+            throw new IllegalArgumentException("해당 email의 사용자가 이미 존재합니다.");
         }
 
         Member savedMember = memberRepository.save(member);

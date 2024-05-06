@@ -37,7 +37,7 @@ public class MemberController {
             @RequestBody @Valid MemberRequest memberRequest) {
         MemberResponse memberResponse = memberService.addMember(memberRequest);
 
-        return ResponseEntity.created(URI.create("/member/" + memberResponse.id()))
+        return ResponseEntity.created(URI.create("/members/" + memberResponse.id()))
                 .body(memberResponse);
     }
 
