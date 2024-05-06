@@ -35,12 +35,26 @@ class ThemeControllerTest {
         params.put("description", "완전 무서움");
         params.put("thumbnail", "http://something");
 
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .when().get("/themes")
+                .then()
+                .statusCode(200)
+                .body("size()", is(3));
+
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/themes")
                 .then().log().all()
                 .statusCode(201);
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .when().get("/themes")
+                .then()
+                .statusCode(200)
+                .body("size()", is(4));
     }
 
     @DisplayName("테마 컨트롤러는 테마 조회 요청이 들어오면 200을 반환한다.")

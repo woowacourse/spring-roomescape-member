@@ -50,6 +50,13 @@ class ReservationControllerTest {
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
 
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .when().get("/reservations")
+                .then()
+                .statusCode(200)
+                .body("size()", is(7));
+
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)

@@ -36,6 +36,13 @@ class ReservationTimeControllerTest {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:30");
 
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .when().get("/times")
+                .then()
+                .statusCode(200)
+                .body("size()", is(3));
+
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
