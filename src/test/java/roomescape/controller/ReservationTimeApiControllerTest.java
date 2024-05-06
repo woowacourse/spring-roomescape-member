@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,7 +16,10 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import roomescape.repository.DatabaseCleanupListener;
 import roomescape.service.dto.AvailableTimeResponseDto;
 import roomescape.service.dto.AvailableTimeResponseDtos;
+import roomescape.service.dto.ReservationRequestDto;
+import roomescape.service.dto.ReservationTimeRequestDto;
 import roomescape.service.dto.ReservationTimeResponseDto;
+import roomescape.service.dto.ThemeRequestDto;
 
 @TestExecutionListeners(value = {
         DatabaseCleanupListener.class,
@@ -34,26 +36,19 @@ class ReservationTimeApiControllerTest {
         RestAssured.port = port;
     }
 
-    private final Map<String, String> reservationTimeCreate1 = Map.of(
-            "startAt", "10:00"
-    );
+    private final ReservationTimeRequestDto reservationTimeCreate1 = new ReservationTimeRequestDto("10:00");
+    private final ReservationTimeRequestDto reservationTimeCreate2 = new ReservationTimeRequestDto("12:00");
+    private final ThemeRequestDto themeCreate1 = new ThemeRequestDto("공포", "공포는 무서워", "hi.jpg");
+    private final ReservationRequestDto reservationCreate1 = new ReservationRequestDto("재즈", 1L, "2100-08-05", 1L);
 
-    private final Map<String, String> reservationTimeCreate2 = Map.of(
-            "startAt", "12:00"
-    );
-
-    private final Map<String, Object> reservationCreate1 = Map.of(
-            "name", "재즈",
-            "date", "2100-08-05",
-            "timeId", 1,
-            "themeId", 1
-    );
-
-    private final Map<String, String> themeCreate1 = Map.of(
-            "name", "공포",
-            "description", "공포는 무서워",
-            "thumbnail", "hi.jpg"
-    );
+    private void create(String path, Object param) {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(param)
+                .when().post(path)
+                .then().log().all()
+                .statusCode(201);
+    }
 
     @DisplayName("예약 시간을 생성하는데 성공하면 응답과 201 상태 코드를 반환한다.")
     @Test
@@ -124,15 +119,6 @@ class ReservationTimeApiControllerTest {
         assertThat(actualResponse)
                 .usingRecursiveComparison()
                 .isEqualTo(expectedResponse);
-    }
-
-    private void create(String path, Map<String, String> param) {
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(param)
-                .when().post(path)
-                .then().log().all()
-                .statusCode(201);
     }
 
     @DisplayName("예약 시간을 삭제하는데 성공하면 응답과 204 상태 코드를 반환한다.")
