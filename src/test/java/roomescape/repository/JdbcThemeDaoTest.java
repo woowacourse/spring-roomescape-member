@@ -4,14 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import io.restassured.RestAssured;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.test.annotation.DirtiesContext;
@@ -19,13 +16,10 @@ import roomescape.domain.Theme;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class ThemeDaoTest {
-
-    @LocalServerPort
-    private Integer port;
+class JdbcThemeDaoTest {
 
     @Autowired
-    private ThemeDao themeDao;
+    private JdbcThemeDao themeDao;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -35,11 +29,6 @@ class ThemeDaoTest {
             resultSet.getString("description"),
             resultSet.getString("thumbnail")
     );
-
-    @BeforeEach
-    void setPort() {
-        RestAssured.port = port;
-    }
 
     @DisplayName("모든 테마를 조회한다.")
     @Test

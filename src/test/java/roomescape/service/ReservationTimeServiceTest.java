@@ -10,20 +10,17 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.TimeCreateRequest;
 import roomescape.dto.TimeMemberResponse;
 import roomescape.dto.TimeResponse;
+import roomescape.exception.ExistReservationException;
 import roomescape.exception.IllegalTimeException;
 import roomescape.repository.mock.InMemoryReservationDao;
 import roomescape.repository.mock.InMemoryTimeDao;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationTimeServiceTest {
 
     private final InMemoryTimeDao timeDao = new InMemoryTimeDao();
@@ -55,9 +52,9 @@ class ReservationTimeServiceTest {
         // given
         timeDao.times.add(new ReservationTime(1L, LocalTime.of(10, 0)));
         timeDao.times.add(new ReservationTime(2L, LocalTime.of(11, 0)));
-        reservationDao.reservations.add(new Reservation(1L, "테니", LocalDate.of(2099,12,31),
+        reservationDao.reservations.add(new Reservation(1L, "커비", LocalDate.of(2099,12,31),
                 new ReservationTime(1L, LocalTime.of(10,0)),
-                new Theme(1L, "테마이름", "설명", "썸네일")));
+                new Theme(1L, "이름", "설명", "썸네일")));
 
         // when
         List<TimeMemberResponse> allTimes = reservationTimeService.findAllWithBooking(LocalDate.of(2099, 12, 31), 1L);
@@ -89,16 +86,17 @@ class ReservationTimeServiceTest {
         assertThat(id).isEqualTo(1L);
     }
 
-//    @DisplayName("예약이 존재하는 경우 예약시간을 삭제하면 예외가 발생한다.")
-//    @Test
-//    void deleteTimeById_AbsenceId_ExceptionThrown() {
-    // given
-//        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "12:00");
-//        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "테마이름", "설명", "썸네일");
-//        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "테니", "2099-07-02", 1, 1);
-//
-//        // when & then
-//        assertThatThrownBy(() -> reservationTimeService.deleteTimeById(1L))
-//                .isInstanceOf(ExistReservationException.class);
-//    }
+    @DisplayName("예약이 존재하는 경우 예약시간을 삭제하면 예외가 발생한다.")
+    @Test
+    void deleteTimeById_AbsenceId_ExceptionThrown() {
+     // given
+        timeDao.times.add(new ReservationTime(1L, LocalTime.of(10, 0)));
+        reservationDao.reservations.add(new Reservation(1L, "커비", LocalDate.of(2099,12,31),
+                new ReservationTime(1L, LocalTime.of(10,0)),
+                new Theme(1L, "이름", "설명", "썸네일")));
+
+        // when & then
+        assertThatThrownBy(() -> reservationTimeService.deleteTimeById(1L))
+                .isInstanceOf(ExistReservationException.class);
+    }
 }

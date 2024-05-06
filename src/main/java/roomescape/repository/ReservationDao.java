@@ -16,4 +16,8 @@ public interface ReservationDao {
     void deleteById(Long id);
 
     List<Long> findTimeIdsByDateAndThemeId(LocalDate date, Long themeId);
+
+    boolean existByTimeId(Long id);
+
+    boolean existByThemeId(Long id);
 }

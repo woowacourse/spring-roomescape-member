@@ -4,32 +4,40 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.dto.ReservationCreateRequest;
 import roomescape.exception.ExistReservationException;
 import roomescape.exception.IllegalReservationException;
+import roomescape.repository.mock.InMemoryReservationDao;
+import roomescape.repository.mock.InMemoryThemeDao;
+import roomescape.repository.mock.InMemoryTimeDao;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationServiceTest {
 
-    @Autowired
-    private ReservationService reservationService;
+    private final InMemoryReservationDao reservationDao = new InMemoryReservationDao();
+    private final InMemoryTimeDao timeDao = new InMemoryTimeDao();
+    private final InMemoryThemeDao themeDao = new InMemoryThemeDao();
+    private final ReservationService reservationService = new ReservationService(reservationDao, timeDao, themeDao);
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+    @BeforeEach
+    void setUp() {
+        timeDao.times = new ArrayList<>();
+        reservationDao.reservations = new ArrayList<>();
+    }
 
     @DisplayName("예약을 생성한 아이디를 반환한다.")
     @Test
     void save() {
         // given
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "이름", "설명", "썸네일");
+        timeDao.times.add(new ReservationTime(1L, LocalTime.of(10, 0)));
+        themeDao.themes.add(new Theme(1L,"이름", "설명", "썸네일"));
 
 
         // when
@@ -43,9 +51,8 @@ class ReservationServiceTest {
     @Test
     void save_pastDate_IllegalReservationException() {
         // given
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "이름", "설명", "썸네일");
-
+        timeDao.times.add(new ReservationTime(1L, LocalTime.of(10, 0)));
+        themeDao.themes.add(new Theme(1L,"이름", "설명", "썸네일"));
 
         // when && then
         assertThatThrownBy(() -> reservationService.save(new ReservationCreateRequest(null, "커비", LocalDate.of(2000,1,1), 1L, 1L)))
@@ -56,9 +63,8 @@ class ReservationServiceTest {
     @Test
     void save_pastTime_IllegalTimeException() {
         // given
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "00:01");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "이름", "설명", "썸네일");
-
+        timeDao.times.add(new ReservationTime(1L, LocalTime.of(10, 0)));
+        themeDao.themes.add(new Theme(1L,"이름", "설명", "썸네일"));
 
         // when && then
         assertThatThrownBy(() -> reservationService.save(new ReservationCreateRequest(null, "커비", LocalDate.now(), 1L, 1L)))
@@ -70,9 +76,11 @@ class ReservationServiceTest {
     @Test
     void save_duplicatedTime_IllegalTimeException() {
         // given
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "이름", "설명", "썸네일");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "커비", "2099-12-31", 1, 1);
+        timeDao.times.add(new ReservationTime(1L, LocalTime.of(10, 0)));
+        themeDao.themes.add(new Theme(1L,"이름", "설명", "썸네일"));
+        reservationDao.reservations.add(new Reservation(1L, "커비", LocalDate.of(2099,12,31),
+                new ReservationTime(1L, LocalTime.of(10,0)),
+                new Theme(1L, "이름", "설명", "썸네일")));
 
         // when && then
         assertThatThrownBy(() -> reservationService.save(new ReservationCreateRequest(null, "커비", LocalDate.of(2099,12,31), 1L, 1L)))

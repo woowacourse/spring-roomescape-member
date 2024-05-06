@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
 
 @Repository
-public class JdbcTimeDao implements TimeDao{
+public class JdbcTimeDao implements TimeDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;

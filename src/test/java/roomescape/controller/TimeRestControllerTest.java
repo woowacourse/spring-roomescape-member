@@ -30,8 +30,6 @@ class TimeRestControllerTest {
     @Autowired
     private JdbcTimeDao jdbcTimeDao;
 
-
-
     @DisplayName("모든 시간을 조회한다.")
     @Test
     void getAll() {
@@ -49,12 +47,12 @@ class TimeRestControllerTest {
         assertThat(reservations).containsExactly(new TimeResponse(1L, LocalTime.of(10, 0)));
     }
 
-//    @Test // TODO: 해결
+    //    @Test // TODO: 해결
     void getAll_member() {
         // given
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "11:00");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "테마이름", "설명", "썸네일");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "이름", "설명", "썸네일");
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운",
                 "2099-12-31", 1, 1);
 
@@ -67,8 +65,8 @@ class TimeRestControllerTest {
 
         // then
         assertThat(reservations).containsExactly(
-                new TimeMemberResponse(1L, LocalTime.of(10,0), true),
-                new TimeMemberResponse(2L, LocalTime.of(11,0), false)
+                new TimeMemberResponse(1L, LocalTime.of(10, 0), true),
+                new TimeMemberResponse(2L, LocalTime.of(11, 0), false)
         );
     }
 

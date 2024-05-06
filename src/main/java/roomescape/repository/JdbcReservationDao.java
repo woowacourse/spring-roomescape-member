@@ -104,4 +104,17 @@ public class JdbcReservationDao implements ReservationDao {
         return jdbcTemplate.queryForList("SELECT time_id FROM reservation WHERE date = ? AND theme_id = ?", Long.class,
                 date, themeId);
     }
+
+    @Override
+    public boolean existByTimeId(final Long id) {
+        String sql = "SELECT count(*) FROM reservation WHERE time_id = ?";
+        int count = jdbcTemplate.queryForObject(sql, Integer.class, id);
+        return count > 0;
+    }
+
+    @Override
+    public boolean existByThemeId(final Long id) {
+        String sql = "SELECT count(*) FROM reservation WHERE theme_id = ?";
+        int count = jdbcTemplate.queryForObject(sql, Integer.class, id);
+        return count > 0;    }
 }

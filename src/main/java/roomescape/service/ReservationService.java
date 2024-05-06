@@ -10,25 +10,25 @@ import roomescape.dto.ReservationCreateRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.exception.ExistReservationException;
 import roomescape.exception.IllegalReservationException;
-import roomescape.repository.JdbcReservationDao;
+import roomescape.repository.ReservationDao;
 import roomescape.repository.ThemeDao;
-import roomescape.repository.JdbcTimeDao;
+import roomescape.repository.TimeDao;
 
 @Service
 public class ReservationService {
 
-    private final JdbcReservationDao jdbcReservationDao;
-    private final JdbcTimeDao jdbcTimeDao;
+    private final ReservationDao reservationDao;
+    private final TimeDao timeDao;
     private final ThemeDao themeDao;
 
-    public ReservationService(final JdbcTimeDao jdbcTimeDao, JdbcReservationDao jdbcReservationDao, ThemeDao themeDao) {
-        this.jdbcTimeDao = jdbcTimeDao;
-        this.jdbcReservationDao = jdbcReservationDao;
+    public ReservationService(ReservationDao reservationDao, final TimeDao timeDao, ThemeDao themeDao) {
+        this.reservationDao = reservationDao;
+        this.timeDao = timeDao;
         this.themeDao = themeDao;
     }
 
     public List<ReservationResponse> findAll() {
-        List<Reservation> reservations = jdbcReservationDao.findAll();
+        List<Reservation> reservations = reservationDao.findAll();
         return ReservationResponse.fromReservations(reservations);
     }
 
@@ -37,7 +37,7 @@ public class ReservationService {
             throw new IllegalReservationException("[ERROR] 과거 날짜는 예약할 수 없습니다.");
         }
 
-        ReservationTime time = jdbcTimeDao.findById(request.timeId());
+        ReservationTime time = timeDao.findById(request.timeId());
         if (request.date().isEqual(LocalDate.now()) && time.isPast()) {
             throw new IllegalReservationException("[ERROR] 과거 시간은 예약할 수 없습니다.");
         }
@@ -45,14 +45,14 @@ public class ReservationService {
         Theme theme = themeDao.findById(request.themeId());
         Reservation reservation = ReservationCreateRequest.toReservation(request, time, theme);
 
-        if (jdbcReservationDao.existByDateAndTimeAndTheme(reservation.getDate(), reservation.getTimeId(), reservation.getThemeId())) {
+        if (reservationDao.existByDateAndTimeAndTheme(reservation.getDate(), reservation.getTimeId(), reservation.getThemeId())) {
             throw new ExistReservationException("[ERROR] 같은 날짜, 테마, 시간에 중복된 예약을 생성할 수 없습니다.");
         } // TODO: IllegalReservationException와 통합?
 
-        return jdbcReservationDao.save(reservation);
+        return reservationDao.save(reservation);
     }
 
     public void deleteById(Long id) {
-        jdbcReservationDao.deleteById(id);
+        reservationDao.deleteById(id);
     }
 }

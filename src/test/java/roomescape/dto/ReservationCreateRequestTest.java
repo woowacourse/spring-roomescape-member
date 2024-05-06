@@ -20,14 +20,12 @@ class ReservationCreateRequestTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-
-
     @DisplayName("예약자 이름이 비어있을 경우 BAD REQUEST를 반환한다.")
     @Test
     void create_nullName_badRequest() {
         // given
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "테마이름", "설명", "썸네일");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "이름", "설명", "썸네일");
         Map<String, String> params = Map.of(
                 "name", "",
                 "date", "2024-08-30",
@@ -49,7 +47,7 @@ class ReservationCreateRequestTest {
     void create_nullDate_badRequest() {
         // given
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "테마이름", "설명", "썸네일");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "이름", "설명", "썸네일");
         Map<String, String> params = Map.of(
                 "name", "테니",
                 "date", "",
@@ -71,7 +69,7 @@ class ReservationCreateRequestTest {
     void create_nullTimeId_badRequest() {
         // given
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "테마이름", "설명", "썸네일");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "이름", "설명", "썸네일");
         Map<String, String> params = Map.of(
                 "name", "테니",
                 "date", "2024-08-30",
@@ -93,7 +91,7 @@ class ReservationCreateRequestTest {
     void create_nullThemeId_badRequest() {
         // given
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "테마이름", "설명", "썸네일");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "이름", "설명", "썸네일");
         Map<String, String> params = Map.of(
                 "name", "테니",
                 "date", "2024-08-30",

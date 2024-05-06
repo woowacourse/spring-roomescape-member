@@ -3,7 +3,6 @@ package roomescape.repository.mock;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import roomescape.domain.Reservation;
 import roomescape.repository.ReservationDao;
 
@@ -31,9 +30,9 @@ public class InMemoryReservationDao implements ReservationDao {
     @Override
     public boolean existByDateAndTimeAndTheme(final LocalDate date, final Long timeId, final Long themeId) {
         return reservations.stream()
-                .anyMatch(target -> target.getDate() == date
-                                    && Objects.equals(target.getTimeId(), timeId)
-                                    && Objects.equals(target.getThemeId(), themeId));
+                .anyMatch(target -> target.getDate().equals(date)
+                                    && target.getTimeId().equals(timeId)
+                                    && target.getThemeId().equals(themeId));
 
     }
 
@@ -60,5 +59,17 @@ public class InMemoryReservationDao implements ReservationDao {
                                        && reservation.getThemeId().equals(themeId))
                 .mapToLong(Reservation::getTimeId)
                 .boxed().toList();
+    }
+
+    @Override
+    public boolean existByTimeId(final Long timeId) {
+        return reservations.stream()
+                .anyMatch(target -> target.getTimeId().equals(timeId));
+    }
+
+    @Override
+    public boolean existByThemeId(final Long themeId) {
+        return reservations.stream()
+                .anyMatch(target -> target.getThemeId().equals(themeId));
     }
 }

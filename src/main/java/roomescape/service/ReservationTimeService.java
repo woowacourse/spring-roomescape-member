@@ -2,7 +2,6 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.util.List;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.TimeCreateRequest;
@@ -49,10 +48,9 @@ public class ReservationTimeService {
     }
 
     public void deleteTimeById(Long id) {
-        try {
-            timeDao.deleteById(id);
-        } catch (DataIntegrityViolationException e) {
+        if (reservationDao.existByTimeId(id)) {
             throw new ExistReservationException("[ERROR] 예약이 존재하는 시간은 삭제할 수 없습니다.");
         }
+        timeDao.deleteById(id);
     }
 }

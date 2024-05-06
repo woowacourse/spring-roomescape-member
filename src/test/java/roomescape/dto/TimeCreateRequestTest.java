@@ -16,8 +16,6 @@ import org.springframework.test.annotation.DirtiesContext;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class TimeCreateRequestTest {
 
-
-
     @DisplayName("시작 시간이 비어있을 경우 BAD REQUEST를 반환한다.")
     @Test
     void create_nullStartAt_bad_request() {

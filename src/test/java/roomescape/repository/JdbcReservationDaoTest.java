@@ -3,16 +3,13 @@ package roomescape.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import io.restassured.RestAssured;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.test.annotation.DirtiesContext;
@@ -23,9 +20,6 @@ import roomescape.domain.Theme;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class JdbcReservationDaoTest {
-
-    @LocalServerPort
-    private Integer port;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -40,11 +34,6 @@ class JdbcReservationDaoTest {
             new Theme(resultSet.getLong("theme_id"), resultSet.getString("theme_name"),
                     resultSet.getString("theme_description"), resultSet.getString("theme_thumbnail"))
     );
-
-    @BeforeEach
-    void setPort() {
-        RestAssured.port = port;
-    }
 
     @DisplayName("모든 예약을 조회한다.")
     @Test
