@@ -48,11 +48,11 @@ public class FakeReservationDao implements ReservationDao {
                 .toList();
     }
 
-    @Override // TODO: fake object test!
+    @Override
     public List<Long> findThemeIdByDateAndOrderByThemeIdCountAndLimit(LocalDate startDate, LocalDate endDate, int limit) {
         List<ReservationSavedDto> filteredReservations = findBetweenDates(startDate, endDate);
         Map<Long, Long> countOfThemeIds = countByThemeId(filteredReservations);
-        return sortByCountAndLimit(countOfThemeIds);
+        return sortByCountAndLimit(countOfThemeIds, limit);
     }
 
     private List<ReservationSavedDto> findBetweenDates(LocalDate startDate, LocalDate endDate) {
@@ -71,10 +71,10 @@ public class FakeReservationDao implements ReservationDao {
                 .collect(Collectors.groupingBy(ReservationSavedDto::getThemeId, Collectors.counting()));
     }
 
-    private List<Long> sortByCountAndLimit(Map<Long, Long> countOfThemeIds) {
+    private List<Long> sortByCountAndLimit(Map<Long, Long> countOfThemeIds, int limit) {
         return countOfThemeIds.entrySet().stream()
                 .sorted(Map.Entry.<Long, Long>comparingByValue().reversed())
-                .limit(10)
+                .limit(limit)
                 .map(Map.Entry::getKey)
                 .toList();
     }
@@ -84,7 +84,7 @@ public class FakeReservationDao implements ReservationDao {
         ReservationSavedDto foundReservation = reservations.stream()
                 .filter(reservation -> reservation.getId() == id)
                 .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("아이디가 존재하지 않습니다."));
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 예약입니다."));
         reservations.remove(foundReservation);
     }
 

@@ -43,7 +43,7 @@ public class FakeReservationTimeDao implements ReservationTimeDao {
         ReservationTime findReservationTime = reservationTimes.stream()
                 .filter(reservationTime -> reservationTime.getId() == id)
                 .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("해당하는 아이디가 없습니다."));
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 예약 시간입니다."));
         reservationTimes.remove(findReservationTime);
     }
 
