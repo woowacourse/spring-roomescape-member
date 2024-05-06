@@ -23,9 +23,13 @@ import roomescape.domain.theme.ThemeThumbnail;
 public class JdbcReservationDao implements ReservationDao {
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert jdbcInsert;
 
     public JdbcReservationDao(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
+        this.jdbcInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName("reservation")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
@@ -84,9 +88,6 @@ public class JdbcReservationDao implements ReservationDao {
 
     @Override
     public Reservation create(Reservation reservation) {
-        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
-        jdbcInsert.withTableName("reservation").usingGeneratedKeyColumns("id");
-
         Map<String, Object> params = new HashMap<>();
         params.put("name", reservation.getName().getValue());
         params.put("date", reservation.getDate().getValue());

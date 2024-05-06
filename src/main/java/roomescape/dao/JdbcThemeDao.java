@@ -19,20 +19,24 @@ import roomescape.domain.theme.ThemeThumbnail;
 public class JdbcThemeDao implements ThemeDao {
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert jdbcInsert;
 
     public JdbcThemeDao(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
+        this.jdbcInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName("theme")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
     public List<Theme> readAll() {
-        String sql = "SELECT id, name, description, thumbnail FROM theme" ;
+        String sql = "SELECT id, name, description, thumbnail FROM theme";
         return jdbcTemplate.query(sql, themeRowMapper());
     }
 
     @Override
     public Optional<Theme> readById(Long id) {
-        String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ? " ;
+        String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ? ";
         try {
             Theme theme = jdbcTemplate.queryForObject(sql, themeRowMapper(), id);
             return Optional.of(theme);
@@ -43,9 +47,6 @@ public class JdbcThemeDao implements ThemeDao {
 
     @Override
     public Theme create(Theme theme) {
-        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
-        jdbcInsert.withTableName("theme").usingGeneratedKeyColumns("id");
-
         Map<String, Object> params = new HashMap<>();
         params.put("name", theme.getName().getValue());
         params.put("description", theme.getDescription().getValue());
