@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.global.dto.response.ApiResponse;
 import roomescape.global.exception.error.ErrorType;
-import roomescape.global.exception.model.ConflictException;
+import roomescape.global.exception.model.DataConflictException;
 import roomescape.global.exception.model.ValidateException;
 
 @RestControllerAdvice
@@ -30,9 +30,9 @@ public class ExceptionControllerAdvice {
         return ApiResponse.fail(ErrorType.BAD_REQUEST);
     }
 
-    @ExceptionHandler(value = ConflictException.class)
+    @ExceptionHandler(value = DataConflictException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ApiResponse<Object> handleConflictException(final ConflictException e) {
+    public ApiResponse<Object> handleConflictException(final DataConflictException e) {
         logger.error(e.getMessage(), e);
         return ApiResponse.fail(e.getErrorType());
     }

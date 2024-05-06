@@ -13,7 +13,7 @@ import roomescape.dao.TimeDao;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.Time;
 import roomescape.dto.reservation.ReservationRequest;
-import roomescape.global.exception.model.ConflictException;
+import roomescape.global.exception.model.DataConflictException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -46,7 +46,7 @@ class ReservationServiceTest {
 
         assertThatThrownBy(() -> reservationService.addReservation(
                 new ReservationRequest("예약", LocalDate.now().plusDays(1L), time.getId(), theme.getId())))
-                .isInstanceOf(ConflictException.class);
+                .isInstanceOf(DataConflictException.class);
     }
 
     @Test
@@ -60,7 +60,7 @@ class ReservationServiceTest {
         // when & then
         assertThatThrownBy(() -> reservationService.addReservation(
                 new ReservationRequest("예약", beforeDate, time.getId(), theme.getId())))
-                .isInstanceOf(ConflictException.class);
+                .isInstanceOf(DataConflictException.class);
     }
 
     @Test
@@ -74,6 +74,6 @@ class ReservationServiceTest {
         // when & then
         assertThatThrownBy(() -> reservationService.addReservation(
                 new ReservationRequest("예약", beforeTime.toLocalDate(), time.getId(), theme.getId())))
-                .isInstanceOf(ConflictException.class);
+                .isInstanceOf(DataConflictException.class);
     }
 }
