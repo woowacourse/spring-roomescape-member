@@ -1,6 +1,5 @@
 package roomescape.domain.theme;
 
-import java.util.Objects;
 import roomescape.exception.InvalidValueException;
 
 public class ThemeThumbnail {
