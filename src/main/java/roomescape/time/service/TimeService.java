@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.exception.model.RoomEscapeException;
-import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.domain.Time;
 import roomescape.time.dto.TimeRequest;
@@ -58,9 +57,9 @@ public class TimeService {
     }
 
     public void validateReservationExistence(long timeId) {
-        Optional<Reservation> reservation = reservationRepository.findByTimeId(timeId);
+        boolean isTimeReservationExists = reservationRepository.existByTimeId(timeId);
 
-        if (reservation.isPresent()) {
+        if (isTimeReservationExists) {
             throw new RoomEscapeException(TimeExceptionCode.EXIST_RESERVATION_AT_CHOOSE_TIME);
         }
     }

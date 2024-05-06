@@ -2,9 +2,7 @@ package roomescape.reservation.dao;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import javax.sql.DataSource;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -114,43 +112,17 @@ public class ReservationJdbcDao implements ReservationDao {
     }
 
     @Override
-    public Optional<Reservation> findByTimeId(long timeId) {
-        String findByTimeIdSql = """
-                SELECT r.id, r.name, r.date,
-                       t.id AS time_id, t.start_at,
-                       th.id AS theme_id, th.name AS themeName, th.description, th.thumbnail
-                FROM reservation r
-                INNER JOIN reservation_time t ON r.time_id = t.id
-                INNER JOIN theme th ON r.theme_id = th.id
-                WHERE t.id = ?
-                """;
+    public boolean existsByThemeId(long themeId) {
+        String existByThemeIdSql = "SELECT CASE WHEN EXISTS (SELECT 1 FROM reservation WHERE theme_id = ?) THEN TRUE ELSE FALSE END";
 
-        try {
-            Reservation reservation = jdbcTemplate.queryForObject(findByTimeIdSql, RESERVATION_ROW_MAPPER, timeId);
-            return Optional.of(reservation);
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(existByThemeIdSql, Boolean.class, themeId));
     }
 
     @Override
-    public Optional<Reservation> findByThemeId(long themeId) {
-        String findByThemeIdSql = """
-                SELECT r.id, r.name, r.date,
-                       t.id AS time_id, t.start_at,
-                       th.id AS theme_id, th.name AS themeName, th.description, th.thumbnail
-                FROM reservation r
-                INNER JOIN reservation_time t ON r.time_id = t.id
-                INNER JOIN theme th ON r.theme_id = th.id
-                WHERE th.id = ?
-                """;
+    public boolean existsByTimeId(long timeId) {
+        String existByTimeIdSql = "SELECT CASE WHEN EXISTS (SELECT 1 FROM reservation WHERE time_id = ?) THEN TRUE ELSE FALSE END";
 
-        try {
-            Reservation reservation = jdbcTemplate.queryForObject(findByThemeIdSql, RESERVATION_ROW_MAPPER, themeId);
-            return Optional.of(reservation);
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(existByTimeIdSql, Boolean.class, timeId));
     }
 
     @Override

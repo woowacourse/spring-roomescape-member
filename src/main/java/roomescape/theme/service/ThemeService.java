@@ -2,10 +2,8 @@ package roomescape.theme.service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.exception.model.RoomEscapeException;
-import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.dto.ThemeRankResponse;
@@ -18,7 +16,6 @@ import roomescape.theme.repository.ThemeRepository;
 public class ThemeService {
 
     public static final int NUMBER_OF_ONE_WEEK = 7;
-    public static final int NUMBER_OF_ONE_DAY = 1;
     public static final int TOP_THEMES_LIMIT = 10;
 
     private final ThemeRepository themeRepository;
@@ -54,8 +51,9 @@ public class ThemeService {
     }
 
     public void removeTheme(long id) {
-        Optional<Reservation> reservation = reservationRepository.findByThemeId(id);
-        if (reservation.isPresent()) {
+        boolean isThemeReservationExist = reservationRepository.existByThemeId(id);
+
+        if (isThemeReservationExist) {
             throw new RoomEscapeException(ThemeExceptionCode.USING_THEME_RESERVATION_EXIST);
         }
         themeRepository.deleteById(id);

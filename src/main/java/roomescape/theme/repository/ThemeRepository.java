@@ -22,7 +22,8 @@ public class ThemeRepository {
         return themeDao.findAllThemes();
     }
 
-    public void deleteById(long themeID) {
-        themeDao.deleteById(themeID);
+    public void deleteById(long themeId) {
+        System.out.println("==== theme");
+        themeDao.deleteById(themeId);
     }
 }
