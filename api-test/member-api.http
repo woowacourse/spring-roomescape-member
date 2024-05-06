@@ -1,0 +1,20 @@
+### 회원 가입 API
+POST http://localhost:8080/sighup
+Content-Type: application/json
+
+{
+  "email": "admin@email.com",
+  "password": "password"
+}
+
+### 로그인 API
+POST http://localhost:8080/login
+Content-Type: application/json
+
+{
+  "email": "admin@email.com",
+  "password": "password"
+}
+
+### 인증 정보 조회 API
+GET http://localhost:8080/login/check
