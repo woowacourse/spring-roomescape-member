@@ -61,8 +61,8 @@ public class Reservation {
         return id;
     }
 
-    public UserName getName() {
-        return userName;
+    public String getName() {
+        return userName.getValue();
     }
 
     public LocalDate getDate() {

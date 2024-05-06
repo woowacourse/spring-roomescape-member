@@ -6,7 +6,7 @@ import javax.sql.DataSource;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -30,9 +30,7 @@ public class ReservationTimeDao {
     }
 
     public ReservationTime save(final ReservationTime reservationTime) {
-        final SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("START_AT", reservationTime.getStartAt());
-
+        final SqlParameterSource params = new BeanPropertySqlParameterSource(reservationTime);
         final long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
         return reservationTime.assignId(id);
     }

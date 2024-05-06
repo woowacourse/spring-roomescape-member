@@ -6,7 +6,7 @@ import javax.sql.DataSource;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -30,11 +30,7 @@ public class ThemeDao {
     }
 
     public Theme save(final Theme theme) {
-        final SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("NAME", theme.getName())
-                .addValue("DESCRIPTION", theme.getDescription())
-                .addValue("THUMBNAIL", theme.getThumbnail());
-
+        final SqlParameterSource params = new BeanPropertySqlParameterSource(theme);
         final long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
         return theme.assignId(id);
     }
