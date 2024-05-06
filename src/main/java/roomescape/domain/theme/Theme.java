@@ -6,15 +6,15 @@ public class Theme {
     private final String description;
     private final String thumbnail;
 
-    public Theme(String name, String description, String thumbnail) {
-        this(null, name, description, thumbnail);
-    }
-
     public Theme(Long id, String name, String description, String thumbnail) {
         this.id = id;
         this.name = new ThemeName(name);
         this.description = description;
         this.thumbnail = thumbnail;
+    }
+
+    public Theme(String name, String description, String thumbnail) {
+        this(null, name, description, thumbnail);
     }
 
     public Long getId() {
