@@ -35,6 +35,14 @@ public class ReservationTimeDao {
         return jdbcTemplate.query("SELECT * FROM RESERVATION_TIME", reservationTimeRowMapper);
     }
 
+    public List<ReservationTime> getAvailableTimes(LocalDate date, long themeId) {
+        String query = "SELECT rt.id, rt.start_at " +
+                "FROM reservation_time rt " +
+                "LEFT JOIN reservation r ON rt.id = r.time_id AND r.date = ? AND r.theme_id = ? " +
+                "WHERE r.id IS NULL";
+        return jdbcTemplate.query(query, reservationTimeRowMapper, date, themeId);
+    }
+
     public ReservationTime findById(long id) {
         return jdbcTemplate.queryForObject(
                 "SELECT * FROM RESERVATION_TIME WHERE ID = ?", reservationTimeRowMapper, id
@@ -48,24 +56,19 @@ public class ReservationTimeDao {
         return findById(id);
     }
 
-    public boolean exists(LocalTime startAt) {
-        Integer count = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM RESERVATION_TIME WHERE START_AT = ?",
-                Integer.class,
-                startAt
-        );
-        return count != null && count > 0;
-    }
-
     public void delete(long id) {
         jdbcTemplate.update("DELETE FROM RESERVATION_TIME WHERE ID = ?", id);
     }
 
-    public List<ReservationTime> getAvailableTimes(LocalDate date, long themeId) {
-        String query = "SELECT rt.id, rt.start_at " +
-                "FROM reservation_time rt " +
-                "LEFT JOIN reservation r ON rt.id = r.time_id AND r.date = ? AND r.theme_id = ? " +
-                "WHERE r.id IS NULL";
-        return jdbcTemplate.query(query, reservationTimeRowMapper, date, themeId);
+    public boolean existsById(long id) {
+        String query = "SELECT COUNT(*) FROM RESERVATION_TIME WHERE ID = ?";
+        Integer count = jdbcTemplate.queryForObject(query, Integer.class, id);
+        return count != null && count > 0;
+    }
+
+    public boolean existsByStartAt(LocalTime startAt) {
+        String query = "SELECT COUNT(*) FROM RESERVATION_TIME WHERE START_AT = ?";
+        Integer count = jdbcTemplate.queryForObject(query, Integer.class, startAt);
+        return count != null && count > 0;
     }
 }
