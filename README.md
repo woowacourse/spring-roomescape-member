@@ -93,12 +93,12 @@ Content-Type: application/json
 - [x] 테스트 추가
   - [x] 통합 테스트 - controller
   - [x] 유닛 테스트 - dao, service
+- [x] save 메서드 반환값 아이디로 변경하기
+- [x] 빈값 검증 Request로 옮기기
 - [ ] 테스트 포트 확인
-- [ ] delete 메서드 반환값 아이디로 변경하기
 - [ ] 테스트 httpStatus 통일
 - [ ] /times/member -> /times/available
 - [ ] exception 핸들러 컨트롤러 어드바이스 이해하기
 - [ ] 날짜 7일 상수화
 - [ ] data.sql
-- [ ] 빈값 체크 Request로 옮기기
 - [ ] fake 객체를 만들어서 service에서 dao의 기능을 테스트하지 않도록 해보기
