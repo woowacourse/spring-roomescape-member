@@ -37,9 +37,9 @@ public class ReservationService {
     public ReservationResponse insertReservation(ReservationRequest request) {
         validateDuplicate(request);
         ReservationTime time = reservationTimeDao.findById(request.timeId())
-                .orElseThrow(() -> new IllegalArgumentException("올바르지 않은 입력입니다."));
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
         ReservationTheme theme = reservationThemeDao.findById(request.themeId())
-                .orElseThrow(() -> new IllegalArgumentException("올바르지 않은 입력입니다."));
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
         ReservationInsertCondition insertCondition = new ReservationInsertCondition(request.name(), request.date(),
                 time, theme);
         Reservation inserted = reservationDao.insert(insertCondition);

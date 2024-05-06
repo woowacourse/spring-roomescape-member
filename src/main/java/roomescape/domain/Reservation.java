@@ -21,7 +21,7 @@ public class Reservation {
 
     private void validateId(Long id) {
         if (id == null || id <= 0) {
-            throw new IllegalArgumentException("invalid id");
+            throw new IllegalArgumentException("유효하지 않은 ID 입니다.");
         }
     }
 
