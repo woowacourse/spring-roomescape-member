@@ -3,6 +3,7 @@ package roomescape.theme.repository;
 import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
+import org.springframework.context.annotation.Primary;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.theme.model.Theme;
 
 @Repository
+@Primary
 public class JdbcThemeRepository implements ThemeRepository {
 
     private final JdbcTemplate jdbcTemplate;
