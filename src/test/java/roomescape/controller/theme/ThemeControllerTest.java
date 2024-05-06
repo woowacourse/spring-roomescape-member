@@ -120,11 +120,14 @@ class ThemeControllerTest {
         final String name = "name";
         final String description = "description";
         final String thumbnail = "thumbnail";
-
+        final String over255 = "1".repeat(256);
         return Stream.of(
                 Arguments.of(name, description, null),
                 Arguments.of(name, null, thumbnail),
-                Arguments.of(null, description, thumbnail)
+                Arguments.of(null, description, thumbnail),
+                Arguments.of(over255, description, thumbnail),
+                Arguments.of(name, over255, thumbnail),
+                Arguments.of(name, description, over255)
         );
     }
 }
