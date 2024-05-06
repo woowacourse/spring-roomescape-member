@@ -1,8 +1,5 @@
 package roomescape.reservation;
 
-import static org.hamcrest.Matchers.is;
-import static org.mockito.BDDMockito.given;
-
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.Clock;
@@ -11,14 +8,15 @@ import java.time.ZoneId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.reservation.dto.request.ThemeRequest;
+
+import static org.hamcrest.Matchers.is;
+import static org.mockito.BDDMockito.given;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -26,9 +24,6 @@ class ThemeTest {
 
     @LocalServerPort
     int port;
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     @MockBean
     private Clock clock;
