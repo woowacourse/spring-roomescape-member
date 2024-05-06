@@ -17,7 +17,7 @@ public interface ReservationDao {
 
     long countReservationByTimeId(long timeId);
 
-    long countReservationByDateAndTimeId(LocalDate date, long timeId);
+    long countReservationByDateAndTimeId(LocalDate date, long timeId, long themeId);
 
     List<ReservationTime> findReservationTimeByDateAndTheme(LocalDate date, long themeId);
 }

@@ -32,7 +32,7 @@ public class ReservationRepository {
     public Reservation addReservation(ReservationRequest request) {
         ReservationTime reservationTime = reservationTimeDao.findReservationById(request.getTimeId());
         validateReservationDateTimeBeforeNow(request.getDate(), reservationTime.getStartAt());
-        validateDuplicatedReservation(request.getDate(), request.getTimeId());
+        validateDuplicatedReservation(request.getDate(), request.getThemeId(), request.getTimeId());
 
         Theme theme = themeDao.findThemeById(request.getThemeId());
 
@@ -48,8 +48,8 @@ public class ReservationRepository {
         }
     }
 
-    private void validateDuplicatedReservation(LocalDate date, Long timeId) {
-        Long countReservation = reservationDao.countReservationByDateAndTimeId(date, timeId);
+    private void validateDuplicatedReservation(LocalDate date, Long themeId, Long timeId) {
+        long countReservation = reservationDao.countReservationByDateAndTimeId(date, timeId, themeId);
         if (countReservation > 0) {
             throw new DuplicatedException("이미 해당 시간에 예약이 존재합니다.");
         }

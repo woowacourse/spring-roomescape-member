@@ -92,10 +92,10 @@ class ReservationServiceTest {
                 .doesNotThrowAnyException();
     }
 
-    @DisplayName("날짜, 시간이 일치하는 예약을 추가하려 할 때 예외가 발생한다.")
+    @DisplayName("날짜, 시간, 테마가 일치하는 예약을 추가하려 할 때 예외가 발생한다.")
     @Test
     void should_throw_exception_when_add_exist_reservation() {
-        ReservationRequest request = new ReservationRequest("배키", LocalDate.of(2030, 8, 5), 2L, 2L);
+        ReservationRequest request = new ReservationRequest("배키", LocalDate.of(2030, 8, 5), 2L, 1L);
         assertThatThrownBy(() -> reservationService.addReservation(request))
                 .isInstanceOf(DuplicatedException.class)
                 .hasMessage("[ERROR] 이미 해당 시간에 예약이 존재합니다.");
