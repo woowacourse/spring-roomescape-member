@@ -57,6 +57,12 @@ public class ReservationThemeDao {
         jdbcTemplate.update(sql, id);
     }
 
+
+    public Boolean isExist(Long id) {
+        String sql = "SELECT EXISTS(SELECT * FROM theme WHERE id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
+    }
+
     private RowMapper<ReservationTheme> getReservationThemeRowMapper() {
         return (resultSet, numRow) -> new ReservationTheme(
                 resultSet.getLong("id"),
