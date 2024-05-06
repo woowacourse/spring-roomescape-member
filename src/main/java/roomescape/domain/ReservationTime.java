@@ -16,6 +16,11 @@ public class ReservationTime {
         this.startAt = startAt;
     }
 
+    public boolean isPastOrPresentTime() {
+        LocalTime now = LocalTime.now();
+        return startAt.isBefore(now) || startAt == now;
+    }
+
     public Long getId() {
         return id;
     }

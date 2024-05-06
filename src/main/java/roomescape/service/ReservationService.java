@@ -1,7 +1,6 @@
 package roomescape.service;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
@@ -53,16 +52,14 @@ public class ReservationService {
 
     private void validate(Reservation reservation, ReservationTime reservationTime) {
         LocalDate nowDate = LocalDate.now();
-        LocalTime nowTime = LocalTime.now();
         LocalDate reservationDate = reservation.getDate();
-        LocalTime reservationStartAt = reservationTime.getStartAt();
 
         if (reservationDate.isBefore(nowDate)) {
             throw new IllegalStateException("예약 날짜는 오늘보다 이전일 수 없습니다.");
         }
 
-        if (reservationDate.isEqual(nowDate) && reservationStartAt.isBefore(nowTime)) {
-            throw new IllegalStateException("예약 시간은 현재 시간보다 이전일 수 없습니다.");
+        if (reservationDate.isEqual(nowDate) && reservationTime.isPastOrPresentTime()) {
+            throw new IllegalStateException("예약 시간은 현재 시간보다 이전이거나 같을 수 없습니다.");
         }
 
         if (reservationRepository.hasDuplicateReservation(reservation)) {
