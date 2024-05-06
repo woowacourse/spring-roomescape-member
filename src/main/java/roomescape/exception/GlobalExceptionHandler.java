@@ -15,13 +15,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleResourceNotFoundException(ResourceNotFoundException exception) {
-        ErrorResponse data = new ErrorResponse(HttpStatus.NOT_FOUND, exception.getMessage());
+        ErrorResponse data = new ErrorResponse(exception.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(data);
     }
 
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ErrorResponse> handleBadRequestException(BadRequestException exception) {
-        ErrorResponse data = new ErrorResponse(HttpStatus.BAD_REQUEST, exception.getMessage());
+        ErrorResponse data = new ErrorResponse(exception.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(data);
     }
 
@@ -31,19 +31,21 @@ public class GlobalExceptionHandler {
             return handleDateTimeParseException();
         }
 
-        ErrorResponse data = new ErrorResponse(HttpStatus.BAD_REQUEST, "요청에 잘못된 형식의 값이 있습니다.");
+        ErrorResponse data = new ErrorResponse("요청에 잘못된 형식의 값이 있습니다.");
         return ResponseEntity.badRequest().body(data);
     }
 
     private ResponseEntity<ErrorResponse> handleDateTimeParseException() {
-        ErrorResponse data = new ErrorResponse(HttpStatus.BAD_REQUEST, "잘못된 형식의 날짜 혹은 시간입니다.");
+        ErrorResponse data = new ErrorResponse("잘못된 형식의 날짜 혹은 시간입니다.");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(data);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
-        String message = exception.getBindingResult().getFieldError().getDefaultMessage();
-        ErrorResponse data = new ErrorResponse(HttpStatus.BAD_REQUEST, message);
+        String message = exception.getBindingResult()
+                .getFieldError()
+                .getDefaultMessage();
+        ErrorResponse data = new ErrorResponse(message);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(data);
     }
 }
