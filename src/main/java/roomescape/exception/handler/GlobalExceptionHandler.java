@@ -15,37 +15,37 @@ import java.util.NoSuchElementException;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(value = Exception.class)
+    @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleGeneralException(Exception ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
 
-    @ExceptionHandler(value = DuplicateReservationException.class)
+    @ExceptionHandler(DuplicateReservationException.class)
     public ResponseEntity<String> handleDuplicateReservation(DuplicateReservationException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
 
-    @ExceptionHandler(value = InvalidNameException.class)
+    @ExceptionHandler(InvalidNameException.class)
     public ResponseEntity<String> handleInvalidName(InvalidNameException ex) {
         return ResponseEntity.badRequest().body(ex.getMessage());
     }
 
-    @ExceptionHandler(value = InvalidDateException.class)
+    @ExceptionHandler(InvalidDateException.class)
     public ResponseEntity<String> handleInvalidDate(InvalidDateException ex) {
         return ResponseEntity.badRequest().body(ex.getMessage());
     }
 
-    @ExceptionHandler(value = InvalidTimeException.class)
+    @ExceptionHandler(InvalidTimeException.class)
     public ResponseEntity<String> handleInvalidTime(InvalidTimeException ex) {
         return ResponseEntity.badRequest().body(ex.getMessage());
     }
 
-    @ExceptionHandler(value = DataAccessException.class)
+    @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<String> handleDataAccess(DataAccessException ex) {
         return ResponseEntity.internalServerError().body(ex.getMessage());
     }
 
-    @ExceptionHandler(value = NoSuchElementException.class)
+    @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<String> handleNoSuchElement(NoSuchElementException ex) {
         return ResponseEntity.notFound().build();
     }
