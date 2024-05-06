@@ -1,6 +1,7 @@
 package roomescape.web.api;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,6 +15,7 @@ import roomescape.service.ReservationTimeService;
 import roomescape.service.dto.request.ReservationTimeRequest;
 import roomescape.service.dto.response.AvailableReservationTimeResponse;
 import roomescape.service.dto.response.ReservationTimeResponse;
+import roomescape.web.exception.DateFormat;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -41,12 +43,12 @@ public class ReservationTimeController {
     }
 
     @GetMapping("/times/available")
-    public ResponseEntity<List<AvailableReservationTimeResponse>> findAllAvailable(
-            @RequestParam("date") LocalDate date,
-            @RequestParam("themeId") Long themeId
+    public ResponseEntity<List<AvailableReservationTimeResponse>> findAvailableByThemeAndDate(
+            @DateFormat @RequestParam("date") String date,
+            @Positive @RequestParam("themeId") Long themeId
     ) {
         List<AvailableReservationTimeResponse> reservationTimeResponses =
-                reservationTimeService.findAllWithAvailability(date, themeId);
+                reservationTimeService.findAllWithAvailability(LocalDate.parse(date), themeId);
 
         return ResponseEntity.ok(reservationTimeResponses);
     }
