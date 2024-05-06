@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.BookableTimeResponse;
 import roomescape.dto.BookableTimesRequest;
@@ -19,10 +19,11 @@ public class UserReservationController {
         this.userReservationService = userReservationService;
     }
 
-    @GetMapping("/reservations/bookable-times/{date}/{themeId}")
+    @GetMapping("bookable-times")
     public ResponseEntity<List<BookableTimeResponse>> getTimesWithStatus(
-            @PathVariable("date") LocalDate date,
-            @PathVariable("themeId") Long themeId) {
+            @RequestParam("date") LocalDate date,
+            @RequestParam("themeId") Long themeId) {
+        System.out.println("들옴");
         return ResponseEntity.ok(userReservationService.findBookableTimes(new BookableTimesRequest(date, themeId)));
     }
 }
