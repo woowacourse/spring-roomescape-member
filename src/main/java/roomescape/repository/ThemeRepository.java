@@ -61,7 +61,7 @@ public class ThemeRepository {
         return jdbcTemplate.query(sql, themeRowMapper);
     }
 
-    public List<Theme> findTop10ByOrderByReservationCountBetween(LocalDate start, LocalDate end) {
+    public List<Theme> findRanksByPeriodAndCount(LocalDate start, LocalDate end, int count) {
         String sql = "SELECT t.id, t.name, t.description, t.thumbnail " +
                 "FROM theme AS t " +
                 "INNER JOIN reservation AS r " +
@@ -69,8 +69,8 @@ public class ThemeRepository {
                 "WHERE r.date BETWEEN ? AND ? " +
                 "GROUP BY t.id " +
                 "ORDER BY count(t.id) DESC " +
-                "LIMIT 10";
-        return jdbcTemplate.query(sql, themeRowMapper, Date.valueOf(start), Date.valueOf(end));
+                "LIMIT ?";
+        return jdbcTemplate.query(sql, themeRowMapper, Date.valueOf(start), Date.valueOf(end), count);
     }
 
     public void deleteById(Long id) {

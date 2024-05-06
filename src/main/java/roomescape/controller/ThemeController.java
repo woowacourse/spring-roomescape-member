@@ -48,7 +48,7 @@ public class ThemeController {
 
     @GetMapping("/themes/ranks")
     public ResponseEntity<List<ThemeResponse>> getThemeRanks() {
-        List<Theme> themes = themeFindService.findTop10Recent7Days();
+        List<Theme> themes = themeFindService.findThemeRanks();
         return ResponseEntity.ok(
                 themes.stream()
                         .map(ThemeResponse::new)
