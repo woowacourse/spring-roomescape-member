@@ -55,14 +55,6 @@ public class ReservationService {
         if (reservation.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("예약은 현재 시간 이후여야 합니다.");
         }
-        if (isAlreadyReserved(reservation)) {
-            throw new IllegalArgumentException("해당 시간대 해당 테마 예약은 이미 존재합니다.");
-        }
-    }
-
-    private boolean isAlreadyReserved(Reservation reservation) {
-        return reservationDao.isExistReservationByDateAndTimeIdAndThemeId(
-                reservation.getDate(), reservation.getTimeId(), reservation.getThemeId());
     }
 
     public void deleteReservation(Long id) {

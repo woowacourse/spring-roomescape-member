@@ -1,10 +1,13 @@
 package roomescape.dao;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -66,32 +69,27 @@ public class ReservationDao {
         }
     }
 
-    public boolean isExistReservationByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
-        String sql = """
-                SELECT EXISTS (
-                    SELECT 1
-                    FROM reservation
-                    WHERE date = ? AND time_id = ? AND theme_id = ?
-                )
-                """;
-        return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
-    }
-
     public Reservation createReservation(Reservation reservation) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        String sql = "INSERT INTO reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)";
-
-        jdbcTemplate.update(connection -> {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
-            preparedStatement.setString(1, reservation.getName());
-            preparedStatement.setObject(2, reservation.getDate());
-            preparedStatement.setLong(3, reservation.getTimeId());
-            preparedStatement.setLong(4, reservation.getThemeId());
-            return preparedStatement;
-        }, keyHolder);
+        try {
+            jdbcTemplate.update(connection -> createPreparedStatementForUpdate(connection, reservation), keyHolder);
+        } catch (DuplicateKeyException exception) {
+            throw new IllegalArgumentException("해당 날짜, 시간, 테마에 이미 예약이 존재합니다.");
+        }
 
         Long id = keyHolder.getKey().longValue();
         return readReservationById(id).orElseThrow();
+    }
+
+    private PreparedStatement createPreparedStatementForUpdate(Connection connection, Reservation reservation)
+            throws SQLException {
+        String sql = "INSERT INTO reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
+        preparedStatement.setString(1, reservation.getName());
+        preparedStatement.setObject(2, reservation.getDate());
+        preparedStatement.setLong(3, reservation.getTimeId());
+        preparedStatement.setLong(4, reservation.getThemeId());
+        return preparedStatement;
     }
 
     public void deleteReservation(Long id) {

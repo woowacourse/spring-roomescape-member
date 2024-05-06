@@ -39,9 +39,6 @@ public class ThemeService {
     }
 
     public ThemeResponse createTheme(ThemeCreateRequest dto) {
-        if (themeDao.isExistThemeByName(dto.name())) {
-            throw new IllegalArgumentException("해당 테마 이름은 이미 존재합니다.");
-        }
         Theme createdTheme = themeDao.createTheme(dto.createTheme());
         return ThemeResponse.from(createdTheme);
     }

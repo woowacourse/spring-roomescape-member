@@ -1,11 +1,14 @@
 package roomescape.dao;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -54,29 +57,24 @@ public class TimeDao {
         return jdbcTemplate.query(sql, rowMapper, date, themeId);
     }
 
-    public boolean isExistTimeByStartAt(LocalTime startAt) {
-        String sql = """
-                SELECT EXISTS (
-                    SELECT 1
-                    FROM reservation_time
-                    WHERE start_at = ?
-                )
-                """;
-        return jdbcTemplate.queryForObject(sql, Boolean.class, startAt);
-    }
-
     public ReservationTime createTime(ReservationTime time) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        String sql = "INSERT INTO reservation_time(start_at) VALUES (?)";
-
-        jdbcTemplate.update((connection) -> {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
-            preparedStatement.setObject(1, time.getStartAt());
-            return preparedStatement;
-        }, keyHolder);
+        try {
+            jdbcTemplate.update(connection -> createPreparedStatementForUpdate(connection, time), keyHolder);
+        } catch (DuplicateKeyException exception) {
+            throw new IllegalArgumentException("해당 시간은 이미 존재합니다.");
+        }
 
         Long id = keyHolder.getKey().longValue();
         return time.withId(id);
+    }
+
+    private PreparedStatement createPreparedStatementForUpdate(Connection connection, ReservationTime time)
+            throws SQLException {
+        String sql = "INSERT INTO reservation_time(start_at) VALUES (?)";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql, new String[]{"id"});
+        preparedStatement.setObject(1, time.getStartAt());
+        return preparedStatement;
     }
 
     public void deleteTime(Long id) {

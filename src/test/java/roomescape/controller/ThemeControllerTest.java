@@ -49,7 +49,7 @@ class ThemeControllerTest {
     @DisplayName("인기 테마 목록을 읽을 수 있다.")
     @Test
     void readPopularReservations() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "11:00");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "11:00:00");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                 "테마1", "설명1", "https://image.jpg");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
