@@ -71,6 +71,7 @@ public class JdbcThemeRepository implements ThemeRepository {
                 on r.theme_id = t.id
                 group by t.id
                 order by count desc
+                where count > 0
                 limit 10
                 """;
         return jdbcTemplate.query(sql, themeRowMapper);

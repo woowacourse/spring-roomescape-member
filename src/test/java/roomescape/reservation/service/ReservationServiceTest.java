@@ -2,172 +2,142 @@ package roomescape.reservation.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.reservation.dto.request.CreateReservationRequest;
-import roomescape.reservation.dto.response.CreateReservationResponse;
 import roomescape.reservation.dto.response.FindAvailableTimesResponse;
 import roomescape.reservation.dto.response.FindReservationResponse;
-import roomescape.reservation.model.Reservation;
-import roomescape.reservation.repository.ReservationRepository;
-import roomescape.reservationtime.repository.ReservationTimeRepository;
-import roomescape.theme.repository.ThemeRepository;
-import roomescape.util.DummyDataFixture;
+import roomescape.reservation.fake.FakeReservationRepository;
+import roomescape.reservationtime.fake.FakeReservationTimeRepository;
+import roomescape.theme.fake.FakeThemeRepository;
+import roomescape.fixture.Fixture;
 
-@SpringBootTest
-class ReservationServiceTest extends DummyDataFixture {
+class ReservationServiceTest {
 
-    @InjectMocks
-    private ReservationService reservationService;
+    private static FakeThemeRepository themeRepository;
+    private static FakeReservationTimeRepository reservationTimeRepository;
+    private static FakeReservationRepository reservationRepository;
+    private static ReservationService reservationService;
 
-    @Mock
-    private ReservationRepository reservationRepository;
+    @BeforeAll
+    static void beforeAll() {
+        reservationRepository = new FakeReservationRepository();
+        reservationTimeRepository = new FakeReservationTimeRepository();
+        themeRepository = new FakeThemeRepository(reservationRepository);
+        reservationService = new ReservationService(reservationRepository, reservationTimeRepository,
+                themeRepository);
+    }
 
-    @Mock
-    private ReservationTimeRepository reservationTimeRepository;
+    @BeforeEach
+    void setUp() {
+        reservationRepository.clear();
+        reservationTimeRepository.clear();
+        themeRepository.clear();
 
-    @Mock
-    private ThemeRepository themeRepository;
+        reservationTimeRepository.save(Fixture.RESERVATION_TIME_1);
+        reservationTimeRepository.save(Fixture.RESERVATION_TIME_2);
+        themeRepository.save(Fixture.THEME_1);
+        themeRepository.save(Fixture.THEME_2);
+        reservationRepository.save(Fixture.RESERVATION_1);
+        reservationRepository.save(Fixture.RESERVATION_2);
+    }
 
     @Test
-    @DisplayName("예약 생성 시 해당 데이터의 id값을 반환한다.")
+    @DisplayName("예약 생성 시 해당 데이터를 반환한다.")
     void createReservation() {
         // given
-        CreateReservationRequest createReservationRequest = new CreateReservationRequest(
-                LocalDate.of(2024, 10, 10), "포비", 1L, 1L);
-
-        // stub
-        Mockito.when(reservationTimeRepository.findById(1L)).thenReturn(Optional.of(super.getReservationTimeById(1L)));
-        Mockito.when(themeRepository.findById(1L)).thenReturn(Optional.of(super.getThemeById(1L)));
-        Mockito.when(reservationRepository.save(any(Reservation.class))).thenReturn(super.getReservationById(10L));
+        var request = new CreateReservationRequest("포비", LocalDate.of(2124, 10, 10), 1L, 1L);
 
         // when
-        CreateReservationResponse createReservationResponse = reservationService.createReservation(
-                createReservationRequest);
+        var response = reservationService.createReservation(request);
 
         // then
-        assertThat(createReservationResponse.id()).isEqualTo(10L);
+        Assertions.assertAll(() -> assertThat(response.id()).isEqualTo(3L),
+                () -> assertThat(response.name()).isEqualTo("포비"),
+                () -> assertThat(response.date()).isEqualTo("2124-10-10"),
+                () -> assertThat(response.time().id()).isEqualTo(1L),
+                () -> assertThat(response.theme().id()).isEqualTo(1L));
     }
 
     @Test
-    @DisplayName("예약 생성 시 해당하는 예약 시간 id와 동일하게 저장된 예약 시간이 없는 경우 예외가 발생한다.")
+    @DisplayName("예약 생성 시 해당하는 예약 시간 id 가 없는 경우 예외가 발생한다.")
     void createReservation_ifReservationTimeNotExist_throwException() {
         // given
-        CreateReservationRequest createReservationRequest = new CreateReservationRequest(
-                LocalDate.of(10, 10, 10), "포비", 1L, 1L);
-
-        // stub
-        Mockito.when(reservationTimeRepository.findById(1L)).thenReturn(Optional.empty());
+        var request = new CreateReservationRequest("포비", LocalDate.of(10, 10, 10), 99999L, 1L);
 
         // when & then
-        assertThatThrownBy(() -> reservationService.createReservation(createReservationRequest))
-                .isInstanceOf(NoSuchElementException.class)
-                .hasMessage("해당하는 예약 시간이 존재하지 않습니다.");
+        assertThatThrownBy(() -> reservationService.createReservation(request)).isInstanceOf(
+                NoSuchElementException.class).hasMessage("해당하는 예약 시간이 존재하지 않습니다.");
     }
 
     @Test
-    @DisplayName("예약 생성 시 해당하는 테마 id와 동일하게 저장된 테마가 없는 경우 예외가 발생한다.")
+    @DisplayName("예약 생성 시 해당하는 테마 id가 없는 경우 예외가 발생한다.")
     void createReservation_ifThemeNotExist_throwException() {
         // given
-        CreateReservationRequest createReservationRequest = new CreateReservationRequest(
-                LocalDate.of(10, 10, 10), "포비", 1L, 1L);
-
-        // stub
-        Mockito.when(reservationTimeRepository.findById(1L)).thenReturn(Optional.of(super.getReservationTimeById(1L)));
-        Mockito.when(themeRepository.findById(1L)).thenReturn(Optional.empty());
+        var request = new CreateReservationRequest("포비", LocalDate.of(10, 10, 10), 1L, 99999L);
 
         // when & then
-        assertThatThrownBy(() -> reservationService.createReservation(createReservationRequest))
-                .isInstanceOf(NoSuchElementException.class)
-                .hasMessage("해당하는 테마가 존재하지 않습니다.");
+        assertThatThrownBy(() -> reservationService.createReservation(request)).isInstanceOf(
+                NoSuchElementException.class).hasMessage("해당하는 테마가 존재하지 않습니다.");
     }
 
     @Test
-    @DisplayName("예약 생성 시 해당하는 날짜와 시간이 동일하게 저장된 테마가 있는 경우 예외가 발생한다.")
+    @DisplayName("예약 생성 시 동일한 테마, 날짜, 시간이 겹치는 경우 예외가 발생한다.")
     void createReservation_ifExistSameDateAndTime_throwException() {
         // given
-        CreateReservationRequest createReservationRequest = new CreateReservationRequest(
-                LocalDate.of(2024, 10, 10), "포비", 1L, 1L);
-
-        // stub
-        Mockito.when(reservationTimeRepository.findById(1L)).thenReturn(Optional.of(super.getReservationTimeById(1L)));
-        Mockito.when(themeRepository.findById(1L)).thenReturn(Optional.of(super.getThemeById(1L)));
-        Mockito.when(reservationRepository.existsByDateAndTimeAndTheme(
-                LocalDate.of(2024, 10, 10), 1L, 1L)).thenReturn(true);
+        var request = new CreateReservationRequest("포비", LocalDate.of(2030, 4, 23), 1L, 1L);
+        reservationService.createReservation(request);
 
         // when & then
-        assertThatThrownBy(() -> reservationService.createReservation(createReservationRequest))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("동일한 시간의 예약이 존재합니다.");
+        assertThatThrownBy(() -> reservationService.createReservation(request)).isInstanceOf(
+                IllegalStateException.class).hasMessage("동일한 시간의 예약이 존재합니다.");
     }
 
     @Test
     @DisplayName("예약 생성 시 지나간 날짜와 시간에 대한 예약인 경우 예외가 발생한다.")
     void createReservation_validateReservationDateTime_throwException() {
         // given
-        CreateReservationRequest createReservationRequest = new CreateReservationRequest(
-                LocalDate.of(1000, 10, 10), "포비", 1L, 1L);
-
-        // stub
-        Mockito.when(reservationTimeRepository.findById(1L)).thenReturn(Optional.of(super.getReservationTimeById(1L)));
-        Mockito.when(themeRepository.findById(1L)).thenReturn(Optional.of(super.getThemeById(1L)));
+        CreateReservationRequest createReservationRequest = new CreateReservationRequest("포비", LocalDate.of(1, 1, 1),
+                1L, 1L);
 
         // when & then
-        assertThatThrownBy(() -> reservationService.createReservation(createReservationRequest))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("지나간 날짜와 시간에 대한 예약 생성은 불가능합니다.");
+        assertThatThrownBy(() -> reservationService.createReservation(createReservationRequest)).isInstanceOf(
+                IllegalArgumentException.class).hasMessage("지나간 날짜와 시간에 대한 예약 생성은 불가능합니다.");
     }
 
     @Test
     @DisplayName("예약 목록 조회 시 저장된 예약과 예약 시간에 대한 정보를 반환한다.")
     void getReservations() {
-        // stub
-        Mockito.when(reservationRepository.findAll())
-                .thenReturn(List.of(super.getReservationById(1L), super.getReservationById(2L)));
+        // when
+        List<FindReservationResponse> reservations = reservationService.getReservations();
 
-        // when & then
-        assertThat(reservationService.getReservations())
+        // then
+        assertThat(reservations)
                 .containsExactly(
-                        FindReservationResponse.of(super.getReservationById(1L)),
-                        FindReservationResponse.of(super.getReservationById(2L)));
+                        FindReservationResponse.of(Fixture.RESERVATION_1),
+                        FindReservationResponse.of(Fixture.RESERVATION_2));
     }
 
     @Test
     @DisplayName("해당하는 id와 동일한 저장된 예약 대한 정보를 반환한다.")
     void getReservation() {
-        // given
-        long id = 1L;
-
-        // stub
-        Mockito.when(reservationRepository.findById(id))
-                .thenReturn(Optional.ofNullable(super.getReservationById(id)));
-
         // when & then
-        assertThat(reservationService.getReservation(id))
-                .isEqualTo(FindReservationResponse.of(super.getReservationById(1L)));
+        assertThat(reservationService.getReservation(1L)).isEqualTo(FindReservationResponse.of(Fixture.RESERVATION_1));
     }
 
     @Test
     @DisplayName("해당하는 id와 동일한 저장된 예약이 없는 경우 예외가 발생한다.")
     void getReservation_ifNotExist_throwException() {
-        // stub
-        Mockito.when(reservationRepository.findById(anyLong()))
-                .thenReturn(Optional.empty());
-
         // when & then
-        assertThatThrownBy(() -> reservationService.getReservation(anyLong()))
-                .isInstanceOf(NoSuchElementException.class)
+        assertThatThrownBy(() -> reservationService.getReservation(99999L)).isInstanceOf(NoSuchElementException.class)
                 .hasMessage("해당하는 예약이 존재하지 않습니다.");
     }
 
@@ -175,55 +145,32 @@ class ReservationServiceTest extends DummyDataFixture {
     @Test
     @DisplayName("해당하는 날짜와 테마를 통해 가능한 예약 시간 정보를 반환한다.")
     void getAvailableTimes() {
-        LocalDate date = LocalDate.of(2024, 10, 23);
-
-        // stub
-        Mockito.when(reservationTimeRepository.findAll()).thenReturn(getPreparedReservationTimes());
-        Mockito.when(reservationRepository.findAllByDateAndThemeId(date, 1L))
-                .thenReturn(List.of(getReservationById(1L), getReservationById(2L)));
+        LocalDate date = Fixture.RESERVATION_1.getDate();
+        LocalTime time1 = Fixture.RESERVATION_TIME_1.getTime();
+        LocalTime time2 = Fixture.RESERVATION_TIME_2.getTime();
 
         // when & then
-        assertThat(reservationService.getAvailableTimes(date, 1L))
-                .isEqualTo(List.of(
-                        FindAvailableTimesResponse.of(1L, getReservationTimeById(1L).getTime(), true),
-                        FindAvailableTimesResponse.of(2L, getReservationTimeById(2L).getTime(), true),
-                        FindAvailableTimesResponse.of(3L, getReservationTimeById(3L).getTime(), false),
-                        FindAvailableTimesResponse.of(4L, getReservationTimeById(4L).getTime(), false),
-                        FindAvailableTimesResponse.of(5L, getReservationTimeById(5L).getTime(), false),
-                        FindAvailableTimesResponse.of(6L, getReservationTimeById(6L).getTime(), false)));
+        assertThat(reservationService.getAvailableTimes(date, 1L)).isEqualTo(
+                List.of(FindAvailableTimesResponse.of(1L, time1, true),
+                        FindAvailableTimesResponse.of(2L, time2, false)));
     }
-
 
     @Test
     @DisplayName("해당하는 id와 동일한 저장된 예약을 삭제한다.")
     void deleteReservation() {
-        // given
-        long reservationId = 1L;
-
-        // stub
-        Mockito.when(reservationRepository.findById(reservationId))
-                .thenReturn(Optional.of(super.getReservationById(reservationId)));
-
         // when
-        reservationService.deleteReservation(reservationId);
+        reservationService.deleteReservation(2L);
 
         // then
-        Mockito.verify(reservationRepository, Mockito.times(1)).deleteById(reservationId);
+        assertThat(reservationService.getReservations())
+                .containsExactly(FindReservationResponse.of(Fixture.RESERVATION_1));
     }
 
     @Test
-    @DisplayName("해당하는 id와 동일한 저장된 예약이 없는 경우 예외가 발생한다.")
+    @DisplayName("존재하지 않는 예약 id 를 삭제 시 예외가 발생한다.")
     void deleteReservation_ifNotExist_throwException() {
-        // given
-        long timeId = 2L;
-
-        // stub
-        Mockito.when(reservationRepository.findById(timeId))
-                .thenReturn(Optional.empty());
-
         // when & then
-        assertThatThrownBy(() -> reservationService.deleteReservation(timeId))
-                .isInstanceOf(NoSuchElementException.class)
-                .hasMessage("해당하는 예약이 존재하지 않습니다.");
+        assertThatThrownBy(() -> reservationService.deleteReservation(99999L)).isInstanceOf(
+                NoSuchElementException.class).hasMessage("해당하는 예약이 존재하지 않습니다.");
     }
 }

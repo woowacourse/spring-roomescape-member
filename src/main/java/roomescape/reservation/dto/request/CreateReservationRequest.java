@@ -5,7 +5,7 @@ import roomescape.reservation.model.Reservation;
 import roomescape.reservationtime.model.ReservationTime;
 import roomescape.theme.model.Theme;
 
-public record CreateReservationRequest(LocalDate date, String name, Long timeId, Long themeId) {
+public record CreateReservationRequest(String name, LocalDate date, Long timeId, Long themeId) {
     public CreateReservationRequest {
         if (date == null || name.isBlank() || timeId == null || themeId == null) {
             throw new IllegalArgumentException("올바른 예약이 아닙니다.");
@@ -13,11 +13,6 @@ public record CreateReservationRequest(LocalDate date, String name, Long timeId,
     }
 
     public Reservation toReservation(final ReservationTime reservationTime, final Theme theme) {
-        return new Reservation(
-                null,
-                this.name,
-                this.date,
-                reservationTime,
-                theme);
+        return new Reservation(null, this.name, this.date, reservationTime, theme);
     }
 }

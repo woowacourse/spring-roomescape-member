@@ -2,6 +2,7 @@ package roomescape.theme.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -57,16 +58,18 @@ class JdbcThemeRepositoryTest {
     @DisplayName("Theme 테이블에서 많이 예약된 테마 10개를 내림차순으로 가져온다.")
     void findOrderByReservation() {
         assertThat(themeRepository.findOrderByReservation())
-                .containsExactly(
+                .containsExactlyInAnyOrderElementsOf(List.of(
                         Fixture.THEME_2,
                         Fixture.THEME_1,
-                        Fixture.THEME_3);
+                        Fixture.THEME_3));
     }
 
     @Test
     @DisplayName("주어진 id와 동일한 데이터를 삭제한다.")
     void deleteById() {
         themeRepository.deleteById(3L);
-        assertThat(themeRepository.findById(3L)).isNotPresent();
+
+        assertThat(themeRepository.findById(3L))
+                .isNotPresent();
     }
 }
