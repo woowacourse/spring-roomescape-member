@@ -53,14 +53,10 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> getAll() {
-        List<ReservationResponse> reservations = reservationDao.getAll()
+        return reservationDao.getAll()
                 .stream()
                 .map(ReservationResponse::from)
                 .toList();
-        if (reservations.isEmpty()) {
-            throw new IllegalArgumentException("[ERROR] 방탈출 예약 내역이 없습니다.");
-        }
-        return reservations;
     }
 
     public List<SelectableTimeResponse> findSelectableTimes(final LocalDate date, final long themeId) {
