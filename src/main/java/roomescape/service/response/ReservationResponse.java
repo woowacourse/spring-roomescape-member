@@ -11,7 +11,7 @@ public record ReservationResponse(
 ) {
 
     public static ReservationResponse from(Reservation reservation) {
-        String date = reservation.getDate().toString();
+        String date = reservation.getDate().date().toString();
         ReservationTimeResponse timeResponse = ReservationTimeResponse.from(reservation.getTime());
         ThemeResponse themeResponse = ThemeResponse.from(reservation.getTheme());
 

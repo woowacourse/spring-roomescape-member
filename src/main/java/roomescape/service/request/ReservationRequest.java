@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Positive;
 import java.time.LocalDate;
 import roomescape.domain.Name;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.web.exception.DateValid;
@@ -18,6 +19,6 @@ public record ReservationRequest(
 ) {
 
     public Reservation toDomain(ReservationTime reservationTime, Theme theme) {
-        return new Reservation(new Name(name), LocalDate.parse(date), reservationTime, theme);
+        return new Reservation(new Name(name), new ReservationDate(LocalDate.parse(date)), reservationTime, theme);
     }
 }

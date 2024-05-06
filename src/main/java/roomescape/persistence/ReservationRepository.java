@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Name;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
@@ -21,7 +22,8 @@ public class ReservationRepository {
             (resultSet, rowNum) -> new Reservation(
                     resultSet.getLong("reservation_id"),
                     new Name(resultSet.getString("name")),
-                    LocalDate.parse(resultSet.getString("date")),
+                    new ReservationDate(
+                            LocalDate.parse(resultSet.getString("date"))),
                     new ReservationTime(
                             resultSet.getLong("time_id"),
                             LocalTime.parse(resultSet.getString("start_at"))),
@@ -46,7 +48,7 @@ public class ReservationRepository {
     public Reservation create(Reservation reservation) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.getName().value())
-                .addValue("date", reservation.getDate())
+                .addValue("date", reservation.getDate().date())
                 .addValue("time_id", reservation.getTime().getId())
                 .addValue("theme_id", reservation.getTheme().getId());
         Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
@@ -68,7 +70,7 @@ public class ReservationRepository {
 
         int duplicatedCount = jdbcTemplate.queryForObject(
                 sql,
-                Integer.class, reservation.getDate(),
+                Integer.class, reservation.getDate().date(),
                 reservation.getTime().getId(),
                 reservation.getTheme().getId()
         );

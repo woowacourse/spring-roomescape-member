@@ -18,6 +18,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.domain.Name;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
@@ -60,7 +61,7 @@ class ReservationRepositoryTest {
         // then
         assertAll(
                 () -> assertThat(findReservations.getName().value()).isEqualTo("엘라"),
-                () -> assertThat(findReservations.getDate()).isEqualTo("2024-05-04")
+                () -> assertThat(findReservations.getDate().date()).isEqualTo("2024-05-04")
         );
 
     }
@@ -70,7 +71,7 @@ class ReservationRepositoryTest {
     void create() {
         // given
         Name name = new Name("브라운");
-        LocalDate date = LocalDate.parse("2023-08-05");
+        ReservationDate date = new ReservationDate(LocalDate.parse("2023-08-05"));
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.parse("10:00"));
         Theme theme = new Theme(1L, null, null, null);
         Reservation createReservation = new Reservation(name, date, reservationTime, theme);
@@ -101,7 +102,7 @@ class ReservationRepositoryTest {
     void hasDuplicateDateTimeThemeReservation() {
         // given
         Name name = new Name("아톰");
-        LocalDate date = LocalDate.parse("2024-05-04");
+        ReservationDate date = new ReservationDate(LocalDate.parse("2024-05-04"));
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.parse("10:00"));
         Theme theme = new Theme(1L, "테마1", "테마1설명", "테마1이미지");
         Reservation reservation = new Reservation(name, date, reservationTime, theme);
