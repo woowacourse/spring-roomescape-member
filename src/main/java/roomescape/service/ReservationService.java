@@ -24,16 +24,16 @@ public class ReservationService {
         this.themeDao = themeDao;
     }
 
-    public List<ReservationResponse> readReservations() {
-        return reservationDao.readReservations()
+    public List<ReservationResponse> findReservations() {
+        return reservationDao.findReservations()
                 .stream()
                 .map(ReservationResponse::from)
                 .toList();
     }
 
     public ReservationResponse createReservation(ReservationCreateRequest dto) {
-        ReservationTime time = readTimeByTimeId(dto.timeId());
-        Theme theme = readThemeByThemeId(dto.themeId());
+        ReservationTime time = findTimeByTimeId(dto.timeId());
+        Theme theme = findThemeByThemeId(dto.themeId());
         Reservation reservation = dto.createReservation(time, theme);
 
         validateIsAvailable(reservation);
@@ -41,13 +41,13 @@ public class ReservationService {
         return ReservationResponse.from(createdReservation);
     }
 
-    private ReservationTime readTimeByTimeId(Long timeId) {
-        return timeDao.readTimeById(timeId)
+    private ReservationTime findTimeByTimeId(Long timeId) {
+        return timeDao.findTimeById(timeId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 예약 시간이 존재하지 않습니다."));
     }
 
-    private Theme readThemeByThemeId(Long themeId) {
-        return themeDao.readThemeById(themeId)
+    private Theme findThemeByThemeId(Long themeId) {
+        return themeDao.findThemeById(themeId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 테마가 존재하지 않습니다."));
     }
 

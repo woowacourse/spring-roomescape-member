@@ -31,7 +31,7 @@ class ThemeControllerTest {
 
     @DisplayName("테마 목록을 읽을 수 있다.")
     @Test
-    void readReservations() {
+    void findReservations() {
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                 "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg");
 
@@ -48,7 +48,7 @@ class ThemeControllerTest {
 
     @DisplayName("인기 테마 목록을 읽을 수 있다.")
     @Test
-    void readPopularReservations() {
+    void findPopularReservations() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "11:00:00");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                 "테마1", "설명1", "https://image.jpg");

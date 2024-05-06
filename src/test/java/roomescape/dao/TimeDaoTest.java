@@ -30,7 +30,7 @@ class TimeDaoTest {
 
     @DisplayName("저장한 예약 시간을 불러올 수 있다.")
     @Test
-    void readTimesTest() {
+    void findTimesTest() {
         jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00:00");
         jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "10:00:00");
         List<ReservationTime> expected = List.of(
@@ -38,33 +38,33 @@ class TimeDaoTest {
                 new ReservationTime(2L, LocalTime.of(10, 0))
         );
 
-        List<ReservationTime> actual = timeDao.readTimes();
+        List<ReservationTime> actual = timeDao.findTimes();
 
         assertThat(actual).containsAll(expected);
     }
 
     @DisplayName("id를 통해 예약 시간을 조회할 수 있다.")
     @Test
-    void readTimeByIdTest() {
+    void findTimeByIdTest() {
         jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00:00");
         Optional<ReservationTime> expected = Optional.of(new ReservationTime(1L, LocalTime.of(19, 0)));
 
-        Optional<ReservationTime> actual = timeDao.readTimeById(1L);
+        Optional<ReservationTime> actual = timeDao.findTimeById(1L);
 
         assertThat(actual).isEqualTo(expected);
     }
 
     @DisplayName("해당 id의 예약 시간이 없을 경우, 빈 값을 반환한다.")
     @Test
-    void readTimeByIdTest_whenTimeNotExist() {
-        Optional<ReservationTime> actual = timeDao.readTimeById(1L);
+    void findTimeByIdTest_whenTimeNotExist() {
+        Optional<ReservationTime> actual = timeDao.findTimeById(1L);
 
         assertThat(actual).isEmpty();
     }
 
     @DisplayName("특정 날짜, 테마가 예약된 시간을 조회할 수 있다.")
     @Test
-    void readTimesExistsReservationDateAndThemeIdTest() {
+    void findTimesExistsReservationDateAndThemeIdTest() {
         jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00:00");
         jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "10:00:00");
         jdbcTemplate.update(
@@ -75,7 +75,7 @@ class TimeDaoTest {
                 "브라운", "2024-08-15", 2, 1);
         List<ReservationTime> expected = List.of(new ReservationTime(2L, LocalTime.of(10, 0)));
 
-        List<ReservationTime> actual = timeDao.readTimesExistsReservationDateAndThemeId(LocalDate.of(2024, 8, 15), 1L);
+        List<ReservationTime> actual = timeDao.findTimesExistsReservationDateAndThemeId(LocalDate.of(2024, 8, 15), 1L);
 
         assertThat(actual).isEqualTo(expected);
     }

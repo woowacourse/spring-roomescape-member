@@ -25,28 +25,28 @@ class ThemeServiceTest {
 
     @DisplayName("모든 테마를 조회할 수 있다.")
     @Test
-    void readThemesTest() {
-        given(themeDao.readThemes()).willReturn(List.of(
+    void findThemesTest() {
+        given(themeDao.findThemes()).willReturn(List.of(
                 new Theme(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg"),
                 new Theme(2L, "레벨3 탈출", "레벨3 탈출하기", "https://img.jpg")));
 
-        assertThat(themeService.readThemes()).isEqualTo(List.of(
+        assertThat(themeService.findThemes()).isEqualTo(List.of(
                 new ThemeResponse(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg"),
                 new ThemeResponse(2L, "레벨3 탈출", "레벨3 탈출하기", "https://img.jpg")));
     }
 
     @DisplayName("인기 테마를 조회할 수 있다.")
     @Test
-    void readPopularThemesTest() {
+    void findPopularThemesTest() {
         LocalDate currentDate = LocalDate.now();
         LocalDate startDate = currentDate.minusDays(7);
         LocalDate endDate = currentDate.minusDays(1);
         int count = 10;
-        given(themeDao.readThemesSortedByCountOfReservation(startDate, endDate, count)).willReturn(List.of(
+        given(themeDao.findThemesSortedByCountOfReservation(startDate, endDate, count)).willReturn(List.of(
                 new Theme(2L, "레벨3 탈출", "레벨3 탈출하기", "https://img.jpg"),
                 new Theme(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg")));
 
-        assertThat(themeService.readPopularThemes()).isEqualTo(List.of(
+        assertThat(themeService.findPopularThemes()).isEqualTo(List.of(
                 new ThemeResponse(2L, "레벨3 탈출", "레벨3 탈출하기", "https://img.jpg"),
                 new ThemeResponse(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg")));
     }

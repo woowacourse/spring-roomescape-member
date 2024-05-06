@@ -29,7 +29,7 @@ class ThemeDaoTest {
 
     @DisplayName("모든 테마를 조회할 수 있다.")
     @Test
-    void readThemesTest() {
+    void findThemesTest() {
         jdbcTemplate.update(
                 "INSERT INTO theme (name, description, thumbnail) values (?, ?, ?)",
                 "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg");
@@ -40,36 +40,36 @@ class ThemeDaoTest {
                 new Theme(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg"),
                 new Theme(2L, "레벨3 탈출", "레벨3 탈출하기", "https://img.jpg"));
 
-        List<Theme> actual = themeDao.readThemes();
+        List<Theme> actual = themeDao.findThemes();
 
         assertThat(actual).containsAll(expected);
     }
 
     @DisplayName("id를 통해 테마를 조회할 수 있다.")
     @Test
-    void readThemeByIdTest() {
+    void findThemeByIdTest() {
         jdbcTemplate.update(
                 "INSERT INTO theme (name, description, thumbnail) values (?, ?, ?)",
                 "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg");
         Optional<Theme> expected = Optional.of(
                 new Theme(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg"));
 
-        Optional<Theme> actual = themeDao.readThemeById(1L);
+        Optional<Theme> actual = themeDao.findThemeById(1L);
 
         assertThat(actual).isEqualTo(expected);
     }
 
     @DisplayName("해당 id의 테마가 없을 경우, 빈 값을 반환한다.")
     @Test
-    void readThemeByIdTest_whenThemeNotExist() {
-        Optional<Theme> actual = themeDao.readThemeById(1L);
+    void findThemeByIdTest_whenThemeNotExist() {
+        Optional<Theme> actual = themeDao.findThemeById(1L);
 
         assertThat(actual).isEmpty();
     }
 
     @DisplayName("특정 기간 내 인기 테마를 예약 횟수 순으로 조회할 수 있다.")
     @Test
-    void readThemesSortedByCountOfReservationTest() {
+    void findThemesSortedByCountOfReservationTest() {
         jdbcTemplate.update(
                 "INSERT INTO theme (name, description, thumbnail) values (?, ?, ?)",
                 "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg");
@@ -85,7 +85,7 @@ class ThemeDaoTest {
         LocalDate start = LocalDate.of(2024, 8, 14);
         LocalDate end = LocalDate.of(2024, 8, 15);
         int count = 1;
-        List<Theme> actual = themeDao.readThemesSortedByCountOfReservation(start, end, count);
+        List<Theme> actual = themeDao.findThemesSortedByCountOfReservation(start, end, count);
 
         assertThat(actual).isEqualTo(expected);
     }

@@ -17,16 +17,16 @@ public class TimeService {
         this.timeDao = timeDao;
     }
 
-    public List<TimeResponse> readTimes() {
-        return timeDao.readTimes()
+    public List<TimeResponse> findTimes() {
+        return timeDao.findTimes()
                 .stream()
                 .map(TimeResponse::from)
                 .toList();
     }
 
-    public List<AvailableTimeResponse> readAvailableTimes(LocalDate date, Long themeId) {
-        List<ReservationTime> allTime = timeDao.readTimes();
-        List<ReservationTime> alreadyBookedTime = timeDao.readTimesExistsReservationDateAndThemeId(date, themeId);
+    public List<AvailableTimeResponse> findAvailableTimes(LocalDate date, Long themeId) {
+        List<ReservationTime> allTime = timeDao.findTimes();
+        List<ReservationTime> alreadyBookedTime = timeDao.findTimesExistsReservationDateAndThemeId(date, themeId);
 
         return allTime.stream()
                 .map(time -> AvailableTimeResponse.of(time, alreadyBookedTime.contains(time)))

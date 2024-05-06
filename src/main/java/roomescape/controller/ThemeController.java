@@ -24,14 +24,14 @@ public class ThemeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ThemeResponse>> readThemes() {
-        List<ThemeResponse> response = themeService.readThemes();
+    public ResponseEntity<List<ThemeResponse>> findThemes() {
+        List<ThemeResponse> response = themeService.findThemes();
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<ThemeResponse>> readPopularThemes() {
-        List<ThemeResponse> response = themeService.readPopularThemes();
+    public ResponseEntity<List<ThemeResponse>> findPopularThemes() {
+        List<ThemeResponse> response = themeService.findPopularThemes();
         return ResponseEntity.ok(response);
     }
 

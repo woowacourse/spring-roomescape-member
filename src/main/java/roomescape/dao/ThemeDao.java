@@ -31,7 +31,7 @@ public class ThemeDao {
         );
     }
 
-    public List<Theme> readThemes() {
+    public List<Theme> findThemes() {
         String sql = """
                 SELECT id, name, description, thumbnail
                 FROM theme
@@ -39,7 +39,7 @@ public class ThemeDao {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public Optional<Theme> readThemeById(Long id) {
+    public Optional<Theme> findThemeById(Long id) {
         String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
@@ -48,7 +48,7 @@ public class ThemeDao {
         }
     }
 
-    public List<Theme> readThemesSortedByCountOfReservation(LocalDate startDate, LocalDate endDate, int count) {
+    public List<Theme> findThemesSortedByCountOfReservation(LocalDate startDate, LocalDate endDate, int count) {
         String sql = """
                 SELECT theme.id, theme.name, theme.description, theme.thumbnail, COUNT(reservation.theme_id) AS reservation_count
                 FROM theme

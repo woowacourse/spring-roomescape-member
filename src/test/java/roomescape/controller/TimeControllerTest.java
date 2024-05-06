@@ -33,7 +33,7 @@ class TimeControllerTest {
 
     @DisplayName("시간 목록을 읽을 수 있다.")
     @Test
-    void readTimes() {
+    void findTimes() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", LocalTime.of(10, 0));
 
         int size = RestAssured.given().log().all()
@@ -49,7 +49,7 @@ class TimeControllerTest {
 
     @DisplayName("예약 가능한 시간 목록을 읽을 수 있다.")
     @Test
-    void readAvailableTimes() {
+    void findAvailableTimes() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00:00");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "11:00:00");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",

@@ -31,7 +31,7 @@ class ReservationDaoTest {
 
     @DisplayName("모든 예약을 읽을 수 있다.")
     @Test
-    void readReservationsTest() {
+    void findReservationsTest() {
         jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "19:00:00");
         jdbcTemplate.update(
                 "INSERT INTO theme (name, description, thumbnail) values (?, ?, ?)",
@@ -52,7 +52,7 @@ class ReservationDaoTest {
                         new ReservationTime(1L, LocalTime.of(19, 0)),
                         new Theme(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg")));
 
-        List<Reservation> actual = reservationDao.readReservations();
+        List<Reservation> actual = reservationDao.findReservations();
 
         assertThat(actual).containsAll(expected);
     }

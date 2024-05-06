@@ -20,19 +20,19 @@ public class ThemeService {
         this.themeDao = themeDao;
     }
 
-    public List<ThemeResponse> readThemes() {
-        return themeDao.readThemes()
+    public List<ThemeResponse> findThemes() {
+        return themeDao.findThemes()
                 .stream()
                 .map(ThemeResponse::from)
                 .toList();
     }
 
-    public List<ThemeResponse> readPopularThemes() {
+    public List<ThemeResponse> findPopularThemes() {
         LocalDate currentDate = LocalDate.now();
         LocalDate startDate = currentDate.minusDays(POPULAR_THEME_START_DATE_BOUNDARY);
         LocalDate endDate = currentDate.minusDays(POPULAR_THEME_END_DATE_BOUNDARY);
 
-        return themeDao.readThemesSortedByCountOfReservation(startDate, endDate, COUNT_OF_POPULAR_THEME)
+        return themeDao.findThemesSortedByCountOfReservation(startDate, endDate, COUNT_OF_POPULAR_THEME)
                 .stream()
                 .map(ThemeResponse::from)
                 .toList();

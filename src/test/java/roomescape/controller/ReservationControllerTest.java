@@ -31,7 +31,7 @@ class ReservationControllerTest {
 
     @DisplayName("예약 목록을 읽을 수 있다.")
     @Test
-    void readReservations() {
+    void findReservations() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00:00");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                 "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg");

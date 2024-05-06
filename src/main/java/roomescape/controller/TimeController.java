@@ -28,16 +28,16 @@ public class TimeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TimeResponse>> readTimes() {
-        List<TimeResponse> response = service.readTimes();
+    public ResponseEntity<List<TimeResponse>> findTimes() {
+        List<TimeResponse> response = service.findTimes();
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/available")
-    public ResponseEntity<List<AvailableTimeResponse>> readAvailableTimes(
+    public ResponseEntity<List<AvailableTimeResponse>> findAvailableTimes(
             @RequestParam @JsonFormat(pattern = "yyyy-MM-dd") LocalDate date,
             @RequestParam Long themeId) {
-        List<AvailableTimeResponse> response = service.readAvailableTimes(date, themeId);
+        List<AvailableTimeResponse> response = service.findAvailableTimes(date, themeId);
         return ResponseEntity.ok(response);
     }
 

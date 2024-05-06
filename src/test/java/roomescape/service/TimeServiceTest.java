@@ -27,28 +27,28 @@ class TimeServiceTest {
 
     @DisplayName("예약 시간을 모두 조회할 수 있다.")
     @Test
-    void readTimesTest() {
-        given(timeDao.readTimes()).willReturn(List.of(
+    void findTimesTest() {
+        given(timeDao.findTimes()).willReturn(List.of(
                 new ReservationTime(1L, LocalTime.of(19, 0)),
                 new ReservationTime(2L, LocalTime.of(10, 0))));
 
-        assertThat(timeService.readTimes()).isEqualTo(List.of(
+        assertThat(timeService.findTimes()).isEqualTo(List.of(
                 new TimeResponse(1L, LocalTime.of(19, 0)),
                 new TimeResponse(2L, LocalTime.of(10, 0))));
     }
 
     @DisplayName("예약 시간의 예약 가능 여부를 조회할 수 있다.")
     @Test
-    void readAvailableTimesTest() {
+    void findAvailableTimesTest() {
         LocalDate date = LocalDate.of(2023, 8, 20);
         Long themeId = 1L;
-        given(timeDao.readTimes()).willReturn(List.of(
+        given(timeDao.findTimes()).willReturn(List.of(
                 new ReservationTime(1L, LocalTime.of(19, 0)),
                 new ReservationTime(2L, LocalTime.of(10, 0))));
-        given(timeDao.readTimesExistsReservationDateAndThemeId(date, themeId)).willReturn(List.of(
+        given(timeDao.findTimesExistsReservationDateAndThemeId(date, themeId)).willReturn(List.of(
                 new ReservationTime(1L, LocalTime.of(19, 0))));
 
-        assertThat(timeService.readAvailableTimes(date, themeId)).isEqualTo(List.of(
+        assertThat(timeService.findAvailableTimes(date, themeId)).isEqualTo(List.of(
                 new AvailableTimeResponse(new TimeResponse(1L, LocalTime.of(19, 0)), true),
                 new AvailableTimeResponse(new TimeResponse(2L, LocalTime.of(10, 0)), false)));
     }

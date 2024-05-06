@@ -40,7 +40,7 @@ public class ReservationDao {
         );
     }
 
-    public List<Reservation> readReservations() {
+    public List<Reservation> findReservations() {
         String sql = """
                 SELECT reservation.id, reservation.name, reservation.date, reservation.time_id, reservation.theme_id,
                         reservation_time.start_at,
@@ -52,7 +52,7 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    private Optional<Reservation> readReservationById(Long id) {
+    private Optional<Reservation> findReservationById(Long id) {
         String sql = """
                 SELECT reservation.id, reservation.name, reservation.date, reservation.time_id, reservation.theme_id,
                         reservation_time.start_at,
@@ -78,7 +78,7 @@ public class ReservationDao {
         }
 
         Long id = keyHolder.getKey().longValue();
-        return readReservationById(id).orElseThrow();
+        return findReservationById(id).orElseThrow();
     }
 
     private PreparedStatement createPreparedStatementForUpdate(Connection connection, Reservation reservation)

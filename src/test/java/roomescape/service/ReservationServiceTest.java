@@ -39,8 +39,8 @@ class ReservationServiceTest {
 
     @DisplayName("모든 예약을 조회할 수 있다.")
     @Test
-    void readReservationsTest() {
-        given(reservationDao.readReservations()).willReturn(List.of(
+    void findReservationsTest() {
+        given(reservationDao.findReservations()).willReturn(List.of(
                 new Reservation(
                         1L, "브라운", LocalDate.of(2024, 8, 15),
                         new ReservationTime(1L, LocalTime.of(19, 0)),
@@ -50,7 +50,7 @@ class ReservationServiceTest {
                         new ReservationTime(1L, LocalTime.of(19, 0)),
                         new Theme(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg"))));
 
-        assertThat(reservationService.readReservations()).isEqualTo(List.of(
+        assertThat(reservationService.findReservations()).isEqualTo(List.of(
                 new ReservationResponse(
                         1L, "브라운", LocalDate.of(2024, 8, 15),
                         new TimeResponse(1L, LocalTime.of(19, 0)),
@@ -66,9 +66,9 @@ class ReservationServiceTest {
     void createReservationTest() {
         LocalDate date = LocalDate.now().plusDays(7);
         ReservationCreateRequest request = new ReservationCreateRequest("브라운", date, 1L, 1L);
-        given(timeDao.readTimeById(1L))
+        given(timeDao.findTimeById(1L))
                 .willReturn(Optional.of(new ReservationTime(1L, LocalTime.of(19, 0))));
-        given(themeDao.readThemeById(1L))
+        given(themeDao.findThemeById(1L))
                 .willReturn(Optional.of(new Theme(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg")));
         given(reservationDao.createReservation(any())).willReturn(new Reservation(
                 1L, "브라운", LocalDate.of(2024, 8, 15),
@@ -87,7 +87,7 @@ class ReservationServiceTest {
     void createReservationTest_whenTimeNotExist() {
         LocalDate date = LocalDate.now().plusDays(7);
         ReservationCreateRequest request = new ReservationCreateRequest("브라운", date, 1L, 1L);
-        given(timeDao.readTimeById(1L)).willReturn(Optional.empty());
+        given(timeDao.findTimeById(1L)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> reservationService.createReservation(request))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -99,9 +99,9 @@ class ReservationServiceTest {
     void createReservationTest_whenThemeNotExist() {
         LocalDate date = LocalDate.now().plusDays(7);
         ReservationCreateRequest request = new ReservationCreateRequest("브라운", date, 1L, 1L);
-        given(timeDao.readTimeById(1L))
+        given(timeDao.findTimeById(1L))
                 .willReturn(Optional.of(new ReservationTime(1L, LocalTime.of(19, 0))));
-        given(themeDao.readThemeById(1L)).willReturn(Optional.empty());
+        given(themeDao.findThemeById(1L)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> reservationService.createReservation(request))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -113,9 +113,9 @@ class ReservationServiceTest {
     void createReservationTest_whenDateTimeIsBefore() {
         LocalDate date = LocalDate.now().minusDays(7);
         ReservationCreateRequest request = new ReservationCreateRequest("브라운", date, 1L, 1L);
-        given(timeDao.readTimeById(1L))
+        given(timeDao.findTimeById(1L))
                 .willReturn(Optional.of(new ReservationTime(1L, LocalTime.of(19, 0))));
-        given(themeDao.readThemeById(1L))
+        given(themeDao.findThemeById(1L))
                 .willReturn(Optional.of(new Theme(1L, "레벨2 탈출", "레벨2 탈출하기", "https://img.jpg")));
 
         assertThatThrownBy(() -> reservationService.createReservation(request))
