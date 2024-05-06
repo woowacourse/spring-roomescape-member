@@ -100,37 +100,21 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
-    public Integer countByTimeId(final long timeId) {
-        final String query = """
-                SELECT count(*)
-                FROM reservation
-                WHERE time_id = ?
-                """;
-        return jdbcTemplate.queryForObject(query, Integer.class, timeId);
+    public boolean existByTimeId(final long timeId) {
+        final String query = "SELECT EXISTS(SELECT 1 FROM reservation WHERE time_id = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, timeId));
     }
 
     @Override
-    public Integer countByThemeId(final long themeId) {
-        final String query = """
-                SELECT count(*)
-                FROM reservation
-                WHERE theme_id = ?
-                """;
-        return jdbcTemplate.queryForObject(query, Integer.class, themeId);
+    public boolean existByThemeId(final long themeId) {
+        final String query = "SELECT EXISTS(SELECT 1 FROM reservation WHERE theme_id = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, themeId));
     }
 
     @Override
-    public Integer countByDateAndTimeIdAndThemeId(final String date, final long timeId, final long themeId) {
-        final String query = """
-                SELECT count(*)
-                FROM reservation as r
-                inner join reservation_time as t
-                on r.time_id = t.id
-                inner join theme as m
-                on r.theme_id = m.id
-                WHERE r.date = ? and t.id = ? and m.id = ?
-                """;
-        return jdbcTemplate.queryForObject(query, Integer.class, date, timeId, themeId);
+    public boolean existByDateAndTimeIdAndThemeId(final String date, final long timeId, final long themeId) {
+        final String query = "SELECT EXISTS(SELECT 1 FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, date, timeId, themeId));
     }
 
     @Override

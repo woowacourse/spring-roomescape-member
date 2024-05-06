@@ -41,18 +41,18 @@ public class ReservationConsoleRepository implements ReservationRepository {
     }
 
     @Override
-    public Integer countByTimeId(final long timeId) {
-        return null;
+    public boolean existByTimeId(final long timeId) {
+        return false;
     }
 
     @Override
-    public Integer countByThemeId(final long themeId) {
-        return null;
+    public boolean existByThemeId(final long themeId) {
+        return false;
     }
 
     @Override
-    public Integer countByDateAndTimeIdAndThemeId(final String date, final long timeId, final long themeId) {
-        return null;
+    public boolean existByDateAndTimeIdAndThemeId(final String date, final long timeId, final long themeId) {
+        return false;
     }
 
     @Override

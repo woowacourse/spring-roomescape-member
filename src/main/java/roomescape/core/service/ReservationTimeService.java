@@ -46,9 +46,9 @@ public class ReservationTimeService {
 
     @Transactional
     public void delete(final long id) {
-        final int reservationCount = reservationRepository.countByTimeId(id);
-        if (reservationCount > 0) {
-            throw new IllegalArgumentException("Reservation time that have reservations cannot be deleted.");
+        final boolean exist = reservationRepository.existByTimeId(id);
+        if (exist) {
+            throw new IllegalArgumentException("해당 시간에 예약한 내역이 존재하여 삭제할 수 없습니다.");
         }
         reservationTimeRepository.deleteById(id);
     }

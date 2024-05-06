@@ -11,11 +11,11 @@ public interface ReservationRepository {
 
     List<BookingTimeResponseDto> findAllByDateAndThemeId(final String date, final long themeId);
 
-    Integer countByTimeId(final long timeId);
+    boolean existByTimeId(final long timeId);
 
-    Integer countByThemeId(final long themeId);
+    boolean existByThemeId(final long themeId);
 
-    Integer countByDateAndTimeIdAndThemeId(final String date, final long timeId, final long themeId);
+    boolean existByDateAndTimeIdAndThemeId(final String date, final long timeId, final long themeId);
 
     void deleteById(final long id);
 }

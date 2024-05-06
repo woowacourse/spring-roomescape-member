@@ -45,9 +45,9 @@ public class ThemeService {
 
     @Transactional
     public void delete(final long id) {
-        final int reservationCount = reservationRepository.countByThemeId(id);
-        if (reservationCount > 0) {
-            throw new IllegalArgumentException("Theme that have reservations cannot be deleted.");
+        final boolean exist = reservationRepository.existByThemeId(id);
+        if (exist) {
+            throw new IllegalArgumentException("해당 테마를 예약한 내역이 존재하여 삭제할 수 없습니다.");
         }
         themeRepository.deleteById(id);
     }

@@ -50,9 +50,12 @@ public class ReservationService {
     }
 
     private void validateDuplicatedReservation(final Reservation reservation, final ReservationTime reservationTime) {
-        final Integer reservationCount = reservationRepository.countByDateAndTimeIdAndThemeId(
-                reservation.getDateString(), reservationTime.getId(), reservation.getTheme().getId());
-        if (reservationCount > 0) {
+        final boolean exist = reservationRepository.existByDateAndTimeIdAndThemeId(
+                reservation.getDateString(),
+                reservationTime.getId(),
+                reservation.getTheme().getId()
+        );
+        if (exist) {
             throw new IllegalArgumentException("예약 내역이 존재합니다.");
         }
     }
