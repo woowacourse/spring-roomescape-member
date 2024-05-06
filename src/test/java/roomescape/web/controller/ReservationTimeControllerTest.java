@@ -109,7 +109,7 @@ class ReservationTimeControllerTest extends IntegrationTestSupport {
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(400)
-                .body("details.message", hasItem("생성할 예약 시간은 필수입니다."));
+                .body("details.message", hasItem("예약 시간은 필수입니다."));
     }
 
     @Test
