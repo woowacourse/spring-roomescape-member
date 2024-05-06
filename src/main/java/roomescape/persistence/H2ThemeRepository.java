@@ -63,7 +63,7 @@ public class H2ThemeRepository implements ThemeRepository {
             String sql = "delete from theme where id = ?";
             jdbcTemplate.update(sql, id);
         } catch (DataIntegrityViolationException e) {
-            throw new IllegalArgumentException("해당 테마를 참조하는 예약이 존재합니다.");
+            throw new IllegalStateException("해당 테마를 참조하는 예약이 존재합니다.");
         }
     }
 

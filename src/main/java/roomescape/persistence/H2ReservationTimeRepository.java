@@ -61,7 +61,7 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
         try {
             jdbcTemplate.update(sql, id);
         } catch (DataIntegrityViolationException e) {
-            throw new IllegalArgumentException("해당 시간은 예약이 존재하여 삭제할 수 없습니다. ");
+            throw new IllegalStateException("해당 시간은 예약이 존재하여 삭제할 수 없습니다. ");
         }
     }
 

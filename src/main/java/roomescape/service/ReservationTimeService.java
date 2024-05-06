@@ -66,7 +66,7 @@ public class ReservationTimeService {
                 .anyMatch(reservationTime::hasSameStartAt);
 
         if (isDuplicateReservationTimePresent) {
-            throw new IllegalArgumentException(String.format("중복된 예약 시간이 존재합니다. 입력한 시간: %s",
+            throw new IllegalStateException(String.format("중복된 예약 시간이 존재합니다. 입력한 시간: %s",
                     reservationTime.getStartAt().toString()));
         }
     }

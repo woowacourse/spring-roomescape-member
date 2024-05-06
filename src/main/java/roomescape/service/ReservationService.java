@@ -52,7 +52,7 @@ public class ReservationService {
                 .anyMatch(reservation::hasSameDateTime);
 
         if (isDuplicateReservationPresent) {
-            throw new IllegalArgumentException("중복된 예약이 존재합니다.");
+            throw new IllegalStateException("중복된 예약이 존재합니다.");
         }
     }
 
