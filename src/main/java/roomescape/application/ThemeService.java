@@ -15,6 +15,8 @@ import roomescape.dto.theme.AvailableTimeResponse;
 
 @Service
 public class ThemeService {
+    private static final int INVALID_DELETE_COUNT = 0;
+
     private final Clock clock;
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
@@ -45,10 +47,10 @@ public class ThemeService {
     }
 
     public void delete(long id) {
-        if (themeRepository.findById(id).isEmpty()) {
+        int deleteCount = themeRepository.deleteById(id);
+        if (deleteCount == INVALID_DELETE_COUNT) {
             throw new IllegalArgumentException("존재하지 않는 테마입니다.");
         }
-        themeRepository.deleteById(id);
     }
 
     public List<Theme> findPopularThemes() {

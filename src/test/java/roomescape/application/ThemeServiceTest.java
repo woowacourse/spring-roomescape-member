@@ -4,16 +4,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.application.dto.ThemeCreationRequest;
 import roomescape.domain.theme.Theme;
+import roomescape.support.annotation.FixedClock;
+import roomescape.support.extension.MockClockExtension;
 import roomescape.support.extension.TableTruncateExtension;
 
 @SpringBootTest
-@ExtendWith(TableTruncateExtension.class)
+@ExtendWith({TableTruncateExtension.class, MockClockExtension.class})
+@FixedClock(date = "2024-05-03")
 class ThemeServiceTest {
     @Autowired
     private ThemeService themeService;
@@ -52,9 +57,22 @@ class ThemeServiceTest {
     }
 
     @Test
-    void 아이디가_없으면_예외가_발생한다() {
+    void 존재하지_않는_테마를_삭제하면_예외가_발생한다() {
         assertThatThrownBy(() -> themeService.delete(0L))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("존재하지 않는 테마입니다.");
+    }
+
+    @Test
+    @Sql("/reservation.sql")
+    void 인기_테마를_조회한다() {
+        List<Theme> popularThemes = themeService.findPopularThemes();
+
+        assertAll(
+                () -> assertThat(popularThemes).hasSize(3),
+                () -> assertThat(popularThemes.get(0).getName()).isEqualTo("테마1"),
+                () -> assertThat(popularThemes.get(1).getName()).isEqualTo("테마3"),
+                () -> assertThat(popularThemes.get(2).getName()).isEqualTo("테마2")
+        );
     }
 }

@@ -2,11 +2,11 @@ INSERT INTO reservation_time
 VALUES (1, '11:10');
 
 INSERT INTO theme
-VALUES (1, '우와1`', '재밌는설명', '썸네일');
+VALUES (1, '테마1', '재밌는설명', '썸네일');
 INSERT INTO theme
-VALUES (2, '오오1', '설명22', '썸네일2');
+VALUES (2, '테마2', '설명22', '썸네일2');
 INSERT INTO theme
-VALUES (3, '굿굿1', '설명33', '썸네일3');
+VALUES (3, '테마3', '설명33', '썸네일3');
 
 INSERT INTO reservation
 VALUES (1, '프린', '2024-05-01', 1, 1);
