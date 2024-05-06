@@ -17,7 +17,7 @@ public class ExceptionResponse {
     public ExceptionResponse(String message, List<FieldError> fieldErrors) {
         this.message = message;
         this.details = fieldErrors.stream()
-                .map(fieldError -> fieldError.getDefaultMessage())
+                .map(fieldError -> fieldError.getField() + "은 " + fieldError.getDefaultMessage())
                 .toList();
     }
 
