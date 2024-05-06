@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
 import roomescape.domain.dto.ThemeRequest;
 import roomescape.domain.dto.ThemeResponse;
+import roomescape.exception.DeleteNotAllowException;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ThemeDao;
 
@@ -39,7 +40,7 @@ public class ThemeService {
 
     private void validateExistReservation(final Long id) {
         if (reservationDao.isExistsThemeId(id)) {
-            throw new IllegalArgumentException("[ERROR] 예약이 등록된 테마는 제거할 수 없습니다");
+            throw new DeleteNotAllowException("예약이 등록된 테마는 제거할 수 없습니다.");
         }
     }
 }

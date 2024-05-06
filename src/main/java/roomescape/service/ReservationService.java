@@ -6,6 +6,9 @@ import roomescape.domain.Theme;
 import roomescape.domain.TimeSlot;
 import roomescape.domain.dto.ReservationRequest;
 import roomescape.domain.dto.ReservationResponse;
+import roomescape.exception.ErrorType;
+import roomescape.exception.InvalidClientRequestException;
+import roomescape.exception.ReservationFailException;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ThemeDao;
 import roomescape.repository.TimeDao;
@@ -44,12 +47,12 @@ public class ReservationService {
 
     private TimeSlot getTimeSlot(final ReservationRequest reservationRequest) {
         return timeDao.findById(reservationRequest.timeId())
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 예약 시간입니다"));
+                .orElseThrow(() -> new InvalidClientRequestException(ErrorType.NOT_EXIST_TIME, "timeId", reservationRequest.timeId().toString()));
     }
 
     private Theme getTheme(final ReservationRequest reservationRequest) {
         return themeDao.findById(reservationRequest.themeId())
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 테마 입니다"));
+                .orElseThrow(() -> new InvalidClientRequestException(ErrorType.NOT_EXIST_TIME, "themeId", reservationRequest.themeId().toString()));
     }
 
     private void validate(final LocalDate date, final TimeSlot timeSlot, final Theme theme) {
@@ -57,19 +60,19 @@ public class ReservationService {
         validateDuplicatedReservation(date, timeSlot.getId(), theme.getId());
     }
 
+    private void validateReservation(final LocalDate date, final TimeSlot time) {
+        if (time == null || (time.isTimeBeforeNow() && !date.isAfter(LocalDate.now()))) {
+            throw new ReservationFailException("지나간 날짜와 시간으로 예약할 수 없습니다.");
+        }
+    }
+
     private void validateDuplicatedReservation(final LocalDate date, final Long timeId, final Long themeId) {
         if (reservationDao.isExists(date, timeId, themeId)) {
-            throw new IllegalArgumentException("[ERROR] 예약이 찼어요 ㅜㅜ 죄송해요~~");
+            throw new ReservationFailException("이미 예약이 등록되어 있습니다.");
         }
     }
 
     public void delete(final Long id) {
         reservationDao.delete(id);
-    }
-
-    private void validateReservation(final LocalDate date, final TimeSlot time) {
-        if (time == null || (time.isTimeBeforeNow() && !date.isAfter(LocalDate.now()))) {
-            throw new IllegalArgumentException("[ERROR] 지나간 날짜와 시간으로 예약할 수 없습니다");
-        }
     }
 }

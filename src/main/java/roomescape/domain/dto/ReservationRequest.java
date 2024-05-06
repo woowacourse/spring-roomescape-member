@@ -3,10 +3,15 @@ package roomescape.domain.dto;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.TimeSlot;
+import roomescape.exception.ErrorType;
+import roomescape.exception.InvalidClientRequestException;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public record ReservationRequest(String name, LocalDate date, Long timeId, Long themeId) {
+    private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
     public ReservationRequest {
         isValid(name, date, timeId, themeId);
     }
@@ -17,19 +22,31 @@ public record ReservationRequest(String name, LocalDate date, Long timeId, Long 
 
     private void isValid(final String name, final LocalDate date, final Long timeId, final Long themeId) {
         if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("[ERROR] 이름은 비워둘 수 없습니다.");
+            throw new InvalidClientRequestException(ErrorType.EMPTY_VALUE_NOT_ALLOWED, "name", name);
         }
 
-        if (date == null || date.isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException("[ERROR] 올바르지 않은 예약 날짜입니다.");
+        if (date == null) {
+            throw new InvalidClientRequestException(ErrorType.EMPTY_VALUE_NOT_ALLOWED, "date", "");
         }
 
-        if (timeId == null || timeId <= 0) {
-            throw new IllegalArgumentException("[ERROR] 올바르지 않은 예약 시간입니다.");
+        if (timeId == null) {
+            throw new InvalidClientRequestException(ErrorType.EMPTY_VALUE_NOT_ALLOWED, "timeId", "");
         }
 
-        if (themeId == null || themeId <= -1) {
-            throw new IllegalArgumentException("[ERROR] 올바르지 않은 테마 입니다.");
+        if (timeId <= 0) {
+            throw new InvalidClientRequestException(ErrorType.INVALID_TIME, "timeId", timeId.toString());
+        }
+
+        if (themeId == null) {
+            throw new InvalidClientRequestException(ErrorType.EMPTY_VALUE_NOT_ALLOWED, "themeId", "");
+        }
+
+        if (themeId <= 0) {
+            throw new InvalidClientRequestException(ErrorType.INVALID_THEME, "themeId", themeId.toString());
+        }
+
+        if (date.isBefore(LocalDate.now())) {
+            throw new InvalidClientRequestException(ErrorType.PAST_DATE_NOT_ALLOWED, "date", date.format(DATE_TIME_FORMAT));
         }
     }
 }

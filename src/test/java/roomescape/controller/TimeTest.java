@@ -66,7 +66,7 @@ class TimeTest {
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(400)
-                .body(containsString("[ERROR] 이미 등록된 시간입니다"));
+                .body(containsString("이미 등록된 시간입니다"));
     }
 
     @DisplayName("비어있는 시간으로 등록하는 경우 400 오류를 반환한다.")
@@ -83,12 +83,13 @@ class TimeTest {
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(400)
-                .body(containsString("[ERROR] 잘못된 시간입니다"));
+                .body(containsString("startAt"));
     }
 
     @DisplayName("부적절한 양식으로 시간을 등록하는 경우 개발자가 정의한 문구로 400 오류를 반환한다.")
     @ParameterizedTest
-    @ValueSource(strings = {"99:99", "10:00:01"})
+    @ValueSource(strings = {"99:99", "aaaa"})
+    @NullSource
     void given_when_saveInvalidTime_then_statusCodeIsBadRequestWithCustomMessage(String invalidTime) {
         Map<String, Object> time = new HashMap<>();
         time.put("startAt", invalidTime);
@@ -99,7 +100,7 @@ class TimeTest {
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(400)
-                .body(containsString("[ERROR] 적절하지 않은 입력값 입니다"));
+                .body(containsString("startAt"));
     }
 
     @DisplayName("삭제하고자 하는 시간에 예약이 등록되어 있으면 400 오류를 반환한다.")
@@ -110,6 +111,6 @@ class TimeTest {
                 .when().delete("/times/1")
                 .then().log().all()
                 .statusCode(400)
-                .body(containsString("[ERROR] 예약이 등록된 시간은 제거할 수 없습니다"));
+                .body(containsString("예약이 등록된 시간은 제거할 수 없습니다"));
     }
 }

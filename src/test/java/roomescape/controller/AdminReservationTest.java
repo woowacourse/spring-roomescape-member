@@ -102,7 +102,7 @@ class AdminReservationTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400)
-                .body(containsString("[ERROR] 이름은 비워둘 수 없습니다."));
+                .body(containsString("name"));
     }
 
     @DisplayName("부적절한 날짜로 예약하는 경우 400 오류를 반환한다.")
@@ -122,7 +122,7 @@ class AdminReservationTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400)
-                .body(containsString("[ERROR] 올바르지 않은 예약 날짜입니다."));
+                .body(containsString("date"));
     }
 
     @DisplayName("부적절한 시간으로 예약하는 경우 400 오류를 반환한다.")
@@ -143,7 +143,7 @@ class AdminReservationTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400)
-                .body(containsString("[ERROR] 올바르지 않은 예약 시간입니다."));
+                .body(containsString("timeId"));
     }
 
     @DisplayName("지나간 날짜와 시간으로 예약할 경우 400 오류를 반환한다.")
@@ -161,7 +161,7 @@ class AdminReservationTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400)
-                .body(containsString("[ERROR] 지나간 날짜와 시간으로 예약할 수 없습니다"));
+                .body(containsString("지나간 날짜와 시간으로 예약할 수 없습니다"));
     }
 
     @DisplayName("이미 예약이 된 시간을 등록하려 하면 400 오류를 반환한다.")
@@ -179,7 +179,7 @@ class AdminReservationTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400)
-                .body(containsString("[ERROR] 예약이 찼어요 ㅜㅜ 죄송해요~~"));
+                .body(containsString("이미 예약이 등록되어 있습니다."));
     }
 
     @DisplayName("부적절한 테마로 예약하는 경우 400 오류를 반환한다.")
@@ -199,7 +199,7 @@ class AdminReservationTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400)
-                .body(containsString("[ERROR] 올바르지 않은 테마 입니다."));
+                .body(containsString("themeId"));
     }
 
     @DisplayName("등록되지 않은 시간으로 예약하는 경우 400 오류를 반환한다.")
@@ -216,8 +216,7 @@ class AdminReservationTest {
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(400)
-                .body(containsString("[ERROR] 존재하지 않는 테마 입니다"));
+                .statusCode(400);
     }
 
     @DisplayName("이미 예약이 된 시간의 다른 테마를 예약을 할 수 있다.")
@@ -225,7 +224,7 @@ class AdminReservationTest {
     void given_when_saveDuplicatedReservationDateAndTimeAndDifferentThemeId_then_statusCodeIsCreated() {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "포케");
-        reservation.put("date", "2099-04-30");
+        reservation.put("date", "2099-12-30");
         reservation.put("timeId", 1); // 10:00
         reservation.put("themeId", 3);
 

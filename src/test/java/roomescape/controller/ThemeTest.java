@@ -73,13 +73,13 @@ class ThemeTest {
                 .when().delete("/themes/1")
                 .then().log().all()
                 .statusCode(400)
-                .body(containsString("[ERROR] 예약이 등록된 테마는 제거할 수 없습니다"));
+                .body(containsString("예약이 등록된 테마는 제거할 수 없습니다"));
     }
 
     @DisplayName("테마 등록 시 빈 값이 한 개 이상 포함되어 있을 경우 400 오류를 반환한다.")
     @ParameterizedTest
-    @CsvSource({",test,test", "test,,test", "test,test,"})
-    void given_when_saveThemeWithEmptyValues_then_statusCodeIsBadRequest(String name, String description, String thumbNail) {
+    @CsvSource({",test,test,name", "test,,test,description", "test,test,,thumbnail"})
+    void given_when_saveThemeWithEmptyValues_then_statusCodeIsBadRequest(String name, String description, String thumbNail, String emptyFieldName) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("description", description);
@@ -91,6 +91,6 @@ class ThemeTest {
                 .when().post("/themes")
                 .then().log().all()
                 .statusCode(400)
-                .body(containsString("[ERROR] 테마 등록 시 빈 값은 허용하지 않습니다"));
+                .body(containsString(emptyFieldName));
     }
 }
