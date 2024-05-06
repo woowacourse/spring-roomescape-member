@@ -10,8 +10,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.List;
 import java.util.stream.IntStream;
 import org.hamcrest.core.IsNull;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 import roomescape.application.ReservationTimeService;
@@ -21,7 +22,6 @@ import roomescape.fixture.ReservationFixture;
 import roomescape.support.ControllerTest;
 import roomescape.support.SimpleMockMvc;
 
-@DisplayName("예약 시간 컨트롤러")
 class ReservationTimeControllerTest extends ControllerTest {
     @Autowired
     private ReservationTimeService reservationTimeService;
@@ -39,6 +39,36 @@ class ReservationTimeControllerTest extends ControllerTest {
                         status().isCreated(),
                         jsonPath("$.id").value(reservationTime.getId()),
                         jsonPath("$.startAt").value(reservationTime.getStartAt().toString())
+                )
+                .andDo(print());
+    }
+
+    @Test
+    void 예약_시간이_비어있으면_Bad_Request_상태를_반환한다() throws Exception {
+        ReservationTimeRequest request = new ReservationTimeRequest(null);
+        String content = objectMapper.writeValueAsString(request);
+
+        ResultActions result = SimpleMockMvc.post(mockMvc, "/times", content);
+
+        result.andExpectAll(
+                        status().isBadRequest(),
+                        jsonPath("$.fieldErrors[0].field").value("startAt"),
+                        jsonPath("$.fieldErrors[0].rejectedValue").value(IsNull.nullValue()),
+                        jsonPath("$.fieldErrors[0].reason").value("시작 시간은 필수입니다.")
+                )
+                .andDo(print());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"1112", "14:89", "13-00"})
+    void 예약_시간이_형식과_맞지_않으면_Bad_Request_상태를_반환한다(String startAt) throws Exception {
+        String content = "{\"startAt\":" + startAt + "}";
+
+        ResultActions result = SimpleMockMvc.post(mockMvc, "/times", content);
+
+        result.andExpectAll(
+                        status().isBadRequest(),
+                        jsonPath("$.message").value("잘못된 데이터 형식입니다.")
                 )
                 .andDo(print());
     }
@@ -73,39 +103,15 @@ class ReservationTimeControllerTest extends ControllerTest {
     }
 
     @Test
-    void 예약_시간이_비어있으면_Bad_Request_상태를_반환한다() throws Exception {
-        String content = "{}";
-
-        ResultActions result = SimpleMockMvc.post(mockMvc, "/times", content);
+    void 예약_시간_아이디가_양수가_아니면_Bad_Request_상태를_반환한다() throws Exception {
+        long invalidId = -1L;
+        ResultActions result = SimpleMockMvc.delete(mockMvc, "/times/{id}", invalidId);
 
         result.andExpectAll(
                         status().isBadRequest(),
-                        jsonPath("$.fieldErrors[0].field").value("startAt"),
-                        jsonPath("$.fieldErrors[0].rejectedValue").value(IsNull.nullValue()),
-                        jsonPath("$.fieldErrors[0].reason").value("시작 시간은 필수입니다.")
+                        jsonPath("$.violationErrors[0].field").value("id"),
+                        jsonPath("$.violationErrors[0].rejectedValue").value(invalidId)
                 )
-                .andDo(print());
-    }
-
-    @Test
-    void 예약_시간이_포맷에_맞지_않을_경우_Bad_Request_상태를_반환한다() throws Exception {
-        String content = "{\"startAt\":\"1112\"}";
-
-        ResultActions result = SimpleMockMvc.post(mockMvc, "/times", content);
-
-        result.andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("잘못된 데이터 형식입니다"))
-                .andDo(print());
-    }
-
-    @Test
-    void 예약_시간이_올바르지_않을_경우_Bad_Request_상태를_반환한다() throws Exception {
-        String content = "{\"startAt\":\"14:89\"}";
-
-        ResultActions result = SimpleMockMvc.post(mockMvc, "/times", content);
-
-        result.andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("잘못된 데이터 형식입니다"))
                 .andDo(print());
     }
 }
