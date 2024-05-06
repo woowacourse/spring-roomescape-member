@@ -1,6 +1,7 @@
 package roomescape.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,7 +39,7 @@ public class TimeController {
             HttpServletResponse response
     ) {
         TimeResponse timeResponse = timeService.addTime(timeRequest);
-        response.setHeader("Location", "/times/" + timeResponse.id());
+        response.setHeader(HttpHeaders.LOCATION, "/times/" + timeResponse.id());
 
         return ApiResponse.success(timeResponse);
     }

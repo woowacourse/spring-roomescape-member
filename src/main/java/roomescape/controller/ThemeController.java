@@ -2,6 +2,7 @@ package roomescape.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -52,7 +53,7 @@ public class ThemeController {
             HttpServletResponse response
     ) {
         ThemeResponse themeResponse = themeService.addTheme(request);
-        response.setHeader("Location", "/themes/" + themeResponse.id());
+        response.setHeader(HttpHeaders.LOCATION, "/themes/" + themeResponse.id());
 
         return ApiResponse.success(themeResponse);
     }

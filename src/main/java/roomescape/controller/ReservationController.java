@@ -2,6 +2,7 @@ package roomescape.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -51,7 +52,7 @@ public class ReservationController {
     ) {
         ReservationResponse reservationResponse = reservationService.addReservation(reservationRequest);
 
-        response.setHeader("Location", "/reservations/" + reservationResponse.id());
+        response.setHeader(HttpHeaders.LOCATION, "/reservations/" + reservationResponse.id());
         return ApiResponse.success(reservationResponse);
     }
 
