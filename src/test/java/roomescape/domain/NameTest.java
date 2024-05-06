@@ -19,7 +19,7 @@ class NameTest {
 
     @DisplayName("이름이 NULL이면 name 생성 시 예외가 발생합니다.")
     @Test
-    void should_throw_NPE_when_name_is_null() {
+    void should_throw_ClientIllegalArgumentException_when_name_is_null() {
         assertThatThrownBy(() -> new Name(null))
                 .isInstanceOf(ClientIllegalArgumentException.class)
                 .hasMessage("이름은 비어있을 수 없습니다.");
@@ -27,7 +27,7 @@ class NameTest {
 
     @DisplayName("이름이 공백을 제외하고 길이가 0이하이면 name 생성 시 예외가 발생합니다.")
     @Test
-    void should_throw_IllegalArgumentException_when_name_is_blank() {
+    void should_throw_ClientIllegalArgumentException_when_name_is_blank() {
         assertThatThrownBy(() -> new Name(" "))
                 .isInstanceOf(ClientIllegalArgumentException.class)
                 .hasMessage("이름의 길이는 공백을 제외한 1이상이어야합니다.");

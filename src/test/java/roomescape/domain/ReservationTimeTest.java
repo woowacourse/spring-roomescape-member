@@ -19,7 +19,7 @@ class ReservationTimeTest {
 
     @DisplayName("time이 null인 경우 ReservationTime 생성 시 예외가 발생합니다")
     @Test
-    void should_throw_NPE_when_time_is_null() {
+    void should_throw_ClientIllegalArgumentException_when_time_is_null() {
         assertThatThrownBy(() -> new ReservationTime(null, null))
                 .isInstanceOf(ClientIllegalArgumentException.class)
                 .hasMessage("예약 가능 시각은 null일 수 없습니다");

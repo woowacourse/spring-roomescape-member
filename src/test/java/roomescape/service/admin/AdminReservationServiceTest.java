@@ -36,7 +36,7 @@ class AdminReservationServiceTest {
 
     @DisplayName("없는 id의 예약을 삭제하면 예외를 발생합니다.")
     @Test
-    void should_false_when_remove_reservation_with_non_exist_id() {
+    void should_throw_ClientIllegalArgumentException_when_remove_reservation_with_non_exist_id() {
         assertThatThrownBy(() -> adminReservationService.removeReservation(1L))
                 .isInstanceOf(ClientIllegalArgumentException.class)
                 .hasMessage("해당 id를 가진 예약이 존재하지 않습니다.");
@@ -44,7 +44,7 @@ class AdminReservationServiceTest {
 
     @DisplayName("존재하지 않는 예약시각으로 예약 시 예외가 발생합니다.")
     @Test
-    void should_throw_IllegalArgumentException_when_reserve_non_exist_time() {
+    void should_throw_ClientIllegalArgumentException_when_reserve_non_exist_time() {
         LocalDate reservationDate = AFTER_TWO_DAYS_DATE;
         ReservationAddRequest reservationAddRequest = new ReservationAddRequest(reservationDate, "dodo", 1L, 1L);
 
@@ -55,7 +55,7 @@ class AdminReservationServiceTest {
 
     @DisplayName("예약 날짜와 예약시각 그리고 테마 아이디가 같은 경우 예외를 발생합니다.")
     @Test
-    void should_throw_IllegalArgumentException_when_reserve_date_and_time_duplicated() {
+    void should_throw_ClientIllegalArgumentException_when_reserve_date_and_time_duplicated() {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(12, 0));
         Theme theme = new Theme(1L, "dummy", "description", "url");
 

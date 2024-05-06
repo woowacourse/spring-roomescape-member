@@ -12,7 +12,7 @@ class AdminThemeServiceTest {
 
     @DisplayName("존재하지 않는 테마 삭제 요청시 예외가 발생합니다")
     @Test
-    void should_throw_IllegalArgumentException_when_theme_id_no_exist() {
+    void should_throw_ClientIllegalArgumentException_when_theme_id_no_exist() {
         ThemeRepository themeRepository = new FakeThemeRepository();
         AdminThemeService adminThemeService = new AdminThemeService(themeRepository);
 

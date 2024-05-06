@@ -20,7 +20,7 @@ class ReservationDateTest {
 
     @DisplayName("date가 null이면 ReservationDate생성 시 예외가 발생한다")
     @Test
-    void should_throw_NPE_when_date_is_null() {
+    void should_throw_ClientIllegalArgumentException_when_date_is_null() {
         assertThatThrownBy(() -> new ReservationDate(null))
                 .isInstanceOf(ClientIllegalArgumentException.class)
                 .hasMessage("날짜는 null일 수 없습니다");
