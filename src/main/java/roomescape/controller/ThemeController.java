@@ -1,10 +1,12 @@
 package roomescape.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +22,7 @@ import roomescape.dto.theme.ThemeResponse;
 
 @RestController
 @RequestMapping("/themes")
+@Validated
 public class ThemeController {
     private final ThemeService themeService;
 
@@ -45,7 +48,7 @@ public class ThemeController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTheme(@PathVariable long id) {
+    public ResponseEntity<Void> deleteTheme(@PathVariable @Positive long id) {
         themeService.delete(id);
         return ResponseEntity.noContent().build();
     }
@@ -59,8 +62,8 @@ public class ThemeController {
         return ResponseEntity.ok(themeResponses);
     }
 
-    @GetMapping("/{id}/{date}")
-    public ResponseEntity<List<AvailableTimeResponse>> getAvailableTimes(@PathVariable long id,
+    @GetMapping("/{id}/{date}") // todo times로 이동
+    public ResponseEntity<List<AvailableTimeResponse>> getAvailableTimes(@PathVariable @Positive long id,
                                                                          @PathVariable LocalDate date) {
         List<AvailableTimeResponse> responses = themeService.getAvailableTimes(id, date);
         return ResponseEntity.ok(responses);
