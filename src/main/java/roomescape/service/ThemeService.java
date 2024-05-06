@@ -11,6 +11,8 @@ import roomescape.dto.ThemeResponse;
 @Service
 public class ThemeService {
 
+    private static final int TOP_THEMES_PERIOD = 7;
+    private static final int TOP_THEMES_LIMIT = 10;
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
 
@@ -43,7 +45,7 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> getTopThemes() {
-        List<Theme> themes = themeRepository.findTopThemesWithinDays(7, 10);
+        List<Theme> themes = themeRepository.findTopThemesWithinDays(TOP_THEMES_PERIOD, TOP_THEMES_LIMIT);
 
         return themes.stream()
                 .map(ThemeResponse::from)
