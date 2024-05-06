@@ -8,10 +8,17 @@ public class ReservationTheme {
     private final String thumbnail;
 
     public ReservationTheme(Long id, String name, String description, String thumbnail) {
+        validateId(id);
         this.id = id;
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
+    }
+
+    private void validateId(Long id) {
+        if (id == null || id <= 0) {
+            throw new IllegalArgumentException("invalid id");
+        }
     }
 
     public Long getId() {
