@@ -17,7 +17,6 @@ import roomescape.exception.NotExistException;
 import roomescape.exception.PastTimeReservationException;
 import roomescape.fixture.ThemeFixture;
 import roomescape.service.dto.input.ReservationInput;
-import roomescape.service.util.DateTimeFormatter;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReservationServiceTest {
@@ -33,8 +32,6 @@ class ReservationServiceTest {
 
     @Autowired
     JdbcTemplate jdbcTemplate;
-    @Autowired
-    DateTimeFormatter dateTimeFormatter;
 
     @BeforeEach
     void setUp() {
@@ -48,10 +45,10 @@ class ReservationServiceTest {
     @DisplayName("유효한 값을 입력하면 예외를 발생하지 않는다")
     void create_reservation() {
         long timeId = reservationTimeDao.create(ReservationTime.from(null, "10:00"))
-                                        .getId();
+                .getId();
         Long themeId = themeDao.create(ThemeFixture.getDomain())
-                               .getId();
-        ReservationInput input = new ReservationInput("jerry", "2033-03-13", timeId, themeId);
+                .getId();
+        ReservationInput input = new ReservationInput("jerry", "2023-03-13", timeId, themeId);
 
         assertThatCode(() -> reservationService.createReservation(input))
                 .doesNotThrowAnyException();
@@ -68,11 +65,11 @@ class ReservationServiceTest {
     @DisplayName("중복 예약 이면 예외를 발생한다.")
     void throw_exception_when_duplicate_reservationTime() {
         long timeId = reservationTimeDao.create(ReservationTime.from(null, "10:00"))
-                                        .getId();
+                .getId();
         Long themeId = themeDao.create(ThemeFixture.getDomain())
-                               .getId();
-        reservationService.createReservation(new ReservationInput("제리", "2025-11-24", timeId, themeId));
-        final var input = new ReservationInput("제리", "2025-11-24", timeId, themeId);
+                .getId();
+        reservationService.createReservation(new ReservationInput("제리", "2011-11-24", timeId, themeId));
+        final var input = new ReservationInput("제리", "2011-11-24", timeId, themeId);
 
         assertThatThrownBy(
                 () -> reservationService.createReservation(input))
@@ -83,9 +80,9 @@ class ReservationServiceTest {
     @DisplayName("지나간 날짜와 시간으로 예약 생성 시 예외가 발생한다.")
     void throw_exception_when_create_past_time_reservation() {
         Long timeId = reservationTimeDao.create(ReservationTime.from(null, "10:00"))
-                                        .getId();
+                .getId();
         Long themeId = themeDao.create(ThemeFixture.getDomain())
-                               .getId();
+                .getId();
         final var input = new ReservationInput("제리", "1300-03-10", timeId, themeId);
 
         assertThatThrownBy(

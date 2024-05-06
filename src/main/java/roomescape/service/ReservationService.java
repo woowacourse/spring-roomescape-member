@@ -8,7 +8,6 @@ import roomescape.domain.Reservation;
 import roomescape.exception.*;
 import roomescape.service.dto.input.ReservationInput;
 import roomescape.service.dto.output.ReservationOutput;
-import roomescape.service.util.DateTimeFormatter;
 
 import static roomescape.exception.ExceptionDomainType.*;
 
@@ -16,23 +15,16 @@ import static roomescape.exception.ExceptionDomainType.*;
 public class ReservationService {
 
     private final ReservationDao reservationDao;
-    private final ReservationValidator reservationValidator;
-    private final DateTimeFormatter dateTimeFormatter;
+    private final ReservationCreateValidator reservationCreateValidator;
 
     public ReservationService(final ReservationDao reservationDao,
-                              final ReservationValidator reservationValidator,
-                              final DateTimeFormatter dateTimeFormatter) {
+                              final ReservationCreateValidator reservationCreateValidator) {
         this.reservationDao = reservationDao;
-        this.reservationValidator = reservationValidator;
-        this.dateTimeFormatter = dateTimeFormatter;
+        this.reservationCreateValidator = reservationCreateValidator;
     }
 
     public ReservationOutput createReservation(final ReservationInput input) {
-        final Reservation reservation = reservationValidator.validateReservationInput(input);
-
-        if (reservation.isBefore(dateTimeFormatter.getDate(), dateTimeFormatter.getTime())) {
-            throw new PastTimeReservationException(reservation.getLocalDateTimeFormat());
-        }
+        final Reservation reservation = reservationCreateValidator.validateReservationInput(input);
         final Reservation savedReservation = reservationDao.create(reservation);
         return ReservationOutput.toOutput(savedReservation);
     }
