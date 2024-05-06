@@ -47,6 +47,6 @@ INSERT INTO reservation (name, date, time_id, theme_id) VALUES ( '클로버4', '
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ( '클로버5', '2024-12-04', 1, 2);
 
 // 인기 테마 검증용
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ( '클로버3', '2024-05-02', 2, 2);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ( '클로버4', '2024-05-03', 1, 2);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ( '클로버5', '2024-05-04', 1, 1);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ( '클로버3', FORMATDATETIME(DATEADD('DAY', -3, NOW()), 'yyyy-MM-dd'), 2, 2);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ( '클로버4', FORMATDATETIME(DATEADD('DAY', -4, NOW()), 'yyyy-MM-dd'), 1, 2);
+INSERT INTO reservation (name, date, time_id, theme_id) VALUES ( '클로버5', FORMATDATETIME(DATEADD('DAY', -5, NOW()), 'yyyy-MM-dd'), 1, 1);
