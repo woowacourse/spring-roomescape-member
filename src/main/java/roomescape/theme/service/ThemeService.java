@@ -42,8 +42,6 @@ public class ThemeService {
     }
 
     public void deleteById(final Long id) {
-        themeRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("해당하는 테마가 존재하지 않습니다."));
         List<Reservation> reservations = reservationRepository.findAllByThemeId(id);
         if (!reservations.isEmpty()) {
             throw new IllegalStateException("테마를 사용 중인 예약이 존재합니다.");

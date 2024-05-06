@@ -165,12 +165,4 @@ class ReservationServiceTest {
         assertThat(reservationService.getReservations())
                 .containsExactly(FindReservationResponse.of(Fixture.RESERVATION_1));
     }
-
-    @Test
-    @DisplayName("존재하지 않는 예약 id 를 삭제 시 예외가 발생한다.")
-    void deleteReservation_ifNotExist_throwException() {
-        // when & then
-        assertThatThrownBy(() -> reservationService.deleteReservation(99999L)).isInstanceOf(
-                NoSuchElementException.class).hasMessage("해당하는 예약이 존재하지 않습니다.");
-    }
 }

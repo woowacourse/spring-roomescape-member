@@ -73,15 +73,6 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    @DisplayName("해당하는 id와 동일한 저장된 예약 시간이 없는 경우 예외가 발생한다.")
-    void getReservationTime_ifNotExist_throwException() {
-        // when & then
-        assertThatThrownBy(() -> reservationTimeService.deleteById(99999L))
-                .isInstanceOf(NoSuchElementException.class)
-                .hasMessage("해당하는 예약 시간이 존재하지 않습니다.");
-    }
-
-    @Test
     @DisplayName("해당하는 id와 동일한 저장된 예약 시간을 삭제한다.")
     void deleteById() {
         // when
@@ -90,15 +81,6 @@ class ReservationTimeServiceTest {
         // then
         assertThat(reservationRepository.findById(2L))
                 .isEmpty();
-    }
-
-    @Test
-    @DisplayName("해당하는 id와 동일한 저장된 예약 시간이 없는 경우 예외가 발생한다.")
-    void deleteById_ifNotExist_throwException() {
-        // when & then
-        assertThatThrownBy(() -> reservationTimeService.deleteById(99999L))
-                .isInstanceOf(NoSuchElementException.class)
-                .hasMessage("해당하는 예약 시간이 존재하지 않습니다.");
     }
 
     @Test

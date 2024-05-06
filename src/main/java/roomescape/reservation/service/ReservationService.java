@@ -87,8 +87,6 @@ public class ReservationService {
     }
 
     public void deleteReservation(final Long id) {
-        reservationRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("해당하는 예약이 존재하지 않습니다."));
         reservationRepository.deleteById(id);
     }
 }

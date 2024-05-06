@@ -243,13 +243,13 @@ class RoomEscapeApplicationTest {
         }
 
         @Test
-        @DisplayName("존재하지 않는 테마를 삭제 요청 시 404를 반환한다.")
+        @DisplayName("존재하지 않는 테마를 삭제 요청 시에도 204를 반환한다.")
         void deleteTheme_NotFound() {
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
                     .when().delete("/themes/999999999")
                     .then().log().all()
-                    .statusCode(404);
+                    .statusCode(204);
         }
 
         @Test

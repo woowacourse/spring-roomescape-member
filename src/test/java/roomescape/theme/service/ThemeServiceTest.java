@@ -89,18 +89,6 @@ class ThemeServiceTest {
     }
 
     @Test
-    @DisplayName("해당하는 id와 동일한 저장된 예약 시간이 없는 경우 예외가 발생한다.")
-    void deleteById_ifNotExist_throwException() {
-        // given
-        long timeId = 0L;
-
-        // when & then
-        assertThatThrownBy(() -> themeService.deleteById(timeId))
-                .isInstanceOf(NoSuchElementException.class)
-                .hasMessage("해당하는 테마가 존재하지 않습니다.");
-    }
-
-    @Test
     @DisplayName("해당하는 시간을 사용 중인 예약이 존재할 경우 예외가 발생한다.")
     void deleteById_ifAlreadyUsed_throwException() {
         // given
