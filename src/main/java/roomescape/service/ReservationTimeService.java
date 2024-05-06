@@ -26,7 +26,7 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponse save(ReservationTimeRequest reservationTimeRequest) {
-        ReservationTime reservationTime = reservationTimeRequest.toEntity();
+        ReservationTime reservationTime = reservationTimeRequest.toDomain();
 
         rejectDuplicateReservationTime(reservationTime);
 

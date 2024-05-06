@@ -9,7 +9,7 @@ import java.time.LocalTime;
 public record ReservationTimeRequest(
         @NotBlank @TimeFormat String startAt
 ) {
-    public ReservationTime toEntity() {
+    public ReservationTime toDomain() {
         return new ReservationTime(LocalTime.parse(startAt).withSecond(0));
     }
 }

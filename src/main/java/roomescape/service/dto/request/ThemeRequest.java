@@ -9,7 +9,7 @@ public record ThemeRequest(
         @NotBlank @Size(max = 1000) String description,
         String thumbnail
 ) {
-    public Theme toEntity() {
+    public Theme toDomain() {
         return new Theme(name, description, thumbnail);
     }
 }

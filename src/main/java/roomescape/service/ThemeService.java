@@ -29,7 +29,7 @@ public class ThemeService {
     }
 
     public ThemeResponse save(ThemeRequest themeRequest) {
-        Theme theme = themeRequest.toEntity();
+        Theme theme = themeRequest.toDomain();
 
         Theme savedTheme = themeRepository.save(theme);
 
