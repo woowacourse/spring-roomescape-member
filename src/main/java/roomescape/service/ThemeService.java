@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -35,14 +36,14 @@ public class ThemeService {
         return ThemeOutput.toOutputs(themes);
     }
 
-    public List<ThemeOutput> getPopularThemes(final String date) {
-        final List<Theme> themes = themeDao.getPopularWeekendTheme(VisitDate.from(date));
+    public List<ThemeOutput> getPopularThemes(final LocalDate date) {
+        final List<Theme> themes = themeDao.getPopularWeekendTheme(new VisitDate(date));
         return ThemeOutput.toOutputs(themes);
     }
 
     public void deleteTheme(final long id) {
         Theme theme = themeDao.find(id)
-                              .orElseThrow(() -> new NotExistException(THEME, id));
+                .orElseThrow(() -> new NotExistException(THEME, id));
         if (reservationDao.isExistByThemeId(theme.getId())) {
             throw new ExistReservationException(THEME, theme.getId());
         }

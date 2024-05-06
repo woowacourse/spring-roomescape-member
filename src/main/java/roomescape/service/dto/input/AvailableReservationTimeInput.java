@@ -1,5 +1,7 @@
 package roomescape.service.dto.input;
 
-public record AvailableReservationTimeInput(long themeId, String date) {
+import java.time.LocalDate;
+
+public record AvailableReservationTimeInput(long themeId, LocalDate date) {
 
 }

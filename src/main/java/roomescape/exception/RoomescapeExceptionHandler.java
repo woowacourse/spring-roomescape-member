@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @ControllerAdvice
 public class RoomescapeExceptionHandler {
@@ -15,6 +16,10 @@ public class RoomescapeExceptionHandler {
             this.message = e.getMessage();
         }
 
+        public ErrorResponse(String message) {
+            this.message = message;
+        }
+
         public boolean isStatus() {
             return ERROR_STATUS;
         }
@@ -24,35 +29,41 @@ public class RoomescapeExceptionHandler {
         }
     }
 
+    @ExceptionHandler(value = MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        return ResponseEntity.badRequest()
+                .body(new ErrorResponse(String.format("%s 의 입력 형식이 올바르지 않습니다.", e.getName())));
+    }
+
     @ExceptionHandler(value = IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleArgumentException(final IllegalArgumentException exception) {
         return ResponseEntity.badRequest()
-                             .body(new ErrorResponse(exception));
+                .body(new ErrorResponse(exception));
     }
 
     @ExceptionHandler(value = PastTimeReservationException.class)
     public ResponseEntity<ErrorResponse> handlePastTimeReservationException(final PastTimeReservationException exception) {
         return ResponseEntity.badRequest()
-                             .body(new ErrorResponse(exception));
+                .body(new ErrorResponse(exception));
     }
 
 
     @ExceptionHandler(value = ExistReservationException.class)
     public ResponseEntity<ErrorResponse> handleExistReservationException(final ExistReservationException exception) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                             .body(new ErrorResponse(exception));
+                .body(new ErrorResponse(exception));
     }
 
     @ExceptionHandler(value = AlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> handleAlreadyExistsException(final AlreadyExistsException exception) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                             .body(new ErrorResponse(exception));
+                .body(new ErrorResponse(exception));
 
     }
 
     @ExceptionHandler(value = NotExistException.class)
     public ResponseEntity<ErrorResponse> handleNotExistException(final NotExistException exception) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                             .body(new ErrorResponse(exception));
+                .body(new ErrorResponse(exception));
     }
 }

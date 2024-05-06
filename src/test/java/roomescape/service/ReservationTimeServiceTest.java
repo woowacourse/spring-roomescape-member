@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -13,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.dao.ReservationDao;
-import roomescape.domain.AvailableReservationTime;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -107,15 +107,15 @@ class ReservationTimeServiceTest {
     @DisplayName("예약 가능한 시간을 조회한다.")
     void get_available_reservationTime() {
         long timeId1 = reservationTimeService.createReservationTime(new ReservationTimeInput("10:00"))
-                                             .id();
+                .id();
         long timeId2 = reservationTimeService.createReservationTime(new ReservationTimeInput("11:00"))
-                                             .id();
+                .id();
         long themeId = themeService.createTheme(ThemeFixture.getInput())
-                                   .id();
+                .id();
         reservationService.createReservation(new ReservationInput("조이썬", "2025-01-01", timeId2, themeId));
 
         List<AvailableReservationTimeOutput> actual = reservationTimeService.getAvailableTimes(
-                new AvailableReservationTimeInput(themeId, "2025-01-01"));
+                new AvailableReservationTimeInput(themeId, LocalDate.parse("2025-01-01")));
 
         assertThat(actual).containsExactly(
                 new AvailableReservationTimeOutput(timeId1, "10:00", false),
