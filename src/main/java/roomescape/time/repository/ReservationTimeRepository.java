@@ -41,25 +41,29 @@ public class ReservationTimeRepository {
     }
 
     public ReservationTime findById(final long id) {
-        final String sql = "select * from reservation_time where id = ?";
+        final String sql = """
+                SELECT * FROM reservation_time WHERE id = ?""";
         return jdbcTemplate.queryForObject(sql, TIME_ROW_MAPPER, id);
     }
 
     public List<ReservationTime> findAll() {
-        final String sql = "select * from reservation_time";
+        final String sql = """
+                SELECT * FROM reservation_time""";
         return jdbcTemplate.query(sql, TIME_ROW_MAPPER);
     }
 
     public int deleteById(final long id) {
-        final String sql = "delete from reservation_time where id = ?";
+        final String sql = """
+                DELETE FROM reservation_time WHERE id = ?""";
         return jdbcTemplate.update(sql, id);
     }
 
     public List<ReservationUserTime> findAvailableTime(final String date, final long themeId) {
-        final String sql = "SELECT t.id, t.start_at, " +
-                "EXISTS (SELECT 1 FROM reservation r WHERE r.time_id = t.id AND r.date = ? AND r.theme_id = ?) " +
-                "AS already_booked " +
-                "FROM reservation_time t";
+        final String sql = """
+                SELECT t.id, t.start_at,\s
+                EXISTS (SELECT 1 FROM reservation r WHERE r.time_id = t.id AND r.date = ? AND r.theme_id = ?)\s
+                AS already_booked\s
+                FROM reservation_time t""";
         return jdbcTemplate.query(sql, USER_TIME_ROW_MAPPER, date, themeId);
     }
 }

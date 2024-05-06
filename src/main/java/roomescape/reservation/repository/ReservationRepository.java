@@ -42,23 +42,24 @@ public class ReservationRepository {
     }
 
     public List<Reservation> findAll() {
-        final String sql = "SELECT r.id AS reservation_id, r.name AS reservation_name, r.date, " +
-                "rt.id AS time_id, rt.start_at AS time_value, " +
-                "t.id AS theme_id, t.name AS theme_name, t.description, t.thumbnail " +
-                "FROM reservation r " +
-                "INNER JOIN reservation_time rt ON r.time_id = rt.id " +
-                "INNER JOIN theme t ON r.theme_id = t.id";
+        final String sql = """
+                SELECT r.id AS reservation_id, r.name AS reservation_name, r.date, rt.id AS time_id,\s
+                rt.start_at AS time_value, t.id AS theme_id, t.name AS theme_name, t.description, t.thumbnail\s
+                FROM reservation r\s
+                INNER JOIN reservation_time rt ON r.time_id = rt.id\s
+                INNER JOIN theme t ON r.theme_id = t.id""";
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
     public Reservation findById(final long id) {
-        final String sql = "SELECT r.id AS reservation_id, r.name AS reservation_name, r.date, " +
-                "rt.id AS time_id, rt.start_at AS time_value, " +
-                "t.id AS theme_id, t.name AS theme_name, t.description, t.thumbnail " +
-                "FROM reservation r " +
-                "INNER JOIN reservation_time rt ON r.time_id = rt.id " +
-                "INNER JOIN theme t ON r.theme_id = t.id " +
-                "WHERE r.id = ?";
+        final String sql = """
+                SELECT r.id AS reservation_id, r.name AS reservation_name, r.date,\s
+                rt.id AS time_id, rt.start_at AS time_value,\s
+                t.id AS theme_id, t.name AS theme_name, t.description, t.thumbnail\s
+                FROM reservation r\s
+                INNER JOIN reservation_time rt ON r.time_id = rt.id\s
+                INNER JOIN theme t ON r.theme_id = t.id\s
+                WHERE r.id = ?""";
         return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
     }
 
@@ -72,19 +73,20 @@ public class ReservationRepository {
     }
 
     public int deleteById(final long id) {
-        final String sql = "delete from reservation where id = ?";
+        final String sql = """
+                DELETE FROM reservation WHERE id = ?""";
         return jdbcTemplate.update(sql, id);
     }
 
     public boolean checkReservationExists(final String date, final long timeId, final long themeId) {
-        final String sql = "SELECT CASE WHEN COUNT(*) > 0 THEN TRUE ELSE FALSE END " +
-                "FROM reservation AS r " +
-                "INNER JOIN reservation_time AS rt " +
-                "ON r.time_id = rt.id " +
-                "INNER JOIN theme AS t " +
-                "ON r.theme_id = t.id " +
-                "WHERE r.date = ? AND rt.id = ? AND t.id = ?";
-
+        final String sql = """
+                SELECT CASE WHEN COUNT(*) > 0 THEN TRUE ELSE FALSE END\s
+                FROM reservation AS r\s
+                INNER JOIN reservation_time AS rt\s
+                ON r.time_id = rt.id\s
+                INNER JOIN theme AS t\s
+                ON r.theme_id = t.id\s
+                WHERE r.date = ? AND rt.id = ? AND t.id = ?""";
         final Boolean result = jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
         return Boolean.TRUE.equals(result);
     }

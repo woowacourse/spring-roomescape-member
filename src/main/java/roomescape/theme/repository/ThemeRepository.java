@@ -31,7 +31,8 @@ public class ThemeRepository {
     }
 
     public List<Theme> findAll() {
-        final String sql = "select * from theme";
+        final String sql = """
+                SELECT * FROM theme""";
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
@@ -44,18 +45,20 @@ public class ThemeRepository {
     }
 
     public int deleteById(final long id) {
-        final String sql = "delete from theme where id = ?";
+        final String sql = """
+                DELETE FROM theme WHERE id = ?""";
         return jdbcTemplate.update(sql, id);
     }
 
     public List<Theme> findPopular(final String startDate, final String lastDate) {
-        final String sql = "SELECT t.id, t.name, t.description, t.thumbnail, COUNT(r.id) AS reservation_count " +
-                "FROM theme t " +
-                "JOIN reservation r ON t.id = r.theme_id " +
-                "WHERE r.date BETWEEN ? AND ? " +
-                "GROUP BY t.id, t.name, t.description, t.thumbnail " +
-                "ORDER BY reservation_count DESC " +
-                "LIMIT 10;";
+        final String sql = """
+                SELECT t.id, t.name, t.description, t.thumbnail, COUNT(r.id) AS reservation_count\s
+                FROM theme t\s
+                JOIN reservation r ON t.id = r.theme_id\s
+                WHERE r.date BETWEEN ? AND ?\s
+                GROUP BY t.id, t.name, t.description, t.thumbnail\s
+                ORDER BY reservation_count DESC\s
+                LIMIT 10""";
         return jdbcTemplate.query(sql, ROW_MAPPER, startDate, lastDate);
     }
 }
