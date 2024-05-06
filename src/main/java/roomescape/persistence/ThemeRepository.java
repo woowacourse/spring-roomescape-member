@@ -42,8 +42,9 @@ public class ThemeRepository {
         return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 
-    public void removeById(Long id) {
-        jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id);
+    public boolean removeById(Long id) {
+        int updatedRowCount = jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id);
+        return updatedRowCount == 1;
     }
 
     public List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, int limitCount) {

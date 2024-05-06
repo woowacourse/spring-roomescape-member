@@ -57,8 +57,9 @@ public class ReservationRepository {
                 reservation.getTheme());
     }
 
-    public void removeById(Long id) {
-        jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
+    public boolean removeById(Long id) {
+        int updatedRowCount = jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
+        return updatedRowCount == 1;
     }
 
     public boolean hasDuplicateReservation(Reservation reservation) {

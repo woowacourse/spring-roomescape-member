@@ -47,8 +47,9 @@ public class ReservationTimeRepository {
         return new ReservationTime(id, reservationTime.getStartAt());
     }
 
-    public void removeById(Long id) {
-        jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
+    public boolean removeById(Long id) {
+        int updatedRowCount = jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
+        return updatedRowCount == 1;
     }
 
     public boolean hasDuplicateTime(ReservationTime reservationTime) {

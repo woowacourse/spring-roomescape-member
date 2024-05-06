@@ -32,7 +32,9 @@ public class ThemeService {
             throw new IllegalStateException("해당 테마를 사용하는 예약이 존재합니다.");
         }
 
-        themeRepository.removeById(id);
+        if (!themeRepository.removeById(id)) {
+            throw new IllegalArgumentException("존재하지 않는 테마입니다. id를 확인하세요.");
+        }
     }
 
     public List<ThemeResponse> findAll(boolean showRanking) {
