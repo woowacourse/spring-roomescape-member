@@ -103,7 +103,8 @@ public class ReservationJdbcRepository implements ReservationRepository {
                     reservation.getTheme()
             );
         } catch (DuplicateKeyException e) {
-            throw new ExistingEntryException("이미 예약된 시간입니다.");
+            String dateTime = reservation.getDate() + " " + reservation.getReservationTime().getStartAt();
+            throw new ExistingEntryException(dateTime + "은 이미 예약된 시간입니다.");
         }
     }
 

@@ -50,7 +50,8 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
             Long id = simpleJdbcInsert.executeAndReturnKey(parameterSource).longValue();
             return new ReservationTime(id, reservationTime.getStartAt());
         } catch (DuplicateKeyException e) {
-            throw new ExistingEntryException("이미 추가된 예약 시간입니다.");
+            String time = reservationTime.getStartAt().toString();
+            throw new ExistingEntryException(time + "은 이미 추가된 예약 시간입니다.");
         }
     }
 

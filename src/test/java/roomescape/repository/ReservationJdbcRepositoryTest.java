@@ -71,11 +71,12 @@ class ReservationJdbcRepositoryTest {
     @DisplayName("중복된 예약 시간에 예약 추가가 불가능한 지 확인한다.")
     void checkDuplicatedReservationTIme() {
         //given
+        LocalDate date = LocalDate.parse("2025-10-05");
         ReservationTime reservationTime = reservationTimeRepository.findByTimeId(1L);
         Theme theme = themeRepository.findByThemeId(1L);
         Reservation reservation2 = new Reservation(
                 new UserName("메이슨"),
-                LocalDate.parse("2025-10-05"),
+                date,
                 reservationTime,
                 theme
         );
@@ -84,6 +85,6 @@ class ReservationJdbcRepositoryTest {
         assertThatThrownBy(() ->
                 reservationRepository.save(reservation2)
         ).isInstanceOf(ExistingEntryException.class)
-                .hasMessage("이미 예약된 시간입니다.");
+                .hasMessage(date + " " + reservationTime.getStartAt() + "은 이미 예약된 시간입니다.");
     }
 }

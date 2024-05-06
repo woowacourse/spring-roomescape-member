@@ -33,15 +33,16 @@ class ReservationTimeJdbcRepositoryTest {
     @DisplayName("중복된 예약 시간 추가가 불가능한 지 확인한다.")
     void checkDuplicatedReservationTIme() {
         //given
-        ReservationTime reservationTime1 = new ReservationTime(LocalTime.parse("10:00"));
-        ReservationTime reservationTime2 = new ReservationTime(LocalTime.parse("10:00"));
+        LocalTime time = LocalTime.parse("10:00");
+        ReservationTime reservationTime1 = new ReservationTime(time);
+        ReservationTime reservationTime2 = new ReservationTime(time);
         reservationTimeRepository.save(reservationTime1);
 
         //when & then
         assertThatThrownBy(() ->
                 reservationTimeRepository.save(reservationTime2)
         ).isInstanceOf(ExistingEntryException.class)
-                .hasMessage("이미 추가된 예약 시간입니다.");
+                .hasMessage(time + "은 이미 추가된 예약 시간입니다.");
     }
 
     @Test
