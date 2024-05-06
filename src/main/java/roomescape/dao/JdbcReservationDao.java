@@ -112,7 +112,7 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public Boolean exist(long id) {
+    public boolean exist(long id) {
         String sql = """
                 SELECT
                 CASE
@@ -121,11 +121,11 @@ public class JdbcReservationDao implements ReservationDao {
                     ELSE FALSE
                 END
                 """;
-        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, id));
     }
 
     @Override
-    public Boolean exist(ReservationDate reservationDate, ReservationTime reservationTime, Theme theme) {
+    public boolean exist(ReservationDate reservationDate, ReservationTime reservationTime, Theme theme) {
         String sql = """
                 SELECT
                 CASE
@@ -134,13 +134,13 @@ public class JdbcReservationDao implements ReservationDao {
                     ELSE FALSE
                 END
                 """;
-        return jdbcTemplate.queryForObject(
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
                 sql,
                 Boolean.class,
                 reservationDate.toStringDate(),
                 reservationTime.getId(),
                 theme.getId()
-        );
+        ));
     }
 
     @Override
@@ -163,7 +163,7 @@ public class JdbcReservationDao implements ReservationDao {
                     ELSE FALSE
                 END
                 """;
-        return jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, timeId));
     }
 
     @Override
@@ -176,6 +176,6 @@ public class JdbcReservationDao implements ReservationDao {
                     ELSE FALSE
                 END
                 """;
-        return jdbcTemplate.queryForObject(sql, Boolean.class, themeId);
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, themeId));
     }
 }

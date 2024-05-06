@@ -12,7 +12,7 @@ public interface ThemeDao {
 
     Theme create(Theme theme);
 
-    Boolean exist(long id);
+    boolean exist(long id);
 
     void delete(long id);
 }
