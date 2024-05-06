@@ -23,6 +23,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTimeRepository;
+import roomescape.exception.ReservationBusinessException;
 import roomescape.repository.ThemeJdbcRepository;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
@@ -75,21 +76,21 @@ class ReservationTimeServiceTest {
     @Test
     void deleteTimeNotFound() {
         assertThatThrownBy(() -> reservationTimeService.deleteTime(3L))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ReservationBusinessException.class);
     }
 
     @DisplayName("예약이 존재하는 시간 삭제")
     @Test
     void deleteTimeExistReservation() {
         assertThatThrownBy(() -> reservationTimeService.deleteTime(2L))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ReservationBusinessException.class);
     }
 
     @DisplayName("중복된 시간 저장")
     @Test
     void saveDuplicatedTime() {
         assertThatThrownBy(() -> reservationTimeService.saveTime(new ReservationTimeSaveRequest(LocalTime.parse("11:00"))))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ReservationBusinessException.class);
     }
 
     @DisplayName("시간의 예약 여부 조회")

@@ -15,14 +15,15 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationRepository;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.ReservationTimeRepository;
+import roomescape.domain.Theme;
 import roomescape.dto.PopularThemeRequest;
 import roomescape.dto.ThemeResponse;
 import roomescape.dto.ThemeSaveRequest;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
-import roomescape.domain.ReservationRepository;
-import roomescape.domain.ReservationTimeRepository;
+import roomescape.exception.ReservationBusinessException;
 import roomescape.repository.ThemeJdbcRepository;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
@@ -86,7 +87,7 @@ class ThemeServiceTest {
     @Test
     void deleteNonExistTheme() {
         assertThatThrownBy(() -> themeService.deleteTheme(1L))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ReservationBusinessException.class);
     }
 
     @DisplayName("예약이 있는 테마 삭제")
@@ -99,7 +100,7 @@ class ThemeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> themeService.deleteTheme(theme.getId()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ReservationBusinessException.class);
     }
 
     @DisplayName("인기 테마 조회")
