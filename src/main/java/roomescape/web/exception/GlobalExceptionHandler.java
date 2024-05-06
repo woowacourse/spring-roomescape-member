@@ -28,6 +28,7 @@ public class GlobalExceptionHandler {
         BindingResult bindingResult = exception.getBindingResult();
         List<FieldError> fieldError = bindingResult.getFieldErrors();
         ErrorResponse errorResponse = new ErrorResponse(fieldError.toArray(FieldError[]::new));
+        logWarn(exception);
 
         return new ResponseEntity(errorResponse, HttpStatus.BAD_REQUEST);
     }
@@ -37,43 +38,58 @@ public class GlobalExceptionHandler {
         List<ParameterValidationResult> allValidationResults = exception.getAllValidationResults();
         ParameterValidationResult[] parameterValidationResults =
                 allValidationResults.toArray(ParameterValidationResult[]::new);
+        logWarn(exception);
 
         return new ResponseEntity(new ErrorResponse(parameterValidationResults), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handle(ConstraintViolationException exception) {
+        logWarn(exception);
         return new ResponseEntity(new ErrorResponse(exception.getConstraintViolations()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handle(IllegalArgumentException exception) {
+        logWarn(exception);
         return new ResponseEntity(new ErrorResponse(exception.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handle(IllegalStateException exception) {
+        logWarn(exception);
         return new ResponseEntity(new ErrorResponse(exception.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handle(NoSuchElementException exception) {
+        logWarn(exception);
         return new ResponseEntity(new ErrorResponse(exception.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handle(HttpMessageNotReadableException exception) {
+        logWarn(exception);
         return new ResponseEntity<>(new ErrorResponse("읽을 수 없는 HTTP 메세지입니다."), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handle(HttpRequestMethodNotSupportedException exception) {
+        logWarn(exception);
         return new ResponseEntity<>(new ErrorResponse("지원하지 않는 HTTP 메서드입니다."), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handle(Exception exception) {
-        logger.error(exception.getMessage());
+        logError(exception);
         return new ResponseEntity<>(new ErrorResponse("서버 오류입니다."), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private void logError(Exception exception) {
+        logger.error(exception.getMessage());
+    }
+
+    private void logWarn(Exception exception) {
+        logger.warn(exception.getMessage());
     }
 }
