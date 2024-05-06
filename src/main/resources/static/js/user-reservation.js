@@ -2,8 +2,8 @@ const THEME_API_ENDPOINT = '/themes';
 
 document.addEventListener('DOMContentLoaded', () => {
   requestRead(THEME_API_ENDPOINT)
-      .then(renderTheme)
-      .catch(error => console.error('Error fetching times:', error));
+    .then(renderTheme)
+    .catch(error => console.error('Error fetching times:', error));
 
   flatpickr("#datepicker", {
     inline: true,
@@ -36,13 +36,8 @@ function renderTheme(themes) {
   const themeSlots = document.getElementById('theme-slots');
   themeSlots.innerHTML = '';
   themes.forEach(theme => {
-    const name = '';
-    const themeId = '';
-    /*
-    TODO: [3단계] 사용자 예약 - 테마 목록 조회 API 호출 후 렌더링
-          response 명세에 맞춰 createSlot 함수 호출 시 값 설정
-          createSlot('theme', theme name, theme id) 형태로 호출
-    */
+    const name = theme.name;
+    const themeId = theme.themeId;
     themeSlots.appendChild(createSlot('theme', name, themeId));
   });
 }
@@ -72,8 +67,8 @@ function checkDate() {
     timeSlots.innerHTML = '';
 
     requestRead(THEME_API_ENDPOINT)
-        .then(renderTheme)
-        .catch(error => console.error('Error fetching times:', error));
+      .then(renderTheme)
+      .catch(error => console.error('Error fetching times:', error));
   }
 }
 
@@ -87,11 +82,7 @@ function checkDateAndTheme() {
 }
 
 function fetchAvailableTimes(date, themeId) {
-  /*
-  TODO: [3단계] 사용자 예약 - 예약 가능 시간 조회 API 호출
-        요청 포맷에 맞게 설정
-  */
-  fetch('/', { // 예약 가능 시간 조회 API endpoint
+  fetch(`/available-reservation-times?date=${date}&theme-id=${themeId}`, { // 예약 가능 시간 조회 API endpoint
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -100,7 +91,7 @@ function fetchAvailableTimes(date, themeId) {
     if (response.status === 200) return response.json();
     throw new Error('Read failed');
   }).then(renderAvailableTimes)
-  .catch(error => console.error("Error fetching available times:", error));
+    .catch(error => console.error("Error fetching available times:", error));
 }
 
 function renderAvailableTimes(times) {
@@ -116,13 +107,9 @@ function renderAvailableTimes(times) {
     return;
   }
   times.forEach(time => {
-    /*
-    TODO: [3단계] 사용자 예약 - 예약 가능 시간 조회 API 호출 후 렌더링
-          response 명세에 맞춰 createSlot 함수 호출 시 값 설정
-    */
-    const startAt = '';
-    const timeId = '';
-    const alreadyBooked = false;
+    const startAt = time.startAt;
+    const timeId = time.timeId;
+    const alreadyBooked = time.alreadyBooked;
 
     const div = createSlot('time', startAt, timeId, alreadyBooked); // createSlot('time', 시작 시간, time id, 예약 여부)
     timeSlots.appendChild(div);
@@ -156,12 +143,6 @@ function onReservationButtonClick() {
   const name = document.getElementById('user-name').value;
 
   if (selectedDate && selectedThemeId && selectedTimeId) {
-
-    /*
-    TODO: [3단계] 사용자 예약 - 예약 요청 API 호출
-          [5단계] 예약 생성 기능 변경 - 사용자
-          request 명세에 맞게 설정
-    */
     const reservationData = {
       date: selectedDate,
       themeId: selectedThemeId,
@@ -176,18 +157,18 @@ function onReservationButtonClick() {
       },
       body: JSON.stringify(reservationData)
     })
-        .then(response => {
-          if (!response.ok) throw new Error('Reservation failed');
-          return response.json();
-        })
-        .then(data => {
-          alert("Reservation successful!");
-          location.reload();
-        })
-        .catch(error => {
-          alert("An error occurred while making the reservation.");
-          console.error(error);
-        });
+      .then(response => {
+        if (!response.ok) throw new Error('Reservation failed');
+        return response.json();
+      })
+      .then(data => {
+        alert("Reservation successful!");
+        location.reload();
+      })
+      .catch(error => {
+        alert("An error occurred while making the reservation.");
+        console.error(error);
+      });
   } else {
     alert("Please select a date, theme, and time before making a reservation.");
   }
@@ -195,8 +176,8 @@ function onReservationButtonClick() {
 
 function requestRead(endpoint) {
   return fetch(endpoint)
-      .then(response => {
-        if (response.status === 200) return response.json();
-        throw new Error('Read failed');
-      });
+    .then(response => {
+      if (response.status === 200) return response.json();
+      throw new Error('Read failed');
+    });
 }
