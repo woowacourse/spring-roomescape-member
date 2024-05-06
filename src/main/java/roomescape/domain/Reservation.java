@@ -13,12 +13,23 @@ public class Reservation {
     private final Theme theme;
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        validateName(name);
+        validate(name, date, time, theme);
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
+    }
+
+    private void validate(String name, LocalDate date, ReservationTime time, Theme theme) {
+        validateNullField(name, date, time, theme);
+        validateName(name);
+    }
+
+    private void validateNullField(String name, LocalDate date, ReservationTime time, Theme theme) {
+        if (name == null || date == null || time == null || theme == null) {
+            throw new BadRequestException("예약 필드에는 빈 값이 들어올 수 없습니다.");
+        }
     }
 
     private void validateName(String name) {

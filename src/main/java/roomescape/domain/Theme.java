@@ -10,12 +10,23 @@ public class Theme {
     private final String thumbnail;
 
     public Theme(Long id, String name, String description, String thumbnail) {
-        validateNotBlank(name, description, thumbnail);
-        validateThumbnailFormat(thumbnail);
+        validate(name, description, thumbnail);
         this.id = id;
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
+    }
+
+    private void validate(String name, String description, String thumbnail) {
+        validateNullField(name, description, thumbnail);
+        validateNotBlank(name, description, thumbnail);
+        validateThumbnailFormat(thumbnail);
+    }
+
+    private void validateNullField(String name, String description, String thumbnail) {
+        if (name == null || description == null || thumbnail == null) {
+            throw new BadRequestException("테마 필드에는 빈 값이 들어올 수 없습니다.");
+        }
     }
 
     private void validateNotBlank(String name, String description, String thumbnail) {

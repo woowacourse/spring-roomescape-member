@@ -1,5 +1,7 @@
 package roomescape.domain;
 
+import roomescape.exception.BadRequestException;
+
 import java.time.LocalTime;
 
 public class ReservationTime {
@@ -8,8 +10,15 @@ public class ReservationTime {
     private final LocalTime startAt;
 
     public ReservationTime(Long id, LocalTime startAt) {
+        validateNullField(startAt);
         this.id = id;
         this.startAt = startAt;
+    }
+
+    private void validateNullField(LocalTime startAt) {
+        if (startAt == null) {
+            throw new BadRequestException("예약 시간 필드에는 빈 값이 들어올 수 없습니다.");
+        }
     }
 
     public ReservationTime(LocalTime startAt) {
