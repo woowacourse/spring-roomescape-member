@@ -14,4 +14,8 @@ public class RoomEscapeException extends RuntimeException {
     public HttpStatus getHttpStatus() {
         return exceptionCode.getHttpStatus();
     }
+
+    public String getMessage() {
+        return exceptionCode.getMessage();
+    }
 }
