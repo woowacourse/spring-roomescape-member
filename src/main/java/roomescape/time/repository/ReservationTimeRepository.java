@@ -14,11 +14,11 @@ import java.util.List;
 
 @Repository
 public class ReservationTimeRepository {
-    private static final RowMapper<ReservationTime> timeRowMapper = (resultSet, rowNum) ->
+    private static final RowMapper<ReservationTime> TIME_ROW_MAPPER = (resultSet, rowNum) ->
             new ReservationTime(
                     resultSet.getLong("id"),
                     resultSet.getString("start_at"));
-    private static final RowMapper<ReservationUserTime> userTimeRowMapper = (resultSet, rowNum) ->
+    private static final RowMapper<ReservationUserTime> USER_TIME_ROW_MAPPER = (resultSet, rowNum) ->
             new ReservationUserTime(
                     resultSet.getLong("id"),
                     resultSet.getString("start_at"),
@@ -42,12 +42,12 @@ public class ReservationTimeRepository {
 
     public ReservationTime findById(final long id) {
         final String sql = "select * from reservation_time where id = ?";
-        return jdbcTemplate.queryForObject(sql, timeRowMapper, id);
+        return jdbcTemplate.queryForObject(sql, TIME_ROW_MAPPER, id);
     }
 
     public List<ReservationTime> findAll() {
         final String sql = "select * from reservation_time";
-        return jdbcTemplate.query(sql, timeRowMapper);
+        return jdbcTemplate.query(sql, TIME_ROW_MAPPER);
     }
 
     public int deleteById(final long id) {
@@ -60,6 +60,6 @@ public class ReservationTimeRepository {
                 "EXISTS (SELECT 1 FROM reservation r WHERE r.time_id = t.id AND r.date = ? AND r.theme_id = ?) " +
                 "AS already_booked " +
                 "FROM reservation_time t";
-        return jdbcTemplate.query(sql, userTimeRowMapper, date, themeId);
+        return jdbcTemplate.query(sql, USER_TIME_ROW_MAPPER, date, themeId);
     }
 }

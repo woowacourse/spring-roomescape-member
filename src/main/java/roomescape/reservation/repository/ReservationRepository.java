@@ -15,7 +15,7 @@ import java.util.List;
 
 @Repository
 public class ReservationRepository {
-    private static final RowMapper<Reservation> rowMapper = (resultSet, rowNum) ->
+    private static final RowMapper<Reservation> ROW_MAPPER = (resultSet, rowNum) ->
             new Reservation(
                     resultSet.getLong("reservation_id"),
                     resultSet.getString("reservation_name"),
@@ -48,7 +48,7 @@ public class ReservationRepository {
                 "FROM reservation r " +
                 "INNER JOIN reservation_time rt ON r.time_id = rt.id " +
                 "INNER JOIN theme t ON r.theme_id = t.id";
-        return jdbcTemplate.query(sql, rowMapper);
+        return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
     public Reservation findById(final long id) {
@@ -59,7 +59,7 @@ public class ReservationRepository {
                 "INNER JOIN reservation_time rt ON r.time_id = rt.id " +
                 "INNER JOIN theme t ON r.theme_id = t.id " +
                 "WHERE r.id = ?";
-        return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
     }
 
     public long save(final Reservation reservation) {

@@ -13,7 +13,7 @@ import java.util.List;
 
 @Repository
 public class ThemeRepository {
-    private static final RowMapper<Theme> rowMapper = (resultSet, rowNum) ->
+    private static final RowMapper<Theme> ROW_MAPPER = (resultSet, rowNum) ->
             new Theme(
                     resultSet.getLong("id"),
                     resultSet.getString("name"),
@@ -32,7 +32,7 @@ public class ThemeRepository {
 
     public List<Theme> findAll() {
         final String sql = "select * from theme";
-        return jdbcTemplate.query(sql, rowMapper);
+        return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
     public long save(final Theme theme) {
@@ -56,6 +56,6 @@ public class ThemeRepository {
                 "GROUP BY t.id, t.name, t.description, t.thumbnail " +
                 "ORDER BY reservation_count DESC " +
                 "LIMIT 10;";
-        return jdbcTemplate.query(sql, rowMapper, startDate, lastDate);
+        return jdbcTemplate.query(sql, ROW_MAPPER, startDate, lastDate);
     }
 }
