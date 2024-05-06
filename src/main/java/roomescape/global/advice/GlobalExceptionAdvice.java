@@ -38,14 +38,14 @@ public class GlobalExceptionAdvice {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         logger.warn(e.getMessage());
-        ErrorResponse errorResponse = new ErrorResponse("잘못된 데이터 형식입니다");
+        ErrorResponse errorResponse = new ErrorResponse("잘못된 데이터 형식입니다.");
         return ResponseEntity.badRequest().body(errorResponse);
     }
 
     @ExceptionHandler({RuntimeException.class, Exception.class})
     public ResponseEntity<ErrorResponse> handleServerErrorException(Exception e) {
         logger.error(e.getMessage());
-        ErrorResponse errorResponse = new ErrorResponse("서버 에러입니다. 관리자에게 문의하세요");
+        ErrorResponse errorResponse = new ErrorResponse("서버 에러입니다. 관리자에게 문의하세요.");
         return ResponseEntity.internalServerError().body(errorResponse);
     }
 }

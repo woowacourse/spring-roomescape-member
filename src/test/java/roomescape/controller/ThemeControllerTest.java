@@ -44,7 +44,7 @@ class ThemeControllerTest extends ControllerTest {
     }
 
     @Test
-    void 테마명이_비어있으면_400_status를_반환한다() throws Exception {
+    void 테마명이_비어있으면_Bad_Request_상태를_반환한다() throws Exception {
         ThemeRequest request = new ThemeRequest(null, "설명", "https://lemone.com");
         String content = objectMapper.writeValueAsString(request);
 
@@ -59,7 +59,7 @@ class ThemeControllerTest extends ControllerTest {
     }
 
     @Test
-    void 테마_설명이_비어있으면_400_status를_반환한다() throws Exception {
+    void 테마_설명이_비어있으면_Bad_Request_상태를_반환한다() throws Exception {
         ThemeRequest request = new ThemeRequest("테마", "", "https://lemone.com");
         String content = objectMapper.writeValueAsString(request);
 
@@ -75,7 +75,7 @@ class ThemeControllerTest extends ControllerTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"https://lemone", "lemone.com", "www.lemone.com"})
-    void 썸네일_URL_형식이_올바르지_않으면_400_status를_반환한다(String thumbnail) throws Exception {
+    void 썸네일_URL_형식이_올바르지_않으면_Bad_Request_상태를_반환한다(String thumbnail) throws Exception {
         ThemeRequest request = new ThemeRequest("테마", "설명", thumbnail);
         String content = objectMapper.writeValueAsString(request);
 
@@ -115,7 +115,7 @@ class ThemeControllerTest extends ControllerTest {
     }
 
     @Test
-    void 테마_아이디가_양수가_아니면_400_status를_반환한다() throws Exception {
+    void 테마_아이디가_양수가_아니면_Bad_Request_상태를_반환한다() throws Exception {
         long invalidId = -1L;
 
         ResultActions result = SimpleMockMvc.delete(mockMvc, "/themes/{id}", invalidId);
