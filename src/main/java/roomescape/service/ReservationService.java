@@ -31,10 +31,10 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse createReservation(ReservationCreateRequest dto) {
-        ReservationTime time = findTimeByTimeId(dto.timeId());
-        Theme theme = findThemeByThemeId(dto.themeId());
-        Reservation reservation = dto.createReservation(time, theme);
+    public ReservationResponse createReservation(ReservationCreateRequest request) {
+        ReservationTime time = findTimeByTimeId(request.timeId());
+        Theme theme = findThemeByThemeId(request.themeId());
+        Reservation reservation = request.createReservation(time, theme);
 
         validateIsAvailable(reservation);
         Reservation createdReservation = reservationDao.createReservation(reservation);

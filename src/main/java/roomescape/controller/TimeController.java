@@ -42,8 +42,8 @@ public class TimeController {
     }
 
     @PostMapping
-    public ResponseEntity<TimeResponse> createTime(@RequestBody TimeCreateRequest dto) {
-        TimeResponse response = service.createTime(dto);
+    public ResponseEntity<TimeResponse> createTime(@RequestBody TimeCreateRequest request) {
+        TimeResponse response = service.createTime(request);
 
         URI location = URI.create("/times/" + response.id());
         return ResponseEntity

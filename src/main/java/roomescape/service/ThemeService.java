@@ -38,8 +38,8 @@ public class ThemeService {
                 .toList();
     }
 
-    public ThemeResponse createTheme(ThemeCreateRequest dto) {
-        Theme createdTheme = themeDao.createTheme(dto.createTheme());
+    public ThemeResponse createTheme(ThemeCreateRequest request) {
+        Theme createdTheme = themeDao.createTheme(request.createTheme());
         return ThemeResponse.from(createdTheme);
     }
 

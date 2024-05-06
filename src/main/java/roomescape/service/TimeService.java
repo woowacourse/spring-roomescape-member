@@ -33,8 +33,8 @@ public class TimeService {
                 .toList();
     }
 
-    public TimeResponse createTime(TimeCreateRequest dto) {
-        ReservationTime createdTime = timeDao.createTime(dto.createReservationTime());
+    public TimeResponse createTime(TimeCreateRequest request) {
+        ReservationTime createdTime = timeDao.createTime(request.createReservationTime());
         return TimeResponse.from(createdTime);
     }
 
