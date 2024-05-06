@@ -10,6 +10,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.exception.model.RoomEscapeException;
+import roomescape.reservation.exception.ReservationExceptionCode;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.Time;
 
@@ -17,6 +18,22 @@ class ReservationTest {
 
     private static final LocalTime TIME = LocalTime.of(9, 0);
     private static final LocalDate TODAY = LocalDate.now();
+
+    @Test
+    @DisplayName("전달 받은 데이터로 Reservation 객체를 정상적으로 생성한다.")
+    void constructReservation() {
+        Theme theme = new Theme(1, "미르", "미르 방탈출", "썸네일 Url");
+        Time time = new Time(1, TIME);
+        Reservation reservation = Reservation.reservationOf(1L, "폴라", TODAY, time, theme);
+
+        assertAll(
+                () -> assertEquals(reservation.getTheme(), theme),
+                () -> assertEquals(reservation.getReservationTime(), time),
+                () -> assertEquals(reservation.getId(), 1),
+                () -> assertEquals(reservation.getName(), "폴라"),
+                () -> assertEquals(reservation.getDate(), TODAY)
+        );
+    }
 
     @Test
     @DisplayName("전달된 id와 같은 값의 id인지 확인.")
@@ -35,7 +52,7 @@ class ReservationTest {
     void validation_ShouldThrowException_WhenNameIsNull() {
         Throwable nameIsNull = assertThrows(RoomEscapeException.class,
                 () -> Reservation.saveReservationOf(null, TODAY, 1L, 1L));
-        assertEquals("null 혹은 빈칸으로 이루어진 이름으로 예약을 시도하였습니다.", nameIsNull.getMessage());
+        assertEquals(ReservationExceptionCode.NAME_IS_NULL_OR_BLANK_EXCEPTION.getMessage(), nameIsNull.getMessage());
     }
 
     @Test
@@ -44,28 +61,26 @@ class ReservationTest {
         Throwable nameIsEmpty = assertThrows(
                 RoomEscapeException.class, () -> Reservation.saveReservationOf(" ", TODAY, 1L, 1L));
 
-        assertEquals("null 혹은 빈칸으로 이루어진 이름으로 예약을 시도하였습니다.", nameIsEmpty.getMessage());
+        assertEquals(ReservationExceptionCode.NAME_IS_NULL_OR_BLANK_EXCEPTION.getMessage(), nameIsEmpty.getMessage());
     }
 
     @Test
     @DisplayName("과거의 날짜를 예약하려고 시도하는 경우 에러를 발생한다.")
     void validation_ShouldThrowException_WhenReservationDateIsPast() {
-        assertAll(() -> {
-                    Throwable pastDateReservation = assertThrows(RoomEscapeException.class,
-                            () -> Reservation.saveReservationOf("pollari", TODAY.minusDays(1), 1L, 1L));
-                    assertEquals("지난 날짜의 예약을 시도하였습니다.", pastDateReservation.getMessage());
-                }
-        );
+        Throwable pastDateReservation = assertThrows(RoomEscapeException.class,
+                () -> Reservation.saveReservationOf("pollari", TODAY.minusDays(1), 1L, 1L));
+
+        assertEquals(ReservationExceptionCode.RESERVATION_DATE_IS_PAST_EXCEPTION.getMessage(),
+                pastDateReservation.getMessage());
     }
 
     @Test
     @DisplayName("이름에 특수문자가 들어가는 경우 에러를 발생한다.")
     void validation_ShouldThrowException_WhenNameContainsSymbol() {
-        assertAll(() -> {
-                    Throwable pastDateReservation = assertThrows(RoomEscapeException.class,
-                            () -> Reservation.saveReservationOf("@특수문자", TODAY, 1L, 1L));
-                    assertEquals("특수문자가 포함된 이름으로 예약을 시도하였습니다.", pastDateReservation.getMessage());
-                }
-        );
+        Throwable pastDateReservation = assertThrows(RoomEscapeException.class,
+                () -> Reservation.saveReservationOf("@특수문자", TODAY, 1L, 1L));
+
+        assertEquals(ReservationExceptionCode.ILLEGAL_NAME_FORM_EXCEPTION.getMessage(),
+                pastDateReservation.getMessage());
     }
 }
