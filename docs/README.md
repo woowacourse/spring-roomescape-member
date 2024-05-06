@@ -67,6 +67,7 @@
 - [x] 예약 가능 시간을 조회한다.
 - [x] 예약을 추가한다.
 - [x] 인기 테마 목록을 조회한다.
+  - [x] 인기 테마의 조회 시작일, 종료일, 테마 개수는 사용자의 요청에 따라 동적으로 처리한다. 
   - [x] 최근 일주일 기준 방문이 많은 테마 상위 10개를 조회한다.
 
 ## 3. API 명세
@@ -82,17 +83,19 @@ HTTP/1.1 200
 Content-Type: application/json
 ```
 ```json
-[
+{
+  "responses": [
     {
+      "id": 1,
+      "name": "브라운",
+      "date": "2024-08-05",
+      "time": {
         "id": 1,
-        "name": "브라운",
-        "date": "2024-08-05",
-        "time": {
-            "id": 1,
-            "startAt": "10:00"
-        }
+        "startAt": "10:00"
+      }
     }
-]
+  ]
+}
 ```
 
 ### 예약 추가
@@ -153,12 +156,14 @@ HTTP/1.1 200
 Content-Type: application/json
 ```
 ```json
-[
-   {
-        "id": 1,
-        "startAt": "10:00"
+{
+  "responses": [
+    {
+      "id": 1,
+      "startAt": "10:00"
     }
-]
+  ]
+}
 ```
 
 ### 예약 시간 추가
@@ -205,14 +210,16 @@ HTTP/1.1 200
 Content-Type: application/json
 ```
 ```json
-[
-  {
-    "id": 1,
-    "name": "레벨2 탈출",
-    "description": "우테코 레벨2를 탈출하는 내용입니다.",
-    "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
-  }
-]
+{
+  "responses": [
+    {
+      "id": 1,
+      "name": "레벨2 탈출",
+      "description": "우테코 레벨2를 탈출하는 내용입니다.",
+      "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+    }
+  ]
+}
 ```
 
 ### 테마 추가
@@ -261,13 +268,15 @@ content-type: application/json
 ```
 - Response
 ```json
-[
-  {
-    "startAt": "10:00",
-    "timdId": "1",
-    "alreadyBooked": false
-  }
-]
+{
+  "responses": [
+    {
+      "startAt": "10:00",
+      "timdId": "1",
+      "alreadyBooked": false
+    }
+  ]
+}
 ```
 
 ### 인기 테마 목록 조회
@@ -278,11 +287,14 @@ content-type: application/json
 ```
 - Response
 ```json
-[
-  {
-    "name": "테마명",
-    "thumbnail": "테마 이미지",
-    "description": "테마 설명"
-  }
-]
+{
+  "responses": [
+    {
+      "id" : "1",
+      "name": "테마명",
+      "thumbnail": "테마 이미지",
+      "description": "테마 설명"
+    }
+  ]
+}
 ```
