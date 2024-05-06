@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -18,6 +19,17 @@ import java.util.List;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    // TODO: 존재하지 않는 API 경로로 요청을 보내는 경우 처리. 400? 404?
+    //      message: 유효하지 않은 요청 경로입니다.
+
+    @ExceptionHandler(value = HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ExceptionResponse> handle(HttpRequestMethodNotSupportedException exception) {
+        logger.error(exception.getMessage());
+        ExceptionResponse exceptionResponse = new ExceptionResponse("유효하지 않은 HTTP 요청 메서드입니다.");
+
+        return new ResponseEntity(exceptionResponse, HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler
     public ResponseEntity<ExceptionResponse> handle(MethodArgumentNotValidException exception) {
@@ -50,12 +62,6 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity(exceptionResponse, HttpStatus.CONFLICT);
     }
-
-    // TODO: 존재하지 않는 API 경로로 요청을 보내는 경우 처리. 400? 404?
-    //      message: 유효하지 않은 요청 경로입니다.
-
-    // TODO: 지원하지 않는 HTTP 메서드로 요청을 보낸 경우 처리. HttpRequestMethodNotSupportedException.
-    //      message:
 
     // TODO: 존재하지 않는 자원에 접근하려 시도한 경우 처리 (timeId를 2793487329로 주는 경우 등) EmptyResultDataAccessException
     //      message:
