@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.RoomTheme;
+import roomescape.exception.BadRequestException;
 
 @Repository
 public class RoomThemeDao {
@@ -47,6 +48,9 @@ public class RoomThemeDao {
     }
 
     public RoomTheme findById(Long id) {
+        if (id == null) {
+            throw new BadRequestException("id가 빈값일 수 없습니다.");
+        }
         return jdbcTemplate.queryForObject("SELECT * FROM theme WHERE id = ?",
                 (rs, rowNum) -> new RoomTheme(
                         rs.getLong("id"),
@@ -57,6 +61,9 @@ public class RoomThemeDao {
     }
 
     public RoomTheme save(RoomTheme roomTheme) {
+        if (roomTheme == null) {
+            throw new BadRequestException("테마가 빈값일 수 없습니다.");
+        }
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("name", roomTheme.getName())
                 .addValue("description", roomTheme.getDescription())
@@ -67,6 +74,9 @@ public class RoomThemeDao {
     }
 
     public boolean deleteById(Long id) {
+        if (id == null) {
+            throw new BadRequestException("id가 빈값일 수 없습니다.");
+        }
         return jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id) > 0;
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.BadRequestException;
 
 @Repository
 public class ReservationTimeDao {
@@ -30,6 +31,9 @@ public class ReservationTimeDao {
     }
 
     public ReservationTime findById(Long id) {
+        if (id == null) {
+            throw new BadRequestException("id가 빈값일 수 없습니다.");
+        }
         return jdbcTemplate.queryForObject("SELECT * FROM reservation_time WHERE id = ?",
                 (rs, rowNum) -> new ReservationTime(
                         rs.getLong("id"),
@@ -38,12 +42,18 @@ public class ReservationTimeDao {
     }
 
     public boolean existByStartAt(LocalTime startAt) {
+        if (startAt == null) {
+            throw new BadRequestException("시간이 빈값일 수 없습니다.");
+        }
         return jdbcTemplate.queryForObject(
                 "SELECT EXISTS(SELECT * FROM reservation_time WHERE start_at = ?)",
                 Boolean.class, startAt);
     }
 
     public ReservationTime save(ReservationTime reservationTime) {
+        if (reservationTime == null) {
+            throw new BadRequestException("시간이 빈값일 수 없습니다.");
+        }
         SqlParameterSource params = new MapSqlParameterSource("start_at",
                 reservationTime.getStartAt());
         Long id = simpleJdbcInsert.executeAndReturnKey(params)
@@ -53,6 +63,9 @@ public class ReservationTimeDao {
     }
 
     public boolean deleteById(Long id) {
+        if (id == null) {
+            throw new BadRequestException("id가 빈값일 수 없습니다.");
+        }
         return jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id) > 0;
     }
 }

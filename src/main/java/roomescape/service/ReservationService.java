@@ -52,7 +52,7 @@ public class ReservationService {
         return ReservationResponse.from(savedReservation);
     }
 
-    public boolean deleteById(long id) {
+    public boolean deleteById(Long id) {
         return reservationDao.deleteById(id);
     }
 

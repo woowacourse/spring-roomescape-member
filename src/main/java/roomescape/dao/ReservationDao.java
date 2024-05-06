@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
+import roomescape.exception.BadRequestException;
 
 @Repository
 public class ReservationDao {
@@ -84,12 +85,24 @@ public class ReservationDao {
     }
 
     public boolean existsByDateTime(LocalDate date, Long timeId, Long themeId) {
+        if (date == null) {
+            throw new BadRequestException("날짜가 빈값일 수 없습니다.");
+        }
+        if (timeId == null) {
+            throw new BadRequestException("시간이 빈값일 수 없습니다.");
+        }
+        if (themeId == null) {
+            throw new BadRequestException("테마가 빈값일 수 없습니다.");
+        }
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
                 "SELECT EXISTS(SELECT * FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?)",
                 Boolean.class, date, timeId, themeId));
     }
 
     public Reservation save(Reservation reservation) {
+        if (reservation == null) {
+            throw new BadRequestException("예약이 빈값일 수 없습니다.");
+        }
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
                 .addValue("date", reservation.getDate())
@@ -100,6 +113,9 @@ public class ReservationDao {
     }
 
     public boolean deleteById(Long id) {
+        if (id == null) {
+            throw new BadRequestException("id가 빈값일 수 없습니다.");
+        }
         return jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id) > 0;
     }
 }
