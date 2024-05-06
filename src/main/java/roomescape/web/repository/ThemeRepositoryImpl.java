@@ -47,8 +47,8 @@ public class ThemeRepositoryImpl implements ThemeRepository {
 
         final String query = """
                 SELECT t.id, t.name, t.description, t.thumbnail
-                FROM theme as t
-                JOIN reservation as r ON t.id = r.theme_id
+                FROM theme AS t
+                JOIN reservation AS r ON t.id = r.theme_id
                 WHERE r.date BETWEEN ? AND ?
                 GROUP BY t.id
                 ORDER BY count(r.id) DESC
@@ -82,7 +82,7 @@ public class ThemeRepositoryImpl implements ThemeRepository {
     public Integer countByName(final String name) {
         final String query = """
                 SELECT count(*)
-                FROM theme as t
+                FROM theme AS t
                 WHERE t.name = ?
                 """;
         return jdbcTemplate.queryForObject(query, Integer.class, name);

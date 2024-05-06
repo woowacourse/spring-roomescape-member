@@ -60,7 +60,7 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
     public Integer countByStartAt(final String startAt) {
         final String query = """
                 SELECT count(*)
-                FROM reservation_time as t
+                FROM reservation_time AS t
                 WHERE t.start_at = ?
                 """;
 

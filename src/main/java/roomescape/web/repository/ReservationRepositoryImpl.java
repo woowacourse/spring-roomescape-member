@@ -40,20 +40,20 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     public List<Reservation> findAll() {
         final String query = """
                 SELECT
-                    r.id as reservation_id,
+                    r.id AS reservation_id,
                     r.name,
                     r.date,
-                    t.id as time_id,
-                    t.start_at as time_value,
-                    m.id as theme_id,
-                    m.name as theme_name,
-                    m.description as theme_description,
-                    m.thumbnail as theme_thumbnail
-                FROM reservation as r
-                inner join reservation_time as t
-                on r.time_id = t.id
-                inner join theme as m
-                on r.theme_id = m.id
+                    t.id AS time_id,
+                    t.start_at AS time_value,
+                    m.id AS theme_id,
+                    m.name AS theme_name,
+                    m.description AS theme_description,
+                    m.thumbnail AS theme_thumbnail
+                FROM reservation AS r
+                INNER JOIN reservation_time AS t
+                ON r.time_id = t.id
+                INNER JOIN theme AS m
+                ON r.theme_id = m.id
                 """;
         return jdbcTemplate.query(query, getReservationRowMapper());
     }
