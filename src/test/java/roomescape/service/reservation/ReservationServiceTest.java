@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
+import roomescape.service.ReservationService;
 import roomescape.service.dto.SaveReservationRequest;
 
 import java.time.LocalDate;
@@ -16,16 +17,16 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
-class ReservationCreateServiceTest {
+class ReservationServiceTest {
 
     private JdbcTemplate jdbcTemplate;
-    private ReservationCreateService reservationCreateService;
+    private ReservationService reservationService;
 
     @Autowired
-    public ReservationCreateServiceTest(JdbcTemplate jdbcTemplate) {
+    public ReservationServiceTest(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         System.out.println("jdbcTemplate = " + jdbcTemplate);
-        reservationCreateService = new ReservationCreateService(
+        reservationService = new ReservationService(
                 new ReservationRepository(jdbcTemplate),
                 new ReservationTimeRepository(jdbcTemplate),
                 new ThemeRepository(jdbcTemplate)
@@ -38,7 +39,7 @@ class ReservationCreateServiceTest {
         SaveReservationRequest request = new SaveReservationRequest(
                 "capy", LocalDate.now().plusDays(1L), 2L, 2L);
 
-        assertThatCode(() -> reservationCreateService.createReservation(request))
+        assertThatCode(() -> reservationService.createReservation(request))
                 .doesNotThrowAnyException();
     }
 
@@ -48,7 +49,7 @@ class ReservationCreateServiceTest {
         SaveReservationRequest request = new SaveReservationRequest(
                 "capy", LocalDate.now().plusDays(1L), 1L, 1L);
 
-        assertThatThrownBy(() -> reservationCreateService.createReservation(request))
+        assertThatThrownBy(() -> reservationService.createReservation(request))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 시간에 이미 예약된 테마입니다.");
     }
@@ -59,7 +60,7 @@ class ReservationCreateServiceTest {
         SaveReservationRequest request = new SaveReservationRequest(
                 "capy", LocalDate.now().minusDays(1L), 2L, 2L);
 
-        assertThatThrownBy(() -> reservationCreateService.createReservation(request))
+        assertThatThrownBy(() -> reservationService.createReservation(request))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("지나간 날짜와 시간에 대한 예약 생성은 불가능합니다.");
     }

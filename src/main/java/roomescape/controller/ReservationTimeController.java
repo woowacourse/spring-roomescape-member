@@ -12,9 +12,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.service.dto.ReservationTimeIsBookedResponse;
 import roomescape.service.dto.ReservationTimeResponse;
 import roomescape.service.dto.SaveReservationTimeRequest;
-import roomescape.service.reservationtime.ReservationTimeCreateService;
-import roomescape.service.reservationtime.ReservationTimeDeleteService;
-import roomescape.service.reservationtime.ReservationTimeFindService;
+import roomescape.service.ReservationTimeService;
 
 import java.net.URI;
 import java.time.LocalDate;
@@ -24,39 +22,35 @@ import java.util.Map;
 @RestController
 public class ReservationTimeController {
 
-    private final ReservationTimeCreateService reservationTimeCreateService;
-    private final ReservationTimeFindService reservationTimeFindService;
-    private final ReservationTimeDeleteService reservationTimeDeleteService;
+    private final ReservationTimeService reservationTimeService;
 
-    public ReservationTimeController(ReservationTimeCreateService reservationTimeCreateService, ReservationTimeFindService reservationTimeFindService, ReservationTimeDeleteService reservationTimeDeleteService) {
-        this.reservationTimeCreateService = reservationTimeCreateService;
-        this.reservationTimeFindService = reservationTimeFindService;
-        this.reservationTimeDeleteService = reservationTimeDeleteService;
+    public ReservationTimeController(ReservationTimeService reservationTimeService) {
+        this.reservationTimeService = reservationTimeService;
     }
 
     @GetMapping("/times")
     public ResponseEntity<List<ReservationTimeResponse>> getReservationTimes() {
-        List<ReservationTime> reservationTimes = reservationTimeFindService.findReservationTimes();
+        List<ReservationTime> reservationTimes = reservationTimeService.findReservationTimes();
         return ResponseEntity.ok(ReservationTimeResponse.listOf(reservationTimes));
     }
 
     @GetMapping("/times/available")
     public ResponseEntity<List<ReservationTimeIsBookedResponse>> getReservationTimesIsBooked(@RequestParam LocalDate date,
                                                                                              @RequestParam Long themeId) {
-        Map<ReservationTime, Boolean> isBooked = reservationTimeFindService.findIsBooked(date, themeId);
+        Map<ReservationTime, Boolean> isBooked = reservationTimeService.findIsBooked(date, themeId);
         return ResponseEntity.ok(ReservationTimeIsBookedResponse.listOf(isBooked));
     }
 
     @PostMapping("/times")
     public ResponseEntity<ReservationTimeResponse> addReservationTime(@RequestBody SaveReservationTimeRequest request) {
-        ReservationTime reservationTime = reservationTimeCreateService.createReservationTime(request);
+        ReservationTime reservationTime = reservationTimeService.createReservationTime(request);
         return ResponseEntity.created(URI.create("times/" + reservationTime.getId()))
                 .body(ReservationTimeResponse.of(reservationTime));
     }
 
     @DeleteMapping("/times/{id}")
     public ResponseEntity<Void> deleteReservationTime(@PathVariable Long id) {
-        reservationTimeDeleteService.deleteReservationTime(id);
+        reservationTimeService.deleteReservationTime(id);
         return ResponseEntity.noContent().build();
     }
 }

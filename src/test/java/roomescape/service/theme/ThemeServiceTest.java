@@ -7,20 +7,21 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
+import roomescape.service.ThemeService;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
-class ThemeDeleteServiceTest {
+class ThemeServiceTest {
 
     private JdbcTemplate jdbcTemplate;
-    private ThemeDeleteService themeDeleteService;
+    private ThemeService themeService;
 
     @Autowired
-    public ThemeDeleteServiceTest(JdbcTemplate jdbcTemplate) {
+    public ThemeServiceTest(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        themeDeleteService = new ThemeDeleteService(
+        themeService = new ThemeService(
                 new ThemeRepository(jdbcTemplate),
                 new ReservationRepository(jdbcTemplate)
         );
@@ -29,14 +30,14 @@ class ThemeDeleteServiceTest {
     @Test
     @DisplayName("예약 중이 아닌 테마를 삭제할 시 성공한다.")
     void deleteNotReservedTime_Success() {
-        assertThatCode(() -> themeDeleteService.deleteTheme(2L))
+        assertThatCode(() -> themeService.deleteTheme(2L))
                 .doesNotThrowAnyException();
     }
 
     @Test
     @DisplayName("이미 예약 중인 테마를 삭제할 시 예외가 발생한다.")
     void deleteReservedTime_Failure() {
-        assertThatThrownBy(() -> themeDeleteService.deleteTheme(1L))
+        assertThatThrownBy(() -> themeService.deleteTheme(1L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 예약중인 테마는 삭제할 수 없습니다.");
     }

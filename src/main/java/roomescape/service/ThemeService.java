@@ -1,18 +1,42 @@
-package roomescape.service.theme;
+package roomescape.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.domain.Theme;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
+import roomescape.service.dto.SaveThemeRequest;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Service
-public class ThemeDeleteService {
+public class ThemeService {
+
+    private static final int START_DAYS_SUBTRACT = 7;
+    private static final int END_DAYS_SUBTRACT = 1;
 
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
 
-    public ThemeDeleteService(ThemeRepository themeRepository, ReservationRepository reservationRepository) {
+    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository) {
         this.themeRepository = themeRepository;
         this.reservationRepository = reservationRepository;
+    }
+
+
+    public Theme createTheme(SaveThemeRequest request) {
+        Theme theme = SaveThemeRequest.toEntity(request);
+        return themeRepository.save(theme);
+    }
+
+    public List<Theme> findThemes() {
+        return themeRepository.findAll();
+    }
+
+    public List<Theme> findTop10Recent7Days() {
+        return themeRepository.findTop10ByOrderByReservationCountBetween(
+                LocalDate.now().minusDays(START_DAYS_SUBTRACT),
+                LocalDate.now().minusDays(END_DAYS_SUBTRACT));
     }
 
     public void deleteTheme(Long id) {

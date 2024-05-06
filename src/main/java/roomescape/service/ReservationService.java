@@ -1,4 +1,4 @@
-package roomescape.service.reservation;
+package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
@@ -11,15 +11,18 @@ import roomescape.service.dto.SaveReservationRequest;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
-public class ReservationCreateService {
+public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
 
-    public ReservationCreateService(ReservationRepository reservationRepository, ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
+    public ReservationService(ReservationRepository reservationRepository,
+                              ReservationTimeRepository reservationTimeRepository,
+                              ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
@@ -47,5 +50,13 @@ public class ReservationCreateService {
 
     private LocalDateTime toLocalDateTime(LocalDate date, ReservationTime reservationTime) {
         return LocalDateTime.of(date, reservationTime.getStartAt());
+    }
+
+    public List<Reservation> findReservations() {
+        return reservationRepository.findAll();
+    }
+
+    public void deleteReservation(Long id) {
+        reservationRepository.deleteById(id);
     }
 }
