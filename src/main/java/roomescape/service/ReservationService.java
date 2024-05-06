@@ -40,7 +40,7 @@ public class ReservationService {
         ReservationTime reservationTime = reservationTimeDao.findById(reservationRequest.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("올바르지 않은 입력입니다."));
         LocalDate date = reservationRequest.date();
-        validatePast(date, LocalTime.parse(reservationTime.getStartAt()));
+        validatePast(date, reservationTime.getStartAt());
         validateDuplicated(date, reservationRequest.timeId(), reservationRequest.themeId());
         Long id = reservationDao.insert(
                 reservationRequest.name(), reservationRequest.date().toString(), reservationRequest.timeId(),

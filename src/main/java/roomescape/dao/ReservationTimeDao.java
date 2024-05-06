@@ -51,7 +51,7 @@ public class ReservationTimeDao {
     private RowMapper<ReservationTime> getReservationTimeRowMapper() {
         return (resultSet, numRow) -> new ReservationTime(
                 resultSet.getLong("id"),
-                resultSet.getString("start_at")
+                resultSet.getTime("start_at").toLocalTime()
         );
     }
 }

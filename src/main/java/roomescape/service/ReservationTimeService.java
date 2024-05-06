@@ -24,7 +24,7 @@ public class ReservationTimeService {
         Long id = reservationTimeDao.insert(
                 timeRequest.startAt().format(DateTimeFormatter.ofPattern("HH:mm")));
         ReservationTime inserted = new ReservationTime(id,
-                timeRequest.startAt().format(DateTimeFormatter.ofPattern("HH:mm")));
+                timeRequest.startAt());
 
         return new TimeResponse(inserted);
     }

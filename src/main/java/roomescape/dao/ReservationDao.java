@@ -112,7 +112,7 @@ public class ReservationDao {
                 resultSet.getString("date"),
                 new ReservationTime(
                         resultSet.getLong("time_id"),
-                        resultSet.getString("time_value")
+                        resultSet.getTime("time_value").toLocalTime()
                 ),
                 new ReservationTheme(
                         resultSet.getLong("theme_id"),
