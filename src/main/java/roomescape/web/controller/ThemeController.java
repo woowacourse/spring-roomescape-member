@@ -46,9 +46,9 @@ class ThemeController {
             @RequestParam(required = false, defaultValue = "false") boolean showRanking
     ) {
         if (showRanking) {
-            return ResponseEntity.ok(themeService.findPopularThemes());
+            return ResponseEntity.ok(themeService.getPopularThemes());
         }
 
-        return ResponseEntity.ok(themeService.findAll());
+        return ResponseEntity.ok(themeService.getAllThemes());
     }
 }
