@@ -9,7 +9,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.domain.Theme;
 import roomescape.support.IntegrationTestSupport;
 
@@ -84,8 +83,7 @@ class ThemeRepositoryTest extends IntegrationTestSupport {
 
     // 테스트 데이터 - 테마아이디(해당테마 예약 갯수): 6(6), 5(5), 7(5), 4(4), 3(3), 1(1), 8(1), 2(0), 9(0), 10(0)
     @Test
-    @Sql(scripts = {"/reset_test_data.sql", "/popular_themes_data.sql"},
-            executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = {"/reset_test_data.sql", "/popular_themes_data.sql"})
     @DisplayName("최근 일주일간 인기 테마를 조회할 수 있다.")
     void findPopularThemes() {
         LocalDate startDate = LocalDate.parse("2024-04-01");
