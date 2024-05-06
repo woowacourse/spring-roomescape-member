@@ -30,7 +30,7 @@ public class ReservationTimeService {
     }
 
     private void validateDuplicatedTime(final LocalTime requestReservationTime) {
-        if (reservationTimeDAO.existReservationOfTime(requestReservationTime)) {
+        if (reservationTimeDAO.existReservationTimeOf(requestReservationTime)) {
             throw new IllegalArgumentException("중복된 시간을 예약할 수 없습니다.");
         }
     }

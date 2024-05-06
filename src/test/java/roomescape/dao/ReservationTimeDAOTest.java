@@ -50,22 +50,22 @@ class ReservationTimeDAOTest {
 
     @Test
     @DisplayName("입력된 시간에 예약이 존재하는지 여부를 알 수 있다.")
-    void existReservationOfTime_true() {
+    void existReservationTime_true() {
         final LocalTime time = LocalTime.now();
         reservationTimeDAO.insert(new ReservationTime(time));
 
-        final Boolean result = reservationTimeDAO.existReservationOfTime(time);
+        final Boolean result = reservationTimeDAO.existReservationTimeOf(time);
 
         assertThat(result).isTrue();
     }
 
     @Test
     @DisplayName("입력된 시간에 예약이 존재하는지 여부를 알 수 있다.")
-    void existReservationOfTime_false() {
+    void existReservationTime_false() {
         final LocalTime time = LocalTime.now();
         reservationTimeDAO.insert(new ReservationTime(time));
 
-        final Boolean result = reservationTimeDAO.existReservationOfTime(time.minusHours(1));
+        final Boolean result = reservationTimeDAO.existReservationTimeOf(time.minusHours(1));
 
         assertThat(result).isFalse();
     }

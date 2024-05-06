@@ -49,7 +49,7 @@ public class ReservationTimeDAO {
         jdbcTemplate.update(sql, id);
     }
 
-    public Boolean existReservationOfTime(final LocalTime time) {
+    public Boolean existReservationTimeOf(final LocalTime time) {
         final String sql = """
                     SELECT CASE WHEN EXISTS (
                         SELECT 1
