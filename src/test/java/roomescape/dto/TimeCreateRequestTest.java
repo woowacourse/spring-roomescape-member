@@ -12,17 +12,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class TimeCreateRequestTest {
 
-    @LocalServerPort
-    private Integer port;
 
-    @BeforeEach
-    void setPort() {
-        RestAssured.port = port;
-    }
 
     @DisplayName("시작 시간이 비어있을 경우 BAD REQUEST를 반환한다.")
     @Test

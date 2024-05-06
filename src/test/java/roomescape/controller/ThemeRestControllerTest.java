@@ -20,7 +20,7 @@ import roomescape.domain.Theme;
 import roomescape.dto.ThemeResponse;
 import roomescape.repository.ThemeDao;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ThemeRestControllerTest {
 
@@ -30,13 +30,7 @@ class ThemeRestControllerTest {
     @Autowired
     private ThemeDao themeDao;
 
-    @LocalServerPort
-    private Integer port;
 
-    @BeforeEach
-    void setPort() {
-        RestAssured.port = port;
-    }
 
     @DisplayName("모든 테마를 조회한다.")
     @Test

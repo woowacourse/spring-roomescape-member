@@ -18,7 +18,7 @@ import roomescape.dto.TimeResponse;
 import roomescape.exception.ExistReservationException;
 import roomescape.exception.IllegalTimeException;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationTimeServiceTest {
 

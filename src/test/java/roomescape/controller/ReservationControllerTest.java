@@ -21,7 +21,7 @@ import roomescape.domain.Reservation;
 import roomescape.dto.ReservationResponse;
 import roomescape.repository.ReservationDao;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationControllerTest {
 
@@ -31,13 +31,7 @@ class ReservationControllerTest {
     @Autowired
     private ReservationDao reservationDao;
 
-    @LocalServerPort
-    private Integer port;
 
-    @BeforeEach
-    void setPort() {
-        RestAssured.port = port;
-    }
 
     @DisplayName("모든 예약을 조회한다.")
     @Test

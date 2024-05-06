@@ -22,7 +22,7 @@ import roomescape.dto.TimeMemberResponse;
 import roomescape.dto.TimeResponse;
 import roomescape.repository.TimeDao;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class TimeRestControllerTest {
 
@@ -32,13 +32,7 @@ class TimeRestControllerTest {
     @Autowired
     private TimeDao timeDao;
 
-    @LocalServerPort
-    private Integer port;
 
-    @BeforeEach
-    void setPort() {
-        RestAssured.port = port;
-    }
 
     @DisplayName("모든 시간을 조회한다.")
     @Test
