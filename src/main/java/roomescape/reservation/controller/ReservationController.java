@@ -32,7 +32,7 @@ public class ReservationController {
 
     @GetMapping("/reservations")
     public ResponseEntity<List<ReservationResponse>> reservations() {
-        return ResponseEntity.ok(reservationService.findAllReservations());
+        return ResponseEntity.ok(reservationService.findMemberReservations());
     }
 
     @PostMapping("/reservations")

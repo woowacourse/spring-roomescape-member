@@ -116,7 +116,7 @@ class ReservationTimeServiceTest {
         reservationTimeRepository.save(get2PM());
         Theme theme = themeRepository.save(getTheme1());
         Reservation reservation = reservationRepository.save(getNextDayReservation(time, theme));
-        reservationRepository.saveReservationList(1L, reservation.getId());
+        reservationRepository.saveMemberReservation(1L, reservation.getId());
 
         //when
         List<AvailableTimeResponse> availableTimes

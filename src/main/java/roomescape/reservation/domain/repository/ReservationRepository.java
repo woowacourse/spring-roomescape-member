@@ -8,9 +8,11 @@ import roomescape.reservation.domain.dto.ReservationMember;
 public interface ReservationRepository {
     Reservation save(Reservation reservation);
 
-    List<ReservationMember> findAllReservationList();
+    List<ReservationMember> findAllMemberReservation();
 
-    boolean deleteReservationListById(long reservationMemberId);
+    boolean deleteMemberReservationById(long memberReservationId);
+
+    void deleteMemberReservationByReservationId(long reservationId);
 
     boolean delete(long reservationId);
 
@@ -20,7 +22,7 @@ public interface ReservationRepository {
 
     boolean existsBy(LocalDate date, long timeId, long themeId);
 
-    boolean existReservationListBy(LocalDate date, long timeId, long themeId);
+    boolean existMemberReservationBy(LocalDate date, long timeId, long themeId);
 
-    long saveReservationList(long memberId, long reservationId);
+    long saveMemberReservation(long memberId, long reservationId);
 }

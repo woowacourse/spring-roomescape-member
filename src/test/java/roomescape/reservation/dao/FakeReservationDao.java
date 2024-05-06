@@ -13,7 +13,7 @@ import roomescape.reservation.domain.repository.ReservationRepository;
 
 public class FakeReservationDao implements ReservationRepository {
     private final Map<Long, Reservation> reservations = new HashMap<>();
-    private Map<Long, Long> reservationList = new HashMap<>();
+    private Map<Long, Long> memberReservation = new HashMap<>();
 
     @Override
     public Reservation save(final Reservation reservation) {
@@ -23,19 +23,27 @@ public class FakeReservationDao implements ReservationRepository {
     }
 
     @Override
-    public List<ReservationMember> findAllReservationList() {
-        return reservationList.keySet().stream()
+    public List<ReservationMember> findAllMemberReservation() {
+        return memberReservation.keySet().stream()
                 .map(key -> new ReservationMember(key, reservations.get(key), getMemberChoco())).toList();
     }
 
     @Override
-    public boolean deleteReservationListById(long reservationMemberId) {
-        if (!reservationList.containsKey(reservationMemberId)) {
+    public boolean deleteMemberReservationById(long memberReservationId) {
+        if (!memberReservation.containsKey(memberReservationId)) {
             return false;
         }
-        reservationList.remove(reservationMemberId);
+        memberReservation.remove(memberReservationId);
         return true;
     }
+
+    @Override
+    public void deleteMemberReservationByReservationId(long reservationId) {
+        memberReservation = memberReservation.entrySet().stream()
+                .filter(entry -> entry.getValue() != reservationId)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
 
     @Override
     public boolean delete(final long reservationId) {
@@ -43,8 +51,6 @@ public class FakeReservationDao implements ReservationRepository {
             return false;
         }
         reservations.remove(reservationId);
-        reservationList = reservationList.entrySet().stream().filter(entry -> entry.getValue() == reservationId)
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         return true;
     }
 
@@ -66,17 +72,17 @@ public class FakeReservationDao implements ReservationRepository {
     }
 
     @Override
-    public boolean existReservationListBy(final LocalDate date, final long timeId, final long themeId) {
+    public boolean existMemberReservationBy(final LocalDate date, final long timeId, final long themeId) {
         Reservation reservation1 = reservations.values().stream()
                 .filter(reservation -> reservation.getDate().equals(date) && reservation.getTime().getId()
                         .equals(timeId) && reservation.getTheme().getId().equals(themeId)).findFirst().orElseThrow();
 
-        return reservationList.containsValue(reservation1.getId());
+        return memberReservation.containsValue(reservation1.getId());
     }
 
     @Override
-    public long saveReservationList(final long memberId, final long reservationId) {
-        reservationList.put(memberId, reservationId);
-        return reservationList.size();
+    public long saveMemberReservation(final long memberId, final long reservationId) {
+        memberReservation.put(memberId, reservationId);
+        return memberReservation.size();
     }
 }

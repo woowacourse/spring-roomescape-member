@@ -82,7 +82,7 @@ public class ThemeDao implements ThemeRepository {
                 SELECT theme.id, theme.name, theme.description, theme.thumbnail, COUNT(*) AS reservation_count 
                 FROM theme 
                 INNER JOIN reservation AS re ON re.theme_id = theme.id 
-                INNER JOIN reservation_list AS rl ON rl.reservation_id = re.id 
+                INNER JOIN member_reservation AS mr ON mr.reservation_id = re.id 
                 WHERE re.date BETWEEN ? AND ? 
                 GROUP BY theme.id, theme.name 
                 ORDER BY reservation_count DESC 

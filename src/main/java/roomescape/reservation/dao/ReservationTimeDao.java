@@ -87,8 +87,8 @@ public class ReservationTimeDao implements ReservationTimeRepository {
                 SELECT * FROM reservation_time 
                 INNER JOIN reservation as re 
                 ON re.time_id = reservation_time.id 
-                INNER JOIN reservation_list as rl 
-                ON re.id = rl.reservation_id 
+                INNER JOIN member_reservation as mr 
+                ON re.id = mr.reservation_id 
                 WHERE re.date = ? AND re.theme_id = ?;
                 """;
 

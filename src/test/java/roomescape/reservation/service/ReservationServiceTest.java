@@ -59,7 +59,8 @@ class ReservationServiceTest {
         ReservationTime time = reservationTimeRepository.save(getNoon());
         Theme theme = themeRepository.save(getTheme1());
         reservationRepository.save(new Reservation(LocalDate.parse(date), time, theme));
-        MemberReservationRequest memberReservationRequest = new MemberReservationRequest(name, date, time.getId(), theme.getId());
+        MemberReservationRequest memberReservationRequest = new MemberReservationRequest(name, date, time.getId(),
+                theme.getId());
 
         //when
         ReservationResponse reservationResponse = reservationService.createMemberReservation(memberReservationRequest);
@@ -80,10 +81,10 @@ class ReservationServiceTest {
         Theme theme = getTheme1();
         Reservation reservation = reservationRepository.save(getNextDayReservation(time, theme));
         Member member = memberRepository.save(getMemberChoco());
-        reservationRepository.saveReservationList(member.getId(), reservation.getId());
+        reservationRepository.saveMemberReservation(member.getId(), reservation.getId());
 
         //when
-        List<ReservationResponse> reservations = reservationService.findAllReservations();
+        List<ReservationResponse> reservations = reservationService.findMemberReservations();
 
         //then
         assertAll(
@@ -103,13 +104,13 @@ class ReservationServiceTest {
         Reservation reservation = getNextDayReservation(time, theme);
         reservationRepository.save(reservation);
         Member member = memberRepository.save(getMemberChoco());
-        long id = reservationRepository.saveReservationList(member.getId(), reservation.getId());
+        long id = reservationRepository.saveMemberReservation(member.getId(), reservation.getId());
 
         //when
         reservationService.deleteMemberReservation(id);
 
         //then
-        assertThat(reservationRepository.findAllReservationList()).hasSize(0);
+        assertThat(reservationRepository.findAllMemberReservation()).hasSize(0);
     }
 
     @DisplayName("일자와 시간 중복 시 예외가 발생한다.")
@@ -120,7 +121,7 @@ class ReservationServiceTest {
         ReservationTime time = reservationTimeRepository.save(getNoon());
         Theme theme = themeRepository.save(getTheme1());
         Reservation reservation = reservationRepository.save(getNextDayReservation(time, theme));
-        reservationRepository.saveReservationList(member.getId(), reservation.getId());
+        reservationRepository.saveMemberReservation(member.getId(), reservation.getId());
 
         MemberReservationRequest memberReservationRequest = new MemberReservationRequest(member.getName(),
                 reservation.getDate().toString(), time.getId(), theme.getId());
@@ -128,5 +129,22 @@ class ReservationServiceTest {
         //when & then
         assertThatThrownBy(() -> reservationService.createMemberReservation(memberReservationRequest))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("예약 삭제 시, 사용자 예약도 함께 삭제된다.")
+    @Test
+    void deleteMemberReservation() {
+        //given
+        Member member = memberRepository.save(getMemberChoco());
+        ReservationTime time = reservationTimeRepository.save(getNoon());
+        Theme theme = themeRepository.save(getTheme1());
+        Reservation reservation = reservationRepository.save(getNextDayReservation(time, theme));
+        reservationRepository.saveMemberReservation(member.getId(), reservation.getId());
+
+        //when
+        reservationService.delete(reservation.getId());
+
+        //then
+        assertThat(reservationService.findMemberReservations()).hasSize(0);
     }
 }

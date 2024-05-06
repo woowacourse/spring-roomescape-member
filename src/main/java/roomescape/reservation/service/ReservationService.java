@@ -32,8 +32,8 @@ public class ReservationService {
         this.memberRepository = memberRepository;
     }
 
-    public List<ReservationResponse> findAllReservations() {
-        return reservationRepository.findAllReservationList().stream()
+    public List<ReservationResponse> findMemberReservations() {
+        return reservationRepository.findAllMemberReservation().stream()
                 .map(ReservationResponse::from)
                 .toList();
     }
@@ -51,15 +51,15 @@ public class ReservationService {
 
         LocalDate date = LocalDate.parse(memberReservationRequest.date());
 
-        if (reservationRepository.existReservationListBy(date, reservationTime.getId(), theme.getId())) {
+        if (reservationRepository.existMemberReservationBy(date, reservationTime.getId(), theme.getId())) {
             throw new IllegalArgumentException("예약이 다른 사람과 중복되었습니다. 다른 예약 시간을 선택해주세요.");
         }
 
         Member member = memberRepository.save(new Member(memberReservationRequest.name()));
         Reservation reservation = reservationRepository.save(new Reservation(date, reservationTime, theme));
-        long reservationListId = reservationRepository.saveReservationList(member.getId(), reservation.getId());
+        long memberReservationId = reservationRepository.saveMemberReservation(member.getId(), reservation.getId());
 
-        return ReservationResponse.from(reservationListId, reservation, member);
+        return ReservationResponse.from(memberReservationId, reservation, member);
     }
 
     public long create(ReservationRequest reservationRequest) {
@@ -83,13 +83,16 @@ public class ReservationService {
     }
 
     public void deleteMemberReservation(long reservationMemberId) {
-        if (!reservationRepository.deleteReservationListById(reservationMemberId)) {
+        if (!reservationRepository.deleteMemberReservationById(reservationMemberId)) {
             throw new IllegalArgumentException(String.format("잘못된 사용자 예약입니다. id=%d를 확인해주세요.", reservationMemberId));
         }
     }
 
+    @Transactional
     public void delete(long reservationId) {
-        if (!reservationRepository.delete(reservationId)) {
+        reservationRepository.deleteMemberReservationByReservationId(reservationId);
+        boolean deleted = reservationRepository.delete(reservationId);
+        if (!deleted) {
             throw new IllegalArgumentException(String.format("잘못된 예약입니다. id=%d를 확인해주세요.", reservationId));
         }
     }

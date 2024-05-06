@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import roomescape.admin.dto.ReservationRequest;
-import roomescape.reservation.controller.dto.MemberReservationRequest;
-import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
 import roomescape.reservation.service.ReservationTimeService;
 
@@ -36,7 +34,7 @@ public class AdminController {
 
     @GetMapping("/reservation")
     public String reservation(Model model) {
-        model.addAttribute("reservations", reservationService.findAllReservations());
+        model.addAttribute("reservations", reservationService.findMemberReservations());
         return "admin/reservation-new";
     }
 

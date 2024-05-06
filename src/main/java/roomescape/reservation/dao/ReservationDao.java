@@ -21,11 +21,11 @@ import roomescape.reservation.domain.repository.ReservationRepository;
 public class ReservationDao implements ReservationRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleReservationInsert;
-    private final SimpleJdbcInsert simpleReservationListInsert;
+    private final SimpleJdbcInsert simpleMemberReservationInsert;
 
     private final RowMapper<ReservationMember> rowMapper = (ResultSet resultSet, int rowNum) -> {
         return new ReservationMember(
-                resultSet.getLong("reservation_list_id"),
+                resultSet.getLong("member_reservation_id"),
                 new Reservation(
                         resultSet.getLong("reservation_id"),
                         resultSet.getDate("date").toLocalDate(),
@@ -49,8 +49,8 @@ public class ReservationDao implements ReservationRepository {
         this.simpleReservationInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
-        this.simpleReservationListInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName("reservation_list")
+        this.simpleMemberReservationInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName("member_reservation")
                 .usingGeneratedKeyColumns("id");
     }
 
@@ -70,25 +70,31 @@ public class ReservationDao implements ReservationRepository {
     }
 
     @Override
-    public List<ReservationMember> findAllReservationList() {
+    public List<ReservationMember> findAllMemberReservation() {
         String sql = """
-                SELECT rl.id AS reservation_list_id, r.id AS reservation_id, r.date, t.id AS time_id, t.start_at AS time_value, 
+                SELECT mr.id AS member_reservation_id, r.id AS reservation_id, r.date, t.id AS time_id, t.start_at AS time_value, 
                 th.id AS theme_id, th.name AS theme_name, th.description, th.thumbnail, m.id AS member_id, m.name AS member_name 
                 FROM reservation AS r 
                 INNER JOIN reservation_time AS t ON r.time_id = t.id 
                 INNER JOIN theme AS th ON r.theme_id = th.id 
-                INNER JOIN reservation_list AS rl ON rl.reservation_id = r.id 
-                INNER JOIN member AS m ON m.id = rl.member_id;
+                INNER JOIN member_reservation AS mr ON mr.reservation_id = r.id 
+                INNER JOIN member AS m ON m.id = mr.member_id;
                 """;
 
         return jdbcTemplate.query(sql, rowMapper);
     }
 
     @Override
-    public boolean deleteReservationListById(long reservationMemberId) {
-        String sql = "DELETE FROM reservation_list WHERE id = ?;";
-        int updateId = jdbcTemplate.update(sql, reservationMemberId);
+    public boolean deleteMemberReservationById(long memberReservationId) {
+        String sql = "DELETE FROM member_reservation WHERE id = ?;";
+        int updateId = jdbcTemplate.update(sql, memberReservationId);
         return updateId != 0;
+    }
+
+    @Override
+    public void deleteMemberReservationByReservationId(long reservationId) {
+        String sql = "DELETE FROM member_reservation WHERE reservation_id = ?";
+        jdbcTemplate.update(sql, reservationId);
     }
 
     @Override
@@ -141,17 +147,17 @@ public class ReservationDao implements ReservationRepository {
     }
 
     @Override
-    public boolean existReservationListBy(LocalDate date, long timeId, long themeId) {
+    public boolean existMemberReservationBy(LocalDate date, long timeId, long themeId) {
         String sql = """
                 SELECT 1
-                FROM reservation_list as rl
-                WHERE rl.reservation_id = (
+                FROM member_reservation as mr
+                WHERE mr.reservation_id = (
                     SELECT r.id
                     FROM reservation AS r 
                     INNER JOIN reservation_time AS t ON r.time_id = t.id 
                     INNER JOIN theme AS th ON r.theme_id = th.id 
-                    INNER JOIN reservation_list AS rl ON rl.reservation_id = r.id 
-                    INNER JOIN member AS m ON m.id = rl.member_id 
+                    INNER JOIN member_reservation AS mr ON mr.reservation_id = r.id 
+                    INNER JOIN member AS m ON m.id = mr.member_id 
                     WHERE date = ? AND time_id = ? AND theme_id = ?
                     LIMIT 1
                 );
@@ -161,10 +167,10 @@ public class ReservationDao implements ReservationRepository {
     }
 
     @Override
-    public long saveReservationList(long memberId, long reservationId) {
+    public long saveMemberReservation(long memberId, long reservationId) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("member_id", memberId)
                 .addValue("reservation_id", reservationId);
-        return simpleReservationListInsert.executeAndReturnKey(params).longValue();
+        return simpleMemberReservationInsert.executeAndReturnKey(params).longValue();
     }
 }

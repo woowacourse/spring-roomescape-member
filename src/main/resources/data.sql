@@ -49,13 +49,13 @@ VALUES ('클로버');
 
 
 -- 예약 목록 추가
-INSERT INTO reservation_list(member_id, reservation_id)
+INSERT INTO member_reservation(member_id, reservation_id)
 VALUES (1, 1);
-INSERT INTO reservation_list(member_id, reservation_id)
+INSERT INTO member_reservation(member_id, reservation_id)
 VALUES (1, 3);
-INSERT INTO reservation_list(member_id, reservation_id)
+INSERT INTO member_reservation(member_id, reservation_id)
 VALUES (1, 2);
-INSERT INTO reservation_list(member_id, reservation_id)
+INSERT INTO member_reservation(member_id, reservation_id)
 VALUES (2, 3);
-INSERT INTO reservation_list(member_id, reservation_id)
+INSERT INTO member_reservation(member_id, reservation_id)
 VALUES (3, 4);

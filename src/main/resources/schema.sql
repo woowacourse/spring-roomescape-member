@@ -32,13 +32,13 @@ CREATE TABLE member
     PRIMARY KEY (id)
 );
 
-CREATE TABLE reservation_list
+CREATE TABLE member_reservation
 (
 
     id             BIGINT NOT NULL AUTO_INCREMENT,
     member_id      BIGINT,
     reservation_id BIGINT,
     FOREIGN KEY (member_id) REFERENCES member (id),
-    FOREIGN KEY (reservation_id) REFERENCES reservation (id) ON DELETE CASCADE,
+    FOREIGN KEY (reservation_id) REFERENCES reservation (id),
     PRIMARY KEY (id)
 );

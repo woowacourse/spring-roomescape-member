@@ -95,7 +95,7 @@ class ReservationControllerTest extends ControllerTest {
     @Test
     void reservationNotFound() {
         //given
-        long invalidId = reservationService.findAllReservations().size() + 10;
+        long invalidId = reservationService.findMemberReservations().size() + 10;
 
         //when & then
         RestAssured.given().log().all()

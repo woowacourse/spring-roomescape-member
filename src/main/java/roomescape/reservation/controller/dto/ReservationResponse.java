@@ -11,9 +11,9 @@ public record ReservationResponse(
         LocalDate date,
         ReservationTimeResponse time,
         ThemeResponse theme) {
-    public static ReservationResponse from(long reservationListId, Reservation reservation, Member member) {
+    public static ReservationResponse from(long memberReservationId, Reservation reservation, Member member) {
         return new ReservationResponse(
-                reservationListId,
+                memberReservationId,
                 member.getName(),
                 reservation.getDate(),
                 ReservationTimeResponse.from(reservation.getTime()),
