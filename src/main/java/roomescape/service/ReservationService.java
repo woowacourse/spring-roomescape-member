@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
 import roomescape.dto.ReservationResponse;
-import roomescape.exception.BadRequestException;
+import roomescape.exception.ViolationException;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
 
@@ -29,7 +29,7 @@ public class ReservationService {
 
     private void validateReservationDate(Reservation reservation) {
         if (reservation.isBeforeOrOnToday()) {
-            throw new BadRequestException("이전 날짜 혹은 당일은 예약할 수 없습니다.");
+            throw new ViolationException("이전 날짜 혹은 당일은 예약할 수 없습니다.");
         }
     }
 
@@ -37,7 +37,7 @@ public class ReservationService {
         boolean existReservationInSameTime = reservationRepository.existByDateAndTimeIdAndThemeId(
                 reservation.getDate(), reservation.getReservationTimeId(), reservation.getThemeId());
         if (existReservationInSameTime) {
-            throw new BadRequestException("해당 시간대에 예약이 모두 찼습니다.");
+            throw new ViolationException("해당 시간대에 예약이 모두 찼습니다.");
         }
     }
 

@@ -1,9 +1,9 @@
 package roomescape.exception;
 
-public class BadRequestException extends RuntimeException {
+public class ViolationException extends RuntimeException {
     private final String message;
 
-    public BadRequestException(String message) {
+    public ViolationException(String message) {
         super(message);
         this.message = message;
     }

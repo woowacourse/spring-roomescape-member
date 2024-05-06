@@ -4,7 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import roomescape.exception.BadRequestException;
+import roomescape.exception.ViolationException;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static roomescape.TestFixture.*;
@@ -18,6 +18,6 @@ class ReservationTest {
     void validateName(String invalidName) {
         // when & then
         assertThatThrownBy(() -> new Reservation(invalidName, MIA_RESERVATION_DATE, new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME()))
-                .isInstanceOf(BadRequestException.class);
+                .isInstanceOf(ViolationException.class);
     }
 }

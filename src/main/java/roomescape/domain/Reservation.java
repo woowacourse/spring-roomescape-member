@@ -1,6 +1,6 @@
 package roomescape.domain;
 
-import roomescape.exception.BadRequestException;
+import roomescape.exception.ViolationException;
 
 import java.time.LocalDate;
 import java.util.regex.Matcher;
@@ -34,11 +34,11 @@ public class Reservation {
 
     private void validateName(String name) {
         if (name == null || name.isBlank()) {
-            throw new BadRequestException("예약자 이름은 비어있을 수 없습니다.");
+            throw new ViolationException("예약자 이름은 비어있을 수 없습니다.");
         }
         Matcher matcher = NAME_PATTERN.matcher(name);
         if (matcher.matches()) {
-            throw new BadRequestException("예약자 이름은 숫자로만 구성될 수 없습니다.");
+            throw new ViolationException("예약자 이름은 숫자로만 구성될 수 없습니다.");
         }
     }
 

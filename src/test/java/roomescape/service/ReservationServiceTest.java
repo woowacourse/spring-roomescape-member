@@ -14,7 +14,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.ReservedThemeResponse;
-import roomescape.exception.BadRequestException;
+import roomescape.exception.ViolationException;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
 
@@ -62,7 +62,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.create(reservation))
-                .isInstanceOf(BadRequestException.class);
+                .isInstanceOf(ViolationException.class);
     }
 
     private static Stream<LocalDate> invalidReservationDate() {
@@ -84,7 +84,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.create(miaReservation))
-                .isInstanceOf(BadRequestException.class);
+                .isInstanceOf(ViolationException.class);
     }
 
     @Test

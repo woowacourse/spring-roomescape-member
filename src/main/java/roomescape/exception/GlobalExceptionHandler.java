@@ -71,8 +71,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return parameterName + String.format("(type: %s) 파라미터의 타입이 올바르지 않습니다.", type);
     }
 
-    @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ErrorResponse> handleBadRequestException(BadRequestException e) {
+    @ExceptionHandler(ViolationException.class)
+    public ResponseEntity<ErrorResponse> handleViolationException(ViolationException e) {
         log.error(e.getMessage());
         return ResponseEntity.badRequest()
                 .body(new ErrorResponse(e.getMessage()));
