@@ -23,7 +23,6 @@ public class ThemeRepository {
     }
 
     public void deleteById(long themeId) {
-        System.out.println("==== theme");
         themeDao.deleteById(themeId);
     }
 }
