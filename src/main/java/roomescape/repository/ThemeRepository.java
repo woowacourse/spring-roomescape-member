@@ -1,8 +1,5 @@
 package roomescape.repository;
 
-import java.time.LocalDate;
-import java.util.List;
-import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -10,6 +7,10 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.theme.Theme;
+
+import javax.sql.DataSource;
+import java.time.LocalDate;
+import java.util.List;
 
 @Repository
 public class ThemeRepository {
@@ -31,16 +32,11 @@ public class ThemeRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
+    // TODO: 예외 처리 필요. Optional?
     public Theme findById(Long id) {
         String sql = "SELECT * FROM theme WHERE id = ?";
 
         return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
-    }
-
-    public List<Theme> findAll() {
-        String sql = "SELECT * FROM theme";
-
-        return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
     public List<Theme> findTopNByReservationCount(LocalDate startDate, LocalDate endDate, int count) {
@@ -55,6 +51,12 @@ public class ThemeRepository {
                 """;
 
         return jdbcTemplate.query(sql, ROW_MAPPER, startDate, endDate, count);
+    }
+
+    public List<Theme> findAll() {
+        String sql = "SELECT * FROM theme";
+
+        return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
     public Theme save(Theme theme) {
