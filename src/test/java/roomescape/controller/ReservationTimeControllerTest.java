@@ -51,7 +51,7 @@ class ReservationTimeControllerTest {
     @DisplayName("특정 날짜와 테마에 따른 모든 시간의 예약 가능 여부를 확인한다.")
     @Test
     void should_get_reservations_with_book_state_by_date_and_theme() {
-        List<IsReservedTimeResponse> responses = RestAssured.given().log().all()
+        RestAssured.given().log().all()
                 .when().get("/times/reserved?date=2030-08-05&themeId=1")
                 .then().log().all()
                 .statusCode(200).extract()
