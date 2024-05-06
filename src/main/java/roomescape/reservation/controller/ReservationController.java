@@ -19,7 +19,6 @@ import roomescape.reservation.dto.response.FindReservationResponse;
 import roomescape.reservation.service.ReservationService;
 
 @RestController
-@RequestMapping("/reservations")
 public class ReservationController {
 
     private final ReservationService reservationService;
@@ -28,7 +27,7 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @PostMapping
+    @PostMapping("/reservations")
     public ResponseEntity<CreateReservationResponse> createReservation(
             @RequestBody CreateReservationRequest createReservationRequest) {
         CreateReservationResponse createReservationResponse = reservationService.createReservation(
@@ -37,23 +36,23 @@ public class ReservationController {
                 .body(createReservationResponse);
     }
 
-    @GetMapping
+    @GetMapping("/reservations")
     public ResponseEntity<List<FindReservationResponse>> getReservations() {
         return ResponseEntity.ok(reservationService.getReservations());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/reservations/{id}")
     public ResponseEntity<FindReservationResponse> getReservation(@PathVariable final Long id) {
         return ResponseEntity.ok(reservationService.getReservation(id));
     }
 
-    @GetMapping("/times")
+    @GetMapping("/reservations/times")
     public ResponseEntity<List<FindAvailableTimesResponse>> getAvailableTimes(@RequestParam LocalDate date,
                                                                               @RequestParam Long themeId) {
         return ResponseEntity.ok(reservationService.getAvailableTimes(date, themeId));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/reservations/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
         reservationService.deleteReservation(id);
         return ResponseEntity.noContent().build();
