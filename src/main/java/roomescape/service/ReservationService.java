@@ -65,16 +65,9 @@ public class ReservationService {
         }
     }
 
-    public void deleteReservation(Long id) {
-        validateNull(id);
+    public void deleteReservation(long id) {
         validateExistence(id);
         reservationRepository.deleteReservationById(id);
-    }
-
-    private void validateNull(Long id) {
-        if (id == null) {
-            throw new BadRequestException("[ERROR] id에 null이 입력될 수 없습니다.");
-        }
     }
 
     private void validateExistence(long id) {
@@ -84,9 +77,8 @@ public class ReservationService {
         }
     }
 
-    public List<MemberReservationTimeResponse> findReservationTimesInformation(LocalDate date, Long themeId) {
+    public List<MemberReservationTimeResponse> findReservationTimesInformation(LocalDate date, long themeId) {
         // TODO: themeId <= 0 예외 처리
-        validateNull(themeId);
         List<ReservationTime> bookedTimes = reservationRepository.findReservationTimeBooked(date, themeId);
         List<ReservationTime> notBookedTimes = reservationRepository.findReservationTimeNotBooked(date, themeId);
         List<MemberReservationTimeResponse> bookedResponse = mapToResponse(bookedTimes, true);

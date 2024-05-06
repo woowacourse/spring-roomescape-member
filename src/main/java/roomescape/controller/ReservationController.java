@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import roomescape.controller.request.ReservationRequest;
 import roomescape.controller.response.MemberReservationTimeResponse;
 import roomescape.controller.response.ReservationResponse;
+import roomescape.exception.BadRequestException;
 import roomescape.model.Reservation;
 import roomescape.service.ReservationService;
 import roomescape.service.dto.ReservationDto;
@@ -44,6 +45,7 @@ public class ReservationController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable("id") Long id) {
+        validateNull(id);
         reservationService.deleteReservation(id);
         return ResponseEntity.noContent().build();
     }
@@ -52,8 +54,15 @@ public class ReservationController {
     public ResponseEntity<List<MemberReservationTimeResponse>> showReservationTimesInformation(
             @RequestParam(name = "date") LocalDate date,
             @RequestParam(name = "themeId") Long themeId) {
+        validateNull(themeId);
         List<MemberReservationTimeResponse> response = reservationService.findReservationTimesInformation(date, themeId);
         // TODO: 여기서 response 객체로 반환하도록 수정
         return ResponseEntity.ok(response);
+    }
+
+    private void validateNull(Long value) {
+        if (value == null) {
+            throw new BadRequestException("[ERROR] 요청된 데이터에 null 혹은 비어있는 값이 존재합니다.");
+        }
     }
 }

@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.controller.request.ThemeRequest;
 import roomescape.controller.response.ThemeResponse;
+import roomescape.exception.BadRequestException;
 import roomescape.model.Theme;
 import roomescape.service.ThemeService;
 import roomescape.service.dto.ThemeDto;
@@ -42,6 +43,7 @@ public class ThemeController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable("id") Long id) {
+        validateNull(id);
         themeService.deleteTheme(id);
         return ResponseEntity.noContent().build();
     }
@@ -53,5 +55,11 @@ public class ThemeController {
                 .map(ThemeResponse::from)
                 .toList();
         return ResponseEntity.ok(response);
+    }
+
+    private void validateNull(Long value) {
+        if (value == null) {
+            throw new BadRequestException("[ERROR] 요청된 데이터에 null 혹은 비어있는 값이 존재합니다.");
+        }
     }
 }

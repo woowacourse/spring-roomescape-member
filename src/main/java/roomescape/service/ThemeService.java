@@ -31,10 +31,7 @@ public class ThemeService {
                 .orElseThrow(() -> new BadRequestException("[ERROR] 데이터가 저장되지 않습니다."));
     }
 
-    public void deleteTheme(Long id) {
-        if (id == null) {
-            throw new BadRequestException("[ERROR] id에 null이 입력될 수 없습니다.");
-        }
+    public void deleteTheme(long id) {
         themeRepository.deleteThemeById(id);
     }
 
