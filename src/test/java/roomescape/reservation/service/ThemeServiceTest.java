@@ -99,7 +99,7 @@ class ThemeServiceTest {
     void endDatePriorToStartDate() {
         //given
         int limit = 10;
-        LocalDate startDate = LocalDate.now().minusDays(1);
+        LocalDate startDate = LocalDate.now().plusDays(2);
         LocalDate endDate = LocalDate.now();
 
         //when & then

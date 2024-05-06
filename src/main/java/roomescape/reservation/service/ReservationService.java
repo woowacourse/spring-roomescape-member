@@ -4,14 +4,14 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.admin.dto.ReservationRequest;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.repository.MemberRepository;
-import roomescape.reservation.controller.dto.ReservationRequest;
+import roomescape.reservation.controller.dto.MemberReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
-import roomescape.reservation.domain.dto.ReservationMember;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.domain.repository.ReservationTimeRepository;
 import roomescape.reservation.domain.repository.ThemeRepository;
@@ -33,16 +33,40 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> findAllReservations() {
-        return reservationRepository.findAll().stream()
+        return reservationRepository.findAllReservationList().stream()
                 .map(ReservationResponse::from)
                 .toList();
     }
 
     @Transactional
-    public ReservationResponse create(ReservationRequest reservationRequest) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId()).orElseThrow(
+    public ReservationResponse createMemberReservation(MemberReservationRequest memberReservationRequest) {
+        ReservationTime reservationTime = reservationTimeRepository.findById(memberReservationRequest.timeId())
+                .orElseThrow(
+                        () -> new IllegalArgumentException(
+                                String.format("잘못된 예약 시간입니다. id=%d를 확인해주세요.", memberReservationRequest.timeId())));
+
+        Theme theme = themeRepository.findById(memberReservationRequest.themeId()).orElseThrow(
                 () -> new IllegalArgumentException(
-                        String.format("잘못된 예약 시간입니다. id=%d를 확인해주세요.", reservationRequest.timeId())));
+                        String.format("잘못된 테마입니다. id=%d를 확인해주세요.", memberReservationRequest.themeId())));
+
+        LocalDate date = LocalDate.parse(memberReservationRequest.date());
+
+        if (reservationRepository.existReservationListBy(date, reservationTime.getId(), theme.getId())) {
+            throw new IllegalArgumentException("예약이 다른 사람과 중복되었습니다. 다른 예약 시간을 선택해주세요.");
+        }
+
+        Member member = memberRepository.save(new Member(memberReservationRequest.name()));
+        Reservation reservation = reservationRepository.save(new Reservation(date, reservationTime, theme));
+        long reservationListId = reservationRepository.saveReservationList(member.getId(), reservation.getId());
+
+        return ReservationResponse.from(reservationListId, reservation, member);
+    }
+
+    public long create(ReservationRequest reservationRequest) {
+        ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId())
+                .orElseThrow(
+                        () -> new IllegalArgumentException(
+                                String.format("잘못된 예약 시간입니다. id=%d를 확인해주세요.", reservationRequest.timeId())));
 
         Theme theme = themeRepository.findById(reservationRequest.themeId()).orElseThrow(
                 () -> new IllegalArgumentException(
@@ -50,19 +74,22 @@ public class ReservationService {
 
         LocalDate date = LocalDate.parse(reservationRequest.date());
 
-        if (reservationRepository.existReservationListBy(date, reservationTime.getId(), theme.getId())) {
-            throw new IllegalArgumentException("예약이 다른 사람과 중복되었습니다. 다른 예약 시간을 선택해주세요.");
+        if (reservationRepository.existsBy(date, reservationTime.getId(), theme.getId())) {
+            throw new IllegalArgumentException("예약이 중복되었습니다. 다른 예약 시간을 선택해주세요.");
         }
 
-        Member member = memberRepository.save(new Member(reservationRequest.name()));
         Reservation reservation = reservationRepository.save(new Reservation(date, reservationTime, theme));
-        reservationRepository.saveReservationList(member.getId(), reservation.getId());
+        return reservation.getId();
+    }
 
-        return ReservationResponse.from(new ReservationMember(reservation, member));
+    public void deleteMemberReservation(long reservationMemberId) {
+        if (!reservationRepository.deleteReservationListById(reservationMemberId)) {
+            throw new IllegalArgumentException(String.format("잘못된 사용자 예약입니다. id=%d를 확인해주세요.", reservationMemberId));
+        }
     }
 
     public void delete(long reservationId) {
-        if (!reservationRepository.deleteById(reservationId)) {
+        if (!reservationRepository.delete(reservationId)) {
             throw new IllegalArgumentException(String.format("잘못된 예약입니다. id=%d를 확인해주세요.", reservationId));
         }
     }

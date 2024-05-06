@@ -42,7 +42,7 @@ public class FakeThemeDao implements ThemeRepository {
     }
 
     private boolean containsThemeId(long themeId) {
-        return reservationRepository.findAll().stream()
+        return reservationRepository.findAllReservationList().stream()
                 .anyMatch(reservationMember -> reservationMember.reservation().getTheme().getId() == themeId);
     }
 
@@ -54,7 +54,7 @@ public class FakeThemeDao implements ThemeRepository {
     @Override
     public List<Theme> findPopularThemes(final LocalDate startDate, final LocalDate endDate, final int limit) {
 
-        List<ReservationMember> reservationMembers = reservationRepository.findAll();
+        List<ReservationMember> reservationMembers = reservationRepository.findAllReservationList();
 
         Map<Long, Long> themeReservationCounts = reservationMembers.stream()
                 .filter(reservationMember -> reservationMember.reservation().getDate().isAfter(startDate)

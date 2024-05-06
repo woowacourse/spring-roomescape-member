@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import roomescape.reservation.controller.dto.ReservationRequest;
+import roomescape.reservation.controller.dto.MemberReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.controller.dto.ReservationTimeRequest;
 import roomescape.reservation.controller.dto.ReservationTimeResponse;
@@ -42,7 +42,7 @@ class ReservationControllerTest extends ControllerTest {
         themeResponse = themeService.create(new ThemeRequest("name", "description", "thumbnail"));
     }
 
-    @DisplayName("예약 생성 시 201을 반환한다.")
+    @DisplayName("사용자 예약 생성 시 201을 반환한다.")
     @Test
     void create() {
         //given
@@ -65,7 +65,7 @@ class ReservationControllerTest extends ControllerTest {
     @Test
     void delete() {
         //given
-        ReservationResponse reservationResponse = reservationService.create(new ReservationRequest(
+        ReservationResponse reservationResponse = reservationService.createMemberReservation(new MemberReservationRequest(
                         "choco",
                         LocalDate.now().toString(),
                         reservationTimeResponse.id(),
@@ -95,7 +95,7 @@ class ReservationControllerTest extends ControllerTest {
     @Test
     void reservationNotFound() {
         //given
-        long invalidId = 6L;
+        long invalidId = reservationService.findAllReservations().size() + 10;
 
         //when & then
         RestAssured.given().log().all()
