@@ -6,7 +6,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.dao.ReservationTimeDao;
 import roomescape.reservation.domain.ReservationTime;
-import roomescape.reservation.dto.request.ReservationRequest;
 import roomescape.reservation.handler.exception.CustomBadRequest;
 import roomescape.reservation.handler.exception.CustomException;
 import roomescape.reservation.handler.exception.CustomInternalServerError;
@@ -28,8 +27,8 @@ public class ReservationTimeService {
         }
     }
 
-    public ReservationTime findReservationTime(ReservationRequest reservationRequest) {
-        return reservationTimeDao.findById(reservationRequest.timeId())
+    public ReservationTime findReservationTime(Long id) {
+        return reservationTimeDao.findById(id)
                 .orElseThrow(() -> new CustomException(CustomBadRequest.NOT_FOUND_RESERVATION_TIME));
     }
 

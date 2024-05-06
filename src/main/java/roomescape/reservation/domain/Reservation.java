@@ -42,12 +42,8 @@ public class Reservation {
         }
     }
 
-    public boolean isSameDate(LocalDate localDate) {
-        return date.isEqual(localDate);
-    }
-
-    public boolean isSameTime(ReservationTime reservationTime) {
-        return time.equals(reservationTime);
+    public boolean isSameDateTIme(Reservation reservation) {
+        return date.isEqual(reservation.date) && time.equals(reservation.time);
     }
 
     public Long getId() {

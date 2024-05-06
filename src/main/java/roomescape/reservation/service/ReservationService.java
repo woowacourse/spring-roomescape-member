@@ -29,24 +29,26 @@ public class ReservationService {
     }
 
     public Reservation createReservation(ReservationRequest reservationRequest) {
-        ReservationTime reservationTime = reservationTimeService.findReservationTime(reservationRequest);
-
-        reservationDao.findAllReservations().stream()
-                .filter(reservation ->
-                        reservation.isSameTime(reservationTime) && reservation.isSameDate(reservationRequest.date()))
-                .findAny()
-                .ifPresent(time -> {
-                    throw new CustomException(CustomBadRequest.DUPLICATE_RESERVATION);
-                });
-
+        ReservationTime reservationTime = reservationTimeService.findReservationTime(reservationRequest.timeId());
         Theme theme = themeService.findTheme(reservationRequest.themeId());
-
         Reservation reservation = reservationRequest.toEntity(reservationTime, theme);
+
+        validateDuplication(reservation);
+
         try {
             return reservationDao.save(reservation);
         } catch (DataAccessException e) {
             throw new CustomException(CustomInternalServerError.FAIl_TO_CREATE);
         }
+    }
+
+    private void validateDuplication(Reservation reservation) {
+        reservationDao.findAllReservations().stream()
+                .filter(r -> r.isSameDateTIme(reservation))
+                .findAny()
+                .ifPresent(r -> {
+                    throw new CustomException(CustomBadRequest.DUPLICATE_RESERVATION);
+                });
     }
 
     public List<Reservation> findReservations(LocalDate date, Long themeId) {
@@ -58,21 +60,23 @@ public class ReservationService {
     }
 
     public List<AvailableTimeResponse> findAvailableTimes(LocalDate date, Long themeId) {
-        List<Reservation> reservations = findReservations(date, themeId);
+        List<ReservationTime> reservedTimes = findReservations(date, themeId).stream()
+                .map(Reservation::getTime)
+                .toList();
         List<ReservationTime> reservationTimes = reservationTimeService.findAllReservationTimes();
 
         return reservationTimes.stream()
                 .map(reservationTime -> new AvailableTimeResponse(
                         reservationTime.getStartAt(),
                         reservationTime.getId(),
-                        isReservedTime(reservations, reservationTime)
+                        isReservedTime(reservedTimes, reservationTime)
                 ))
                 .toList();
     }
 
-    private boolean isReservedTime(List<Reservation> reservations, ReservationTime reservationTime) {
-        return reservations.stream()
-                .noneMatch(reservation -> reservation.isSameTime(reservationTime));
+    private boolean isReservedTime(List<ReservationTime> reservedTimes, ReservationTime reservationTime) {
+        return reservedTimes.stream()
+                .noneMatch(reservedTime -> reservedTime.equals(reservationTime));
     }
 
     public void deleteReservation(Long id) {
