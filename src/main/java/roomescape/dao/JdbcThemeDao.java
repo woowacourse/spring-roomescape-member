@@ -18,6 +18,14 @@ import roomescape.domain.theme.ThemeThumbnail;
 @Repository
 public class JdbcThemeDao implements ThemeDao {
 
+    private static final RowMapper<Theme> THEME_ROW_MAPPER =
+            (resultSet, rowNum) -> new Theme(
+            resultSet.getLong("id"),
+            ThemeName.from(resultSet.getString("name")),
+            ThemeDescription.from(resultSet.getString("description")),
+            ThemeThumbnail.from(resultSet.getString("thumbnail"))
+    );
+
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
@@ -31,14 +39,14 @@ public class JdbcThemeDao implements ThemeDao {
     @Override
     public List<Theme> readAll() {
         String sql = "SELECT id, name, description, thumbnail FROM theme";
-        return jdbcTemplate.query(sql, themeRowMapper());
+        return jdbcTemplate.query(sql, THEME_ROW_MAPPER);
     }
 
     @Override
     public Optional<Theme> readById(Long id) {
         String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ? ";
         try {
-            Theme theme = jdbcTemplate.queryForObject(sql, themeRowMapper(), id);
+            Theme theme = jdbcTemplate.queryForObject(sql, THEME_ROW_MAPPER, id);
             return Optional.of(theme);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -77,14 +85,5 @@ public class JdbcThemeDao implements ThemeDao {
                 WHERE id = ?
                 """;
         jdbcTemplate.update(sql, id);
-    }
-
-    private RowMapper<Theme> themeRowMapper() {
-        return (resultSet, rowNum) -> new Theme(
-                resultSet.getLong("id"),
-                ThemeName.from(resultSet.getString("name")),
-                ThemeDescription.from(resultSet.getString("description")),
-                ThemeThumbnail.from(resultSet.getString("thumbnail"))
-        );
     }
 }

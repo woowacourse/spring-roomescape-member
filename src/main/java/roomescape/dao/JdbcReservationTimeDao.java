@@ -16,6 +16,12 @@ import roomescape.domain.reservationtime.ReservationTime;
 @Repository
 public class JdbcReservationTimeDao implements ReservationTimeDao {
 
+    private static final RowMapper<ReservationTime> RESERVATION_TIME_ROW_MAPPER =
+            (resultSet, rowNum) -> new ReservationTime(
+                    resultSet.getLong("id"),
+                    ReservationStartAt.from(resultSet.getString("start_at"))
+            );
+
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
@@ -29,14 +35,14 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
     @Override
     public List<ReservationTime> readAll() {
         String sql = "SELECT id, start_at FROM reservation_time";
-        return jdbcTemplate.query(sql, reservationTimeRowMapper());
+        return jdbcTemplate.query(sql, RESERVATION_TIME_ROW_MAPPER);
     }
 
     @Override
     public Optional<ReservationTime> readById(long id) {
         String sql = "SELECT  id, start_at FROM reservation_time WHERE id = ? ";
         try {
-            ReservationTime reservationTime = jdbcTemplate.queryForObject(sql, reservationTimeRowMapper(), id);
+            ReservationTime reservationTime = jdbcTemplate.queryForObject(sql, RESERVATION_TIME_ROW_MAPPER, id);
             return Optional.of(reservationTime);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -86,12 +92,5 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
                 WHERE id = ?
                 """;
         jdbcTemplate.update(sql, id);
-    }
-
-    private RowMapper<ReservationTime> reservationTimeRowMapper() {
-        return (resultSet, rowNum) -> new ReservationTime(
-                resultSet.getLong("id"),
-                ReservationStartAt.from(resultSet.getString("start_at"))
-        );
     }
 }

@@ -22,6 +22,19 @@ import roomescape.domain.theme.ThemeThumbnail;
 @Repository
 public class JdbcReservationDao implements ReservationDao {
 
+    private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER =
+            (resultSet, rowNum) -> new Reservation(
+            resultSet.getLong("id"),
+            new ReservationName(resultSet.getString("name")),
+            ReservationDate.from(resultSet.getString("date")),
+            new ReservationTime(resultSet.getLong("time_id"),
+                    ReservationStartAt.from(resultSet.getString("time_value"))),
+            new Theme(resultSet.getLong("theme_id"),
+                    ThemeName.from(resultSet.getString("theme_name")),
+                    ThemeDescription.from(resultSet.getString("theme_description")),
+                    ThemeThumbnail.from(resultSet.getString("theme_thumbnail")))
+    );
+
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
@@ -52,7 +65,7 @@ public class JdbcReservationDao implements ReservationDao {
                 INNER JOIN
                     theme th ON r.theme_id = th.id;
                 """;
-        return jdbcTemplate.query(sql, reservationRowMapper());
+        return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER);
     }
 
     @Override
@@ -164,19 +177,5 @@ public class JdbcReservationDao implements ReservationDao {
                 END
                 """;
         return jdbcTemplate.queryForObject(sql, Boolean.class, themeId);
-    }
-
-    private RowMapper<Reservation> reservationRowMapper() {
-        return (resultSet, rowNum) -> new Reservation(
-                resultSet.getLong("id"),
-                new ReservationName(resultSet.getString("name")),
-                ReservationDate.from(resultSet.getString("date")),
-                new ReservationTime(resultSet.getLong("time_id"),
-                        ReservationStartAt.from(resultSet.getString("time_value"))),
-                new Theme(resultSet.getLong("theme_id"),
-                        ThemeName.from(resultSet.getString("theme_name")),
-                        ThemeDescription.from(resultSet.getString("theme_description")),
-                        ThemeThumbnail.from(resultSet.getString("theme_thumbnail")))
-        );
     }
 }
