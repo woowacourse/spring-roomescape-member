@@ -103,6 +103,12 @@ class ThemeControllerTest extends IntegrationTestSupport {
                 .when().delete("/themes/2")
                 .then().log().all()
                 .statusCode(204);
+
+        RestAssured.given().log().all()
+                .when().get("/themes")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(1));
     }
 
     @Test

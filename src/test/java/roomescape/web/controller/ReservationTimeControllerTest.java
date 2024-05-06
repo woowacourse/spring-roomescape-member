@@ -133,6 +133,12 @@ class ReservationTimeControllerTest extends IntegrationTestSupport {
                 .when().delete("/times/3")
                 .then().log().all()
                 .statusCode(204);
+
+        RestAssured.given().log().all()
+                .when().get("/times")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(2));
     }
 
     @Test
