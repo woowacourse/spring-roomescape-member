@@ -7,7 +7,7 @@ public interface ReservationRepository {
 
     Reservation save(Reservation reservation);
 
-    boolean hasSameReservation(Reservation reservation);
+    boolean hasSameReservation(String date, Long timeId, Long themeId);
 
     void delete(Long id);
 

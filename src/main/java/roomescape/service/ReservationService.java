@@ -2,12 +2,14 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
 import roomescape.dto.request.ReservationAddRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.dto.response.ThemeResponse;
 import roomescape.repository.reservation.ReservationRepository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -31,24 +33,24 @@ public class ReservationService {
         ReservationTimeResponse timeResponse = reservationTimeService.getTime(reservationAddRequest.timeId());
         ThemeResponse themeResponse = themeService.getTheme(reservationAddRequest.themeId());
 
+        validateAddReservation(reservationAddRequest, LocalDateTime.of(reservationAddRequest.date(), timeResponse.toReservationTime().getStartAt()));
+
         Reservation reservation = new Reservation(
                 reservationAddRequest.name(),
                 reservationAddRequest.date(),
                 timeResponse.toReservationTime(),
                 themeResponse.toTheme()
         );
-        validateDateTime(reservation);
         return ReservationResponse.from(reservationRepository.save(reservation));
     }
 
-    private void validateDateTime(Reservation reservation) {
-        LocalDateTime localDateTime = LocalDateTime.of(reservation.getDate(), reservation.getTime().getStartAt());
+    private void validateAddReservation(ReservationAddRequest reservationAddRequest, LocalDateTime reservationTime) {
         LocalDateTime now = LocalDateTime.now();
 
-        if (localDateTime.isBefore(now)) {
+        if (reservationTime.isBefore(now)) {
             throw new IllegalArgumentException("과거 시간은 예약할 수 없습니다.");
         }
-        if (reservationRepository.hasSameReservation(reservation)) {
+        if (reservationRepository.hasSameReservation(reservationAddRequest.getStringDate(), reservationAddRequest.timeId(), reservationAddRequest.themeId())) {
             throw new IllegalArgumentException("중복 예약을 할 수 없습니다.");
         }
     }

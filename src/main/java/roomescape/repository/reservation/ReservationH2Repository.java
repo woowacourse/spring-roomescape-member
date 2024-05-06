@@ -46,9 +46,9 @@ public class ReservationH2Repository implements ReservationRepository {
     }
 
     @Override
-    public boolean hasSameReservation(Reservation reservation) {
+    public boolean hasSameReservation(String date, Long timeId, Long themeId) {
         String sql = "SELECT * FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?";
-        return !jdbcTemplate.query(sql, (rs, rowNum) -> 0, reservation.getDate(), reservation.getTime().getId(), reservation.getTheme().getId()).isEmpty();
+        return !jdbcTemplate.query(sql, (rs, rowNum) -> 0, date, timeId, themeId).isEmpty();
     }
 
     @Override
