@@ -8,6 +8,7 @@ import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationName;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.ThemeName;
 
 public class ReservationRequestDto {
 
@@ -72,7 +73,7 @@ public class ReservationRequestDto {
         return new Reservation(
                 null,
                 new ReservationName(name),
-                new Theme(themeId, null, null, null),
+                new Theme(themeId, (ThemeName) null, null, null),
                 new ReservationDate(date),
                 new ReservationTime(timeId, (LocalTime) null)
         );
