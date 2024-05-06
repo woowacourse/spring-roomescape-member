@@ -19,7 +19,7 @@ public class ReservationTimeControllerTest {
     @DisplayName("예약 시간 추가, 조회, 삭제를 정상적으로 수행한다.")
     void ReservationTime_CREATE_READ_DELETE_Success() {
         Map<String, String> time = Map.of(
-                "startAt", "12:00"
+                "startAt", "10:00"
         );
 
         RestAssured.given().log().all()
@@ -33,10 +33,10 @@ public class ReservationTimeControllerTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(3));
+                .body("size()", is(1));
 
         RestAssured.given().log().all()
-                .when().delete("/times/3")
+                .when().delete("/times/1")
                 .then().log().all()
                 .statusCode(204);
     }

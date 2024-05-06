@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.ReservationTime;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -20,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
+@Sql("/truncate-data.sql")
 class ReservationTimeServiceTest {
 
     private JdbcTemplate jdbcTemplate;
@@ -45,8 +47,9 @@ class ReservationTimeServiceTest {
 
     @Test
     @DisplayName("이미 존재하는 예약 시간을 생성하는 경우 예외가 발생한다.")
+    @Sql("/theme-time-data.sql")
     void checkDuplicateTime_Failure() {
-        SaveReservationTimeRequest request = new SaveReservationTimeRequest(LocalTime.of(11, 0));
+        SaveReservationTimeRequest request = new SaveReservationTimeRequest(LocalTime.of(10, 0));
 
         assertThatThrownBy(() -> reservationTimeService.createReservationTime(request))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -55,18 +58,20 @@ class ReservationTimeServiceTest {
 
     @Test
     @DisplayName("날짜와 테마가 주어지면 각 시간의 예약 여부를 구한다.")
+    @Sql(scripts = {"/theme-time-data.sql", "/reservation-data.sql"})
     void findAvailabilityByDateAndTheme() {
-        LocalDate date = LocalDate.now().plusDays(1L);
+        LocalDate date = LocalDate.of(2100, 12, 31);
 
         assertThat(reservationTimeService.findIsBooked(date, 1L))
                 .isEqualTo(Map.of(
-                        new ReservationTime(1L, LocalTime.of(10, 0)), true,
+                        new ReservationTime(1L, LocalTime.of    (10, 0)), true,
                         new ReservationTime(2L, LocalTime.of(11, 0)), false
                 ));
     }
 
     @Test
     @DisplayName("예약 중이 아닌 시간을 삭제할 시 성공한다.")
+    @Sql("/theme-time-data.sql")
     void deleteNotReservedTime_Success() {
         assertThatCode(() -> reservationTimeService.deleteReservationTime(2L))
                 .doesNotThrowAnyException();
@@ -74,6 +79,7 @@ class ReservationTimeServiceTest {
 
     @Test
     @DisplayName("이미 예약 중인 시간을 삭제할 시 예외가 발생한다.")
+    @Sql(scripts = {"/theme-time-data.sql", "/reservation-data.sql"})
     void deleteReservedTime_Failure() {
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1L))
                 .isInstanceOf(IllegalArgumentException.class)
