@@ -1,7 +1,8 @@
 package roomescape.controller.user;
 
 import static org.hamcrest.Matchers.is;
-import static roomescape.fixture.LocalDateFixture.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static roomescape.fixture.LocalDateFixture.AFTER_TWO_DAYS_DATE;
 
 import io.restassured.RestAssured;
 import java.time.LocalDate;
@@ -16,7 +17,7 @@ import org.springframework.test.annotation.DirtiesContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class UserReservationControllerTest {
+class UserThemeControllerTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -25,9 +26,8 @@ class UserReservationControllerTest {
     void setUp() {
         jdbcTemplate.update("insert into reservation_time values(1,'10:00')");
         jdbcTemplate.update("insert into theme values(1,'리비', '리비 설명', 'url')");
-        LocalDate reservationDate = AFTER_TWO_DAYS_DATE;
         jdbcTemplate.update("insert into reservation (name, date, time_id, theme_id) values(?,?,?,?)", "브라운",
-                reservationDate, 1, 1);
+                AFTER_TWO_DAYS_DATE, 1, 1);
     }
 
     @AfterEach
@@ -35,13 +35,13 @@ class UserReservationControllerTest {
         jdbcTemplate.update("delete from reservation");
     }
 
-    @DisplayName("예약 가능 시각 목록을 불러올 수 있다. (200 OK)")
+    @DisplayName("인기 테마 목록을 불러올 수 있다.(200 OK)")
     @Test
-    void should_response_bookable_time() {
+    void should_response_theme_ranking() {
         RestAssured.given().log().all()
-                .when().get("/bookable-times?date="+ AFTER_TWO_DAYS_DATE+"&themeId=1")
+                .when().get("/theme-ranking")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", is(0));
     }
 }

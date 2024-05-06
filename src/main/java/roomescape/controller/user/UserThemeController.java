@@ -16,7 +16,7 @@ public class UserThemeController {
         this.userThemeService = userThemeService;
     }
 
-    @GetMapping("/theme-rank")
+    @GetMapping("/theme-ranking")
     public ResponseEntity<List<Theme>> getThemeRank() {
         return ResponseEntity.ok(userThemeService.getThemeRanking());
     }
