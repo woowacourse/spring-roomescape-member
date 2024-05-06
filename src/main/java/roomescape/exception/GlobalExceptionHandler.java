@@ -29,6 +29,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                                                HttpStatusCode status, WebRequest request) {
         String errorMessage = Objects.requireNonNull(e.getBindingResult().getFieldError())
                 .getDefaultMessage();
+        log.error(errorMessage);
         return ResponseEntity.badRequest()
                 .body(new ErrorResponse(errorMessage));
     }
@@ -38,9 +39,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                                                HttpStatusCode status, WebRequest request) {
         if (e.getCause() instanceof InvalidFormatException invalidFormatException) {
             String errorMessage = getMismatchedInputExceptionMessage(invalidFormatException);
+            log.error(errorMessage);
             return ResponseEntity.badRequest()
                     .body(new ErrorResponse(errorMessage));
         }
+        log.error(e.getMessage());
         return ResponseEntity.badRequest()
                 .body(new ErrorResponse(e.getMessage()));
     }
@@ -57,6 +60,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
         String errorMessage = getMethodArgumentTypeMismatchExceptionMessage(e);
+        log.error(errorMessage);
         return ResponseEntity.badRequest()
                 .body(new ErrorResponse(errorMessage));
     }
@@ -69,12 +73,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ErrorResponse> handleBadRequestException(BadRequestException e) {
+        log.error(e.getMessage());
         return ResponseEntity.badRequest()
                 .body(new ErrorResponse(e.getMessage()));
     }
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException e) {
+        log.error(e.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ErrorResponse(e.getMessage()));
     }
