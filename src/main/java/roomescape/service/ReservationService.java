@@ -72,7 +72,7 @@ public class ReservationService {
                                                LocalTime now) {
         if (reservationDate.isSameDate(date)) {
             return reservationTimes.stream()
-                    .filter(time -> !time.isBeforeTime(now))
+                    .filter(time -> time.isAfterOrSameTime(now))
                     .toList();
         }
         return reservationTimes;

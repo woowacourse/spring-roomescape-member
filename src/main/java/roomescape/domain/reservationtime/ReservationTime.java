@@ -16,8 +16,8 @@ public class ReservationTime {
         this(id, reservationTime.getStartAt());
     }
 
-    public boolean isBeforeTime(LocalTime time) {
-        return reservationStartAt.isBefore(time);
+    public boolean isAfterOrSameTime(LocalTime time) {
+        return !reservationStartAt.isBefore(time);
     }
 
     public Long getId() {

@@ -37,7 +37,7 @@ public class Reservation {
     }
 
     public boolean isBeforeTime(LocalTime time) {
-        return reservationTime.isBeforeTime(time);
+        return !reservationTime.isAfterOrSameTime(time);
     }
 
     public Long getId() {
