@@ -19,7 +19,7 @@ public class UserReservationController {
         this.userReservationService = userReservationService;
     }
 
-    @GetMapping("bookable-times")
+    @GetMapping("/bookable-times")
     public ResponseEntity<List<BookableTimeResponse>> getTimesWithStatus(
             @RequestParam("date") LocalDate date,
             @RequestParam("themeId") Long themeId) {

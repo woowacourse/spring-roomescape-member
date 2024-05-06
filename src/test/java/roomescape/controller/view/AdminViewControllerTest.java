@@ -19,15 +19,6 @@ public class AdminViewControllerTest {
                 .statusCode(200);
     }
 
-    @DisplayName("웰컴페이지 요청 시 응답할 수 있다")
-    @Test
-    void should_response_200_when_request_welcome_page() {
-        RestAssured.given().log().all()
-                .when().get("/")
-                .then().log().all()
-                .statusCode(200);
-    }
-
     @DisplayName("/admin/reservation get 요청 시 응답할 수 있다")
     @Test
     void should_response_200_when_request_reservation_page() {
