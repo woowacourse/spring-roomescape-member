@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.dto.ErrorResponse;
 
 @RestControllerAdvice
-public class ControllerExceptionHandler {
+public class GlobalExceptionHandler {
     private static final String NULL_POINTER_EXCEPTION_ERROR_MESSAGE = "인자 중 null 값이 존재합니다.";
 
     @ExceptionHandler(IllegalArgumentException.class)
