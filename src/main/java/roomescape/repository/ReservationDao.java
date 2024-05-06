@@ -13,11 +13,11 @@ public interface ReservationDao {
 
     void deleteReservation(long id);
 
-    Long countReservationById(long id);
+    long countReservationById(long id);
 
-    Long countReservationByTimeId(long timeId);
+    long countReservationByTimeId(long timeId);
 
-    Long countReservationByDateAndTimeId(LocalDate date, long timeId);
+    long countReservationByDateAndTimeId(LocalDate date, long timeId);
 
     List<ReservationTime> findReservationTimeByDateAndTheme(LocalDate date, long themeId);
 }

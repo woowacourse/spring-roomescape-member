@@ -83,28 +83,25 @@ public class ReservationDaoImpl implements ReservationDao {
     }
 
     @Override
-    public Long countReservationById(long id) {
+    public long countReservationById(long id) {
         String sql = "SELECT count(id) FROM reservation WHERE id = ?";
         Long countReservation = jdbcTemplate.queryForObject(sql, (resultSet, ignored) -> resultSet.getLong(1), id);
-        validateNullResult(countReservation); //todo 예외는 꼭 예외를 발생시켜야 할 때만 해야함 : 그냥 0으로 반환하면 안되나? count잖아!!
-        return countReservation;
+        return returnZeroIfNull(countReservation);
     }
 
     @Override
-    public Long countReservationByTimeId(long timeId) {
+    public long countReservationByTimeId(long timeId) {
         String sql = "SELECT count(id) FROM reservation WHERE time_id = ?";
         Long countReservation = jdbcTemplate.queryForObject(sql, (resultSet, ignored) -> resultSet.getLong(1), timeId);
-        validateNullResult(countReservation);
-        return countReservation;
+        return returnZeroIfNull(countReservation);
     }
 
     @Override
-    public Long countReservationByDateAndTimeId(LocalDate date, long timeId) {
+    public long countReservationByDateAndTimeId(LocalDate date, long timeId) {
         String sql = "SELECT count(id) FROM reservation WHERE date = ? AND time_id = ?";
         Long countReservation = jdbcTemplate.queryForObject(sql, (resultSet, ignored) -> resultSet.getLong(1), date,
                 timeId);
-        validateNullResult(countReservation);
-        return countReservation;
+        return returnZeroIfNull(countReservation);
     }
 
     @Override
@@ -121,9 +118,10 @@ public class ReservationDaoImpl implements ReservationDao {
                 ), date, themeId);
     }
 
-    private void validateNullResult(Long queryResult) {
+    private long returnZeroIfNull(Long queryResult) {
         if (queryResult == null) {
-            throw new NullPointerException("쿼리 실행 결과가 null 입니다.");
+            return 0L;
         }
+        return queryResult.longValue();
     }
 }
