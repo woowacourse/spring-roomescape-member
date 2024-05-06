@@ -36,12 +36,13 @@ public class ReservationService {
                 .toList();
     }
 
-    public List<AvailableReservationResponse> findTimeByDateAndThemeID(String date, Long themeId, LocalDate today, LocalTime now) {
+    public List<AvailableReservationResponse> findTimeByDateAndThemeID(String date, Long themeId) {
         ReservationDate reservationDate = ReservationDate.from(date);
         List<ReservationTime> reservationTimes = reservationTimeDao.readAll();
         List<Long> ids = reservationDao.readTimeIdsByDateAndThemeId(reservationDate, themeId);
-        List<ReservationTime> filteredTimes = filterByDate(reservationDate, reservationTimes, today, now);
-        return changeToAvailableReservationResponse(filteredTimes, ids);
+        return reservationTimes.stream()
+                .map(time -> AvailableReservationResponse.of(time, ids.contains(time.getId())))
+                .toList();
     }
 
     public ReservationResponse add(ReservationCreateRequest request) {
@@ -56,25 +57,6 @@ public class ReservationService {
     public void delete(Long id) {
         validateNotExistReservation(id);
         reservationDao.delete(id);
-    }
-
-    private List<ReservationTime> filterByDate(ReservationDate reservationDate,
-                                               List<ReservationTime> reservationTimes,
-                                               LocalDate date,
-                                               LocalTime now) {
-        if (reservationDate.isSameDate(date)) {
-            return reservationTimes.stream()
-                    .filter(time -> time.isAfterOrSameTime(now))
-                    .toList();
-        }
-        return reservationTimes;
-    }
-
-    private List<AvailableReservationResponse> changeToAvailableReservationResponse(List<ReservationTime> filteredTimes,
-                                                                                    List<Long> ids) {
-        return filteredTimes.stream()
-                .map(time -> AvailableReservationResponse.of(time, ids.contains(time.getId())))
-                .toList();
     }
 
     private ReservationTime findReservationTime(Long timeId) {

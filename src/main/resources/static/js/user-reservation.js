@@ -82,8 +82,8 @@ function checkDateAndTheme() {
 }
 
 function fetchAvailableTimes(date, themeId) {
-  const requrl = new URLSearchParams({date, themeId, today: getToday(), now: getNowTime()})
-  fetch(`/reservations/user?${requrl}`, { // 예약 가능 시간 조회 API endpoint
+  const requrl = new URLSearchParams({date, themeId});
+  fetch(`/reservations/available-time?${requrl}`, { // 예약 가능 시간 조회 API endpoint
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -91,11 +91,11 @@ function fetchAvailableTimes(date, themeId) {
   }).then(response => {
     if (response.status === 200) return response.json();
     throw new Error('Read failed');
-  }).then(renderAvailableTimes)
+  }).then(response => renderAvailableTimes(date, response))
     .catch(error => console.error("Error fetching available times:", error));
 }
 
-function renderAvailableTimes(times) {
+function renderAvailableTimes(date, times) {
   const timeSection = document.getElementById("time-section");
   if (timeSection.classList.contains("disabled")) {
     timeSection.classList.remove("disabled");
@@ -110,7 +110,7 @@ function renderAvailableTimes(times) {
   times.forEach(time => {
     const startAt = time.startAt;
     const timeId = time.timeId;
-    const alreadyBooked = time.alreadyBooked;
+    const alreadyBooked = isBeforeNow(date, startAt) ? true : time.alreadyBooked;
 
     const div = createSlot('time', startAt, timeId, alreadyBooked); // createSlot('time', 시작 시간, time id, 예약 여부)
     timeSlots.appendChild(div);
@@ -207,4 +207,9 @@ function getNowTime() {
   const mm = String(today.getMinutes()).padStart(2, '0');
 
   return hh + ':' + mm;
+}
+
+function isBeforeNow(date, time) {
+  const selectedDateTime = new Date(`${date}T${time}`);
+  return selectedDateTime < new Date();
 }
