@@ -66,21 +66,21 @@ class ReservationTimeServiceTest {
     @DisplayName("예약 시간을 삭제한다.")
     @Test
     void should_delete_reservation_time() {
-        reservationTimeService.deleteReservationTime(3);
+        reservationTimeService.deleteReservationTime(3L);
         assertThat(reservationTimeService.findAllReservationTimes()).hasSize(INITIAL_TIME_COUNT - 1);
     }
 
     @DisplayName("예약 시간을 삭제하려 할 때 특정 id를 가진 예약 시간이 존재하는 경우 예외가 발생하지 않는다.")
     @Test
     void should_not_throw_exception_when_exist_id() {
-        assertThatCode(() -> reservationTimeService.deleteReservationTime(3))
+        assertThatCode(() -> reservationTimeService.deleteReservationTime(3L))
                 .doesNotThrowAnyException();
     }
 
     @DisplayName("예약 시간을 삭제하려 할 때 특정 id를 가진 예약 시간이 존재하지 않는 경우 예외가 발생한다.")
     @Test
     void should_throw_exception_when_not_exist_id() {
-        assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(999))
+        assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(999L))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("[ERROR] 존재하지 않는 시간입니다.");
     }
@@ -88,7 +88,7 @@ class ReservationTimeServiceTest {
     @DisplayName("예약 시간을 삭제하려 할 때 해당 시간을 사용하는 예약이 존재하는 경우 예외가 발생한다.")
     @Test
     void should_throw_exception_when_exist_reservation_using_time() {
-        assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(2))
+        assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(2L))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage("[ERROR] 해당 시간을 사용하고 있는 예약이 있습니다.");
     }

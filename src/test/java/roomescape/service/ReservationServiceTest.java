@@ -70,21 +70,21 @@ class ReservationServiceTest {
     @DisplayName("예약을 삭제한다.")
     @Test
     void should_delete_reservation() {
-        reservationService.deleteReservation(1);
+        reservationService.deleteReservation(1L);
         assertThat(reservationService.findAllReservations()).hasSize(INITIAL_RESERVATION_COUNT - 1);
     }
 
     @DisplayName("존재하는 예약을 삭제하려 하면 예외가 발생하지 않는다.")
     @Test
     void should_not_throw_exception_when_exist_reservation_time() {
-        assertThatCode(() -> reservationService.deleteReservation(1))
+        assertThatCode(() -> reservationService.deleteReservation(1L))
                 .doesNotThrowAnyException();
     }
 
     @DisplayName("존재하지 않는 예약을 삭제하려 하면 예외가 발생한다.")
     @Test
     void should_throw_exception_when_not_exist_reservation_time() {
-        assertThatThrownBy(() -> reservationService.deleteReservation(999))
+        assertThatThrownBy(() -> reservationService.deleteReservation(999L))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("[ERROR] 존재하지 않는 예약입니다.");
     }
@@ -127,7 +127,7 @@ class ReservationServiceTest {
     @Test
     void should_return_times_with_book_state() {
         LocalDate date = LocalDate.of(9999, 9, 9);
-        List<MemberReservationTimeResponse> times = reservationService.findReservationTimesInformation(date, 1);
+        List<MemberReservationTimeResponse> times = reservationService.findReservationTimesInformation(date, 1L);
         assertThat(times).hasSize(INITIAL_TIME_COUNT);
         assertThat(times).containsOnly(
                 new MemberReservationTimeResponse(1, LocalTime.of(1, 0), true),

@@ -44,24 +44,31 @@ public class ReservationTimeService {
                 .orElseThrow(() -> new BadRequestException("[ERROR] 데이터가 저장되지 않습니다."));
     }
 
-    public void deleteReservationTime(long id) {
+    public void deleteReservationTime(Long id) {
         validate(id);
         reservationTimeRepository.deleteReservationTimeById(id);
     }
 
-    private void validate(long id) {
+    private void validate(Long id) {
+        validateNull(id);
         validateExistence(id);
         validateDependence(id);
     }
 
-    private void validateDependence(long id) {
+    private void validateNull(Long id) {
+        if (id == null) {
+            throw new BadRequestException("[ERROR] id에 null이 입력될 수 없습니다.");
+        }
+    }
+
+    private void validateDependence(Long id) {
         boolean isExist = reservationTimeRepository.isExistReservationByTimeId(id);
         if (isExist) {
             throw new BadRequestException("[ERROR] 해당 시간을 사용하고 있는 예약이 있습니다.");
         }
     }
 
-    private void validateExistence(long id) {
+    private void validateExistence(Long id) {
         boolean isNotExist = !reservationTimeRepository.isExistReservationTimeById(id);
         if (isNotExist) {
             throw new NotFoundException("[ERROR] 존재하지 않는 시간입니다.");

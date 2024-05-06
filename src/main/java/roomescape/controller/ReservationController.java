@@ -43,7 +43,7 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable("id") long id) {
+    public ResponseEntity<Void> deleteReservation(@PathVariable("id") Long id) {
         reservationService.deleteReservation(id);
         return ResponseEntity.noContent().build();
     }
@@ -51,7 +51,7 @@ public class ReservationController {
     @GetMapping("/times")
     public ResponseEntity<List<MemberReservationTimeResponse>> showReservationTimesInformation(
             @RequestParam(name = "date") LocalDate date,
-            @RequestParam(name = "themeId") long themeId) {
+            @RequestParam(name = "themeId") Long themeId) {
         List<MemberReservationTimeResponse> response = reservationService.findReservationTimesInformation(date, themeId);
         // TODO: 여기서 response 객체로 반환하도록 수정
         return ResponseEntity.ok(response);

@@ -53,7 +53,7 @@ class ThemeServiceTest {
     @DisplayName("테마를 삭제한다.")
     @Test
     void should_delete_theme() {
-        themeService.deleteTheme(1);
+        themeService.deleteTheme(1L);
         assertThat(themeService.findAllThemes()).hasSize(INITIAL_THEME_COUNT - 1);
     }
 

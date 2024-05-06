@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.controller.request.ReservationTimeRequest;
 import roomescape.controller.response.ReservationTimeResponse;
+import roomescape.exception.BadRequestException;
 import roomescape.model.ReservationTime;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.dto.ReservationTimeDto;
@@ -41,7 +42,7 @@ public class ReservationTimeController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservationTime(@PathVariable("id") long id) {
+    public ResponseEntity<Void> deleteReservationTime(@PathVariable("id") Long id) {
         reservationTimeService.deleteReservationTime(id);
         return ResponseEntity.noContent().build();
     }

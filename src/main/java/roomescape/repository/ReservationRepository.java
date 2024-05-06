@@ -54,9 +54,7 @@ public class ReservationRepository {
                 reservation.getId(), reservation.getName(), reservation.getDate(),
                 reservation.getTime().getId(), reservation.getTheme().getId());
         long id = reservationDao.save(reservationSavedDto);
-        System.out.println(id);
         ReservationSavedDto saved = reservationDao.findById(id).orElseThrow(NoSuchElementException::new);
-        System.out.println("@@" + saved.getId());
         ReservationTime time = reservationTimeDao.findById(saved.getTimeId()).orElseThrow(NoSuchElementException::new);
         Theme theme = themeDao.findById(saved.getThemeId()).orElseThrow(NoSuchElementException::new);
         return new Reservation(id, saved.getName(), saved.getDate(), time, theme);
