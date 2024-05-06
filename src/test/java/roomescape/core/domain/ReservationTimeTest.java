@@ -13,7 +13,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 class ReservationTimeTest {
     @Test
-    @DisplayName("시간을 생성한다.")
+    @DisplayName("시간을 생성한다")
     void createReservationTime() {
         assertThatCode(() -> new ReservationTime(ID, START_AT))
                 .doesNotThrowAnyException();
