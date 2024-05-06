@@ -28,9 +28,7 @@ public class TimeController {
 
     @GetMapping
     public ResponseEntity<List<TimeResponse>> readTimes() {
-        List<TimeResponse> timeResponses = timeService.findAllTimes();
-
-        return ResponseEntity.ok(timeResponses);
+        return ResponseEntity.ok(timeService.findAllTimes());
     }
 
     @PostMapping

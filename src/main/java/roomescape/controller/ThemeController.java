@@ -29,16 +29,12 @@ public class ThemeController {
 
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> readThemes() {
-        List<ThemeResponse> themeResponses = themeService.findAllThemes();
-
-        return ResponseEntity.ok(themeResponses);
+        return ResponseEntity.ok(themeService.findAllThemes());
     }
 
     @GetMapping("/top")
     public ResponseEntity<List<ThemeResponse>> readTopNThemes(@RequestParam int count) {
-        List<ThemeResponse> themeResponses = themeService.findTopNThemes(count);
-
-        return ResponseEntity.ok(themeResponses);
+        return ResponseEntity.ok(themeService.findTopNThemes(count));
     }
 
     @PostMapping

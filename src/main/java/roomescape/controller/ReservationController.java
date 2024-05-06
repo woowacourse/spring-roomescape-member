@@ -32,17 +32,14 @@ public class ReservationController {
 
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> readReservations() {
-        List<ReservationResponse> reservationResponses = reservationService.findAllReservations();
-
-        return ResponseEntity.ok(reservationResponses);
+        return ResponseEntity.ok(reservationService.findAllReservations());
     }
 
     @GetMapping("/themes/{themeId}")
     public ResponseEntity<List<ReservationAvailableTimeResponse>> readAvailableTimeReservations(
-            @PathVariable
-            Long themeId,
-            @RequestParam
-            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
+            @PathVariable Long themeId,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date
+    ) {
         return ResponseEntity.ok(reservationService.findReservationByDateAndThemeId(date, themeId));
     }
 
