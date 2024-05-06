@@ -2,9 +2,7 @@ package roomescape.repository;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import javax.sql.DataSource;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -47,22 +45,6 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
-    public Optional<Reservation> findById(long id) {
-        try {
-            String sql = """
-                    SELECT r.id AS reservation_id, r.name, r.date, time.id AS time_id, time.start_at AS time_value, 
-                          theme.id AS theme_id, theme.name AS theme_name, theme.description, theme.thumbnail
-                    FROM reservation AS r
-                    INNER JOIN reservation_time AS time ON r.time_id = time.id
-                    INNER JOIN theme ON r.theme_id = theme.id
-                    WHERE r.id = ?
-                    """;
-            return Optional.of(jdbcTemplate.queryForObject(sql, reservationRowMapper, id));
-        } catch (EmptyResultDataAccessException exception) {
-            return Optional.empty();
-        }
-    }
-
     public List<Reservation> findByTimeId(final long timeId) {
         String sql = """
                 SELECT r.id AS reservation_id, r.name, r.date, time.id AS time_id, time.start_at AS time_value, 
@@ -88,18 +70,18 @@ public class ReservationDao {
     }
 
 
-    public List<Long> findByDateAndTimeIdAndThemeId(LocalDate date, long timeId, long themeId) {
-        String sql = "SELECT time_id FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?";
+    public List<Long> findByDateAndTimeIdAndThemeId(final LocalDate date, final long timeId, final long themeId) {
+        String sql = "SELECT id FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?";
         return jdbcTemplate.query(
                 sql, (resultSet, rowNum) -> resultSet.getLong("time_id"),
                 date.toString(), timeId, themeId
         );
     }
 
-    public List<Long> findTimeIdsByDateAndThemeId(LocalDate date, long themeId) {
+    public List<Long> findTimeIdsByDateAndThemeId(final LocalDate date, final long themeId) {
         String sql = "SELECT time_id FROM reservation WHERE date = ? AND theme_id = ?";
         return jdbcTemplate.query(
-                sql, (resultSet, rowNum) -> resultSet.getLong("time_id"),
+                sql, (resultSet, rowNum) -> resultSet.getLong("id"),
                 date.toString(), themeId
         );
     }
