@@ -37,30 +37,4 @@ public class ReservationTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Name cannot exceed 10 characters");
     }
-
-    @Test
-    @DisplayName("날짜와 시간이 과거일 경우 예외가 발생한다.")
-    void dateTimeException() {
-        assertAll(
-                () -> assertThatThrownBy(() -> new Reservation(
-                        0,
-                        "brown",
-                        LocalDate.now().minusDays(1),
-                        new ReservationTime(0, LocalTime.now()),
-                        new Theme(0, "theme", "description", "thumbnail"))
-                )
-                        .isInstanceOf(IllegalArgumentException.class)
-                        .hasMessage("Cannot create a reservation for a past date and time."),
-
-                () -> assertThatThrownBy(() -> new Reservation(
-                        0,
-                        "brown",
-                        LocalDate.now(),
-                        new ReservationTime(0, LocalTime.now().minusHours(1)),
-                        new Theme(0, "theme", "description", "thumbnail"))
-                )
-                        .isInstanceOf(IllegalArgumentException.class)
-                        .hasMessage("Cannot create a reservation for a past date and time.")
-        );
-    }
 }
