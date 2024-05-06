@@ -164,7 +164,7 @@ function onReservationButtonClick() {
       body: JSON.stringify(reservationData)
     })
         .then(response => {
-          if (!response.ok) throw new Error('Reservation failed');
+          if (response.status !== 201) throw new Error('Reservation failed');
           return response.json();
         })
         .then(data => {
