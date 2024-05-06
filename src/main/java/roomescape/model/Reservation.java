@@ -61,4 +61,15 @@ public class Reservation {
     public int hashCode() {
         return Objects.hash(id, name, date, time, theme);
     }
+
+    @Override
+    public String toString() {
+        return "Reservation{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", date=" + date +
+                ", time=" + time +
+                ", theme=" + theme +
+                '}';
+    }
 }
