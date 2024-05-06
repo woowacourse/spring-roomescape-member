@@ -40,14 +40,8 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse createMemberReservation(MemberReservationRequest memberReservationRequest) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(memberReservationRequest.timeId())
-                .orElseThrow(
-                        () -> new IllegalArgumentException(
-                                String.format("잘못된 예약 시간입니다. id=%d를 확인해주세요.", memberReservationRequest.timeId())));
-
-        Theme theme = themeRepository.findById(memberReservationRequest.themeId()).orElseThrow(
-                () -> new IllegalArgumentException(
-                        String.format("잘못된 테마입니다. id=%d를 확인해주세요.", memberReservationRequest.themeId())));
+        ReservationTime reservationTime = findAndValidateReservationTime(memberReservationRequest.timeId());
+        Theme theme = findAndValidateTheme(memberReservationRequest.themeId());
 
         LocalDate date = LocalDate.parse(memberReservationRequest.date());
 
@@ -63,14 +57,8 @@ public class ReservationService {
     }
 
     public long create(ReservationRequest reservationRequest) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(reservationRequest.timeId())
-                .orElseThrow(
-                        () -> new IllegalArgumentException(
-                                String.format("잘못된 예약 시간입니다. id=%d를 확인해주세요.", reservationRequest.timeId())));
-
-        Theme theme = themeRepository.findById(reservationRequest.themeId()).orElseThrow(
-                () -> new IllegalArgumentException(
-                        String.format("잘못된 테마입니다. id=%d를 확인해주세요.", reservationRequest.themeId())));
+        ReservationTime reservationTime = findAndValidateReservationTime(reservationRequest.timeId());
+        Theme theme = findAndValidateTheme(reservationRequest.themeId());
 
         LocalDate date = LocalDate.parse(reservationRequest.date());
 
@@ -95,5 +83,17 @@ public class ReservationService {
         if (!deleted) {
             throw new IllegalArgumentException(String.format("잘못된 예약입니다. id=%d를 확인해주세요.", reservationId));
         }
+    }
+
+    private ReservationTime findAndValidateReservationTime(long timeId) {
+        return reservationTimeRepository.findById(timeId)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        String.format("잘못된 예약 시간입니다. id=%d를 확인해주세요.", timeId)));
+    }
+
+    private Theme findAndValidateTheme(long themeId) {
+        return themeRepository.findById(themeId)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        String.format("잘못된 테마입니다. id=%d를 확인해주세요.", themeId)));
     }
 }
