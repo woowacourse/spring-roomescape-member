@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
@@ -21,6 +22,29 @@ public class ReservationDaoImpl implements ReservationDao {
     private final JdbcTemplate jdbcTemplate;
 
     private final SimpleJdbcInsert insertActor;
+
+    private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) ->
+            new Reservation(
+                    resultSet.getLong("reservation_id"),
+                    resultSet.getString("name"),
+                    resultSet.getDate("date").toLocalDate(),
+                    new ReservationTime(
+                            resultSet.getLong("time_id"),
+                            resultSet.getTime("time_start_at").toLocalTime()
+                    ),
+                    new Theme(
+                            resultSet.getLong("theme_id"),
+                            resultSet.getString("theme_name"),
+                            resultSet.getString("description"),
+                            resultSet.getString("thumbnail")
+                    )
+            );
+
+    private final RowMapper<ReservationTime> reservationTimeRowMapper = (resultSet, rowNum) ->
+            new ReservationTime(
+                    resultSet.getLong("time_id"),
+                    resultSet.getTime("start_at").toLocalTime()
+            );
 
     public ReservationDaoImpl(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
@@ -46,22 +70,7 @@ public class ReservationDaoImpl implements ReservationDao {
                 INNER JOIN reservation_time AS t ON r.time_id = t.id
                 INNER JOIN theme AS th ON r.theme_id = th.id
                 """;
-        return jdbcTemplate.query(sql, (resultSet, rowNum) ->
-                new Reservation(
-                        resultSet.getLong("reservation_id"),
-                        resultSet.getString("name"),
-                        resultSet.getDate("date").toLocalDate(),
-                        new ReservationTime(
-                                resultSet.getLong("time_id"),
-                                resultSet.getTime("time_start_at").toLocalTime()
-                        ),
-                        new Theme(
-                                resultSet.getLong("theme_id"),
-                                resultSet.getString("theme_name"),
-                                resultSet.getString("description"),
-                                resultSet.getString("thumbnail")
-                        )
-                ));
+        return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
     @Override
@@ -99,8 +108,8 @@ public class ReservationDaoImpl implements ReservationDao {
     @Override
     public long countReservationByDateAndTimeId(LocalDate date, long timeId) {
         String sql = "SELECT count(id) FROM reservation WHERE date = ? AND time_id = ?";
-        Long countReservation = jdbcTemplate.queryForObject(sql, (resultSet, ignored) -> resultSet.getLong(1), date,
-                timeId);
+        Long countReservation =
+                jdbcTemplate.queryForObject(sql, (resultSet, ignored) -> resultSet.getLong(1), date, timeId);
         return returnZeroIfNull(countReservation);
     }
 
@@ -111,11 +120,7 @@ public class ReservationDaoImpl implements ReservationDao {
                 FROM reservation AS r INNER JOIN reservation_time AS t ON r.time_id = t.id
                 WHERE date = ? AND theme_id = ?
                 """;
-        return jdbcTemplate.query(sql, (resultSet, rowNum) ->
-                new ReservationTime(
-                        resultSet.getLong("time_id"),
-                        resultSet.getTime("start_at").toLocalTime()
-                ), date, themeId);
+        return jdbcTemplate.query(sql, reservationTimeRowMapper, date, themeId);
     }
 
     private long returnZeroIfNull(Long queryResult) {

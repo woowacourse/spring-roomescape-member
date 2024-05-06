@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
@@ -21,6 +22,12 @@ public class ReservationTimeDaoImpl implements ReservationTimeDao {
 
     private final SimpleJdbcInsert insertActor;
 
+    private final RowMapper<ReservationTime> reservationTimeRowMapper = (resultSet, rowNum) ->
+            new ReservationTime(
+                    resultSet.getLong("id"),
+                    resultSet.getTime("start_at").toLocalTime()
+            );
+
     public ReservationTimeDaoImpl(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.insertActor = new SimpleJdbcInsert(dataSource)
@@ -31,11 +38,7 @@ public class ReservationTimeDaoImpl implements ReservationTimeDao {
     @Override
     public List<ReservationTime> findAllReservationTimes() {
         String sql = "SELECT id, start_at FROM reservation_time";
-        return jdbcTemplate.query(sql, (resultSet, rowNum) ->
-                new ReservationTime(
-                        resultSet.getLong("id"),
-                        resultSet.getTime("start_at").toLocalTime()
-                ));
+        return jdbcTemplate.query(sql, reservationTimeRowMapper);
     }
 
     @Override
@@ -45,21 +48,13 @@ public class ReservationTimeDaoImpl implements ReservationTimeDao {
                 FROM reservation AS r INNER JOIN reservation_time AS t ON r.time_id = t.id
                 WHERE DATE = ? AND theme_id = ?
                 """;
-        return jdbcTemplate.query(sql, (resultSet, rowNum) ->
-                new ReservationTime(
-                        resultSet.getLong("time_id"),
-                        resultSet.getTime("start_at").toLocalTime()
-                ), date, themeId);
+        return jdbcTemplate.query(sql, reservationTimeRowMapper, date, themeId);
     }
 
     @Override
     public ReservationTime findReservationById(long id) {
         String sql = "SELECT * FROM reservation_time WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, (resultSet, rowNum) ->
-                new ReservationTime(
-                        resultSet.getLong("id"),
-                        resultSet.getTime("start_at").toLocalTime()
-                ), id);
+        return jdbcTemplate.queryForObject(sql, reservationTimeRowMapper, id);
     }
 
     @Override

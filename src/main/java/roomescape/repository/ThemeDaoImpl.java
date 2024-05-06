@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
@@ -19,6 +20,14 @@ public class ThemeDaoImpl implements ThemeDao {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert insertActor;
 
+    private final RowMapper<Theme> themeRowMapper = (resultSet, rowNum) ->
+            new Theme(
+                    resultSet.getLong("id"),
+                    resultSet.getString("name"),
+                    resultSet.getString("description"),
+                    resultSet.getString("thumbnail")
+            );
+
     public ThemeDaoImpl(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.insertActor = new SimpleJdbcInsert(dataSource)
@@ -29,13 +38,7 @@ public class ThemeDaoImpl implements ThemeDao {
     @Override
     public List<Theme> findAllThemes() {
         String sql = "SELECT id, name, description, thumbnail FROM theme";
-        return jdbcTemplate.query(sql, (resultSet, rowNum) ->
-                new Theme(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("description"),
-                        resultSet.getString("thumbnail")
-                ));
+        return jdbcTemplate.query(sql, themeRowMapper);
     }
 
     @Override
@@ -57,13 +60,7 @@ public class ThemeDaoImpl implements ThemeDao {
     @Override
     public Theme findThemeById(long id) {
         String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, (resultSet, ignored) ->
-                new Theme(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("description"),
-                        resultSet.getString("thumbnail")
-                ), id);
+        return jdbcTemplate.queryForObject(sql, themeRowMapper, id);
     }
 
     @Override
@@ -77,12 +74,6 @@ public class ThemeDaoImpl implements ThemeDao {
                 ORDER BY COUNT(r.theme_id) DESC
                 limit ? 
                 """;
-        return jdbcTemplate.query(sql, (resultSet, ignored) ->
-                new Theme(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("description"),
-                        resultSet.getString("thumbnail")
-                ), before, after, limit);
+        return jdbcTemplate.query(sql, themeRowMapper, before, after, limit);
     }
 }
