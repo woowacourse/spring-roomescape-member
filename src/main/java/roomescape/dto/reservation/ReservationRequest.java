@@ -1,17 +1,20 @@
 package roomescape.dto.reservation;
 
-import java.time.LocalDate;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.lang.NonNull;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.Time;
 
+import java.time.LocalDate;
+
 public record ReservationRequest(
-        @NonNull String name,
-        @NonNull @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
-        @NonNull Long timeId,
-        @NonNull Long themeId
+        @NotBlank String name,
+        @NotNull @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
+        @NotNull @Positive Long timeId,
+        @NotNull @Positive Long themeId
 ) {
 
     public Reservation toReservation(Time time, Theme theme) {

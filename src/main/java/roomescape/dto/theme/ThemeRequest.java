@@ -1,10 +1,10 @@
 package roomescape.dto.theme;
 
-import org.springframework.lang.NonNull;
+import jakarta.validation.constraints.NotBlank;
 
 public record ThemeRequest(
-        @NonNull String name,
-        @NonNull String description,
-        @NonNull String thumbnail
+        @NotBlank String name,
+        @NotBlank String description,
+        @NotBlank String thumbnail
 ) {
 }
