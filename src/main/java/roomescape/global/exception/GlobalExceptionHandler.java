@@ -46,7 +46,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = ConflictException.class)
     public ResponseEntity<ExceptionResponse> handleConflictException(ConflictException exception) {
         logger.error(exception.getMessage());
-        ExceptionResponse exceptionResponse = new ExceptionResponse("요청한 값에 충돌이 발생했습니다.");
+        ExceptionResponse exceptionResponse = new ExceptionResponse(exception.getMessage());
 
         return new ResponseEntity(exceptionResponse, HttpStatus.CONFLICT);
     }
