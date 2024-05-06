@@ -3,8 +3,8 @@ package roomescape.exception.handler;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.InvalidDateException;
 import roomescape.exception.InvalidNameException;
@@ -12,7 +12,7 @@ import roomescape.exception.InvalidTimeException;
 
 import java.util.NoSuchElementException;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
