@@ -1,34 +1,40 @@
 package roomescape.controller;
 
+import io.restassured.RestAssured;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.test.annotation.DirtiesContext;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-@WebMvcTest(AdminWebController.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class AdminWebControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+    @LocalServerPort
+    int randomServerPort;
+
+    @BeforeEach
+    public void setup() {
+        RestAssured.port = randomServerPort;
+    }
 
     @DisplayName("/admin으로 요청하면 200응답이 넘어온다.")
     @Test
-    void requestAdminPageTest() throws Exception {
-        mockMvc.perform(get("/admin"))
-                .andDo(print())
-                .andExpect(status().isOk());
+    void requestAdminPageTest() {
+        RestAssured.given().log().all()
+                .when().get("/admin")
+                .then().log().all()
+                .statusCode(200);
     }
 
     @DisplayName("/admin/reservation으로 요청하면 200응답이 넘어온다.")
     @Test
-    void requestReservationPageTest() throws Exception {
-        mockMvc.perform(get("/admin/reservation"))
-                .andDo(print())
-                .andExpect(status().isOk());
+    void requestReservationPageTest() {
+        RestAssured.given().log().all()
+                .when().get("/admin/reservation")
+                .then().log().all()
+                .statusCode(200);
     }
 }

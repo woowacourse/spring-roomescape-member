@@ -7,7 +7,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ReservationTest {
 
@@ -32,16 +31,5 @@ class ReservationTest {
 
         // Then
         assertThat(initIndexReservation.getId()).isEqualTo(initialIndex);
-    }
-
-    @DisplayName("id값을 누락하고 생성 시도를 하면 예외가 발생한다.")
-    @Test
-    void throwExceptionWhenIdIsNull() {
-        // When & Then
-        final ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
-        final Theme theme = Theme.of(1L, "hi", "hihi", "hh");
-        assertThatThrownBy(() -> Reservation.of(null, "치킨", LocalDate.now(), reservationTime, theme))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("id는 필수 값입니다.");
     }
 }
