@@ -5,7 +5,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
-public record ReservationRequest(
+public record ReservationSaveRequest(
         String name,
         LocalDate date,
         long timeId,

@@ -4,7 +4,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.request.ReservationTimeRequest;
+import roomescape.dto.request.ReservationTimeSaveRequest;
 import roomescape.dto.response.ReservationTimeDeleteResponse;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.repository.ReservationDao;
@@ -23,8 +23,8 @@ public class ReservationTimeService {
         this.reservationDao = reservationDao;
     }
 
-    public ReservationTimeResponse save(final ReservationTimeRequest reservationTimeRequest) {
-        ReservationTime reservationTime = reservationTimeRequest.toEntity();
+    public ReservationTimeResponse save(final ReservationTimeSaveRequest reservationTimeSaveRequest) {
+        ReservationTime reservationTime = reservationTimeSaveRequest.toEntity();
         return ReservationTimeResponse.from(reservationTimeDao.save(reservationTime));
     }
 

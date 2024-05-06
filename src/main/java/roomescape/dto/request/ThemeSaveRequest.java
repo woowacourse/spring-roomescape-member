@@ -2,7 +2,7 @@ package roomescape.dto.request;
 
 import roomescape.domain.Theme;
 
-public record ThemeRequest(
+public record ThemeSaveRequest(
         String name,
         String description,
         String thumbnail

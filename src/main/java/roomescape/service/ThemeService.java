@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
-import roomescape.dto.request.ThemeRequest;
+import roomescape.dto.request.ThemeSaveRequest;
 import roomescape.dto.response.ThemeDeleteResponse;
 import roomescape.dto.response.ThemeResponse;
 import roomescape.repository.ReservationDao;
@@ -20,8 +20,8 @@ public class ThemeService {
         this.reservationDao = reservationDao;
     }
 
-    public ThemeResponse save(final ThemeRequest themeRequest) {
-        Theme theme = themeRequest.toEntity();
+    public ThemeResponse save(final ThemeSaveRequest themeSaveRequest) {
+        Theme theme = themeSaveRequest.toEntity();
         return ThemeResponse.from(themeDao.save(theme));
     }
 

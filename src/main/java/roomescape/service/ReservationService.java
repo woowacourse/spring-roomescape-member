@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.request.ReservationRequest;
+import roomescape.dto.request.ReservationSaveRequest;
 import roomescape.dto.response.ReservationDeleteResponse;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.dto.response.SelectableTimeResponse;
@@ -30,25 +30,25 @@ public class ReservationService {
         this.themeDao = themeDao;
     }
 
-    public ReservationResponse save(final ReservationRequest reservationRequest) {
-        ReservationTime reservationTime = findReservationTimeById(reservationRequest);
-        Theme theme = findThemeById(reservationRequest);
+    public ReservationResponse save(final ReservationSaveRequest reservationSaveRequest) {
+        ReservationTime reservationTime = findReservationTimeById(reservationSaveRequest);
+        Theme theme = findThemeById(reservationSaveRequest);
 
-        if (hasDuplicateReservation(reservationRequest.date(), reservationRequest.timeId(),
-                reservationRequest.themeId())) {
+        if (hasDuplicateReservation(reservationSaveRequest.date(), reservationSaveRequest.timeId(),
+                reservationSaveRequest.themeId())) {
             throw new IllegalArgumentException("[ERROR] 중복된 예약이 존재합니다.");
         }
-        Reservation reservation = reservationRequest.toEntity(reservationTime, theme);
+        Reservation reservation = reservationSaveRequest.toEntity(reservationTime, theme);
         return ReservationResponse.from(reservationDao.save(reservation));
     }
 
-    private ReservationTime findReservationTimeById(final ReservationRequest reservationRequest) {
-        return reservationTimeDao.findById(reservationRequest.timeId())
+    private ReservationTime findReservationTimeById(final ReservationSaveRequest reservationSaveRequest) {
+        return reservationTimeDao.findById(reservationSaveRequest.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 잘못된 예약 가능 시간 번호를 입력하였습니다."));
     }
 
-    private Theme findThemeById(final ReservationRequest reservationRequest) {
-        return themeDao.findById(reservationRequest.themeId())
+    private Theme findThemeById(final ReservationSaveRequest reservationSaveRequest) {
+        return themeDao.findById(reservationSaveRequest.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 잘못된 테마 번호를 입력하였습니다."));
     }
 
