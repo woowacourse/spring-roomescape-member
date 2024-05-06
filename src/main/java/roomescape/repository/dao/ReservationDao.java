@@ -1,6 +1,5 @@
 package roomescape.repository.dao;
 
-import roomescape.model.Reservation;
 import roomescape.repository.dto.ReservationSavedDto;
 
 import java.time.LocalDate;
