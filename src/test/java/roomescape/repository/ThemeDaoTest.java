@@ -86,6 +86,7 @@ class ThemeDaoTest {
     @DisplayName("일주일간의 인기순 10개 테마를 반환한다.")
     @Test
     void findThemesByDescOrder() {
+        // given && when
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "이름1", "설명", "썸네일");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "이름2", "설명", "썸네일");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "이름3", "설명", "썸네일");
@@ -142,8 +143,10 @@ class ThemeDaoTest {
                 "2024-04-30", 1, 11);
 
         List<Theme> themesByDescOrder = themeDao.findThemesByDescOrder();
-        assertThat(themesByDescOrder).doesNotContain(new Theme(11L, "이름11", "설명", "썸네일"));
-    } // TODO: 수정
+
+        // then
+        assertThat(themesByDescOrder).hasSize(10);
+    }
 
     @DisplayName("테마를 저장하고 반환한다.")
     @Test

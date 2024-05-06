@@ -13,8 +13,6 @@ import org.springframework.test.annotation.DirtiesContext;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ThemeCreateRequestTest {
 
-
-
     @DisplayName("이름이 비어있을 경우 BAD REQUEST를 반환한다.")
     @Test
     void create_nullnName_badRequest() {
