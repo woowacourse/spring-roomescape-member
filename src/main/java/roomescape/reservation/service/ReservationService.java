@@ -33,9 +33,7 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> findMemberReservations() {
-        return reservationRepository.findAllMemberReservation().stream()
-                .map(ReservationResponse::from)
-                .toList();
+        return reservationRepository.findAllMemberReservation().stream().map(ReservationResponse::from).toList();
     }
 
     @Transactional
@@ -44,6 +42,9 @@ public class ReservationService {
         Theme theme = findAndValidateTheme(memberReservationRequest.themeId());
 
         LocalDate date = LocalDate.parse(memberReservationRequest.date());
+        if (date.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("지나간 날짜와 시간에 대한 예약 생성은 불가능합니다. 다른 예약 시간을 선택해주세요.");
+        }
 
         if (reservationRepository.existMemberReservationBy(date, reservationTime.getId(), theme.getId())) {
             throw new IllegalArgumentException("예약이 다른 사람과 중복되었습니다. 다른 예약 시간을 선택해주세요.");
@@ -87,13 +88,11 @@ public class ReservationService {
 
     private ReservationTime findAndValidateReservationTime(long timeId) {
         return reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        String.format("잘못된 예약 시간입니다. id=%d를 확인해주세요.", timeId)));
+                .orElseThrow(() -> new IllegalArgumentException(String.format("잘못된 예약 시간입니다. id=%d를 확인해주세요.", timeId)));
     }
 
     private Theme findAndValidateTheme(long themeId) {
         return themeRepository.findById(themeId)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        String.format("잘못된 테마입니다. id=%d를 확인해주세요.", themeId)));
+                .orElseThrow(() -> new IllegalArgumentException(String.format("잘못된 테마입니다. id=%d를 확인해주세요.", themeId)));
     }
 }

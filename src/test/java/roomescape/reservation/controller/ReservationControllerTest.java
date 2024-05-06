@@ -65,7 +65,8 @@ class ReservationControllerTest extends ControllerTest {
     @Test
     void delete() {
         //given
-        ReservationResponse reservationResponse = reservationService.createMemberReservation(new MemberReservationRequest(
+        ReservationResponse reservationResponse = reservationService.createMemberReservation(
+                new MemberReservationRequest(
                         "choco",
                         LocalDate.now().toString(),
                         reservationTimeResponse.id(),
@@ -132,6 +133,25 @@ class ReservationControllerTest extends ControllerTest {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", name);
         reservation.put("date", "2100-12-01");
+        reservation.put("timeId", reservationTimeResponse.id());
+        reservation.put("themeId", themeResponse.id());
+
+        //when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @DisplayName("지나간 날짜와 시간에 대한 예약 생성 시, 400을 반환한다.")
+    @Test
+    void createReservationAfterNow() {
+        //given
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", "choco");
+        reservation.put("date", LocalDate.now().minusDays(2).toString());
         reservation.put("timeId", reservationTimeResponse.id());
         reservation.put("themeId", themeResponse.id());
 
