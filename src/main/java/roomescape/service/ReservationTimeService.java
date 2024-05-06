@@ -1,10 +1,12 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
+import roomescape.dao.TimeInsertCondition;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.time.TimeRequest;
 import roomescape.dto.time.TimeResponse;
@@ -21,10 +23,8 @@ public class ReservationTimeService {
     }
 
     public TimeResponse insertReservationTime(TimeRequest timeRequest) {
-        Long id = reservationTimeDao.insert(
-                timeRequest.startAt().format(DateTimeFormatter.ofPattern("HH:mm")));
-        ReservationTime inserted = new ReservationTime(id,
-                timeRequest.startAt());
+        TimeInsertCondition insertCondition = new TimeInsertCondition(timeRequest.startAt());
+        ReservationTime inserted = reservationTimeDao.insert(insertCondition);
 
         return new TimeResponse(inserted);
     }
@@ -43,7 +43,12 @@ public class ReservationTimeService {
     }
 
     public boolean isBooked(String date, Long timeId, Long themeId) {
-        int count = reservationDao.count(date, timeId, themeId);
-        return count > 0;
+        if (themeId == null) {
+            throw new IllegalArgumentException("invalid theme_id");
+        }
+        if (date == null || date.isBlank()) {
+            throw new IllegalArgumentException("invalid date");
+        }
+        return reservationDao.hasSameReservation(LocalDate.parse(date), timeId, themeId);
     }
 }

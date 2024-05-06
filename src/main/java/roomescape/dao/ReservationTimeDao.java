@@ -1,5 +1,6 @@
 package roomescape.dao;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.support.DataAccessUtils;
@@ -24,12 +25,16 @@ public class ReservationTimeDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Long insert(String startAt) {
+    public ReservationTime insert(TimeInsertCondition insertCondition) {
+        LocalTime time = insertCondition.getStartAt();
         SqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("start_at", startAt);
+                .addValue("start_at", time.toString());
 
-        return insertActor.executeAndReturnKey(parameters).longValue();
+        Long id = insertActor.executeAndReturnKey(parameters).longValue();
+
+        return new ReservationTime(id, time);
     }
+
 
     public List<ReservationTime> findAll() {
         String sql = "SELECT id, start_at FROM reservation_time";
