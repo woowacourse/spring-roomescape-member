@@ -38,17 +38,19 @@ class ThemeServiceTest {
     void findTheme() {
         List<ThemeResponse> themes = themeService.findThemes();
 
-        assertThat(themes).hasSize(2);
+        assertThat(themes).hasSize(6);
     }
 
     @Test
     @DisplayName("테마를 삭제한다.")
     void deleteTheme() {
+        int before = themeService.findThemes().size();
+
         themeService.deleteTheme(THEME_2.getId());
 
-        List<ThemeResponse> themes = themeService.findThemes();
+        int after = themeService.findThemes().size();
 
-        assertThat(themes).hasSize(1);
+        assertThat(before - after).isEqualTo(1);
     }
 
     @Test

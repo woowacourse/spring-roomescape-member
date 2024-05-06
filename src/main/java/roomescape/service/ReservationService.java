@@ -1,24 +1,18 @@
 package roomescape.service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
-import roomescape.domain.Theme;
 import roomescape.dto.request.ReservationAddRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.dto.response.ThemeResponse;
 import roomescape.repository.reservation.ReservationRepository;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Service
 public class ReservationService {
-
-    public static final int DAY_BEFORE_CALCULATE_DATE = 8;
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeService reservationTimeService;
@@ -68,19 +62,5 @@ public class ReservationService {
                 .stream()
                 .map(ReservationResponse::from)
                 .toList();
-    }
-
-    public List<ReservationResponse> findPopularThemes(Long limitCount) {
-        Map<Theme, Long> themeReservationCounts = reservationRepository.findAll().stream()
-                .filter(reservation -> reservation.getDate().isAfter(LocalDate.now().minusDays(DAY_BEFORE_CALCULATE_DATE)))
-                .filter(reservation -> reservation.getDate().isBefore(LocalDate.now()))
-                .collect(Collectors.groupingBy(Reservation::getTheme, Collectors.counting()));
-
-        return themeReservationCounts.entrySet().stream()
-                .sorted(Map.Entry.<Theme, Long>comparingByValue().reversed())
-                .limit(limitCount)
-                .map(Map.Entry::getKey)
-                .map(ReservationResponse::from)
-                .collect(Collectors.toList());
     }
 }
