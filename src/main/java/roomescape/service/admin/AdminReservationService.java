@@ -8,19 +8,19 @@ import roomescape.domain.Theme;
 import roomescape.dto.ReservationAddRequest;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
-import roomescape.repository.ThemeDao;
+import roomescape.repository.ThemeRepository;
 
 @Service
 public class AdminReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
-    private final ThemeDao themeDao;
+    private final ThemeRepository themeRepository;
 
-    public AdminReservationService(ReservationRepository reservationRepository, ReservationTimeRepository reservationTimeRepository, ThemeDao themeDao) {
+    public AdminReservationService(ReservationRepository reservationRepository, ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
-        this.themeDao = themeDao;
+        this.themeRepository = themeRepository;
     }
 
     public List<Reservation> findAllReservation() {
@@ -41,7 +41,7 @@ public class AdminReservationService {
     }
 
     private Theme getTheme(ReservationAddRequest reservationAddRequest) {
-        return themeDao.findById(reservationAddRequest.themeId())
+        return themeRepository.findById(reservationAddRequest.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재 하지 않는 테마로 예약할 수 없습니다"));
     }
 

@@ -14,21 +14,22 @@ import roomescape.domain.Theme;
 import roomescape.dto.ReservationAddRequest;
 import roomescape.service.fakeDao.FakeReservationRepository;
 import roomescape.service.fakeDao.FakeReservationTimeRepository;
-import roomescape.service.fakeDao.FakeThemeDao;
+import roomescape.service.fakeDao.FakeThemeRepository;
 
 class AdminReservationServiceTest {
 
     AdminReservationService adminReservationService;
     FakeReservationRepository fakeReservationRepository;
     FakeReservationTimeRepository fakeReservationTimeRepository;
-    FakeThemeDao fakeThemeDao;
+    FakeThemeRepository fakeThemeRepository;
 
     @BeforeEach
     void setUp() {
         fakeReservationRepository = new FakeReservationRepository();
         fakeReservationTimeRepository = new FakeReservationTimeRepository();
-        fakeThemeDao = new FakeThemeDao();
-        adminReservationService = new AdminReservationService(fakeReservationRepository, fakeReservationTimeRepository, fakeThemeDao);
+        fakeThemeRepository = new FakeThemeRepository();
+        adminReservationService = new AdminReservationService(fakeReservationRepository, fakeReservationTimeRepository,
+                fakeThemeRepository);
     }
 
     @DisplayName("없는 id의 예약을 삭제하면 예외를 발생합니다.")
@@ -58,7 +59,7 @@ class AdminReservationServiceTest {
 
         Reservation reservation = new Reservation(null, "lib", AFTER_ONE_DAYS_DATE, reservationTime, theme);
         fakeReservationTimeRepository.insert(reservationTime);
-        fakeThemeDao.insert(theme);
+        fakeThemeRepository.insert(theme);
         fakeReservationRepository.insert(reservation);
 
         ReservationAddRequest conflictRequest = new ReservationAddRequest(AFTER_ONE_DAYS_DATE, "dodo",
