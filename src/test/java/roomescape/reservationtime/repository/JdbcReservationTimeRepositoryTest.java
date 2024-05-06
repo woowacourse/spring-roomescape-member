@@ -4,17 +4,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalTime;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.fixture.Fixture;
 import roomescape.reservationtime.model.ReservationTime;
 
 @ActiveProfiles("test")
-@SpringBootTest
+@JdbcTest
 @Sql(scripts = {"/delete-data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD,
 statements = {
         "INSERT INTO reservation_time (start_at) VALUES ('10:00')",
@@ -23,14 +25,20 @@ statements = {
 class JdbcReservationTimeRepositoryTest {
 
     @Autowired
+    private JdbcTemplate jdbcTemplate;
     private JdbcReservationTimeRepository reservationTimeRepository;
+
+    @BeforeEach
+    void setUp() {
+        reservationTimeRepository = new JdbcReservationTimeRepository(jdbcTemplate, jdbcTemplate.getDataSource());
+    }
 
     @Test
     @DisplayName("ReservationTime 저장한 후 저장한 row의 id값을 반환한다.")
     void save() {
-        ReservationTime newReservationTime = new ReservationTime(null, LocalTime.of(14, 00));
+        ReservationTime newReservationTime = new ReservationTime(null, LocalTime.of(14, 0));
 
-        assertThat(reservationTimeRepository.save(newReservationTime)).isEqualTo(new ReservationTime(3L, LocalTime.of(10, 00)));
+        assertThat(reservationTimeRepository.save(newReservationTime)).isEqualTo(new ReservationTime(3L, LocalTime.of(10, 0)));
     }
 
     @Test

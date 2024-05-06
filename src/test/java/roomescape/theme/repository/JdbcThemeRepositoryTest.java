@@ -4,22 +4,30 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.fixture.Fixture;
 import roomescape.theme.model.Theme;
 
 @ActiveProfiles("test")
-@SpringBootTest
+@JdbcTest
 @Sql(scripts = {"/delete-data.sql", "/init-data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class JdbcThemeRepositoryTest {
 
     @Autowired
+    private JdbcTemplate jdbcTemplate;
     private JdbcThemeRepository themeRepository;
+
+    @BeforeEach
+    void setUp() {
+        themeRepository = new JdbcThemeRepository(jdbcTemplate, jdbcTemplate.getDataSource());
+    }
 
     @Test
     @DisplayName("Theme 저장한 후 저장한 테마 값을 반환한다.")
@@ -60,8 +68,7 @@ class JdbcThemeRepositoryTest {
         assertThat(themeRepository.findOrderByReservation())
                 .containsExactlyInAnyOrderElementsOf(List.of(
                         Fixture.THEME_2,
-                        Fixture.THEME_1,
-                        Fixture.THEME_3));
+                        Fixture.THEME_1));
     }
 
     @Test

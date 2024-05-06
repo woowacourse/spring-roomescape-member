@@ -27,7 +27,7 @@ import roomescape.theme.model.Theme;
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
-class RoomescapeApplicationTest {
+class RoomEscapeApplicationTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -229,7 +229,7 @@ class RoomescapeApplicationTest {
                     .when().get("/themes/popular")
                     .then().log().all()
                     .statusCode(200)
-                    .body("size()", Matchers.is(10));
+                    .body("size()", Matchers.is(6));
         }
 
         @Test

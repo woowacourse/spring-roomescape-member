@@ -7,22 +7,31 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.fixture.Fixture;
 import roomescape.reservation.model.Reservation;
 
 @ActiveProfiles("test")
-@SpringBootTest
+@JdbcTest
 @Sql(scripts = {"/delete-data.sql", "/init-data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class JdbcReservationRepositoryTest {
 
     @Autowired
-    private JdbcReservationRepository jdbcReservationRepository;
+    private JdbcTemplate jdbcTemplate;
+
+    private  JdbcReservationRepository jdbcReservationRepository;
+
+    @BeforeEach
+    void setUp() {
+        jdbcReservationRepository = new JdbcReservationRepository(jdbcTemplate, jdbcTemplate.getDataSource());
+    }
 
     @Test
     @DisplayName("Reservation를 저장한 후 그 값을 반환한다.")

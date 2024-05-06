@@ -35,7 +35,7 @@ class ReservationControllerTest {
     void createReservation() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/reservations")
                         .content(objectMapper.writeValueAsString(new CreateReservationRequest(
-                                LocalDate.of(3000, 1, 1), "포비", 1L, 1L)))
+                                "포비", LocalDate.of(3000, 1, 1), 1L, 1L)))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(header().stringValues("Location", "/reservations/14"));
