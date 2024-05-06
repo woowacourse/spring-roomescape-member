@@ -26,7 +26,7 @@ class ReservationTimeServiceTest {
     void createException() {
         assertThatThrownBy(() -> reservationTimeService.create(new ReservationTime(0, LocalTime.of(11, 0))))
                 .isInstanceOf(EntityExistsException.class)
-                .hasMessage("StartAt already exists");
+                .hasMessage("Time 11:00 already exists.");
     }
 
     @Test
@@ -35,6 +35,6 @@ class ReservationTimeServiceTest {
         long id = 1L;
         assertThatThrownBy(() -> reservationTimeService.delete(id))
                 .isInstanceOf(ForeignKeyViolationException.class)
-                .hasMessage("Cannot delete a time with id " + id + " as being referred by reservation");
+                .hasMessage("Cannot delete a time with id " + id + " as being referred by reservation.");
     }
 }

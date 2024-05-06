@@ -37,24 +37,32 @@ public class ReservationTimeService {
     }
 
     public void delete(long id) {
-        requireExistsById(id);
+        requireNotReferred(id);
+        requireExists(id);
         reservationTimeDao.delete(id);
     }
 
     public boolean existsByStartAt(LocalTime startAt) {
-        return reservationTimeDao.exists(startAt);
+        return reservationTimeDao.existsByStartAt(startAt);
     }
 
-    private void requireExistsById(long id) {
+    private void requireExists(long id) {
+        if (!reservationTimeDao.existsById(id)) {
+            throw new EntityExistsException("Reservation time with id " + id + " does not exists.");
+        }
+    }
+
+    private void requireNotReferred(long id) {
         if (reservationDao.existsByTimeId(id)) {
             throw new ForeignKeyViolationException(
-                    "Cannot delete a time with id " + id + " as being referred by reservation");
+                    "Cannot delete a time with id " + id + " as being referred by reservation.");
         }
     }
 
     private void requireStartAtNotAlreadyExists(ReservationTime reservationTime) {
-        if (existsByStartAt(reservationTime.startAt())) {
-            throw new EntityExistsException("StartAt already exists");
+        LocalTime startAt = reservationTime.startAt();
+        if (existsByStartAt(startAt)) {
+            throw new EntityExistsException("Time " + startAt + " already exists.");
         }
     }
 }

@@ -56,13 +56,16 @@ public class ReservationService {
 
     private void requireExistsById(long id) {
         if (!reservationDao.existsById(id)) {
-            throw new EntityNotFoundException("Reservation does not exists.");
+            throw new EntityNotFoundException("Reservation with id + " + id + " does not exists.");
         }
     }
 
     private void requireExistsByAttributes(ReservationRequest request) {
         if (reservationDao.existsByAttributes(request.date(), request.timeId(), request.themeId())) {
-            throw new EntityExistsException("Reservation already exists.");
+            throw new EntityExistsException("Reservation on " + request.date()
+                    + " with timeId " + request.timeId()
+                    + " and themeId " + request.themeId()
+                    + " already exists.");
         }
     }
 
