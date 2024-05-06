@@ -2,48 +2,75 @@ package roomescape.controller;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.controller.request.ReservationTimeRequest;
 import roomescape.model.ReservationTime;
 
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class ReservationTimeControllerTest {
 
+    private static final int INITIAL_TIME_COUNT = 2;
+
+    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert timeInsertActor;
+
     @Autowired
-    JdbcTemplate jdbcTemplate;
+    public ReservationTimeControllerTest(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.timeInsertActor = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation_time")
+                .usingGeneratedKeyColumns("id");
+    }
 
-    @DisplayName("모든 예약 시간을 조회한다")
+    @BeforeEach
+    void setUp() {
+        initDatabase();
+        insertReservationTime("1:00");
+        insertReservationTime("2:00");
+    }
+
+    private void initDatabase() {
+        jdbcTemplate.execute("ALTER TABLE reservation_time SET REFERENTIAL_INTEGRITY FALSE");
+        jdbcTemplate.execute("TRUNCATE TABLE reservation_time RESTART IDENTITY");
+    }
+
+    private void insertReservationTime(String startAt) {
+        Map<String, Object> parameters = new HashMap<>(1);
+        parameters.put("start_at", startAt);
+        timeInsertActor.execute(parameters);
+    }
+
+    @DisplayName("모든 예약 시간을 조회한다.")
     @Test
-    void should_get_reservation_times() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) values (?)", "10:00");
-
+    void should_get_all_reservation_times() {
         List<ReservationTime> reservationTimes = RestAssured.given().log().all()
                 .when().get("/times")
                 .then().log().all()
-                .statusCode(200).extract()
-                .jsonPath().getList(".", ReservationTime.class);
+                .statusCode(200)
+                .extract().jsonPath().getList(".", ReservationTime.class);
 
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation_time", Integer.class);
-
-        Assertions.assertThat(reservationTimes).hasSize(count);
+        assertThat(reservationTimes).hasSize(INITIAL_TIME_COUNT);
     }
 
-    @DisplayName("예약 시간을 추가한다")
+    @DisplayName("예약 시간을 추가한다.")
     @Test
-    void should_add_reservation_times() {
-        ReservationTimeRequest request = new ReservationTimeRequest(LocalTime.of(12, 0));
+    void should_add_reservation_time() {
+        ReservationTimeRequest request = new ReservationTimeRequest(LocalTime.of(3, 0));
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -51,13 +78,12 @@ class ReservationTimeControllerTest {
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201)
-                .header("Location", "/times/3");
+                .header("Location", "/times/" + (INITIAL_TIME_COUNT + 1));
 
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation_time", Integer.class);
-        assertThat(count).isEqualTo(3);
+        assertThat(countAllTimes()).isEqualTo(INITIAL_TIME_COUNT + 1);
     }
 
-    @DisplayName("예약 시간을 삭제한다")
+    @DisplayName("예약 시간을 삭제한다.")
     @Test
     void should_remove_reservation_time() {
         RestAssured.given().log().all()
@@ -65,7 +91,10 @@ class ReservationTimeControllerTest {
                 .then().log().all()
                 .statusCode(204);
 
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation_time", Integer.class);
-        assertThat(count).isEqualTo(1);
+        assertThat(countAllTimes()).isEqualTo(INITIAL_TIME_COUNT - 1);
+    }
+
+    private Integer countAllTimes() {
+        return jdbcTemplate.queryForObject("SELECT count(id) from reservation_time", Integer.class);
     }
 }

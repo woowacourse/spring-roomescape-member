@@ -79,7 +79,7 @@ public class JdbcReservationDao implements ReservationDao {
                 from reservation
                 where date between ? and ? 
                 group by theme_id
-                order by count(theme_id) desc
+                order by count(theme_id) desc, theme_id asc
                 limit ?
                 """;
         return jdbcTemplate.query(sql, (resultSet, rowNum) -> resultSet.getLong("theme_id"),
