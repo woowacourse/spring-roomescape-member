@@ -2,8 +2,6 @@ package roomescape.domain.reservation.repository;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -66,37 +64,25 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Optional<Reservation> findById(long id) {
+    public boolean existsByTimeId(long timeId) {
         String query = """
-                SELECT * FROM reservation AS r
-                JOIN reservation_time AS t
-                ON r.time_id = t.id
-                JOIN theme AS th
-                On r.theme_id = th.id
-                WHERE r.id = ?
+                SELECT EXISTS(
+                    SELECT 1 FROM reservation
+                    WHERE time_id = ?
+                )
                 """;
-        try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(query, ROW_MAPPER, id));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
+        return jdbcTemplate.queryForObject(query, Boolean.class, timeId);
     }
 
     @Override
-    public Optional<Reservation> findByTimeId(long timeId) {
+    public boolean existsByThemeId(long themeId) {
         String query = """
-                SELECT * FROM reservation AS r
-                JOIN reservation_time AS t
-                ON r.time_id = t.id
-                JOIN theme AS th
-                On r.theme_id = th.id
-                WHERE r.time_id = ?
+                SELECT EXISTS(
+                    SELECT 1 FROM reservation
+                    WHERE theme_id = ?
+                )
                 """;
-        try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(query, ROW_MAPPER, timeId));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
+        return jdbcTemplate.queryForObject(query, Boolean.class, themeId);
     }
 
     @Override
@@ -112,8 +98,8 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public void deleteById(long id) {
+    public int deleteById(long id) {
         String query = "DELETE FROM reservation WHERE id = ?";
-        jdbcTemplate.update(query, id);
+        return jdbcTemplate.update(query, id);
     }
 }

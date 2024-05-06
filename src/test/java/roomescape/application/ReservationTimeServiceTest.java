@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DuplicateKeyException;
 import roomescape.application.dto.ReservationTimeCreationRequest;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.theme.Theme;
@@ -44,8 +45,7 @@ public class ReservationTimeServiceTest {
         reservationTimeService.register(request);
 
         assertThatThrownBy(() -> reservationTimeService.register(request))
-                .isExactlyInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("이미 존재하는 예약 시간입니다.");
+                .isExactlyInstanceOf(DuplicateKeyException.class);
     }
 
     @Test
@@ -67,7 +67,8 @@ public class ReservationTimeServiceTest {
     }
 
     @Test
-    void 특정_시간의_예약과_같은_시간을_삭제했을_때_예외가_발생한다() {
+        // todo sql
+    void 예약에서_사용_중인_시간을_삭제하면_예외가_발생한다() {
         LocalTime startAt = LocalTime.of(13, 0);
         ReservationTimeCreationRequest request = new ReservationTimeCreationRequest(startAt);
         ReservationTime reservationTime = reservationTimeService.register(request);

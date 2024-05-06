@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.application.dto.ThemeCreationRequest;
 import roomescape.domain.theme.Theme;
@@ -42,8 +43,7 @@ class ThemeServiceTest {
         themeService.save(request);
 
         assertThatThrownBy(() -> themeService.save(request))
-                .isExactlyInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("테마 이름이 존재합니다.");
+                .isExactlyInstanceOf(DuplicateKeyException.class);
     }
 
     @Test
@@ -61,6 +61,17 @@ class ThemeServiceTest {
         assertThatThrownBy(() -> themeService.delete(0L))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("존재하지 않는 테마입니다.");
+    }
+
+    @Test
+        // todo sql
+    void 예약에서_사용_중인_테마를_삭제하면_예외가_발생한다() {
+        ThemeCreationRequest request = new ThemeCreationRequest("테마1", "설명", "썸네일1");
+        Theme theme = themeService.save(request);
+
+        assertThatThrownBy(() -> themeService.delete(theme.getId()))
+                .isExactlyInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("해당 테마를 사용하는 예약이 존재합니다.");
     }
 
     @Test

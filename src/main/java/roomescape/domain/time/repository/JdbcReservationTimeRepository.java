@@ -1,6 +1,5 @@
 package roomescape.domain.time.repository;
 
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -39,18 +38,6 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public boolean existsByStartAt(LocalTime startAt) {
-        String query = """
-                SELECT EXISTS(
-                    SELECT 1
-                    FROM reservation_time
-                    WHERE start_at = ?
-                )
-                """;
-        return jdbcTemplate.queryForObject(query, Boolean.class, startAt);
-    }
-
-    @Override
     public Optional<ReservationTime> findById(long id) {
         String query = "SELECT * FROM reservation_time WHERE id = ?";
         try {
@@ -67,8 +54,8 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public void deleteById(long id) {
+    public int deleteById(long id) {
         String query = "DELETE FROM reservation_time WHERE id = ?";
-        jdbcTemplate.update(query, id);
+        return jdbcTemplate.update(query, id);
     }
 }

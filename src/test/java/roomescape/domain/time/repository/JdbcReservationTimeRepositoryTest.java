@@ -26,32 +26,9 @@ class JdbcReservationTimeRepositoryTest {
         String startAt = "13:00";
         ReservationTime reservationTime = ReservationFixture.reservationTime(startAt);
 
-        reservationTime = reservationTimeRepository.save(reservationTime);
+        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
 
-        ReservationTime savedReservationTime = reservationTimeRepository.findById(reservationTime.getId()).get();
         assertThat(savedReservationTime.getStartAt()).isEqualTo(LocalTime.parse(startAt));
-    }
-
-    @Test
-    void 예약_시간이_이미_존재하면_true를_반환한다() {
-        String startAt = "13:00";
-        ReservationTime reservationTime = ReservationFixture.reservationTime(startAt);
-        reservationTimeRepository.save(reservationTime);
-
-        boolean exists = reservationTimeRepository.existsByStartAt(LocalTime.parse(startAt));
-
-        assertThat(exists).isTrue();
-    }
-
-    @Test
-    void 예약_시간이_존재하지_않으면_false를_반환한다() {
-        String startAt = "13:00";
-        ReservationTime reservationTime = ReservationFixture.reservationTime(startAt);
-        reservationTimeRepository.save(reservationTime);
-
-        boolean exists = reservationTimeRepository.existsByStartAt(LocalTime.parse("21:00"));
-
-        assertThat(exists).isFalse();
     }
 
     @Test
@@ -71,11 +48,18 @@ class JdbcReservationTimeRepositoryTest {
 
     @Test
     void 예약_시간을_삭제한다() {
-        ReservationTime reservationTime = ReservationFixture.reservationTime("10:00");
+        ReservationTime reservationTime = ReservationFixture.reservationTime();
         reservationTime = reservationTimeRepository.save(reservationTime);
 
-        reservationTimeRepository.deleteById(reservationTime.getId());
+        int deletedCount = reservationTimeRepository.deleteById(reservationTime.getId());
 
-        assertThat(reservationTimeRepository.findAll()).isEmpty();
+        assertThat(deletedCount).isEqualTo(1);
+    }
+
+    @Test
+    void 존재하지_않는_예약_시간을_삭제하면_0을_반환한다() {
+        int deletedCount = reservationTimeRepository.deleteById(0L);
+
+        assertThat(deletedCount).isEqualTo(0);
     }
 }

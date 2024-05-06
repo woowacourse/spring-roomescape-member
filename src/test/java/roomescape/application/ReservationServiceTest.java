@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DuplicateKeyException;
 import roomescape.application.dto.ReservationCreationRequest;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.theme.Theme;
@@ -71,8 +72,7 @@ public class ReservationServiceTest {
         reservationService.reserve(request);
 
         assertThatThrownBy(() -> reservationService.reserve(request))
-                .isExactlyInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("이미 예약된 날짜, 시간입니다.");
+                .isExactlyInstanceOf(DuplicateKeyException.class);
     }
 
     @Test

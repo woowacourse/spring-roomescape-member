@@ -8,8 +8,6 @@ import roomescape.domain.theme.Theme;
 public interface ThemeRepository {
     Theme save(Theme theme);
 
-    boolean existsByName(String name);
-
     Optional<Theme> findById(long id);
 
     List<Theme> findAll();

@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.application.dto.ReservationCreationRequest;
 import roomescape.domain.reservation.Reservation;
@@ -13,31 +12,29 @@ import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.time.ReservationTime;
+import roomescape.domain.time.repository.ReservationTimeRepository;
 
 @Service
 public class ReservationService {
     private static final int IN_ADVANCE_RESERVATION_DAYS = 1;
+    private static final int INVALID_DELETED_COUNT = 0;
 
     private final Clock clock;
-    private final ReservationTimeService reservationTimeService;
+    private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;
     private final ThemeRepository themeRepository;
 
-    public ReservationService(Clock clock, ReservationTimeService reservationTimeService,
+    public ReservationService(Clock clock, ReservationTimeRepository reservationTimeRepository,
                               ReservationRepository reservationRepository, ThemeRepository themeRepository) {
         this.clock = clock;
-        this.reservationTimeService = reservationTimeService;
+        this.reservationTimeRepository = reservationTimeRepository;
         this.reservationRepository = reservationRepository;
         this.themeRepository = themeRepository;
     }
 
     public Reservation reserve(ReservationCreationRequest request) {
-        ReservationTime time = reservationTimeService.getReservationTime(request.timeId());
+        ReservationTime time = getTime(request.timeId());
         validateReservationInAdvance(request.date(), time.getStartAt());
-        if (reservationRepository.existsByReservationDateTimeAndTheme(request.date(), time.getId(),
-                request.themeId())) {
-            throw new IllegalArgumentException("이미 예약된 날짜, 시간입니다.");
-        }
         Theme theme = getTheme(request.themeId());
         Reservation reservation = request.toReservation(time, theme);
         return reservationRepository.save(reservation);
@@ -51,9 +48,14 @@ public class ReservationService {
         }
     }
 
+    private ReservationTime getTime(long timeId) {
+        return reservationTimeRepository.findById(timeId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
+    }
+
     private Theme getTheme(long themeId) {
         return themeRepository.findById(themeId)
-                .orElseThrow(() -> new IllegalArgumentException("테마가 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
     }
 
     public List<Reservation> findReservations() {
@@ -61,10 +63,9 @@ public class ReservationService {
     }
 
     public void cancel(long id) {
-        Optional<Reservation> reservation = reservationRepository.findById(id);
-        if (reservation.isEmpty()) {
+        int deletedCount = reservationRepository.deleteById(id);
+        if (deletedCount == INVALID_DELETED_COUNT) {
             throw new IllegalArgumentException("존재하지 않는 예약입니다.");
         }
-        reservationRepository.deleteById(id);
     }
 }

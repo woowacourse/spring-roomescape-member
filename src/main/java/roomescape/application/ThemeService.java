@@ -15,7 +15,7 @@ import roomescape.dto.theme.AvailableTimeResponse;
 
 @Service
 public class ThemeService {
-    private static final int INVALID_DELETE_COUNT = 0;
+    private static final int INVALID_DELETED_COUNT = 0;
 
     private final Clock clock;
     private final ThemeRepository themeRepository;
@@ -31,15 +31,8 @@ public class ThemeService {
     }
 
     public Theme save(ThemeCreationRequest request) {
-        validateDuplicateName(request.name());
         Theme theme = request.toTheme();
         return themeRepository.save(theme);
-    }
-
-    private void validateDuplicateName(String name) {
-        if (themeRepository.existsByName(name)) {
-            throw new IllegalArgumentException("테마 이름이 존재합니다.");
-        }
     }
 
     public List<Theme> findThemes() {
@@ -47,9 +40,16 @@ public class ThemeService {
     }
 
     public void delete(long id) {
-        int deleteCount = themeRepository.deleteById(id);
-        if (deleteCount == INVALID_DELETE_COUNT) {
+        validateReservedTheme(id);
+        int deletedCount = themeRepository.deleteById(id);
+        if (deletedCount == INVALID_DELETED_COUNT) {
             throw new IllegalArgumentException("존재하지 않는 테마입니다.");
+        }
+    }
+
+    private void validateReservedTheme(long id) {
+        if (reservationRepository.existsByThemeId(id)) {
+            throw new IllegalArgumentException("해당 테마를 사용하는 예약이 존재합니다.");
         }
     }
 
@@ -57,7 +57,7 @@ public class ThemeService {
         return themeRepository.findPopularThemesForWeekLimit10(LocalDate.now(clock));
     }
 
-    public List<AvailableTimeResponse> getAvailableTimes(long id, LocalDate date) {
+    public List<AvailableTimeResponse> getAvailableTimes(long id, LocalDate date) { // todo time으로 이동
         List<AvailableTimeResponse> responses = new ArrayList<>();
         for (ReservationTime reservationTime : reservationTimeRepository.findAll()) {
             boolean alreadyBooked = reservationRepository.existsByReservationDateTimeAndTheme(date,

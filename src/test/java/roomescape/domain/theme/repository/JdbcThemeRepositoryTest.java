@@ -36,19 +36,6 @@ class JdbcThemeRepositoryTest {
     }
 
     @Test
-    void 같은_테마_이름이_존재하면_true를_반환한다() {
-        Theme theme = ThemeFixture.theme();
-        theme = themeRepository.save(theme);
-
-        assertThat(themeRepository.existsByName(theme.getName())).isTrue();
-    }
-
-    @Test
-    void 같은_테마_이름이_존재하지_않으면_false를_반환한다() {
-        assertThat(themeRepository.existsByName("오리와 함께 스프링 모험기")).isFalse();
-    }
-
-    @Test
     void 모든_테마를_조회한다() {
         Theme theme1 = ThemeFixture.theme("테마1");
         Theme theme2 = ThemeFixture.theme("테마2");
@@ -69,12 +56,14 @@ class JdbcThemeRepositoryTest {
         theme = themeRepository.save(theme);
 
         int deleteCount = themeRepository.deleteById(theme.getId());
+
         assertThat(deleteCount).isEqualTo(1);
     }
 
     @Test
     void 존재하지_않는_테마를_삭제하면_0을_반환한다() {
         int deleteCount = themeRepository.deleteById(0L);
+
         assertThat(deleteCount).isEqualTo(0);
     }
 
