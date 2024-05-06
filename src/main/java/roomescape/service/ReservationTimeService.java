@@ -41,16 +41,9 @@ public class ReservationTimeService {
     }
 
     public void delete(Long id) {
-        validateNull(id);
         validateNotExist(id);
         validateExistReservationByTimeId(id);
         reservationTimeDao.delete(id);
-    }
-
-    private void validateNull(Long id) {
-        if (id == null) {
-            throw new InvalidValueException("예약 시간 아이디는 비어있을 수 없습니다.");
-        }
     }
 
     private void validateNotExist(Long id) {

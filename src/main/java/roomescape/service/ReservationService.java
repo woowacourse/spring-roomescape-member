@@ -61,7 +61,6 @@ public class ReservationService {
     }
 
     public void delete(Long id) {
-        validateNull(id);
         validateNotExistReservation(id);
         reservationDao.delete(id);
     }
@@ -103,12 +102,6 @@ public class ReservationService {
     private void validatePastTimeWhenToday(Reservation reservation, LocalDate today, LocalTime now) {
         if (reservation.isSameDate(today) && reservation.isBeforeTime(now)) {
             throw new InvalidValueException("현재보다 이전 시간을 예약할 수 없습니다.");
-        }
-    }
-
-    private void validateNull(Long id) {
-        if (id == null) {
-            throw new InvalidValueException("예약 아이디는 비어있을 수 없습니다.");
         }
     }
 
