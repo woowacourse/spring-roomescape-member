@@ -22,12 +22,6 @@ public class Reservations {
                 .anyMatch(reservation -> reservation.isReservationTimeOf(timeId));
     }
 
-    public <T> List<T> mapTo(Function<Reservation, T> mapper) {
-        return reservations.stream()
-                .map(mapper)
-                .toList();
-    }
-
     public List<Reservation> getReservations() {
         return Collections.unmodifiableList(reservations);
     }

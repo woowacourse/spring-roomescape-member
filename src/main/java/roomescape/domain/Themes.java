@@ -16,12 +16,6 @@ public class Themes {
                 .anyMatch(theme -> theme.isNameOf(name));
     }
 
-    public <T> List<T> mapTo(Function<Theme, T> mapper) {
-        return themes.stream()
-                .map(mapper)
-                .toList();
-    }
-
     public List<Theme> getThemes() {
         return Collections.unmodifiableList(themes);
     }

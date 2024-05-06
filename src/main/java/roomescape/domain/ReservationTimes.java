@@ -11,12 +11,6 @@ public class ReservationTimes {
         this.reservationTimes = reservationTimes;
     }
 
-    public <T> List<T> mapTo(Function<ReservationTime, T> mapper) {
-        return reservationTimes.stream()
-                .map(mapper)
-                .toList();
-    }
-
     public List<ReservationTime> getReservationTimes() {
         return Collections.unmodifiableList(reservationTimes);
     }

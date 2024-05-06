@@ -36,13 +36,15 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> findAll() {
-        return themeRepository.findAll()
-                .mapTo(ThemeResponse::from);
+        return themeRepository.findAll().getThemes().stream()
+                .map(ThemeResponse::from)
+                .toList();
     }
 
     public List<ThemeResponse> findAndOrderByPopularity(LocalDate start, LocalDate end, int count) {
-        return reservationRepository.findAndOrderByPopularity(start, end, count)
-                .mapTo(ThemeResponse::from);
+        return reservationRepository.findAndOrderByPopularity(start, end, count).getThemes().stream()
+                .map(ThemeResponse::from)
+                .toList();
     }
 
     public void delete(long themeId) {
