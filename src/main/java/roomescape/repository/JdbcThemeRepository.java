@@ -1,6 +1,5 @@
 package roomescape.repository;
 
-import java.time.LocalDate;
 import java.util.List;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.RowMapper;
@@ -56,7 +55,7 @@ public class JdbcThemeRepository {
         return !result.isEmpty();
     }
 
-    public List<Theme> findTopThemesDescendingByReservationCount(LocalDate startDate, LocalDate endDate,
+    public List<Theme> findTopThemesDescendingByReservationCount(String startDate, String endDate,
                                                                  int themeCount) {
         String sql = """
                     SELECT th.id, th.name, th.description, th.thumbnail

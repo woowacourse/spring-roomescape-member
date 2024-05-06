@@ -1,79 +1,134 @@
 package roomescape.controller;
 
-import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import roomescape.domain.Theme;
-import roomescape.service.ThemeService;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import roomescape.repository.DatabaseCleanupListener;
+import roomescape.service.dto.ReservationRequestDto;
+import roomescape.service.dto.ReservationTimeRequestDto;
 import roomescape.service.dto.ThemeRequestDto;
 import roomescape.service.dto.ThemeResponseDto;
 
-@WebMvcTest(ThemeApiController.class)
+@TestExecutionListeners(value = {
+        DatabaseCleanupListener.class,
+        DependencyInjectionTestExecutionListener.class
+})
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class ThemeApiControllerTest {
 
-    @MockBean
-    private ThemeService themeServiceService;
+    @LocalServerPort
+    private int port;
 
-    @Autowired
-    private MockMvc mockMvc;
+    @BeforeEach
+    void setUp() {
+        RestAssured.port = port;
+    }
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ReservationTimeRequestDto reservationTimeCreate1 = new ReservationTimeRequestDto("10:00");
+    private final ReservationTimeRequestDto reservationTimeCreate2 = new ReservationTimeRequestDto("12:00");
+    private final ThemeRequestDto themeCreate1 = new ThemeRequestDto("공포", "공포는 무서워", "hi.jpg");
+    private final ThemeRequestDto themeCreate2 = new ThemeRequestDto("추리", "추리는 재밌어", "hi.jpg");
+    private final ThemeRequestDto themeCreate3 = new ThemeRequestDto("탈출", "탈출은 빠르게", "hi.jpg");
+    private final ReservationRequestDto reservationCreate1 = new ReservationRequestDto("재즈", 1L, "2100-01-01", 1L);
+    private final ReservationRequestDto reservationCreate2 = new ReservationRequestDto("러너덕", 1L, "2025-08-05", 1L);
+    private final ReservationRequestDto reservationCreate3 = new ReservationRequestDto("재즈덕", 2L, "2025-08-05", 2L);
+    private final ReservationRequestDto reservationCreate4 = new ReservationRequestDto("덕", 2L, "2025-08-06", 1L);
 
-    @DisplayName("/themes GET 요청 시 모든 테마 정보와 200 상태 코드를 응답한다.")
+    private void create(String path, Object param) {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(param)
+                .when().post(path)
+                .then().log().all()
+                .statusCode(201);
+    }
+
+    @DisplayName("테마를 생성하는데 성공하면 응답과 201 상태 코드를 반환한다.")
     @Test
-    void return_200_status_code_and_saved_all_themes_when_get_request() throws Exception {
-        List<ThemeResponseDto> responseDtos = List.of(
-                new ThemeResponseDto(new Theme(1L, "이름", "내용", "썸네일")),
-                new ThemeResponseDto(new Theme(2L, "아토", "방탈출", "좋아.jpg"))
+    void return_201_when_create_theme() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(themeCreate1)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201);
+    }
+
+    @DisplayName("테마 목록을 조회하는데 성공하면 응답과 200 상태 코드를 반환한다.")
+    @Test
+    void return_200_when_find_all_themes() {
+        create("/themes", themeCreate1);
+        create("/themes", themeCreate2);
+        List<ThemeResponseDto> actualResponse = RestAssured.given().log().all()
+                .when().get("/themes")
+                .then().log().all()
+                .statusCode(200)
+                .extract()
+                .jsonPath()
+                .getList(".", ThemeResponseDto.class);
+
+        ThemeResponseDto expectedResponse1 = new ThemeResponseDto(1L, "공포", "공포는 무서워", "hi.jpg");
+        ThemeResponseDto expectedResponse2 = new ThemeResponseDto(2L, "추리", "추리는 재밌어", "hi.jpg");
+
+        assertThat(actualResponse)
+                .usingRecursiveComparison()
+                .isEqualTo(List.of(expectedResponse1, expectedResponse2));
+    }
+
+    @DisplayName("인기 테마를 조회하는데 성공하면 응답과 200 상태 코드를 반환한다.")
+    @Test
+    void return_200_when_find_top_booked_themes() {
+        create("/themes", themeCreate1);
+        create("/themes", themeCreate2);
+        create("/themes", themeCreate3);
+        create("/times", reservationTimeCreate1);
+        create("/times", reservationTimeCreate2);
+        create("/reservations", reservationCreate1);
+        create("/reservations", reservationCreate2);
+        create("/reservations", reservationCreate3);
+        create("/reservations", reservationCreate4);
+
+        List<ThemeResponseDto> actualResponse = RestAssured.given().log().all()
+                .when().get("/themes/popular?start-date=2025-08-05&end-date=2025-08-07&count=2")
+                .then().log().all()
+                .statusCode(200)
+                .extract()
+                .jsonPath()
+                .getList(".", ThemeResponseDto.class);
+
+        List<ThemeResponseDto> expectedResponse = List.of(
+                new ThemeResponseDto(2L, "추리", "추리는 재밌어", "hi.jpg"),
+                new ThemeResponseDto(1L, "공포", "공포는 무서워", "hi.jpg")
         );
 
-        given(themeServiceService.findAllThemes()).willReturn(responseDtos);
-
-        mockMvc.perform(get("/themes"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()", is(2)));
+        assertThat(actualResponse)
+                .usingRecursiveComparison()
+                .isEqualTo(expectedResponse);
     }
 
-    @DisplayName("/themes POST 요청 시 저장된 테마와 201 상태 코드를 응답한다.")
+    @DisplayName("테마를 삭제하는데 성공하면 응답과 204 상태 코드를 반환한다.")
     @Test
-    void return_200_status_code_and_saved_theme_when_post_request() throws Exception {
-        ThemeRequestDto requestDto = new ThemeRequestDto("안돌", "안녕하세요", "hello.png");
-        String requestBody = objectMapper.writeValueAsString(requestDto);
+    void return_204_when_delete_theme() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(themeCreate1)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201);
 
-        ThemeResponseDto responseDto = new ThemeResponseDto(new Theme(1L, "안돌", "안녕하세요", "hello.png"));
-
-        given(themeServiceService.createTheme(any())).willReturn(responseDto);
-
-        mockMvc.perform(post("/themes")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id", is(1)))
-                .andExpect(jsonPath("$.name", is("안돌")))
-                .andExpect(jsonPath("$.description", is("안녕하세요")))
-                .andExpect(jsonPath("$.thumbnail", is("hello.png")));
-    }
-
-    @DisplayName("/themes/{id} DELETE 요청 시 204 상태 코드를 응답한다.")
-    @Test
-    void return_200_status_code_when_delete_request() throws Exception {
-        mockMvc.perform(delete("/themes/{id}", 1))
-                .andExpect(status().isNoContent());
+        RestAssured.given().log().all()
+                .when().delete("/themes/1")
+                .then().log().all()
+                .statusCode(204);
     }
 }

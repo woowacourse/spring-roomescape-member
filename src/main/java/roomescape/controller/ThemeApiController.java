@@ -7,9 +7,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.service.ThemeService;
+import roomescape.service.dto.PopularThemeRequestDto;
 import roomescape.service.dto.ThemeRequestDto;
 import roomescape.service.dto.ThemeResponseDto;
 
@@ -28,8 +30,10 @@ public class ThemeApiController {
     }
 
     @GetMapping("/themes/popular")
-    public List<ThemeResponseDto> findTopBookedThemes() {
-        return themeService.findTopPopularThemes();
+    public List<ThemeResponseDto> findTopBookedThemes(@RequestParam(name = "start-date") String startDate,
+                                                      @RequestParam(name = "end-date") String endDate,
+                                                      @RequestParam Integer count) {
+        return themeService.findTopBookedThemes(new PopularThemeRequestDto(startDate, endDate, count));
     }
 
     @ResponseStatus(HttpStatus.CREATED)

@@ -1,11 +1,11 @@
 package roomescape.service;
 
-import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
 import roomescape.repository.JdbcReservationRepository;
 import roomescape.repository.JdbcThemeRepository;
+import roomescape.service.dto.PopularThemeRequestDto;
 import roomescape.service.dto.ThemeRequestDto;
 import roomescape.service.dto.ThemeResponseDto;
 
@@ -27,10 +27,9 @@ public class ThemeService {
                 .toList();
     }
 
-    public List<ThemeResponseDto> findTopPopularThemes() {
+    public List<ThemeResponseDto> findTopBookedThemes(PopularThemeRequestDto requestDto) {
         List<Theme> topBookedThemes = themeRepository.findTopThemesDescendingByReservationCount(
-                LocalDate.now().minusDays(7),
-                LocalDate.now().minusDays(1), 10);
+                requestDto.getStartDate(), requestDto.getEndDate(), requestDto.getCount());
 
         return topBookedThemes.stream()
                 .map(ThemeResponseDto::new)

@@ -3,7 +3,6 @@ package roomescape.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import java.time.LocalDate;
 import java.util.List;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
@@ -118,8 +117,8 @@ class JdbcThemeRepositoryTest {
         reservationRepository.insertReservation(reservation3);
 
         List<Theme> themes = themeRepository.findTopThemesDescendingByReservationCount(
-                LocalDate.parse("2024-05-01"),
-                LocalDate.parse("2024-05-05"),
+                "2024-05-01",
+                "2024-05-05",
                 2
         );
 
