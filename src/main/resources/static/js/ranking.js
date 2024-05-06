@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     /*
     TODO: [3단계] 인기 테마 - 인기 테마 목록 조회 API 호출
     */
-    requestRead('/') // 인기 테마 목록 조회 API endpoint
+    requestRead('/themes/rankings') // 인기 테마 목록 조회 API endpoint
         .then(render)
         .catch(error => console.error('Error fetching times:', error));
 });
@@ -15,15 +15,12 @@ function render(data) {
           response 명세에 맞춰 name, thumbnail, description 값 설정
     */
     data.forEach(theme => {
-        const name = '';
-        const thumbnail = '';
-        const description = '';
 
         const htmlContent = `
-            <img class="mr-3 img-thumbnail" src="${thumbnail}" alt="${name}">
+            <img class="mr-3 img-thumbnail" src="${theme.thumbnail}" alt="${theme.name}" width="300">
             <div class="media-body">
-                <h5 class="mt-0 mb-1">${name}</h5>
-                ${description}
+                <h5 class="mt-0 mb-1">${theme.name}</h5>
+                ${theme.description}
             </div>
         `;
 
