@@ -1,6 +1,5 @@
 package roomescape.service;
 
-import java.time.Clock;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
@@ -18,13 +17,11 @@ public class ThemeService {
 
     private final ReservationRepository reservationRepository;
     private final ThemeRepository themeRepository;
-    private final Clock clock;
 
     public ThemeService(ReservationRepository reservationRepository,
-                        ThemeRepository themeRepository, Clock clock) {
+                        ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.themeRepository = themeRepository;
-        this.clock = clock;
     }
 
     public List<ThemeResponse> getAllThemes() {

@@ -92,7 +92,8 @@ class ReservationControllerTest extends BaseControllerTest {
 
 
     private void addReservation() {
-        ReservationRequest request = new ReservationRequest("구름", LocalDate.of(2024, 4, 9), 1L, 1L);
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+        ReservationRequest request = new ReservationRequest("구름", tomorrow, 1L, 1L);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -109,12 +110,13 @@ class ReservationControllerTest extends BaseControllerTest {
             softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
             softly.assertThat(response.header("Location")).isEqualTo("/reservations/1");
             softly.assertThat(reservationResponse).isEqualTo(
-                    new ReservationResponse(1L, "구름", LocalDate.of(2024, 4, 9), reservationTimeResponse,
+                    new ReservationResponse(1L, "구름", tomorrow, reservationTimeResponse,
                             themeResponse));
         });
     }
 
     private void getAllReservations() {
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
@@ -130,7 +132,7 @@ class ReservationControllerTest extends BaseControllerTest {
             softly.assertThat(reservationResponses).hasSize(1);
             softly.assertThat(reservationResponses)
                     .containsExactly(
-                            new ReservationResponse(1L, "구름", LocalDate.of(2024, 4, 9), reservationTimeResponse,
+                            new ReservationResponse(1L, "구름", tomorrow, reservationTimeResponse,
                                     themeResponse));
         });
     }
@@ -147,7 +149,8 @@ class ReservationControllerTest extends BaseControllerTest {
     }
 
     private void addReservationFailWhenDuplicatedReservation() {
-        ReservationRequest request = new ReservationRequest("구름", LocalDate.of(2024, 4, 9), 1L, 1L);
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+        ReservationRequest request = new ReservationRequest("구름", tomorrow, 1L, 1L);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
