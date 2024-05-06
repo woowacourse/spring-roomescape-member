@@ -20,7 +20,6 @@ public class Reservation {
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         validateName(name);
-        validateDateTime(date, time);
 
         this.id = id;
         this.name = name;
@@ -35,15 +34,13 @@ public class Reservation {
         }
     }
 
-    private void validateDateTime(LocalDate date, ReservationTime time) {
-        LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
-        if (LocalDateTime.now().isAfter(reservationDateTime)) {
-            throw new CustomException(CustomBadRequest.PAST_TIME_SLOT_RESERVATION);
-        }
+    public boolean isSameDateTime(Reservation reservation) {
+        return date.isEqual(reservation.date) && time.equals(reservation.time);
     }
 
-    public boolean isSameDateTIme(Reservation reservation) {
-        return date.isEqual(reservation.date) && time.equals(reservation.time);
+    public boolean isBefore(LocalDateTime localDateTime) {
+        return LocalDateTime.of(date, time.getStartAt())
+                .isBefore(localDateTime);
     }
 
     public Long getId() {

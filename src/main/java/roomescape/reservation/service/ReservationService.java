@@ -1,7 +1,9 @@
 package roomescape.reservation.service;
 
 import java.util.List;
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.dao.ReservationDao;
@@ -20,12 +22,14 @@ public class ReservationService {
     private final ReservationDao reservationDao;
     private final ReservationTimeService reservationTimeService;
     private final ThemeService themeService;
+    private final Clock clock;
 
     public ReservationService(ReservationDao reservationDao, ReservationTimeService reservationTimeService,
-                              ThemeService themeService) {
+                              ThemeService themeService, Clock clock) {
         this.reservationDao = reservationDao;
         this.reservationTimeService = reservationTimeService;
         this.themeService = themeService;
+        this.clock = clock;
     }
 
     public Reservation createReservation(ReservationRequest reservationRequest) {
@@ -34,6 +38,7 @@ public class ReservationService {
         Reservation reservation = reservationRequest.toEntity(reservationTime, theme);
 
         validateDuplication(reservation);
+        validatePastTime(reservation);
 
         try {
             return reservationDao.save(reservation);
@@ -44,11 +49,17 @@ public class ReservationService {
 
     private void validateDuplication(Reservation reservation) {
         reservationDao.findAllReservations().stream()
-                .filter(r -> r.isSameDateTIme(reservation))
+                .filter(r -> r.isSameDateTime(reservation))
                 .findAny()
                 .ifPresent(r -> {
                     throw new CustomException(CustomBadRequest.DUPLICATE_RESERVATION);
                 });
+    }
+
+    private void validatePastTime(Reservation reservation) {
+        if (reservation.isBefore(LocalDateTime.now(clock))) {
+            throw new CustomException(CustomBadRequest.PAST_TIME_SLOT_RESERVATION);
+        }
     }
 
     public List<Reservation> findReservations(LocalDate date, Long themeId) {
