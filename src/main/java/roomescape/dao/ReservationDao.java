@@ -109,7 +109,7 @@ public class ReservationDao {
         return (resultSet, numRow) -> new Reservation(
                 resultSet.getLong("reservation_id"),
                 resultSet.getString("name"),
-                resultSet.getString("date"),
+                resultSet.getDate("date").toLocalDate(),
                 new ReservationTime(
                         resultSet.getLong("time_id"),
                         resultSet.getTime("time_value").toLocalTime()

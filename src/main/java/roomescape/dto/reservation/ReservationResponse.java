@@ -1,13 +1,17 @@
 package roomescape.dto.reservation;
 
+import java.time.format.DateTimeFormatter;
 import roomescape.domain.Reservation;
 import roomescape.dto.theme.ThemeResponse;
 import roomescape.dto.time.TimeResponse;
 
 public record ReservationResponse(Long id, String name, String date, TimeResponse time, ThemeResponse theme) {
 
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yy-MM-dd");
+
     public ReservationResponse(Reservation reservation) {
-        this(reservation.getId(), reservation.getName(), reservation.getDate(), new TimeResponse(reservation.getTime()),
+        this(reservation.getId(), reservation.getName(), reservation.getDate().format(DATE_FORMATTER),
+                new TimeResponse(reservation.getTime()),
                 new ThemeResponse(reservation.getTheme()));
     }
 }

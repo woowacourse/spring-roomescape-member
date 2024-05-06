@@ -47,7 +47,7 @@ public class ReservationService {
                 reservationRequest.themeId());
         ReservationTheme reservationTheme = reservationThemeDao.findById(reservationRequest.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("올바르지 않은 입력입니다."));
-        Reservation inserted = new Reservation(id, reservationRequest.name(), reservationRequest.date().toString(),
+        Reservation inserted = new Reservation(id, reservationRequest.name(), reservationRequest.date(),
                 reservationTime, reservationTheme);
         return new ReservationResponse(inserted);
     }
