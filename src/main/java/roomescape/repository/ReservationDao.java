@@ -87,7 +87,7 @@ public class ReservationDao {
     }
 
     public boolean existsById(long id) {
-        String query = "SELECT EXISTS (SELECT 1 FROM RESERVATION WHERE id = ?)";
+        String query = "SELECT EXISTS (SELECT 1 FROM RESERVATION WHERE ID = ?)";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, id));
     }
 
@@ -102,7 +102,7 @@ public class ReservationDao {
     }
 
     public boolean existsByAttributes(LocalDate date, long timeId, long themeId) {
-        String query = "SELECT EXISTS (SELECT 1 FROM RESERVATION WHERE DATE = ? AND TIME_ID = ? AND THEME_ID = ?) ";
+        String query = "SELECT EXISTS (SELECT 1 FROM RESERVATION WHERE DATE = ? AND TIME_ID = ? AND THEME_ID = ?)";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, date, timeId, themeId));
     }
 }
