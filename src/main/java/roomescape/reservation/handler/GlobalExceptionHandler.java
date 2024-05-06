@@ -3,6 +3,7 @@ package roomescape.reservation.handler;
 import java.time.format.DateTimeParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import roomescape.reservation.handler.exception.CustomException;
@@ -26,6 +27,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleInvalidNumber(NumberFormatException e) {
         return new ResponseEntity<>("""
                 잘못된 숫자 형식입니다.
+                """, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<String> handleInvalidRequestForm(NumberFormatException e) {
+        return new ResponseEntity<>("""
+                요청 형식이 잘못되었습니다.
                 """, HttpStatus.BAD_REQUEST);
     }
 
