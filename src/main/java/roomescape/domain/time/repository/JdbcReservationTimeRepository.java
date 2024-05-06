@@ -1,7 +1,10 @@
 package roomescape.domain.time.repository;
 
+import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -45,6 +48,17 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public Set<Long> findReservedTimeIds(long themeId, LocalDate date) {
+        String query = """
+                SELECT t.id FROM reservation_time AS t
+                JOIN reservation AS r
+                ON t.id = r.time_id
+                WHERE r.theme_id = ? AND r.reservation_date = ?
+                """;
+        return new HashSet<>(jdbcTemplate.queryForList(query, Long.class, themeId, date));
     }
 
     @Override

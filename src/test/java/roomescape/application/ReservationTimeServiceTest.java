@@ -2,18 +2,23 @@ package roomescape.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.application.dto.ReservationTimeCreationRequest;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.time.ReservationTime;
+import roomescape.dto.reservationtime.AvailableTimeResponse;
 import roomescape.fixture.ReservationFixture;
 import roomescape.fixture.ThemeFixture;
 import roomescape.support.extension.TableTruncateExtension;
@@ -78,5 +83,20 @@ public class ReservationTimeServiceTest {
         assertThatThrownBy(() -> reservationTimeService.delete(reservationTime.getId()))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("해당 시간을 사용하는 예약이 존재합니다");
+    }
+
+    @Test
+    @Sql("/reservation.sql")
+    void 테마의_예약_가능한_시간을_조회한다() {
+        List<AvailableTimeResponse> availableTimes = reservationTimeService.findAvailableTimes(2L,
+                LocalDate.parse("2024-05-01"));
+
+        assertSoftly(softly -> {
+            softly.assertThat(availableTimes.get(0).alreadyBooked()).isTrue();
+            softly.assertThat(availableTimes.get(1).alreadyBooked()).isTrue();
+            softly.assertThat(availableTimes.get(2).alreadyBooked()).isFalse();
+            softly.assertThat(availableTimes.get(3).alreadyBooked()).isFalse();
+            softly.assertThat(availableTimes.get(4).alreadyBooked()).isFalse();
+        });
     }
 }

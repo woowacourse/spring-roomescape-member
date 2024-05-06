@@ -3,12 +3,15 @@ package roomescape.domain.time.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.time.ReservationTime;
 import roomescape.fixture.ReservationFixture;
 
@@ -61,5 +64,16 @@ class JdbcReservationTimeRepositoryTest {
         int deletedCount = reservationTimeRepository.deleteById(0L);
 
         assertThat(deletedCount).isEqualTo(0);
+    }
+
+    @Test
+    @Sql("/reservation.sql")
+    void 테마의_예약된_시간_아이디를_조회한다() {
+        Set<Long> reservedTimeIds = reservationTimeRepository.findReservedTimeIds(2L, LocalDate.parse("2024-05-01"));
+
+        assertAll(
+                () -> assertThat(reservedTimeIds).hasSize(2),
+                () -> assertThat(reservedTimeIds).containsExactly(1L, 2L)
+        );
     }
 }

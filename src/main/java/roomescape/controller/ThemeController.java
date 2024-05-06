@@ -13,10 +13,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.application.ReservationTimeService;
 import roomescape.application.ThemeService;
 import roomescape.domain.theme.Theme;
-import roomescape.dto.theme.AvailableTimeResponse;
+import roomescape.dto.reservationtime.AvailableTimeResponse;
 import roomescape.dto.theme.ThemeRequest;
 import roomescape.dto.theme.ThemeResponse;
 
@@ -25,9 +27,11 @@ import roomescape.dto.theme.ThemeResponse;
 @Validated
 public class ThemeController {
     private final ThemeService themeService;
+    private final ReservationTimeService reservationTimeService;
 
-    public ThemeController(ThemeService themeService) {
+    public ThemeController(ThemeService themeService, ReservationTimeService reservationTimeService) {
         this.themeService = themeService;
+        this.reservationTimeService = reservationTimeService;
     }
 
     @PostMapping
@@ -62,10 +66,10 @@ public class ThemeController {
         return ResponseEntity.ok(themeResponses);
     }
 
-    @GetMapping("/{id}/{date}") // todo times로 이동
+    @GetMapping("/{id}")
     public ResponseEntity<List<AvailableTimeResponse>> getAvailableTimes(@PathVariable @Positive long id,
-                                                                         @PathVariable LocalDate date) {
-        List<AvailableTimeResponse> responses = themeService.getAvailableTimes(id, date);
+                                                                         @RequestParam LocalDate date) {
+        List<AvailableTimeResponse> responses = reservationTimeService.findAvailableTimes(id, date);
         return ResponseEntity.ok(responses);
     }
 }
