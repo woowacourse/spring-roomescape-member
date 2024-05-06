@@ -1,8 +1,13 @@
 package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static roomescape.fixture.LocalDateFixture.AFTER_THREE_DAYS_DATE;
+import static roomescape.fixture.LocalDateFixture.AFTER_TWO_DAYS_DATE;
+import static roomescape.fixture.LocalDateFixture.BEFORE_ONE_DAYS_DATE;
+import static roomescape.fixture.LocalDateFixture.BEFORE_THREE_DAYS_DATE;
+import static roomescape.fixture.LocalDateFixture.BEFORE_TWO_DAYS_DATE;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
@@ -21,9 +26,6 @@ import roomescape.domain.Theme;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationDaoImplTest {
 
-    private static final LocalDate DATE_AFTER_TWO = LocalDate.now().plusDays(2);
-    private static final LocalDate DATE_AFTER_THREE = LocalDate.now().plusDays(3);
-
     @Autowired
     private JdbcTemplate jdbcTemplate;
     @Autowired
@@ -35,7 +37,7 @@ class ReservationDaoImplTest {
         jdbcTemplate.update("insert into theme(name, description, thumbnail) values(?,?,?)", "리비", "머리 쓰는 중",
                 "url");
         jdbcTemplate.update("insert into reservation (name, date, time_id, theme_id) values(?,?,?,?)", "브라운",
-                DATE_AFTER_TWO, 1L, 1L);
+                AFTER_TWO_DAYS_DATE, 1L, 1L);
     }
 
     @AfterEach
@@ -59,7 +61,7 @@ class ReservationDaoImplTest {
     void should_findById() {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
         Theme theme = new Theme(1L, "리비", "머리 쓰는 중", "url");
-        Reservation expectedReservation = new Reservation(1L, "브라운", DATE_AFTER_TWO, reservationTime, theme);
+        Reservation expectedReservation = new Reservation(1L, "브라운", AFTER_TWO_DAYS_DATE, reservationTime, theme);
 
         List<Reservation> all = reservationDaoImpl.findAll();
         assertThat(reservationDaoImpl.findById(1L)).isPresent();
@@ -70,7 +72,7 @@ class ReservationDaoImplTest {
     void should_insert() {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
         Theme theme = new Theme(1L, "리비", "머리 쓰는 중", "url");
-        Reservation reservation = new Reservation(null, "도도", DATE_AFTER_THREE, reservationTime, theme);
+        Reservation reservation = new Reservation(null, "도도", AFTER_THREE_DAYS_DATE, reservationTime, theme);
 
         Reservation savedReservation = reservationDaoImpl.insert(reservation);
 
@@ -91,12 +93,33 @@ class ReservationDaoImplTest {
     @DisplayName("예약날짜와 예약 시간 ID와 테마 ID가 동일한 경우를 알 수 있습니다.")
     @Test
     void should_return_true_when_reservation_date_and_time_id_and_theme_id_equal() {
-        assertThat(reservationDaoImpl.existByDateAndTimeIdAndThemeId(DATE_AFTER_TWO, 1L, 1L)).isTrue();
+        assertThat(reservationDaoImpl.existByDateAndTimeIdAndThemeId(AFTER_TWO_DAYS_DATE, 1L, 1L)).isTrue();
     }
 
     @DisplayName("예약날짜와 예약 시간 ID와 테마 ID가 동일하지 않은 경우를 알 수 있습니다.")
     @Test
     void should_return_false_when_reservation_date_and_time_id_and_theme_id_not_equal() {
-        assertThat(reservationDaoImpl.existByDateAndTimeIdAndThemeId(DATE_AFTER_THREE, 1L, 1L)).isFalse();
+        assertThat(reservationDaoImpl.existByDateAndTimeIdAndThemeId(AFTER_THREE_DAYS_DATE, 1L, 1L)).isFalse();
+    }
+
+    @DisplayName("인기 테마 목록을 불러올 수 있습니다.")
+    @Test
+    void should_read_theme_ranking() {
+        jdbcTemplate.update("insert into theme(name, description, thumbnail) values(?,?,?)", "테마2", "테마2 설명 쓰는 중",
+                "url");
+        jdbcTemplate.update("insert into reservation (name, date, time_id, theme_id) values(?,?,?,?)", "브라운",
+                BEFORE_TWO_DAYS_DATE, 1L, 2L);
+        jdbcTemplate.update("insert into reservation (name, date, time_id, theme_id) values(?,?,?,?)", "도도",
+                BEFORE_THREE_DAYS_DATE, 1L, 2L);
+        jdbcTemplate.update("insert into reservation (name, date, time_id, theme_id) values(?,?,?,?)", "리비",
+                BEFORE_ONE_DAYS_DATE, 1L, 1L);
+
+        List<Theme> themeRaking = reservationDaoImpl.findThemeOrderByReservationCount();
+
+        assertAll(
+                () -> assertThat(themeRaking).hasSize(2),
+                () -> assertThat(themeRaking.get(0).getName()).isEqualTo("도도")
+        );
+
     }
 }
