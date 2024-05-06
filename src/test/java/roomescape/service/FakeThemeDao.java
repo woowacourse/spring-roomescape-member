@@ -51,6 +51,8 @@ public class FakeThemeDao implements ThemeDao {
 
     @Override
     public List<Theme> findThemeRankingByDate(LocalDate before, LocalDate after, int limit) {
+
+
         return List.of(
                 new Theme(10L, "name10", "description10", "thumbnail10"),
                 new Theme(9L, "name9", "description9", "thumbnail9"),

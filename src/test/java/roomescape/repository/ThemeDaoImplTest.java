@@ -1,6 +1,7 @@
 package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -103,19 +104,22 @@ class ThemeDaoImplTest {
         LocalDate before = LocalDate.of(2030, 1, 1);
         LocalDate after = LocalDate.of(2030, 1, 7);
         List<Theme> themes = themeDao.findThemeRankingByDate(before, after, 10);
-        assertThat(themes).hasSize(10);
-        assertThat(themes).containsExactly(
-                new Theme(10L, "name10", "description10", "thumbnail10"),
-                new Theme(9L, "name9", "description9", "thumbnail9"),
-                new Theme(1L, "name1", "description1", "thumbnail1"),
-                new Theme(2L, "name2", "description2", "thumbnail2"),
-                new Theme(3L, "name3", "description3", "thumbnail3"),
-                new Theme(4L, "name4", "description4", "thumbnail4"),
-                new Theme(5L, "name5", "description5", "thumbnail5"),
-                new Theme(6L, "name6", "description6", "thumbnail6"),
-                new Theme(7L, "name7", "description7", "thumbnail7"),
-                new Theme(8L, "name8", "description8", "thumbnail8")
-        );
+
+        assertSoftly(softly -> {
+            softly.assertThat(themes).hasSize(10);
+            softly.assertThat(themes).containsExactly(
+                    new Theme(10L, "name10", "description10", "thumbnail10"),
+                    new Theme(9L, "name9", "description9", "thumbnail9"),
+                    new Theme(1L, "name1", "description1", "thumbnail1"),
+                    new Theme(2L, "name2", "description2", "thumbnail2"),
+                    new Theme(3L, "name3", "description3", "thumbnail3"),
+                    new Theme(4L, "name4", "description4", "thumbnail4"),
+                    new Theme(5L, "name5", "description5", "thumbnail5"),
+                    new Theme(6L, "name6", "description6", "thumbnail6"),
+                    new Theme(7L, "name7", "description7", "thumbnail7"),
+                    new Theme(8L, "name8", "description8", "thumbnail8")
+            );
+        });
     }
 
     private void insertTheme(String name, String description, String thumbnail) {
