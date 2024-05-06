@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import roomescape.controller.request.ReservationRequest;
+import roomescape.controller.response.ReservationResponse;
 import roomescape.model.Reservation;
 import roomescape.service.ReservationService;
 
@@ -25,8 +26,12 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations")
-    public ResponseEntity<List<Reservation>> getReservations() {
-        return ResponseEntity.ok(reservationService.findAllReservations());
+    public ResponseEntity<List<ReservationResponse>> getReservations() {
+        List<Reservation> allReservations = reservationService.findAllReservations();
+        List<ReservationResponse> responses = allReservations.stream()
+                .map(ReservationResponse::new)
+                .toList();
+        return ResponseEntity.ok(responses);
     }
 
     @PostMapping("/reservations")
