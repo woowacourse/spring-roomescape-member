@@ -25,8 +25,8 @@ public class ThemeService {
         return themeDao.findAll();
     }
 
-    public List<Theme> getTop10() {
-        return themeDao.getTop10();
+    public List<Theme> getLastWeekTop10() {
+        return themeDao.getLastWeekTop10();
     }
 
     public Theme create(Theme theme) {

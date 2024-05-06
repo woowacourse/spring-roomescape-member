@@ -50,7 +50,7 @@ public class ThemeDao {
         jdbcTemplate.update(query, themeID);
     }
 
-    public List<Theme> getTop10() {
+    public List<Theme> getLastWeekTop10() {
         String query = "SELECT t.id, t.name, t.description, t.thumbnail, COUNT(r.id) AS reservation_count " +
                 "FROM theme t " +
                 "INNER JOIN reservation r ON t.id = r.theme_id " +

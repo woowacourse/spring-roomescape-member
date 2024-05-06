@@ -43,7 +43,7 @@ public class ThemeController {
     }
 
     @GetMapping("/rank")
-    public ResponseEntity<List<Theme>> getTop10() {
-        return ResponseEntity.ok(themeService.getTop10());
+    public ResponseEntity<List<Theme>> getLastWeekTop10() {
+        return ResponseEntity.ok(themeService.getLastWeekTop10());
     }
 }
