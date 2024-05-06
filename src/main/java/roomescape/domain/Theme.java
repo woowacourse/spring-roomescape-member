@@ -14,10 +14,6 @@ public class Theme {
     }
 
     public static Theme of(final Long id, final String name, final String description, final String thumbnail) {
-        if (id == null) {
-            throw new IllegalArgumentException("id는 필수 값입니다.");
-        }
-
         return new Theme(id, new ThemeName(name), new ThemeDescription(description), new ThemeThumbnail(thumbnail));
     }
 

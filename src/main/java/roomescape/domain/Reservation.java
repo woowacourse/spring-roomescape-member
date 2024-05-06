@@ -42,9 +42,6 @@ public class Reservation {
             final ReservationTime time,
             final Theme theme
     ) {
-        if (id == null) {
-            throw new IllegalArgumentException("id는 필수 값입니다.");
-        }
         validateReservationTimeAndTheme(time, theme);
 
         return new Reservation(
