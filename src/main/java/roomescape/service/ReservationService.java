@@ -4,7 +4,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.dao.ReservationDao;
-import roomescape.dao.ReservationInsertCondition;
+import roomescape.dao.condition.ReservationInsertCondition;
 import roomescape.dao.ReservationThemeDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.Reservation;
