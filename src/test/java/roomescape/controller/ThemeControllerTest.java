@@ -1,12 +1,14 @@
 package roomescape.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.LocalTime;
 import java.util.List;
 import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.Test;
@@ -14,8 +16,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
+import roomescape.application.ReservationTimeService;
 import roomescape.application.ThemeService;
 import roomescape.domain.theme.Theme;
+import roomescape.dto.reservationtime.AvailableTimeResponse;
 import roomescape.dto.theme.ThemeRequest;
 import roomescape.fixture.ThemeFixture;
 import roomescape.support.ControllerTest;
@@ -24,6 +28,8 @@ import roomescape.support.SimpleMockMvc;
 class ThemeControllerTest extends ControllerTest {
     @Autowired
     private ThemeService themeService;
+    @Autowired
+    private ReservationTimeService reservationTimeService;
 
     @Test
     void 테마를_생성한다() throws Exception {
@@ -138,6 +144,27 @@ class ThemeControllerTest extends ControllerTest {
                 status().isOk(),
                 jsonPath("$[0].id").value(popularThemes.get(0).getId()),
                 jsonPath("$[1].id").value(popularThemes.get(1).getId())
+        ).andDo(print());
+    }
+
+    @Test
+    void 테마의_예약_가능한_시간을_조회한다() throws Exception {
+        List<AvailableTimeResponse> availableTimes = List.of(
+                new AvailableTimeResponse(1L, LocalTime.parse("13:00"), false),
+                new AvailableTimeResponse(2L, LocalTime.parse("14:00"), true)
+        );
+        when(reservationTimeService.findAvailableTimes(anyLong(), any())).thenReturn(availableTimes);
+
+        ResultActions result = SimpleMockMvc.get(mockMvc, "/themes/{id}?date=2024-05-01", 1L);
+
+        result.andExpectAll(
+                status().isOk(),
+                jsonPath("$[0].id").value(availableTimes.get(0).id()),
+                jsonPath("$[0].startAt").value("13:00"),
+                jsonPath("$[0].alreadyBooked").value(false),
+                jsonPath("$[1].id").value(availableTimes.get(1).id()),
+                jsonPath("$[1].startAt").value("14:00"),
+                jsonPath("$[1].alreadyBooked").value(true)
         ).andDo(print());
     }
 }
