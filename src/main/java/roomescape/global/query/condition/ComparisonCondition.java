@@ -24,7 +24,7 @@ public class ComparisonCondition extends Condition {
     @Override
     public void assemble(StringBuilder builder) {
         builder.append(column)
-                .append(operator)
+                .append(operator.value)
                 .append(value());
     }
 
@@ -45,11 +45,6 @@ public class ComparisonCondition extends Condition {
 
         Operator(String value) {
             this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
         }
     }
 }
