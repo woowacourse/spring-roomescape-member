@@ -1,6 +1,7 @@
 package roomescape.reservation.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -14,7 +15,6 @@ import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -31,8 +31,10 @@ import roomescape.time.domain.Time;
 @WebMvcTest(ReservationController.class)
 class ReservationControllerTest {
 
-    private final Reservation reservation = Reservation.reservationOf(1L, "polla", LocalDate.now(),
-            new Time(1L, LocalTime.now()), new Theme(1L, "polla", "폴라 방탈출", "이미지~"));
+    private static final LocalDate TODAY = LocalDate.now();
+
+    private final Reservation reservation = Reservation.reservationOf(1L, "polla", TODAY,
+            new Time(1L, LocalTime.of(10, 0)), new Theme(1L, "polla", "폴라 방탈출", "이미지~"));
 
     @Autowired
     private MockMvc mockMvc;
@@ -43,7 +45,7 @@ class ReservationControllerTest {
     @Test
     @DisplayName("예약 정보를 잘 저장하는지 확인한다.")
     void saveReservation() throws Exception {
-        Mockito.when(reservationService.addReservation(any()))
+        when(reservationService.addReservation(any()))
                 .thenReturn(ReservationResponse.fromReservation(reservation));
 
         String content = new ObjectMapper()
@@ -62,7 +64,7 @@ class ReservationControllerTest {
     @Test
     @DisplayName("예약 정보를 잘 불러오는지 확인한다.")
     void findAllReservations() throws Exception {
-        Mockito.when(reservationService.findReservations())
+        when(reservationService.findReservations())
                 .thenReturn(List.of(ReservationResponse.fromReservation(reservation)));
 
         mockMvc.perform(get("/reservations"))
@@ -73,11 +75,11 @@ class ReservationControllerTest {
     @Test
     @DisplayName("예약 가능한 시간을 잘 불러오는지 확인한다.")
     void findAvailableTimeList() throws Exception {
-        Mockito.when(reservationService.findTimeAvailability(1, LocalDate.now()))
+        when(reservationService.findTimeAvailability(1, TODAY))
                 .thenReturn(
                         List.of(ReservationTimeAvailabilityResponse.fromTime(reservation.getReservationTime(), true)));
 
-        mockMvc.perform(get("/reservations/1?date=" + LocalDate.now()))
+        mockMvc.perform(get("/reservations/1?date=" + TODAY))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
