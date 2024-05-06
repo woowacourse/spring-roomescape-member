@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import roomescape.time.response.AvailableTime;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.service.ReservationTimeService;
 
@@ -46,9 +47,9 @@ public class ReservationTimeController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<List<ReservationTime>> availableTime(@RequestParam String date, @RequestParam long themeId){
-        LocalDate parse = LocalDate.parse(date);
-        return ResponseEntity.ok(reservationTimeService.available(parse,themeId));
+    public ResponseEntity<List<AvailableTime>> availableTime(@RequestParam String date, @RequestParam long themeId) {
+        LocalDate parseDate = LocalDate.parse(date);
+        return ResponseEntity.ok(reservationTimeService.available(parseDate, themeId));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

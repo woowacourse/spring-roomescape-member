@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import roomescape.reservation.repository.ReservationDao;
+import roomescape.time.response.AvailableTime;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeDao;
 
@@ -43,7 +44,7 @@ public class ReservationTimeService {
         reservationTimeDao.delete(id);
     }
 
-    public List<ReservationTime> available(LocalDate parse, long themeId) {
-        return reservationTimeDao.available(parse,themeId);
+    public List<AvailableTime> available(LocalDate date, long themeId) {
+        return reservationTimeDao.available(date, themeId);
     }
 }
