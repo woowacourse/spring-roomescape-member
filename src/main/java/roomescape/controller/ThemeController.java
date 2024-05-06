@@ -33,7 +33,7 @@ public class ThemeController {
                 .body(themeResponses);
     }
 
-    @GetMapping("/hot")//시작일, 종료일, 10개,
+    @GetMapping("/hot")
     public ResponseEntity<ThemeResponses> findHotThemesByDurationAndCount(
             @RequestParam LocalDate start, @RequestParam LocalDate end, @RequestParam Integer limit) {
         ThemeResponses themeResponses = themeService.findHotThemesByDurationAndCount(start, end, limit);
