@@ -130,7 +130,7 @@ class ReservationControllerTest extends ControllerTest {
 
     @Test
     @DisplayName("존재하지 않는 예약 시간의 예약 POST 요청 시 상태코드 404를 반환한다.")
-    void createReservationWithNotExistTime() throws Exception {
+    void createReservationWithNotExistingTime() throws Exception {
         // given
         Long notExistingTimeId = 1L;
         Long themeId = 1L;
@@ -142,6 +142,31 @@ class ReservationControllerTest extends ControllerTest {
 
         BDDMockito.willThrow(new NotFoundException(TEST_ERROR_MESSAGE))
                 .given(reservationTimeService)
+                .findById(anyLong());
+
+        // when & then
+        mockMvc.perform(post("/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(request)))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").exists());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 테마의 예약 POST 요청 시 상태코드 404를 반환한다.")
+    void createReservationWithNotExistingTheme() throws Exception {
+        // given
+        Long timeId = 1L;
+        Long notExistingThemeId = 1L;
+        ReservationTimeResponse timeResponse = ReservationTimeResponse.from(new ReservationTime(1L, MIA_RESERVATION_TIME));
+        ReservationSaveRequest request = new ReservationSaveRequest(USER_MIA, MIA_RESERVATION_DATE, timeId, notExistingThemeId);
+
+        BDDMockito.given(reservationTimeService.findById(timeId))
+                .willReturn(timeResponse);
+
+        BDDMockito.willThrow(new NotFoundException(TEST_ERROR_MESSAGE))
+                .given(themeService)
                 .findById(anyLong());
 
         // when & then
@@ -166,21 +191,5 @@ class ReservationControllerTest extends ControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNoContent());
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 예약 DELETE 요청 시 상태코드 404를 반환한다.")
-    void deleteNotExistingReservation() throws Exception {
-        // given
-        BDDMockito.willThrow(new NotFoundException(TEST_ERROR_MESSAGE))
-                .given(reservationService)
-                .delete(anyLong());
-
-        // when & then
-        mockMvc.perform(delete("/reservations/{id}", anyLong())
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").exists());
     }
 }

@@ -148,21 +148,4 @@ class ReservationAcceptanceTest extends ApiAcceptanceTest {
                     .isNotNull();
         });
     }
-
-    @Test
-    @DisplayName("[Step3, Step6, Step8] 존재하지 않는 예약을 삭제한다.")
-    void deleteNotExistingReservation() {
-        // given & when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when().delete("/reservations/1")
-                .then().log().all()
-                .extract();
-        ErrorResponse errorResponse = response.as(ErrorResponse.class);
-
-        // then
-        assertSoftly(softly -> {
-            checkHttpStatusNotFound(softly, response);
-            softly.assertThat(errorResponse.message()).isNotNull();
-        });
-    }
 }

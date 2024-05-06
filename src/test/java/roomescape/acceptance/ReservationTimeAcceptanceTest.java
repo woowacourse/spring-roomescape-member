@@ -96,23 +96,6 @@ class ReservationTimeAcceptanceTest extends ApiAcceptanceTest {
         );
     }
 
-    @Test
-    @DisplayName("[Step7] 존재하지 않는 예약 시간을 삭제한다.")
-    void deleteNotExistingReservationTime() {
-        // given & when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when().delete("/times/10000")
-                .then().log().all()
-                .extract();
-        ErrorResponse errorResponse = response.as(ErrorResponse.class);
-
-        // then
-        assertSoftly(softly -> {
-            checkHttpStatusNotFound(softly, response);
-            softly.assertThat(errorResponse.message()).isNotNull();
-        });
-    }
-
     void findReservationTimesWithSizeOne() {
         // given & when
         ExtractableResponse<Response> response = RestAssured.given().log().all()

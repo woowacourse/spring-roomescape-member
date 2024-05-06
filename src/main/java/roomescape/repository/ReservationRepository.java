@@ -13,8 +13,6 @@ public interface ReservationRepository {
 
     List<Reservation> findAll();
 
-    boolean existById(Long id);
-
     void deleteById(Long id);
 
     int countByTimeId(Long timeId);

@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
 import roomescape.dto.ReservationResponse;
-import roomescape.exception.NotFoundException;
 import roomescape.exception.ViolationException;
 import roomescape.repository.ReservationRepository;
 
@@ -50,10 +49,6 @@ public class ReservationService {
 
     @Transactional
     public void delete(Long id) {
-        boolean isExist = reservationRepository.existById(id);
-        if (!isExist) {
-            throw new NotFoundException("해당 ID의 예약이 없습니다.");
-        }
         reservationRepository.deleteById(id);
     }
 }

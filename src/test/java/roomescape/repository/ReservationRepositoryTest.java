@@ -88,44 +88,6 @@ class ReservationRepositoryTest extends RepositoryTest {
     }
 
     @Test
-    @DisplayName("Id로 예약이 존재하면 true를 반환한다.")
-    void findById() {
-        // given
-        long timeId = 1L;
-        long themeId = 1L;
-        String insertSql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(insertSql, new String[]{"id"});
-            ps.setString(1, USER_MIA);
-            ps.setDate(2, Date.valueOf(MIA_RESERVATION_DATE));
-            ps.setLong(3, timeId);
-            ps.setLong(4, themeId);
-            return ps;
-        }, keyHolder);
-        Long id = keyHolder.getKey().longValue();
-
-        // when
-        boolean isExist = reservationRepository.existById(id);
-
-        // then
-        assertThat(isExist).isTrue();
-    }
-
-    @Test
-    @DisplayName("Id에 해당하는 예약이 없다면 false를 반환한다.")
-    void findByNotExistingId() {
-        // given
-        Long id = 1L;
-
-        // when
-        boolean isExist = reservationRepository.existById(id);
-
-        // then
-        assertThat(isExist).isFalse();
-    }
-
-    @Test
     @DisplayName("Id로 예약을 삭제한다.")
     void deleteById() {
         // given

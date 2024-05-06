@@ -86,19 +86,6 @@ public class ReservationDao implements ReservationRepository {
     }
 
     @Override
-    public boolean existById(Long id) {
-        String sql = """
-                SELECT EXISTS (
-                    SELECT 1
-                    FROM reservation
-                    WHERE id = ?
-                ) AS is_exist;
-                """;
-        return jdbcTemplate.queryForObject(sql,
-                (resultSet, rowNumber) -> resultSet.getBoolean("is_exist"), id);
-    }
-
-    @Override
     public void deleteById(Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
         jdbcTemplate.update(sql, id);

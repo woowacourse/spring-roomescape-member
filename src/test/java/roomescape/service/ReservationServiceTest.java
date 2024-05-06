@@ -120,25 +120,8 @@ class ReservationServiceTest {
         // given
         Long existingId = 1L;
 
-        BDDMockito.given(reservationRepository.existById(existingId))
-                .willReturn(true);
-
         // when & then
         assertThatCode(() -> reservationService.delete(existingId))
                 .doesNotThrowAnyException();
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 예약 Id로 삭제할 수 없다.")
-    void deleteNotExistingId() {
-        // given
-        Long notExistingId = 1L;
-
-        BDDMockito.given(reservationRepository.existById(notExistingId))
-                .willReturn(false);
-
-        // when & then
-        assertThatThrownBy(() -> reservationService.delete(notExistingId))
-                .isInstanceOf(NotFoundException.class);
     }
 }

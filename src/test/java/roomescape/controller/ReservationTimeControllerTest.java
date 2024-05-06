@@ -10,7 +10,6 @@ import roomescape.domain.ReservationTime;
 import roomescape.dto.AvailableReservationTimeResponse;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.ReservationTimeSaveRequest;
-import roomescape.exception.NotFoundException;
 import roomescape.service.ReservationTimeService;
 
 import java.time.LocalTime;
@@ -22,7 +21,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static roomescape.TestFixture.*;
+import static roomescape.TestFixture.MIA_RESERVATION_DATE;
+import static roomescape.TestFixture.MIA_RESERVATION_TIME;
 
 @WebMvcTest(ReservationTimeController.class)
 class ReservationTimeControllerTest extends ControllerTest {
@@ -121,22 +121,6 @@ class ReservationTimeControllerTest extends ControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNoContent());
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 예약 시간 DELETE 요청 시 상태코드 404를 반환한다.")
-    void deleteNotExistingReservationTime() throws Exception {
-        // given
-        BDDMockito.willThrow(new NotFoundException(TEST_ERROR_MESSAGE))
-                .given(reservationTimeService)
-                .delete(anyLong());
-
-        // when & then
-        mockMvc.perform(delete("/times/{id}", anyLong())
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").exists());
     }
 
     @Test

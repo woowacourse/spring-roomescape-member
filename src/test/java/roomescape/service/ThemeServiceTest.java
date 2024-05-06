@@ -100,26 +100,11 @@ class ThemeServiceTest {
     @DisplayName("테마를 삭제한다.")
     void deleteById() {
         // given
-        Theme theme = WOOTECO_THEME(1L);
-
-        BDDMockito.given(themeRepository.findById(anyLong()))
-                .willReturn(Optional.of(theme));
+        Long themeId = 1L;
 
         // when & then
-        assertThatCode(() -> themeService.deleteById(1L))
+        assertThatCode(() -> themeService.deleteById(themeId))
                 .doesNotThrowAnyException();
-    }
-
-    @Test
-    @DisplayName("삭제하려는 테마가 존재하지 않는 경우 예외가 발생한다.")
-    void deleteByNotExistId() {
-        // given
-        BDDMockito.given(themeRepository.findById(anyLong()))
-                .willReturn(Optional.empty());
-
-        // when & then
-        assertThatThrownBy(() -> themeService.deleteById(1L))
-                .isInstanceOf(NotFoundException.class);
     }
 
     @Test

@@ -48,10 +48,9 @@ public class ReservationTimeService {
 
     @Transactional
     public void delete(Long id) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("해당 ID의 예약 시간이 없습니다."));
-        validateHasReservation(reservationTime);
-        reservationTimeRepository.deleteById(reservationTime.getId());
+        reservationTimeRepository.findById(id)
+                .ifPresent(this::validateHasReservation);
+        reservationTimeRepository.deleteById(id);
     }
 
     private void validateHasReservation(ReservationTime reservationTime) {

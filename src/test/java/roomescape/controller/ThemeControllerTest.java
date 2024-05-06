@@ -8,7 +8,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import roomescape.dto.ThemeResponse;
 import roomescape.dto.ThemeSaveRequest;
-import roomescape.exception.NotFoundException;
 import roomescape.service.ThemeService;
 
 import java.util.List;
@@ -80,21 +79,6 @@ class ThemeControllerTest extends ControllerTest {
         mockMvc.perform(delete("/themes/{id}", anyLong()))
                 .andDo(print())
                 .andExpect(status().isNoContent());
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 테마 DELETE 요청 시 상태코드 404를 반환한다.")
-    void deleteNotExistingTheme() throws Exception {
-        // given
-        BDDMockito.willThrow(new NotFoundException(TEST_ERROR_MESSAGE))
-                .given(themeService)
-                .deleteById(anyLong());
-
-        // when & then
-        mockMvc.perform(delete("/themes/{id}", anyLong()))
-                .andDo(print())
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").exists());
     }
 
     @Test
