@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ExceptionResponse> handleException(MethodArgumentNotValidException exception) {
         exception.printStackTrace();
 
-        ExceptionResponse exceptionResponse = new ExceptionResponse(HttpStatus.BAD_REQUEST, exception.getMessage());
+        ExceptionResponse exceptionResponse = new ExceptionResponse(HttpStatus.BAD_REQUEST, exception.getFieldErrors().get(0).getDefaultMessage());
         return ResponseEntity.badRequest().body(exceptionResponse);
     }
 
@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ExceptionResponse> handleException(HttpMessageNotReadableException exception) {
         exception.printStackTrace();
 
-        ExceptionResponse exceptionResponse = new ExceptionResponse(HttpStatus.BAD_REQUEST, exception.getMessage());
+        ExceptionResponse exceptionResponse = new ExceptionResponse(HttpStatus.BAD_REQUEST, "잘못된 형식의 Request Body 입니다.");
         return ResponseEntity.badRequest().body(exceptionResponse);
     }
 
@@ -42,7 +42,7 @@ public class GlobalExceptionHandler {
 
         ExceptionResponse exceptionResponse = new ExceptionResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                exception.getClass().getName());
+                "서버에서 예기치 못한 에러가 발생했습니다.");
         return ResponseEntity.internalServerError().body(exceptionResponse);
     }
 }
