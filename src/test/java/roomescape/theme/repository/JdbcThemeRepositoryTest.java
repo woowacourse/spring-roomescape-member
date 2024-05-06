@@ -14,7 +14,7 @@ import roomescape.theme.model.Theme;
 
 @ActiveProfiles("test")
 @SpringBootTest
-@Sql(scripts = {"/delete-data.sql", "/theme-init-data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = {"/delete-data.sql", "/init-data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class JdbcThemeRepositoryTest {
 
     @Autowired

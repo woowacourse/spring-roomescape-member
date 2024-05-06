@@ -4,6 +4,7 @@ import java.sql.Time;
 import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
+import org.springframework.context.annotation.Primary;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.reservationtime.model.ReservationTime;
 
 @Repository
+@Primary
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
 
     private final JdbcTemplate jdbcTemplate;
