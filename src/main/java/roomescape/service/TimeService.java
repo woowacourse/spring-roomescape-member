@@ -34,21 +34,26 @@ public class TimeService {
     }
 
     public TimeResponse addTime(final TimeRequest timeRequest) {
+        validateTimeDuplication(timeRequest);
+        Time time = timeDao.insert(timeRequest.toTime());
+
+        return TimeResponse.from(time);
+    }
+
+    private void validateTimeDuplication(final TimeRequest timeRequest) {
         List<Time> duplicateTimes = timeDao.findByStartAt(timeRequest.startAt());
+
         if (duplicateTimes.size() > 0) {
-            throw new DataConflictException(ErrorType.TIME_DUPLICATION_CONFLICT, "이미 존재하는 예약 시간입니다.");
+            throw new DataConflictException(ErrorType.TIME_DUPLICATION_CONFLICT,
+                    String.format("이미 존재하는 예약 시간입니다. [startAt: %s]", timeRequest.startAt()));
         }
-
-        Time time = timeRequest.toTime();
-        Time savedTime = timeDao.insert(time);
-
-        return TimeResponse.from(savedTime);
     }
 
     public void removeTimeById(final Long id) {
         List<Reservation> usingTimeReservations = reservationDao.findByTimeId(id);
         if (usingTimeReservations.size() > 0) {
-            throw new DataConflictException(ErrorType.TIME_IS_USED_CONFLICT, String.format("[TimeId - %d] 해당 시간에 예약이 존재하여 시간을 삭제할 수 없습니다.", id));
+            throw new DataConflictException(ErrorType.TIME_IS_USED_CONFLICT,
+                    String.format("해당 시간에 예약이 존재하여 시간을 삭제할 수 없습니다. [timeId: %d]", id));
         }
         timeDao.deleteById(id);
     }

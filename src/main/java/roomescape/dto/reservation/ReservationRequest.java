@@ -24,7 +24,8 @@ public record ReservationRequest(
     public ReservationRequest {
         if (StringUtils.isBlank(name) || StringUtils.isBlank(date.toString())
                 || StringUtils.isBlank(timeId.toString()) || StringUtils.isBlank(themeId.toString())) {
-            throw new ValidateException(ErrorType.BAD_REQUEST, "공백 또는 null이 포함된 요청입니다.");
+            throw new ValidateException(ErrorType.REQUEST_DATA_BLANK,
+                    String.format("공백 또는 null이 포함된 요청입니다. [values: %s]", this));
         }
     }
 

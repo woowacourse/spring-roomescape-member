@@ -18,8 +18,13 @@ public class Time {
         this.id = id;
         this.startAt = startAt;
 
+        validateNull();
+    }
+
+    private void validateNull() {
         if (startAt == null) {
-            throw new ValidateException(ErrorType.INVALID_ERROR, String.format("유효하지 않은 값입니다.%n%s", this.toString()));
+            throw new ValidateException(ErrorType.TIME_REQUEST_DATA_BLANK,
+                    String.format("예약 시간(Time) 생성에 유효하지 않은 값이 입력되었습니다. [values: %s]", this));
         }
     }
 

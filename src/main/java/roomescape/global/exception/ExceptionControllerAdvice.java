@@ -20,14 +20,14 @@ public class ExceptionControllerAdvice {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiResponse<Object> handleValidateException(final ValidateException e) {
         logger.error(e.getMessage(), e);
-        return ApiResponse.fail(ErrorType.BAD_REQUEST);
+        return ApiResponse.fail(e.getErrorType());
     }
 
     @ExceptionHandler(value = HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiResponse<Object> handleHttpMessageNotReadableException(final HttpMessageNotReadableException e) {
         logger.error(e.getMessage(), e);
-        return ApiResponse.fail(ErrorType.BAD_REQUEST);
+        return ApiResponse.fail(ErrorType.INVALID_REQUEST_DATA_TYPE);
     }
 
     @ExceptionHandler(value = DataConflictException.class)

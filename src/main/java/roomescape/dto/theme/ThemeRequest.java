@@ -13,7 +13,8 @@ public record ThemeRequest(
 ) {
     public ThemeRequest {
         if (StringUtils.isBlank(thumbnail) || StringUtils.isBlank(name) || StringUtils.isBlank(description)) {
-            throw new ValidateException(ErrorType.BAD_REQUEST, "공백 또는 null이 포함된 요청입니다.");
+            throw new ValidateException(ErrorType.REQUEST_DATA_BLANK,
+                    String.format("공백 또는 null이 포함된 요청입니다. [values: %s]", this));
         }
     }
 }
