@@ -69,6 +69,23 @@ index.html
 
 ---
 
+### Front_로그인 페이지
+
+#### Request
+```http
+GET /login HTTP/1.1
+```
+
+#### Response
+```http
+HTTP/1.1 200
+Content-Type : text/html
+
+login.html
+```
+
+---
+
 ### Front_예약 페이지
 
 #### Request
@@ -260,6 +277,7 @@ Content-Type: application/json
 }
 ```
 ---
+
 ### 예약 가능 시간 조회
 
 #### Request

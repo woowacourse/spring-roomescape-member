@@ -10,4 +10,9 @@ public class FrontPageController {
     public String reservation(){
         return "/reservation";
     }
+
+    @GetMapping("/login")
+    public String login() {
+        return "/login";
+    }
 }
