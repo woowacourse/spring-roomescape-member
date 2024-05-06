@@ -8,24 +8,19 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.ReservationTime;
 
-
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class ReservationTimeRepositoryImplTest {
+class ReservationTimeRepositoryImplTest extends RepositoryTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-    @Autowired
+
     private ReservationTimeRepository reservationTimeRepository;
 
     @BeforeEach
     void setUp() {
+        reservationTimeRepository = new ReservationTimeRepositoryImpl(jdbcTemplate);
         jdbcTemplate.update("insert into reservation_time (start_at) values('10:00')");
     }
 
