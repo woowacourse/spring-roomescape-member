@@ -1,6 +1,7 @@
 package roomescape.controller;
 
 import java.net.URI;
+import java.time.LocalDate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.ThemeCreateRequest;
 import roomescape.dto.ThemeResponse;
@@ -31,9 +33,10 @@ public class ThemeController {
                 .body(themeResponses);
     }
 
-    @GetMapping("/hot/weekly")
-    public ResponseEntity<ThemeResponses> findWeeklyHotThemes() {
-        ThemeResponses themeResponses = themeService.findWeeklyHotThemes();
+    @GetMapping("/hot")//시작일, 종료일, 10개,
+    public ResponseEntity<ThemeResponses> findHotThemesByDurationAndCount(
+            @RequestParam LocalDate start, @RequestParam LocalDate end, @RequestParam Integer limit) {
+        ThemeResponses themeResponses = themeService.findHotThemesByDurationAndCount(start, end, limit);
         return ResponseEntity.ok()
                 .body(themeResponses);
     }

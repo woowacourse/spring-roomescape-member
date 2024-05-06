@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
@@ -11,7 +12,7 @@ public interface ThemeRepository {
 
     Theme findByThemeId(Long themeId);
 
-    List<Theme> findWeeklyHotThemes();
+    List<Theme> findHotThemesByDurationAndCount(LocalDate start, LocalDate end, Integer limit);
 
     Theme save(Theme theme);
 

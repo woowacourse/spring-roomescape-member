@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import javax.sql.DataSource;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -44,7 +45,7 @@ public class ThemeJdbcRepository implements ThemeRepository {
         return jdbcTemplate.queryForObject(sql, themeRowMapper, themeId);
     }
 
-    public List<Theme> findWeeklyHotThemes() {
+    public List<Theme> findHotThemesByDurationAndCount(LocalDate start, LocalDate end, Integer limit) {
         String sql = """
                 SELECT
                     th.id AS theme_id,
@@ -55,12 +56,12 @@ public class ThemeJdbcRepository implements ThemeRepository {
                 FROM
                     reservation AS r
                 INNER JOIN theme AS th ON r.theme_id = th.id
-                WHERE r.date BETWEEN DATEADD(DAY, -7, CURDATE()) AND CURDATE()
+                WHERE r.date BETWEEN ? AND ?
                 GROUP BY theme_id
                 ORDER BY reservation_count DESC, theme_name
-                LIMIT 10;
+                LIMIT ?;
                 """;
-        return jdbcTemplate.query(sql, themeRowMapper);
+        return jdbcTemplate.query(sql, themeRowMapper, start, end, limit);
     }
 
     public Theme save(Theme theme) {

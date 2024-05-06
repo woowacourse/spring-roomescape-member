@@ -2,10 +2,25 @@ document.addEventListener('DOMContentLoaded', () => {
     /*
     TODO: [3단계] 인기 테마 - 인기 테마 목록 조회 API 호출
     */
-    requestRead('/themes/hot/weekly') // 인기 테마 목록 조회 API endpoint
+    const endDate = new Date();
+    const startDate = new Date(endDate.getDate() - 7);
+
+    const start = dateFormat(startDate);
+    const end = dateFormat(endDate);
+    const limit = 10;
+
+    requestRead(`/themes/hot?start=${start}&end=${end}&limit=${limit}`) // 인기 테마 목록 조회 API endpoint
         .then(render)
         .catch(error => console.error('Error fetching times:', error));
 });
+
+function dateFormat(input) {
+    const year = input.getFullYear();
+    const month = String(input.getMonth() + 1).padStart(2, '0');
+    const day = String(input.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+}
 
 function render(data) {
     const container = document.getElementById('theme-ranking');

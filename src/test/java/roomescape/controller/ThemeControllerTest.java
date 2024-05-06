@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -142,8 +143,12 @@ public class ThemeControllerTest {
     @Test
     @DisplayName("주간 인기 테마 목록 조회 API 작동을 확인한다")
     void checkWeeklyHotThemes() {
+        LocalDate start = LocalDate.parse("2024-05-02");
+        LocalDate end = start.minusDays(7);
+        Integer limit = 10;
+
         RestAssured.given().log().all()
-                .when().get("themes/hot/weekly")
+                .when().get("themes/hot?start=" + start + "&end=" + end + "&limit=" + limit)
                 .then().log().all()
                 .statusCode(200);
     }

@@ -1,14 +1,17 @@
 package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -64,14 +67,20 @@ class ThemeJdbcRepositoryTest {
         ).isInstanceOf(ReferencedRowExistsException.class)
                 .hasMessage("현 테마에 예약이 존재합니다.");
     }
-/*
+
     @Test
     @Sql("/data.sql")
     @DisplayName("주간 인기 테마 목록이 10개인지 확인한다.")
     void checkWeeklyHotThemesSize() {
-        List<Theme> themes = themeRepository.findWeeklyHotThemes();
+        //given
+        LocalDate start = LocalDate.parse("2024-04-26");
+        LocalDate end = LocalDate.parse("2024-05-02");
+        Integer limit = 10;
+
+        //when
+        List<Theme> themes = themeRepository.findHotThemesByDurationAndCount(start, end, limit);
+
+        //then
         assertThat(themes.size()).isEqualTo(10);
     }
-
- */
 }

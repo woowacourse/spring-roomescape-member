@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
@@ -26,8 +27,8 @@ public class ThemeService {
         return new ThemeResponses(themeResponses);
     }
 
-    public ThemeResponses findWeeklyHotThemes() {
-        List<ThemeResponse> themeResponses = themeRepository.findWeeklyHotThemes()
+    public ThemeResponses findHotThemesByDurationAndCount(LocalDate start, LocalDate end, Integer limit) {
+        List<ThemeResponse> themeResponses = themeRepository.findHotThemesByDurationAndCount(start, end, limit)
                 .stream()
                 .map(ThemeResponse::from)
                 .toList();
