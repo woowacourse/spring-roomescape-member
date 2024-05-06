@@ -1,6 +1,5 @@
 package roomescape.service.fakedao;
 
-import roomescape.model.Reservation;
 import roomescape.repository.dao.ReservationDao;
 import roomescape.repository.dto.ReservationSavedDto;
 
@@ -11,14 +10,11 @@ import java.util.stream.Collectors;
 
 public class FakeReservationDao implements ReservationDao {
 
-    private final AtomicLong index = new AtomicLong(3); // TODO: change to 1
-    private final List<ReservationSavedDto> reservations;
+    private final AtomicLong index = new AtomicLong(1);
+    private final List<ReservationSavedDto> reservations = new ArrayList<>();
 
     public FakeReservationDao(List<ReservationSavedDto> reservations) {
-//        for (ReservationSavedDto dto : reservations) {
-//            Reservation reservation = new Reservation(dto.getName(), dto.getDate(), dto.);
-//        } TODO
-        this.reservations = reservations;
+        reservations.forEach(this::save);
     }
 
     @Override
@@ -27,15 +23,19 @@ public class FakeReservationDao implements ReservationDao {
     }
 
     @Override
-    public long save(Reservation reservation) {
+    public long save(ReservationSavedDto rawDto) {
         long key = index.getAndIncrement();
-        ReservationSavedDto saved = new ReservationSavedDto(key, reservation.getName(), reservation.getDate(), reservation.getTime().getId(), reservation.getTheme().getId());
-        reservations.add(saved);
+        ReservationSavedDto reservationSavedDto = new ReservationSavedDto(
+                key, rawDto.getName(), rawDto.getDate(),
+                rawDto.getTimeId(), rawDto.getThemeId());
+        reservations.add(reservationSavedDto);
         return key;
     }
 
     @Override
     public Optional<ReservationSavedDto> findById(long id) {
+        System.out.print("findById = " + id);
+        System.out.println(reservations);
         return reservations.stream()
                 .filter(reservation -> reservation.getId() == id)
                 .findFirst();
@@ -48,7 +48,7 @@ public class FakeReservationDao implements ReservationDao {
                 .toList();
     }
 
-    @Override
+    @Override // TODO: fake object test!
     public List<Long> findThemeIdByDateAndOrderByThemeIdCountAndLimit(LocalDate startDate, LocalDate endDate, int limit) {
         List<ReservationSavedDto> filteredReservations = findBetweenDates(startDate, endDate);
         Map<Long, Long> countOfThemeIds = countByThemeId(filteredReservations);

@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface ReservationDao {
 
-    long save(Reservation reservation);
+    long save(ReservationSavedDto reservationSavedDto);
 
     List<ReservationSavedDto> findAll();
 

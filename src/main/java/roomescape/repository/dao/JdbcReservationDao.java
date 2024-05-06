@@ -26,12 +26,12 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public long save(Reservation reservation) {
+    public long save(ReservationSavedDto reservationSavedDto) {
         Map<String, Object> parameters = new HashMap<>(4);
-        parameters.put("name", reservation.getName());
-        parameters.put("date", reservation.getDate());
-        parameters.put("time_id", reservation.getTime().getId());
-        parameters.put("theme_id", reservation.getTheme().getId());
+        parameters.put("name", reservationSavedDto.getName());
+        parameters.put("date", reservationSavedDto.getDate());
+        parameters.put("time_id", reservationSavedDto.getTimeId());
+        parameters.put("theme_id", reservationSavedDto.getThemeId());
         return insertActor.executeAndReturnKey(parameters).longValue();
     }
 

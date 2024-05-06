@@ -19,6 +19,14 @@ public class ReservationSavedDto {
         this.themeId = themeId;
     }
 
+    public ReservationSavedDto(String name, LocalDate date, long timeId, long themeId) {
+        this.id = 0;
+        this.name = name;
+        this.date = date;
+        this.timeId = timeId;
+        this.themeId = themeId;
+    }
+
     public long getId() {
         return id;
     }
@@ -50,5 +58,16 @@ public class ReservationSavedDto {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, date, timeId, themeId);
+    }
+
+    @Override
+    public String toString() {
+        return "ReservationSavedDto{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", date=" + date +
+                ", timeId=" + timeId +
+                ", themeId=" + themeId +
+                '}';
     }
 }

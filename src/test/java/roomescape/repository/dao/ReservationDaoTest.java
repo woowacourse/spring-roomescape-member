@@ -93,11 +93,9 @@ class ReservationDaoTest {
     @DisplayName("예약을 저장한다.")
     @Test
     void should_save_reservation() {
-        Theme theme = new Theme(1, "n1", "d1", "t1");
-        ReservationTime time = new ReservationTime(1, LocalTime.of(1, 0));
-        Reservation reservation = new Reservation("n3", LocalDate.of(2000, 1, 3), time, theme);
+        ReservationSavedDto reservationSavedDto = new ReservationSavedDto("n3", LocalDate.of(2000, 1, 3), 1, 1);
 
-        reservationDao.save(reservation);
+        reservationDao.save(reservationSavedDto);
 
         assertThat(reservationDao.findAll()).hasSize(INITIAL_RESERVATION_COUNT + 1);
     }
