@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.global.dto.ErrorResponse;
 
 @RestControllerAdvice
-public class GlobalExceptionAdvice {
+public class GlobalExceptionHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @ExceptionHandler(IllegalArgumentException.class)
