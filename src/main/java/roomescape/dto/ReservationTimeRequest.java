@@ -11,17 +11,12 @@ public record ReservationTimeRequest(
 ) {
 
     public ReservationTimeRequest {
-        validateNonNull();
-    }
-
-    private void validateNonNull() {
         try {
             Objects.requireNonNull(startAt);
         } catch (NullPointerException e) {
             throw new IllegalArgumentException("null 값이 될 수 없습니다.");
         }
     }
-
 
     public ReservationTime toEntity() {
         return new ReservationTime(startAt);

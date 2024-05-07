@@ -10,10 +10,6 @@ public record ThemeRequest(
 ) {
 
     public ThemeRequest {
-        validateNonNull();
-    }
-
-    private void validateNonNull() {
         try {
             Objects.requireNonNull(name);
             Objects.requireNonNull(description);

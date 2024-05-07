@@ -12,12 +12,12 @@ public record Name(String name) {
     }
 
     private void validateName(String name) {
-        if (format.matcher(name).matches()) {
-            throw new IllegalArgumentException("이름은 영어 또는 한글만 가능합니다.");
+        if (!format.matcher(name).matches()) {
+            throw new IllegalArgumentException(String.format("이름: %s, 이름은 영어 또는 한글만 가능합니다.", name));
         }
 
         if (name.length() < MIN_LENGTH || name.length() > MAX_LENGTH) {
-            throw new IllegalArgumentException(String.format("이름은 %d~%d자만 가능합니다.", MAX_LENGTH, MAX_LENGTH));
+            throw new IllegalArgumentException(String.format("이름은 %d~%d자만 가능합니다.", MIN_LENGTH, MAX_LENGTH));
         }
     }
 }

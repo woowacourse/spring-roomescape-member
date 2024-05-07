@@ -100,7 +100,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = """
                 SELECT theme_id
                 FROM reservation
-                WHERE date BETWEEN dateadd(day,?,now()) AND dateadd(day,?,now())
+                WHERE date BETWEEN dateadd(day, ?, CURRENT_DATE()) AND dateadd(day, ?, CURRENT_DATE())
                 GROUP BY theme_id
                 ORDER BY COUNT(*) DESC
                 LIMIT ?;

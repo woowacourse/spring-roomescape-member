@@ -15,10 +15,6 @@ public record ReservationRequest(
 ) {
 
     public ReservationRequest {
-        validateNonNull();
-    }
-
-    private void validateNonNull() {
         try {
             Objects.requireNonNull(name);
             Objects.requireNonNull(date);

@@ -36,6 +36,7 @@ INSERT INTO reservation (name, date, time_id, theme_id) VALUES
 ('제이', CURRENT_DATE() - INTERVAL '4' DAY, 1, 9),
 ('제이', CURRENT_DATE() - INTERVAL '5' DAY, 2, 10),
 ('제이', CURRENT_DATE() - INTERVAL '7' DAY, 3, 11),
+
 ('제이', CURRENT_DATE() - INTERVAL '8' DAY, 3, 12),
 ('제이', CURRENT_DATE() - INTERVAL '8' DAY, 3, 12),
 ('제이', CURRENT_DATE() - INTERVAL '8' DAY, 3, 12),

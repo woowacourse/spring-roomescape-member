@@ -1,7 +1,7 @@
 package roomescape.domain.theme;
 
 public record Name(String name) {
-    private static final int MAX_LENGTH = 20;
+    private static final int MAX_LENGTH = 10;
 
     public Name {
         validateName(name);
