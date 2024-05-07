@@ -50,17 +50,17 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {
         String sql = """
-            SELECT 
-                r.id AS reservation_id, 
-                r.name AS reservation_name , 
-                r.date AS reservation_date, 
-                t.id AS time_id, 
+            SELECT
+                r.id AS reservation_id,
+                r.name AS reservation_name,
+                r.date AS reservation_date,
+                t.id AS time_id,
                 t.start_at AS time_value,
                 th.id AS theme_id,
                 th.name AS theme_name,
                 th.description AS theme_description,
-                th.thumbnail AS theme_thumbnail 
-            FROM reservation AS r 
+                th.thumbnail AS theme_thumbnail
+            FROM reservation AS r
             INNER JOIN reservation_time AS t ON r.time_id = t.id
             INNER JOIN theme AS th ON r.theme_id = th.id
             """;
@@ -111,17 +111,17 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> findAllByDateAndThemeId(LocalDate date, Long themeId) {
         String sql = """
-            SELECT 
-                r.id AS reservation_id, 
-                r.name AS reservation_name , 
-                r.date AS reservation_date, 
-                t.id AS time_id, 
+            SELECT
+                r.id AS reservation_id,
+                r.name AS reservation_name,
+                r.date AS reservation_date,
+                t.id AS time_id,
                 t.start_at AS time_value,
                 th.id AS theme_id,
                 th.name AS theme_name,
                 th.description AS theme_description,
-                th.thumbnail AS theme_thumbnail 
-            FROM reservation AS r 
+                th.thumbnail AS theme_thumbnail
+            FROM reservation AS r
             INNER JOIN reservation_time AS t ON r.time_id = t.id
             INNER JOIN theme AS th ON r.theme_id = th.id
             WHERE date = ? AND theme_id = ?
