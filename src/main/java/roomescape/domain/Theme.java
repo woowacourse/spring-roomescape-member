@@ -9,6 +9,13 @@ public class Theme {
     private final ThemeDescription description;
     private final String thumbnail;
 
+    private Theme(final Long id, final ThemeName name, final ThemeDescription description, final String thumbnail) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.thumbnail = thumbnail;
+    }
+
     public static Theme of(final String name, final String description, final String thumbnail) {
         return new Theme(null, new ThemeName(name), new ThemeDescription(description), thumbnail);
     }
@@ -17,13 +24,7 @@ public class Theme {
         return new Theme(id, new ThemeName(name), new ThemeDescription(description), thumbnail);
     }
 
-    private Theme(final Long id, final ThemeName name, final ThemeDescription description, final String thumbnail) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.thumbnail = thumbnail;
-    }
-
+    // TODO : 이름 변경
     public Theme initializeIndex(final Long themeId) {
         return new Theme(themeId, name, description, thumbnail);
     }

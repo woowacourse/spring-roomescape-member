@@ -8,6 +8,10 @@ public class ReservationTimeAvailabilities {
 
     private final Map<ReservationTime, Boolean> values;
 
+    public ReservationTimeAvailabilities(final Map<ReservationTime, Boolean> values) {
+        this.values = values;
+    }
+
     public static ReservationTimeAvailabilities of(final List<ReservationTime> reservationTimes, final List<Reservation> reservations) {
         final Map<ReservationTime, Boolean> reservationTimeAvailabilities = new HashMap<>();
         reservationTimes.forEach(reservationTime -> reservationTimeAvailabilities.put(
@@ -19,10 +23,6 @@ public class ReservationTimeAvailabilities {
     private static boolean isTimeAvailable(final List<Reservation> reservations, final ReservationTime reservationTime) {
         return reservations.stream()
                 .anyMatch(reservation -> reservation.getTime().equals(reservationTime));
-    }
-
-    public ReservationTimeAvailabilities(final Map<ReservationTime, Boolean> values) {
-        this.values = values;
     }
 
     public Map<ReservationTime, Boolean> getValues() {

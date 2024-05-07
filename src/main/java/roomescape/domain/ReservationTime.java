@@ -24,6 +24,7 @@ public class ReservationTime {
         }
     }
 
+    // TODO: 이름 변경
     public ReservationTime initializeIndex(final Long reservationId) {
         return new ReservationTime(reservationId, startAt);
     }
