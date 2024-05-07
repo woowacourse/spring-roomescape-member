@@ -24,7 +24,7 @@ class ReservationTimeControllerTest {
 
     @DisplayName("성공: 예약 시간 저장 -> 201")
     @Test
-    void create() {
+    void save() {
         CreateTimeRequest request = new CreateTimeRequest(1L, "10:00");
 
         RestAssured.given().log().all()
@@ -39,7 +39,7 @@ class ReservationTimeControllerTest {
 
     @DisplayName("성공: 예약 시간 삭제 -> 204")
     @Test
-    void deleteBy() {
+    void delete() {
         jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES ('10:00')");
 
         RestAssured.given().log().all()
@@ -51,7 +51,7 @@ class ReservationTimeControllerTest {
 
     @DisplayName("성공: 예약 시간 조회 -> 200")
     @Test
-    void getReservationTimes() {
+    void findAll() {
         jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES ('10:00'), ('11:00')");
 
         RestAssured.given().log().all()
@@ -65,7 +65,7 @@ class ReservationTimeControllerTest {
 
     @DisplayName("실패: 잘못된 포맷의 예약 시간 저장 -> 400")
     @Test
-    void create_IllegalTimeFormat() {
+    void save_IllegalTimeFormat() {
         CreateTimeRequest request = new CreateTimeRequest(1L, "24:00");
 
         RestAssured.given().log().all()
@@ -94,7 +94,7 @@ class ReservationTimeControllerTest {
 
     @DisplayName("실패: 이미 존재하는 시간을 저장 -> 400")
     @Test
-    void create_Duplicate() {
+    void save_Duplicate() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('10:00')");
 
         CreateTimeRequest request = new CreateTimeRequest(1L, "10:00");

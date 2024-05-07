@@ -36,7 +36,7 @@ class ThemeControllerTest {
 
     @DisplayName("성공: 테마 생성 -> 201")
     @Test
-    void create() {
+    void save() {
         CreateThemeRequest request = new CreateThemeRequest("방탈출3", "설명3", "https://url3");
 
         RestAssured.given().log().all()
@@ -81,7 +81,7 @@ class ThemeControllerTest {
 
     @DisplayName("실패: 잘못된 포맷으로 테마 생성 -> 400")
     @Test
-    void create_IllegalTheme() {
+    void save_IllegalTheme() {
         CreateThemeRequest request = new CreateThemeRequest("방탈출3", "설명3", "ftp://url3");
 
         RestAssured.given().log().all()
@@ -94,7 +94,7 @@ class ThemeControllerTest {
 
     @DisplayName("실패: 중복 테마 추가 -> 400")
     @Test
-    void create_Duplicate() {
+    void save_Duplicate() {
         CreateThemeRequest request = new CreateThemeRequest("방탈출1", "설명1", "https://url1");
 
         RestAssured.given().log().all()
@@ -122,7 +122,7 @@ class ThemeControllerTest {
     @DisplayName("성공: 상위 10개의 인기 테마 조회 -> 200")
     @Test
     @Sql("/popularTestData.sql")
-    void findPopularTheme() {
+    void findPopular() {
         RestAssured.given().log().all()
             .when().get("/themes/popular")
             .then().log().all()

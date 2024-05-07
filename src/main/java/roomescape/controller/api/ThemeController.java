@@ -31,7 +31,7 @@ public class ThemeController {
     }
 
     @PostMapping
-    public ResponseEntity<CreateThemeResponse> create(@RequestBody CreateThemeRequest request) {
+    public ResponseEntity<CreateThemeResponse> save(@RequestBody CreateThemeRequest request) {
         Theme newTheme = themeService.save(
             new SaveThemeDto(request.name(), request.description(), request.thumbnail()));
         Long id = newTheme.getId();

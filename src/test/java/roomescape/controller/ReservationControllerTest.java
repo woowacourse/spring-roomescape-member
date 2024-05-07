@@ -33,7 +33,7 @@ class ReservationControllerTest {
 
     @DisplayName("성공: 예약 저장 -> 201")
     @Test
-    void reserve() {
+    void save() {
         CreateReservationRequest request = new CreateReservationRequest("brown", "2060-01-01", 1L, 1L);
 
         RestAssured.given().log().all()
@@ -51,7 +51,7 @@ class ReservationControllerTest {
 
     @DisplayName("성공: 예약 삭제 -> 204")
     @Test
-    void deleteBy() {
+    void delete() {
         jdbcTemplate.update(
             "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('brown', '2060-01-01', 1, 1)");
 
@@ -63,7 +63,7 @@ class ReservationControllerTest {
 
     @DisplayName("성공: 예약 조회 -> 200")
     @Test
-    void getReservations() {
+    void findAll() {
         jdbcTemplate.update("""
             INSERT INTO reservation (name, date, time_id, theme_id)
             VALUES
@@ -84,7 +84,7 @@ class ReservationControllerTest {
 
     @DisplayName("실패: 존재하지 않는 time id 예약 -> 400")
     @Test
-    void reserve_TimeIdNotFound() {
+    void save_TimeIdNotFound() {
         CreateReservationRequest request = new CreateReservationRequest("tre", "2060-01-01", 2L, 1L);
 
         RestAssured.given().log().all()
@@ -97,7 +97,7 @@ class ReservationControllerTest {
 
     @DisplayName("실패: 존재하지 않는 theme id 예약 -> 400")
     @Test
-    void reserve_ThemeIdNotFound() {
+    void save_ThemeIdNotFound() {
         CreateReservationRequest request = new CreateReservationRequest("tre", "2060-01-01", 1L, 2L);
 
         RestAssured.given().log().all()
@@ -110,7 +110,7 @@ class ReservationControllerTest {
 
     @DisplayName("실패: 중복 예약 -> 400")
     @Test
-    void reserve_Duplication() {
+    void save_Duplication() {
         jdbcTemplate.update(
             "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('brown', '2060-01-01', 1, 1)");
 
@@ -126,7 +126,7 @@ class ReservationControllerTest {
 
     @DisplayName("실패: 과거 시간 예약 -> 400")
     @Test
-    void reserve_PastTime() {
+    void save_PastTime() {
         CreateReservationRequest request = new CreateReservationRequest("brown", "2000-01-01", 1L, 1L);
 
         RestAssured.given().log().all()

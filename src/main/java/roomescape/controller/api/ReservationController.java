@@ -35,7 +35,7 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<CreateReservationResponse> reserve(@RequestBody CreateReservationRequest request) {
+    public ResponseEntity<CreateReservationResponse> save(@RequestBody CreateReservationRequest request) {
         Reservation newReservation = reservationService.save(
             new SaveReservationDto(request.name(), request.date(), request.timeId(), request.themeId()));
         Long id = newReservation.getId();
@@ -49,14 +49,14 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBy(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         reservationService.delete(id);
 
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping
-    public ResponseEntity<List<CreateReservationResponse>> getReservations() {
+    public ResponseEntity<List<CreateReservationResponse>> findAll() {
         List<Reservation> reservations = reservationService.findAll();
         List<CreateReservationResponse> createReservationResponse = reservations.stream().
             map(reservation -> new CreateReservationResponse(
