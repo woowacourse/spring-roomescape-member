@@ -21,11 +21,7 @@ public record ReservationRequest(
         Long themeId) {
 
     public Reservation toReservation(ReservationTime reservationTime, Theme theme) {
-        try {
-            return new Reservation(new PlayerName(name), parsedDate(), reservationTime, theme);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException(e.getMessage());
-        }
+        return new Reservation(new PlayerName(name), parsedDate(), reservationTime, theme);
     }
 
     public LocalDate parsedDate() {
