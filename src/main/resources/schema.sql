@@ -14,6 +14,16 @@ CREATE TABLE reservation_time
     PRIMARY KEY (id)
 );
 
+CREATE TABLE member
+(
+    id       BIGINT       NOT NULL AUTO_INCREMENT,
+    email    VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    name     VARCHAR(255) NOT NULL,
+    role     ENUM ('USER', 'ADMIN') DEFAULT 'USER' NOT NULL,
+    PRIMARY KEY (id)
+);
+
 CREATE TABLE reservation
 (
     id       BIGINT       NOT NULL AUTO_INCREMENT,
