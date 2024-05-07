@@ -64,14 +64,11 @@ class ThemeServiceTest {
     }
 
     @Test
-        // todo sql
+    @Sql("/reservation.sql")
     void 예약에서_사용_중인_테마를_삭제하면_예외가_발생한다() {
-//        ThemeCreationRequest request = new ThemeCreationRequest("테마1", "설명", "썸네일1");
-//        ThemeResponse response = themeService.save(request);
-//
-//        assertThatThrownBy(() -> themeService.delete(response.id()))
-//                .isExactlyInstanceOf(IllegalArgumentException.class)
-//                .hasMessageContaining("해당 테마를 사용하는 예약이 존재합니다.");
+        assertThatThrownBy(() -> themeService.delete(1L))
+                .isExactlyInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("해당 테마를 사용하는 예약이 존재합니다.");
     }
 
     @Test

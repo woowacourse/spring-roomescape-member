@@ -63,17 +63,11 @@ public class ReservationTimeServiceTest {
     }
 
     @Test
-        // todo sql
+    @Sql("/reservation.sql")
     void 예약에서_사용_중인_시간을_삭제하면_예외가_발생한다() {
-//        LocalTime startAt = LocalTime.of(13, 0);
-//        ReservationTimeCreationRequest request = new ReservationTimeCreationRequest(startAt);
-//        ReservationTimeResponse reservationTime = reservationTimeService.register(request);
-//        Theme theme = themeRepository.save(ThemeFixture.theme());
-//        reservationRepository.save(ReservationFixture.reservation("prin", "2024-04-30", reservationTime, theme));
-//
-//        assertThatThrownBy(() -> reservationTimeService.delete(reservationTime.getId()))
-//                .isExactlyInstanceOf(IllegalArgumentException.class)
-//                .hasMessageContaining("해당 시간을 사용하는 예약이 존재합니다");
+        assertThatThrownBy(() -> reservationTimeService.delete(1L))
+                .isExactlyInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("해당 시간을 사용하는 예약이 존재합니다");
     }
 
     @Test
