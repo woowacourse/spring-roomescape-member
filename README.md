@@ -1,4 +1,9 @@
 # 기능 구현 목록
+## STEP4
+### 사용자 로그인
+- 이메일과 비밀번호 입력 시 응답 쿠키에 토큰 추가
+- 로그인 후 쿠키를 이용해 사용자 정보 조회
+
 ## STEP3
 ### 사용자 예약
 - reservation 요청 응답페이지(templates/reservation.html)
