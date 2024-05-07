@@ -47,6 +47,6 @@
 - [x] `/login` 요청 시 `templates/login.html`가 응답한다.
 
 ## 사용자
-- [ ] 사용자는 `name`, `email`, `password`를 갖는다.
-- [ ] 사용자는 `email`과 `password`로 로그인을 한다.
+- [x] 사용자는 `name`, `email`, `password`를 갖는다.
+- [x] 사용자는 `email`과 `password`로 로그인을 한다.
 

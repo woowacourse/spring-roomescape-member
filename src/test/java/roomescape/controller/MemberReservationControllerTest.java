@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DisplayName("사용자 예약 컨트롤러")
-class UserReservationControllerTest {
+class MemberReservationControllerTest {
 
     @LocalServerPort
     private int port;

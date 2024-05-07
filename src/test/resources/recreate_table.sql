@@ -1,6 +1,7 @@
 DROP TABLE IF EXISTS reservation;
 DROP TABLE IF EXISTS reservation_time;
 DROP TABLE IF EXISTS theme;
+DROP TABLE IF EXISTS member;
 
 CREATE TABLE reservation_time
 (
@@ -30,6 +31,16 @@ CREATE TABLE IF NOT EXISTS reservation
     FOREIGN KEY (theme_id) REFERENCES theme (id)
 );
 
+CREATE TABLE IF NOT EXISTS member
+(
+    id       BIGINT       NOT NULL AUTO_INCREMENT,
+    name     VARCHAR(255) NOT NULL,
+    email    VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+INSERT INTO member(name, email, password) VALUES ( '클로버', 'clover@gmail.com', 'password' );
 
 INSERT INTO reservation_time (start_at) VALUES ('10:00:00');
 INSERT INTO reservation_time (start_at) VALUES ('12:00:00');

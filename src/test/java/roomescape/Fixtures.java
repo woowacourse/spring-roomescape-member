@@ -1,5 +1,6 @@
 package roomescape;
 
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -9,6 +10,12 @@ import java.time.LocalTime;
 import java.util.List;
 
 public class Fixtures {
+
+    public static final Member memberFixture = new Member(
+            1L,
+            "클로버",
+            "clover@gmail.com",
+            "password");
 
     public static final ReservationTime reservationTimeFixture = new ReservationTime(
             1L,
