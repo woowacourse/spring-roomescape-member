@@ -41,9 +41,9 @@ public class ThemeController {
         return ResponseEntity.created(URI.create("/themes/" + response.getId())).body(response);
     }
 
-    @DeleteMapping("/{theme_id}")
-    public ResponseEntity<Void> deleteTheme(@PathVariable(value = "theme_id") Long id) {
-        themeService.deleteTheme(id);
+    @DeleteMapping("/{themeId}")
+    public ResponseEntity<Void> deleteTheme(@PathVariable Long themeId) {
+        themeService.deleteTheme(themeId);
         return ResponseEntity.noContent().build();
     }
 }
