@@ -92,7 +92,7 @@ public class ReservationDao {
         return jdbcTemplate.update("DELETE FROM RESERVATION WHERE ID = ?", id);
     }
 
-    public boolean existsByDateTime(LocalDate date, long timeId, long themeId) {
+    public boolean isDuplicate(LocalDate date, long timeId, long themeId) {
         String query = "SELECT COUNT(*) FROM RESERVATION WHERE time_id = ? AND date = ? AND theme_id=?";
         Integer count = jdbcTemplate.queryForObject(query, Integer.class, timeId, date, themeId);
         return count != null && count > 0;

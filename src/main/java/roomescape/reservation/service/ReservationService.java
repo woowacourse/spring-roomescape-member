@@ -17,7 +17,7 @@ import roomescape.time.repository.ReservationTimeDao;
 
 @Service
 public class ReservationService {
-    private static final int DELETE_SUCCESS=1;
+    private static final int DELETE_SUCCESS = 1;
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
@@ -33,18 +33,14 @@ public class ReservationService {
     }
 
     public Reservation save(ReservationRequest request) {
-        if (reservationDao.existsByDateTime(request.date(), request.timeId(), request.themeId())) {
-            throw new IllegalArgumentException("Reservation already exists");
-        }
+        validateDuplicate(request);
         ReservationTime reservationTime = reservationTimeDao.findById(request.timeId());
         Theme theme = themeDao.findById(request.themeId());
         return reservationDao.save(new Reservation(0, request.name(), request.date(), reservationTime, theme));
     }
 
     public Reservation validateFutureAndSave(ReservationRequest request) {
-        if (reservationDao.existsByDateTime(request.date(), request.timeId(), request.themeId())) {
-            throw new IllegalArgumentException("Reservation already exists");
-        }
+        validateDuplicate(request);
         ReservationTime reservationTime = reservationTimeDao.findById(request.timeId());
         validateDateTime(request.date(), reservationTime.startAt());
         Theme theme = themeDao.findById(request.themeId());
@@ -52,8 +48,14 @@ public class ReservationService {
 
     }
 
+    private void validateDuplicate(ReservationRequest request) {
+        if (reservationDao.isDuplicate(request.date(), request.timeId(), request.themeId())) {
+            throw new IllegalArgumentException("Reservation already exists");
+        }
+    }
+
     public void delete(long id) {
-        if(reservationDao.deleteById(id)!=DELETE_SUCCESS){
+        if (reservationDao.deleteById(id) != DELETE_SUCCESS) {
             throw new IllegalArgumentException("Cannot delete a reservation by given id");
         }
     }
