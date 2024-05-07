@@ -67,12 +67,8 @@ public class ReservationTimeRepository {
         return jdbcTemplate.query(sql, reservationTimeRowMapper);
     }
 
-    public void deleteById(Long id) {
+    public int deleteById(Long id) {
         String sql = "DELETE FROM reservation_time WHERE id = ?";
-        jdbcTemplate.update(con -> {
-            PreparedStatement ps = con.prepareStatement(sql);
-            ps.setLong(1, id);
-            return ps;
-        });
+        return jdbcTemplate.update(sql, id);
     }
 }

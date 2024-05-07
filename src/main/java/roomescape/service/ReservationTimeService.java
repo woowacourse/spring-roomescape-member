@@ -51,15 +51,12 @@ public class ReservationTimeService {
     }
 
     public void deleteReservationTime(Long id) {
-        reservationTimeRepository.findAll()
-                .stream()
-                .filter(reservationTime -> reservationTime.isSameReservationTime(id))
-                .findFirst()
-                .orElseThrow(() -> new IllegalUserRequestException("존재하지 않는 예약 아이디 입니다."));
-
         if (reservationRepository.existsByReservationTimeId(id)) {
             throw new IllegalUserRequestException("이미 예약중인 시간은 삭제할 수 없습니다.");
         }
-        reservationTimeRepository.deleteById(id);
+        int deletedCount = reservationTimeRepository.deleteById(id);
+        if (deletedCount == 0) {
+            throw new IllegalUserRequestException("존재하지 않는 예약 시간입니다.");
+        }
     }
 }

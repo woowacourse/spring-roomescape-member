@@ -43,16 +43,13 @@ public class ThemeService {
     }
 
     public void deleteTheme(Long id) {
-        themeRepository.findAll()
-                .stream()
-                .filter(theme -> theme.isSameTheme(id))
-                .findFirst()
-                .orElseThrow(() -> new IllegalUserRequestException("존재하지 않는 테마 아이디 입니다."));
-
         if (reservationRepository.existsByReservationThemeId(id)) {
             throw new IllegalUserRequestException("이미 예약중인 테마는 삭제할 수 없습니다.");
         }
 
-        themeRepository.deleteById(id);
+        int deleteCount = themeRepository.deleteById(id);
+        if (deleteCount == 0) {
+            throw new IllegalUserRequestException("존재하지 않는 테마입니다.");
+        }
     }
 }
