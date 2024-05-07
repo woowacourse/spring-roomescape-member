@@ -90,6 +90,11 @@ public class ReservationThemeDao {
         return jdbcTemplate.query(sql, getReservationThemeRowMapper(), from.toString(), to.toString());
     }
 
+    public Boolean hasSameName(String name) {
+        String sql = "SELECT EXISTS(SELECT name FROM theme WHERE name = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, name);
+    }
+
     private RowMapper<ReservationTheme> getReservationThemeRowMapper() {
         return (resultSet, numRow) -> new ReservationTheme(
                 resultSet.getLong("id"),

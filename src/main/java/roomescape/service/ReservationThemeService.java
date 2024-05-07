@@ -29,6 +29,7 @@ public class ReservationThemeService {
     }
 
     public ThemeResponse insertTheme(ThemeRequest themeRequest) {
+        validateDuplicate(themeRequest.name());
         ThemeInsertCondition insertCondition = new ThemeInsertCondition(themeRequest.name(),
                 themeRequest.description(), themeRequest.thumbnail());
         ReservationTheme inserted = reservationThemeDao.insert(insertCondition);
@@ -51,5 +52,11 @@ public class ReservationThemeService {
         return reservationThemeDao.findBestThemesInWeek(from, to).stream()
                 .map(WeeklyThemeResponse::new)
                 .toList();
+    }
+
+    private void validateDuplicate(String name) {
+        if (reservationThemeDao.hasSameName(name)) {
+            throw new IllegalArgumentException("이름이 동일한 테마가 존재합니다.");
+        }
     }
 }
