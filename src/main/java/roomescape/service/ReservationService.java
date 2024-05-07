@@ -13,7 +13,6 @@ import roomescape.repository.ReservationDao;
 import roomescape.repository.ThemeDao;
 import roomescape.repository.TimeDao;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -22,8 +21,7 @@ public class ReservationService {
     private final ReservationDao reservationDao;
     private final ThemeDao themeDao;
 
-    public ReservationService(final
-                              TimeDao timeDao, final ReservationDao reservationDao, final ThemeDao themeDao) {
+    public ReservationService(final TimeDao timeDao, final ReservationDao reservationDao, final ThemeDao themeDao) {
         this.timeDao = timeDao;
         this.reservationDao = reservationDao;
         this.themeDao = themeDao;
@@ -34,9 +32,9 @@ public class ReservationService {
     }
 
     public ReservationResponse create(final ReservationRequest reservationRequest) {
+        validateDuplicatedReservation(reservationRequest);
         TimeSlot timeSlot = getTimeSlot(reservationRequest);
         Theme theme = getTheme(reservationRequest);
-        validateDuplicatedReservation(reservationRequest.date(), timeSlot.getId(), theme.getId());
         Reservation newReservation = new Reservation(reservationRequest.name(), reservationRequest.date(), timeSlot, theme);
         Long reservationId = reservationDao.create(newReservation);
         return ReservationResponse.from(reservationId, newReservation);
@@ -52,8 +50,8 @@ public class ReservationService {
                 .orElseThrow(() -> new InvalidClientRequestException(ErrorType.NOT_EXIST_TIME, "themeId", reservationRequest.themeId().toString()));
     }
 
-    private void validateDuplicatedReservation(final LocalDate date, final Long timeId, final Long themeId) {
-        if (reservationDao.isExists(date, timeId, themeId)) {
+    private void validateDuplicatedReservation(final ReservationRequest reservationRequest) {
+        if (reservationDao.isExists(reservationRequest.date(), reservationRequest.timeId(), reservationRequest.themeId())) {
             throw new ReservationFailException("이미 예약이 등록되어 있습니다.");
         }
     }
