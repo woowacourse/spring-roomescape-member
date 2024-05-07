@@ -2,7 +2,6 @@ package roomescape.domain;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
 
 public class Themes {
     private final List<Theme> themes;

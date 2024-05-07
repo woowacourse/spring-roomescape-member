@@ -2,7 +2,6 @@ package roomescape.domain;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
 
 public class Reservations {
     private final List<Reservation> reservations;

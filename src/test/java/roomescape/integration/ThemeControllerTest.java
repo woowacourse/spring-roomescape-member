@@ -1,16 +1,13 @@
 package roomescape.integration;
 
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static roomescape.exception.ExceptionType.DELETE_USED_THEME;
 import static roomescape.exception.ExceptionType.DUPLICATE_THEME;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import io.restassured.mapper.ObjectMapperType;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
