@@ -306,3 +306,14 @@ id : long
     - [x] `일주일을 기준으로` 예약이 많은 테마 10개 확인
         - 4월 8일인 경우, 게임 날짜가 4월 1일부터 4월 7일까지인 예약 건수가 많은 순서대로 10개의 테마를 조회
     - [x] 테스트 만들기
+
+## 4단계 요구사항
+
+- [ ] 사용자 도메인을 추가
+  - name: 사용자 이름
+  - email: 이메일
+  - password: 비밀번호
+  - email을 로그인의 id로, password를 비밀번호로 사용
+- [ ] GET /login 요청 시 로그인 폼이 있는 페이지 응답(templates/login.html)
+- [ ] POST /login 요청 시 로그인 폼에 입력한 email, password 값을 body에 포함
+  - 응답 시 Cookie에 "token"값으로 토큰을 포함
