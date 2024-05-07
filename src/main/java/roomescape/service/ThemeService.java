@@ -49,7 +49,7 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> readPopularThemes() {
-        LocalDate end = LocalDate.now().minusDays(1L);
+        LocalDate end = LocalDate.now();
         LocalDate start = end.minusDays(POPULAR_THEME_PERIOD);
 
         Map<Long, Long> reservationCountByTheme = collectReservationByTheme(start, end);
