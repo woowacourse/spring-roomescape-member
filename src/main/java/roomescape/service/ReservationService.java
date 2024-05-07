@@ -38,7 +38,7 @@ public class ReservationService {
 
         LocalDate date = reservationDto.getDate();
         validateIsFuture(date, time.getStartAt());
-        validateDuplication(date, time.getId());
+        validateDuplication(date, time.getId(), theme.getId());
 
         Reservation reservation = Reservation.from(reservationDto, time, theme);
         return reservationRepository.saveReservation(reservation);
@@ -90,8 +90,8 @@ public class ReservationService {
         }
     }
 
-    private void validateDuplication(LocalDate date, long timeId) {
-        boolean isExist = reservationRepository.isExistReservationByDateAndTimeId(date, timeId);
+    private void validateDuplication(LocalDate date, long timeId, long themeId) {
+        boolean isExist = reservationRepository.isExistReservationByDateAndTimeIdAndThemeId(date, timeId, themeId);
         if (isExist) {
             throw new DuplicatedException("[ERROR] 중복되는 예약은 추가할 수 없습니다.");
         }

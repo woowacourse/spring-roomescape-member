@@ -45,8 +45,8 @@ public class ReservationRepository {
         return themeDao.findById(id);
     }
 
-    public boolean isExistReservationByDateAndTimeId(LocalDate date, long timeId) {
-        return reservationDao.isExistByDateAndTimeId(date, timeId);
+    public boolean isExistReservationByDateAndTimeIdAndThemeId(LocalDate date, long timeId, long themeId) {
+        return reservationDao.isExistByDateAndTimeIdAndThemeId(date, timeId, themeId);
     }
 
     public Reservation saveReservation(Reservation reservation) {

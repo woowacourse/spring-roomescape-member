@@ -134,14 +134,14 @@ class FakeReservationDaoTest {
     @DisplayName("해당 날짜와 timeId를 가진 예약이 존재하면 참을 반환한다.")
     @Test
     void should_return_true_when_exist_date_and_timeId() {
-        Boolean isExist = fakeReservationDao.isExistByDateAndTimeId(LocalDate.now(), 1);
+        Boolean isExist = fakeReservationDao.isExistByDateAndTimeIdAndThemeId(LocalDate.now(), 1L, 1L);
         assertThat(isExist).isTrue();
     }
 
     @DisplayName("해당 날짜와 timeId를 가진 예약이 존재하지 않으면 거짓을 반환한다.")
     @Test
     void should_return_false_when_not_exist_date_and_timeId() {
-        Boolean isExist = fakeReservationDao.isExistByDateAndTimeId(LocalDate.now(), 999);
+        Boolean isExist = fakeReservationDao.isExistByDateAndTimeIdAndThemeId(LocalDate.now(), 999L, 1L);
         assertThat(isExist).isFalse();
     }
 }

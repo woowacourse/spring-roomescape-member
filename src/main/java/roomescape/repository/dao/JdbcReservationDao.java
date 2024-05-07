@@ -104,8 +104,8 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public Boolean isExistByDateAndTimeId(LocalDate date, long timeId) {
-        String sql = "select exists (select id from reservation where date = ? and time_id = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId);
+    public Boolean isExistByDateAndTimeIdAndThemeId(LocalDate date, long timeId, long themeId) {
+        String sql = "select exists (select id from reservation where date = ? and time_id = ? and theme_id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
     }
 }

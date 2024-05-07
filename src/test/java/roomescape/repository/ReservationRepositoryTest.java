@@ -111,17 +111,17 @@ class ReservationRepositoryTest {
         assertThat(time).hasValue(new Theme(1, "n1", "d1", "t1"));
     }
 
-    @DisplayName("특정 날짜와 시간을 가진 예약이 존재하는 경우 참을 반환한다.")
+    @DisplayName("특정 날짜와 시간과 테마를 가진 예약이 존재하는 경우 참을 반환한다.")
     @Test
     void should_return_true_when_exist_reservation_by_date_and_timeId() {
-        boolean isExist = reservationRepository.isExistReservationByDateAndTimeId(LocalDate.of(2000, 1, 1), 1);
+        boolean isExist = reservationRepository.isExistReservationByDateAndTimeIdAndThemeId(LocalDate.of(2000, 1, 1), 1L, 1L);
         assertThat(isExist).isTrue();
     }
 
-    @DisplayName("특정 날짜와 시간을 가진 예약이 존재하지 않는 경우 거짓을 반환한다.")
+    @DisplayName("특정 날짜와 시간과 테마를 가진 예약이 존재하지 않는 경우 거짓을 반환한다.")
     @Test
     void should_return_false_when_not_exist_reservation_by_date_and_timeId() {
-        boolean isExist = reservationRepository.isExistReservationByDateAndTimeId(LocalDate.of(9999, 1, 1), 1);
+        boolean isExist = reservationRepository.isExistReservationByDateAndTimeIdAndThemeId(LocalDate.of(9999, 1, 1), 1L, 1L);
         assertThat(isExist).isFalse();
     }
 

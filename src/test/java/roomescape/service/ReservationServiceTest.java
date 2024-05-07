@@ -94,7 +94,7 @@ class ReservationServiceTest {
     @DisplayName("날짜와 시간이 중복되는 예약을 추가하려 할 때 예외가 발생한다.")
     @Test
     void should_throw_exception_when_add_exist_reservation() {
-        ReservationDto reservationDto = new ReservationDto("n", LocalDate.of(9999, 9, 9), 1L, 2L);
+        ReservationDto reservationDto = new ReservationDto("n", LocalDate.of(9999, 9, 9), 1L, 1L);
         assertThatThrownBy(() -> reservationService.saveReservation(reservationDto))
                 .isInstanceOf(DuplicatedException.class)
                 .hasMessage("[ERROR] 중복되는 예약은 추가할 수 없습니다.");
