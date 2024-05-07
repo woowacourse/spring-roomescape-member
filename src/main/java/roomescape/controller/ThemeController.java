@@ -31,10 +31,8 @@ public class ThemeController {
     }
 
     @GetMapping("/ranking")
-    public List<ThemeResponse> findAndOrderByPopularity(@RequestParam LocalDate start,
-                                                        @RequestParam LocalDate end,
-                                                        @RequestParam int count) {
-        return themeService.findAndOrderByPopularity(start, end, count);
+    public List<ThemeResponse> findAndOrderByPopularity(@RequestParam int count) {
+        return themeService.findAndOrderByPopularity(count);
     }
 
     @PostMapping

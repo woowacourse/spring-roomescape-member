@@ -3,9 +3,9 @@ package roomescape.service;
 import static roomescape.exception.ExceptionType.DELETE_USED_THEME;
 import static roomescape.exception.ExceptionType.DUPLICATE_THEME;
 
-import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.domain.Duration;
 import roomescape.domain.Theme;
 import roomescape.domain.Themes;
 import roomescape.dto.ThemeRequest;
@@ -41,8 +41,9 @@ public class ThemeService {
                 .toList();
     }
 
-    public List<ThemeResponse> findAndOrderByPopularity(LocalDate start, LocalDate end, int count) {
-        return reservationRepository.findAndOrderByPopularity(start, end, count).getThemes().stream()
+    public List<ThemeResponse> findAndOrderByPopularity(int count) {
+        Duration lastWeek = Duration.ofLastWeek();
+        return reservationRepository.findAndOrderByPopularity(lastWeek, count).getThemes().stream()
                 .map(ThemeResponse::from)
                 .toList();
     }

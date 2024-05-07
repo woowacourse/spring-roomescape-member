@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.Duration;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Reservations;
@@ -111,7 +112,7 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
     }
 
     @Override
-    public Themes findAndOrderByPopularity(LocalDate start, LocalDate end, int count) {
+    public Themes findAndOrderByPopularity(Duration duration, int count) {
         List<Theme> findThemes = jdbcTemplate.query(
                 """
                         SELECT TH.*, COUNT(*) AS count FROM THEME TH
@@ -123,7 +124,10 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
                         DESC
                         LIMIT ?
                         """,
-                THEME_ROW_MAPPER, start, end, count);
+                THEME_ROW_MAPPER,
+                duration.getStartDate(),
+                duration.getEndDate(),
+                count);
         return new Themes(findThemes);
     }
 

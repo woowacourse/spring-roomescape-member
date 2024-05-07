@@ -67,6 +67,10 @@ public class Reservation implements Comparable<Reservation> {
         return this.getLocalDateTime().isBefore(base);
     }
 
+    public boolean isBetween(Duration duration) {
+        return duration.contains(date);
+    }
+
     public boolean hasSameId(long id) {
         return this.id == id;
     }

@@ -70,4 +70,36 @@ class ReservationTest {
         assertThat(savedReservation.isSameReservation(nonSavedReservation))
                 .isTrue();
     }
+
+    @DisplayName("기간에 포함되는 예약인지 확인할 수 있다.")
+    @Test
+    void isBetweenDurationTest() {
+        Duration beforeDuration = new Duration(
+                LocalDate.of(2024, 4, 1),
+                LocalDate.of(2024, 4, 20)
+        );
+        Duration containsDuration = new Duration(
+                LocalDate.of(2024, 5, 1),
+                LocalDate.of(2024, 5, 30)
+        );
+        Duration afterDuration = new Duration(
+                LocalDate.of(2024, 6, 1),
+                LocalDate.of(2024, 6, 20)
+        );
+        Reservation reservation = new Reservation(
+                "name",
+                LocalDate.of(2024, 05, 05),
+                new ReservationTime(LocalTime.of(16, 30)),
+                new Theme("name", "description", "thumbnail")
+        );
+
+        assertAll(
+                () -> assertThat(reservation.isBetween(beforeDuration))
+                        .isFalse(),
+                () -> assertThat(reservation.isBetween(containsDuration))
+                        .isTrue(),
+                () -> assertThat(reservation.isBetween(afterDuration))
+                        .isFalse()
+        );
+    }
 }

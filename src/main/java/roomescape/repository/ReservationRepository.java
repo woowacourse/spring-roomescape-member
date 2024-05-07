@@ -1,6 +1,7 @@
 package roomescape.repository;
 
 import java.time.LocalDate;
+import roomescape.domain.Duration;
 import roomescape.domain.Reservation;
 import roomescape.domain.Reservations;
 import roomescape.domain.Theme;
@@ -13,7 +14,7 @@ public interface ReservationRepository {
 
     Reservations findByThemeAndDate(Theme theme, LocalDate date);
 
-    Themes findAndOrderByPopularity(LocalDate start, LocalDate end, int count);
+    Themes findAndOrderByPopularity(Duration duration, int count);
 
     boolean existByTimeId(long timeId);
 

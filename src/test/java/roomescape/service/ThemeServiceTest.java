@@ -89,8 +89,7 @@ class ThemeServiceTest {
             reservationRepository.save(new Reservation("name", LocalDate.now().minusDays(3), reservationTime, theme4));
 
             //when
-            List<ThemeResponse> popularThemes = themeService.findAndOrderByPopularity(
-                    LocalDate.now().minusDays(7), LocalDate.now().minusDays(1), 5);
+            List<ThemeResponse> popularThemes = themeService.findAndOrderByPopularity(5);
 
             assertThat(popularThemes).contains(
                     ThemeResponse.from(theme1),
