@@ -2,9 +2,9 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
-import roomescape.domain.ThemeName;
 import roomescape.dto.request.ThemeAddRequest;
 import roomescape.dto.response.ThemeResponse;
 import roomescape.exceptions.ClientException;
@@ -20,12 +20,12 @@ public class ThemeService {
     }
 
     public ThemeResponse addTheme(ThemeAddRequest themeAddRequest) {
-        if (themeRepository.hasTheme(new ThemeName(themeAddRequest.name()))) {
+        try {
+            Theme theme = themeRepository.save(themeAddRequest.toTheme());
+            return new ThemeResponse(theme);
+        } catch (DuplicateKeyException e) {
             throw new ClientException("이미 존재하는 테마 이름입니다.");
         }
-
-        Theme theme = themeRepository.save(themeAddRequest.toTheme());
-        return new ThemeResponse(theme);
     }
 
     public List<ThemeResponse> findThemes() {

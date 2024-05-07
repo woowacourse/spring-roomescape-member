@@ -1,7 +1,7 @@
 package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static roomescape.InitialDataFixture.INITIAL_THEME_COUNT;
 import static roomescape.InitialDataFixture.NOT_RESERVATION_THEME;
 import static roomescape.InitialDataFixture.THEME_1;
@@ -37,7 +37,6 @@ class ThemeServiceTest {
                 THEME_1.getDescription(),
                 THEME_1.getThumbnail()
         );
-
         assertThatThrownBy(() -> themeService.addTheme(themeAddRequest))
                 .isInstanceOf(ClientException.class);
     }

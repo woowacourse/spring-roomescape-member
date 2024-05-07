@@ -25,3 +25,5 @@ CREATE TABLE reservation
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id)
 );
+
+ALTER TABLE theme ADD CONSTRAINT unique_name UNIQUE (name);
