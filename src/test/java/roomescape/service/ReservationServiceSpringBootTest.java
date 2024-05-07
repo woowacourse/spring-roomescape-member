@@ -4,44 +4,27 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import javax.sql.DataSource;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
+import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.Time;
 import roomescape.dto.reservation.ReservationRequest;
-import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.TimeRepository;
 
-@JdbcTest
-@Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
-class ReservationServiceTest {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+class ReservationServiceSpringBootTest {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    private DataSource dataSource;
-
     private ReservationService reservationService;
-    private TimeRepository timeRepository;
-    private ThemeRepository themeRepository;
-    private ReservationRepository reservationRepository;
 
-    @BeforeEach
-    void init() {
-        reservationRepository = new ReservationRepository(jdbcTemplate, dataSource);
-        timeRepository = new TimeRepository(jdbcTemplate, dataSource);
-        themeRepository = new ThemeRepository(jdbcTemplate, dataSource);
-        reservationService = new ReservationService(reservationRepository, timeRepository, themeRepository);
-    }
+    @Autowired
+    private TimeRepository timeRepository;
+
+    @Autowired
+    private ThemeRepository themeRepository;
 
     @Test
     @DisplayName("동일한 날짜와 시간과 테마에 예약을 생성하면 예외가 발생한다")

@@ -1,5 +1,8 @@
 package roomescape.repository;
 
+import java.time.LocalTime;
+import java.util.List;
+import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -7,10 +10,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.time.Time;
-
-import javax.sql.DataSource;
-import java.time.LocalTime;
-import java.util.List;
 
 @Repository
 public class TimeRepository {
@@ -30,7 +29,6 @@ public class TimeRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
-    // TODO: 예외 처리 필요. Optional?
     public Time findById(Long id) {
         String sql = "SELECT * FROM reservation_time WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
