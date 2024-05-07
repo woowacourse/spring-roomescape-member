@@ -91,8 +91,8 @@ public class ReservationDao {
     public List<Long> findByDateAndTimeIdAndThemeId(final LocalDate date, final long timeId, final long themeId) {
         String sql = "SELECT id FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?";
         return jdbcTemplate.query(
-                sql, (resultSet, rowNum) -> resultSet.getLong("time_id"),
-                date.toString(), timeId, themeId
+                sql, (resultSet, rowNum) -> resultSet.getLong("id"),
+                date, timeId, themeId
         );
     }
 
@@ -100,7 +100,7 @@ public class ReservationDao {
         String sql = "SELECT time_id FROM reservation WHERE date = ? AND theme_id = ?";
         return jdbcTemplate.query(
                 sql, (resultSet, rowNum) -> resultSet.getLong("id"),
-                date.toString(), themeId
+                date, themeId
         );
     }
 
