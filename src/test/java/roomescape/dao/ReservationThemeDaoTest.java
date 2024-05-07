@@ -1,83 +1,126 @@
 package roomescape.dao;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.dao.condition.ThemeInsertCondition;
 import roomescape.domain.ReservationTheme;
 
-import java.sql.PreparedStatement;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 @JdbcTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Import(ReservationThemeDao.class)
-@Sql(scripts = {"/test_schema.sql", "/test_data.sql"})
+@Sql(scripts = {"/test_schema.sql"})
 public class ReservationThemeDaoTest {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-    @Autowired
-    private ReservationThemeDao reservationThemeDao;
+    private ReservationThemeDao themeDao;
 
     @DisplayName("모든 테마를 조회한다.")
     @Test
-    void findAllTest() {
-        List<ReservationTheme> reservationThemes = reservationThemeDao.findAll();
+    void findAll() {
+        // given
+        themeDao.insert(new ThemeInsertCondition("name", "desc", "thumb"));
 
+        // when
+        List<ReservationTheme> reservationThemes = themeDao.findAll();
+
+        // then
         assertThat(reservationThemes.size()).isEqualTo(1);
     }
 
     @DisplayName("테마 ID를 이용하여 테마를 조회한다.")
     @Test
-    void findByIdTest() {
-        ReservationTheme reservationTheme = reservationThemeDao.findById(1L).get();
+    void findById() {
+        // given
+        ReservationTheme inserted = themeDao.insert(new ThemeInsertCondition("name", "desc", "thumb"));
 
-        assertThat(reservationTheme.getId()).isEqualTo(1L);
+        // when
+        ReservationTheme theme = themeDao.findById(inserted.getId()).orElseThrow();
+
+        // then
+        assertThat(theme.getName()).isEqualTo(inserted.getName());
     }
 
     @DisplayName("ID가 존재하지 않으면 빈 시간을 반환한다.")
     @Test
-    void findByWrongIdTest() {
-        Optional<ReservationTheme> reservationTheme = reservationThemeDao.findById(9L);
+    void findByWrongId() {
+        Optional<ReservationTheme> reservationTheme = themeDao.findById(9L);
 
         assertThat(reservationTheme).isEqualTo(Optional.empty());
     }
 
     @DisplayName("테마를 추가한다.")
     @Test
-    void insertTest() {
-        Long index = jdbcTemplate.queryForObject("SELECT count(*) FROM theme", Long.class);
-        Long id = reservationThemeDao.insert("test", "testDesc", "testThumbnail");
+    void insert() {
+        // given
+        ReservationTheme inserted = themeDao.insert(new ThemeInsertCondition("name", "desc", "thumb"));
 
-        assertThat(id).isEqualTo(index + 1);
+        // when
+        Long insertedThemeId = inserted.getId();
+
+        // then
+        assertThat(insertedThemeId).isEqualTo(1L);
     }
 
     @DisplayName("ID를 이용하여 테마를 삭제한다.")
     @Test
-    void deleteByIdTest() {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement("INSERT INTO theme(name, description, thumbnail) VALUES (?, ?, ?)",
-                    new String[]{"id"});
-            ps.setString(1, "test");
-            ps.setString(2, "testDesc");
-            ps.setString(3, "testThumbnail");
-            return ps;
-        }, keyHolder);
+    void deleteById() {
+        // given
+        ReservationTheme inserted = themeDao.insert(new ThemeInsertCondition("name", "desc", "thumb"));
 
-        Long key = keyHolder.getKey().longValue();
-        reservationThemeDao.deleteById(key);
+        // when
+        themeDao.deleteById(inserted.getId());
+        Optional<ReservationTheme> theme = themeDao.findById(inserted.getId());
 
-        assertThat(reservationThemeDao.findAll().stream().map(ReservationTheme::getId).toList()).doesNotContain(key);
+        // then
+        assertThat(theme).isEqualTo(Optional.empty());
+    }
+
+    @DisplayName("ID를 이용하여 테마가 존재하는지 확인한다.")
+    @Test
+    void isExist() {
+        // given
+        ReservationTheme inserted = themeDao.insert(new ThemeInsertCondition("name", "desc", "thumb"));
+
+        // when
+        Boolean isExist = themeDao.isExist(inserted.getId());
+
+        // then
+        assertThat(isExist).isTrue();
+    }
+
+    @DisplayName("동일한 이름의 테마가 존재하는지 확인한다.")
+    @Test
+    void hasSameName() {
+        // given
+        ReservationTheme inserted = themeDao.insert(new ThemeInsertCondition("name", "desc", "thumb"));
+
+        // when
+        Boolean hasSameName = themeDao.hasSameName("name");
+
+        // then
+        assertThat(hasSameName).isTrue();
+    }
+
+    @DisplayName("지난 일주일간 가장 많이 예약된 테마를 조회한다.")
+    @Test
+    @Sql(scripts = {"/test_schema.sql", "/test_weekly_theme.sql"})
+    void findBestThemeInWeek() {
+        // given
+        LocalDate from = LocalDate.now().minusWeeks(1);
+        LocalDate to = LocalDate.now().minusDays(1);
+
+        // when
+        List<ReservationTheme> bestThemesInWeek = themeDao.findBestThemesInWeek(from, to);
+
+        // then
+        assertThat(bestThemesInWeek).extracting("name").containsExactly("test3", "test2", "test1", "test4");
     }
 }

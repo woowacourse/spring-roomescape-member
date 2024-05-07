@@ -1,71 +1,136 @@
 package roomescape.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import io.restassured.RestAssured;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.domain.ReservationTime;
+import roomescape.dto.reservation.ReservationRequest;
+import roomescape.dto.theme.ThemeRequest;
+import roomescape.dto.time.BookableTimeResponse;
 import roomescape.dto.time.TimeRequest;
+import roomescape.dto.time.TimeResponse;
 
-import java.time.LocalTime;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.*;
-
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@Sql(scripts = {"/test_schema.sql", "/test_data.sql"})
-public class ReservationTimeServiceTest {
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@Sql(scripts = {"/test_schema.sql"})
+class ReservationTimeServiceTest {
 
     @Autowired
-    private final ReservationTimeService reservationTimeService;
+    private ReservationService reservationService;
 
     @Autowired
-    public ReservationTimeServiceTest(ReservationTimeService reservationTimeService) {
-        this.reservationTimeService = reservationTimeService;
+    private ReservationTimeService timeService;
+
+    @Autowired
+    private ReservationThemeService themeService;
+
+    @LocalServerPort
+    int port;
+
+    @BeforeEach
+    void setUp() {
+        RestAssured.port = port;
     }
 
-    @DisplayName("모든 예약 시간을 조회한다.")
+    @DisplayName("시간을 추가한다.")
     @Test
-    void getAllReservationTimesTest() {
-        List<ReservationTime> reservationTimes = reservationTimeService.getAllReservationTimes();
+    void insertTime() {
+        // given
+        TimeResponse response = timeService.insertTime(new TimeRequest(LocalTime.now().plusHours(1)));
 
-        assertThat(reservationTimes.size()).isEqualTo(1);
+        // when
+        Long insertedTimeId = response.id();
+
+        // then
+        assertThat(insertedTimeId).isEqualTo(1L);
     }
 
-    @DisplayName("예약 시간을 추가한다.")
+    @DisplayName("동일한 시간은 추가할 수 없다.")
     @Test
-    void insertReservationTimeTest() {
-        TimeRequest timeRequest = new TimeRequest(LocalTime.parse("01:01"));
-        ReservationTime reservationTime = reservationTimeService.insertReservationTime(timeRequest);
+    void insertSameTime() {
+        // given
+        timeService.insertTime(new TimeRequest(LocalTime.parse("10:00")));
 
-        assertThat(reservationTime.getStartAt()).isEqualTo("01:01");
+        // when & then
+        assertThatThrownBy(() -> timeService.insertTime(new TimeRequest(LocalTime.parse("10:00"))))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("동일한 시간이 존재합니다.");
     }
 
-    @DisplayName("예약 시간 ID를 이용하여 시간을 삭제한다.")
+    @DisplayName("모든 시간을 조회한다.")
     @Test
-    void deleteReservationTimeTest() {
-        TimeRequest timeRequest = new TimeRequest(LocalTime.parse("01:01"));
-        ReservationTime reservationTime = reservationTimeService.insertReservationTime(timeRequest);
-        int sizeBeforeDelete = reservationTimeService.getAllReservationTimes().size();
-        assertThatCode(() -> reservationTimeService.deleteReservationTime(reservationTime.getId())).doesNotThrowAnyException();
-        assertThat(reservationTimeService.getAllReservationTimes().size()).isEqualTo(sizeBeforeDelete - 1);
+    void getAllReservationTimes() {
+        // given
+        timeService.insertTime(new TimeRequest(LocalTime.parse("10:00")));
+        timeService.insertTime(new TimeRequest(LocalTime.parse("11:00")));
+
+        // when
+        List<TimeResponse> times = timeService.getAllTimes();
+
+        // then
+        assertThat(times).hasSize(2);
+    }
+
+    @DisplayName("모든 예약 가능한 시간을 조회한다.")
+    @Test
+    void getAllBookableTimes() {
+        // given
+        timeService.insertTime(new TimeRequest(LocalTime.parse("10:00")));
+        timeService.insertTime(new TimeRequest(LocalTime.parse("11:00")));
+        themeService.insertTheme(new ThemeRequest("name", "desc", "thumb"));
+        reservationService.insertReservation(new ReservationRequest("user", LocalDate.now().plusDays(1), 1L, 1L));
+
+        // when
+        List<BookableTimeResponse> bookableTimes = timeService.getAllBookableTimes(LocalDate.now().plusDays(1).toString(), 1L);
+
+        // then
+        assertThat(bookableTimes).hasSize(2);
+        assertThat(bookableTimes).extracting("booked").containsExactly(true, false);
+    }
+
+    @DisplayName("테마가 존재하지 않으면 예약 가능한 시간을 조회할 수 없다.")
+    @Test
+    void getAllBookableTimes_WithNotExistTheme() {
+        assertThatThrownBy(() -> timeService.getAllBookableTimes(LocalDate.now().toString(), 1L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("해당 테마는 존재하지 않습니다.");
+    }
+
+    @DisplayName("ID로 시간을 삭제한다.")
+    @Test
+    void deleteTime() {
+        // given
+        timeService.insertTime(new TimeRequest(LocalTime.parse("10:00")));
+
+        // when
+        timeService.deleteTime(1L);
+
+        // then
+        assertThat(timeService.getAllTimes()).hasSize(0);
     }
 
     @DisplayName("예약이 존재하는 시간은 삭제할 수 없다.")
     @Test
-    void deleteInvalidTimeIdTest() {
-        assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1L))
-                .isInstanceOf(IllegalStateException.class);
-    }
+    void deleteReservedTime() {
+        // given
+        timeService.insertTime(new TimeRequest(LocalTime.parse("10:00")));
+        themeService.insertTheme(new ThemeRequest("name", "desc", "thumb"));
+        reservationService.insertReservation(new ReservationRequest("user", LocalDate.now().plusDays(1), 1L, 1L));
 
-    @DisplayName("예약이 가능한 시간인지 확인한다.")
-    @Test
-    void isBookedTest() {
-        boolean actualIsBooked = reservationTimeService.isBooked("2024-01-01", 1L, 1L);
+        // when & then
+        assertThatThrownBy(() -> timeService.deleteTime(1L))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("예약이 존재하는 시간은 삭제할 수 없습니다.");
 
-        assertThat(actualIsBooked).isEqualTo(true);
     }
 }

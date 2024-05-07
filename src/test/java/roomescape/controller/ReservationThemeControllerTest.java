@@ -1,26 +1,36 @@
 package roomescape.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.hamcrest.Matchers.is;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.hamcrest.Matchers.is;
+import roomescape.dto.reservation.ReservationRequest;
+import roomescape.dto.theme.ThemeRequest;
+import roomescape.dto.time.TimeRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@Sql(scripts = {"/test_schema.sql", "/test_data.sql"})
+@Sql(scripts = {"/test_schema.sql"})
 public class ReservationThemeControllerTest {
+
+    @Autowired
+    private ReservationController reservationController;
+
+    @Autowired
+    private ReservationTimeController timeController;
+
+    @Autowired
+    private ReservationThemeController themeController;
 
     @LocalServerPort
     int port;
@@ -30,87 +40,80 @@ public class ReservationThemeControllerTest {
         RestAssured.port = port;
     }
 
-    @DisplayName("어드민 테마 페이지 요청 시 200으로 응답한다.")
-    @Test
-    void themePageTest() {
-        RestAssured.given().log().all()
-                .when().get("/admin/theme")
-                .then().log().all()
-                .statusCode(200);
-    }
-
     @DisplayName("테마 조회 요청 시 200으로 응답한다.")
     @Test
-    void themesTest() {
-        RestAssured.given().log().all()
-                .when().get("/themes")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
-    }
+    void themes() {
+        // given
+        themeController.createTheme(new ThemeRequest("name", "desc", "thumb"));
+        themeController.createTheme(new ThemeRequest("name1", "desc1", "thumb1"));
 
-    @DisplayName("정상적인 테마 추가 요청 시 201으로 응답한다.")
-    @Test
-    void insertTest() throws JsonProcessingException {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", "레벨2 탈출");
-        params.put("description", "우테코 레벨2를 탈출하는 내용입니다.");
-        params.put("thumbnail", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        String requestJson = objectMapper.writeValueAsString(params);
-
-        RestAssured.given().contentType("application/json").body(requestJson).log().all()
-                .when().post("/themes")
-                .then().log().all()
-                .statusCode(201);
-    }
-
-    @DisplayName("테마 삭제 요청 시 204로 응답한다.")
-    @Test
-    void deleteTest() {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", "레벨2 탈출");
-        params.put("description", "우테코 레벨2를 탈출하는 내용입니다.");
-        params.put("thumbnail", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/themes")
-                .then().log().all()
-                .statusCode(201);
-
+        // when & then
         RestAssured.given().log().all()
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(2));
+    }
 
+    @DisplayName("정상적인 테마 추가 요청 시 201으로 응답한다.")
+    @Test
+    void insert() {
+        // given
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "name");
+        params.put("description", "desc");
+        params.put("thumbnail", "thumb");
+
+        // when & then
         RestAssured.given().log().all()
-                .when().delete("/themes/2")
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201)
+                .body("id", is(1))
+                .body("name", is("name"))
+                .body("description", is("desc"))
+                .body("thumbnail", is("thumb"));
+    }
+
+    @DisplayName("테마 삭제 요청 시 204로 응답한다.")
+    @Test
+    void delete() {
+        RestAssured.given().log().all()
+                .when().delete("/themes/1")
                 .then().log().all()
                 .statusCode(204);
     }
 
     @DisplayName("예약이 존재하는 테마는 삭제할 수 없다.")
     @Test
-    void invalidDeleteTimeTest() {
+    void invalidDeleteTime() {
+        // given
+        timeController.createTime(new TimeRequest(LocalTime.parse("10:00")));
+        themeController.createTheme(new ThemeRequest("name", "desc", "thumb"));
+        reservationController.createReservation(new ReservationRequest("user", LocalDate.parse("2025-01-01"), 1L, 1L));
+
+        // when & then
         RestAssured.given().log().all()
                 .when().delete("/themes/1")
                 .then().log().all()
                 .statusCode(400)
-                .body(is("예약이 존재하는 테마는 삭제할 수 없습니다."));
+                .body("message", is("예약이 존재하는 테마는 삭제할 수 없습니다."));
     }
 
-    @DisplayName("최근 일주일간 가장 예약이 많은 테마를 조회한다.")
+    @DisplayName("최근 일주일간 가장 많이 예약된 테마를 조회한다.")
     @Test
-    void weeklyBestThemesTest() {
+    @Sql(scripts = {"/test_schema.sql", "/test_weekly_theme.sql"})
+    void weeklyBestThemes() {
         RestAssured.given().log().all()
-                .when().get("/weeklyThemes")
+                .when().get("/themes/weeklyBest")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("size()", is(4))
+                .body("[0].name", is("test3"))
+                .body("[1].name", is("test2"))
+                .body("[2].name", is("test1"))
+                .body("[3].name", is("test4"));
     }
 }

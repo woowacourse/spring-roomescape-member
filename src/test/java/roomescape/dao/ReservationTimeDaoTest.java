@@ -1,82 +1,100 @@
 package roomescape.dao;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.dao.condition.TimeInsertCondition;
 import roomescape.domain.ReservationTime;
-
-import java.sql.PreparedStatement;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
 @Import(ReservationTimeDao.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@Sql(scripts = {"/test_schema.sql", "/test_data.sql"})
-public class ReservationTimeDaoTest {
+@Sql(scripts = {"/test_schema.sql"})
+class ReservationTimeDaoTest {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private ReservationTimeDao timeDao;
 
-    @Autowired
-    private ReservationTimeDao reservationTimeDao;
-
-    @DisplayName("모든 예약 시간을 조회한다.")
+    @DisplayName("시간을 추가한다.")
     @Test
-    void findAllTest() {
-        List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
+    void insert() {
+        // given
+        ReservationTime inserted = timeDao.insert(new TimeInsertCondition(LocalTime.parse("10:00")));
 
-        assertThat(reservationTimes.size()).isEqualTo(1);
+        // when
+        Long insertedTimeId = inserted.getId();
+
+        // then
+        assertThat(insertedTimeId).isEqualTo(1L);
     }
 
-    @DisplayName("ID를 이용하여 예약 시간을 조회한다.")
+    @DisplayName("모든 시간을 조회한다.")
     @Test
-    void findByIdTest() {
-        ReservationTime reservationTime = reservationTimeDao.findById(1L).get();
+    void findAll() {
+        // given
+        timeDao.insert(new TimeInsertCondition(LocalTime.parse("10:00")));
+        timeDao.insert(new TimeInsertCondition(LocalTime.parse("11:00")));
 
-        assertThat(reservationTime.getId()).isEqualTo(1L);
+        // when
+        List<ReservationTime> times = timeDao.findAll();
+
+        // then
+        assertThat(times).extracting("startAt").containsExactly(LocalTime.parse("10:00"), LocalTime.parse("11:00"));
     }
 
-    @DisplayName("ID가 존재하지 않으면 빈 시간을 반환한다.")
+    @DisplayName("ID를 이용하여 시간을 조회한다.")
     @Test
-    void findByWrongIdTest() {
-        Optional<ReservationTime> reservationTime = reservationTimeDao.findById(9L);
+    void findById() {
+        // given
+        ReservationTime inserted = timeDao.insert(new TimeInsertCondition(LocalTime.parse("10:00")));
 
-        assertThat(reservationTime).isEqualTo(Optional.empty());
+        // when
+        ReservationTime time = timeDao.findById(inserted.getId()).orElseThrow();
+
+        // then
+        assertThat(inserted.getStartAt()).isEqualTo(time.getStartAt());
     }
 
-    @DisplayName("예약 시간을 추가한다.")
+    @DisplayName("ID가 존재하지 않으면 빈 시간 객체를 반환한다.")
     @Test
-    void insertTest() {
-        Long index = jdbcTemplate.queryForObject("SELECT count(*) FROM reservation_time", Long.class);
-        Long id = reservationTimeDao.insert("01:01");
+    void findByNotExistId() {
+        Optional<ReservationTime> time = timeDao.findById(2L);
 
-        assertThat(id).isEqualTo(index + 1);
+        assertThat(time).isEqualTo(Optional.empty());
     }
 
-    @DisplayName("시간 ID를 이용하여 시간을 삭제한다.")
+
+    @DisplayName("ID를 이용하여 예약을 삭제한다.")
     @Test
-    void deleteByIdTest() {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement("INSERT INTO reservation_time(start_at) VALUES ?",
-                    new String[]{"id"});
-            ps.setString(1, "01:02");
-            return ps;
-        }, keyHolder);
+    void deleteById() {
+        // given
+        ReservationTime inserted = timeDao.insert(new TimeInsertCondition(LocalTime.parse("10:00")));
 
-        Long key = keyHolder.getKey().longValue();
-        reservationTimeDao.deleteById(key);
+        // when
+        timeDao.deleteById(inserted.getId());
+        Optional<ReservationTime> time = timeDao.findById(inserted.getId());
 
-        assertThat(reservationTimeDao.findAll().stream().map(ReservationTime::getId).toList()).doesNotContain(key);
+        // then
+        assertThat(time).isEqualTo(Optional.empty());
+    }
+
+    @DisplayName("동일한 시간이 존재하는지 확인한다.")
+    @Test
+    void hasSameTime() {
+        // given
+        timeDao.insert(new TimeInsertCondition(LocalTime.parse("10:00")));
+
+        // when
+        Boolean hasSameTime = timeDao.hasSameTime(LocalTime.parse("10:00"));
+
+        // then
+        assertThat(hasSameTime).isTrue();
     }
 }

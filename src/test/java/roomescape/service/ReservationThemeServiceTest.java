@@ -1,72 +1,121 @@
 package roomescape.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import io.restassured.RestAssured;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.domain.ReservationTheme;
+import roomescape.dto.reservation.ReservationRequest;
 import roomescape.dto.theme.ThemeRequest;
+import roomescape.dto.theme.ThemeResponse;
+import roomescape.dto.theme.WeeklyThemeResponse;
+import roomescape.dto.time.TimeRequest;
 
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.*;
-
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@Sql(scripts = {"/test_schema.sql", "/test_data.sql"})
-public class ReservationThemeServiceTest {
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@Sql(scripts = {"/test_schema.sql"})
+class ReservationThemeServiceTest {
 
     @Autowired
-    private ReservationThemeService reservationThemeService;
+    private ReservationThemeService themeService;
+
+    @Autowired
+    private ReservationService reservationService;
+
+    @Autowired
+    private ReservationTimeService timeService;
+
+    @LocalServerPort
+    int port;
+
+    @BeforeEach
+    void setUp() {
+        RestAssured.port = port;
+    }
 
     @DisplayName("모든 테마를 조회한다.")
     @Test
-    void getAllThemesTest() {
-        List<ReservationTheme> reservationThemes = reservationThemeService.getAllThemes();
+    void getAllThemes() {
+        // given
+        themeService.insertTheme(new ThemeRequest("name", "desc", "thumb"));
 
-        assertThat(reservationThemes.size()).isEqualTo(1);
+        // when
+        List<ThemeResponse> themes = themeService.getAllThemes();
+
+        // then
+        assertThat(themes).hasSize(1);
     }
 
     @DisplayName("테마를 추가한다.")
     @Test
-    void insertThemeTest() {
-        ThemeRequest themeRequest = new ThemeRequest(
-                "레벨2 탈출", "우테코 레벨2 탈출", "https://hi.com"
-        );
-        ReservationTheme reservationTheme = reservationThemeService.insertTheme(themeRequest);
+    void insertTheme() {
+        // given
+        ThemeResponse response = themeService.insertTheme(new ThemeRequest("name", "desc", "thumb"));
 
-        assertThat(reservationTheme.getName()).isEqualTo("레벨2 탈출");
-        assertThat(reservationTheme.getDescription()).isEqualTo("우테코 레벨2 탈출");
-        assertThat(reservationTheme.getThumbnail()).isEqualTo("https://hi.com");
+        // when
+        Long insertedThemeId = response.id();
+
+        // then
+        assertThat(insertedThemeId).isEqualTo(1L);
     }
 
-    @DisplayName("테마 ID를 이용하여 테마를 삭제한다.")
+    @DisplayName("동일한 이름의 테마는 추가할 수 없다.")
     @Test
-    void deleteThemeTest() {
-        ThemeRequest themeRequest = new ThemeRequest(
-                "레벨2 탈출", "우테코 레벨2 탈출", "https://hi.com"
-        );
-        ReservationTheme reservationTheme = reservationThemeService.insertTheme(themeRequest);
+    void insertSameNameTheme() {
+        // given
+        themeService.insertTheme(new ThemeRequest("name", "desc", "thumb"));
 
-        int sizeBeforeDelete = reservationThemeService.getAllThemes().size();
-        assertThatCode(() -> reservationThemeService.deleteTheme(reservationTheme.getId())).doesNotThrowAnyException();
-        assertThat(reservationThemeService.getAllThemes().size()).isEqualTo(sizeBeforeDelete - 1);
+        // when & then
+        assertThatThrownBy(() -> themeService.insertTheme(new ThemeRequest("name", "desc1", "thumb1")))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이름이 동일한 테마가 존재합니다.");
     }
 
-    @DisplayName("이미 예약이 존재하는 테마는 삭제할 수 없다.")
+    @DisplayName("ID로 테마를 삭제한다.")
     @Test
-    void deleteInvalidThemeIdTest() {
-        assertThatThrownBy(() -> reservationThemeService.deleteTheme(1L))
-                .isInstanceOf(IllegalStateException.class);
+    void deleteTheme() {
+        // given
+        themeService.insertTheme(new ThemeRequest("name", "desc", "thumb"));
+
+        // when
+        themeService.deleteTheme(1L);
+
+        // then
+        assertThat(reservationService.getAllReservations()).hasSize(0);
     }
 
-    @DisplayName("지난 일주일간 가장 많이 예약된 테마를 조회한다.")
+    @DisplayName("예약이 존재하는 테마는 삭제할 수 없다.")
     @Test
-    void getWeeklyBestThemesTest() {
-        List<ReservationTheme> reservationThemes = reservationThemeService.getWeeklyBestThemes();
+    void deleteReservedTheme() {
+        // given
+        timeService.insertTime(new TimeRequest(LocalTime.now().plusHours(1)));
+        themeService.insertTheme(new ThemeRequest("name", "desc", "thumb"));
+        reservationService.insertReservation(new ReservationRequest("user", LocalDate.now(), 1L, 1L));
 
-        assertThat(reservationThemes.size()).isEqualTo(0);
+        // when & then
+        assertThatThrownBy(() -> themeService.deleteTheme(1L))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("예약이 존재하는 테마는 삭제할 수 없습니다.");
+    }
+
+    @DisplayName("일주일간 가장 많이 예약된 테마를 조회한다.")
+    @Test
+    @Sql(scripts = {"/test_schema.sql", "/test_weekly_theme.sql"})
+    void getWeeklyBestThemes() {
+        // given
+        List<WeeklyThemeResponse> weeklyBestThemes = themeService.getWeeklyBestThemes();
+
+        // when & then
+        assertThat(weeklyBestThemes).hasSize(4);
+        assertThat(weeklyBestThemes).extracting("name").containsExactly("test3", "test2", "test1", "test4");
     }
 }
