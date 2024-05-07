@@ -7,19 +7,19 @@ import java.time.format.DateTimeParseException;
 
 public class Reservation {
     private final Long id;
-    private final String name;
+    private final Member member;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(final String name, final String date, final ReservationTime time, final Theme theme) {
-        this(null, name, date, time, theme);
+    public Reservation(final Member member, final String date, final ReservationTime time, final Theme theme) {
+        this(null, member, date, time, theme);
     }
 
-    public Reservation(final Long id, final String name, final String date, final ReservationTime time,
+    public Reservation(final Long id, final Member member, final String date, final ReservationTime time,
                        final Theme theme) {
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.date = parseDate(date);
         this.time = time;
         this.theme = theme;
@@ -56,8 +56,12 @@ public class Reservation {
         return id;
     }
 
+    public Long getMemberId() {
+        return member.getId();
+    }
+    
     public String getName() {
-        return name;
+        return member.getName();
     }
 
     public LocalDate getDate() {

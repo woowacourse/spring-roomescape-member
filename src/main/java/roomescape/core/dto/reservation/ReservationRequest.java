@@ -5,9 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 public class ReservationRequest {
-    @NotBlank(message = "이름은 비어있을 수 없습니다.")
-    private String name;
-
     @NotBlank(message = "날짜는 비어있을 수 없습니다.")
     @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "날짜는 yyyy-MM-dd 형식이어야 합니다.")
     private String date;
@@ -21,8 +18,7 @@ public class ReservationRequest {
     public ReservationRequest() {
     }
 
-    public ReservationRequest(final String name, final String date, final Long timeId, final Long themeId) {
-        this.name = name;
+    public ReservationRequest(final String date, final Long timeId, final Long themeId) {
         this.date = date;
         this.timeId = timeId;
         this.themeId = themeId;
@@ -30,10 +26,6 @@ public class ReservationRequest {
 
     public String getDate() {
         return date;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public Long getTimeId() {

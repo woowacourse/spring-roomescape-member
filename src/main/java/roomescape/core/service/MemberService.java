@@ -1,12 +1,13 @@
 package roomescape.core.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.core.config.TokenProvider;
 import roomescape.core.domain.Member;
 import roomescape.core.dto.auth.TokenRequest;
 import roomescape.core.dto.auth.TokenResponse;
+import roomescape.core.dto.member.LoginMember;
 import roomescape.core.dto.member.MemberResponse;
 import roomescape.core.repository.MemberRepository;
+import roomescape.infrastructure.TokenProvider;
 
 @Service
 public class MemberService {
@@ -33,5 +34,14 @@ public class MemberService {
             throw new IllegalArgumentException("존재하지 않는 사용자입니다.");
         }
         return new MemberResponse(member.getName());
+    }
+
+    public LoginMember findLoginMemberByToken(final String token) {
+        final String email = tokenProvider.getPayload(token);
+        final Member member = memberRepository.findByEmail(email);
+        if (member == null) {
+            throw new IllegalArgumentException("존재하지 않는 사용자입니다.");
+        }
+        return new LoginMember(member);
     }
 }

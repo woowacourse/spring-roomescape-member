@@ -3,9 +3,11 @@ package roomescape.core.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.core.domain.Member;
 import roomescape.core.domain.Reservation;
 import roomescape.core.domain.ReservationTime;
 import roomescape.core.domain.Theme;
+import roomescape.core.dto.member.LoginMember;
 import roomescape.core.dto.reservation.ReservationRequest;
 import roomescape.core.dto.reservation.ReservationResponse;
 import roomescape.core.repository.ReservationRepository;
@@ -27,10 +29,12 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponse create(final ReservationRequest request) {
+    public ReservationResponse create(final ReservationRequest request, final LoginMember loginMember) {
         final ReservationTime reservationTime = reservationTimeRepository.findById(request.getTimeId());
         final Theme theme = themeRepository.findById(request.getThemeId());
-        final Reservation reservation = new Reservation(request.getName(), request.getDate(), reservationTime, theme);
+        final Member member = new Member(loginMember.getId(), loginMember.getName(), loginMember.getEmail(),
+                loginMember.getPassword());
+        final Reservation reservation = new Reservation(member, request.getDate(), reservationTime, theme);
 
         reservation.validateDateAndTime();
         validateDuplicatedReservation(reservation, reservationTime);
