@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
+import roomescape.theme.response.RankTheme;
 import roomescape.theme.domain.Theme;
 
 @Repository
@@ -19,6 +20,12 @@ public class ThemeDao {
 
     private final RowMapper<Theme> themeRowMapper = (resultSet, __) -> new Theme(
             resultSet.getLong("id"),
+            resultSet.getString("name"),
+            resultSet.getString("description"),
+            resultSet.getString("thumbnail")
+    );
+
+    private final RowMapper<RankTheme> rankThemeRowMapper = (resultSet, __) -> new RankTheme(
             resultSet.getString("name"),
             resultSet.getString("description"),
             resultSet.getString("thumbnail")
@@ -35,7 +42,7 @@ public class ThemeDao {
         return jdbcTemplate.query("SELECT * FROM THEME", themeRowMapper);
     }
 
-    public Theme findById(Long id) {
+    public Theme findById(long id) {
         return jdbcTemplate.queryForObject("SELECT * FROM THEME WHERE ID = ?", themeRowMapper, id);
     }
 
@@ -50,4 +57,16 @@ public class ThemeDao {
         jdbcTemplate.update(query, themeID);
     }
 
+    public List<RankTheme> getRank() {
+        String query = "SELECT t.id, t.name, t.description, t.thumbnail, COUNT(r.id) AS reservation_count " +
+                "FROM theme t " +
+                "INNER JOIN reservation r ON t.id = r.theme_id " +
+                "WHERE r.date >=( TIMESTAMPADD(DAY, -7, CURRENT_DATE)) " +
+                "AND r.date <= ( TIMESTAMPADD(DAY, -1, CURRENT_DATE)) " +
+                "GROUP BY t.id, t.name, t.description, t.thumbnail " +
+                "ORDER BY reservation_count DESC " +
+                "LIMIT 10";
+
+        return jdbcTemplate.query(query, rankThemeRowMapper);
+    }
 }
