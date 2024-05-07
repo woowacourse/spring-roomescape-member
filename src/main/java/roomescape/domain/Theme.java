@@ -25,19 +25,19 @@ public class Theme {
 
     private void validateName(String name) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("잘못된 테마 이름을 입력하셨습니다.");
+            throw new IllegalArgumentException("테마 이름은 null이거나 비어 있을 수 없습니다.");
         }
     }
 
     private void validateDescription(String description) {
         if (description == null || description.isBlank()) {
-            throw new IllegalArgumentException("잘못된 테마 설명을 입력하셨습니다.");
+            throw new IllegalArgumentException("테마 설명은 null이거나 비어 있을 수 없습니다.");
         }
     }
 
     private void validateThumbnail(String thumbnail) {
         if (thumbnail == null || !thumbnail.startsWith("https://")) {
-            throw new IllegalArgumentException("잘못된 형식의 썸네일 url입니다.");
+            throw new IllegalArgumentException("썸네일 URL은 https://로 시작해야 합니다.");
         }
     }
 
