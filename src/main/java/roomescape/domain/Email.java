@@ -19,4 +19,8 @@ public class Email {
             throw new IllegalArgumentException("잘못된 형식의 이메일입니다. " + value);
         }
     }
+
+    public String getEmail() {
+        return email;
+    }
 }
