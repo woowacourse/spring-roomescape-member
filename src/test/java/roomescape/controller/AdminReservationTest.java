@@ -128,7 +128,7 @@ class AdminReservationTest {
     @DisplayName("부적절한 시간으로 예약하는 경우 400 오류를 반환한다.")
     @ParameterizedTest
     @NullSource
-    @ValueSource(strings = {" ", "", "0", "-1"})
+    @ValueSource(strings = {" ", ""})
     void given_when_saveInvalidTimeId_then_statusCodeIsBadRequest(String invalidTimeId) {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");

@@ -24,11 +24,11 @@ public record ReservationRequest(String name, LocalDate date, Long timeId, Long 
             throw new IllegalArgumentException("[ERROR] 올바르지 않은 예약 날짜입니다.");
         }
 
-        if (timeId == null || timeId <= 0) {
+        if (timeId == null) {
             throw new IllegalArgumentException("[ERROR] 올바르지 않은 예약 시간입니다.");
         }
 
-        if (themeId == null || themeId <= -1) {
+        if (themeId == null) {
             throw new IllegalArgumentException("[ERROR] 올바르지 않은 테마 입니다.");
         }
     }
