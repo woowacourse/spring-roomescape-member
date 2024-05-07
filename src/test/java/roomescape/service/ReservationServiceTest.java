@@ -131,7 +131,7 @@ class ReservationServiceTest {
         Mockito.when(reservationTimeRepository.findById(id))
                 .thenReturn(Optional.of(Fixtures.reservationTimeFixture));
         Mockito.when(themeRepository.findById(id))
-                        .thenReturn(Optional.of(Fixtures.themeFixture));
+                .thenReturn(Optional.of(Fixtures.themeFixture));
         Mockito.when(reservationRepository.findAll())
                 .thenReturn(List.of(Fixtures.reservationFixture));
         ReservationCreateRequest request = new ReservationCreateRequest(
@@ -184,7 +184,8 @@ class ReservationServiceTest {
     @Test
     void deleteReservation() {
         // given
-        Mockito.doNothing().when(reservationRepository).deleteById(id);
+        Mockito.when(reservationRepository.deleteById(id)).
+                thenReturn(1);
 
         // when & then
         assertThatCode(() -> reservationService.deleteReservation(id))

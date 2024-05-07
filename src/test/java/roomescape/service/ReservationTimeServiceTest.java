@@ -129,7 +129,8 @@ class ReservationTimeServiceTest {
         // given
         Mockito.when(reservationRepository.existsByTimeId(id))
                 .thenReturn(false);
-        Mockito.doNothing().when(reservationTimeRepository).deleteById(id);
+        Mockito.when(reservationTimeRepository.deleteById(id))
+                .thenReturn(1);
 
         // when & then
         assertThatCode(() -> reservationTimeService.deleteTime(id))
