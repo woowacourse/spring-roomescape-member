@@ -40,12 +40,12 @@ VALUES (DATEADD('DAY', 4, CURRENT_DATE()), 3, 4);
 
 
 -- 회원 추가
-INSERT INTO member(name)
-VALUES ('초코칩');
-INSERT INTO member(name)
-VALUES ('이든');
-INSERT INTO member(name)
-VALUES ('클로버');
+INSERT INTO member(name, email, password)
+VALUES ('초코칩', 'dev.chocochip@gmail.com', '1234');
+INSERT INTO member(name, email, password)
+VALUES ('이든', 'dev.eden@gmail.com', '5678');
+INSERT INTO member(name, email, password)
+VALUES ('클로버', 'dev.clover@gmail.com', 'asdqwe');
 
 
 -- 예약 목록 추가

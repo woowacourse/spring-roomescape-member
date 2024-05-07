@@ -5,14 +5,20 @@ import java.util.Objects;
 public class Member {
     private Long id;
     private Name name;
+    private String email;
 
-    public Member(Long id, String name) {
+    public Member(Long id, String name, String email) {
         this.id = id;
         this.name = new Name(name);
+        this.email = email;
     }
 
     public Member(String name) {
-        this(null, name);
+        this(null, name, null);
+    }
+
+    public Member(Long id, String name) {
+        this(id, name, null);
     }
 
     public Long getId() {
@@ -21,6 +27,10 @@ public class Member {
 
     public String getName() {
         return name.getName();
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     @Override
@@ -42,9 +52,6 @@ public class Member {
 
     @Override
     public String toString() {
-        return "Member{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                '}';
+        return "Member{" + "id=" + id + ", name=" + name + ", email='" + email + '\'' + '}';
     }
 }
