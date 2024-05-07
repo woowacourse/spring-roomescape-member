@@ -1,148 +1,139 @@
 package roomescape.controller;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
-import roomescape.dto.app.ReservationAppRequest;
-import roomescape.dto.web.ReservationTimeWebResponse;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.dto.web.ReservationWebRequest;
-import roomescape.dto.web.ReservationWebResponse;
-import roomescape.dto.web.ThemeWebResponse;
-import roomescape.exception.DuplicatedReservationException;
-import roomescape.exception.PastReservationException;
-import roomescape.service.ReservationService;
 
-@WebMvcTest(ReservationController.class)
+@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
+@Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
 class ReservationControllerTest {
 
     @Autowired
-    private MockMvc mvc;
-    @Autowired
-    private ObjectMapper objectMapper;
-    @MockBean
-    private ReservationService reservationService;
+    private JdbcTemplate jdbcTemplate;
 
-    @DisplayName("예약을 저장한다. -> 201")
-    @Test
-    void reserve() throws Exception {
-        long timeId = 1L;
-        long themeId = 1L;
-        LocalDate date = LocalDate.EPOCH;
-        String name = "브리";
-        Reservation reservation = new Reservation(1L, name, date, new ReservationTime(LocalTime.MIN),
-            new Theme("방탈출", "방탈출하는 게임", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
-
-        when(reservationService.save(new ReservationAppRequest(name, date.toString(), timeId, themeId)))
-            .thenReturn(reservation);
-
-        String requestBody = objectMapper.writeValueAsString(
-            new ReservationWebRequest(name, date.toString(), timeId, themeId));
-        String responseBody = objectMapper.writeValueAsString(new ReservationWebResponse(1L, name, date,
-            ReservationTimeWebResponse.from(reservation), ThemeWebResponse.from(reservation)));
-
-        mvc.perform(post("/reservations")
-                .content(requestBody)
-                .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isCreated())
-            .andExpect(content().json(responseBody));
+    @BeforeEach
+    void beforeEach() {
+        jdbcTemplate.update("""
+            INSERT INTO reservation_time (start_at) VALUES ('10:00');
+            INSERT INTO theme (name, description, thumbnail) VALUES ('n', 'd', 'https://');
+            """);
     }
 
-    @DisplayName("예약을 삭제한다. -> 204")
+    @DisplayName("성공: 예약 저장 -> 201")
     @Test
-    void deleteBy() throws Exception {
-        long timeId = 1L;
-        long themeId = 1L;
-        LocalDate date = LocalDate.EPOCH;
-        String name = "브리";
-        Reservation reservation = new Reservation(1L, name, date, new ReservationTime(LocalTime.MIN),
-            new Theme("방탈출", "방탈출하는 게임", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+    void reserve() {
+        ReservationWebRequest request = new ReservationWebRequest("brown", "2060-01-01", 1L, 1L);
 
-        when(reservationService.save(new ReservationAppRequest(name, date.toString(), timeId, themeId)))
-            .thenReturn(reservation);
-
-        mvc.perform(delete("/reservations/" + reservation.getId()))
-            .andExpect(status().isNoContent());
+        RestAssured.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(request)
+            .when().post("/reservations")
+            .then().log().all()
+            .statusCode(201)
+            .body("id", is(1))
+            .body("name", is("brown"))
+            .body("date", is("2060-01-01"))
+            .body("time.id", is(1))
+            .body("theme.id", is(1));
     }
 
-    @DisplayName("예약을 조회한다. -> 200")
+    @DisplayName("성공: 예약 삭제 -> 204")
     @Test
-    void getReservations() throws Exception {
-        mvc.perform(get("/reservations"))
-            .andExpect(status().isOk());
+    void deleteBy() {
+        jdbcTemplate.update(
+            "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('brown', '2060-01-01', 1, 1)");
+
+        RestAssured.given().log().all()
+            .when().delete("/reservations/1")
+            .then().log().all()
+            .statusCode(204);
     }
 
-    @DisplayName("실패: 예약 추가에서 IllegalArgumentException 발생 시 -> 400")
+    @DisplayName("성공: 예약 조회 -> 200")
     @Test
-    void reserve_BadRequest() throws Exception {
-        long timeId = 1L;
-        long themeId = 1L;
-        String rawDate = "2040-01-01";
-        String name = "brown";
+    void getReservations() {
+        jdbcTemplate.update("""
+            INSERT INTO reservation (name, date, time_id, theme_id)
+            VALUES
+            ('brown', '2060-01-01', 1, 1),
+            ('tre', '2060-01-02', 1, 1)
+            """);
 
-        String requestBody = objectMapper.writeValueAsString(new ReservationWebRequest(name, rawDate, timeId, themeId));
-
-        when(reservationService.save(any(ReservationAppRequest.class)))
-            .thenThrow(IllegalArgumentException.class);
-
-        mvc.perform(post("/reservations")
-                .content(requestBody)
-                .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest());
+        RestAssured.given().log().all()
+            .when().get("/reservations")
+            .then().log().all()
+            .statusCode(200)
+            .body("size()", is(2))
+            .body("id", hasItems(1, 2))
+            .body("name", hasItems("brown", "tre"))
+            .body("time.id", hasItems(1))
+            .body("theme.id", hasItems(1));
     }
 
-    @DisplayName("중복 예약 시도 -> 400")
+    @DisplayName("실패: 존재하지 않는 time id 예약 -> 400")
     @Test
-    void reserve_Duplication() throws Exception {
-        long timeId = 1L;
-        long themeId = 1L;
-        String rawDate = "2040-01-01";
-        String name = "brown";
+    void reserve_TimeIdNotFound() {
+        ReservationWebRequest request = new ReservationWebRequest("tre", "2060-01-01", 2L, 1L);
 
-        String requestBody = objectMapper.writeValueAsString(new ReservationWebRequest(name, rawDate, timeId, themeId));
-
-        when(reservationService.save(new ReservationAppRequest(name, rawDate, timeId, themeId)))
-            .thenThrow(DuplicatedReservationException.class);
-
-        mvc.perform(post("/reservations")
-                .content(requestBody)
-                .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest());
+        RestAssured.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(request)
+            .when().post("/reservations")
+            .then().log().all()
+            .statusCode(400);
     }
 
-    @DisplayName("과거 시간에 예약을 넣을 경우 -> 400")
+    @DisplayName("실패: 존재하지 않는 theme id 예약 -> 400")
     @Test
-    void reserve_PastTime() throws Exception {
-        long timeId = 1L;
-        long themeId = 1L;
-        String rawDate = "2000-01-01";
-        String name = "brown";
+    void reserve_ThemeIdNotFound() {
+        ReservationWebRequest request = new ReservationWebRequest("tre", "2060-01-01", 1L, 2L);
 
-        when(reservationService.save(new ReservationAppRequest(name, rawDate, timeId, themeId)))
-            .thenThrow(PastReservationException.class);
+        RestAssured.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(request)
+            .when().post("/reservations")
+            .then().log().all()
+            .statusCode(400);
+    }
 
-        String requestBody = objectMapper.writeValueAsString(new ReservationWebRequest(name, rawDate, timeId, themeId));
+    @DisplayName("실패: 중복 예약 -> 400")
+    @Test
+    void reserve_Duplication() {
+        jdbcTemplate.update(
+            "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('brown', '2060-01-01', 1, 1)");
 
-        mvc.perform(post("/reservations")
-                .content(requestBody)
-                .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest());
+        ReservationWebRequest request = new ReservationWebRequest("tre", "2060-01-01", 1L, 1L);
+
+        RestAssured.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(request)
+            .when().post("/reservations")
+            .then().log().all()
+            .statusCode(400);
+    }
+
+    @DisplayName("실패: 과거 시간 예약 -> 400")
+    @Test
+    void reserve_PastTime() {
+        ReservationWebRequest request = new ReservationWebRequest("brown", "2000-01-01", 1L, 1L);
+
+        RestAssured.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(request)
+            .when().post("/reservations")
+            .then().log().all()
+            .statusCode(400);
     }
 }
