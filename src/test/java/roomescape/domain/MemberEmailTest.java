@@ -1,4 +1,4 @@
-package roomescape.domain.member;
+package roomescape.domain;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -6,16 +6,17 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
+import roomescape.domain.member.MemberEmail;
 
-class MemberNameTest {
+class MemberEmailTest {
 
     @ParameterizedTest
     @NullAndEmptySource
-    @ValueSource(strings = {" ", "  ", "   "})
-    @DisplayName("사용자 이름이 공백이면 예외를 발생한다.")
-    void validateMemberName(String given) {
+    @ValueSource(strings = {" ", "abr", "12341231"})
+    @DisplayName("이메일 형식이 아닌 입력값은 예외가 발생한다.")
+    void validateEmail(String input) {
         //when //then
-        assertThatThrownBy(() -> new MemberName(given))
+        assertThatThrownBy(() -> new MemberEmail(input))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

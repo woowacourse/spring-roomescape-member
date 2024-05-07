@@ -3,6 +3,7 @@ package roomescape.service;
 import org.springframework.stereotype.Service;
 import roomescape.dao.MemberDao;
 import roomescape.domain.member.Member;
+import roomescape.domain.member.MemberEmail;
 import roomescape.dto.member.MemberResponse;
 import roomescape.dto.member.MemberSignupRequest;
 
@@ -17,7 +18,14 @@ public class MemberService {
 
     public MemberResponse add(MemberSignupRequest signupRequest) {
         Member member = signupRequest.toDomain();
+        validateNotExistEmail(member.getEmail());
         Member createdMember = memberDao.create(member);
         return new MemberResponse(createdMember);
+    }
+
+    private void validateNotExistEmail(MemberEmail memberEmail) {
+        if (memberDao.existByEmail(memberEmail)) {
+            throw new IllegalArgumentException("동일한 이메일이 존재합니다.");
+        }
     }
 }

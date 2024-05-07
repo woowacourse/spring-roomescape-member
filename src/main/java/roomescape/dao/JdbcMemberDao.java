@@ -7,6 +7,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.member.Member;
+import roomescape.domain.member.MemberEmail;
 
 @Repository
 public class JdbcMemberDao implements MemberDao {
@@ -40,5 +41,18 @@ public class JdbcMemberDao implements MemberDao {
         );
         long id = keyHolder.getKey().longValue();
         return new Member(id, member.getName(), member.getEmail(), member.getPassword());
+    }
+
+    @Override
+    public boolean existByEmail(MemberEmail memberEmail) {
+        String sql = """
+                SELECT
+                CASE 
+                    WHEN EXISTS (SELECT 1 FROM member WHERE email = ?)
+                    THEN TRUE
+                    ELSE FALSE
+                END;
+                """;
+        return jdbcTemplate.queryForObject(sql, boolean.class, memberEmail.getValue());
     }
 }

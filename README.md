@@ -319,6 +319,7 @@ id : long
 - [x] POST /signup 요청 시 로그인 폼에 입력한 email, password 값을 body에 포함
   - 응답 시 201 created 응답
   - /login 으로 로케이터 지정
+  - 이메일이 중복시 예외 발생
 - [ ] POST /login 요청 시 로그인 폼에 입력한 email, password 값을 body에 포함
   - 응답 시 Cookie에 "token"값으로 토큰을 포함
 - [ ] 인증 정보 조회
