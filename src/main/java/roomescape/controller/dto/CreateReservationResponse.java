@@ -1,11 +1,11 @@
 package roomescape.controller.dto;
 
 import java.time.LocalDate;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 public record CreateReservationResponse(Long id,
                                         String name,
                                         LocalDate date,
-                                        CreateTimeResponse time,
-                                        CreateThemeResponse theme) {
-
-}
+                                        ReservationTime time,
+                                        Theme theme) { }

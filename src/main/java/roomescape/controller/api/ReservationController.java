@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.CreateReservationRequest;
 import roomescape.controller.dto.CreateReservationResponse;
-import roomescape.controller.dto.CreateThemeResponse;
-import roomescape.controller.dto.CreateTimeResponse;
 import roomescape.controller.dto.ErrorMessageResponse;
 import roomescape.controller.dto.FindReservationResponse;
 import roomescape.domain.Reservation;
@@ -37,14 +35,21 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<CreateReservationResponse> save(@RequestBody CreateReservationRequest request) {
-        Reservation newReservation = reservationService.save(
-            new SaveReservationDto(request.name(), request.date(), request.timeId(), request.themeId()));
+        Reservation newReservation = reservationService.save(new SaveReservationDto(request.name(),
+            request.date(),
+            request.timeId(),
+            request.themeId())
+        );
+
         Long id = newReservation.getId();
 
-        CreateReservationResponse response = new CreateReservationResponse(id, newReservation.getName(),
+        CreateReservationResponse response = new CreateReservationResponse(
+            id,
+            newReservation.getName(),
             newReservation.getDate(),
-            CreateTimeResponse.from(newReservation),
-            CreateThemeResponse.from(newReservation));
+            newReservation.getTime(),
+            newReservation.getTheme()
+        );
 
         return ResponseEntity.created(URI.create("/reservations/" + id)).body(response);
     }
@@ -64,8 +69,8 @@ public class ReservationController {
                 reservation.getId(),
                 reservation.getName(),
                 reservation.getDate(),
-                CreateTimeResponse.from(reservation),
-                CreateThemeResponse.from(reservation)
+                reservation.getTime(),
+                reservation.getTheme()
             )).toList();
 
         return ResponseEntity.ok(createReservationResponse);
