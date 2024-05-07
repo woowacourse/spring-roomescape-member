@@ -79,13 +79,9 @@ public class ThemeRepositoryImpl implements ThemeRepository {
     }
 
     @Override
-    public Integer countByName(final String name) {
-        final String query = """
-                SELECT count(*)
-                FROM theme AS t
-                WHERE t.name = ?
-                """;
-        return jdbcTemplate.queryForObject(query, Integer.class, name);
+    public boolean existByName(final String name) {
+        final String query = "SELECT EXISTS(SELECT 1 FROM theme WHERE name = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, name));
     }
 
     @Override

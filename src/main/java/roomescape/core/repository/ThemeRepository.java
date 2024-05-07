@@ -12,7 +12,7 @@ public interface ThemeRepository {
 
     Theme findById(long id);
 
-    Integer countByName(String name);
+    boolean existByName(String name);
 
     void deleteById(long id);
 }

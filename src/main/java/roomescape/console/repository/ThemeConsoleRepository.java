@@ -26,8 +26,8 @@ public class ThemeConsoleRepository implements ThemeRepository {
     }
 
     @Override
-    public Integer countByName(final String name) {
-        return null;
+    public boolean existByName(final String name) {
+        return false;
     }
 
     @Override

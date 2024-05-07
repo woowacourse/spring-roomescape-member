@@ -53,8 +53,8 @@ public class ThemeService {
     }
 
     private void validateDuplicatedName(final Theme theme) {
-        final Integer themeCount = themeRepository.countByName(theme.getName());
-        if (themeCount > 0) {
+        final boolean exist = themeRepository.existByName(theme.getName());
+        if (exist) {
             throw new IllegalArgumentException("해당 이름의 테마가 이미 존재합니다.");
         }
     }
