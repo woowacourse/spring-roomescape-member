@@ -35,10 +35,8 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse create(ReservationRequest request) {
-        Theme theme = themeRepository.findById(request.themeId())
-                .orElseThrow(() -> new RoomescapeException("존재하지 않는 테마 입니다."));
-        ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
-                .orElseThrow(() -> new RoomescapeException("존재하지 않는 예약 시간 입니다."));
+        Theme theme = themeRepository.getById(request.themeId());
+        ReservationTime reservationTime = reservationTimeRepository.getById(request.timeId());
 
         if (reservationRepository.existsBy(request.date(), request.timeId(), request.themeId())) {
             throw new RoomescapeException("이미 존재하는 예약입니다.");
@@ -59,8 +57,7 @@ public class ReservationService {
 
     @Transactional
     public void deleteById(long id) {
-        Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new RoomescapeException("존재하지 않는 예약 입니다."));
+        Reservation reservation = reservationRepository.getById(id);
         reservationRepository.deleteById(reservation.getId());
     }
 }

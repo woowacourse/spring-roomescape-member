@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,8 +54,8 @@ class ThemeServiceTest {
     @Test
     void shouldThrowIllegalArgumentExceptionWhenDeleteWithNonExistId() {
         assertThatCode(() -> themeService.deleteById(1L))
-                .isInstanceOf(RoomescapeException.class)
-                .hasMessage("존재하지 않는 테마 입니다.");
+                .isInstanceOf(NoSuchElementException.class)
+                .hasMessage("존재하지 않는 테마입니다.");
     }
 
     @DisplayName("예약이 존재하는 테마를 삭제하는 경우, 예외가 발생한다.")

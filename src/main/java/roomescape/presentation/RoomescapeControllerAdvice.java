@@ -1,7 +1,7 @@
 package roomescape.presentation;
 
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +47,12 @@ public class RoomescapeControllerAdvice {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "값을 변환하는 중 오류가 발생했습니다.");
         problemDetail.setTitle("요청을 변환할 수 없습니다.");
         return problemDetail;
+    }
+
+    @ExceptionHandler({IllegalArgumentException.class, NoSuchElementException.class})
+    public ProblemDetail handleIllegalArgumentException(IllegalArgumentException exception) {
+        logger.error(exception.getMessage(), exception);
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exception.getMessage());
     }
 
     @ExceptionHandler(Exception.class)

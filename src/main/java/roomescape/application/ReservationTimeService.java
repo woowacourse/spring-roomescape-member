@@ -41,8 +41,7 @@ public class ReservationTimeService {
 
     @Transactional
     public void deleteById(long id) {
-        ReservationTime time = reservationTimeRepository.findById(id)
-                .orElseThrow(() -> new RoomescapeException("존재하지 않는 예약 시간입니다."));
+        ReservationTime time = reservationTimeRepository.getById(id);
         if (reservationRepository.existsByTimeId(time.getId())) {
             throw new RoomescapeException("연관된 예약이 존재하여 삭제할 수 없습니다.");
         }

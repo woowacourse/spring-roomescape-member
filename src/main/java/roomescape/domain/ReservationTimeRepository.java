@@ -3,13 +3,18 @@ package roomescape.domain;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 public interface ReservationTimeRepository {
 
+    ReservationTime create(ReservationTime reservationTime);
+
     Optional<ReservationTime> findById(long id);
 
-    ReservationTime create(ReservationTime reservationTime);
+    default ReservationTime getById(long id) {
+        return findById(id).orElseThrow(() -> new NoSuchElementException("존재하지 않는 예약 시간입니다."));
+    }
 
     List<ReservationTime> findAll();
 

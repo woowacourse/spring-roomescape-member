@@ -35,8 +35,7 @@ public class ThemeService {
 
     @Transactional
     public void deleteById(long id) {
-        Theme theme = themeRepository.findById(id)
-                .orElseThrow(() -> new RoomescapeException("존재하지 않는 테마 입니다."));
+        Theme theme = themeRepository.getById(id);
         if (themeRepository.existsByTimeId(theme.getId())) {
             throw new RoomescapeException("연관된 예약이 존재하여 삭제할 수 없습니다.");
         }
