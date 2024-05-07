@@ -37,26 +37,14 @@ public class ReservationService {
     }
 
     public Reservation save(final ReservationRequestDto requestDto) {
-        final ReservationTime reservationTime = findReservationTime(requestDto);
-        final Theme theme = findTheme(requestDto);
+        final ReservationTime reservationTime = reservationTimeDao.getById(requestDto.timeId());
+        final Theme theme = themeDao.getById(requestDto.themeId());
         final Reservation reservation = requestDto.toReservation(reservationTime, theme);
 
         validateReservationAvailable(reservation);
 
         final long reservationId = reservationDao.save(reservation);
         return Reservation.createWithId(reservationId, reservation);
-    }
-
-    private Theme findTheme(final ReservationRequestDto requestDto) {
-        return themeDao.findById(requestDto.themeId())
-                       .orElseThrow(() ->
-                               new EmptyDataAccessException("themeId : %d에 해당하는 테마가 존재하지 않습니다.", requestDto.themeId()));
-    }
-
-    private ReservationTime findReservationTime(final ReservationRequestDto requestDto) {
-        return reservationTimeDao.findById(requestDto.timeId())
-                                 .orElseThrow(() ->
-                                         new EmptyDataAccessException("timeId : %d에 해당하는 시간이 존재하지 않습니다.", requestDto.timeId()));
     }
 
     private void validateReservationAvailable(final Reservation reservation) {

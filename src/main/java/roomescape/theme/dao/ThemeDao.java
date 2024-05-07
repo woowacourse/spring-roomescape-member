@@ -2,7 +2,6 @@ package roomescape.theme.dao;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 import javax.sql.DataSource;
 
@@ -14,6 +13,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
+import roomescape.exception.EmptyDataAccessException;
 import roomescape.theme.domain.Theme;
 
 @Repository
@@ -35,12 +35,12 @@ public class ThemeDao {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public Optional<Theme> findById(final long id) {
+    public Theme getById(final long id) {
         final String sql = "select * from theme where id = ?";
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
+            return jdbcTemplate.queryForObject(sql, rowMapper, id);
         } catch (final EmptyResultDataAccessException exception) {
-            return Optional.empty();
+            throw new EmptyDataAccessException("themeId : %d에 해당하는 테마가 존재하지 않습니다.", id);
         }
     }
 

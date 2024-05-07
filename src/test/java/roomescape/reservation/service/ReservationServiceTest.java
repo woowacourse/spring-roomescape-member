@@ -7,7 +7,6 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -45,8 +44,8 @@ class ReservationServiceTest {
         Long id = 1L;
         ReservationTime reservationTime = ReservationTime.createWithId(id, "00:00");
         Theme theme = Theme.createWithId(1L, "정글 모험", "열대 정글의 심연을 탐험하세요.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        when(reservationTimeDao.findById(id)).thenReturn(Optional.of(reservationTime));
-        when(themeDao.findById(id)).thenReturn(Optional.of(theme));
+        when(reservationTimeDao.getById(id)).thenReturn(reservationTime);
+        when(themeDao.getById(id)).thenReturn(theme);
         when(reservationDao.checkExistByReservation(any(LocalDate.class), anyLong(), anyLong())).thenReturn(true);
         assertAll(
                 () -> assertThatThrownBy(() -> reservationService.save(

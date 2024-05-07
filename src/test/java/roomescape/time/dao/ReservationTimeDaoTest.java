@@ -32,8 +32,8 @@ class ReservationTimeDaoTest {
 
     @Test
     @DisplayName("특정 예약 시간을 조회할 수 있다.")
-    void findById() {
-        assertThat(reservationTimeDao.findById(1L).get()).isEqualTo(ReservationTime.createWithId(1L, "09:00"));
+    void getById() {
+        assertThat(reservationTimeDao.getById(1L)).isEqualTo(ReservationTime.createWithId(1L, "09:00"));
     }
 
     @Test
