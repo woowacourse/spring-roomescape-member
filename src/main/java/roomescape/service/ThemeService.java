@@ -23,18 +23,18 @@ public class ThemeService {
     }
 
     public ThemeOutput createTheme(final ThemeInput input) {
-        final Theme theme = themeDao.create(Theme.of(null, input.name(), input.description(), input.thumbnail()));
-        return ThemeOutput.toOutput(theme);
+        final Theme theme = themeDao.create(input.toTheme());
+        return ThemeOutput.from(theme);
     }
 
     public List<ThemeOutput> getAllThemes() {
         final List<Theme> themes = themeDao.getAll();
-        return ThemeOutput.toOutputs(themes);
+        return ThemeOutput.list(themes);
     }
 
-    public List<ThemeOutput> getPopularThemes(final String date) {
-        final List<Theme> themes = themeDao.getPopularTheme(VisitDate.from(date));
-        return ThemeOutput.toOutputs(themes);
+    public List<ThemeOutput> findPopularThemes(final String date) {
+        final List<Theme> themes = themeDao.findPopular(VisitDate.from(date));
+        return ThemeOutput.list(themes);
     }
 
     public void deleteTheme(final long id) {

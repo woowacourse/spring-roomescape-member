@@ -10,8 +10,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.api.dto.request.ReservationRequest;
+import roomescape.controller.api.dto.request.ReservationCreateRequest;
 import roomescape.controller.api.dto.response.ReservationResponse;
+import roomescape.controller.api.dto.response.ReservationsResponse;
 import roomescape.service.ReservationService;
 import roomescape.service.dto.output.ReservationOutput;
 
@@ -26,16 +27,16 @@ public class ReservationApiController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> createReservation(@RequestBody final ReservationRequest request) {
+    public ResponseEntity<ReservationResponse> createReservation(@RequestBody final ReservationCreateRequest request) {
         final ReservationOutput output = reservationService.createReservation(request.toInput());
         return ResponseEntity.created(URI.create("/reservations/" + output.id()))
-                .body(ReservationResponse.toResponse(output));
+                .body(ReservationResponse.from(output));
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> getAllReservations() {
+    public ResponseEntity<ReservationsResponse> getAllReservations() {
         final List<ReservationOutput> outputs = reservationService.getAllReservations();
-        return ResponseEntity.ok(ReservationResponse.toResponses(outputs));
+        return ResponseEntity.ok(ReservationsResponse.from(outputs));
     }
 
     @DeleteMapping("/{id}")

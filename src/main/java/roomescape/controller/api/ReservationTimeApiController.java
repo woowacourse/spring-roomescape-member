@@ -11,11 +11,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.api.dto.request.ReservationTimeRequest;
+import roomescape.controller.api.dto.request.ReservationTimeCreateRequest;
+import roomescape.controller.api.dto.response.AvailableReservationTimesResponse;
 import roomescape.controller.api.dto.response.ReservationTimeResponse;
-import roomescape.dao.dto.AvailableReservationTimeResponse;
+import roomescape.controller.api.dto.response.ReservationTimesResponse;
 import roomescape.service.ReservationTimeService;
-import roomescape.service.dto.input.AvailableReservationTimeInput;
+import roomescape.service.dto.output.AvailableReservationTimeOutput;
 import roomescape.service.dto.output.ReservationTimeOutput;
 
 @RestController
@@ -29,25 +30,26 @@ public class ReservationTimeApiController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTimeResponse> createReservationTime(@RequestBody final ReservationTimeRequest request) {
+    public ResponseEntity<ReservationTimeResponse> createReservationTime(
+            @RequestBody final ReservationTimeCreateRequest request) {
         final ReservationTimeOutput output = reservationTimeService.createReservationTime(request.toInput());
         return ResponseEntity.created(URI.create("/times/" + output.id()))
-                .body(ReservationTimeResponse.toResponse(output));
+                .body(ReservationTimeResponse.from(output));
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationTimeResponse>> getAllReservationTimes() {
-        final List<ReservationTimeOutput> output = reservationTimeService.getAllReservationTimes();
-        return ResponseEntity.ok(ReservationTimeResponse.toResponses(output));
+    public ResponseEntity<ReservationTimesResponse> getAllReservationTimes() {
+        final List<ReservationTimeOutput> outputs = reservationTimeService.getAllReservationTimes();
+        return ResponseEntity.ok(ReservationTimesResponse.from(outputs));
     }
 
     @GetMapping("/available")
-    public ResponseEntity<List<AvailableReservationTimeResponse>> getAllReservationTimes(
+    public ResponseEntity<AvailableReservationTimesResponse> findAvailableReservationTimes(
             @RequestParam final String date,
-            @RequestParam final Long themeId) {
-        final List<AvailableReservationTimeResponse> response = reservationTimeService.getAvailableTimes(
-                new AvailableReservationTimeInput(themeId, date));
-        return ResponseEntity.ok(response);
+            @RequestParam final long themeId) {
+        final List<AvailableReservationTimeOutput> outputs =
+                reservationTimeService.findAvailableReservationTimes(date, themeId);
+        return ResponseEntity.ok(AvailableReservationTimesResponse.from(outputs));
     }
 
     @DeleteMapping("/{id}")

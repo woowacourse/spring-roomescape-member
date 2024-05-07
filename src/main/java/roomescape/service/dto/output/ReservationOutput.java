@@ -5,19 +5,19 @@ import roomescape.domain.Reservation;
 
 public record ReservationOutput(long id, String name, ThemeOutput theme, String date, ReservationTimeOutput time) {
 
-    public static ReservationOutput toOutput(final Reservation reservation) {
+    public static ReservationOutput from(final Reservation reservation) {
         return new ReservationOutput(
                 reservation.getId(),
                 reservation.getNameAsString(),
-                ThemeOutput.toOutput(reservation.getTheme()),
+                ThemeOutput.from(reservation.getTheme()),
                 reservation.getDate().asString(),
-                ReservationTimeOutput.toOutput(reservation.getTime())
+                ReservationTimeOutput.from(reservation.getTime())
         );
     }
 
-    public static List<ReservationOutput> toOutputs(final List<Reservation> reservations) {
+    public static List<ReservationOutput> list(final List<Reservation> reservations) {
         return reservations.stream()
-                .map(ReservationOutput::toOutput)
+                .map(ReservationOutput::from)
                 .toList();
     }
 }

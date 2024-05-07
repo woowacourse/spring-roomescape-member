@@ -49,12 +49,12 @@ public class ReservationService {
             throw new PastTimeReservationException(reservation.getDateAndTimeFormat());
         }
         final Reservation savedReservation = reservationDao.create(reservation);
-        return ReservationOutput.toOutput(savedReservation);
+        return ReservationOutput.from(savedReservation);
     }
 
     public List<ReservationOutput> getAllReservations() {
         final List<Reservation> reservations = reservationDao.getAll();
-        return ReservationOutput.toOutputs(reservations);
+        return ReservationOutput.list(reservations);
     }
 
     public void deleteReservation(final long id) {

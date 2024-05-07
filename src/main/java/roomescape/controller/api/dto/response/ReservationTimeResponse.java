@@ -5,13 +5,13 @@ import roomescape.service.dto.output.ReservationTimeOutput;
 
 public record ReservationTimeResponse(long id, String startAt) {
 
-    public static ReservationTimeResponse toResponse(final ReservationTimeOutput output) {
+    public static ReservationTimeResponse from(final ReservationTimeOutput output) {
         return new ReservationTimeResponse(output.id(), output.startAt());
     }
 
-    public static List<ReservationTimeResponse> toResponses(final List<ReservationTimeOutput> outputs) {
+    public static List<ReservationTimeResponse> list(final List<ReservationTimeOutput> outputs) {
         return outputs.stream()
-                .map(ReservationTimeResponse::toResponse)
+                .map(ReservationTimeResponse::from)
                 .toList();
     }
 }

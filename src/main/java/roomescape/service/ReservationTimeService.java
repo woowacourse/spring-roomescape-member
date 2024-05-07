@@ -4,14 +4,13 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
-import roomescape.dao.dto.AvailableReservationTimeResponse;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.ExistReservationInReservationTimeException;
 import roomescape.exception.NotExistReservationTimeException;
 import roomescape.exception.ReservationTimeAlreadyExistsException;
-import roomescape.service.dto.input.AvailableReservationTimeInput;
 import roomescape.service.dto.input.ReservationTimeInput;
+import roomescape.service.dto.output.AvailableReservationTimeOutput;
 import roomescape.service.dto.output.ReservationTimeOutput;
 
 @Service
@@ -33,16 +32,16 @@ public class ReservationTimeService {
         }
 
         final ReservationTime savedReservationTime = reservationTimeDao.create(reservationTime);
-        return ReservationTimeOutput.toOutput(savedReservationTime);
+        return ReservationTimeOutput.from(savedReservationTime);
     }
 
     public List<ReservationTimeOutput> getAllReservationTimes() {
         final List<ReservationTime> reservationTimes = reservationTimeDao.getAll();
-        return ReservationTimeOutput.toOutputs(reservationTimes);
+        return ReservationTimeOutput.list(reservationTimes);
     }
 
-    public List<AvailableReservationTimeResponse> getAvailableTimes(final AvailableReservationTimeInput input) {
-        return reservationTimeDao.getAvailable(ReservationDate.from(input.date()), input.themeId());
+    public List<AvailableReservationTimeOutput> findAvailableReservationTimes(final String date, final long themeId) {
+        return reservationTimeDao.findAvailable(ReservationDate.from(date), themeId);
     }
 
     public void deleteReservationTime(final long id) {

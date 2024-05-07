@@ -6,7 +6,7 @@ import roomescape.domain.Theme;
 
 public record ReservationInput(String name, String date, Long timeId, Long themeId) {
 
-    public Reservation toReservation(ReservationTime time, Theme theme) {
+    public Reservation toReservation(final ReservationTime time, final Theme theme) {
         return Reservation.from(null, name, date, time, theme);
     }
 }

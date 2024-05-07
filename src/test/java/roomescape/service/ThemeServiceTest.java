@@ -145,7 +145,7 @@ class ThemeServiceTest {
                 Theme.of(themeOutput2.id(), themeOutput2.name(), themeOutput2.description(), themeOutput2.thumbnail())
         ));
 
-        final List<ThemeOutput> popularThemes = themeService.getPopularThemes("2024-06-04");
+        final List<ThemeOutput> popularThemes = themeService.findPopularThemes("2024-06-04");
 
         assertThat(popularThemes).containsExactly(
                 new ThemeOutput(themeOutput1.id(), themeOutput1.name(), themeOutput1.description(),

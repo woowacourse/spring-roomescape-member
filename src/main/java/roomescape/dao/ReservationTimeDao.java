@@ -9,28 +9,30 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.dao.dto.AvailableReservationTimeResponse;
-import roomescape.dao.mapper.AvailableReservationTimeMapper;
+import roomescape.dao.mapper.AvailableReservationTimeRowMapper;
 import roomescape.dao.mapper.ReservationTimeRowMapper;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
+import roomescape.service.dto.output.AvailableReservationTimeOutput;
 
 @Repository
 public class ReservationTimeDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
-    private final ReservationTimeRowMapper rowMapper;
-    private final AvailableReservationTimeMapper availableReservationTimeMapper;
+    private final ReservationTimeRowMapper reservationTimeRowMapper;
+    private final AvailableReservationTimeRowMapper availableReservationTimeRowMapper;
 
-    public ReservationTimeDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource, final ReservationTimeRowMapper rowMapper,
-                              final AvailableReservationTimeMapper availableReservationTimeMapper) {
+    public ReservationTimeDao(final JdbcTemplate jdbcTemplate,
+                              final DataSource dataSource,
+                              final ReservationTimeRowMapper reservationTimeRowMapper,
+                              final AvailableReservationTimeRowMapper availableReservationTimeRowMapper) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation_time")
                 .usingGeneratedKeyColumns("id");
-        this.rowMapper = rowMapper;
-        this.availableReservationTimeMapper = availableReservationTimeMapper;
+        this.reservationTimeRowMapper = reservationTimeRowMapper;
+        this.availableReservationTimeRowMapper = availableReservationTimeRowMapper;
     }
 
     public ReservationTime create(final ReservationTime reservationTime) {
@@ -48,7 +50,7 @@ public class ReservationTimeDao {
     public Optional<ReservationTime> find(final Long id) {
         final String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, reservationTimeRowMapper, id));
         } catch (final EmptyResultDataAccessException exception) {
             return Optional.empty();
         }
@@ -56,22 +58,20 @@ public class ReservationTimeDao {
 
     public List<ReservationTime> getAll() {
         final String sql = "SELECT id, start_at FROM reservation_time";
-        return jdbcTemplate.query(sql, rowMapper);
+        return jdbcTemplate.query(sql, reservationTimeRowMapper);
     }
 
-    public List<AvailableReservationTimeResponse> getAvailable(final ReservationDate date, final Long themeId) {
+    public List<AvailableReservationTimeOutput> findAvailable(final ReservationDate date, final long themeId) {
         final String sql = """
                 SELECT
+                t.start_at AS start_at,
                 t.id AS time_id,
-                r.id IS NOT NULL AS booked,
-                t.start_at AS start_at
+                r.id IS NOT NULL AS already_booked
                 FROM reservation_time AS t
                 LEFT OUTER JOIN reservation AS r
-                ON t.id = r.time_id AND r.theme_id = ? AND r.date = ?;
+                ON t.id = r.time_id AND r.date = ? AND r.theme_id = ?;
                 """;
-        return jdbcTemplate.query(sql, availableReservationTimeMapper, themeId, date.asString());
-
-
+        return jdbcTemplate.query(sql, availableReservationTimeRowMapper, date.asString(), themeId);
     }
 
     public void delete(final long id) {

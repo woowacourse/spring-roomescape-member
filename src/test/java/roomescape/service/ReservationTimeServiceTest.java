@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.dao.ReservationDao;
-import roomescape.dao.dto.AvailableReservationTimeResponse;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -20,9 +19,9 @@ import roomescape.exception.ExistReservationInReservationTimeException;
 import roomescape.exception.NotExistReservationTimeException;
 import roomescape.exception.ReservationTimeAlreadyExistsException;
 import roomescape.fixture.ThemeFixture;
-import roomescape.service.dto.input.AvailableReservationTimeInput;
 import roomescape.service.dto.input.ReservationInput;
 import roomescape.service.dto.input.ReservationTimeInput;
+import roomescape.service.dto.output.AvailableReservationTimeOutput;
 import roomescape.service.dto.output.ReservationTimeOutput;
 import roomescape.service.dto.output.ThemeOutput;
 
@@ -108,12 +107,12 @@ public class ReservationTimeServiceTest {
         long themeId = themeService.createTheme(ThemeFixture.getInput()).id();
         reservationService.createReservation(new ReservationInput("조이썬", "2025-01-01", timeId2, themeId));
 
-        List<AvailableReservationTimeResponse> actual = reservationTimeService.getAvailableTimes(
-                new AvailableReservationTimeInput(themeId, "2025-01-01"));
+        List<AvailableReservationTimeOutput> actual = reservationTimeService.findAvailableReservationTimes(
+                "2025-01-01", themeId);
 
         assertThat(actual).containsExactly(
-                new AvailableReservationTimeResponse(false, timeId1, "10:00"),
-                new AvailableReservationTimeResponse(true, timeId2, "11:00")
+                new AvailableReservationTimeOutput("10:00", timeId1, false),
+                new AvailableReservationTimeOutput("11:00", timeId2, true)
         );
     }
 }

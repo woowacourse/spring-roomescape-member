@@ -47,7 +47,7 @@ public class ThemeDao {
         }
     }
 
-    public List<Theme> getPopularTheme(final VisitDate visitDate) {
+    public List<Theme> findPopular(final VisitDate visitDate) {
         final String sql = """
                 SELECT
                     t.id AS theme_id,
