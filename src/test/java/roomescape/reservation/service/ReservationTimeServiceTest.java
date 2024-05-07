@@ -1,6 +1,7 @@
 package roomescape.reservation.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.doReturn;
 
 import java.time.LocalTime;
@@ -45,5 +46,14 @@ class ReservationTimeServiceTest {
 
         assertThatThrownBy(() -> reservationTimeService.delete(timeId))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("이미 해당 시간으로 예약이 없을 경우 false를 반환한다.")
+    void isExistTest() {
+        doReturn(Optional.empty()).when(reservationTimeRepository)
+                .findById(1L);
+
+        assertThat(reservationTimeService.isExist(1L)).isFalse();
     }
 }

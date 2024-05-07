@@ -83,7 +83,7 @@ class ReservationTimeRepositoryTest {
         Long reservationId = reservationRepository.save(reservation);
 
         List<AvailableTimeResponse> availableTime = reservationTimeRepository.findAvailableTime(
-                LocalDate.parse("2024-07-07"), 1L);
+                LocalDate.parse("2024-07-07"), themeId);
 
         assertAll(
                 () -> assertThat(availableTime.get(0).alreadyBooked()).isFalse(),

@@ -4,56 +4,54 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import roomescape.reservation.domain.Name;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.dto.ReservationCreateRequest;
 import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservation.dto.ThemeResponse;
+import roomescape.reservation.dto.TimeResponse;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.reservation.repository.ReservationTimeRepository;
-import roomescape.reservation.repository.ThemeRepository;
 
 @Service
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
-    private final ReservationTimeRepository reservationTimeRepository;
-    private final ThemeRepository themeRepository;
+    private final ReservationTimeService reservationTimeService;
+    private final ThemeService themeService;
 
     public ReservationService(
             ReservationRepository reservationRepository,
-            ReservationTimeRepository reservationTimeRepository,
-            ThemeRepository themeRepository
+            ReservationTimeService reservationTimeService,
+            ThemeService themeService
     ) {
         this.reservationRepository = reservationRepository;
-        this.reservationTimeRepository = reservationTimeRepository;
-        this.themeRepository = themeRepository;
+        this.reservationTimeService = reservationTimeService;
+        this.themeService = themeService;
     }
 
     public Long save(ReservationCreateRequest reservationCreateRequest) {
-        Reservation reservation = getValidatedReservation(reservationCreateRequest);
+        TimeResponse timeResponse = reservationTimeService.findById(reservationCreateRequest.timeId());
+        ThemeResponse themeResponse = themeService.findById(reservationCreateRequest.themeId());
+        getValidatedReservation(reservationCreateRequest);
+
+        Theme theme = new Theme(themeResponse.id(), new Name(themeResponse.name()), themeResponse.description(),
+                themeResponse.thumbnail());
+        ReservationTime reservationTime = new ReservationTime(timeResponse.id(), timeResponse.startAt());
+        Reservation reservation = reservationCreateRequest.toReservation(theme, reservationTime);
 
         return reservationRepository.save(reservation);
     }
 
-    private Reservation getValidatedReservation(ReservationCreateRequest reservationCreateRequest) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(reservationCreateRequest.timeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
-
-        Theme theme = themeRepository.findById(reservationCreateRequest.themeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
-
+    private void getValidatedReservation(ReservationCreateRequest reservationCreateRequest) {
         if (LocalDate.now().isAfter(reservationCreateRequest.date())) {
             throw new IllegalArgumentException("지난 날짜는 예약할 수 없습니다.");
         }
 
-        Reservation reservation = reservationCreateRequest.toReservation(theme, reservationTime);
-
-        if (reservationRepository.existReservation(reservation)) {
+        if (reservationTimeService.isExist(reservationCreateRequest.timeId())) {
             throw new IllegalArgumentException("중복된 예약이 있습니다.");
         }
-
-        return reservation;
     }
 
     public ReservationResponse findById(Long id) {

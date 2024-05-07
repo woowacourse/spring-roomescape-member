@@ -2,6 +2,7 @@ package roomescape.reservation.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.domain.ReservationTime;
@@ -29,6 +30,14 @@ public class ReservationTimeService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다"));
 
         return TimeResponse.toResponse(reservationTime);
+    }
+
+    public boolean isExist(Long id) {
+        Optional<ReservationTime> time = reservationTimeRepository.findById(id);
+        if (time.isEmpty()) {
+            return false;
+        }
+        return true;
     }
 
     public List<TimeResponse> findAll() {
