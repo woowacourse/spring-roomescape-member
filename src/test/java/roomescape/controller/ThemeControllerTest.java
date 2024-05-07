@@ -25,10 +25,12 @@ class ThemeControllerTest {
 
     @BeforeEach
     void addInitialData() {
-        jdbcTemplate.update("INSERT INTO theme(name, description, thumbnail) VALUES (?, ?, ?)", "방탈출1", "설명1",
-            "https://url1");
-        jdbcTemplate.update("INSERT INTO theme(name, description, thumbnail) VALUES (?, ?, ?)", "방탈출2", "설명2",
-            "https://url2");
+        jdbcTemplate.update("""
+            INSERT INTO theme(name, description, thumbnail)
+            VALUES
+            ('방탈출1', '설명1', 'https://url1'),
+            ('방탈출2', '설명2', 'https://url2')
+            """);
     }
 
     @DisplayName("성공: 테마 생성 -> 201")
