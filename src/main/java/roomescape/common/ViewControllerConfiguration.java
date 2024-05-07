@@ -12,11 +12,14 @@ public class ViewControllerConfiguration implements WebMvcConfigurer {
         WebMvcConfigurer.super.addViewControllers(registry);
 
         registry.addViewController("/").setViewName("index");
+        registry.addViewController("/login").setViewName("login");
+
         registry.addViewController("/reservation").setViewName("reservation");
 
         registry.addViewController("/admin").setViewName("/admin/index");
         registry.addViewController("/admin/reservation").setViewName("/admin/reservation-new");
         registry.addViewController("/admin/time").setViewName("/admin/time");
         registry.addViewController("/admin/theme").setViewName("/admin/theme");
+
     }
 }
