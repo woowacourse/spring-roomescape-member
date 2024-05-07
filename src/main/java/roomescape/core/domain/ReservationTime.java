@@ -6,8 +6,8 @@ import java.time.format.DateTimeParseException;
 import roomescape.web.exception.BadRequestException;
 
 public class ReservationTime {
+    private static final String TIME_FORMAT = "HH:mm";
     private static final Long DEFAULT_ID = 0L;
-    public static final String TIME_FORMAT = "HH:mm";
 
     private final Long id;
     private final LocalTime startAt;
