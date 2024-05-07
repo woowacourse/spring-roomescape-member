@@ -18,7 +18,6 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
-import roomescape.domain.ThemeName;
 import roomescape.domain.ThemeRepository;
 
 @JdbcTest
@@ -63,9 +62,9 @@ class JdbcReservationRepositoryTest {
     @Test
     void shouldReturnReservationWithIdWhenReservationSave() {
         ReservationTime reservationTime = reservationTimeRepository.create(new ReservationTime(LocalTime.of(12, 0)));
-        Theme theme = themeRepository.create(new Theme(new ThemeName("theme1"), "desc", "url"));
+        Theme theme = themeRepository.create(new Theme("theme1", "desc", "url"));
         Reservation reservationWithoutId = new Reservation(
-                new PlayerName("test"),
+                "test",
                 LocalDate.of(2024, 12, 25),
                 reservationTime,
                 theme
@@ -108,7 +107,7 @@ class JdbcReservationRepositoryTest {
 
     private Reservation createReservation() {
         ReservationTime reservationTime = reservationTimeRepository.create(new ReservationTime(LocalTime.of(12, 0)));
-        Theme theme = themeRepository.create(new Theme(new ThemeName("theme1"), "desc", "url"));
+        Theme theme = themeRepository.create(new Theme("theme1", "desc", "url"));
         LocalDate date = LocalDate.of(2024, 12, 25);
         jdbcTemplate.update("insert into reservation (id, name, date, time_id, theme_id) values (?, ?, ?, ?, ?)",
                 1L, "test", date, reservationTime.getId(), theme.getId());

@@ -3,7 +3,6 @@ package roomescape.application.dto.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
-import roomescape.domain.PlayerName;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -19,6 +18,6 @@ public record ReservationRequest(
         Long themeId) {
 
     public Reservation toReservation(ReservationTime reservationTime, Theme theme) {
-        return new Reservation(new PlayerName(name), date, reservationTime, theme);
+        return new Reservation(name, date, reservationTime, theme);
     }
 }

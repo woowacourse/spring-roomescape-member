@@ -12,7 +12,6 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.application.dto.request.ThemeRequest;
 import roomescape.application.dto.response.ThemeResponse;
 import roomescape.domain.Theme;
-import roomescape.domain.ThemeName;
 import roomescape.domain.ThemeRepository;
 
 @ServiceTest
@@ -67,6 +66,6 @@ class ThemeServiceTest {
     }
 
     private Theme createTheme() {
-        return themeRepository.create(new Theme(new ThemeName("테마"), "테마 설명", "url"));
+        return themeRepository.create(new Theme("테마", "테마 설명", "url"));
     }
 }

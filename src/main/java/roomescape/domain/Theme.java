@@ -20,8 +20,8 @@ public class Theme {
         this.thumbnailUrl = thumbnailUrl;
     }
 
-    public Theme(ThemeName name, String description, String thumbnail) {
-        this(null, name, description, thumbnail);
+    public Theme(String name, String description, String thumbnailUrl) {
+        this(null, new ThemeName(name), description, thumbnailUrl);
     }
 
     private void validateDescription(String description) {

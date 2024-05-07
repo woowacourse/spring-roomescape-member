@@ -2,7 +2,6 @@ package roomescape.application.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import roomescape.domain.Theme;
-import roomescape.domain.ThemeName;
 
 public record ThemeRequest(
         @NotBlank(message = "테마 이름을 입력해주세요.")
@@ -13,6 +12,6 @@ public record ThemeRequest(
         String thumbnail) {
 
     public Theme toTheme() {
-        return new Theme(new ThemeName(name), description, thumbnail);
+        return new Theme(name, description, thumbnail);
     }
 }

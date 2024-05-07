@@ -12,13 +12,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.application.dto.request.ReservationTimeRequest;
 import roomescape.application.dto.response.ReservationTimeResponse;
-import roomescape.domain.PlayerName;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
-import roomescape.domain.ThemeName;
 import roomescape.domain.ThemeRepository;
 
 @ServiceTest
@@ -77,9 +75,9 @@ class ReservationTimeServiceTest {
     void shouldThrowsExceptionReservationWhenReservedInTime() {
         ReservationTime time = createTime(10, 0);
         long timeId = time.getId();
-        Theme theme = themeRepository.create(new Theme(new ThemeName("테마1"), "테마1 설명", "url"));
+        Theme theme = themeRepository.create(new Theme("테마1", "테마1 설명", "url"));
         reservationRepository.create(new Reservation(
-                new PlayerName("오리"), LocalDate.parse("2024-01-01"), time, theme
+                "오리", LocalDate.parse("2024-01-01"), time, theme
         ));
         assertThatCode(() -> reservationTimeService.deleteById(timeId))
                 .isInstanceOf(IllegalArgumentException.class)

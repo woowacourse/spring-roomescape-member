@@ -12,13 +12,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.application.dto.request.ReservationRequest;
 import roomescape.application.dto.response.ReservationResponse;
-import roomescape.domain.PlayerName;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
-import roomescape.domain.ThemeName;
 import roomescape.domain.ThemeRepository;
 
 @ServiceTest
@@ -39,7 +37,7 @@ class ReservationServiceTest {
     @Test
     void shouldReturnReservationResponseWhenValidReservationRequestSave() {
         ReservationTime time = reservationTimeRepository.create(new ReservationTime(LocalTime.of(12, 0)));
-        Theme theme = themeRepository.create(new Theme(new ThemeName("themeName"), "desc", "url"));
+        Theme theme = themeRepository.create(new Theme("themeName", "desc", "url"));
         ReservationRequest reservationRequest = new ReservationRequest(
                 "test",
                 LocalDate.of(2024, 1, 1),
@@ -56,7 +54,7 @@ class ReservationServiceTest {
     @DisplayName("존재하지 않는 예약 시간으로 예약을 생성시 예외가 발생한다.")
     @Test
     void shouldReturnIllegalArgumentExceptionWhenNotFoundReservationTime() {
-        Theme savedTheme = themeRepository.create(new Theme(new ThemeName("test"), "test", "test"));
+        Theme savedTheme = themeRepository.create(new Theme("test", "test", "test"));
         ReservationRequest request = new ReservationRequest("test", LocalDate.of(2024, 1, 1), 99L, savedTheme.getId());
 
         assertThatCode(() -> reservationService.create(request))
@@ -84,7 +82,7 @@ class ReservationServiceTest {
     @Test
     void shouldReturnIllegalStateExceptionWhenDuplicatedReservationCreate() {
         ReservationTime time = reservationTimeRepository.create(new ReservationTime(LocalTime.of(10, 0)));
-        Theme theme = themeRepository.create(new Theme(new ThemeName("test"), "test", "test"));
+        Theme theme = themeRepository.create(new Theme("test", "test", "test"));
         ReservationRequest request = new ReservationRequest(
                 "test",
                 LocalDate.of(2024, 1, 1),
@@ -102,7 +100,7 @@ class ReservationServiceTest {
     @Test
     void shouldThrowsIllegalArgumentExceptionWhenReservationDateIsBeforeCurrentDate() {
         ReservationTime time = reservationTimeRepository.create(new ReservationTime(LocalTime.of(12, 0)));
-        Theme theme = themeRepository.create(new Theme(new ThemeName("test"), "test", "test"));
+        Theme theme = themeRepository.create(new Theme("test", "test", "test"));
         System.out.println(time.getId() + " " + theme.getId());
         ReservationRequest reservationRequest = new ReservationRequest(
                 "test", LocalDate.of(1999, 12, 31), time.getId(), theme.getId()
@@ -141,8 +139,8 @@ class ReservationServiceTest {
 
     private Reservation saveReservation() {
         ReservationTime time = reservationTimeRepository.create(new ReservationTime(LocalTime.of(10, 0)));
-        Theme theme = themeRepository.create(new Theme(new ThemeName("test"), "test", "test"));
-        Reservation reservation = new Reservation(new PlayerName("test"), LocalDate.of(2024, 1, 1), time, theme);
+        Theme theme = themeRepository.create(new Theme("test", "test", "test"));
+        Reservation reservation = new Reservation("test", LocalDate.of(2024, 1, 1), time, theme);
         return reservationRepository.create(reservation);
     }
 }

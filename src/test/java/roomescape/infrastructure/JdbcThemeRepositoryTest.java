@@ -13,7 +13,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Theme;
-import roomescape.domain.ThemeName;
 import roomescape.domain.ThemeRepository;
 
 @JdbcTest
@@ -28,7 +27,7 @@ class JdbcThemeRepositoryTest {
     @DisplayName("테마를 저장한다.")
     @Test
     void shouldSaveTheme() {
-        Theme theme = new Theme(new ThemeName("테마"), "테마 설명", "url");
+        Theme theme = new Theme("테마", "테마 설명", "url");
         themeRepository.create(theme);
         int rowCount = getTotalRowCount();
         assertThat(rowCount).isEqualTo(1);
@@ -46,7 +45,7 @@ class JdbcThemeRepositoryTest {
     @DisplayName("id로 테마를 조회한다.")
     @Test
     void shouldFindThemeById() {
-        Theme theme = new Theme(new ThemeName("테마"), "테마 설명", "url");
+        Theme theme = new Theme("테마", "테마 설명", "url");
         jdbcTemplate.update("insert into theme (id, name, description, thumbnail) values (?, ?, ?, ?)",
                 1L, "테마", "테마 설명", "url");
         Optional<Theme> foundTheme = themeRepository.findById(1L);
@@ -56,7 +55,7 @@ class JdbcThemeRepositoryTest {
     @DisplayName("id로 테마를 삭제한다.")
     @Test
     void shouldDeleteThemeById() {
-        Theme theme = new Theme(new ThemeName("테마"), "테마 설명", "url");
+        Theme theme = new Theme("테마", "테마 설명", "url");
         jdbcTemplate.update("insert into theme (id, name, description, thumbnail) values (?, ?, ?, ?)",
                 1L, "테마", "테마 설명", "url");
         themeRepository.deleteById(1L);
