@@ -18,17 +18,17 @@ import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 
 @JdbcTest
-class JdbcReservationDaoTest {
+class JdbcReservationRepositoryTest {
 
     private final JdbcTemplate jdbcTemplate;
-    private final JdbcReservationDao jdbcReservationDao;
+    private final JdbcReservationRepository jdbcReservationDao;
 
     private Reservation savedReservation;
 
     @Autowired
-    private JdbcReservationDaoTest(JdbcTemplate jdbcTemplate) {
+    private JdbcReservationRepositoryTest(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.jdbcReservationDao = new JdbcReservationDao(jdbcTemplate);
+        this.jdbcReservationDao = new JdbcReservationRepository(jdbcTemplate);
     }
 
     @BeforeEach

@@ -14,17 +14,17 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.reservation.domain.ReservationTime;
 
 @JdbcTest
-class JdbcReservationTimeDaoTest {
+class JdbcReservationTimeRepositoryTest {
 
     private final JdbcTemplate jdbcTemplate;
-    private final JdbcReservationTimeDao jdbcReservationTimeDao;
+    private final JdbcReservationTimeRepository jdbcReservationTimeDao;
 
     private ReservationTime savedReservationTime;
 
     @Autowired
-    private JdbcReservationTimeDaoTest(JdbcTemplate jdbcTemplate) {
+    private JdbcReservationTimeRepositoryTest(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        jdbcReservationTimeDao = new JdbcReservationTimeDao(jdbcTemplate);
+        jdbcReservationTimeDao = new JdbcReservationTimeRepository(jdbcTemplate);
     }
 
     @BeforeEach

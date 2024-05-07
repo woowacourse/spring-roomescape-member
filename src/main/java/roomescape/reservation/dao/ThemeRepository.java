@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import roomescape.reservation.domain.Theme;
 
-public interface ThemeDao {
+public interface ThemeRepository {
 
     Theme save(Theme theme);
 

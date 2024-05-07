@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import roomescape.reservation.domain.ReservationTime;
 
-public interface ReservationTimeDao {
+public interface ReservationTimeRepository {
 
     ReservationTime save(ReservationTime reservationTime);
 
