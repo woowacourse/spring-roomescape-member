@@ -15,10 +15,6 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.ReservationTime;
-import roomescape.global.query.QueryBuilder;
-import roomescape.global.query.SelectQuery;
-import roomescape.global.query.condition.ComparisonCondition;
-import roomescape.global.query.condition.MultiLineCondition;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -89,18 +85,16 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public boolean existsByReservationDateTimeAndTheme(LocalDate date, long timeId, long themeId) {
-        SelectQuery subQuery = QueryBuilder.select(TABLE_NAME)
-                .addColumns("1")
-                .where(ComparisonCondition.equalTo("r.reservation_date", date))
-                .where(ComparisonCondition.equalTo("r.time_id", timeId))
-                .where(ComparisonCondition.equalTo("r.theme_id", themeId));
-        String query = QueryBuilder.select(TABLE_NAME)
-                .alias("r")
-                .addColumns("id")
-                .where(MultiLineCondition.exists(subQuery))
-                .build();
+        String query = """
+                SELECT r.id FROM reservation AS r
+                WHERE EXISTS(
+                SELECT 1 FROM reservation 
+                WHERE r.reservation_date = ? AND r.time_id = ? AND r.theme_id = ?)              
+                """;
+
         try {
-            jdbcTemplate.queryForObject(query, Long.class);
+            // todo: Optional.ofNullable로 감쌀지 생각.
+            jdbcTemplate.queryForObject(query, Long.class, date, timeId, themeId);
             return true;
         } catch (EmptyResultDataAccessException e) {
             return false;
@@ -121,9 +115,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public void deleteById(long id) {
-        String query = QueryBuilder.delete(TABLE_NAME)
-                .where(ComparisonCondition.equalTo("id", id))
-                .build();
-        jdbcTemplate.update(query);
+        String query = "DELETE FROM reservation WHERE id = ?";
+        jdbcTemplate.update(query, id);
     }
 }

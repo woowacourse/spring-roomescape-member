@@ -12,10 +12,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsertOperations;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.time.ReservationTime;
-import roomescape.global.query.QueryBuilder;
-import roomescape.global.query.SelectQuery;
-import roomescape.global.query.condition.ComparisonCondition;
-import roomescape.global.query.condition.MultiLineCondition;
 
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
@@ -45,16 +41,13 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public boolean existsByStartAt(LocalTime localTime) {
-        SelectQuery subQuery = QueryBuilder.select(TABLE_NAME)
-                .addColumns("1")
-                .where(ComparisonCondition.equalTo("t.start_at", localTime));
-        String query = QueryBuilder.select(TABLE_NAME)
-                .alias("t")
-                .addColumns("id")
-                .where(MultiLineCondition.exists(subQuery))
-                .build();
+        String query = """
+                SELECT t.id FROM reservation_time AS t 
+                WHERE EXISTS (SELECT 1 FROM reservation_time WHERE t.start_at = ?)
+                """;
+
         try {
-            jdbcTemplate.queryForObject(query, Long.class);
+            jdbcTemplate.queryForObject(query, Long.class, localTime.toString());
             return true;
         } catch (EmptyResultDataAccessException e) {
             return false;
@@ -63,12 +56,12 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public Optional<ReservationTime> findById(long id) {
-        String query = QueryBuilder.select(TABLE_NAME)
-                .addAllColumns()
-                .where(ComparisonCondition.equalTo("id", id))
-                .build();
+        String query = """
+                SELECT * FROM reservation_time
+                WHERE id = ?
+                """;
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(query, ROW_MAPPER));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(query, ROW_MAPPER, id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -76,17 +69,17 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public List<ReservationTime> findAll() {
-        String query = QueryBuilder.select(TABLE_NAME)
-                .addAllColumns()
-                .build();
+        String query = """
+                SELECT * FROM reservation_time
+                """;
         return jdbcTemplate.query(query, ROW_MAPPER);
     }
 
     @Override
     public void deleteById(long id) {
-        String query = QueryBuilder.delete(TABLE_NAME)
-                .where(ComparisonCondition.equalTo("id", id))
-                .build();
-        jdbcTemplate.update(query);
+        String query = """
+                DELETE FROM reservation_time WHERE id = ?
+                """;
+        jdbcTemplate.update(query, id);
     }
 }

@@ -12,7 +12,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsertOperations;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.theme.Theme;
-import roomescape.global.query.QueryBuilder;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
@@ -36,9 +35,9 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findAll() {
-        String query = QueryBuilder.select("theme")
-                .addAllColumns()
-                .build();
+        String query = """
+                SELECT * FROM theme
+                """;
 
         return jdbcTemplate.query(query, ROW_MAPPER);
     }
