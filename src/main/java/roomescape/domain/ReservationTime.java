@@ -16,14 +16,10 @@ public class ReservationTime {
         this.startAt = startAt;
     }
 
-    private static void validateExist(final LocalTime startAt) {
+    private void validateExist(final LocalTime startAt) {
         if (startAt == null) {
             throw new IllegalArgumentException("비어있는 입력이 존재할 수 없습니다.");
         }
-    }
-
-    public boolean isMatch(final LocalTime time) {
-        return this.startAt.equals(time);
     }
 
     public Long getId() {
