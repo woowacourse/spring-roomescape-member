@@ -1,6 +1,7 @@
 package roomescape.core.domain;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
@@ -32,12 +33,23 @@ public class Reservation {
         }
     }
 
-    public boolean isDatePast() {
-        return date.isBefore(LocalDate.now());
+    public void validateDateAndTime() {
+        if (isDatePast()) {
+            throw new IllegalArgumentException("지난 날짜에는 예약할 수 없습니다.");
+        }
+        if (isDateToday() && time.isPast()) {
+            throw new IllegalArgumentException("지난 시간에는 예약할 수 없습니다.");
+        }
     }
 
-    public boolean isDateToday() {
-        return date.isEqual(LocalDate.now());
+    private boolean isDatePast() {
+        final ZoneId kst = ZoneId.of("Asia/Seoul");
+        return date.isBefore(LocalDate.now(kst));
+    }
+
+    private boolean isDateToday() {
+        final ZoneId kst = ZoneId.of("Asia/Seoul");
+        return date.isEqual(LocalDate.now(kst));
     }
 
     public Long getId() {

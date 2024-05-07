@@ -32,20 +32,11 @@ public class ReservationService {
         final Theme theme = themeRepository.findById(request.getThemeId());
         final Reservation reservation = new Reservation(request.getName(), request.getDate(), reservationTime, theme);
 
-        validateDateTimeIsNotPast(reservation, reservationTime);
+        reservation.validateDateAndTime();
         validateDuplicatedReservation(reservation, reservationTime);
         final Long id = reservationRepository.save(reservation);
 
         return new ReservationResponse(id, reservation);
-    }
-
-    private void validateDateTimeIsNotPast(final Reservation reservation, final ReservationTime reservationTime) {
-        if (reservation.isDatePast()) {
-            throw new IllegalArgumentException("지난 날짜에는 예약할 수 없습니다.");
-        }
-        if (reservation.isDateToday() && reservationTime.isPast()) {
-            throw new IllegalArgumentException("지난 시간에는 예약할 수 없습니다.");
-        }
     }
 
     private void validateDuplicatedReservation(final Reservation reservation, final ReservationTime reservationTime) {

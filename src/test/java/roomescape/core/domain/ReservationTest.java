@@ -37,7 +37,9 @@ class ReservationTest {
         final String date = LocalDate.now().minusDays(1).format(DateTimeFormatter.ISO_DATE);
         final Reservation reservation = new Reservation("리건", date, time, theme);
 
-        assertThat(reservation.isDatePast()).isTrue();
+        assertThatThrownBy(reservation::validateDateAndTime)
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("지난 날짜에는 예약할 수 없습니다.");
     }
 
     @Test
@@ -46,6 +48,8 @@ class ReservationTest {
         final String date = LocalDate.now().format(DateTimeFormatter.ISO_DATE);
         final Reservation reservation = new Reservation("리건", date, time, theme);
 
-        assertThat(reservation.isDateToday()).isTrue();
+        assertThatThrownBy(reservation::validateDateAndTime)
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("지난 시간에는 예약할 수 없습니다.");
     }
 }
