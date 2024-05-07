@@ -1,6 +1,5 @@
 package roomescape.application;
 
-import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -18,14 +17,13 @@ import roomescape.domain.time.ReservationTime;
 public class ReservationService {
     private static final int IN_ADVANCE_RESERVATION_DAYS = 1;
 
-    private final Clock clock;
     private final ReservationTimeService reservationTimeService;
     private final ReservationRepository reservationRepository;
     private final ThemeRepository themeRepository;
 
-    public ReservationService(Clock clock, ReservationTimeService reservationTimeService,
-                              ReservationRepository reservationRepository, ThemeRepository themeRepository) {
-        this.clock = clock;
+    public ReservationService(ReservationTimeService reservationTimeService,
+                              ReservationRepository reservationRepository,
+                              ThemeRepository themeRepository) {
         this.reservationTimeService = reservationTimeService;
         this.reservationRepository = reservationRepository;
         this.themeRepository = themeRepository;
@@ -44,7 +42,7 @@ public class ReservationService {
 
     private void validateReservationInAdvance(LocalDate date, LocalTime time) {
         LocalDateTime reservationDateTime = LocalDateTime.of(date, time);
-        LocalDateTime baseDateTime = LocalDateTime.now(clock).plusDays(IN_ADVANCE_RESERVATION_DAYS);
+        LocalDateTime baseDateTime = LocalDateTime.now().plusDays(IN_ADVANCE_RESERVATION_DAYS);
         if (reservationDateTime.isBefore(baseDateTime)) {
             throw new IllegalArgumentException(String.format("예약은 최소 %d일 전에 해야합니다.", IN_ADVANCE_RESERVATION_DAYS));
         }

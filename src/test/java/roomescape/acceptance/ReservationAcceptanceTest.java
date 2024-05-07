@@ -13,24 +13,19 @@ import org.junit.jupiter.api.DynamicNode;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.reservation.ReservationResponse;
 import roomescape.support.AcceptanceTest;
 import roomescape.support.SimpleRestAssured;
-import roomescape.support.annotation.FixedClock;
-import roomescape.support.extension.MockClockExtension;
 
 @Sql("/init.sql")
-@ExtendWith(MockClockExtension.class)
-@FixedClock(date = "2023-08-04")
 class ReservationAcceptanceTest extends AcceptanceTest {
     private static final String PATH = "/reservations";
     private static final Map<String, Object> BODY = Map.of(
             "name", "브라운",
-            "date", "2023-08-05",
+            "date", LocalDate.now().plusDays(1).toString(),
             "timeId", 1L,
             "themeId", 1L
     );
@@ -86,7 +81,7 @@ class ReservationAcceptanceTest extends AcceptanceTest {
                 .jsonPath().getList(".", ReservationResponse.class);
 
         Integer count = executeCountQuery();
-        assertThat(reservations.size()).isEqualTo(count);
+        assertThat(reservations).hasSize(count);
     }
 
     @DisplayName("[6단계 - 데이터 추가 / 삭제하기]")
@@ -104,7 +99,7 @@ class ReservationAcceptanceTest extends AcceptanceTest {
                     SimpleRestAssured.delete(PATH + "/1")
                             .statusCode(204);
                     Integer countAfterDelete = executeCountQuery();
-                    assertThat(countAfterDelete).isEqualTo(0);
+                    assertThat(countAfterDelete).isZero();
                 })
         );
     }

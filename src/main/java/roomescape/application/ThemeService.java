@@ -1,6 +1,5 @@
 package roomescape.application;
 
-import java.time.Clock;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,14 +14,12 @@ import roomescape.dto.theme.AvailableTimeResponse;
 
 @Service
 public class ThemeService {
-    private final Clock clock;
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
 
-    public ThemeService(Clock clock, ThemeRepository themeRepository, ReservationRepository reservationRepository,
+    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository,
                         ReservationTimeRepository reservationTimeRepository) {
-        this.clock = clock;
         this.themeRepository = themeRepository;
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
@@ -55,7 +52,7 @@ public class ThemeService {
     }
 
     public List<Theme> getPopularThemes() {
-        return themeRepository.findPopularThemes(LocalDate.now(clock));
+        return themeRepository.findPopularThemes(LocalDate.now());
     }
 
     public List<AvailableTimeResponse> getAvailableTimes(long id, LocalDate date) {
