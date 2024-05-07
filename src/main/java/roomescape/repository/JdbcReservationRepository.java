@@ -12,6 +12,8 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.Role;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -20,8 +22,15 @@ public class JdbcReservationRepository implements ReservationRepository {
     private final SimpleJdbcInsert simpleJdbcInsert;
     private final RowMapper<Reservation> rowMapper = (rs, rowNum) -> {
         Long id = rs.getLong("id");
-        String name = rs.getString("name");
         LocalDate date = rs.getObject("date", LocalDate.class);
+
+        Member member = new Member(
+                rs.getLong("member_id"),
+                rs.getString("member_email"),
+                rs.getString("member_password"),
+                rs.getString("member_name"),
+                Role.valueOf(rs.getString("member_role"))
+        );
 
         ReservationTime time = new ReservationTime(
                 rs.getLong("time_id"),
@@ -35,7 +44,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 rs.getString("theme_thumbnail")
         );
 
-        return new Reservation(id, name, date, time, theme);
+        return new Reservation(id, date, member, time, theme);
     };
 
     public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
@@ -52,6 +61,11 @@ public class JdbcReservationRepository implements ReservationRepository {
                         r.id,
                         r.name,
                         r.date,
+                        m.id AS member_id,
+                        m.email AS member_email,
+                        m.password AS member_password,
+                        m.name AS member_name,
+                        m.role AS member_role,
                         t.id AS time_id,
                         t.start_at AS time_start_at,
                         th.id AS theme_id,
@@ -59,6 +73,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                         th.description AS theme_description,
                         th.thumbnail AS theme_thumbnail
                     FROM reservation AS r
+                    JOIN member AS m
+                    ON r.member_id = m.id
                     JOIN reservation_time AS t
                     ON r.time_id = t.id
                     JOIN theme AS th
@@ -71,8 +87,8 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public Reservation save(Reservation reservation) {
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", reservation.getName())
                 .addValue("date", reservation.getDate())
+                .addValue("member_id", reservation.getMemberId())
                 .addValue("time_id", reservation.getTimeId())
                 .addValue("theme_id", reservation.getThemeId());
 
@@ -80,8 +96,8 @@ public class JdbcReservationRepository implements ReservationRepository {
 
         return new Reservation(
                 id,
-                reservation.getName(),
                 reservation.getDate(),
+                reservation.getMember(),
                 reservation.getTime(),
                 reservation.getTheme()
         );

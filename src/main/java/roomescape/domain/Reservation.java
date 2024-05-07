@@ -3,36 +3,37 @@ package roomescape.domain;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import roomescape.domain.member.Member;
 
 public class Reservation {
 
-    private static final int NAME_MAX_LENGTH = 255;
-
     private final Long id;
-    private final String name;
     private final LocalDate date;
+    private final Member member;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        this(null, name, date, time, theme);
+    public Reservation(LocalDate date, Member member, ReservationTime time, Theme theme) {
+        this(null, date, member, time, theme);
     }
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        validate(name, date, time, theme);
+    public Reservation(Long id, LocalDate date, Member member, ReservationTime time, Theme theme) {
+        validate(date, member, time, theme);
 
         this.id = id;
-        this.name = name;
         this.date = date;
+        this.member = member;
         this.time = time;
         this.theme = theme;
     }
 
-    private void validate(String name, LocalDate date, ReservationTime time, Theme theme) {
-        validateName(name);
-
+    private void validate(LocalDate date, Member member, ReservationTime time, Theme theme) {
         if (date == null) {
             throw new IllegalArgumentException("날짜는 필수 값입니다.");
+        }
+
+        if (member == null) {
+            throw new IllegalArgumentException("회원은 필수 값입니다.");
         }
 
         if (time == null) {
@@ -44,15 +45,6 @@ public class Reservation {
         }
     }
 
-    private void validateName(String name) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("이름은 필수 값입니다.");
-        }
-
-        if (name.length() > NAME_MAX_LENGTH) {
-            throw new IllegalArgumentException(String.format("이름은 %d자를 넘을 수 없습니다.", NAME_MAX_LENGTH));
-        }
-    }
 
     public boolean isBefore(LocalDateTime dateTime) {
         LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
@@ -81,12 +73,16 @@ public class Reservation {
         return id;
     }
 
-    public String getName() {
-        return name;
-    }
-
     public LocalDate getDate() {
         return date;
+    }
+
+    public Member getMember() {
+        return member;
+    }
+
+    public Long getMemberId() {
+        return member.getId();
     }
 
     public ReservationTime getTime() {
