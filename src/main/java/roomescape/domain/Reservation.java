@@ -33,25 +33,25 @@ public class Reservation {
         validateTheme(theme);
     }
 
-    public void validateName(Name name) {
+    private void validateName(Name name) {
         if (Objects.isNull(name)) {
             throw new InvalidDomainObjectException("name must not be null");
         }
     }
 
-    public void validateDate(LocalDate date) {
+    private void validateDate(LocalDate date) {
         if (Objects.isNull(date)) {
             throw new InvalidDomainObjectException("date must not be null");
         }
     }
 
-    public void validateTime(ReservationTime time) {
+    private void validateTime(ReservationTime time) {
         if (Objects.isNull(time)) {
             throw new InvalidDomainObjectException("time must not be null");
         }
     }
 
-    public void validateTheme(Theme theme) {
+    private void validateTheme(Theme theme) {
         if (Objects.isNull(theme)) {
             throw new InvalidDomainObjectException("theme must not be null");
         }
