@@ -79,13 +79,13 @@ public class ReservationDao {
     }
 
     public boolean isExistsTimeId(final Long timeId) {
-        String sql = "select count(*) from reservation where time_id = ?";
-        return jdbcTemplate.queryForObject(sql, Integer.class, timeId) != 0;
+        String sql = "select exists(select 1 from reservation where time_id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
     }
 
     public boolean isExistsThemeId(final Long themeId) {
-        String sql = "select count(*) from reservation where theme_id = ?";
-        return jdbcTemplate.queryForObject(sql, Integer.class, themeId) != 0;
+        String sql = "select exists(select 1 from reservation where theme_id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, themeId);
     }
 
     public List<Reservation> findByDateAndThemeId(final LocalDate date, final Long themeId) {

@@ -52,7 +52,7 @@ public class TimeDao {
     }
 
     public boolean isExist(LocalTime localTime) {
-        String sql = "select count(*) from reservation_time where start_at = ?";
-        return jdbcTemplate.queryForObject(sql, Integer.class, localTime) != 0;
+        String sql = "select exists(select 1 from reservation_time where start_at = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, localTime);
     }
 }
