@@ -13,6 +13,7 @@ import roomescape.dto.reservation.ReservationTimeInfosResponse;
 import roomescape.dto.reservation.ReservationsResponse;
 import roomescape.global.exception.error.ErrorType;
 import roomescape.global.exception.model.DataConflictException;
+import roomescape.global.exception.model.ValidateException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -67,7 +68,7 @@ public class ReservationService {
 
     private void validateDateAndTime(final LocalDate requestDate, final Time requestTime, final LocalDateTime now) {
         if (isReservationInPast(requestDate, requestTime, now)) {
-            throw new DataConflictException(ErrorType.RESERVATION_PERIOD_CONFLICT,
+            throw new ValidateException(ErrorType.RESERVATION_PERIOD_CONFLICT,
                     String.format("지난 날짜나 시간은 예약이 불가능합니다. [now: %s %s | request: %s %s]",
                             now.toLocalDate(), now.toLocalTime(), requestDate, requestTime.getStartAt()));
         }
