@@ -2,6 +2,7 @@ package roomescape.reservation.repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -12,6 +13,8 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.UserName;
+import roomescape.reservation.handler.exception.CustomException;
+import roomescape.reservation.handler.exception.ExceptionCode;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -47,7 +50,8 @@ public class JdbcReservationRepository implements ReservationRepository {
     public Reservation save(Reservation reservation) {
         SqlParameterSource parameterSource = new BeanPropertySqlParameterSource(reservation);
         Number id = jdbcInsert.executeAndReturnKey(parameterSource);
-        return new Reservation(id.longValue(), reservation.getName(), reservation.getReservationDate(), reservation.getTime(), reservation.getTheme());
+        return new Reservation(id.longValue(), reservation.getName(), reservation.getReservationDate(),
+                reservation.getTime(), reservation.getTheme());
     }
 
     @Override
@@ -103,7 +107,10 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public void delete(Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
-
-        jdbcTemplate.update(sql, id);
+        try {
+            jdbcTemplate.update(sql, id);
+        } catch (DataAccessException exception) {
+            throw new CustomException(ExceptionCode.NOT_FOUND_RESERVATION);
+        }
     }
 }

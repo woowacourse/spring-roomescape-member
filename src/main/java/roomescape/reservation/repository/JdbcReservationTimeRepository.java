@@ -2,6 +2,7 @@ package roomescape.reservation.repository;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -10,6 +11,8 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.handler.exception.CustomException;
+import roomescape.reservation.handler.exception.ExceptionCode;
 
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
@@ -57,6 +60,10 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     public void delete(Long id) {
         String sql = "DELETE FROM reservation_time WHERE id = ?";
 
-        jdbcTemplate.update(sql, id);
+        try {
+            jdbcTemplate.update(sql, id);
+        } catch (DataAccessException exception) {
+            throw new CustomException(ExceptionCode.NOT_FOUND_RESERVATION_TIME);
+        }
     }
 }

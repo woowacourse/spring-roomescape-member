@@ -3,6 +3,7 @@ package roomescape.reservation.repository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -11,6 +12,8 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Theme;
+import roomescape.reservation.handler.exception.CustomException;
+import roomescape.reservation.handler.exception.ExceptionCode;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
@@ -74,6 +77,10 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public void delete(Long id) {
         String sql = "DELETE FROM theme WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        try {
+            jdbcTemplate.update(sql, id);
+        } catch (DataAccessException exception) {
+            throw new CustomException(ExceptionCode.NOT_FOUND_THEME);
+        }
     }
 }
