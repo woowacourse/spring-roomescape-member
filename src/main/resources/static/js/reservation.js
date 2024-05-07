@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('add-button').addEventListener('click', addInputRow);
 
     requestRead(RESERVATION_API_ENDPOINT)
+        .then(data => data.data)
         .then(render)
         .catch(error => console.error('Error fetching reservations:', error));
 
