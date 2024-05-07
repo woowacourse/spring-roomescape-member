@@ -56,6 +56,7 @@ public class FakeThemeRepository implements ThemeRepository {
                 .collect(Collectors.groupingBy(Reservation::getTheme, Collectors.counting())).entrySet().stream()
                 .sorted(Collections.reverseOrder(Entry.comparingByValue()))
                 .map(Entry::getKey)
+                .limit(10)
                 .toList();
     }
 

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -69,6 +70,38 @@ class JdbcThemeRepositoryTest {
                 .containsExactlyInAnyOrderElementsOf(List.of(
                         Fixture.THEME_2,
                         Fixture.THEME_1));
+    }
+
+    @Test
+    @DisplayName("예약되지 않은 테마는 가져오지 않는다.")
+    void findOrderByReservation2() {
+        themeRepository.save(new Theme(null, "예약되지 않은 테마", "테마 설명", "https://asd.cmom"));
+
+        List<Theme> orderByReservation = themeRepository.findOrderByReservation();
+
+        assertThat(orderByReservation)
+                .containsExactlyInAnyOrderElementsOf(List.of(
+                        Fixture.THEME_2,
+                        Fixture.THEME_1));
+    }
+
+    @Test
+    @DisplayName("예약이 많은 순서대로 테마 10개만 가져온다.")
+    void findOrderByReservation3() {
+        // 테마 10개 추가 및 1 ~ 11번 테마를 사용하는 예약 생성
+        generateReservationBy11Theme();
+
+        assertThat(themeRepository.findOrderByReservation())
+                .hasSize(10);
+    }
+
+    private void generateReservationBy11Theme() {
+        // 테마 10개 추가
+        IntStream.range(0, 10).forEach(i ->
+                jdbcTemplate.update("insert into theme (name, description, thumbnail) values ('추가 테마%d', '설명', 'https://asd.cmom')".formatted(i)));
+        // 1 ~ 11번 테마를 사용하는 예약 생성
+        IntStream.range(1, 12).forEach(i ->
+            jdbcTemplate.update("insert into reservation (name, date, time_id, theme_id) values ('마크' , %d-05-01, 1, %d)".formatted(2124 + i, i)));
     }
 
     @Test
