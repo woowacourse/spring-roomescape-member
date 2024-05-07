@@ -1,4 +1,4 @@
-package roomescape.admin.controller;
+package roomescape.acceptance;
 
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;

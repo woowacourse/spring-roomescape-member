@@ -1,4 +1,4 @@
-package roomescape.reservation.repository;
+package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -16,7 +16,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.repository.JdbcReservationRepository;
 
 @JdbcTest
 class JdbcReservationRepositoryTest {

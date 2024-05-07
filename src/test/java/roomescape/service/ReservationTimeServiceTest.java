@@ -1,4 +1,4 @@
-package roomescape.reservation.service;
+package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -11,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.service.dto.request.ReservationTimeRequest;
 import roomescape.service.dto.response.ReservationTimeResponse;
-import roomescape.service.ReservationTimeService;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
