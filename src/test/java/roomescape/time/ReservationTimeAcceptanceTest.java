@@ -52,9 +52,5 @@ public class ReservationTimeAcceptanceTest {
         RestAssured.given()
                    .when().delete("/times/1")
                    .then().statusCode(200);
-
-        RestAssured.given()
-                   .when().delete("/times/1")
-                   .then().statusCode(204);
     }
 }

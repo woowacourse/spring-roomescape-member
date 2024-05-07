@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import roomescape.exception.DuplicatedDataException;
-import roomescape.exception.EmptyDataAccessException;
 import roomescape.exception.PastDateReservationException;
 import roomescape.exception.PastTimeReservationException;
 import roomescape.reservation.dao.ReservationDao;
@@ -64,9 +63,6 @@ public class ReservationService {
     }
 
     public void deleteById(final long id) {
-        int affectedColumn = reservationDao.deleteById(id);
-        if (affectedColumn == 0) {
-            throw new EmptyDataAccessException("reservationId : %d에 해당하는 예약이 존재하지 않습니다.", id);
-        }
+        reservationDao.deleteById(id);
     }
 }

@@ -90,9 +90,5 @@ public class ReservationAcceptanceTest {
         RestAssured.given()
                    .when().delete("/reservations/1")
                    .then().statusCode(200);
-
-        RestAssured.given()
-                   .when().delete("/reservations/1")
-                   .then().statusCode(204);
     }
 }

@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import roomescape.exception.DuplicatedDataException;
-import roomescape.exception.EmptyDataAccessException;
 import roomescape.exception.UnableDeleteDataException;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.theme.dao.ThemeDao;
@@ -40,10 +39,7 @@ public class ThemeService {
         if (reservationDao.checkExistReservationByTheme(id)) {
             throw new UnableDeleteDataException("해당 테마를 예약한 예약내역이 존재하여 삭제가 불가합니다.");
         }
-        int affectedColumn = themeDao.deleteById(id);
-        if (affectedColumn == 0) {
-            throw new EmptyDataAccessException("themeId : %d에 해당하는 테마가 존재하지 않습니다.", id);
-        }
+        themeDao.deleteById(id);
     }
 
     public List<Theme> findPopularThemes() {

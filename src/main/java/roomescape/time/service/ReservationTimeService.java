@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import roomescape.exception.DuplicatedDataException;
-import roomescape.exception.EmptyDataAccessException;
 import roomescape.exception.UnableDeleteDataException;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.time.dao.ReservationTimeDao;
@@ -41,10 +40,7 @@ public class ReservationTimeService {
         if (reservationDao.checkExistReservationByTime(id)) {
             throw new UnableDeleteDataException("해당 시간을 예약한 예약내역이 존재하여 삭제가 불가합니다.");
         }
-        int affectedColumn = reservationTimeDao.deleteById(id);
-        if (affectedColumn == 0) {
-            throw new EmptyDataAccessException("timeId : %d에 해당하는 시간이 존재하지 않습니다.", id);
-        }
+        reservationTimeDao.deleteById(id);
     }
 
     public List<ReservationUserTime> findAvailableTime(final String date, final long themeId) {

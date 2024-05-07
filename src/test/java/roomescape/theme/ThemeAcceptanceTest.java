@@ -55,9 +55,5 @@ public class ThemeAcceptanceTest {
         RestAssured.given()
                    .when().delete("/themes/1")
                    .then().statusCode(200);
-
-        RestAssured.given()
-                   .when().delete("/themes/1")
-                   .then().statusCode(204);
     }
 }
