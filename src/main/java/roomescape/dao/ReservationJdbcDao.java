@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -19,21 +20,22 @@ import java.util.Objects;
 
 @Repository
 public class ReservationJdbcDao implements ReservationDao {
+
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
     private final RowMapper<Reservation> rowMapper = (resultSet, rowNumber) -> new Reservation(
-                resultSet.getLong("reservation_id"),
-                resultSet.getString("name"),
-                resultSet.getString("date"),
-                new ReservationTime(
-                        resultSet.getLong("time_id"),
-                        resultSet.getString("time_value")),
-                new Theme(
-                        resultSet.getLong("theme_id"),
-                        resultSet.getString("theme_name"),
-                        resultSet.getString("theme_description"),
-                        resultSet.getString("theme_thumbnail")
-                ));
+            resultSet.getLong("reservation_id"),
+            new Name(resultSet.getString("name")),
+            resultSet.getString("date"),
+            new ReservationTime(
+                    resultSet.getLong("time_id"),
+                    resultSet.getString("time_value")),
+            new Theme(
+                    resultSet.getLong("theme_id"),
+                    resultSet.getString("theme_name"),
+                    resultSet.getString("theme_description"),
+                    resultSet.getString("theme_thumbnail")
+            ));
 
     public ReservationJdbcDao(final JdbcTemplate jdbcTemplate, final DataSource source) {
         this.jdbcTemplate = jdbcTemplate;

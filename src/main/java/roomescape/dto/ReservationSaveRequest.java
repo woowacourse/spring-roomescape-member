@@ -1,5 +1,6 @@
 package roomescape.dto;
 
+import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -13,6 +14,6 @@ public record ReservationSaveRequest(
     public Reservation toModel(final ThemeResponse themeResponse, final ReservationTimeResponse timeResponse) {
         final ReservationTime time = new ReservationTime(timeResponse.id(), timeResponse.startAt());
         final Theme theme = new Theme(themeResponse.id(), themeResponse.name(), themeResponse.description(), themeResponse.thumbnail());
-        return new Reservation(name, date, time, theme);
+        return new Reservation(new Name(name), date, time, theme);
     }
 }

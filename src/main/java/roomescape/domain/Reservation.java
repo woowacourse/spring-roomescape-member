@@ -3,30 +3,26 @@ package roomescape.domain;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Reservation {
-    private static final Pattern NAME_PATTERN = Pattern.compile("^\\d+$");
 
     private final Long id;
-    private final String name;
+    private final Name name;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(final String name, final String date, final ReservationTime time, final Theme theme) {
+    public Reservation(final Name name, final String date, final ReservationTime time, final Theme theme) {
         this(null, name, date, time, theme);
     }
 
-    public Reservation(final Long id, final String name, final String date,
+    public Reservation(final Long id, final Name name, final String date,
                        final ReservationTime time, final Theme theme) {
         this(id, name, convertToLocalDate(date), time, theme);
     }
 
-    public Reservation(final Long id, final String name, final LocalDate date,
+    public Reservation(final Long id, final Name name, final LocalDate date,
                        final ReservationTime time, final Theme theme) {
-        validateName(name);
         validateDate(date);
         this.id = id;
         this.name = name;
@@ -43,16 +39,6 @@ public class Reservation {
             return LocalDate.parse(date);
         } catch (DateTimeParseException e) {
             throw new IllegalArgumentException("유효하지 않은 예약 날짜입니다.");
-        }
-    }
-
-    private void validateName(final String name) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("예약자 이름은 비어있을 수 없습니다.");
-        }
-        Matcher matcher = NAME_PATTERN.matcher(name);
-        if (matcher.matches()) {
-            throw new IllegalArgumentException("예약자 이름은 숫자로만 구성될 수 없습니다.");
         }
     }
 
@@ -78,8 +64,12 @@ public class Reservation {
         return id;
     }
 
-    public String getName() {
+    public Name getName() {
         return name;
+    }
+
+    public String getNameString() {
+        return name.getName();
     }
 
     public LocalDate getDate() {

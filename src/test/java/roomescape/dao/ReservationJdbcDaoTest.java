@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -68,7 +69,7 @@ class ReservationJdbcDaoTest extends DaoTest {
         // then
         assertThat(reservations).hasSize(2)
                 .extracting(Reservation::getName)
-                .containsExactly(USER_MIA, USER_TOMMY);
+                .containsExactly(new Name(USER_MIA), new Name(USER_TOMMY));
     }
 
     @Test

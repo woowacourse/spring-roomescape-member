@@ -2,7 +2,10 @@ package roomescape.domain;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.*;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.LocalDate;
 import java.util.stream.Stream;
@@ -14,21 +17,11 @@ import static roomescape.TestFixture.*;
 class ReservationTest {
 
     @ParameterizedTest
-    @NullSource
-    @ValueSource(strings = {"123", "", " "})
-    @DisplayName("예약자 이름이 빈칸이거나 숫자로만 구성될 경우 예외를 발생한다.")
-    void throwExceptionWhenInvalidName(final String invalidName) {
-        // when & then
-        assertThatThrownBy(() -> new Reservation(invalidName, MIA_RESERVATION_DATE, new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME()))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @ParameterizedTest
     @MethodSource("invalidLocalDate")
     @DisplayName("예약 날짜가 현재 날짜 이후가 아닌 경우 예외가 발생한다.")
     void throwExceptionWhenInvalidDate(final LocalDate invalidDate) {
         // when & then
-        assertThatThrownBy(() -> new Reservation(USER_MIA, invalidDate.toString(), new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME()))
+        assertThatThrownBy(() -> new Reservation(new Name(USER_MIA), invalidDate.toString(), new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -45,7 +38,7 @@ class ReservationTest {
     @DisplayName("예약 날짜 입력 값이 유효하지 않으면 예외가 발생한다.")
     void throwExceptionWhenCannotConvertToLocalDate(final String invalidDate) {
         // when & then
-        assertThatThrownBy(() -> new Reservation(USER_MIA, invalidDate, new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME()))
+        assertThatThrownBy(() -> new Reservation(new Name(USER_MIA), invalidDate, new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 

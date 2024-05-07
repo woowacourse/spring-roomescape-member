@@ -1,5 +1,6 @@
 package roomescape;
 
+import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -24,12 +25,12 @@ public class TestFixture {
     }
 
     public static Reservation MIA_RESERVATION(final ReservationTime time, final Theme theme) {
-        return new Reservation(USER_MIA, MIA_RESERVATION_DATE, time, theme);
+        return new Reservation(new Name(USER_MIA), MIA_RESERVATION_DATE, time, theme);
     }
 
     public static Reservation TOMMY_RESERVATION() {
         return new Reservation(
-                USER_TOMMY, TOMMY_RESERVATION_DATE,
+                new Name(USER_TOMMY), TOMMY_RESERVATION_DATE,
                 new ReservationTime(TOMMY_RESERVATION_TIME), WOOTECO_THEME()
         );
     }
