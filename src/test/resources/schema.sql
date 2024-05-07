@@ -5,9 +5,9 @@ drop table if exists reservation_time CASCADE;
 CREATE TABLE theme
 (
     id          BIGINT       NOT NULL AUTO_INCREMENT,
-    name        VARCHAR(20)  NOT NULL,
-    description VARCHAR(80)  NOT NULL,
-    thumbnail   VARCHAR(700) NOT NULL,
+    name        VARCHAR(100)  NOT NULL,
+    description VARCHAR(500)  NOT NULL,
+    thumbnail   VARCHAR(1000) NOT NULL,
     PRIMARY KEY (id)
 );
 
@@ -21,7 +21,7 @@ CREATE TABLE reservation_time
 CREATE TABLE reservation
 (
     id       BIGINT     NOT NULL AUTO_INCREMENT,
-    name     VARCHAR(5) NOT NULL,
+    name     VARCHAR(100) NOT NULL,
     date     DATE       NOT NULL,
     time_id  BIGINT, -- 컬럼 수정
     theme_id BIGINT, -- 컬럼 수정
