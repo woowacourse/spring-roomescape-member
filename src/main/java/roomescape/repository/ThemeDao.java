@@ -1,5 +1,7 @@
 package roomescape.repository;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -50,16 +52,19 @@ public class ThemeDao {
         jdbcTemplate.update(query, themeID);
     }
 
-    public List<Theme> getLastWeekTop10() {
+    public List<Theme> getLastWeekTop10(LocalDate currentDate) {
+        LocalDate weekAgo = currentDate.minusWeeks(1);
+        Timestamp currentTimestamp = Timestamp.valueOf(currentDate.atStartOfDay());
+        Timestamp weekAgoTimestamp = Timestamp.valueOf(weekAgo.atStartOfDay());
         String query = "SELECT t.id, t.name, t.description, t.thumbnail, COUNT(r.id) AS reservation_count " +
                 "FROM theme t " +
                 "INNER JOIN reservation r ON t.id = r.theme_id " +
-                "WHERE r.date >=( TIMESTAMPADD(DAY, -7, CURRENT_DATE)) " +
-                "AND r.date <= ( TIMESTAMPADD(DAY, -1, CURRENT_DATE)) " +
+                "WHERE r.date >= ? " +
+                "AND r.date < ? " +
                 "GROUP BY t.id, t.name, t.description, t.thumbnail " +
                 "ORDER BY reservation_count DESC " +
                 "LIMIT 10";
-        return jdbcTemplate.query(query, themeRowMapper);
+        return jdbcTemplate.query(query, themeRowMapper, weekAgoTimestamp, currentTimestamp);
     }
 
     public boolean existsById(Long id) {

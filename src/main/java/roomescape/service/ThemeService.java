@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -26,7 +27,11 @@ public class ThemeService {
     }
 
     public List<Theme> getLastWeekTop10() {
-        return themeDao.getLastWeekTop10();
+        return getLastWeekTop10(LocalDate.now());
+    }
+
+    public List<Theme> getLastWeekTop10(LocalDate currentDate) {
+        return themeDao.getLastWeekTop10(currentDate);
     }
 
     public Theme create(Theme theme) {
