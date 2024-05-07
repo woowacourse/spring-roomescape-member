@@ -42,7 +42,10 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public Optional<ReservationTime> findById(long id) {
-        String query = "SELECT * FROM reservation_time WHERE id = ?";
+        String query = """
+                SELECT id, start_at FROM reservation_time
+                WHERE id = ?
+                """;
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(query, ROW_MAPPER, id));
         } catch (EmptyResultDataAccessException e) {
@@ -63,7 +66,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public List<ReservationTime> findAll() {
-        String query = "SELECT * FROM reservation_time";
+        String query = "SELECT id, start_at FROM reservation_time";
         return jdbcTemplate.query(query, ROW_MAPPER);
     }
 

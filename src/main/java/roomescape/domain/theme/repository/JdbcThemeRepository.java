@@ -45,7 +45,10 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public Optional<Theme> findById(long id) {
-        String query = "SELECT * FROM theme WHERE id = ?";
+        String query = """
+                SELECT id, name, description, thumbnail FROM theme 
+                WHERE id = ?
+                """;
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(query, ROW_MAPPER, id));
         } catch (EmptyResultDataAccessException e) {
@@ -55,7 +58,7 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findAll() {
-        String query = "SELECT * FROM theme";
+        String query = "SELECT id, name, description, thumbnail FROM theme";
         return jdbcTemplate.query(query, ROW_MAPPER);
     }
 
@@ -69,7 +72,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     public List<Theme> findPopularThemesForWeekLimit10(LocalDate now) {
         LocalDate baseDate = now.minusDays(POPULAR_THEMES_SELECTION_DAYS);
         String query = """
-                SELECT * FROM theme AS t
+                SELECT t.id, t.name, t.description, t.thumbnail FROM theme AS t
                 JOIN (
                     SELECT theme_id, count(*) AS theme_count, reservation_date FROM reservation
                     GROUP BY theme_id) AS r

@@ -88,7 +88,8 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {
         String query = """
-                SELECT * FROM reservation AS r
+                SELECT r.id, r.name, r.reservation_date, r.time_id, t.start_at, r.theme_id, th.name, th.description, th.thumbnail
+                FROM reservation AS r
                 JOIN reservation_time AS t
                 ON r.time_id = t.id
                 JOIN theme AS th
