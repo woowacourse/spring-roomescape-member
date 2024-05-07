@@ -55,15 +55,15 @@ public class ThemeRepository {
         return jdbcTemplate.query(sql, themeRowMapper);
     }
 
-    public List<Theme> findTop10ByOrderByReservationCountBetween(LocalDate start, LocalDate end) {
+    public List<Theme> findRanksBetween(LocalDate start, LocalDate end, int rankCount) {
         String sql = "select t.id, t.name, t.description, t.thumbnail " +
                 "from theme as t inner join reservation as r " +
                 "on t.id = r.theme_id " +
                 "where r.date between ? and ? " +
                 "group by t.id " +
                 "order by count(t.id) desc " +
-                "LIMIT 10";
-        return jdbcTemplate.query(sql, themeRowMapper, Date.valueOf(start), Date.valueOf(end));
+                "LIMIT ?";
+        return jdbcTemplate.query(sql, themeRowMapper, Date.valueOf(start), Date.valueOf(end), rankCount);
     }
 
     public void deleteById(Long id) {

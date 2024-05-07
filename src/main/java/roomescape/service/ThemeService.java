@@ -14,6 +14,7 @@ public class ThemeService {
 
     private static final int START_DAYS_SUBTRACT = 7;
     private static final int END_DAYS_SUBTRACT = 1;
+    private static final int RANK_COUNT = 10;
 
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
@@ -34,9 +35,10 @@ public class ThemeService {
     }
 
     public List<Theme> findTop10Recent7Days() {
-        return themeRepository.findTop10ByOrderByReservationCountBetween(
+        return themeRepository.findRanksBetween(
                 LocalDate.now().minusDays(START_DAYS_SUBTRACT),
-                LocalDate.now().minusDays(END_DAYS_SUBTRACT));
+                LocalDate.now().minusDays(END_DAYS_SUBTRACT),
+                RANK_COUNT);
     }
 
     public void deleteTheme(Long id) {
