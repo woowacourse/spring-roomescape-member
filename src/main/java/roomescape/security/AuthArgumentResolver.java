@@ -13,25 +13,25 @@ import roomescape.dto.response.MemberResponse;
 import roomescape.service.MemberService;
 
 @Component
-public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver {
+public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
 
     private static final String TOKEN = "token";
 
     private final MemberService memberService;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public LoginUserArgumentResolver(MemberService memberService, JwtTokenProvider jwtTokenProvider) {
+    public AuthArgumentResolver(MemberService memberService, JwtTokenProvider jwtTokenProvider) {
         this.memberService = memberService;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(LoginUser.class);
+        return parameter.hasParameterAnnotation(Auth.class);
     }
 
     @Override
-    public MemberResponse resolveArgument(
+    public Accessor resolveArgument(
             MethodParameter parameter,
             ModelAndViewContainer mavContainer,
             NativeWebRequest webRequest,
@@ -40,7 +40,14 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
         String token = extractTokenFromCookie(webRequest);
         Long id = jwtTokenProvider.getMemberId(token);
 
-        return memberService.getById(id);
+        MemberResponse memberResponse = memberService.getById(id);
+
+        return new Accessor(
+                memberResponse.id(),
+                memberResponse.name(),
+                memberResponse.email(),
+                memberResponse.role()
+        );
     }
 
     private String extractTokenFromCookie(NativeWebRequest webRequest) {
