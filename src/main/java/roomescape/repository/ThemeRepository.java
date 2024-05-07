@@ -60,7 +60,7 @@ public class ThemeRepository {
     public List<Theme> findRanksBetween(LocalDate start, LocalDate end, int rankCount) {
         String sql = "SELECT t.id, t.name, t.description, t.thumbnail " +
                 "FROM theme AS t " +
-                "INNER JOIN join reservation AS r " +
+                "INNER JOIN reservation AS r " +
                 "ON t.id = r.theme_id " +
                 "WHERE r.date BETWEEN ? AND ? " +
                 "GROUP BY t.id " +
