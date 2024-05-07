@@ -9,7 +9,7 @@ document.getElementById('logout-btn').addEventListener('click', function (event)
     credentials: 'include' // 쿠키를 포함시키기 위해 필요
   })
       .then(response => {
-        if(response.ok) {
+        if (response.ok) {
           // 로그아웃 성공, 페이지 새로고침 또는 리다이렉트
           window.location.reload();
         } else {
