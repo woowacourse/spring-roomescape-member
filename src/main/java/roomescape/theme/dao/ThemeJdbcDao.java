@@ -50,7 +50,7 @@ public class ThemeJdbcDao implements ThemeDao {
         try {
             Theme theme = jdbcTemplate.queryForObject(findThemeSql, THEME_ROW_MAPPER, themeId);
 
-            return Optional.of(theme);
+            return Optional.ofNullable(theme);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
