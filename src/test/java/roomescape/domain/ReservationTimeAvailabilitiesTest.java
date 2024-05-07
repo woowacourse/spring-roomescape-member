@@ -25,9 +25,9 @@ class ReservationTimeAvailabilitiesTest {
 
         final LocalDate date = LocalDate.now().plusDays(3);
         final List<Reservation> reservations = List.of(
-                Reservation.of(1L, "켈리", date, reservationTime1, theme),
-                Reservation.of(2L, "켈리", date, reservationTime2, theme),
-                Reservation.of(3L, "켈리", date, reservationTime3, theme)
+                Reservation.createInstance(1L, "켈리", date, reservationTime1, theme),
+                Reservation.createInstance(2L, "켈리", date, reservationTime2, theme),
+                Reservation.createInstance(3L, "켈리", date, reservationTime3, theme)
         );
 
 

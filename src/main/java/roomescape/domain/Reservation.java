@@ -12,7 +12,21 @@ public class Reservation {
     private final ReservationTime time;
     private final Theme theme;
 
-    public static Reservation of(
+    private Reservation(
+            final Long id,
+            final ClientName clientName,
+            final ReservationDate date,
+            final ReservationTime time,
+            final Theme theme
+    ) {
+        this.id = id;
+        this.clientName = clientName;
+        this.date = date;
+        this.time = time;
+        this.theme = theme;
+    }
+
+    public static Reservation createInstanceWithoutId(
             final String clientName,
             final LocalDate date,
             final ReservationTime time,
@@ -37,7 +51,7 @@ public class Reservation {
         }
     }
 
-    public static Reservation of(
+    public static Reservation createInstance(
             final Long id,
             final String clientName,
             final LocalDate date,
@@ -53,21 +67,7 @@ public class Reservation {
         );
     }
 
-    private Reservation(
-            final Long id,
-            final ClientName clientName,
-            final ReservationDate date,
-            final ReservationTime time,
-            final Theme theme
-    ) {
-        this.id = id;
-        this.clientName = clientName;
-        this.date = date;
-        this.time = time;
-        this.theme = theme;
-    }
-
-    public Reservation initializeIndex(final Long reservationId) {
+    public Reservation copyWithId(final Long reservationId) {
         return new Reservation(reservationId, clientName, date, time, theme);
     }
 

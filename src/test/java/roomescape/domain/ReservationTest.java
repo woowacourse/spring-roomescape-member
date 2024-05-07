@@ -19,7 +19,7 @@ class ReservationTest {
         final LocalDate reservationDate = LocalDate.now().plusDays(1);
         final ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(2, 22));
         final Theme theme = Theme.of(1L, "테바의 비밀친구", "테바의 은밀한 비밀친구", "대충 테바 사진 링크");
-        final Reservation reservation = Reservation.of(
+        final Reservation reservation = Reservation.createInstanceWithoutId(
                 clientName,
                 reservationDate,
                 reservationTime,
@@ -28,7 +28,7 @@ class ReservationTest {
         final Long initialIndex = 3L;
 
         // When
-        final Reservation initIndexReservation = reservation.initializeIndex(initialIndex);
+        final Reservation initIndexReservation = reservation.copyWithId(initialIndex);
 
         // Then
         assertThat(initIndexReservation.getId()).isEqualTo(initialIndex);
@@ -43,7 +43,7 @@ class ReservationTest {
         final LocalDate dateBeforeNow = LocalDate.now().minusDays(1);
 
         // When & Then
-        assertThatThrownBy(() -> Reservation.of("켈리", dateBeforeNow, reservationTime, theme))
+        assertThatThrownBy(() -> Reservation.createInstanceWithoutId("켈리", dateBeforeNow, reservationTime, theme))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약 일시는 현재 시간 이후여야 합니다.");
     }

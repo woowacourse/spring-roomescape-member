@@ -22,7 +22,7 @@ class ReservationResponseTest {
         final Theme theme = Theme.of(1L, "테바의 비밀친구", "테바의 은밀한 비밀친구", "대충 테바 사진 링크");
         final String clientName = "켈리";
         final LocalDate reservationDate = LocalDate.now().plusDays(1);
-        final Reservation reservation = Reservation.of(1L, clientName, reservationDate, reservationTime, theme);
+        final Reservation reservation = Reservation.createInstance(1L, clientName, reservationDate, reservationTime, theme);
 
         // When
         final ReservationResponse reservationResponse = ReservationResponse.from(reservation);
