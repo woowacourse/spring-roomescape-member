@@ -91,19 +91,19 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean isTimeIdExists(Long id) {
+    public Boolean isTimeIdExists(Long id) {
         String sql = "SELECT EXISTS (SELECT id FROM reservation WHERE time_id = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, id);
     }
 
     @Override
-    public boolean isThemeIdExists(Long id) {
+    public Boolean isThemeIdExists(Long id) {
         String sql = "SELECT EXISTS(SELECT id FROM reservation WHERE theme_id = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, id);
     }
 
     @Override
-    public boolean isDuplicated(LocalDate date, Long timeId, Long themeId) {
+    public Boolean isDuplicated(LocalDate date, Long timeId, Long themeId) {
         String sql = "SELECT EXISTS(SELECT id FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
     }

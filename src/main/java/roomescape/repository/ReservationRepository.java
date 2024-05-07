@@ -12,11 +12,11 @@ public interface ReservationRepository {
 
     int deleteById(Long id);
 
-    boolean isTimeIdExists(Long id);
+    Boolean isTimeIdExists(Long id);
 
-    boolean isThemeIdExists(Long id);
+    Boolean isThemeIdExists(Long id);
 
-    boolean isDuplicated(LocalDate date, Long timeId, Long themeId);
+    Boolean isDuplicated(LocalDate date, Long timeId, Long themeId);
 
     List<Reservation> findAllByDateAndThemeId(LocalDate date, Long themeId);
 }

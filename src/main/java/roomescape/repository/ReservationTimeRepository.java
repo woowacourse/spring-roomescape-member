@@ -14,5 +14,5 @@ public interface ReservationTimeRepository {
 
     List<ReservationTime> findAll();
 
-    boolean isStartTimeExists(LocalTime startTime);
+    Boolean isStartTimeExists(LocalTime startTime);
 }

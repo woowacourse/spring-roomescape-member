@@ -65,7 +65,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public boolean isNameExists(String name) {
+    public Boolean isNameExists(String name) {
         String sql = "SELECT EXISTS(SELECT id FROM theme WHERE name = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, name);
     }
