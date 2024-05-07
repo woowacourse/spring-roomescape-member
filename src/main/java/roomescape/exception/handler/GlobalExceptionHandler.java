@@ -1,7 +1,10 @@
 package roomescape.exception.handler;
 
+import jakarta.validation.ConstraintViolationException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -43,5 +46,19 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = UnableDeleteDataException.class)
     public ResponseEntity<String> handleUnableDeleteData(UnableDeleteDataException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(value = MethodArgumentNotValidException.class)
+    public ResponseEntity<String> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                             .body("field : " + ex.getBindingResult().getFieldErrors().get(0)
+                                                  .getField() + System.lineSeparator()
+                                     + "message : " + ex.getBindingResult().getFieldErrors().get(0)
+                                                        .getDefaultMessage());
+    }
+
+    @ExceptionHandler(value = ConstraintViolationException.class)
+    public ResponseEntity<String> handleConstraintViolation(ConstraintViolationException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

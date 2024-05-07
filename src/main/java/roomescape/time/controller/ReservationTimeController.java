@@ -3,7 +3,12 @@ package roomescape.time.controller;
 import java.net.URI;
 import java.util.List;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +25,7 @@ import roomescape.time.service.ReservationTimeService;
 
 @RestController
 @RequestMapping("/times")
+@Validated
 public class ReservationTimeController {
 
     private final ReservationTimeService reservationTimeService;
@@ -29,7 +35,7 @@ public class ReservationTimeController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTimeResponseDto> save(@RequestBody final ReservationTimeRequestDto request) {
+    public ResponseEntity<ReservationTimeResponseDto> save(@RequestBody @Valid final ReservationTimeRequestDto request) {
         final ReservationTimeResponseDto responseDto = new ReservationTimeResponseDto(reservationTimeService.save(request));
         return ResponseEntity.created(URI.create("/times/" + responseDto.id())).body(responseDto);
     }
@@ -43,13 +49,17 @@ public class ReservationTimeController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") final long id) {
+    public ResponseEntity<Void> delete(
+            @PathVariable("id")
+            @Min(value = 1, message = "올바른 시간 ID를 입력해야 합니다.") final long id) {
         reservationTimeService.deleteById(id);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/available")
-    public List<ReservationUserTime> findAvailableTime(@RequestParam("date") final String date, @RequestParam("themeId") final long themeId) {
+    public List<ReservationUserTime> findAvailableTime(
+            @NotBlank(message = "날짜를 입력해야 합니다.") @RequestParam("date") final String date,
+            @Min(value = 1, message = "올바른 테마 ID를 입력해야 합니다.") @RequestParam("themeId") final long themeId) {
         return reservationTimeService.findAvailableTime(date, themeId);
     }
 }
