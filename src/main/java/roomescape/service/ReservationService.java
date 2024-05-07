@@ -1,5 +1,11 @@
 package roomescape.service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.theme.Theme;
@@ -7,17 +13,9 @@ import roomescape.domain.time.Time;
 import roomescape.dto.reservation.ReservationAvailableTimeResponse;
 import roomescape.dto.reservation.ReservationRequest;
 import roomescape.dto.reservation.ReservationResponse;
-import roomescape.global.exception.model.ConflictException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.TimeRepository;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class ReservationService {
@@ -72,8 +70,9 @@ public class ReservationService {
     }
 
     private void validateDateAndTime(LocalDate requestDate, LocalDate today, Time time) {
-        if (requestDate.isBefore(today) || (requestDate.isEqual(today) && time.getStartAt().isBefore(LocalTime.now()))) {
-            throw new ConflictException("지난 날짜나 시간은 예약이 불가능합니다.");
+        if (requestDate.isBefore(today) || (requestDate.isEqual(today) && time.getStartAt()
+                .isBefore(LocalTime.now()))) {
+            throw new IllegalStateException("지난 날짜나 시간은 예약이 불가능합니다.");
         }
     }
 
@@ -82,7 +81,7 @@ public class ReservationService {
                 reservationRequest.timeId(), reservationRequest.date(), theme.getId());
 
         if (duplicateTimeReservation.size() > 0) {
-            throw new ConflictException("이미 해당 날짜/시간/테마에 예약이 존재합니다.");
+            throw new IllegalStateException("이미 해당 날짜/시간/테마에 예약이 존재합니다.");
         }
     }
 

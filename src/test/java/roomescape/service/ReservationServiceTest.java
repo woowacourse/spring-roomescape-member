@@ -1,5 +1,10 @@
 package roomescape.service;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,16 +16,9 @@ import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.Time;
 import roomescape.dto.reservation.ReservationRequest;
-import roomescape.global.exception.model.ConflictException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.TimeRepository;
-
-import javax.sql.DataSource;
-import java.time.LocalDate;
-import java.time.LocalTime;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
 @Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
@@ -58,7 +56,7 @@ class ReservationServiceTest {
 
         assertThatThrownBy(() -> reservationService.createReservation(
                 new ReservationRequest("예약", LocalDate.now().plusDays(1L), time.getId(), theme.getId())))
-                .isInstanceOf(ConflictException.class);
+                .isInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -72,7 +70,7 @@ class ReservationServiceTest {
         // when & then
         assertThatThrownBy(() -> reservationService.createReservation(
                 new ReservationRequest("예약", beforeDate, time.getId(), theme.getId())))
-                .isInstanceOf(ConflictException.class);
+                .isInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -87,6 +85,6 @@ class ReservationServiceTest {
         // when & then
         assertThatThrownBy(() -> reservationService.createReservation(
                 new ReservationRequest("예약", LocalDate.now(), time.getId(), theme.getId()))
-        ).isInstanceOf(ConflictException.class);
+        ).isInstanceOf(IllegalStateException.class);
     }
 }

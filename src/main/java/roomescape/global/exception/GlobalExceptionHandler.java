@@ -1,6 +1,7 @@
 package roomescape.global.exception;
 
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -14,9 +15,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
-import roomescape.global.exception.model.ConflictException;
-
-import java.util.List;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -52,8 +50,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity(new ExceptionResponse(message), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(value = ConflictException.class)
-    public ResponseEntity<ExceptionResponse> handle(ConflictException e) {
+    @ExceptionHandler(value = IllegalStateException.class)
+    public ResponseEntity<ExceptionResponse> handle(IllegalStateException e) {
         return new ResponseEntity(new ExceptionResponse(e.getMessage()), HttpStatus.CONFLICT);
     }
 
