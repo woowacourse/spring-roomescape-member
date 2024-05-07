@@ -14,8 +14,10 @@ public class ReservationTimeAvailabilities {
 
     public static ReservationTimeAvailabilities of(final List<ReservationTime> reservationTimes, final List<Reservation> reservations) {
         final Map<ReservationTime, Boolean> reservationTimeAvailabilities = new HashMap<>();
-        reservationTimes.forEach(reservationTime -> reservationTimeAvailabilities.put(
-                reservationTime, isTimeAvailable(reservations, reservationTime)));
+
+        for (ReservationTime reservationTime : reservationTimes) {
+            reservationTimeAvailabilities.put(reservationTime, isTimeAvailable(reservations, reservationTime));
+        }
 
         return new ReservationTimeAvailabilities(reservationTimeAvailabilities);
     }
