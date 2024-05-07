@@ -74,10 +74,10 @@ public class JdbcThemeRepository implements ThemeRepository {
     public List<Theme> findPopular(int count) {
         String sql = """
             SELECT
-                th.id AS id, 
-                th.name AS name, 
+                th.id AS id,
+                th.name AS name,
                 th.description AS description,
-                th.thumbnail AS thumbnail, 
+                th.thumbnail AS thumbnail,
                 COUNT(r.theme_id) AS count
             FROM theme AS th
             LEFT JOIN reservation AS r ON th.id = r.theme_id AND r.date BETWEEN TIMESTAMPADD(DAY, -8, NOW()) AND TIMESTAMPADD(DAY, -1, NOW())
