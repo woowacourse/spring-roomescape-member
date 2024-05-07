@@ -12,9 +12,9 @@ public interface ReservationRepository {
 
     int deleteById(Long id);
 
-    Boolean isTimeIdExists(Long id);
+    Boolean isTimeIdUsed(Long id);
 
-    Boolean isThemeIdExists(Long id);
+    Boolean isThemeIdUsed(Long id);
 
     Boolean isDuplicated(LocalDate date, Long timeId, Long themeId);
 

@@ -37,7 +37,7 @@ public class ThemeService {
     }
 
     public int delete(Long id) {
-        if (reservationRepository.isThemeIdExists(id)) {
+        if (reservationRepository.isThemeIdUsed(id)) {
             throw new ReservationExistsException();
         }
         return themeRepository.deleteById(id);

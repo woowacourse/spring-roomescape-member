@@ -49,7 +49,7 @@ public class ReservationTimeService {
     }
 
     public int delete(Long id) {
-        if (reservationRepository.isTimeIdExists(id)) {
+        if (reservationRepository.isTimeIdUsed(id)) {
             throw new ReservationExistsException();
         }
         return reservationTimeRepository.deleteById(id);

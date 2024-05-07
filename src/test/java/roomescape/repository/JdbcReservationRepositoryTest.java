@@ -91,8 +91,8 @@ class JdbcReservationRepositoryTest {
         Long nonExistingTimeId = savedReservationTime.getId();
 
         assertAll(
-            () -> assertThat(reservationRepository.isTimeIdExists(existingTimeId)).isTrue(),
-            () -> assertThat(reservationRepository.isTimeIdExists(nonExistingTimeId)).isFalse()
+            () -> assertThat(reservationRepository.isTimeIdUsed(existingTimeId)).isTrue(),
+            () -> assertThat(reservationRepository.isTimeIdUsed(nonExistingTimeId)).isFalse()
         );
     }
 
