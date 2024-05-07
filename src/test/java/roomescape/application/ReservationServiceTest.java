@@ -42,7 +42,7 @@ class ReservationServiceTest {
         Theme theme = themeRepository.create(new Theme(new ThemeName("themeName"), "desc", "url"));
         ReservationRequest reservationRequest = new ReservationRequest(
                 "test",
-                "2024-01-01",
+                LocalDate.of(2024, 1, 1),
                 time.getId(),
                 theme.getId()
         );
@@ -57,7 +57,7 @@ class ReservationServiceTest {
     @Test
     void shouldReturnIllegalArgumentExceptionWhenNotFoundReservationTime() {
         Theme savedTheme = themeRepository.create(new Theme(new ThemeName("test"), "test", "test"));
-        ReservationRequest request = new ReservationRequest("test", "2024-01-01", 99L, savedTheme.getId());
+        ReservationRequest request = new ReservationRequest("test", LocalDate.of(2024, 1, 1), 99L, savedTheme.getId());
 
         assertThatCode(() -> reservationService.create(request))
                 .isInstanceOf(RoomescapeException.class)
@@ -70,7 +70,7 @@ class ReservationServiceTest {
         ReservationTime time = reservationTimeRepository.create(new ReservationTime(LocalTime.of(12, 0)));
         ReservationRequest request = new ReservationRequest(
                 "test",
-                "2024-01-01",
+                LocalDate.of(2024, 1, 1),
                 time.getId(),
                 99L
         );
@@ -87,7 +87,7 @@ class ReservationServiceTest {
         Theme theme = themeRepository.create(new Theme(new ThemeName("test"), "test", "test"));
         ReservationRequest request = new ReservationRequest(
                 "test",
-                "2024-01-01",
+                LocalDate.of(2024, 1, 1),
                 time.getId(),
                 theme.getId()
         );
@@ -105,7 +105,7 @@ class ReservationServiceTest {
         Theme theme = themeRepository.create(new Theme(new ThemeName("test"), "test", "test"));
         System.out.println(time.getId() + " " + theme.getId());
         ReservationRequest reservationRequest = new ReservationRequest(
-                "test", "1999-12-31", time.getId(), theme.getId()
+                "test", LocalDate.of(1999, 12, 31), time.getId(), theme.getId()
         );
 
         assertThatCode(() -> reservationService.create(reservationRequest))

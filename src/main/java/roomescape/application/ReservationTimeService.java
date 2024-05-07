@@ -25,7 +25,7 @@ public class ReservationTimeService {
 
     @Transactional
     public ReservationTimeResponse create(ReservationTimeRequest request) {
-        if (reservationTimeRepository.existsByStartAt(request.parsedStartAt())) {
+        if (reservationTimeRepository.existsByStartAt(request.startAt())) {
             throw new RoomescapeException("이미 존재하는 예약입니다.");
         }
         ReservationTime reservationTime = reservationTimeRepository.create(request.toReservationTime());

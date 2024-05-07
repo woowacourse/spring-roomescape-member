@@ -40,7 +40,7 @@ public class ReservationService {
         ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
                 .orElseThrow(() -> new RoomescapeException("존재하지 않는 예약 시간 입니다."));
 
-        if (reservationRepository.existsBy(request.parsedDate(), request.timeId(), request.themeId())) {
+        if (reservationRepository.existsBy(request.date(), request.timeId(), request.themeId())) {
             throw new RoomescapeException("이미 존재하는 예약입니다.");
         }
         Reservation reservation = request.toReservation(reservationTime, theme);
