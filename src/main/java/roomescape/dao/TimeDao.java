@@ -56,11 +56,10 @@ public class TimeDao {
                     rt.id, start_at, IFNULL(is_reserved, 'False') AS is_reserved
                 FROM reservation_time rt
                 LEFT JOIN (
-                    SELECT rt.id, 'True' AS is_reserved
-                    FROM reservation_time rt
-                    JOIN reservation r ON r.time_id = rt.id
+                    SELECT r.time_id, 'True' AS is_reserved
+                    FROM reservation r
                     WHERE r.date = ? AND r.theme_id = ?
-                ) rvt ON rt.id = rvt.id
+                ) r ON rt.id = r.time_id
                 """;
 
         List<ReservationTimeInfoResponse> results = jdbcTemplate.query(sql, (rs, rowNum) -> {
