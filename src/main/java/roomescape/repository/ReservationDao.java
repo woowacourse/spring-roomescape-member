@@ -88,7 +88,6 @@ public class ReservationDao {
         return jdbcTemplate.queryForObject(sql, Integer.class, themeId) != 0;
     }
 
-    //TODO: 엔티티 만들기~~
     public List<Reservation> findByDateAndThemeId(final LocalDate date, final Long themeId) {
         String sql = """
                     SELECT

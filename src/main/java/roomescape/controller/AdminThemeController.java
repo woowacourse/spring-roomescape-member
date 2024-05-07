@@ -11,10 +11,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/themes")
-public class ThemeController {
+public class AdminThemeController {
     private final ThemeService themeService;
 
-    public ThemeController(final ThemeService themeService) {
+    public AdminThemeController(final ThemeService themeService) {
         this.themeService = themeService;
     }
 
