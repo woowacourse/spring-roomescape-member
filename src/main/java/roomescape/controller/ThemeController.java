@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Theme;
 import roomescape.dto.app.ThemeAppRequest;
+import roomescape.dto.web.ErrorMessageResponse;
 import roomescape.dto.web.ThemeWebRequest;
 import roomescape.dto.web.ThemeWebResponse;
 import roomescape.exception.DuplicatedThemeException;
@@ -81,12 +82,14 @@ public class ThemeController {
     }
 
     @ExceptionHandler(DuplicatedThemeException.class)
-    public ResponseEntity<String> handleDuplicatedThemeException(DuplicatedThemeException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
+    public ResponseEntity<ErrorMessageResponse> handleDuplicatedThemeException(DuplicatedThemeException e) {
+        ErrorMessageResponse response = new ErrorMessageResponse(e.getMessage());
+        return ResponseEntity.badRequest().body(response);
     }
 
     @ExceptionHandler(ReservationExistsException.class)
-    public ResponseEntity<String> handleReservationExistsException(ReservationExistsException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
+    public ResponseEntity<ErrorMessageResponse> handleReservationExistsException(ReservationExistsException e) {
+        ErrorMessageResponse response = new ErrorMessageResponse(e.getMessage());
+        return ResponseEntity.badRequest().body(response);
     }
 }

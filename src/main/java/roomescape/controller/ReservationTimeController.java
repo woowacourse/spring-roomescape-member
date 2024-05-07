@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.app.ReservationTimeAppRequest;
 import roomescape.dto.app.ReservationTimeAppResponse;
+import roomescape.dto.web.ErrorMessageResponse;
 import roomescape.dto.web.ReservationTimeUserWebResponse;
 import roomescape.dto.web.ReservationTimeWebRequest;
 import roomescape.dto.web.ReservationTimeWebResponse;
@@ -81,12 +82,14 @@ public class ReservationTimeController {
     }
 
     @ExceptionHandler(ReservationExistsException.class)
-    public ResponseEntity<String> handleReservationExistsException(ReservationExistsException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
+    public ResponseEntity<ErrorMessageResponse> handleReservationExistsException(ReservationExistsException e) {
+        ErrorMessageResponse response = new ErrorMessageResponse(e.getMessage());
+        return ResponseEntity.badRequest().body(response);
     }
 
     @ExceptionHandler(DuplicatedReservationTimeException.class)
-    public ResponseEntity<String> handleDuplicatedReservationTimeException(DuplicatedReservationTimeException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
+    public ResponseEntity<ErrorMessageResponse> handleDuplicatedReservationTimeException(DuplicatedReservationTimeException e) {
+        ErrorMessageResponse response = new ErrorMessageResponse(e.getMessage());
+        return ResponseEntity.badRequest().body(response);
     }
 }
