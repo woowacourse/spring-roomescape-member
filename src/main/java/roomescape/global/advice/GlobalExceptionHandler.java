@@ -52,7 +52,7 @@ public class GlobalExceptionHandler {
         return new ErrorResponse("이미 존재하는 데이터입니다.");
     }
 
-    @ExceptionHandler({RuntimeException.class, Exception.class})
+    @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleServerErrorException(Exception e) {
         logger.error(e.getMessage());
