@@ -16,7 +16,6 @@ import roomescape.repository.theme.ThemeRepository;
 import roomescape.repository.reservation.ReservationRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -95,11 +94,6 @@ class ThemeServiceTest {
     void readPopularThemes() {
         // given
         List<Long> expected = List.of(5L, 1L, 2L, 3L, 4L);
-        for (Long id : expected) {
-            int index = id.intValue() - 1;
-            Mockito.when(themeRepository.findById(id))
-                    .thenReturn(Optional.ofNullable(Fixtures.themeFixtures.get(index)));
-        }
         Mockito.when(reservationRepository.findByDateBetween(any(), any()))
                 .thenReturn(Fixtures.reservationFixturesForPopularTheme);
 

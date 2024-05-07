@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.exception.BadRequestException;
 import roomescape.repository.reservation.ReservationRepository;
@@ -52,18 +53,17 @@ public class ThemeService {
         LocalDate end = LocalDate.now();
         LocalDate start = end.minusDays(POPULAR_THEME_PERIOD);
 
-        Map<Long, Long> reservationCountByTheme = collectReservationByTheme(start, end);
-
-        return reservationCountByTheme.entrySet().stream()
+        Map<Theme, Long> themeReferenceCount = calcThemeReferenceCount(start, end);
+        return themeReferenceCount.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                 .limit(POPULAR_THEME_COUNT)
-                .map(e -> readTheme(e.getKey()))
+                .map(e -> ThemeResponse.from(e.getKey()))
                 .toList();
     }
 
-    private Map<Long, Long> collectReservationByTheme(LocalDate start, LocalDate end) {
+    private Map<Theme, Long> calcThemeReferenceCount(LocalDate start, LocalDate end) {
         return reservationRepository.findByDateBetween(start, end).stream()
-                .collect(Collectors.groupingBy(reservation -> reservation.getTheme().getId(), Collectors.counting()));
+                .collect(Collectors.groupingBy(Reservation::getTheme, Collectors.counting()));
     }
 
     public ThemeResponse readTheme(Long id) {
