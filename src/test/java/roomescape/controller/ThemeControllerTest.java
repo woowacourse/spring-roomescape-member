@@ -31,7 +31,7 @@ class ThemeControllerTest {
             "https://url2");
     }
 
-    @DisplayName("테마를 생성한다 -> 201")
+    @DisplayName("성공: 테마 생성 -> 201")
     @Test
     void create() {
         ThemeWebRequest request = new ThemeWebRequest("방탈출", "대충 설명", "https://url.jpg");
@@ -45,7 +45,7 @@ class ThemeControllerTest {
             .body("id", is(3));
     }
 
-    @DisplayName("테마를 삭제한다 -> 204")
+    @DisplayName("성공: 테마 삭제 -> 204")
     @Test
     void delete() {
         RestAssured.given().log().all()
@@ -58,7 +58,7 @@ class ThemeControllerTest {
         assertThat(count).isEqualTo(1L);
     }
 
-    @DisplayName("테마를 조회한다 -> 200")
+    @DisplayName("성공: 테마 조회 -> 200")
     @Test
     void findAll() {
         RestAssured.given().log().all()
@@ -69,7 +69,7 @@ class ThemeControllerTest {
             .body("size()", is(2));
     }
 
-    @DisplayName("테마 정보 포맷이 잘못될 경우 -> 400")
+    @DisplayName("실패: 잘못된 포맷으로 테마 생성 -> 400")
     @Test
     void create_IllegalTheme() {
         ThemeWebRequest request = new ThemeWebRequest("방탈출3", "설명3", "ftp://url3");
@@ -82,7 +82,7 @@ class ThemeControllerTest {
             .statusCode(400);
     }
 
-    @DisplayName("중복된 데이터를 추가한다 -> 400")
+    @DisplayName("실패: 중복 테마 추가 -> 400")
     @Test
     void create_Duplicate() {
         ThemeWebRequest request = new ThemeWebRequest("방탈출1", "설명1", "https://url1");
@@ -95,7 +95,7 @@ class ThemeControllerTest {
             .statusCode(400);
     }
 
-    @DisplayName("예약이 존재한 상태에서 테마를 삭제한다 -> 400")
+    @DisplayName("실패: 예약에서 사용되는 테마 삭제 -> 400")
     @Test
     void delete_ReservationExists() {
         jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "12:00");
@@ -108,7 +108,7 @@ class ThemeControllerTest {
             .statusCode(400);
     }
 
-    @DisplayName("상위 10개 인기 테마를 조회 한다. -> 200")
+    @DisplayName("성공: 상위 10개의 인기 테마 조회 -> 200")
     @Test
     @Sql("/popularTestData.sql")
     void findPopularTheme() {
