@@ -23,7 +23,9 @@ class BookServiceTest {
     @DisplayName("예약 가능한 시간 목록들을 반환한다.")
     @Test
     void given_when_findAvaliableBookList_thenReturnBookResponse() {
+        //when
         final List<BookResponse> bookResponses = bookService.findAvaliableBookList(LocalDate.parse("2099-05-08"), 1L);
+        //then
         assertThat(bookResponses.size()).isEqualTo(4);
     }
 }

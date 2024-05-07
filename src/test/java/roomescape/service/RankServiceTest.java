@@ -27,7 +27,6 @@ class RankServiceTest {
         LocalDate startDate = LocalDate.parse("2024-04-30");
         LocalDate endDate = LocalDate.parse("2024-05-02");
         Long count = 10L;
-
         //when
         final List<ThemeResponse> popularThemeList = rankService.getPopularThemeList(startDate, endDate, count);
         assertThat(popularThemeList.get(0).id()).isEqualTo(2L);
