@@ -1,4 +1,4 @@
-package roomescape.controller.reservation;
+package roomescape.controller.api.reservation;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

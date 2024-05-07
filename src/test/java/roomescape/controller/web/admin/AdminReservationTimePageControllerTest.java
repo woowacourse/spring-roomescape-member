@@ -1,4 +1,4 @@
-package roomescape.controller.user;
+package roomescape.controller.web.admin;
 
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.DisplayName;
@@ -6,20 +6,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class ReservationPageControllerTest {
+class AdminReservationTimePageControllerTest {
 
     @Test
-    @DisplayName("사용자의 예약 페이지를 응답한다.")
-    void getUserPage() {
+    @DisplayName("/admin/time 페이지를 응답한다.")
+    void responseAdminPage() {
         RestAssured.given().log().all()
-                .when().get("/reservation")
+                .when().get("/admin/time")
                 .then().log().all()
                 .statusCode(200);
     }
-
-
 }
