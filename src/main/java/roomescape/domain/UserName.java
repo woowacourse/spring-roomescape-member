@@ -11,10 +11,10 @@ public class UserName {
 
     private void validateName(final String name) {
         if (name.isBlank()) {
-            throw new IllegalArgumentException("[ERROR] 잘못된 이름입니다.");
+            throw new IllegalArgumentException("[ERROR] 예약자명은 빈 값일 수 없습니다.");
         }
         if (name.length() > MAX_NAME_LENGTH) {
-            throw new IllegalArgumentException("[ERROR] 너무 긴 이름 입력입니다.");
+            throw new IllegalArgumentException("[ERROR] 예약자명의 길이는 " + MAX_NAME_LENGTH + "자 이하입니다.");
         }
     }
 
