@@ -3,10 +3,10 @@ package roomescape.controller;
 import static roomescape.TestFixture.DATE_FIXTURE;
 import static roomescape.TestFixture.RESERVATION_TIME_FIXTURE;
 import static roomescape.TestFixture.ROOM_THEME_FIXTURE;
-import static roomescape.TestFixture.TIME_FIXTURE;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +23,6 @@ import org.springframework.http.HttpStatus;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.RoomThemeDao;
-import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
@@ -114,8 +113,8 @@ class ReservationControllerTest {
     @Test
     void outdatedReservation() {
         // given
-        ReservationRequest reservationRequest = createReservationRequest("브라운",
-                LocalDate.of(2023, 12, 12));
+        ReservationRequest reservationRequest = createReservationRequest(
+                "브라운", LocalDate.of(2023, 12, 12));
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -128,8 +127,7 @@ class ReservationControllerTest {
     @Test
     void duplicateReservation() {
         // given
-        ReservationRequest reservationRequest = createReservationRequest("브라운",
-                DATE_FIXTURE);
+        ReservationRequest reservationRequest = createReservationRequest("브라운", DATE_FIXTURE);
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservationRequest)
@@ -157,14 +155,14 @@ class ReservationControllerTest {
     @Test
     void deleteReservationSuccess() {
         // given
-        ReservationTime savedReservationTime = reservationTimeDao.save(
-                new ReservationTime(TIME_FIXTURE));
-        RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);
-        Reservation savedReservation = reservationDao.save(
-                new Reservation(new Name("brown"), DATE_FIXTURE, savedReservationTime,
-                        savedRoomTheme));
+        ReservationRequest reservationRequest = createReservationRequest("브라운", DATE_FIXTURE);
+        Response reservationResponse = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationRequest)
+                .when().post("/reservations")
+                .then().log().all().extract().response();
+        long id = reservationResponse.jsonPath().getLong("id");
         // when & then
-        Long id = savedReservation.getId();
         RestAssured.given().log().all()
                 .when().delete("/reservations/" + id)
                 .then().log().all().assertThat().statusCode(HttpStatus.NO_CONTENT.value());

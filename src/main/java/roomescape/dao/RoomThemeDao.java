@@ -33,23 +33,24 @@ public class RoomThemeDao {
     }
 
     public List<RoomTheme> findAllRanking() {
-        return jdbcTemplate.query("""
+        String sql = """
                 select t.id, t.name, t.description, t.thumbnail from theme as t
                 inner join reservation as r on r.theme_id = t.id
                 WHERE r.date > (NOW() -  8) AND r.date < NOW()
                 group by t.id
                 order by count(t.id) desc
                 limit 10
-                """, rowMapper);
+                """;
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
     public RoomTheme findById(Long id) {
         List<RoomTheme> roomThemes = jdbcTemplate.query(
                 "SELECT * FROM theme WHERE id = ?", rowMapper, id);
-        if (roomThemes.size() == 1) {
-            return roomThemes.get(0);
+        if (roomThemes.isEmpty()) {
+            throw new InvalidInputException("해당 테마가 존재하지 않습니다.");
         }
-        throw new InvalidInputException("해당 테마가 존재하지 않습니다.");
+        return roomThemes.get(0);
     }
 
     public RoomTheme save(RoomTheme roomTheme) {
@@ -57,7 +58,6 @@ public class RoomThemeDao {
                 .addValue("name", roomTheme.getName())
                 .addValue("description", roomTheme.getDescription())
                 .addValue("thumbnail", roomTheme.getThumbnail());
-
         long id = simpleJdbcInsert.executeAndReturnKey(parameterSource).longValue();
         return new RoomTheme(id, roomTheme);
     }

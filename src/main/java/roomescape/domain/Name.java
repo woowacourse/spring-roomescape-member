@@ -6,13 +6,13 @@ public class Name {
     private final String name;
 
     public Name(String name) {
-        validateEmpty(name);
+        validateBlank(name);
         this.name = name;
     }
 
-    public void validateEmpty(String name) {
-        if (name.isBlank()) {
-            throw new InvalidInputException("이름에 공백을 입력할 수 없습니다.");
+    public void validateBlank(String name) {
+        if (name == null || name.isBlank()) {
+            throw new InvalidInputException("사용자 이름에 공백을 입력할 수 없습니다.");
         }
     }
 

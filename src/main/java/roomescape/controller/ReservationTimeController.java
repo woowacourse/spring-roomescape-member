@@ -35,11 +35,12 @@ public class ReservationTimeController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<ReservationTimeWithBookStatusResponse>> findReservationTimesWithBookStatus(
+    public ResponseEntity<List<ReservationTimeWithBookStatusResponse>>
+    findReservationTimesWithBookStatus(
             @RequestParam("date") LocalDate date,
             @RequestParam("themeId") Long themeId) {
-        ReservationTimeWithBookStatusRequest timeRequest = new ReservationTimeWithBookStatusRequest(
-                date, themeId);
+        ReservationTimeWithBookStatusRequest timeRequest
+                = new ReservationTimeWithBookStatusRequest(date, themeId);
         return ResponseEntity.ok(
                 reservationTimeService.findReservationTimesWithBookStatus(timeRequest));
     }
@@ -47,8 +48,8 @@ public class ReservationTimeController {
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> addTime(
             @Valid @RequestBody ReservationTimeRequest reservationTimeRequest) {
-        ReservationTimeResponse reservationTimeResponse = reservationTimeService.save(
-                reservationTimeRequest);
+        ReservationTimeResponse reservationTimeResponse
+                = reservationTimeService.save(reservationTimeRequest);
         return ResponseEntity.created(URI.create("/times/" + reservationTimeResponse.id()))
                 .body(reservationTimeResponse);
     }

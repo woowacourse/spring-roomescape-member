@@ -144,8 +144,8 @@ class ReservationTimeControllerTest {
                 .when().get("reservations")
                 .then().log().all().extract().response();
         assertAll(
-                () -> assertThat(deleteResponse.statusCode()).isEqualTo(
-                        HttpStatus.NO_CONTENT.value()),
+                () -> assertThat(deleteResponse.statusCode())
+                        .isEqualTo(HttpStatus.NO_CONTENT.value()),
                 () -> assertThat(reservationResponse.jsonPath().getList(".")).isEmpty()
         );
     }

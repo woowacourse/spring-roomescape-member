@@ -50,28 +50,27 @@ public class ReservationTimeDao {
                         new ReservationTime(rs.getLong("id"),
                                 rs.getTime("start_at").toLocalTime()),
                         rs.getBoolean("booked"));
-
         return jdbcTemplate.query(sql, mapper, bookedDate, bookedThemeId);
     }
 
     public ReservationTime findById(Long id) {
         List<ReservationTime> reservationTimes = jdbcTemplate.query(
                 "SELECT * FROM reservation_time WHERE id = ?", rowMapper, id);
-        if (reservationTimes.size() == 1) {
-            return reservationTimes.get(0);
+        if (reservationTimes.isEmpty()) {
+            throw new InvalidInputException("해당 예약 시간이 존재하지 않습니다.");
         }
-        throw new InvalidInputException("해당 예약 시간이 존재하지 않습니다.");
+        return reservationTimes.get(0);
     }
 
     public boolean existByStartAt(LocalTime startAt) {
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
+        return jdbcTemplate.queryForObject(
                 "SELECT EXISTS(SELECT * FROM reservation_time WHERE start_at = ?)",
-                Boolean.class, startAt));
+                Boolean.class, startAt);
     }
 
     public ReservationTime save(ReservationTime reservationTime) {
-        SqlParameterSource params = new MapSqlParameterSource("start_at",
-                reservationTime.getStartAt());
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("start_at", reservationTime.getStartAt());
         Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
         return new ReservationTime(id, reservationTime);
     }

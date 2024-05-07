@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ExceptionDto> handleHttpMessageNotReadableException() {
         return ResponseEntity.badRequest().body(new ExceptionDto(
-                "날짜 혹은 시간 입력 양식이 잘못되었습니다. ex)YYYY-mm-dd, HH:mm"));
+                "날짜 혹은 시간 입력 양식이 잘못되었습니다. ex)yyyy-MM-dd, HH:mm"));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
