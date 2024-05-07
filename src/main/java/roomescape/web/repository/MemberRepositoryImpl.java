@@ -1,5 +1,6 @@
 package roomescape.web.repository;
 
+import java.util.List;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -30,6 +31,12 @@ public class MemberRepositoryImpl implements MemberRepository {
     public Member findByEmail(final String email) {
         final String query = "SELECT id, name, email, password FROM member WHERE email = ?";
         return jdbcTemplate.queryForObject(query, getUserRowMapper(), email);
+    }
+
+    @Override
+    public List<Member> findAll() {
+        final String query = "SELECT id, name, email, password FROM member";
+        return jdbcTemplate.query(query, getUserRowMapper());
     }
 
     private RowMapper<Member> getUserRowMapper() {

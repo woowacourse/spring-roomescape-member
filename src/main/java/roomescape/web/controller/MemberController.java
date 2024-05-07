@@ -4,6 +4,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -74,5 +75,11 @@ public class MemberController {
         response.addCookie(cookie);
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/members")
+    public ResponseEntity<List<MemberResponse>> findMembers() {
+        final List<MemberResponse> memberResponses = memberService.findAll();
+        return ResponseEntity.ok().body(memberResponses);
     }
 }

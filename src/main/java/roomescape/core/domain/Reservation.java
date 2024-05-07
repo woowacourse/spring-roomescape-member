@@ -59,7 +59,11 @@ public class Reservation {
     public Long getMemberId() {
         return member.getId();
     }
-    
+
+    public Member getMember() {
+        return member;
+    }
+
     public String getName() {
         return member.getName();
     }
