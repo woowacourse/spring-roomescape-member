@@ -1,5 +1,8 @@
 package roomescape.web.controller;
 
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
+
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.core.domain.ReservationTime;
 import roomescape.core.dto.BookingTimeResponseDto;
 import roomescape.core.dto.ReservationTimeRequestDto;
 import roomescape.core.dto.ReservationTimeResponseDto;
@@ -29,14 +33,19 @@ public class ReservationTimeController {
     @PostMapping
     public ResponseEntity<ReservationTimeResponseDto> create(
             @RequestBody @Valid final ReservationTimeRequestDto request) {
-        final ReservationTimeResponseDto response = reservationTimeService.create(request);
+        final ReservationTime time = new ReservationTime(request.getStartAt());
+        final ReservationTime savedTime = reservationTimeService.create(time);
+        final ReservationTimeResponseDto response = new ReservationTimeResponseDto(savedTime);
         return ResponseEntity.created(URI.create("/times/" + response.getId()))
                 .body(response);
     }
 
     @GetMapping
     public ResponseEntity<List<ReservationTimeResponseDto>> findAll() {
-        return ResponseEntity.ok(reservationTimeService.findAll());
+        return reservationTimeService.findAll()
+                .stream()
+                .map(ReservationTimeResponseDto::new)
+                .collect(collectingAndThen(toList(), ResponseEntity::ok));
     }
 
     @GetMapping(params = {"date", "themeId"})
@@ -48,6 +57,7 @@ public class ReservationTimeController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") final long id) {
         reservationTimeService.delete(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent()
+                .build();
     }
 }

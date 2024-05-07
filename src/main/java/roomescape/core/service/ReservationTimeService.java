@@ -26,19 +26,15 @@ public class ReservationTimeService {
     }
 
     @Transactional
-    public ReservationTimeResponseDto create(final ReservationTimeRequestDto request) {
-        final ReservationTime reservationTime = new ReservationTime(request.getStartAt());
-        validateDuplicatedStartAt(reservationTime);
-        final Long id = reservationTimeRepository.save(reservationTime);
-        return new ReservationTimeResponseDto(id, reservationTime);
+    public ReservationTime create(final ReservationTime time) {
+        validateDuplicatedStartAt(time);
+        final Long id = reservationTimeRepository.save(time);
+        return new ReservationTime(id, time.getStartAtString());
     }
 
     @Transactional(readOnly = true)
-    public List<ReservationTimeResponseDto> findAll() {
-        return reservationTimeRepository.findAll()
-                .stream()
-                .map(ReservationTimeResponseDto::new)
-                .toList();
+    public List<ReservationTime> findAll() {
+        return reservationTimeRepository.findAll();
     }
 
     @Transactional(readOnly = true)
