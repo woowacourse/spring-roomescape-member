@@ -38,7 +38,7 @@ public class ReservationService {
     public List<ReservationResponse> findAllReservation() {
         List<Reservation> reservations = reservationRepository.findAll();
         return reservations.stream()
-                .map(ReservationResponse::from)
+                .map(ReservationResponse::new)
                 .toList();
     }
 
@@ -51,7 +51,7 @@ public class ReservationService {
 
         Reservation reservation = request.toReservation(time, theme);
         Reservation savedReservation = reservationRepository.save(reservation);
-        return ReservationResponse.from(savedReservation);
+        return new ReservationResponse(savedReservation);
     }
 
     private void validateDuplicateReservation(ReservationRequest request) {

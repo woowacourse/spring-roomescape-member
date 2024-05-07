@@ -16,12 +16,8 @@ public class AvailableReservationTimeResponse {
         this.alreadyBooked = alreadyBooked;
     }
 
-    public static AvailableReservationTimeResponse of(ReservationTime time, boolean alreadyBooked) {
-        return new AvailableReservationTimeResponse(
-                time.getId(),
-                time.getStartAt(),
-                alreadyBooked
-        );
+    public AvailableReservationTimeResponse(ReservationTime time, boolean alreadyBooked) {
+        this(time.getId(), time.getStartAt(), alreadyBooked);
     }
 
     public Long getId() {

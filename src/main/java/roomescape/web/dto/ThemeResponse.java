@@ -8,16 +8,15 @@ public class ThemeResponse {
     private final String description;
     private final String thumbnail;
 
-    public ThemeResponse(final Long id, final String name, final String description, final String thumbnail) {
+    public ThemeResponse(Long id, String name, String description, String thumbnail) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
     }
 
-    public static ThemeResponse from(Theme theme) {
-        return new ThemeResponse(
-                theme.getId(),
+    public ThemeResponse(Theme theme) {
+        this(theme.getId(),
                 theme.getName(),
                 theme.getDescription(),
                 theme.getThumbnail()

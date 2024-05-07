@@ -27,7 +27,7 @@ public class ReservationTimeService {
     public List<ReservationTimeResponse> findAllReservationTime() {
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
         return reservationTimes.stream()
-                .map(ReservationTimeResponse::from)
+                .map(ReservationTimeResponse::new)
                 .toList();
     }
 
@@ -42,7 +42,7 @@ public class ReservationTimeService {
     private AvailableReservationTimeResponse toAvailableReservationTimeResponse(
             ReservationTime time, List<Long> unavailableTimeIds) {
         boolean alreadyBooked = isAlreadyBooked(time.getId(), unavailableTimeIds);
-        return AvailableReservationTimeResponse.of(time, alreadyBooked);
+        return new AvailableReservationTimeResponse(time, alreadyBooked);
     }
 
     private boolean isAlreadyBooked(Long targetTimeId, List<Long> unavailableTimeIds) {
@@ -55,7 +55,7 @@ public class ReservationTimeService {
         }
         ReservationTime reservationTime = request.toReservationTime();
         ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
-        return ReservationTimeResponse.from(savedReservationTime);
+        return new ReservationTimeResponse(savedReservationTime);
     }
 
     public void deleteReservationTime(Long id) {

@@ -19,13 +19,12 @@ public class ReservationResponse {
         this.theme = theme;
     }
 
-    public static ReservationResponse from(Reservation reservation) {
-        return new ReservationResponse(
-                reservation.getId(),
+    public ReservationResponse(Reservation reservation) {
+        this(reservation.getId(),
                 reservation.getName(),
                 reservation.getDate(),
-                ReservationTimeResponse.from(reservation.getTime()),
-                ThemeResponse.from(reservation.getTheme())
+                new ReservationTimeResponse(reservation.getTime()),
+                new ThemeResponse(reservation.getTheme())
         );
     }
 

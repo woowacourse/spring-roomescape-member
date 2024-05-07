@@ -27,7 +27,7 @@ public class ThemeService {
     public List<ThemeResponse> findAllTheme() {
         List<Theme> themes = themeRepository.findAll();
         return themes.stream()
-                .map(ThemeResponse::from)
+                .map(ThemeResponse::new)
                 .toList();
     }
 
@@ -36,14 +36,14 @@ public class ThemeService {
         String endDate = LocalDate.now(clock).toString();
         List<Theme> themes = reservationRepository.findThemeWithMostPopularReservation(startDate, endDate);
         return themes.stream()
-                .map(ThemeResponse::from)
+                .map(ThemeResponse::new)
                 .toList();
     }
 
     public ThemeResponse saveTheme(ThemeRequest request) {
         Theme theme = request.toTheme();
         Theme savedTheme = themeRepository.save(theme);
-        return ThemeResponse.from(savedTheme);
+        return new ThemeResponse(savedTheme);
     }
 
     public void deleteTheme(Long id) {
