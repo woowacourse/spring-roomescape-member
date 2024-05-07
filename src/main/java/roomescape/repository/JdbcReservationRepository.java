@@ -96,16 +96,17 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Long> findThemeReservationCountsForLastWeek(int daysToStartBefore, int daysToEndBefore, int limit) {
-        String sql = String.format("""
+    public List<Long> findPopularThemesByReservation(int daysToStartBefore, int daysToEndBefore, int limit) {
+        String sql = """
                 SELECT theme_id
                 FROM reservation
-                WHERE date BETWEEN CURRENT_DATE() - INTERVAL '%d' DAY AND CURRENT_DATE() - INTERVAL '%d' DAY
+                WHERE date BETWEEN dateadd(day,?,now()) AND dateadd(day,?,now())
                 GROUP BY theme_id
                 ORDER BY COUNT(*) DESC
-                LIMIT %d;
-                """, daysToStartBefore, daysToEndBefore, limit);
-        return jdbcTemplate.query(sql, (resultSet, rowNum) -> resultSet.getLong("theme_id"));
+                LIMIT ?;
+                """;
+        return jdbcTemplate.query(sql, (resultSet, rowNum) -> resultSet.getLong("theme_id"),
+                -daysToStartBefore, -daysToEndBefore, limit);
     }
 
     @Override

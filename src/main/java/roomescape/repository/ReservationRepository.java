@@ -12,7 +12,7 @@ public interface ReservationRepository {
 
     Reservation findById(Long id);
 
-    List<Long> findThemeReservationCountsForLastWeek(int daysToStartBefore, int daysToEndBefore, int limit);
+    List<Long> findPopularThemesByReservation(int daysToStartBefore, int daysToEndBefore, int limit);
 
     List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId);
 

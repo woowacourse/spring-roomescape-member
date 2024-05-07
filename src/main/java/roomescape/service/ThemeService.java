@@ -47,7 +47,7 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> getPopularThemes() {
-        List<Long> popularThemeIds = reservationRepository.findThemeReservationCountsForLastWeek(7, 1, 10);
+        List<Long> popularThemeIds = reservationRepository.findPopularThemesByReservation(7, 1, 10);
         return popularThemeIds.stream()
                 .map(themeRepository::findById)
                 .map(ThemeResponse::from)
