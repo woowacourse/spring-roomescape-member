@@ -49,10 +49,4 @@ public class ReservationController {
         reservationService.delete(id);
         return ResponseEntity.noContent().build();
     }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Void> handleIllegalArgumentException(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().build();
-    }
-
 }

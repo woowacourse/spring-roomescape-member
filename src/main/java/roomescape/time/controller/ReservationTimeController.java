@@ -51,9 +51,4 @@ public class ReservationTimeController {
         LocalDate parseDate = LocalDate.parse(date);
         return ResponseEntity.ok(reservationTimeService.available(parseDate, themeId));
     }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Void> handleIllegalArgumentException(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().build();
-    }
 }
