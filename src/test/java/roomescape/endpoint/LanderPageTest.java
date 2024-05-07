@@ -1,8 +1,10 @@
 package roomescape.endpoint;
 
+import io.restassured.RestAssured;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 
@@ -21,6 +23,9 @@ class LanderPageTest {
             "/:사용자 메인 페이지"
     }, delimiter = ':')
     void loadPage(String path, String description) {
-        HttpRestTestTemplate.assertGetOk(path);
+        RestAssured.given().log().all()
+                .when().get(path)
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value());
     }
 }

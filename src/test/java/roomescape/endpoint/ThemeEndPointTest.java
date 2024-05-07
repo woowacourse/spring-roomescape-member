@@ -1,15 +1,21 @@
 package roomescape.endpoint;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
-import static roomescape.endpoint.RequestFixture.themeRequest;
 
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import roomescape.domain.ThemeRepository;
+import roomescape.dto.ThemeRequest;
+import roomescape.dto.ThemeResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -19,33 +25,80 @@ public class ThemeEndPointTest {
     @Autowired
     ThemeRepository themeRepository;
 
-    @DisplayName("테마 목록 조회")
+    @DisplayName("테마 목록을 조회하면 상태 코드 200과 테마 목록을 응답으로 반환한다.")
     @Test
     void getThemes() {
-        HttpRestTestTemplate.assertGetOk("/themes");
+        List<ThemeResponse> responses = RestAssured.given().log().all()
+                .when().get("/themes")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .jsonPath()
+                .getList(".", ThemeResponse.class);
+
+        List<ThemeResponse> expected = List.of(
+                new ThemeResponse(1L, "이름1", "설명1", "썸네일1"),
+                new ThemeResponse(2L, "이름2", "설명2", "썸네일2")
+        );
+
+        assertThat(responses)
+                .isEqualTo(expected);
     }
 
-    @DisplayName("테마 추가")
+    @DisplayName("테마를 추가하면 상태 코드 201와 추가된 객체를 반환한다.")
     @Test
     void addTheme() {
-        HttpRestTestTemplate.assertPostCreated(themeRequest, "/themes", "id", notNullValue());
+        ThemeRequest request = new ThemeRequest("이름", "설명", "썸네일");
+        ThemeResponse expected = new ThemeResponse(3L, "이름", "설명", "썸네일");
+
+        ThemeResponse response = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract()
+                .as(ThemeResponse.class);
+
+        assertThat(response)
+                .isEqualTo(expected);
     }
 
-    @DisplayName("테마 삭제")
+    @DisplayName("테마를 삭제하면 상태 코드 204를 반환한다.")
     @Test
     void deleteTheme() {
-        HttpRestTestTemplate.assertDeleteNoContent("/themes/1");
+        RestAssured.given().log().all()
+                .when().delete("/themes/1")
+                .then().log().all()
+                .statusCode(HttpStatus.NO_CONTENT.value())
+                .body(notNullValue());
     }
 
-    @DisplayName("테마 삭제 불가능 - 해당 테마에 예약 존재")
+    @DisplayName("예약이 존재하는 테마를 삭제하면 상태 코드 400을 반환한다.")
     @Test
     void deleteThemeFailed() {
-        HttpRestTestTemplate.assertDeleteBadRequest("/themes/2");
+        RestAssured.given().log().all()
+                .when().delete("/themes/2")
+                .then().log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("테마 순위 조회")
+    @DisplayName("테마 순위를 조회하면 상태코드 200과 테마의 순위를 반환한다.")
     @Test
     void getTopThemes() {
-        HttpRestTestTemplate.assertGetOk("/themes/rankings");
+        List<ThemeResponse> responses = RestAssured.given().log().all()
+                .when().get("/themes/rankings")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .jsonPath()
+                .getList(".", ThemeResponse.class);
+
+        List<ThemeResponse> expected = List.of(
+                new ThemeResponse(2L, "이름2", "설명2", "썸네일2")
+        );
+
+        assertThat(responses)
+                .isEqualTo(expected);
     }
 }
