@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Theme;
+import roomescape.exception.IllegalUserRequestException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -51,7 +52,7 @@ class ThemeServiceTest {
     @Sql(scripts = {"/theme-time-data.sql", "/reservation-data.sql"})
     void deleteReservedTime_Failure() {
         assertThatThrownBy(() -> themeService.deleteTheme(1L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IllegalUserRequestException.class)
                 .hasMessage("이미 예약중인 테마는 삭제할 수 없습니다.");
     }
 

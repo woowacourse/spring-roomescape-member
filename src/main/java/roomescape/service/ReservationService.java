@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.IllegalUserRequestException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -30,11 +31,11 @@ public class ReservationService {
 
     public Reservation createReservation(SaveReservationRequest request) {
         ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간 입니다."));
+                .orElseThrow(() -> new IllegalUserRequestException("존재하지 않는 예약 시간 입니다."));
         Theme theme = themeRepository.findById(request.themeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마 입니다."));
+                .orElseThrow(() -> new IllegalUserRequestException("존재하지 않는 테마 입니다."));
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(request.date(), request.timeId(), request.themeId())) {
-            throw new IllegalArgumentException("해당 시간에 이미 예약된 테마입니다.");
+            throw new IllegalUserRequestException("해당 시간에 이미 예약된 테마입니다.");
         }
         validateDateIsFuture(toLocalDateTime(request.date(), reservationTime));
 
@@ -44,7 +45,7 @@ public class ReservationService {
 
     private void validateDateIsFuture(LocalDateTime localDateTime) {
         if (localDateTime.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("지나간 날짜와 시간에 대한 예약 생성은 불가능합니다.");
+            throw new IllegalUserRequestException("지나간 날짜와 시간에 대한 예약 생성은 불가능합니다.");
         }
     }
 

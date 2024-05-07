@@ -3,6 +3,7 @@ package roomescape.service.dto;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.IllegalUserRequestException;
 
 import java.time.LocalDate;
 
@@ -14,7 +15,7 @@ public record SaveReservationRequest(String name, LocalDate date, Long timeId, L
 
     private void validateNameBlank(String name) {
         if (name.isBlank()) {
-            throw new IllegalArgumentException("이름은 빈칸일 수 없습니다.");
+            throw new IllegalUserRequestException("이름은 빈칸일 수 없습니다.");
         }
     }
 

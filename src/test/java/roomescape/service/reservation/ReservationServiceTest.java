@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.exception.IllegalUserRequestException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -57,7 +58,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.createReservation(request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IllegalUserRequestException.class)
                 .hasMessage("해당 시간에 이미 예약된 테마입니다.");
     }
 
@@ -68,7 +69,7 @@ class ReservationServiceTest {
                 "capy", LocalDate.now().minusDays(1L), 1L, 1L);
 
         assertThatThrownBy(() -> reservationService.createReservation(request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IllegalUserRequestException.class)
                 .hasMessage("지나간 날짜와 시간에 대한 예약 생성은 불가능합니다.");
     }
 }

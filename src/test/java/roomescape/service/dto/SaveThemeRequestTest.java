@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import roomescape.exception.IllegalUserRequestException;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -22,7 +23,7 @@ public class SaveThemeRequestTest {
     @DisplayName("테마 이름이 빈칸인 경우 예외가 발생한다.")
     void checkThemeNameBlank_Failure(String name) {
         assertThatThrownBy(() -> new SaveThemeRequest(name, "description", "thumbnail"))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IllegalUserRequestException.class)
                 .hasMessage("테마 이름은 빈칸일 수 없습니다.");
     }
 }

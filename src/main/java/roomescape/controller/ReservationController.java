@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Reservation;
+import roomescape.exception.IllegalUserRequestException;
 import roomescape.service.dto.ReservationResponse;
 import roomescape.service.dto.SaveReservationRequest;
 import roomescape.service.ReservationService;
@@ -45,7 +46,7 @@ public class ReservationController {
                 .stream()
                 .filter(reservation -> reservation.isSameReservation(id))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 아이디 입니다."));
+                .orElseThrow(() -> new IllegalUserRequestException("존재하지 않는 예약 아이디 입니다."));
 
         reservationService.deleteReservation(id);
 

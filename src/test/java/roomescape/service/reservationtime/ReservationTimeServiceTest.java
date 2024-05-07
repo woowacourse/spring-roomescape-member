@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.IllegalUserRequestException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.service.ReservationTimeService;
@@ -52,7 +53,7 @@ class ReservationTimeServiceTest {
         SaveReservationTimeRequest request = new SaveReservationTimeRequest(LocalTime.of(10, 0));
 
         assertThatThrownBy(() -> reservationTimeService.createReservationTime(request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IllegalUserRequestException.class)
                 .hasMessage("이미 존재하는 예약 시간입니다.");
     }
 
@@ -82,7 +83,7 @@ class ReservationTimeServiceTest {
     @Sql(scripts = {"/theme-time-data.sql", "/reservation-data.sql"})
     void deleteReservedTime_Failure() {
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IllegalUserRequestException.class)
                 .hasMessage("이미 예약중인 시간은 삭제할 수 없습니다.");
     }
 }

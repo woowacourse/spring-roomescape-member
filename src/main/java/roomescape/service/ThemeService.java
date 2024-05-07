@@ -2,6 +2,7 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
+import roomescape.exception.IllegalUserRequestException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.service.dto.SaveThemeRequest;
@@ -46,10 +47,10 @@ public class ThemeService {
                 .stream()
                 .filter(theme -> theme.isSameTheme(id))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마 아이디 입니다."));
+                .orElseThrow(() -> new IllegalUserRequestException("존재하지 않는 테마 아이디 입니다."));
 
         if (reservationRepository.existsByReservationThemeId(id)) {
-            throw new IllegalArgumentException("이미 예약중인 테마는 삭제할 수 없습니다.");
+            throw new IllegalUserRequestException("이미 예약중인 테마는 삭제할 수 없습니다.");
         }
 
         themeRepository.deleteById(id);

@@ -2,6 +2,7 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.IllegalUserRequestException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.service.dto.SaveReservationTimeRequest;
@@ -24,7 +25,7 @@ public class ReservationTimeService {
 
     public ReservationTime createReservationTime(SaveReservationTimeRequest request) {
         if (reservationTimeRepository.findByStartAt(request.startAt()).isPresent()) {
-            throw new IllegalArgumentException("이미 존재하는 예약 시간입니다.");
+            throw new IllegalUserRequestException("이미 존재하는 예약 시간입니다.");
         }
 
         ReservationTime newReservationTime = SaveReservationTimeRequest.toEntity(request);
@@ -54,10 +55,10 @@ public class ReservationTimeService {
                 .stream()
                 .filter(reservationTime -> reservationTime.isSameReservationTime(id))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 아이디 입니다."));
+                .orElseThrow(() -> new IllegalUserRequestException("존재하지 않는 예약 아이디 입니다."));
 
         if (reservationRepository.existsByReservationTimeId(id)) {
-            throw new IllegalArgumentException("이미 예약중인 시간은 삭제할 수 없습니다.");
+            throw new IllegalUserRequestException("이미 예약중인 시간은 삭제할 수 없습니다.");
         }
         reservationTimeRepository.deleteById(id);
     }
