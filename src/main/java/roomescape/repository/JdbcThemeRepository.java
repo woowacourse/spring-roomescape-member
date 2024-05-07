@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
@@ -14,12 +15,21 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
+    private final RowMapper<Theme> themeMapper;
 
     public JdbcThemeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+
         this.simpleJdbcInsert = new SimpleJdbcInsert(Objects.requireNonNull(jdbcTemplate.getDataSource()))
             .withTableName("theme")
             .usingGeneratedKeyColumns("id");
+
+        this.themeMapper = (rs, rowNum) -> new Theme(
+            rs.getLong("id"),
+            rs.getString("name"),
+            rs.getString("description"),
+            rs.getString("thumbnail")
+        );
     }
 
     @Override
@@ -30,8 +40,7 @@ public class JdbcThemeRepository implements ThemeRepository {
             Map.entry("thumbnail", theme.getThumbnail())
         );
 
-        long id = simpleJdbcInsert.executeAndReturnKey(saveSource)
-            .longValue();
+        long id = simpleJdbcInsert.executeAndReturnKey(saveSource).longValue();
 
         return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
@@ -45,24 +54,13 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public List<Theme> findAll() {
         String sql = "SELECT * FROM theme";
-
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new Theme(
-            rs.getLong("id"),
-            rs.getString("name"),
-            rs.getString("description"),
-            rs.getString("thumbnail")
-        ));
+        return jdbcTemplate.query(sql, themeMapper);
     }
 
     @Override
     public Theme findById(Long id) {
         String sql = "SELECT * FROM theme WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new Theme(
-            rs.getLong("id"),
-            rs.getString("name"),
-            rs.getString("description"),
-            rs.getString("thumbnail")
-        ), id);
+        return jdbcTemplate.queryForObject(sql, themeMapper, id);
     }
 
     @Override
@@ -91,11 +89,6 @@ public class JdbcThemeRepository implements ThemeRepository {
             LIMIT ?
             """;
 
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new Theme(
-            rs.getLong("id"),
-            rs.getString("name"),
-            rs.getString("description"),
-            rs.getString("thumbnail")
-        ), startDate, endDate, count);
+        return jdbcTemplate.query(sql, themeMapper, startDate, endDate, count);
     }
 }

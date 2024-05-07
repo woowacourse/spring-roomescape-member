@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
@@ -17,12 +18,30 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
+    private final RowMapper<Reservation> reservationMapper;
 
     public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        simpleJdbcInsert = new SimpleJdbcInsert(Objects.requireNonNull(jdbcTemplate.getDataSource()))
+
+        this.simpleJdbcInsert = new SimpleJdbcInsert(Objects.requireNonNull(jdbcTemplate.getDataSource()))
             .withTableName("reservation")
             .usingGeneratedKeyColumns("id");
+
+        this.reservationMapper = (rs, rowNum) -> new Reservation(
+            rs.getLong("reservation_id"),
+            rs.getString("reservation_name"),
+            LocalDate.parse(rs.getString("reservation_date")),
+            new ReservationTime(
+                rs.getLong("time_id"),
+                LocalTime.parse(rs.getString("time_value"))
+            ),
+            new Theme(
+                rs.getLong("theme_id"),
+                rs.getString("theme_name"),
+                rs.getString("theme_description"),
+                rs.getString("theme_thumbnail")
+            )
+        );
     }
 
     @Override
@@ -66,21 +85,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             """;
 
         return jdbcTemplate.query(
-            sql, (rs, rowNum) -> new Reservation(
-                rs.getLong("reservation_id"),
-                rs.getString("reservation_name"),
-                LocalDate.parse(rs.getString("reservation_date")),
-                new ReservationTime(
-                    rs.getLong("time_id"),
-                    LocalTime.parse(rs.getString("time_value"))
-                ),
-                new Theme(
-                    rs.getLong("theme_id"),
-                    rs.getString("theme_name"),
-                    rs.getString("theme_description"),
-                    rs.getString("theme_thumbnail")
-                )
-            )
+            sql, reservationMapper
         );
     }
 
@@ -128,19 +133,6 @@ public class JdbcReservationRepository implements ReservationRepository {
             """;
 
         return jdbcTemplate.query(
-            sql, (rs, rowNum) -> new Reservation(
-                rs.getLong("reservation_id"),
-                rs.getString("reservation_name"),
-                LocalDate.parse(rs.getString("reservation_date")),
-                new ReservationTime(
-                    rs.getLong("time_id"),
-                    LocalTime.parse(rs.getString("time_value"))
-                ),
-                new Theme(
-                    rs.getString("theme_name"),
-                    rs.getString("theme_description"),
-                    rs.getString("theme_thumbnail")
-                )
-            ), date, themeId);
+            sql, reservationMapper, date, themeId);
     }
 }
