@@ -97,7 +97,7 @@ class ReservationServiceTest {
         // given
         createReservationRequest(VALID_STRING_DATE);
         // when
-        reservationService.deleteById(1);
+        reservationService.deleteById(1L);
         // then
         assertThat(reservationService.findAll()).isEmpty();
     }

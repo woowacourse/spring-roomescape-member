@@ -25,3 +25,11 @@ CREATE TABLE IF NOT EXISTS reservation
     FOREIGN KEY (time_id) REFERENCES reservation_time (id) ON DELETE CASCADE,
     FOREIGN KEY (theme_id) REFERENCES theme (id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS member
+(
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    name VARCHAR NOT NULL,
+    email VARCHAR NOT NULL,
+    password VARCHAR NOT NULL
+)

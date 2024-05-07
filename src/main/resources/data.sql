@@ -13,3 +13,5 @@ insert into reservation(name, date, time_id, theme_id) values('명오', '2024-04
 insert into reservation(name, date, time_id, theme_id) values('제제', '2024-04-26', 2, 2);
 insert into reservation(name, date, time_id, theme_id) values('썬', '2024-05-01', 1, 2);
 insert into reservation(name, date, time_id, theme_id) values('아서', '2024-05-01', 1, 3);
+
+insert into member(name, email, password) values ('제제', 'zeze@gmail.com', 'zeze');
