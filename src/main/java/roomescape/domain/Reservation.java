@@ -1,8 +1,12 @@
 package roomescape.domain;
 
+import roomescape.domain.exception.InvalidRequestBodyFieldException;
+import roomescape.domain.exception.InvalidReservationTimeException;
+
 import java.time.LocalDate;
 
 public class Reservation {
+
     private Long id;
     private String name;
     private LocalDate date;
@@ -25,9 +29,15 @@ public class Reservation {
         this.theme = theme;
     }
 
-    private static void validateNotNull(String name, LocalDate date, ReservationTime time, Theme theme) {
+    private void validateNotNull(String name, LocalDate date, ReservationTime time, Theme theme) {
         if (name == null || name.isBlank() || date == null || time == null) {
-            throw new IllegalArgumentException("예약 필드값이 null 입니다.");
+            throw new InvalidRequestBodyFieldException("예약 필드값이 null 입니다.");
+        }
+    }
+
+    public void validateDifferentDateTime(LocalDate requestDate, ReservationTime requestTime) {
+        if (date.isEqual(requestDate) && time.isSameTime(requestTime)) {
+            throw new InvalidReservationTimeException("예약 날짜와 예약 시간이 중복될 수 없습니다.");
         }
     }
 

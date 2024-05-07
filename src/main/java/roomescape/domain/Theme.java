@@ -1,6 +1,9 @@
 package roomescape.domain;
 
+import roomescape.domain.exception.InvalidRequestBodyFieldException;
+
 public class Theme {
+
     private Long id;
     private String name;
     private String description;
@@ -23,7 +26,7 @@ public class Theme {
 
     private static void validateNotnull(String name, String description, String thumbnail) {
         if (name == null || name.isBlank() || description == null || thumbnail == null) {
-            throw new IllegalArgumentException("테마 필드값이 null 입니다.");
+            throw new InvalidRequestBodyFieldException("테마 필드값이 null 입니다.");
         }
     }
 
