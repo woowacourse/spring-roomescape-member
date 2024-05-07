@@ -11,8 +11,6 @@ public interface ThemeRepository {
 
     void deleteById(long id);
 
-    boolean existsByName(String name);
-
     Optional<Theme> findById(long id);
 
     List<Theme> getReferenceByReservationTermAndCount(String startDate, String endDate, long count);

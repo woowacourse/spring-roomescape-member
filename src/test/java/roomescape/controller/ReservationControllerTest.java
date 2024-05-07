@@ -83,8 +83,7 @@ public class ReservationControllerTest {
                 .body(new ReservationRequest("lilly", date, timeId, themeId))
                 .when().post("/reservations")
                 .then().log().all()
-                .assertThat().statusCode(400)
-                .body("message", is("선택하신 테마와 일정은 이미 예약이 존재합니다."));
+                .assertThat().statusCode(400);
     }
 
     @DisplayName("예약 추가 실패 테스트 - 이름 길이 오류")

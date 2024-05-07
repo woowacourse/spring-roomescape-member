@@ -27,19 +27,11 @@ public class ReservationService {
     }
 
     public ReservationResponse create(final ReservationRequest reservationRequest) {
-        validateDuplicated(reservationRequest);
         ReservationTime reservationTime = findTimeById(reservationRequest.timeId());
         Theme theme = findThemeById(reservationRequest.themeId());
         Reservation reservation = reservationRequest.toReservation(reservationTime, theme);
         Reservation newReservation = reservationRepository.save(reservation);
         return new ReservationResponse(newReservation);
-    }
-
-    private void validateDuplicated(ReservationRequest reservationRequest) {
-        if (reservationRepository.existsByDateAndTimeAndTheme(reservationRequest.date(), reservationRequest.timeId(),
-                reservationRequest.themeId())) {
-            throw new InvalidReservationException("선택하신 테마와 일정은 이미 예약이 존재합니다.");
-        }
     }
 
     private ReservationTime findTimeById(final long timeId) {

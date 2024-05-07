@@ -76,26 +76,6 @@ class ReservationTimeJDBCRepositoryTest {
         assertThat(reservationTimeRepository.findAll().size()).isEqualTo(expectedSize);
     }
 
-    @DisplayName("주어진 시간이 이미 존재한다.")
-    @Test
-    void existsTime() {
-        //when
-        boolean result = reservationTimeRepository.existsByStartAt("12:00");
-
-        //then
-        assertThat(result).isTrue();
-    }
-
-    @DisplayName("주어진 시간이 존재하지 않는다.")
-    @Test
-    void notExistsTime() {
-        //when
-        boolean result = reservationTimeRepository.existsByStartAt("10:00");
-
-        //then
-        assertThat(result).isFalse();
-    }
-
     @DisplayName("예약이 가능한 시간이 있다.")
     @Test
     void findAvailableTimesByThemeAndDate() {

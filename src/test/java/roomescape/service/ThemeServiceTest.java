@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.exception.InvalidReservationException;
@@ -42,8 +43,7 @@ class ThemeServiceTest {
 
         //when&then
         assertThatThrownBy(() -> themeService.create(themeRequest))
-                .isInstanceOf(InvalidReservationException.class)
-                .hasMessage("이미 존재하는 테마 이름입니다.");
+                .isInstanceOf(DuplicateKeyException.class);
     }
 
     @DisplayName("모든 테마를 조회한다.")

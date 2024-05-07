@@ -24,16 +24,9 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponse create(final ReservationTimeCreateRequest reservationTimeCreateRequest) {
-        validateDuplicated(reservationTimeCreateRequest);
         ReservationTime reservationTime = reservationTimeRepository.save(
                 new ReservationTime(reservationTimeCreateRequest.startAt()));
         return new ReservationTimeResponse(reservationTime);
-    }
-
-    private void validateDuplicated(ReservationTimeCreateRequest reservationTimeCreateRequest) {
-        if (reservationTimeRepository.existsByStartAt(reservationTimeCreateRequest.startAt())) {
-            throw new InvalidReservationException("이미 같은 시간이 존재합니다.");
-        }
     }
 
     public List<ReservationTimeResponse> findAll() {

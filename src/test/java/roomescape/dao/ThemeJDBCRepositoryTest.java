@@ -61,26 +61,6 @@ class ThemeJDBCRepositoryTest {
         assertThat(themeRepository.findAll()).hasSize(expectedSize);
     }
 
-    @DisplayName("같은 테마 이름이 존재한다.")
-    @Test
-    void existsByName() {
-        //when
-        boolean result = themeRepository.existsByName("레벨1 탈출");
-
-        //then
-        assertThat(result).isTrue();
-    }
-
-    @DisplayName("같은 테마 이름이 존재하지 않는다.")
-    @Test
-    void notExistsByName() {
-        //when
-        boolean result = themeRepository.existsByName("레벨3 탈출");
-
-        //then
-        assertThat(result).isFalse();
-    }
-
     @DisplayName("id로 테마를 조회한다.")
     @Test
     void findById() {

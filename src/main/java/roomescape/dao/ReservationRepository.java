@@ -10,8 +10,6 @@ public interface ReservationRepository {
 
     void deleteById(long id);
 
-    boolean existsByDateAndTimeAndTheme(String date, long timeId, long themeId);
-
     boolean existsByTimeId(long id);
 
     boolean existsByThemeId(long id);

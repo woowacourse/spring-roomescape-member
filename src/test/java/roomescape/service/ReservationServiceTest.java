@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.exception.InvalidReservationException;
@@ -66,8 +67,7 @@ class ReservationServiceTest {
 
         //when & then
         assertThatThrownBy(() -> reservationService.create(reservationRequest))
-                .isInstanceOf(InvalidReservationException.class)
-                .hasMessage("선택하신 테마와 일정은 이미 예약이 존재합니다.");
+                .isInstanceOf(DuplicateKeyException.class);
     }
 
     @DisplayName("존재하지 않는 시간으로 예약을 추가하면 예외를 발생시킨다.")

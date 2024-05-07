@@ -1,5 +1,6 @@
 package roomescape.exception;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -26,13 +27,19 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(new ExceptionTemplate(exception.getMessage()));
     }
 
-    @ExceptionHandler(NullPointerException.class)
+    @ExceptionHandler()
     public ResponseEntity<ExceptionTemplate> handleNullPointerException(NullPointerException exception) {
         return ResponseEntity.badRequest()
                 .body(new ExceptionTemplate(exception.getMessage()));
     }
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler()
+    public ResponseEntity<ExceptionTemplate> handleDuplicateKeyException(DuplicateKeyException exception) {
+        return ResponseEntity.badRequest()
+                .body(new ExceptionTemplate(exception.getMessage()));
+    }
+
+    @ExceptionHandler()
     public ResponseEntity<ExceptionTemplate> handleException(Exception exception) {
         return ResponseEntity.badRequest()
                 .body(new ExceptionTemplate(exception.getMessage()));

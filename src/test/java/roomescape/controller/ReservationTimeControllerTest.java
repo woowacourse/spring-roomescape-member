@@ -65,7 +65,7 @@ class ReservationTimeControllerTest {
                 .contentType(ContentType.JSON)
                 .body(new ReservationTimeCreateRequest("10:00"))
                 .when().post("/times")
-                .then().log().all().statusCode(400).body("message", is("이미 같은 시간이 존재합니다."));
+                .then().log().all().statusCode(400);
     }
 
     @DisplayName("시간 추가 실패 테스트 - 시간 오류")

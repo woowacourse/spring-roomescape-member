@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.exception.InvalidReservationException;
@@ -58,8 +59,7 @@ class ReservationTimeServiceTest {
 
         //when&then
         assertThatThrownBy(() -> reservationTimeService.create(reservationTimeCreateRequest))
-                .isInstanceOf(InvalidReservationException.class)
-                .hasMessage("이미 같은 시간이 존재합니다.");
+                .isInstanceOf(DuplicateKeyException.class);
     }
 
     @DisplayName("예약이 존재하는 시간으로 삭제를 시도하면 예외를 발생시킨다.")
