@@ -13,7 +13,7 @@ public interface ThemeRepository {
 
     Theme findById(Long id);
 
-    Boolean isNameExists(String name);
+    Boolean isExists(String name);
 
     List<Theme> findPopular(int start, int end, int count);
 }

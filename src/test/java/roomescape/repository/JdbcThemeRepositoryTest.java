@@ -70,9 +70,9 @@ class JdbcThemeRepositoryTest {
         themeRepository.save(theme2);
 
         assertAll(
-            () -> assertThat(themeRepository.isNameExists(name1)).isTrue(),
-            () -> assertThat(themeRepository.isNameExists(name2)).isTrue(),
-            () -> assertThat(themeRepository.isNameExists("bad_name")).isFalse()
+            () -> assertThat(themeRepository.isExists(name1)).isTrue(),
+            () -> assertThat(themeRepository.isExists(name2)).isTrue(),
+            () -> assertThat(themeRepository.isExists("bad_name")).isFalse()
         );
     }
 

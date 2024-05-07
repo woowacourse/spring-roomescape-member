@@ -31,7 +31,7 @@ public class ThemeService {
     }
 
     private void validateDuplication(SaveThemeDto request) {
-        if (themeRepository.isNameExists(request.name())) {
+        if (themeRepository.isExists(request.name())) {
             throw new DuplicatedThemeException();
         }
     }
