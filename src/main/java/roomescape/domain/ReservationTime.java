@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.time.LocalTime;
+import java.util.List;
 
 public class ReservationTime {
     private Long id;
@@ -17,6 +18,10 @@ public class ReservationTime {
 
     public ReservationTime(LocalTime startAt) {
         this(null, startAt);
+    }
+
+    public boolean isAlreadyBooked(List<Long> bookedTimeIds) {
+        return bookedTimeIds.contains(this.id);
     }
 
     public Long getId() {

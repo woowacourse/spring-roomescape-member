@@ -32,21 +32,17 @@ public class ReservationTimeService {
     }
 
     public List<AvailableReservationTimeResponse> findAllAvailableReservationTime(LocalDate date, long themeId) {
-        List<Long> unavailableTimeIds = reservationRepository.findTimeIdByDateAndThemeId(date, themeId);
+        List<Long> bookedTimeIds = reservationRepository.findTimeIdByDateAndThemeId(date, themeId);
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
         return reservationTimes.stream()
-                .map(time -> toAvailableReservationTimeResponse(time, unavailableTimeIds))
+                .map(time -> toAvailableReservationTimeResponse(time, bookedTimeIds))
                 .toList();
     }
 
     private AvailableReservationTimeResponse toAvailableReservationTimeResponse(
-            ReservationTime time, List<Long> unavailableTimeIds) {
-        boolean alreadyBooked = isAlreadyBooked(time.getId(), unavailableTimeIds);
+            ReservationTime time, List<Long> bookedTimeIds) {
+        boolean alreadyBooked = time.isAlreadyBooked(bookedTimeIds);
         return new AvailableReservationTimeResponse(time, alreadyBooked);
-    }
-
-    private boolean isAlreadyBooked(Long targetTimeId, List<Long> unavailableTimeIds) {
-        return unavailableTimeIds.contains(targetTimeId);
     }
 
     public ReservationTimeResponse saveReservationTime(ReservationTimeRequest request) {
