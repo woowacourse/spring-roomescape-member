@@ -10,11 +10,11 @@ import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequest;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 @Service
 public class ReservationService {
+
     private final ReservationDAO reservationDAO;
     private final ReservationTimeDAO reservationTimeDAO;
     private final ThemeDAO themeDAO;
@@ -35,38 +35,21 @@ public class ReservationService {
     }
 
     private void validateReservation(ReservationRequest reservationRequest) {
-        validateDuplicated(reservationRequest);
-        validatePast(reservationRequest);
-    }
-
-    private void validateDuplicated(ReservationRequest reservationRequest) {
-        LocalTime reservationTime = findRequestTime(reservationRequest);
+        ReservationTime requestTime = findRequestTime(reservationRequest);
+        LocalDate requestDate = reservationRequest.date();
         List<Reservation> reservations = reservationDAO.selectAll();
 
-        if (reservations.stream()
-                .anyMatch(reservation -> reservation.getDate().equals(reservationRequest.date()) &&
-                        reservation.getTime().isMatch(reservationTime))) {
-            throw new IllegalArgumentException("예약 날짜와 예약 시간이 중복될 수 없습니다.");
-        }
+        requestTime.validateNotPast(requestDate);
+        validateNotDuplicated(reservations, requestDate, requestTime);
     }
 
-    private void validatePast(ReservationRequest reservationRequest) {
-        LocalDate date = reservationRequest.date();
-        LocalTime reservationTime = findRequestTime(reservationRequest);
-
-        LocalDate today = LocalDate.now();
-        if (date.isBefore(today)) {
-            throw new IllegalArgumentException("지나간 날짜에 예약을 등록할 수 없습니다.");
-        }
-        if (date.isEqual(today) && reservationTime.isBefore(LocalTime.now())) {
-            throw new IllegalArgumentException("지나간 시간에 예약을 등록할 수 없습니다.");
-        }
-    }
-
-    private LocalTime findRequestTime(ReservationRequest reservationRequest) {
+    private ReservationTime findRequestTime(ReservationRequest reservationRequest) {
         Long timeId = reservationRequest.timeId();
-        ReservationTime time = reservationTimeDAO.findById(timeId);
-        return time.getStartAt();
+        return reservationTimeDAO.findById(timeId);
+    }
+
+    private void validateNotDuplicated(List<Reservation> reservations, LocalDate requestDate, ReservationTime requestTime) {
+        reservations.forEach(reservation -> reservation.validateDifferentDateTime(requestDate, requestTime));
     }
 
     public List<Reservation> findAll() {

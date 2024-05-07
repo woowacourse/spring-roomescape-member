@@ -10,6 +10,10 @@ import java.util.List;
 
 @Service
 public class ThemeService {
+
+    private static final int START_DAY = 7;
+    private static final int END_DAY = 1;
+
     private final ThemeDAO themeDAO;
 
     public ThemeService(ThemeDAO themeDAO) {
@@ -17,7 +21,7 @@ public class ThemeService {
     }
 
     public Theme save(ThemeRequest themeRequest) {
-        final Theme theme = new Theme(themeRequest.name(), themeRequest.description(), themeRequest.thumbnail());
+        Theme theme = new Theme(themeRequest.name(), themeRequest.description(), themeRequest.thumbnail());
         return themeDAO.insert(theme);
     }
 
@@ -31,8 +35,8 @@ public class ThemeService {
 
     public List<Theme> findTopRanking() {
         LocalDate currentDate = LocalDate.now();
-        LocalDate firstDayOfPeriod = currentDate.minusDays(7);
-        LocalDate lastDayOfPeriod = currentDate.minusDays(1);
+        LocalDate firstDayOfPeriod = currentDate.minusDays(START_DAY);
+        LocalDate lastDayOfPeriod = currentDate.minusDays(END_DAY);
         return themeDAO.findTopRanking(firstDayOfPeriod, lastDayOfPeriod);
     }
 }

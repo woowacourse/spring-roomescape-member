@@ -15,6 +15,7 @@ import java.util.List;
 
 @Repository
 public class ReservationTimeDAO {
+
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
