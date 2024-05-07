@@ -11,11 +11,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ActiveProfiles;
 import roomescape.dao.ReservationDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.ExistsException;
+import roomescape.exception.InvalidInputException;
 import roomescape.exception.NotExistsException;
 import roomescape.fixture.ThemeFixture;
 import roomescape.service.dto.input.ReservationInput;
@@ -25,6 +27,7 @@ import roomescape.service.dto.output.ReservationTimeOutput;
 import roomescape.service.dto.output.ThemeOutput;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("test")
 public class ReservationTimeServiceTest {
 
     @Autowired
@@ -62,7 +65,7 @@ public class ReservationTimeServiceTest {
     void throw_exception_when_input_is_invalid() {
         ReservationTimeInput input = new ReservationTimeInput("");
         assertThatThrownBy(() -> reservationTimeService.createReservationTime(input))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidInputException.class);
     }
 
     @Test

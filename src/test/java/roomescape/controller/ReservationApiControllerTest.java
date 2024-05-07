@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ActiveProfiles;
 import roomescape.fixture.ThemeFixture;
 import roomescape.service.ReservationService;
 import roomescape.service.ReservationTimeService;
@@ -20,6 +21,7 @@ import roomescape.service.dto.input.ReservationInput;
 import roomescape.service.dto.input.ReservationTimeInput;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("test")
 public class ReservationApiControllerTest {
 
     @Autowired
@@ -110,7 +112,7 @@ public class ReservationApiControllerTest {
                 .body(reservation)
                 .when().post("/reservations")
                 .then()
-                .statusCode(409);
+                .statusCode(400);
     }
 
     @Test
