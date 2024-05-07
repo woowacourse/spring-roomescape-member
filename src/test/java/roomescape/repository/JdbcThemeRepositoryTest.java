@@ -80,7 +80,7 @@ class JdbcThemeRepositoryTest {
     @Test
     @Sql("/popularTestData.sql")
     void findPopular() {
-        List<Theme> popular = themeRepository.findPopular(10);
+        List<Theme> popular = themeRepository.findPopular(8, 1, 10);
 
         List<Theme> expected = List.of(
             new Theme(1L, "theme1", "desc1", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"),

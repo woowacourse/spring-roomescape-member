@@ -12,7 +12,9 @@ import roomescape.service.dto.SaveThemeDto;
 @Service
 public class ThemeService {
 
-    private static final int MAX_POPULAR_THEME_COUNT = 10;
+    private static final int POPULAR_START_DATE = 8;
+    private static final int POPULAR_END_DATE = 1;
+    private static final int POPULAR_THEME_COUNT = 10;
 
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
@@ -46,6 +48,6 @@ public class ThemeService {
     }
 
     public List<Theme> findPopular() {
-        return themeRepository.findPopular(MAX_POPULAR_THEME_COUNT);
+        return themeRepository.findPopular(POPULAR_START_DATE, POPULAR_END_DATE, POPULAR_THEME_COUNT);
     }
 }
