@@ -6,13 +6,13 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.ReservationTimeRepository;
 import roomescape.dto.app.ReservationTimeAppRequest;
 import roomescape.dto.app.ReservationTimeAppResponse;
 import roomescape.exception.DuplicatedReservationTimeException;
 import roomescape.exception.ReservationExistsException;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
 
 @Service
 public class ReservationTimeService {

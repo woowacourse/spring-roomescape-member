@@ -2,12 +2,12 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.domain.ReservationRepository;
 import roomescape.domain.Theme;
-import roomescape.domain.ThemeRepository;
 import roomescape.dto.app.ThemeAppRequest;
 import roomescape.exception.DuplicatedThemeException;
 import roomescape.exception.ReservationExistsException;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ThemeRepository;
 
 @Service
 public class ThemeService {

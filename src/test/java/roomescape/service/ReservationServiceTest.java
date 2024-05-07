@@ -18,12 +18,12 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
 import roomescape.dto.app.ReservationAppRequest;
 import roomescape.exception.DuplicatedReservationException;
 import roomescape.exception.PastReservationException;
 import roomescape.exception.ReservationTimeNotFoundException;
+import roomescape.repository.ReservationTimeRepository;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
