@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
+import roomescape.service.ReservationTimeService;
 import roomescape.service.dto.request.AvailableTimeRequest;
 import roomescape.service.dto.request.ReservationTimeRequest;
 import roomescape.service.dto.response.AvailableTimeResponse;
 import roomescape.service.dto.response.ReservationTimeResponse;
-import roomescape.service.ReservationTimeService;
 
 @RestController
 @RequestMapping("/times")
