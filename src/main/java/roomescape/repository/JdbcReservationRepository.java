@@ -53,9 +53,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             Map.entry("theme_id", reservation.getTheme().getId())
         );
 
-        long id = simpleJdbcInsert
-            .executeAndReturnKey(saveSource)
-            .longValue();
+        long id = simpleJdbcInsert.executeAndReturnKey(saveSource).longValue();
 
         return new Reservation(
             id,
@@ -84,9 +82,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             INNER JOIN theme AS th ON r.theme_id = th.id
             """;
 
-        return jdbcTemplate.query(
-            sql, reservationMapper
-        );
+        return jdbcTemplate.query(sql, reservationMapper);
     }
 
     @Override
@@ -132,7 +128,6 @@ public class JdbcReservationRepository implements ReservationRepository {
             WHERE date = ? AND theme_id = ?
             """;
 
-        return jdbcTemplate.query(
-            sql, reservationMapper, date, themeId);
+        return jdbcTemplate.query(sql, reservationMapper, date, themeId);
     }
 }
