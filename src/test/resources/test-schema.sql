@@ -1,6 +1,7 @@
 DROP TABLE IF EXISTS reservation;
 DROP TABLE IF EXISTS reservation_time;
 DROP TABLE IF EXISTS theme;
+DROP TABLE IF EXISTS member;
 
 CREATE TABLE reservation_time
 (
@@ -15,6 +16,15 @@ CREATE TABLE theme
     name        VARCHAR(255) NOT NULL,
     description VARCHAR(255) NOT NULL,
     thumbnail   VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE member
+(
+    id       BIGINT      NOT NULL AUTO_INCREMENT,
+    name     VARCHAR(10) NOT NULL,
+    email    VARCHAR(30) NOT NULL,
+    password VARCHAR(255),
     PRIMARY KEY (id)
 );
 

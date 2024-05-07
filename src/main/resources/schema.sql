@@ -14,6 +14,15 @@ CREATE TABLE theme
     PRIMARY KEY (id)
 );
 
+CREATE TABLE member
+(
+    id       BIGINT      NOT NULL AUTO_INCREMENT,
+    name     VARCHAR(10) NOT NULL,
+    email    VARCHAR(30) NOT NULL,
+    password VARCHAR(255),
+    PRIMARY KEY (id)
+);
+
 CREATE TABLE reservation
 (
     id       BIGINT       NOT NULL AUTO_INCREMENT,
