@@ -36,4 +36,13 @@ class ViewControllerTest {
                 .then().log().all()
                 .statusCode(200);
     }
+
+    @Test
+    @DisplayName("로그인 페이지를 요청하면 200 OK를 응답힌다.")
+    void loginPageTest() {
+        RestAssured.given().log().all()
+                .when().get("/login")
+                .then().log().all()
+                .statusCode(200);
+    }
 }
