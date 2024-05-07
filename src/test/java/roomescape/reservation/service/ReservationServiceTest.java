@@ -13,9 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.reservation.dto.request.ReservationRequest;
-import roomescape.reservation.dto.response.ReservationResponse;
-import roomescape.reservation.handler.exception.CustomException;
+import roomescape.service.dto.request.ReservationRequest;
+import roomescape.service.dto.response.ReservationResponse;
+import roomescape.handler.exception.CustomException;
+import roomescape.service.ReservationService;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)

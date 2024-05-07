@@ -9,8 +9,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.reservation.dto.request.ReservationTimeRequest;
-import roomescape.reservation.dto.response.ReservationTimeResponse;
+import roomescape.service.dto.request.ReservationTimeRequest;
+import roomescape.service.dto.response.ReservationTimeResponse;
+import roomescape.service.ReservationTimeService;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
