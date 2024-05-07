@@ -1,6 +1,5 @@
 package roomescape.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -11,16 +10,19 @@ import roomescape.dao.TimeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.TimeProvider.TimeProvider;
 import roomescape.dto.ReservationCreateRequest;
 import roomescape.dto.ReservationResponse;
 
 @Service
 public class ReservationService {
+    private final TimeProvider timeProvider;
     private final ReservationDao reservationDao;
     private final TimeDao timeDao;
     private final ThemeDao themeDao;
 
-    public ReservationService(ReservationDao reservationDao, TimeDao timeDao, ThemeDao themeDao) {
+    public ReservationService(TimeProvider timeProvider, ReservationDao reservationDao, TimeDao timeDao, ThemeDao themeDao) {
+        this.timeProvider = timeProvider;
         this.reservationDao = reservationDao;
         this.timeDao = timeDao;
         this.themeDao = themeDao;
@@ -51,7 +53,7 @@ public class ReservationService {
     }
 
     private void validateAvailableReservation(Reservation reservation) {
-        if (reservation.isBefore(LocalDateTime.now())) {
+        if (reservation.isBefore(timeProvider.getCurrentDateTime())) {
             throw new IllegalArgumentException("예약은 현재 시간 이후여야 합니다.");
         }
 
