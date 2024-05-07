@@ -5,8 +5,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -39,8 +41,28 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(problemDetail);
     }
 
-    @ExceptionHandler(value = Exception.class)
-    public ResponseEntity<ProblemDetail> handleException(Exception exception) {
+    @ExceptionHandler(value = MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ProblemDetail> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException exception) {
+        System.err.println(exception.getMessage());
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST,
+                exception.getParameter().getParameterName() + " URL 파라미터의 값이 유효하지 않습니다.");
+        problemDetail.setTitle("유효하지 않은 요청 데이터입니다.");
+        return ResponseEntity.badRequest().body(problemDetail);
+    }
+
+    @ExceptionHandler(value = MissingServletRequestParameterException.class)
+    public ResponseEntity<ProblemDetail> handleMissingServletRequestParameterException(MissingServletRequestParameterException exception) {
+        System.err.println(exception.getMessage());
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST,
+                exception.getParameterName() + " URL 파라미터의 값은 비어있을 수 없습니다.");
+        problemDetail.setTitle("유효하지 않은 요청 데이터입니다.");
+        return ResponseEntity.badRequest().body(problemDetail);
+    }
+
+    @ExceptionHandler(value = RuntimeException.class)
+    public ResponseEntity<ProblemDetail> handleRuntimeException(RuntimeException exception) {
         System.err.println(exception.getMessage());
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.INTERNAL_SERVER_ERROR,
