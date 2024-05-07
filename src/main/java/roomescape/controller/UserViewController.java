@@ -4,7 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class UserViewContorller {
+public class UserViewController {
     @GetMapping("/reservation")
     public String reservationUserPage() {
         return "reservation";
