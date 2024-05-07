@@ -2,6 +2,7 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationCreateValidator;
 import roomescape.domain.Theme;
 import roomescape.domain.TimeSlot;
 import roomescape.domain.dto.ReservationRequest;
@@ -33,10 +34,11 @@ public class ReservationService {
 
     public ReservationResponse create(final ReservationRequest reservationRequest) {
         validateDuplicatedReservation(reservationRequest);
-        TimeSlot timeSlot = getTimeSlot(reservationRequest);
-        Theme theme = getTheme(reservationRequest);
-        Reservation newReservation = new Reservation(reservationRequest.name(), reservationRequest.date(), timeSlot, theme);
-        Long reservationId = reservationDao.create(newReservation);
+        final TimeSlot timeSlot = getTimeSlot(reservationRequest);
+        final Theme theme = getTheme(reservationRequest);
+        final ReservationCreateValidator reservationCreateValidator = new ReservationCreateValidator(reservationRequest, timeSlot, theme);
+        final Reservation newReservation = reservationCreateValidator.create();
+        final Long reservationId = reservationDao.create(newReservation);
         return ReservationResponse.from(reservationId, newReservation);
     }
 
