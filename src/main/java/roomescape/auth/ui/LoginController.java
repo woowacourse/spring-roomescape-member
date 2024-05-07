@@ -1,24 +1,28 @@
 package roomescape.auth.ui;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import roomescape.auth.application.AuthService;
+import roomescape.auth.dto.MemberResponse;
 import roomescape.auth.dto.TokenRequest;
+import roomescape.auth.infrastructure.AuthorizationExtractor;
 
 @RequestMapping("/login")
 @Controller
 public class LoginController {
     private final AuthService authService;
-//    private final BearerAuthorizationExtractor authorizationExtractor;
+    private final AuthorizationExtractor authorizationExtractor;
 
     public LoginController(AuthService authService) {
         this.authService = authService;
-//        this.authorizationExtractor = new BearerAuthorizationExtractor();
+        this.authorizationExtractor = new AuthorizationExtractor();
     }
 
 
@@ -37,10 +41,10 @@ public class LoginController {
         response.addCookie(cookie);
     }
 
-//    @GetMapping("/members/me/token")
-//    public ResponseEntity<MemberResponse> findMyInfo(HttpServletRequest request) {
-//        String token = authorizationExtractor.extract(request);
-//        MemberResponse member = authService.findMemberByToken(token);
-//        return ResponseEntity.ok().body(member);
-//    }
+    @GetMapping("/check")
+    public ResponseEntity<MemberResponse> findMyInfo(HttpServletRequest request) {
+        String token = authorizationExtractor.extract(request);
+        MemberResponse member = authService.findMemberByToken(token);
+        return ResponseEntity.ok().body(member);
+    }
 }

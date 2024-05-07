@@ -1,11 +1,16 @@
 package roomescape.auth.ui;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import roomescape.auth.dto.MemberResponse;
 import roomescape.auth.dto.TokenRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -24,6 +29,7 @@ class LoginControllerTest {
         RestAssured.port = port;
     }
 
+    @DisplayName("토큰으로 로그인을 한다.")
     @Test
     void tokenLogin() {
         String accessToken = RestAssured
@@ -36,14 +42,14 @@ class LoginControllerTest {
 
         System.out.println("accessToken = " + accessToken);
 
-//        MemberResponse member = RestAssured
-//                .given().log().all()
-//                .auth().oauth2(accessToken)
-//                .accept(MediaType.APPLICATION_JSON_VALUE)
-//                .when().get("/members/me/token")
-//                .then().log().all()
-//                .statusCode(HttpStatus.OK.value()).extract().as(MemberResponse.class);
-//
-//        assertThat(member.getEmail()).isEqualTo(EMAIL);
+        MemberResponse member = RestAssured
+                .given().log().all()
+                .cookie("token", accessToken)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/login/check")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value()).extract().as(MemberResponse.class);
+
+        assertThat(member.getName()).isEqualTo("어드민");
     }
 }

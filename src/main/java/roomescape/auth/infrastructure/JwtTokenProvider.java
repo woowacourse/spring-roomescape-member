@@ -25,9 +25,9 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-//    public String getPayload(String token) {
-//        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
-//    }
+    public String getPayload(String token) {
+        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+    }
 //
 //    public boolean validateToken(String token) {
 //        try {

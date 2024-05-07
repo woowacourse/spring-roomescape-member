@@ -1,6 +1,7 @@
 package roomescape.auth.application;
 
 import org.springframework.stereotype.Service;
+import roomescape.auth.dto.MemberResponse;
 import roomescape.auth.dto.TokenRequest;
 import roomescape.auth.infrastructure.JwtTokenProvider;
 
@@ -18,15 +19,15 @@ public class AuthService {
     public boolean checkInvalidLogin(String principal, String credentials) {
         return !EMAIL.equals(principal) || !PASSWORD.equals(credentials);
     }
-//
-//    public MemberResponse findMember(String principal) {
-//        return new MemberResponse(1L, principal, 10);
-//    }
-//
-//    public MemberResponse findMemberByToken(String token) {
-//        String payload = jwtTokenProvider.getPayload(token);
-//        return findMember(payload);
-//    }
+
+    public MemberResponse findMemberByToken(String token) {
+        String payload = jwtTokenProvider.getPayload(token);
+        return findMember(payload);
+    }
+
+    public MemberResponse findMember(String principal) {
+        return new MemberResponse("어드민");
+    }
 
     public String createToken(TokenRequest tokenRequest) {
         if (checkInvalidLogin(tokenRequest.getEmail(), tokenRequest.getPassword())) {
