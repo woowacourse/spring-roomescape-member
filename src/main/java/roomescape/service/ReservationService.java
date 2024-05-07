@@ -46,8 +46,8 @@ public class ReservationService {
     }
 
     public ReservationResponse add(ReservationCreateRequest request, LocalDateTime now) {
-        ReservationTime reservationTime = findReservationTimeBy(request);
-        Theme theme = findThemeBy(request);
+        ReservationTime reservationTime = findReservationTimeBy(request.getTimeId());
+        Theme theme = findThemeBy(request.getThemeId());
         Reservation reservation = request.toDomain(reservationTime, theme);
         reservation.validatePast(reservationTime, now);
         validateDuplicate(reservation);
@@ -85,13 +85,13 @@ public class ReservationService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 아이디를 가진 예약이 존재하지 않습니다."));
     }
 
-    private ReservationTime findReservationTimeBy(ReservationCreateRequest request) {
-        return reservationTimeDao.readById(request.getTimeId())
+    private ReservationTime findReservationTimeBy(Long id) {
+        return reservationTimeDao.readById(id)
                 .orElseThrow(() -> new IllegalArgumentException("예약 시간 아이디에 해당하는 예약 시간이 존재하지 않습니다."));
     }
 
-    private Theme findThemeBy(ReservationCreateRequest request) {
-        return themeDao.readById(request.getThemeId())
+    private Theme findThemeBy(Long id) {
+        return themeDao.readById(id)
                 .orElseThrow(() -> new IllegalArgumentException("테마 아이디에 해당하는 테마가 존재하지 않습니다."));
     }
 }
