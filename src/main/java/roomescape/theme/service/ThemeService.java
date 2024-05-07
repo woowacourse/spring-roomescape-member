@@ -2,7 +2,6 @@ package roomescape.theme.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.dto.ThemeRequestDto;
 import roomescape.theme.repository.ThemeRepository;
 
 import java.time.LocalDate;
@@ -21,8 +20,8 @@ public class ThemeService {
         return themeRepository.findAll();
     }
 
-    public Theme save(final ThemeRequestDto requestDto) {
-        final long themeId = themeRepository.save(requestDto.toTheme());
+    public Theme save(final Theme theme) {
+        final long themeId = themeRepository.save(theme);
 
         return themeRepository.findById(themeId);
     }

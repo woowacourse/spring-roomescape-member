@@ -72,6 +72,6 @@ class ReservationRepositoryTest {
     @DisplayName("특정 날짜, 시간, 테마에 예약이 존재하는지 알 수 있다.")
     void checkReservationExists() {
         save();
-        assertThat(reservationRepository.checkReservationExists(reservation.getDate().toString(), reservationTime.getId(), theme.getId())).isTrue();
+        assertThat(reservationRepository.checkReservationExists(reservation)).isTrue();
     }
 }

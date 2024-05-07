@@ -29,8 +29,8 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponseDto> save(@RequestBody final ReservationRequestDto request) {
-        final Reservation reservation = reservationService.save(request);
+    public ResponseEntity<ReservationResponseDto> save(@RequestBody final ReservationRequestDto reservationRequestDto) {
+        final Reservation reservation = reservationService.save(reservationRequestDto.toReservation());
 
         final ReservationResponseDto reservationResponseDto = changeToReservationResponseDto(reservation);
         final String url = "/reservations/" + reservationResponseDto.id();

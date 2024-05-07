@@ -29,8 +29,8 @@ public class ThemeController {
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponseDto> save(@RequestBody final ThemeRequestDto request) {
-        final Theme theme = themeService.save(request);
+    public ResponseEntity<ThemeResponseDto> save(@RequestBody final ThemeRequestDto themeRequestDto) {
+        final Theme theme = themeService.save(themeRequestDto.toTheme());
 
         final ThemeResponseDto themeResponseDto = changeToThemeResponseDto(theme);
         final String url = "/themes/" + themeResponseDto.id();
@@ -50,7 +50,7 @@ public class ThemeController {
         List<Theme> themes = themeService.findPopular();
 
         List<ThemeResponseDto> themeResponseDtos = changeToThemeResponseDtos(themes);
-        
+
         return ResponseEntity.ok(themeResponseDtos);
     }
 

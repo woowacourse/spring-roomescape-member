@@ -5,7 +5,6 @@ import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.InvalidDateException;
 import roomescape.exception.InvalidTimeException;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.dto.ReservationRequestDto;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
@@ -30,14 +29,14 @@ public class ReservationService {
         return reservationRepository.findAll();
     }
 
-    public Reservation save(final ReservationRequestDto requestDto) {
-        final ReservationTime reservationTime = reservationTimeRepository.findById(requestDto.timeId());
-        final Reservation reservation = requestDto.toReservation();
-        validateFutureReservation(reservation.getDate(), reservationTime);
-        boolean isExist = reservationRepository.checkReservationExists(reservation.getDate().toString(), requestDto.timeId(), requestDto.themeId());
+    public Reservation save(final Reservation reservation) {
+        validateFutureReservation(reservation);
+
+        boolean isExist = reservationRepository.checkReservationExists(reservation);
         validateUniqueReservation(isExist);
 
         final long reservationId = reservationRepository.save(reservation);
+
         return reservationRepository.findById(reservationId);
     }
 
@@ -47,15 +46,18 @@ public class ReservationService {
         validateDeletionOccurred(deleteCount);
     }
 
-    private void validateFutureReservation(final LocalDate localDate, final ReservationTime time) {
+    private void validateFutureReservation(Reservation reservation) {
+        final Long timeId = reservation.getTime().getId();
+        final ReservationTime reservationTime = reservationTimeRepository.findById(timeId);
+
         LocalDateTime currentDateTime = LocalDateTime.now();
         LocalDate currentDate = currentDateTime.toLocalDate();
         LocalTime currentTime = currentDateTime.toLocalTime();
 
-        if (localDate.isBefore(currentDate)) {
+        if (reservation.isPast(currentDate)) {
             throw new InvalidDateException("지난 날짜에 대한 예약은 할 수 없습니다.");
         }
-        if (localDate.equals(currentDate) && time.checkPastTime(currentTime)) {
+        if (reservation.isDate(currentDate) && reservationTime.checkPastTime(currentTime)) {
             throw new InvalidTimeException("지난 시간에 대한 예약은 할 수 없습니다.");
         }
     }

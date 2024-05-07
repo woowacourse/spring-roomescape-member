@@ -48,6 +48,7 @@ public class ReservationRepository {
                 FROM reservation r\s
                 INNER JOIN reservation_time rt ON r.time_id = rt.id\s
                 INNER JOIN theme t ON r.theme_id = t.id""";
+
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
@@ -60,6 +61,7 @@ public class ReservationRepository {
                 INNER JOIN reservation_time rt ON r.time_id = rt.id\s
                 INNER JOIN theme t ON r.theme_id = t.id\s
                 WHERE r.id = ?""";
+
         return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
     }
 
@@ -69,16 +71,18 @@ public class ReservationRepository {
                 .addValue("date", reservation.getDate())
                 .addValue("time_id", reservation.getTime().getId())
                 .addValue("theme_id", reservation.getTheme().getId());
+
         return simpleJdbcInsert.executeAndReturnKey(params).longValue();
     }
 
     public Integer deleteById(final long id) {
         final String sql = """
                 DELETE FROM reservation WHERE id = ?""";
+
         return jdbcTemplate.update(sql, id);
     }
 
-    public Boolean checkReservationExists(final String date, final long timeId, final long themeId) {
+    public Boolean checkReservationExists(Reservation reservation) {
         final String sql = """
                 SELECT CASE WHEN COUNT(*) > 0 THEN TRUE ELSE FALSE END\s
                 FROM reservation AS r\s
@@ -87,6 +91,10 @@ public class ReservationRepository {
                 INNER JOIN theme AS t\s
                 ON r.theme_id = t.id\s
                 WHERE r.date = ? AND rt.id = ? AND t.id = ?""";
+
+        String date = reservation.getDate().toString();
+        Long timeId = reservation.getTime().getId();
+        Long themeId = reservation.getTheme().getId();
         return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
     }
 }

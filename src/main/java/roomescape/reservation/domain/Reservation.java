@@ -28,6 +28,14 @@ public class Reservation {
         this.theme = theme;
     }
 
+    public boolean isPast(LocalDate currentDate) {
+        return date.isBefore(currentDate);
+    }
+
+    public boolean isDate(LocalDate currentDate) {
+        return date.equals(currentDate);
+    }
+
     private void validateNameExist(final String name) {
         if (Objects.isNull(name) || name.isBlank()) {
             throw new InvalidNameException("예약자명이 비어있습니다.");

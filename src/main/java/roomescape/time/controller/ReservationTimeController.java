@@ -30,8 +30,8 @@ public class ReservationTimeController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTimeResponseDto> save(@RequestBody final ReservationTimeRequestDto request) {
-        final ReservationTime reservationTime = reservationTimeService.save(request);
+    public ResponseEntity<ReservationTimeResponseDto> save(@RequestBody final ReservationTimeRequestDto reservationTimeRequestDto) {
+        final ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequestDto.toReservationTime());
 
         final ReservationTimeResponseDto reservationTimeResponseDto = changeToReservationTimeResponseDto(reservationTime);
         final String url = "/times/" + reservationTimeResponseDto.id();
