@@ -49,13 +49,13 @@ public class ReservationService {
         try {
             return LocalDate.parse(rawDate);
         } catch (DateTimeParseException | NullPointerException e) {
-            throw new IllegalArgumentException("잘못된 날짜 형식을 입력하셨습니다.");
+            throw new IllegalArgumentException("잘못된 날짜 형식입니다.");
         }
     }
 
     private ReservationTime findTime(Long timeId) {
         if (timeId == null) {
-            throw new IllegalArgumentException("시간 id는 null이 입력될 수 없습니다.");
+            throw new IllegalArgumentException("시간 ID는 null일 수 없습니다.");
         }
         try {
             return reservationTimeRepository.findById(timeId);
@@ -66,7 +66,7 @@ public class ReservationService {
 
     private Theme findTheme(Long themeId) {
         if (themeId == null) {
-            throw new IllegalArgumentException("테마 id는 null이 입력될 수 없습니다.");
+            throw new IllegalArgumentException("테마 ID는 null일 수 없습니다.");
         }
         try {
             return themeRepository.findById(themeId);

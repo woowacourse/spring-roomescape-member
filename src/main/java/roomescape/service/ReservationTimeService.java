@@ -38,7 +38,7 @@ public class ReservationTimeService {
         try {
             return LocalTime.parse(rawTime);
         } catch (DateTimeParseException | NullPointerException e) {
-            throw new IllegalArgumentException("잘못된 시간 형식을 입력하셨습니다.");
+            throw new IllegalArgumentException("잘못된 시간 형식입니다.");
         }
     }
 
