@@ -1,5 +1,7 @@
 package roomescape.domain;
 
+import roomescape.domain.exception.InvalidDomainObjectException;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -16,11 +18,43 @@ public class Reservation {
     }
 
     public Reservation(Long id, Name name, LocalDate date, ReservationTime time, Theme theme) {
+        validate(name, date, time, theme);
         this.id = id;
-        this.name = Objects.requireNonNull(name, "name must not be null");
-        this.date = Objects.requireNonNull(date, "date must not be null");
-        this.time = Objects.requireNonNull(time, "time must not be null");
-        this.theme = Objects.requireNonNull(theme, "theme must not be null");
+        this.name = name;
+        this.date = date;
+        this.time = time;
+        this.theme = theme;
+    }
+
+    private void validate(Name name, LocalDate date, ReservationTime time, Theme theme) {
+        validateName(name);
+        validateDate(date);
+        validateTime(time);
+        validateTheme(theme);
+    }
+
+    public void validateName(Name name) {
+        if (Objects.isNull(name)) {
+            throw new InvalidDomainObjectException("name must not be null");
+        }
+    }
+
+    public void validateDate(LocalDate date) {
+        if (Objects.isNull(date)) {
+            throw new InvalidDomainObjectException("date must not be null");
+        }
+    }
+
+    public void validateTime(ReservationTime time) {
+        if (Objects.isNull(time)) {
+            throw new InvalidDomainObjectException("time must not be null");
+        }
+    }
+
+    public void validateTheme(Theme theme) {
+        if (Objects.isNull(theme)) {
+            throw new InvalidDomainObjectException("theme must not be null");
+        }
     }
 
     public boolean hasSameTheme(Reservation reservation) {

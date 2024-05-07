@@ -15,7 +15,7 @@ import roomescape.service.ReservationTimeService;
 import roomescape.service.dto.request.ReservationTimeRequest;
 import roomescape.service.dto.response.AvailableReservationTimeResponse;
 import roomescape.service.dto.response.ReservationTimeResponse;
-import roomescape.web.exception.DateFormat;
+import roomescape.web.exception.validation.DateFormat;
 
 import java.time.LocalDate;
 import java.util.List;

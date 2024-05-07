@@ -1,7 +1,11 @@
 package roomescape.domain;
 
+import roomescape.domain.exception.InvalidDomainObjectException;
+
 import java.time.LocalTime;
 import java.util.Objects;
+
+import static java.util.Objects.isNull;
 
 public class ReservationTime {
     private final Long id;
@@ -12,8 +16,19 @@ public class ReservationTime {
     }
 
     public ReservationTime(Long id, LocalTime startAt) {
+        validate(startAt);
         this.id = id;
-        this.startAt = Objects.requireNonNull(startAt, "startAt must not be null");
+        this.startAt = startAt;
+    }
+
+    private void validate(LocalTime startAt) {
+        validateStartAt(startAt);
+    }
+
+    private void validateStartAt(LocalTime startAt) {
+        if (isNull(startAt)) {
+            throw new InvalidDomainObjectException("startAt must not be null");
+        }
     }
 
     public boolean hasSameStartAt(ReservationTime reservationTime) {
