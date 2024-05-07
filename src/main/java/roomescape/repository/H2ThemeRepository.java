@@ -89,15 +89,17 @@ public class H2ThemeRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findPopularThemes(final ReservationDate startAt, final ReservationDate endAt, final int maximumThemeCount) {
-        final String sql = "SELECT "
-                + "th.id, th.name, th.description, th.thumbnail "
-                + "FROM theme as th "
-                + "INNER JOIN reservation as r "
-                + "on r.theme_id = th.id "
-                + "WHERE r.date BETWEEN :startAt AND :endAt "
-                + "GROUP BY r.theme_id "
-                + "ORDER BY COUNT(r.theme_id) DESC "
-                + "LIMIT :maximumThemeCount ";
+        final String sql = """
+                SELECT 
+                th.id, th.name, th.description, th.thumbnail 
+                FROM theme as th 
+                INNER JOIN reservation as r 
+                on r.theme_id = th.id 
+                WHERE r.date BETWEEN :startAt AND :endAt 
+                GROUP BY r.theme_id 
+                ORDER BY COUNT(r.theme_id) DESC 
+                LIMIT :maximumThemeCount 
+                """;
 
         final MapSqlParameterSource param = new MapSqlParameterSource()
                 .addValue("startAt", startAt.getValue())
