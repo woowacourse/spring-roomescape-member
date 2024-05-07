@@ -46,16 +46,16 @@ public class ReservationTimeRepository {
         String sql = "SELECT id, start_at " +
                 "FROM reservation_time " +
                 "WHERE id = ?";
-        List<ReservationTime> reservationTimes = jdbcTemplate.query(sql, reservationTimeRowMapper, id);
-        return reservationTimes.isEmpty() ? Optional.empty() : Optional.of(reservationTimes.get(0));
+        return jdbcTemplate.query(sql, reservationTimeRowMapper, id).stream()
+                .findAny();
     }
 
     public Optional<ReservationTime> findByStartAt(LocalTime startAt) {
         String sql = "SELECT id, start_at " +
                 "FROM reservation_time " +
                 "WHERE start_at = ?";
-        List<ReservationTime> reservationTimes = jdbcTemplate.query(sql, reservationTimeRowMapper, Time.valueOf(startAt));
-        return reservationTimes.isEmpty() ? Optional.empty() : Optional.of(reservationTimes.get(0));
+        return jdbcTemplate.query(sql, reservationTimeRowMapper, Time.valueOf(startAt)).stream()
+                .findAny();
     }
 
     public List<ReservationTime> findReservedBy(LocalDate date, Long themeId) {

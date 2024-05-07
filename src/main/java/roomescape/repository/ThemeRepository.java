@@ -47,8 +47,8 @@ public class ThemeRepository {
         String sql = "SELECT id, name, description, thumbnail " +
                 "FROM theme " +
                 "WHERE id = ?";
-        List<Theme> themes = jdbcTemplate.query(sql, themeRowMapper, id);
-        return themes.isEmpty() ? Optional.empty() : Optional.of(themes.get(0));
+        return jdbcTemplate.query(sql, themeRowMapper, id).stream()
+                .findAny();
     }
 
     public List<Theme> findAll() {
