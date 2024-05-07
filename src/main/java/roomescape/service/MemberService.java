@@ -15,11 +15,12 @@ public class MemberService {
         this.memberRepository = memberRepository;
     }
 
-    public void login(final MemberLoginRequest loginRequest) {
+    public Member login(final MemberLoginRequest loginRequest) {
         final Member member = memberRepository.fetchByEmail(loginRequest.email());
         if (hasInvalidPassword(loginRequest, member)) {
             throw new InvalidRequestException("Invalid password"); // TODO 예외 수정
         }
+        return member;
     }
 
     private boolean hasInvalidPassword(final MemberLoginRequest loginRequest, final Member member) {

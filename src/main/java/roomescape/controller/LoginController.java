@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.domain.Member;
 import roomescape.service.MemberService;
 
 @RestController
@@ -24,8 +25,8 @@ public class LoginController {
     @PostMapping
     public ResponseEntity<Void> login(@RequestBody final MemberLoginRequest memberLoginRequest, final HttpServletResponse response) {
         // TODO cookie 예쁘게 굽기
-        memberService.login(memberLoginRequest);
-        final Cookie cookie = new Cookie("token", memberLoginRequest.email());
+        final Member loginedMember = memberService.login(memberLoginRequest);
+        final Cookie cookie = new Cookie("token", loginedMember.getName());
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         response.addCookie(cookie);
