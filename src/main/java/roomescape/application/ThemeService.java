@@ -4,13 +4,13 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.application.dto.ThemeCreationRequest;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.time.ReservationTime;
 import roomescape.domain.time.repository.ReservationTimeRepository;
 import roomescape.dto.theme.AvailableTimeResponse;
+import roomescape.dto.theme.ThemeRequest;
 
 @Service
 public class ThemeService {
@@ -29,7 +29,7 @@ public class ThemeService {
         return themeRepository.findAll();
     }
 
-    public Theme save(ThemeCreationRequest request) {
+    public Theme save(ThemeRequest request) {
         validateDuplicateName(request.name());
         Theme theme = new Theme(request.name(), request.description(), request.thumbnail());
         return themeRepository.save(theme);

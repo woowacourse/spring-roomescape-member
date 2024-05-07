@@ -3,11 +3,11 @@ package roomescape.application;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
-import roomescape.application.dto.ReservationTimeCreationRequest;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.time.ReservationTime;
 import roomescape.domain.time.repository.ReservationTimeRepository;
+import roomescape.dto.reservationtime.ReservationTimeRequest;
 
 @Service
 public class ReservationTimeService {
@@ -20,7 +20,7 @@ public class ReservationTimeService {
         this.reservationRepository = reservationRepository;
     }
 
-    public ReservationTime register(ReservationTimeCreationRequest request) {
+    public ReservationTime register(ReservationTimeRequest request) {
         if (reservationTimeRepository.existsByStartAt(request.startAt())) {
             throw new IllegalArgumentException("이미 존재하는 예약 시간입니다.");
         }

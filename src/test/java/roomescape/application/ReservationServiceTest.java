@@ -10,12 +10,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import roomescape.application.dto.ReservationCreationRequest;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.time.ReservationTime;
 import roomescape.domain.time.repository.ReservationTimeRepository;
+import roomescape.dto.reservation.ReservationRequest;
 import roomescape.fixture.ReservationFixture;
 import roomescape.fixture.ThemeFixture;
 import roomescape.support.extension.TableTruncateExtension;
@@ -42,7 +42,7 @@ public class ReservationServiceTest {
     @Test
     void 예약을_성공한다() {
         LocalDate date = LocalDate.now().plusDays(1);
-        ReservationCreationRequest request = new ReservationCreationRequest("prin", date, time.getId(), theme.getId());
+        ReservationRequest request = new ReservationRequest("prin", date, time.getId(), theme.getId());
 
         Reservation reservation = reservationService.reserve(request);
 
@@ -54,7 +54,7 @@ public class ReservationServiceTest {
     @Test
     void 최소_1일_전에_예약하지_않으면_예약을_실패한다() {
         LocalDate invalidDate = LocalDate.now().minusDays(1);
-        ReservationCreationRequest request = new ReservationCreationRequest("liv", invalidDate, time.getId(),
+        ReservationRequest request = new ReservationRequest("liv", invalidDate, time.getId(),
                 theme.getId());
 
         assertThatThrownBy(() -> reservationService.reserve(request))
@@ -65,7 +65,7 @@ public class ReservationServiceTest {
     @Test
     void 중복된_예약이_있으면_예약을_실패한다() {
         LocalDate date = LocalDate.now().plusDays(1);
-        ReservationCreationRequest request = new ReservationCreationRequest("sudal", date, time.getId(), theme.getId());
+        ReservationRequest request = new ReservationRequest("sudal", date, time.getId(), theme.getId());
         reservationService.reserve(request);
 
         assertThatThrownBy(() -> reservationService.reserve(request))
@@ -76,7 +76,7 @@ public class ReservationServiceTest {
     @Test
     void 예약을_취소한다() {
         LocalDate date = LocalDate.now().plusDays(1);
-        ReservationCreationRequest request = new ReservationCreationRequest("prin", date, time.getId(), theme.getId());
+        ReservationRequest request = new ReservationRequest("prin", date, time.getId(), theme.getId());
         Reservation reservation = reservationService.reserve(request);
 
         reservationService.cancel(reservation.getId());

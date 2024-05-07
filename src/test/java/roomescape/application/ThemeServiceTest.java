@@ -8,8 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import roomescape.application.dto.ThemeCreationRequest;
 import roomescape.domain.theme.Theme;
+import roomescape.dto.theme.ThemeRequest;
 import roomescape.support.extension.TableTruncateExtension;
 
 @SpringBootTest
@@ -20,7 +20,7 @@ class ThemeServiceTest {
 
     @Test
     void 테마_저장을_성공한다() {
-        ThemeCreationRequest request = new ThemeCreationRequest("테마1", "설명", "썸네일1");
+        ThemeRequest request = new ThemeRequest("테마1", "설명", "썸네일1");
 
         Theme theme = themeService.save(request);
 
@@ -33,7 +33,7 @@ class ThemeServiceTest {
 
     @Test
     void 중복_이름의_테마를_저장할_경우_예외가_발생한다() {
-        ThemeCreationRequest request = new ThemeCreationRequest("테마1", "설명", "썸네일1");
+        ThemeRequest request = new ThemeRequest("테마1", "설명", "썸네일1");
         themeService.save(request);
 
         assertThatThrownBy(() -> themeService.save(request))
@@ -43,7 +43,7 @@ class ThemeServiceTest {
 
     @Test
     void 테마를_삭제한다() {
-        ThemeCreationRequest request = new ThemeCreationRequest("테마1", "설명", "썸네일1");
+        ThemeRequest request = new ThemeRequest("테마1", "설명", "썸네일1");
         Theme theme = themeService.save(request);
 
         themeService.delete(theme.getId());

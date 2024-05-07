@@ -6,12 +6,12 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
-import roomescape.application.dto.ReservationCreationRequest;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.time.ReservationTime;
+import roomescape.dto.reservation.ReservationRequest;
 
 @Service
 public class ReservationService {
@@ -29,7 +29,7 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public Reservation reserve(ReservationCreationRequest request) {
+    public Reservation reserve(ReservationRequest request) {
         ReservationTime time = reservationTimeService.getReservationTime(request.timeId());
         validateReservationInAdvance(request.date(), time.getStartAt());
         if (reservationRepository.existsByReservationDateTimeAndTheme(request.date(), time.getId(),
