@@ -67,7 +67,7 @@ class ReservationTimeServiceTest {
     void insertReservation(String name, String date, long timeId, long themeId) {
         ReservationTime time = reservationTimeDao.findById(timeId);
         Theme theme = themeDao.findById(themeId);
-        reservationDao.save(new Reservation(0, name, LocalDate.parse(date), time, theme));
+        reservationDao.save(new Reservation(name, LocalDate.parse(date), time, theme));
     }
 
     long insertThemeAndGetId(String name, String description, String thumbnail) {

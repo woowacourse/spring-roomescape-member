@@ -36,7 +36,7 @@ public class ReservationService {
         validateDuplicate(request);
         ReservationTime reservationTime = reservationTimeDao.findById(request.timeId());
         Theme theme = themeDao.findById(request.themeId());
-        return reservationDao.save(new Reservation(0, request.name(), request.date(), reservationTime, theme));
+        return reservationDao.save(new Reservation(request.name(), request.date(), reservationTime, theme));
     }
 
     public Reservation validateFutureAndSave(ReservationRequest request) {
@@ -44,7 +44,7 @@ public class ReservationService {
         ReservationTime reservationTime = reservationTimeDao.findById(request.timeId());
         validateDateTime(request.date(), reservationTime.startAt());
         Theme theme = themeDao.findById(request.themeId());
-        return reservationDao.save(new Reservation(0, request.name(), request.date(), reservationTime, theme));
+        return reservationDao.save(new Reservation(request.name(), request.date(), reservationTime, theme));
 
     }
 

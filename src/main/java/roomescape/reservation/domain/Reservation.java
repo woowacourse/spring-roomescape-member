@@ -6,13 +6,11 @@ import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
 public record Reservation(long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+    private static final long UNDEFINED = 0;
 
-    public Reservation(long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        this.id = id;
-        this.name = validateName(name);
-        this.date = date;
-        this.time = time;
-        this.theme = theme;
+    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
+        this(UNDEFINED, name, date, time, theme);
+        validateName(name);
     }
 
     private String validateName(String name) {

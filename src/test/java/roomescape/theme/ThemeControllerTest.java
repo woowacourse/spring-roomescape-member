@@ -131,7 +131,7 @@ public class ThemeControllerTest {
     }
 
     void insertReservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        reservationDao.save(new Reservation(0, name, date, time, theme));
+        reservationDao.save(new Reservation(name, date, time, theme));
     }
 
     void assertThemeCountIsEqualTo(int count) {

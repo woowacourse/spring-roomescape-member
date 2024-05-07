@@ -66,12 +66,12 @@ class ReservationControllerTest {
         long themeId = insertThemeAndGetId("name", "description", "thumbnail");
         long timeId = insertReservationTimeAndGetId("10:00");
 
-        insertReservation("브라운", "2024-08-05", timeId,themeId);
+        insertReservation("브라운", "2024-08-05", timeId, themeId);
         assertReservationCountIsEqualTo(1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(reservationRequest("구구", "2024-08-06", timeId,themeId))
+                .body(reservationRequest("구구", "2024-08-06", timeId, themeId))
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);
@@ -126,13 +126,13 @@ class ReservationControllerTest {
     }
 
     long insertThemeAndGetId(String name, String description, String thumbnail) {
-        return themeDao.save(new Theme(0, name, description, thumbnail)).id();
+        return themeDao.save(new Theme( name, description, thumbnail)).id();
     }
 
     long insertReservationAndGetId(String name, String date, long timeId, long themeId) {
         ReservationTime time = reservationTimeDao.findById(timeId);
         Theme theme = themeDao.findById(themeId);
-        return reservationDao.save(new Reservation(0, name, LocalDate.parse(date), time, theme)).id();
+        return reservationDao.save(new Reservation(name, LocalDate.parse(date), time, theme)).id();
     }
 
     void assertReservationCountIsEqualTo(int count) {
