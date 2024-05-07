@@ -25,13 +25,6 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public boolean hasCharacteristic(LocalDate reservationDate, ReservationTime reservationTime,
-                                     Long roomThemeId) {
-        return date.equals(reservationDate)
-                && time.hasStartAt(reservationTime.getStartAt())
-                && theme.hasId(roomThemeId);
-    }
-
     public Long getId() {
         return id;
     }

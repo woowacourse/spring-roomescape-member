@@ -19,10 +19,6 @@ public class ReservationTime {
         this.startAt = startAt;
     }
 
-    public boolean hasStartAt(LocalTime startAt) {
-        return this.startAt.equals(startAt);
-    }
-
     public Long getId() {
         return id;
     }
