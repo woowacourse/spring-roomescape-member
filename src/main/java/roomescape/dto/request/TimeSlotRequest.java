@@ -10,13 +10,13 @@ public record TimeSlotRequest(@JsonFormat(pattern = "HH:mm") LocalTime startAt) 
         isValid(startAt);
     }
 
+    public TimeSlot toEntity(Long id) {
+        return new TimeSlot(id, startAt);
+    }
+
     private void isValid(LocalTime startAt) {
         if (startAt == null) {
             throw new IllegalArgumentException("[ERROR] 잘못된 시간입니다");
         }
-    }
-
-    public TimeSlot toEntity(Long id) {
-        return new TimeSlot(id, startAt);
     }
 }

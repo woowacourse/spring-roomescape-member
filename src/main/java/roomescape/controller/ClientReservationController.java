@@ -21,7 +21,7 @@ public class ClientReservationController {
     }
 
     @GetMapping("/{date}/{theme_id}")
-    public ResponseEntity<List<BookResponse>> read(@PathVariable(value = "date") LocalDate date, @PathVariable(value = "theme_id") Long themeId) {
+    public ResponseEntity<List<BookResponse>> read(@PathVariable final LocalDate date, @PathVariable(value = "theme_id") final Long themeId) {
         List<BookResponse> books = bookService.findAvaliableBookList(date, themeId);
         return ResponseEntity.ok(books);
     }

@@ -20,8 +20,7 @@ public class ReservationService {
     private final ReservationDao reservationDao;
     private final ThemeDao themeDao;
 
-    public ReservationService(final
-                              TimeDao timeDao, final ReservationDao reservationDao, final ThemeDao themeDao) {
+    public ReservationService(final TimeDao timeDao, final ReservationDao reservationDao, final ThemeDao themeDao) {
         this.timeDao = timeDao;
         this.reservationDao = reservationDao;
         this.themeDao = themeDao;
@@ -35,31 +34,40 @@ public class ReservationService {
     }
 
     public ReservationResponse create(final ReservationRequest reservationRequest) {
-        TimeSlot timeSlot = getTimeSlot(reservationRequest);
-        Theme theme = getTheme(reservationRequest);
+        TimeSlot timeSlot = checkTimeSlot(reservationRequest);
+        Theme theme = checkTheme(reservationRequest);
+
         validate(reservationRequest.date(), timeSlot, theme);
+
         Long reservationId = reservationDao.create(reservationRequest);
         Reservation reservation = reservationRequest.toEntity(reservationId, timeSlot, theme);
+
         return ReservationResponse.from(reservation);
     }
 
-    private TimeSlot getTimeSlot(final ReservationRequest reservationRequest) {
+    public void delete(final Long id) {
+        reservationDao.delete(id);
+    }
+
+    private TimeSlot checkTimeSlot(final ReservationRequest reservationRequest) {
         TimeSlot timeSlot;
         try {
             timeSlot = timeDao.findById(reservationRequest.timeId());
         } catch (EmptyResultDataAccessException e) {
             throw new IllegalArgumentException("[ERROR] 존재하지 않는 예약 시간입니다");
         }
+
         return timeSlot;
     }
 
-    private Theme getTheme(final ReservationRequest reservationRequest) {
+    private Theme checkTheme(final ReservationRequest reservationRequest) {
         Theme theme;
         try {
             theme = themeDao.findById(reservationRequest.themeId());
         } catch (EmptyResultDataAccessException e) {
             throw new IllegalArgumentException("[ERROR] 존재하지 않는 테마 입니다");
         }
+
         return theme;
     }
 
@@ -72,10 +80,6 @@ public class ReservationService {
         if (reservationDao.isExists(date, timeId, themeId)) {
             throw new IllegalArgumentException("[ERROR] 예약이 종료되었습니다");
         }
-    }
-
-    public void delete(final Long id) {
-        reservationDao.delete(id);
     }
 
     private void validateReservation(final LocalDate date, final TimeSlot time) {

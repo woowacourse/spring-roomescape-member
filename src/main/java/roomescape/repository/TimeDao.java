@@ -22,7 +22,7 @@ public class TimeDao {
                     resultSet.getString("start_at")
             );
 
-    public TimeDao(JdbcTemplate jdbcTemplate) {
+    public TimeDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation_time")
@@ -35,23 +35,23 @@ public class TimeDao {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public TimeSlot findById(Long id) {
+    public TimeSlot findById(final Long id) {
         String sql = "select id, start_at from reservation_time where id = ?";
         return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }
 
-    public Long create(TimeSlotRequest timeSlotRequest) {
+    public Long create(final TimeSlotRequest timeSlotRequest) {
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("start_at", timeSlotRequest.startAt());
         return jdbcInsert.executeAndReturnKey(parameterSource).longValue();
     }
 
-    public void delete(Long id) {
+    public void delete(final Long id) {
         String sql = "delete from reservation_time where id = ?";
         jdbcTemplate.update(sql, id);
     }
 
-    public boolean isExist(LocalTime localTime) {
+    public boolean isExist(final LocalTime localTime) {
         String sql = "select exists(select 1 from reservation_time where start_at = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, localTime);
     }

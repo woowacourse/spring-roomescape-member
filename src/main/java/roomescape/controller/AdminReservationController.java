@@ -25,13 +25,13 @@ public class AdminReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> create(@RequestBody ReservationRequest reservationRequest) {
+    public ResponseEntity<ReservationResponse> create(@RequestBody final ReservationRequest reservationRequest) {
         ReservationResponse reservationResponse = reservationService.create(reservationRequest);
         return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.id())).body(reservationResponse);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable final Long id) {
         reservationService.delete(id);
         return ResponseEntity.noContent().build();
     }

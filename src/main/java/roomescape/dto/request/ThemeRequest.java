@@ -10,6 +10,10 @@ public record ThemeRequest(String name, String description, String thumbnail) {
         isValid(name, description, thumbnail);
     }
 
+    public Theme toEntity(final Long id) {
+        return new Theme(id, name, description, thumbnail);
+    }
+
     private void isValid(final String name, final String description, final String thumbnail) {
         validEmpty(name);
         validEmpty(description);
@@ -30,9 +34,5 @@ public record ThemeRequest(String name, String description, String thumbnail) {
         if (!matcher.matches()) {
             throw new IllegalArgumentException("[ERROR] 썸네일 URL 형식이 올바르지 않습니다");
         }
-    }
-
-    public Theme toEntity(final Long id) {
-        return new Theme(id, name, description, thumbnail);
     }
 }

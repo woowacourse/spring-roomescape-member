@@ -23,7 +23,6 @@ public class ThemeDao {
                     resultSet.getString("thumbnail")
             );
 
-
     public ThemeDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)

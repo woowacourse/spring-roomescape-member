@@ -38,15 +38,15 @@ public class TimeService {
         return TimeSlotResponse.from(timeSlot);
     }
 
+    public void delete(Long id) {
+        validateExistReservation(id);
+        timeDao.delete(id);
+    }
+
     private void validateDuplicatedTime(TimeSlotRequest timeSlotRequest) {
         if (timeDao.isExist(timeSlotRequest.startAt())) {
             throw new IllegalArgumentException("[ERROR] 이미 등록된 시간입니다");
         }
-    }
-
-    public void delete(Long id) {
-        validateExistReservation(id);
-        timeDao.delete(id);
     }
 
     private void validateExistReservation(Long id) {
