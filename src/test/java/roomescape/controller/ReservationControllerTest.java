@@ -2,6 +2,7 @@ package roomescape.controller;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -54,12 +55,10 @@ class ReservationControllerTest {
         IntStream.range(1, 6).forEach(i -> insertReservationTime(i + ":00"));
         IntStream.range(0, 20).forEach(i -> insertTheme("n" + i, "d" + i, "t" + i));
 
-        LocalDate date = LocalDate.now().minusDays(1);
-        IntStream.range(0, 1).forEach(i -> insertReservation("n" + i, date, 1, 1));
-        IntStream.range(0, 2).forEach(i -> insertReservation("n" + i, date, 1, 2));
-        IntStream.range(0, 3).forEach(i -> insertReservation("n" + i, date, 1, 3));
-        IntStream.range(0, 4).forEach(i -> insertReservation("n" + i, date, 2, 1));
-        IntStream.range(0, 5).forEach(i -> insertReservation("n" + i, date, 2, 2));
+        LocalDate now = LocalDate.now();
+        IntStream.range(0, 5).forEach(i -> insertReservation("n", now.minusDays(i), 1L, 1L));
+        IntStream.range(0, 5).forEach(i -> insertReservation("n", now.minusDays(i), 2L, 1L));
+        IntStream.range(0, 5).forEach(i -> insertReservation("n", now.minusDays(i), 3L, 1L));
     }
 
     private void initDatabase() {
@@ -142,12 +141,18 @@ class ReservationControllerTest {
                 .statusCode(200)
                 .extract().jsonPath().getList(".", MemberReservationTimeResponse.class);
 
+        System.out.println(times);
         assertThat(times).hasSize(INITIAL_TIME_COUNT);
         assertThat(times.get(0).getIsBooked()).isTrue();
+        assertThat(times.get(0).getTimeId()).isEqualTo(1);
         assertThat(times.get(1).getIsBooked()).isTrue();
-        assertThat(times.get(2).getIsBooked()).isFalse();
+        assertThat(times.get(1).getTimeId()).isEqualTo(2);
+        assertThat(times.get(2).getIsBooked()).isTrue();
+        assertThat(times.get(2).getTimeId()).isEqualTo(3);
         assertThat(times.get(3).getIsBooked()).isFalse();
+        assertThat(times.get(3).getTimeId()).isEqualTo(4);
         assertThat(times.get(4).getIsBooked()).isFalse();
+        assertThat(times.get(4).getTimeId()).isEqualTo(5);
     }
 
     private Integer countAllReservations() {

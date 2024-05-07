@@ -51,14 +51,14 @@ class ThemeControllerTest {
     void setUp() {
         initDatabase();
         IntStream.range(1, 3).forEach(i -> insertReservationTime(i + ":00"));
-        IntStream.range(0, 20).forEach(i -> insertTheme("n" + i, "d" + i, "t" + i));
+        IntStream.range(1, 21).forEach(i -> insertTheme("n" + i, "d" + i, "t" + i));
 
-        LocalDate date = LocalDate.now().minusDays(1);
-        IntStream.range(0, 1).forEach(i -> insertReservation("n" + i, date, 1, 1));
-        IntStream.range(0, 2).forEach(i -> insertReservation("n" + i, date, 1, 2));
-        IntStream.range(0, 3).forEach(i -> insertReservation("n" + i, date, 1, 3));
-        IntStream.range(0, 4).forEach(i -> insertReservation("n" + i, date, 2, 4));
-        IntStream.range(0, 5).forEach(i -> insertReservation("n" + i, date, 2, 5));
+        LocalDate now = LocalDate.now();
+        IntStream.range(1, 2).forEach(i -> insertReservation("n", now.minusDays(i), 1L, 1L));
+        IntStream.range(1, 3).forEach(i -> insertReservation("n", now.minusDays(i), 1L, 2L));
+        IntStream.range(1, 4).forEach(i -> insertReservation("n", now.minusDays(i), 1L, 3L));
+        IntStream.range(1, 5).forEach(i -> insertReservation("n", now.minusDays(i), 2L, 4L));
+        IntStream.range(1, 6).forEach(i -> insertReservation("n", now.minusDays(i), 2L, 5L));
     }
 
     private void initDatabase() {
@@ -129,26 +129,7 @@ class ThemeControllerTest {
         assertThat(countAllThemes()).isEqualTo(INITIAL_THEME_COUNT - 1);
     }
 
-    @DisplayName("예약된 전체 테마 개수가 10 이하인 경우 해당 개수만큼의 인기 테마를 인기 순으로 조회한다.")
-    @Test
-    void should_find_popular_themes_when_less_than_10() {
-        List<ThemeResponse> popularThemes = RestAssured.given().log().all()
-                .when().get("/themes/rank")
-                .then().log().all()
-                .statusCode(200)
-                .extract().jsonPath().getList(".", ThemeResponse.class);
-
-        assertAll(() -> {
-            assertThat(popularThemes).hasSize(5);
-            assertThat(popularThemes.get(0).getId()).isEqualTo(5);
-            assertThat(popularThemes.get(1).getId()).isEqualTo(4);
-            assertThat(popularThemes.get(2).getId()).isEqualTo(3);
-            assertThat(popularThemes.get(3).getId()).isEqualTo(2);
-            assertThat(popularThemes.get(4).getId()).isEqualTo(1);
-        });
-    }
-
-    @DisplayName("예약된 전체 테마 개수가 10 이상인 경우 인기 테마를 인기 순으로 10개 조회한다. 예약 횟수가 같은 경우 theme_id 순으로 조회한다.")
+    @DisplayName("일주일 간 예약된 테마를 인기 순으로 10개 조회한다. 예약 횟수가 같은 경우 theme_id 오름차순으로 조회한다.")
     @Test
     void should_find_popular_themes_when_more_than_10() {
         LocalDate date = LocalDate.now().minusDays(1);
@@ -178,6 +159,26 @@ class ThemeControllerTest {
             assertThat(popularThemes.get(7).getId()).isEqualTo(8);
             assertThat(popularThemes.get(8).getId()).isEqualTo(9);
             assertThat(popularThemes.get(9).getId()).isEqualTo(10);
+        });
+    }
+
+    @DisplayName("예약된 전체 테마 개수가 10 이하인 경우, 해당 개수만큼의 인기 테마를 인기 순으로 조회한다.")
+    @Test
+    void should_find_popular_themes_when_less_than_10() {
+        List<ThemeResponse> popularThemes = RestAssured.given().log().all()
+                .when().get("/themes/rank")
+                .then().log().all()
+                .statusCode(200)
+                .extract().jsonPath().getList(".", ThemeResponse.class);
+
+        System.out.println(popularThemes);
+        assertAll(() -> {
+            assertThat(popularThemes).hasSize(5);
+            assertThat(popularThemes.get(0).getId()).isEqualTo(5);
+            assertThat(popularThemes.get(1).getId()).isEqualTo(4);
+            assertThat(popularThemes.get(2).getId()).isEqualTo(3);
+            assertThat(popularThemes.get(3).getId()).isEqualTo(2);
+            assertThat(popularThemes.get(4).getId()).isEqualTo(1);
         });
     }
 

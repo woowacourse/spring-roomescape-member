@@ -28,4 +28,13 @@ public class MemberReservationTimeResponse {
     public boolean getIsBooked() {
         return isBooked;
     }
+
+    @Override
+    public String toString() {
+        return "MemberReservationTimeResponse{" +
+                "timeId=" + timeId +
+                ", startAt=" + startAt +
+                ", isBooked=" + isBooked +
+                '}';
+    }
 }
