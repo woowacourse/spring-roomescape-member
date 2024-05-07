@@ -44,7 +44,7 @@
 
 # 4단계 - 사용자 로그인
 ## 화면
-- [ ] `/login` 요청 시 `templates/login.html`가 응답한다.
+- [x] `/login` 요청 시 `templates/login.html`가 응답한다.
 
 ## 사용자
 - [ ] 사용자는 `name`, `email`, `password`를 갖는다.
