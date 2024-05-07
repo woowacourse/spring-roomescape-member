@@ -37,7 +37,7 @@ public class ReservationDao {
 
     public List<Reservation> findAll() {
         String sql = """
-                SELECT 
+                SELECT
                     r.id AS reservation_id, 
                     r.name AS reservation_name, 
                     r.date AS reservation_date,
