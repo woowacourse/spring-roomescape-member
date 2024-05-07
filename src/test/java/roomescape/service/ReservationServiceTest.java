@@ -35,7 +35,7 @@ class ReservationServiceTest {
     private ReservationService reservationService;
 
     private ReservationTime defaultTime = new ReservationTime(LocalTime.now());
-    private Theme defaultTheme = new Theme("name", "description", "thumbnail");
+    private Theme defaultTheme = new Theme("name", "description", "http://thumbnail");
 
     @BeforeEach
     void initService() {

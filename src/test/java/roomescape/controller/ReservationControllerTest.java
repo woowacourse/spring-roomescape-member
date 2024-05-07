@@ -25,7 +25,7 @@ class ReservationControllerTest {
     private static final long TIME_ID = 1L;
     private static final LocalTime TIME = LocalTime.now();
     private ReservationTime defaultTime = new ReservationTime(TIME_ID, TIME);
-    private Theme defualtTheme = new Theme("name", "description", "thumbnail");
+    private Theme defualtTheme = new Theme("name", "description", "http://thumbnail");
 
     private CollectionReservationRepository collectionReservationRepository;
     private ReservationController reservationController;

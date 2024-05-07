@@ -49,9 +49,9 @@ class JdbcTemplateThemeRepositoryTest {
 
     @Test
     void findAndOrderByPopularity() {
-        Theme theme1 = themeRepository.save(new Theme("name1", "description1", "thumbnail1"));
-        Theme theme2 = themeRepository.save(new Theme("name2", "description2", "thumbnail2"));
-        Theme theme3 = themeRepository.save(new Theme("name3", "description3", "thumbnail3"));
+        Theme theme1 = themeRepository.save(new Theme("name1", "description1", "http://thumbnail1"));
+        Theme theme2 = themeRepository.save(new Theme("name2", "description2", "http://thumbnail2"));
+        Theme theme3 = themeRepository.save(new Theme("name3", "description3", "http://thumbnail3"));
 
         ReservationTime reservationTime1 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(1, 30)));
         ReservationTime reservationTime2 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(2, 30)));
@@ -75,7 +75,7 @@ class JdbcTemplateThemeRepositoryTest {
     @Test
     @DisplayName("테마가 잘 지워지는지 확인")
     void delete() {
-        Theme theme = themeRepository.save(new Theme("name1", "description1", "thumbnail"));
+        Theme theme = themeRepository.save(new Theme("name1", "description1", "http://thumbnail"));
 
         themeRepository.delete(theme.getId());
 

@@ -38,7 +38,7 @@ class AvailableTimeServiceTest {
     @Test
     void findAvailableTimeTest() {
         //given
-        Theme DEFUALT_THEME = new Theme(1L, "name", "description", "thumbnail");
+        Theme DEFUALT_THEME = new Theme(1L, "name", "description", "http://thumbnail");
         themeRepository.save(DEFUALT_THEME);
         ReservationTime reservationTime1 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(11, 0)));
         ReservationTime reservationTime2 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 0)));

@@ -3,6 +3,7 @@ package roomescape.domain;
 import static roomescape.exception.ExceptionType.EMPTY_DESCRIPTION;
 import static roomescape.exception.ExceptionType.EMPTY_NAME;
 import static roomescape.exception.ExceptionType.EMPTY_THUMBNAIL;
+import static roomescape.exception.ExceptionType.NOT_URL_BASE_THUMBNAIL;
 
 import java.util.Objects;
 import roomescape.exception.RoomescapeException;
@@ -42,6 +43,10 @@ public class Theme {
     private void validateThumbnail(String thumbnail) {
         if (thumbnail == null || thumbnail.isBlank()) {
             throw new RoomescapeException(EMPTY_THUMBNAIL);
+        }
+
+        if (!thumbnail.startsWith("http://") && !thumbnail.startsWith("https://")) {
+            throw new RoomescapeException(NOT_URL_BASE_THUMBNAIL);
         }
     }
 

@@ -11,6 +11,7 @@ public enum ExceptionType {
     EMPTY_THEME(BAD_REQUEST, "테마는 필수값 입니다."),
     EMPTY_DESCRIPTION(BAD_REQUEST, "테마 설명은 필수값 입니다."),
     EMPTY_THUMBNAIL(BAD_REQUEST, "테마 썸네일은 필수값 입니다."),
+    NOT_URL_BASE_THUMBNAIL(BAD_REQUEST, "테마 썸네일이 url 형태가 아닙니다."),
     PAST_TIME_RESERVATION(BAD_REQUEST, "이미 지난 시간에 예약할 수 없습니다."),
     DUPLICATE_RESERVATION(BAD_REQUEST, "같은 시간에 이미 예약이 존재합니다."),
     DUPLICATE_RESERVATION_TIME(BAD_REQUEST, "이미 예약시간이 존재합니다."),

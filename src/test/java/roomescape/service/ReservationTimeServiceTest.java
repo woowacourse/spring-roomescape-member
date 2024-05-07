@@ -98,7 +98,7 @@ class ReservationTimeServiceTest {
                     "name",
                     LocalDate.now(),
                     new ReservationTime(1L, SAVED_TIME),
-                    new Theme(1L, "name", "description", "thumbnail")
+                    new Theme(1L, "name", "description", "http://thumbnail")
             ));
 
             //when & then

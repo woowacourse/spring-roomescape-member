@@ -28,14 +28,14 @@ public class AdminIntegrationTest {
 
     @BeforeEach
     void init() {
-        jdbcTemplate.update("delete from reservation");
-        jdbcTemplate.update("ALTER TABLE reservation alter column id restart with 1");
-        jdbcTemplate.update("delete from reservation_time");
-        jdbcTemplate.update("ALTER TABLE reservation_time alter column id restart with 1");
-        jdbcTemplate.update("insert into reservation_time(start_at) values('11:56')");
-        jdbcTemplate.update("delete from THEME");
-        jdbcTemplate.update("ALTER TABLE THEME alter column id restart with 1");
-        jdbcTemplate.update("insert into THEME values ( 1,'a','a','a')");
+        jdbcTemplate.update("DELETE FROM reservation");
+        jdbcTemplate.update("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.update("DELETE FROM reservation_time");
+        jdbcTemplate.update("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES('11:56')");
+        jdbcTemplate.update("DELETE FROM theme");
+        jdbcTemplate.update("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.update("INSERT INTO theme VALUES ( 1,'name','description','http://thumbnail')");
         RestAssured.port = port;
     }
 
@@ -66,7 +66,7 @@ public class AdminIntegrationTest {
     @Test
     @DisplayName("관리자 예약 페이지가 잘 동작한다.")
     void adminReservationPageWork() {
-        Integer integer = jdbcTemplate.queryForObject("select id from reservation_time",
+        Integer integer = jdbcTemplate.queryForObject("SELECT id FROM reservation_time",
                 Integer.class);
         System.out.println(integer);
         Map<String, Object> params = new HashMap<>();
@@ -117,7 +117,7 @@ public class AdminIntegrationTest {
                 .then().log().all()
                 .statusCode(201);
 
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
+        Integer count = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM reservation", Integer.class);
         Assertions.assertThat(count).isEqualTo(1);
 
         RestAssured.given().log().all()
@@ -125,7 +125,7 @@ public class AdminIntegrationTest {
                 .then().log().all()
                 .statusCode(204);
 
-        Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
+        Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM reservation", Integer.class);
         Assertions.assertThat(countAfterDelete).isEqualTo(0);
     }
 

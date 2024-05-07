@@ -19,7 +19,7 @@ import roomescape.domain.Theme;
 @SpringBootTest
 class JdbcTemplateReservationRepositoryTest {
     private static final ReservationTime DEFAULT_TIME = new ReservationTime(1L, LocalTime.of(11, 56));
-    private static final Theme DEFAULT_THEME = new Theme(1L, "이름", "설명", "썸네일");
+    private static final Theme DEFAULT_THEME = new Theme(1L, "이름", "설명", "http://썸네일");
 
     @Autowired
     private ReservationRepository reservationRepository;
@@ -38,7 +38,7 @@ class JdbcTemplateReservationRepositoryTest {
         jdbcTemplate.update("DELETE FROM theme");
         jdbcTemplate.update("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.update(
-                "INSERT INTO theme (name, description, thumbnail) VALUES('name', 'description', 'thumbnail')");
+                "INSERT INTO theme (name, description, thumbnail) VALUES('name', 'description', 'http://thumbnail')");
 
     }
 
