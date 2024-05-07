@@ -20,13 +20,14 @@ import roomescape.support.extension.TableTruncateExtension;
 @SpringBootTest
 @ExtendWith({TableTruncateExtension.class, MockClockExtension.class})
 @FixedClock(date = "2024-05-03")
+@Sql("/theme.sql")
 class ThemeServiceTest {
     @Autowired
     private ThemeService themeService;
 
     @Test
     void 테마_저장을_성공한다() {
-        ThemeCreationRequest request = new ThemeCreationRequest("테마1", "설명", "썸네일1");
+        ThemeCreationRequest request = new ThemeCreationRequest("포레스트", "설명", "https://forest.com");
 
         ThemeResponse response = themeService.save(request);
 
@@ -39,8 +40,7 @@ class ThemeServiceTest {
 
     @Test
     void 중복_이름의_테마를_저장할_경우_예외가_발생한다() {
-        ThemeCreationRequest request = new ThemeCreationRequest("테마1", "설명", "썸네일1");
-        themeService.save(request);
+        ThemeCreationRequest request = new ThemeCreationRequest("셜록홈즈", "설명", "https://sherlock.com");
 
         assertThatThrownBy(() -> themeService.save(request))
                 .isExactlyInstanceOf(DuplicateKeyException.class);
@@ -48,12 +48,9 @@ class ThemeServiceTest {
 
     @Test
     void 테마를_삭제한다() {
-        ThemeCreationRequest request = new ThemeCreationRequest("테마1", "설명", "썸네일1");
-        ThemeResponse response = themeService.save(request);
+        themeService.delete(2L);
 
-        themeService.delete(response.id());
-
-        assertThat(themeService.findThemes()).isEmpty();
+        assertThat(themeService.findThemes()).hasSize(2);
     }
 
     @Test
@@ -78,9 +75,9 @@ class ThemeServiceTest {
 
         assertAll(
                 () -> assertThat(popularThemes).hasSize(3),
-                () -> assertThat(popularThemes.get(0).name()).isEqualTo("테마1"),
-                () -> assertThat(popularThemes.get(1).name()).isEqualTo("테마3"),
-                () -> assertThat(popularThemes.get(2).name()).isEqualTo("테마2")
+                () -> assertThat(popularThemes.get(0).name()).isEqualTo("셜록홈즈"),
+                () -> assertThat(popularThemes.get(1).name()).isEqualTo("이순신"),
+                () -> assertThat(popularThemes.get(2).name()).isEqualTo("해리포터")
         );
     }
 }

@@ -20,13 +20,14 @@ import roomescape.support.extension.TableTruncateExtension;
 
 @SpringBootTest
 @ExtendWith(TableTruncateExtension.class)
+@Sql("/reservation-time.sql")
 public class ReservationTimeServiceTest {
     @Autowired
     private ReservationTimeService reservationTimeService;
 
     @Test
     void 예약_시간을_성공적으로_등록한다() {
-        LocalTime startAt = LocalTime.of(13, 0);
+        LocalTime startAt = LocalTime.parse("13:00");
         ReservationTimeCreationRequest request = new ReservationTimeCreationRequest(startAt);
 
         ReservationTimeResponse response = reservationTimeService.register(request);
@@ -36,9 +37,8 @@ public class ReservationTimeServiceTest {
 
     @Test
     void 중복된_예약_시간이_있으면_등록을_실패한다() {
-        LocalTime startAt = LocalTime.of(13, 0);
-        ReservationTimeCreationRequest request = new ReservationTimeCreationRequest(startAt);
-        reservationTimeService.register(request);
+        LocalTime invalidStartAt = LocalTime.parse("01:00");
+        ReservationTimeCreationRequest request = new ReservationTimeCreationRequest(invalidStartAt);
 
         assertThatThrownBy(() -> reservationTimeService.register(request))
                 .isExactlyInstanceOf(DuplicateKeyException.class);
@@ -46,18 +46,14 @@ public class ReservationTimeServiceTest {
 
     @Test
     void 예약_시간을_삭제한다() {
-        LocalTime startAt = LocalTime.of(13, 0);
-        ReservationTimeCreationRequest request = new ReservationTimeCreationRequest(startAt);
-        ReservationTimeResponse response = reservationTimeService.register(request);
+        reservationTimeService.delete(2L);
 
-        reservationTimeService.delete(response.id());
-
-        assertThat(reservationTimeService.findReservationTimes()).isEmpty();
+        assertThat(reservationTimeService.findReservationTimes()).hasSize(1);
     }
 
     @Test
     void 존재하지_않는_예약_시간을_삭제하면_예외가_발생한다() {
-        assertThatThrownBy(() -> reservationTimeService.delete(1L))
+        assertThatThrownBy(() -> reservationTimeService.delete(0L))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("존재하지 않는 예약 시간입니다.");
     }
@@ -73,8 +69,8 @@ public class ReservationTimeServiceTest {
     @Test
     @Sql("/reservation.sql")
     void 테마의_예약_가능한_시간을_조회한다() {
-        List<AvailableTimeResponse> availableTimes = reservationTimeService.findAvailableTimes(2L,
-                LocalDate.parse("2024-05-01"));
+        LocalDate date = LocalDate.parse("2024-05-01");
+        List<AvailableTimeResponse> availableTimes = reservationTimeService.findAvailableTimes(2L, date);
 
         assertSoftly(softly -> {
             softly.assertThat(availableTimes.get(0).alreadyBooked()).isTrue();

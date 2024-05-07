@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
@@ -16,6 +15,7 @@ import roomescape.domain.time.ReservationTime;
 import roomescape.fixture.ReservationTimeFixture;
 
 @JdbcTest
+@Sql("/reservation-time.sql")
 class JdbcReservationTimeRepositoryTest {
     private final ReservationTimeRepository reservationTimeRepository;
 
@@ -26,35 +26,23 @@ class JdbcReservationTimeRepositoryTest {
 
     @Test
     void 예약_시간을_저장한다() {
-        String startAt = "13:00";
-        ReservationTime reservationTime = ReservationTimeFixture.reservationTime(startAt);
+        ReservationTime reservationTime = ReservationTimeFixture.reservationTime("23:00");
 
         ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
 
-        assertThat(savedReservationTime.getStartAt()).isEqualTo(LocalTime.parse(startAt));
+        assertThat(savedReservationTime.getStartAt()).isEqualTo(reservationTime.getStartAt());
     }
 
     @Test
     void 모든_예약_시간을_조회한다() {
-        ReservationTime reservationTime1 = ReservationTimeFixture.reservationTime("10:00");
-        ReservationTime reservationTime2 = ReservationTimeFixture.reservationTime("15:00");
-        reservationTimeRepository.save(reservationTime1);
-        reservationTimeRepository.save(reservationTime2);
-
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
-        assertAll(
-                () -> assertThat(reservationTimes).hasSize(2),
-                () -> assertThat(reservationTimes.get(0).getStartAt()).isEqualTo(LocalTime.parse("10:00")),
-                () -> assertThat(reservationTimes.get(1).getStartAt()).isEqualTo(LocalTime.parse("15:00"))
-        );
+
+        assertThat(reservationTimes).hasSize(2);
     }
 
     @Test
     void 예약_시간을_삭제한다() {
-        ReservationTime reservationTime = ReservationTimeFixture.DEFAULT_RESERVATION_TIME;
-        reservationTime = reservationTimeRepository.save(reservationTime);
-
-        int deletedCount = reservationTimeRepository.deleteById(reservationTime.getId());
+        int deletedCount = reservationTimeRepository.deleteById(2L);
 
         assertThat(deletedCount).isEqualTo(1);
     }

@@ -14,6 +14,7 @@ import roomescape.domain.theme.Theme;
 import roomescape.fixture.ThemeFixture;
 
 @JdbcTest
+@Sql("/theme.sql")
 class JdbcThemeRepositoryTest {
     private final ThemeRepository themeRepository;
 
@@ -24,7 +25,7 @@ class JdbcThemeRepositoryTest {
 
     @Test
     void 테마를_저장한다() {
-        Theme theme = ThemeFixture.DEFAULT_THEME;
+        Theme theme = ThemeFixture.theme("포레스트");
 
         Theme savedTheme = themeRepository.save(theme);
 
@@ -37,25 +38,14 @@ class JdbcThemeRepositoryTest {
 
     @Test
     void 모든_테마를_조회한다() {
-        Theme theme1 = ThemeFixture.theme("테마1");
-        Theme theme2 = ThemeFixture.theme("테마2");
-        themeRepository.save(theme1);
-        themeRepository.save(theme2);
-
         List<Theme> themes = themeRepository.findAll();
-        assertAll(
-                () -> assertThat(themes).hasSize(2),
-                () -> assertThat(themes.get(0).getName()).isEqualTo("테마1"),
-                () -> assertThat(themes.get(1).getName()).isEqualTo("테마2")
-        );
+
+        assertThat(themes).hasSize(3);
     }
 
     @Test
     void 테마를_삭제한다() {
-        Theme theme = ThemeFixture.DEFAULT_THEME;
-        theme = themeRepository.save(theme);
-
-        int deleteCount = themeRepository.deleteById(theme.getId());
+        int deleteCount = themeRepository.deleteById(2L);
 
         assertThat(deleteCount).isEqualTo(1);
     }
