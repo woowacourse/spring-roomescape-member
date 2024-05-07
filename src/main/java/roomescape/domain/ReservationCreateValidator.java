@@ -3,7 +3,7 @@ package roomescape.domain;
 import roomescape.domain.dto.ReservationRequest;
 import roomescape.exception.ReservationFailException;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class ReservationCreateValidator {
     private final ReservationRequest reservationRequest;
@@ -18,7 +18,8 @@ public class ReservationCreateValidator {
     }
 
     private void validatePastDate(final ReservationRequest reservationRequest, final TimeSlot timeSlot) {
-        if ((timeSlot.isTimeBeforeNow() && !reservationRequest.date().isAfter(LocalDate.now()))) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(reservationRequest.date(), timeSlot.getStartAt());
+        if (LocalDateTime.now().isAfter(reservationDateTime)) {
             throw new ReservationFailException("지나간 날짜와 시간으로 예약할 수 없습니다.");
         }
     }

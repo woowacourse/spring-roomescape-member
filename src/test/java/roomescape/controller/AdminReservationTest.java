@@ -12,7 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -146,7 +145,7 @@ class AdminReservationTest {
     void given_when_saveWithPastReservation_then_statusCodeIsBadRequest() {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", LocalDate.now().toString());
+        reservation.put("date", "1999-01-01");
         reservation.put("timeId", 1); // 10:00
         reservation.put("themeId", 1);
 
