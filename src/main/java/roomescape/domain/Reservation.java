@@ -35,16 +35,6 @@ public class Reservation {
         this(id, reservation.name, reservation.date, reservation.time, reservation.theme);
     }
 
-    public boolean isDuplicated(Reservation other) {
-        return date.equals(other.date)
-                && time.getId().equals(other.time.getId())
-                && theme.getId().equals(other.theme.getId());
-    }
-
-    public boolean isSameUser(Reservation other) {
-        return name.equals(other.getName());
-    }
-
     public Long getId() {
         return id;
     }
@@ -63,5 +53,13 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public Long getTimeId() {
+        return time.getId();
+    }
+
+    public Long getThemeId() {
+        return theme.getId();
     }
 }

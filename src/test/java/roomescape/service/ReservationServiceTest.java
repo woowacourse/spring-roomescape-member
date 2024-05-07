@@ -63,7 +63,7 @@ class ReservationServiceTest {
         List<ReservationResponse> reservations = reservationService.readReservations();
 
         // then
-        assertThat(reservations.size()).isEqualTo(1);
+        assertThat(reservations).hasSize(1);
     }
 
     @DisplayName("예약 서비스는 id에 맞는 예약을 조회한다.")
@@ -131,9 +131,9 @@ class ReservationServiceTest {
         Mockito.when(reservationTimeRepository.findById(id))
                 .thenReturn(Optional.of(Fixtures.reservationTimeFixture));
         Mockito.when(themeRepository.findById(id))
-                        .thenReturn(Optional.of(Fixtures.themeFixture));
-        Mockito.when(reservationRepository.findAll())
-                .thenReturn(List.of(Fixtures.reservationFixture));
+                .thenReturn(Optional.of(Fixtures.themeFixture));
+        Mockito.when(reservationRepository.existsBy(any(), any(), any()))
+                .thenReturn(true);
         ReservationCreateRequest request = new ReservationCreateRequest(
                 Fixtures.reservationFixture.getName(),
                 Fixtures.reservationFixture.getDate(),
@@ -144,7 +144,7 @@ class ReservationServiceTest {
         // when & then
         assertThatThrownBy(() -> reservationService.createReservation(request))
                 .isInstanceOf(BadRequestException.class)
-                .hasMessage("중복된 예약입니다.");
+                .hasMessage("해당 시간대에 이미 예약된 테마입니다.");
     }
 
     @DisplayName("예약 서비스는 예약 요청에 존재하지 않는 시간이 포함된 경우 예외가 발생한다.")
@@ -170,14 +170,14 @@ class ReservationServiceTest {
                 .thenReturn(Optional.of(Fixtures.reservationTimeFixture));
         Mockito.when(themeRepository.findById(id))
                 .thenReturn(Optional.of(Fixtures.themeFixture));
-        Mockito.when(reservationRepository.findAll())
-                .thenReturn(List.of(Fixtures.reservationFixture));
+        Mockito.when(reservationRepository.existsBy(any(), any(), any()))
+                .thenReturn(true);
         ReservationCreateRequest request = new ReservationCreateRequest("페드로", date, id, id);
 
         // when & then
         assertThatThrownBy(() -> reservationService.createReservation(request))
                 .isInstanceOf(BadRequestException.class)
-                .hasMessage("이미 예약된 테마입니다.");
+                .hasMessage("해당 시간대에 이미 예약된 테마입니다.");
     }
 
     @DisplayName("예약 서비스는 id에 맞는 예약을 삭제한다.")

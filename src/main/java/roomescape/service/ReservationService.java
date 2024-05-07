@@ -55,17 +55,11 @@ public class ReservationService {
     }
 
     private void validateDuplicated(Reservation reservation) {
-        reservationRepository.findAll().stream()
-                .filter(reservation::isDuplicated)
-                .findFirst()
-                .ifPresent(duplicatedReservation -> validateSameUser(duplicatedReservation, reservation));
-    }
-
-    private void validateSameUser(Reservation duplicatedReservation, Reservation reservation) {
-        if (duplicatedReservation.isSameUser(reservation)) {
-            throw new BadRequestException("중복된 예약입니다.");
+        boolean isDuplicated = reservationRepository.existsBy(reservation.getDate(), reservation.getTimeId(),
+                reservation.getThemeId());
+        if (isDuplicated) {
+            throw new BadRequestException("해당 시간대에 이미 예약된 테마입니다.");
         }
-        throw new BadRequestException("이미 예약된 테마입니다.");
     }
 
     private void validateRequestedTime(Reservation reservation, ReservationTime reservationTime) {

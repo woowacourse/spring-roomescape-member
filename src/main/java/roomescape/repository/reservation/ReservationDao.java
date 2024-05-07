@@ -176,4 +176,11 @@ public class ReservationDao implements ReservationRepository {
         );
         return !ids.isEmpty();
     }
+
+    @Override
+    public boolean existsBy(LocalDate date, Long timeId, Long themeId) {
+        String sql = "SELECT EXISTS(SELECT id FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?)";
+        Boolean isExist = jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
+        return Boolean.TRUE.equals(isExist);
+    }
 }
