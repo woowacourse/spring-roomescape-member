@@ -1,0 +1,132 @@
+package roomescape.repository;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.stereotype.Repository;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
+
+import javax.sql.DataSource;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public class H2ReservationRepository implements ReservationRepository {
+
+    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
+
+    public H2ReservationRepository(final DataSource dataSource) {
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
+        this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName("RESERVATION")
+                .usingGeneratedKeyColumns("ID");
+    }
+
+    private Reservation mapRowLazy(final ResultSet rs, final int rowNum) throws SQLException {
+        return new Reservation(
+                rs.getLong("ID"),
+                rs.getString("NAME"),
+                rs.getString("DATE"),
+                new ReservationTime(rs.getLong("TIME_ID")),
+                new Theme(rs.getLong("THEME_ID"))
+        );
+    }
+
+    private Reservation mapRowFull(final ResultSet rs, final int rowNum) throws SQLException {
+        return new Reservation(
+                rs.getLong("RESERVATION.ID"),
+                rs.getString("RESERVATION.NAME"),
+                rs.getString("RESERVATION.DATE"),
+                new ReservationTime(
+                        rs.getLong("RESERVATION_TIME.ID"),
+                        rs.getString("RESERVATION_TIME.START_AT")),
+                new Theme(
+                        rs.getLong("THEME.ID"),
+                        rs.getString("THEME.NAME"),
+                        rs.getString("THEME.DESCRIPTION"),
+                        rs.getString("THEME.THUMBNAIL"))
+        );
+    }
+
+    @Override
+    public List<Reservation> findAll() {
+        final String sql = """
+                SELECT * FROM RESERVATION AS R
+                LEFT JOIN RESERVATION_TIME RT ON RT.ID = R.TIME_ID
+                LEFT JOIN THEME T ON T.ID = R.THEME_ID
+                """;
+
+        return jdbcTemplate.query(sql, this::mapRowFull);
+    }
+
+    @Override
+    public List<Reservation> findAllByDateAndThemeId(final LocalDate date, final long themeId) {
+        final String sql = """
+                SELECT * FROM RESERVATION AS R
+                INNER JOIN RESERVATION_TIME RT ON RT.ID = R.TIME_ID
+                INNER JOIN THEME T ON T.ID = R.THEME_ID
+                WHERE R.DATE = ? AND T.ID = ?
+                """;
+
+        return jdbcTemplate.query(sql, this::mapRowFull, date, themeId);
+    }
+
+    @Override
+    public Optional<Reservation> findById(final long id) {
+        final String sql = "SELECT * FROM reservation WHERE id = ?";
+
+        return jdbcTemplate.query(sql, this::mapRowLazy, id)
+                .stream()
+                .findAny();
+    }
+
+    @Override
+    public boolean existsByTimeId(final long timeId) {
+        final String sql = "SELECT * FROM RESERVATION WHERE TIME_ID = ? LIMIT 1";
+
+        return !jdbcTemplate.query(sql, this::mapRowLazy, timeId)
+                .isEmpty();
+    }
+
+    @Override
+    public boolean existsByThemeId(final long themeId) {
+        final String sql = "SELECT * FROM RESERVATION WHERE THEME_ID = ? LIMIT 1";
+
+        return !jdbcTemplate.query(sql, this::mapRowLazy, themeId)
+                .isEmpty();
+    }
+
+    @Override
+    public boolean existsByDateAndTimeId(final long timeId, final LocalDate date) {
+        final String sql = "SELECT * FROM RESERVATION WHERE TIME_ID = ? AND DATE = ? LIMIT 1";
+
+        return !jdbcTemplate.query(sql, this::mapRowLazy, timeId, date).isEmpty();
+    }
+
+    @Override
+    public Reservation save(final Reservation reservation) {
+        final SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("NAME", reservation.getName())
+                .addValue("DATE", reservation.getDate().format(DateTimeFormatter.ISO_LOCAL_DATE))
+                .addValue("TIME_ID", reservation.getTime().getId())
+                .addValue("THEME_ID", reservation.getTheme().getId());
+
+        final Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
+        return reservation.assignId(id);
+    }
+
+    @Override
+    public int delete(final long id) {
+        final String sql = "DELETE FROM RESERVATION WHERE ID = ?";
+
+        return jdbcTemplate.update(sql, id);
+    }
+}
