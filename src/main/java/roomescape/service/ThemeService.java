@@ -2,6 +2,7 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ThemeSaveRequest;
@@ -44,6 +45,9 @@ public class ThemeService {
     }
 
     public ThemeDeleteResponse delete(final long id) {
+        if (themeDao.findById(id).isEmpty()) {
+            throw new NoSuchElementException();
+        }
         if (!reservationDao.findByThemeId(id).isEmpty()) {
             throw new IllegalArgumentException("[ERROR] 해당 테마를 사용 중인 예약이 있어 삭제할 수 없습니다.");
         }

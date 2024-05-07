@@ -43,6 +43,6 @@ public class ThemeController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ThemeDeleteResponse> delete(@PathVariable("id") long id) {
-        return ResponseEntity.ok(themeService.delete(id));
+        return ResponseEntity.ok().body(themeService.delete(id));
     }
 }

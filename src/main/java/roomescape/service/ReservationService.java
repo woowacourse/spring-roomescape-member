@@ -2,6 +2,7 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -81,6 +82,9 @@ public class ReservationService {
     }
 
     public ReservationDeleteResponse delete(final long id) {
+        if (reservationDao.findById(id).isEmpty()) {
+            throw new NoSuchElementException();
+        }
         return new ReservationDeleteResponse(reservationDao.delete(id));
     }
 }

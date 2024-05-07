@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -28,14 +29,6 @@ public class ReservationTimeService {
         return ReservationTimeResponse.from(reservationTimeDao.save(reservationTime));
     }
 
-    public List<ReservationTimeResponse> findAll() {
-        List<ReservationTimeResponse> reservationTimes = getAll();
-        if (reservationTimes.isEmpty()) {
-            throw new IllegalStateException("[ERROR] 방탈출 예약이 가능한 시간이 없습니다.");
-        }
-        return reservationTimes;
-    }
-
     public List<ReservationTimeResponse> getAll() {
         return reservationTimeDao.getAll()
                 .stream()
@@ -44,8 +37,15 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeDeleteResponse delete(final long id) {
+        validateDoesNotExists(id);
         validateAlreadyHasReservation(id);
         return new ReservationTimeDeleteResponse(reservationTimeDao.delete(id));
+    }
+
+    private void validateDoesNotExists(final long id) {
+        if (reservationTimeDao.findById(id).isEmpty()) {
+            throw new NoSuchElementException();
+        }
     }
 
     private void validateAlreadyHasReservation(final long id) {
