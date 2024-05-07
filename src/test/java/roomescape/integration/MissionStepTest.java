@@ -14,8 +14,8 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.controller.ReservationController;
 import roomescape.service.dto.ReservationResponse;
-import roomescape.web.ReservationController;
 
 class MissionStepTest extends IntegrationTest {
     @Autowired
