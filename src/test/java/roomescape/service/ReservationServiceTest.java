@@ -12,13 +12,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
-import roomescape.service.dto.request.ReservationRequest;
-import roomescape.service.dto.response.ReservationResponse;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.handler.exception.CustomException;
+import roomescape.handler.exception.ExceptionCode;
+import roomescape.service.dto.request.ReservationRequest;
+import roomescape.service.dto.request.ReservationTimeRequest;
+import roomescape.service.dto.request.ThemeRequest;
+import roomescape.service.dto.response.ReservationResponse;
+import roomescape.service.dto.response.ReservationTimeResponse;
+import roomescape.service.dto.response.ThemeResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@Transactional
 class ReservationServiceTest {
 
     @Autowired
@@ -27,24 +32,22 @@ class ReservationServiceTest {
     @Autowired
     private ReservationService reservationService;
 
-    @DisplayName("예약시간이 없는 경우 예외가 발생한다.")
-    @Test
-    void reservationTimeIsNotExist() {
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES(?, ?, ?)", "happy", "hi", "abcd.html");
+    @Autowired
+    private ReservationTimeService reservationTimeService;
 
-        ReservationRequest reservationRequest = new ReservationRequest("브라운", LocalDate.of(2999, 8, 5), 1L,1L);
-
-        assertThatThrownBy(() -> reservationService.createReservation(reservationRequest))
-                .isInstanceOf(CustomException.class);
-    }
+    @Autowired
+    private ThemeService themeService;
 
     @DisplayName("예약 생성 테스트")
     @Test
     void createReservation() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES(?)", LocalTime.of(10, 0));
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES(?, ?, ?)", "happy", "hi", "abcd.html");
+        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.of(10, 0));
+        ReservationTimeResponse reservationTime = reservationTimeService.createReservationTime(reservationTimeRequest);
 
-        ReservationRequest reservationRequest = new ReservationRequest("브라운", LocalDate.of(2999, 8, 5), 1L, 1L);
+        ThemeRequest themeRequest = new ThemeRequest("happy", "hi", "abcd.html");
+        ThemeResponse theme = themeService.createTheme(themeRequest);
+
+        ReservationRequest reservationRequest = new ReservationRequest("브라운", LocalDate.of(2999, 8, 5), reservationTime.id(), theme.id());
         ReservationResponse reservationResponse = reservationService.createReservation(reservationRequest);
 
         assertAll(
@@ -53,13 +56,44 @@ class ReservationServiceTest {
         );
     }
 
+    @DisplayName("예약시간이 없는 경우 예외가 발생한다.")
+    @Test
+    void reservationTimeIsNotExist() {
+        ThemeRequest themeRequest = new ThemeRequest("happy", "hi", "abcd.html");
+        ThemeResponse theme = themeService.createTheme(themeRequest);
+
+        ReservationRequest reservationRequest = new ReservationRequest("브라운", LocalDate.of(2999, 8, 5), 1L, theme.id());
+        assertThatThrownBy(() -> reservationService.createReservation(reservationRequest))
+                .isInstanceOf(CustomException.class)
+                .hasMessage(ExceptionCode.NOT_FOUND_RESERVATION_TIME.getErrorMessage());
+    }
+
+    @DisplayName("과거 시간을 예약하는 경우 예외가 발생한다.")
+    @Test
+    void validatePastTime() {
+        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.of(10, 0));
+        ReservationTimeResponse reservationTime = reservationTimeService.createReservationTime(reservationTimeRequest);
+
+        ThemeRequest themeRequest = new ThemeRequest("happy", "hi", "abcd.html");
+        ThemeResponse theme = themeService.createTheme(themeRequest);
+
+        ReservationRequest reservationRequest = new ReservationRequest("브라운", LocalDate.of(1999, 8, 5), reservationTime.id(), theme.id());
+        assertThatThrownBy(() -> reservationService.createReservation(reservationRequest))
+                .isInstanceOf(CustomException.class)
+                .hasMessage(ExceptionCode.PAST_TIME_SLOT_RESERVATION.getErrorMessage());
+    }
+
+
     @DisplayName("모든 예약 조회 테스트")
     @Test
     void findAllReservations() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES(?)", LocalTime.of(10, 0));
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES(?, ?, ?)", "happy", "hi", "abcd.html");
+        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.of(10, 0));
+        ReservationTimeResponse reservationTime = reservationTimeService.createReservationTime(reservationTimeRequest);
 
-        ReservationRequest reservationRequest = new ReservationRequest("브라운", LocalDate.of(2999, 8, 5), 1L, 1L);
+        ThemeRequest themeRequest = new ThemeRequest("happy", "hi", "abcd.html");
+        ThemeResponse theme = themeService.createTheme(themeRequest);
+
+        ReservationRequest reservationRequest = new ReservationRequest("브라운", LocalDate.of(2999, 8, 5), reservationTime.id(), theme.id());
         reservationService.createReservation(reservationRequest);
 
         List<ReservationResponse> reservations = reservationService.findAllReservations();
@@ -74,10 +108,13 @@ class ReservationServiceTest {
     @DisplayName("예약 삭제 테스트")
     @Test
     void deleteReservation() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES(?)", LocalTime.of(10, 0));
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES(?, ?, ?)", "happy", "hi", "abcd.html");
+        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.of(10, 0));
+        ReservationTimeResponse reservationTime = reservationTimeService.createReservationTime(reservationTimeRequest);
 
-        ReservationRequest reservationRequest = new ReservationRequest("브라운", LocalDate.of(2999, 8, 5), 1L, 1L);
+        ThemeRequest themeRequest = new ThemeRequest("happy", "hi", "abcd.html");
+        ThemeResponse theme = themeService.createTheme(themeRequest);
+
+        ReservationRequest reservationRequest = new ReservationRequest("브라운", LocalDate.of(2999, 8, 5), reservationTime.id(), theme.id());
         ReservationResponse savedReservation = reservationService.createReservation(reservationRequest);
 
         reservationService.deleteReservation(savedReservation.id());

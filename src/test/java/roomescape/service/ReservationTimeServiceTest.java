@@ -9,11 +9,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.service.dto.request.ReservationTimeRequest;
 import roomescape.service.dto.response.ReservationTimeResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@Transactional
 class ReservationTimeServiceTest {
 
     @Autowired
@@ -30,8 +31,11 @@ class ReservationTimeServiceTest {
     @DisplayName("모든 예약 시간 조회 테스트")
     @Test
     void findAllReservationTimes() {
+        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.of(10, 1));
+        ReservationTimeResponse reservationTime = reservationTimeService.createReservationTime(reservationTimeRequest);
+
         List<ReservationTimeResponse> reservationTimes = reservationTimeService.findAllReservationTimes();
-        assertThat(reservationTimes).isEmpty();
+        assertThat(reservationTimes).hasSize(1);
     }
 
     @DisplayName("예약 시간 삭제 테스트")
