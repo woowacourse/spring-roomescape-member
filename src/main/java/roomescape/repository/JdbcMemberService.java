@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -55,5 +56,12 @@ public class JdbcMemberService implements MemberRepository {
         String sql = "SELECT EXISTS(SELECT 1 FROM member WHERE email = ?)";
 
         return jdbcTemplate.queryForObject(sql, Boolean.class, email);
+    }
+
+    @Override
+    public List<Member> findAll() {
+        String sql = "SELECT * FROM member";
+
+        return jdbcTemplate.query(sql, rowMapper);
     }
 }

@@ -1,8 +1,10 @@
 package roomescape.controller.api;
 
 import jakarta.validation.Valid;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,5 +29,12 @@ public class MemberController {
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(memberResponse);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<MemberResponse>> getAllMembers() {
+        List<MemberResponse> memberResponses = memberService.getAllMembers();
+
+        return ResponseEntity.ok(memberResponses);
     }
 }

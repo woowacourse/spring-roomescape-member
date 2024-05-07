@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberRepository;
@@ -33,5 +34,13 @@ public class MemberService {
         Member savedMember = memberRepository.save(member);
 
         return MemberResponse.from(savedMember);
+    }
+
+    public List<MemberResponse> getAllMembers() {
+        List<Member> members = memberRepository.findAll();
+
+        return members.stream()
+                .map(MemberResponse::from)
+                .toList();
     }
 }
