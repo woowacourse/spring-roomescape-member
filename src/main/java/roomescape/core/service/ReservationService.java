@@ -27,24 +27,20 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponseDto create(final ReservationRequestDto request) {
-        final ReservationTime reservationTime = reservationTimeRepository.findById(request.getTimeId());
+    public Reservation create(final ReservationRequestDto request) {
+        final ReservationTime time = reservationTimeRepository.findById(request.getTimeId());
         final Theme theme = themeRepository.findById(request.getThemeId());
-        final Reservation reservation = new Reservation(request.getName(), request.getDate(), reservationTime, theme);
+        final Reservation reservation = new Reservation(request.getName(), request.getDate(), time, theme);
 
-        validateDateTimeIsNotPast(reservation, reservationTime);
-        validateDuplicatedReservation(reservation, reservationTime);
+        validateDateTimeIsNotPast(reservation, time);
+        validateDuplicatedReservation(reservation, time);
         final Long id = reservationRepository.save(reservation);
-
-        return new ReservationResponseDto(id, reservation);
+        return new Reservation(id, reservation.getName(), reservation.getDateString(), time, theme);
     }
 
     @Transactional(readOnly = true)
-    public List<ReservationResponseDto> findAll() {
-        return reservationRepository.findAll()
-                .stream()
-                .map(ReservationResponseDto::new)
-                .toList();
+    public List<Reservation> findAll() {
+        return reservationRepository.findAll();
     }
 
     @Transactional
