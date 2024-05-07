@@ -1,17 +1,13 @@
 package roomescape.user;
 
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 
-import roomescape.reservation.service.ReservationService;
-
-@RestController
+@Controller
 public class UserController {
 
-    private final ReservationService reservationService;
-
-    public UserController(ReservationService reservationService) {
-        this.reservationService = reservationService;
+    @GetMapping("/reservation")
+    public String reservation(){
+        return "reservation";
     }
-
-
 }
