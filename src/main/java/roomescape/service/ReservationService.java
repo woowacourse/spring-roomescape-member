@@ -70,7 +70,7 @@ public class ReservationService {
 
     private void validateDuplicatedReservation(final LocalDate date, final Long timeId, final Long themeId) {
         if (reservationDao.isExists(date, timeId, themeId)) {
-            throw new IllegalArgumentException("[ERROR] 예약이 찼어요 ㅜㅜ 죄송해요~~");
+            throw new IllegalArgumentException("[ERROR] 예약이 종료되었습니다");
         }
     }
 
