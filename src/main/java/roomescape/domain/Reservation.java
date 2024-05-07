@@ -8,12 +8,12 @@ import java.util.Objects;
 public class Reservation {
 
     private final Long id;
-    private final Name name;
+    private final ReservatorName name;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(Long id, Name name, LocalDate date, ReservationTime time, Theme theme) {
+    public Reservation(Long id, ReservatorName name, LocalDate date, ReservationTime time, Theme theme) {
         this.id = id;
         this.name = name;
         this.date = date;
@@ -21,7 +21,7 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public Reservation(Name name, LocalDate date, ReservationTime time, Theme theme) {
+    public Reservation(ReservatorName name, LocalDate date, ReservationTime time, Theme theme) {
         this(null, name, date, time, theme);
     }
 
@@ -33,7 +33,7 @@ public class Reservation {
         return id;
     }
 
-    public Name getName() {
+    public ReservatorName getName() {
         return name;
     }
 

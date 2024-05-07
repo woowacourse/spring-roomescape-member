@@ -1,6 +1,9 @@
 package roomescape.repository.theme;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+import javax.sql.DataSource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -9,12 +12,8 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Name;
 import roomescape.domain.Theme;
-
-import javax.sql.DataSource;
-import java.util.List;
-import java.util.Optional;
+import roomescape.domain.ThemeName;
 import roomescape.exceptions.ClientException;
 
 @Repository
@@ -35,7 +34,7 @@ public class ThemeH2Repository implements ThemeRepository {
     @Override
     public Theme save(Theme theme) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", theme.getName().getName())
+                .addValue("name", theme.getName().name())
                 .addValue("description", theme.getDescription())
                 .addValue("thumbnail", theme.getThumbnail());
         long id = jdbcInsert.executeAndReturnKey(params).longValue();
@@ -44,9 +43,9 @@ public class ThemeH2Repository implements ThemeRepository {
     }
 
     @Override
-    public boolean hasTheme(Name name) {
+    public boolean hasTheme(ThemeName name) {
         String sql = "SELECT * FROM theme WHERE name = ?";
-        return !jdbcTemplate.query(sql, (rs, rowNum) -> 0, name.getName()).isEmpty();
+        return !jdbcTemplate.query(sql, (rs, rowNum) -> 0, name.name()).isEmpty();
     }
 
     @Override
@@ -75,7 +74,7 @@ public class ThemeH2Repository implements ThemeRepository {
     private RowMapper<Theme> getThemeRowMapper() {
         return (resultSet, rowNum) -> new Theme(
                 resultSet.getLong("id"),
-                new Name(resultSet.getString("name")),
+                new ThemeName(resultSet.getString("name")),
                 resultSet.getString("description"),
                 resultSet.getString("thumbnail")
         );

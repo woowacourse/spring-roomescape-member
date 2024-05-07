@@ -40,7 +40,10 @@ public class ReservationTimeController {
     }
 
     @GetMapping("/available")
-    public List<ReservationTimeResponse> findTimesWithAlreadyBooked(@RequestParam LocalDate date, @RequestParam Long themeId) {
+    public List<ReservationTimeResponse> findTimesWithAlreadyBooked(
+            @RequestParam LocalDate date,
+            @RequestParam Long themeId
+    ) {
         return reservationTimeService.findTimesWithAlreadyBooked(date, themeId);
     }
 

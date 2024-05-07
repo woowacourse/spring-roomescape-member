@@ -11,10 +11,11 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.ReservatorName;
 import roomescape.domain.Theme;
+import roomescape.domain.ThemeName;
 
 @Repository
 public class ReservationH2Repository implements ReservationRepository {
@@ -35,7 +36,7 @@ public class ReservationH2Repository implements ReservationRepository {
     @Override
     public Reservation save(Reservation reservation) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", reservation.getName().getName())
+                .addValue("name", reservation.getName().name())
                 .addValue("date", reservation.getDate(DateTimeFormatter.ISO_DATE))
                 .addValue("time_id", reservation.getTime().getId())
                 .addValue("theme_id", reservation.getTheme().getId());
@@ -69,13 +70,13 @@ public class ReservationH2Repository implements ReservationRepository {
             );
             Theme theme = new Theme(
                     resultSet.getLong("theme_id"),
-                    new Name(resultSet.getString("theme_name")),
+                    new ThemeName(resultSet.getString("theme_name")),
                     resultSet.getString("description"),
                     resultSet.getString("thumbnail")
             );
             return new Reservation(
                     resultSet.getLong("id"),
-                    new Name(resultSet.getString("name")),
+                    new ReservatorName(resultSet.getString("name")),
                     LocalDate.parse(resultSet.getString("date")),
                     reservationTime,
                     theme

@@ -3,9 +3,9 @@ package roomescape.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static roomescape.InitialDataFixture.INITIAL_RESERVATION_TIME_COUNT;
+import static roomescape.InitialDataFixture.NOT_RESERVATION_TIME;
 import static roomescape.InitialDataFixture.RESERVATION_1;
 import static roomescape.InitialDataFixture.RESERVATION_TIME_1;
-import static roomescape.InitialDataFixture.NOT_RESERVATION_TIME;
 
 import java.time.LocalTime;
 import java.util.List;

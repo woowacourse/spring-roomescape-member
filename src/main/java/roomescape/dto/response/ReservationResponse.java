@@ -14,7 +14,7 @@ public record ReservationResponse(
     public static ReservationResponse from(Reservation reservation) {
         return new ReservationResponse(
                 reservation.getId(),
-                reservation.getName().getName(),
+                reservation.getName().name(),
                 reservation.getDate(DateTimeFormatter.ISO_DATE),
                 new ReservationTimeResponse(reservation.getTime()),
                 new ThemeResponse(reservation.getTheme())

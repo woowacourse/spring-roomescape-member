@@ -14,7 +14,7 @@ class ReservationResponseTest {
     void createReservationResponse() {
         ReservationResponse expected = new ReservationResponse(
                 RESERVATION_1.getId(),
-                RESERVATION_1.getName().getName(),
+                RESERVATION_1.getName().name(),
                 RESERVATION_1.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                 new ReservationTimeResponse(RESERVATION_1.getTime()),
                 new ThemeResponse(RESERVATION_1.getTheme())

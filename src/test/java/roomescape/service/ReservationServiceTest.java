@@ -16,7 +16,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.domain.Name;
 import roomescape.dto.request.ReservationAddRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.exceptions.ClientException;
@@ -35,7 +34,7 @@ class ReservationServiceTest {
     @DisplayName("과거 시간을 예약하려는 경우 예외를 발생시킨다.")
     void savePastGetTime() {
         ReservationAddRequest reservationAddRequest = new ReservationAddRequest(
-                new Name("네오"),
+                "네오",
                 RESERVATION_1.getDate(),
                 RESERVATION_1.getTime().getId(),
                 THEME_2.getId()
@@ -49,7 +48,7 @@ class ReservationServiceTest {
     @DisplayName("같은 날짜, 시간, 테마에 예약을 하는 경우 예외를 발생시킨다.")
     void saveSameReservation() {
         ReservationAddRequest reservationAddRequest = new ReservationAddRequest(
-                new Name("네오"),
+                "네오",
                 RESERVATION_2.getDate(),
                 RESERVATION_2.getTime().getId(),
                 RESERVATION_2.getTheme().getId()
@@ -62,8 +61,12 @@ class ReservationServiceTest {
     @Test
     @DisplayName("예약을 추가하고 id값을 붙여서 응답 DTO를 생성한다.")
     void addReservation() {
-        ReservationAddRequest reservationAddRequest = new ReservationAddRequest(new Name("네오"),
-                LocalDate.now().plusDays(1), 1L, 1L);
+        ReservationAddRequest reservationAddRequest = new ReservationAddRequest(
+                "네오",
+                LocalDate.now().plusDays(1),
+                1L,
+                1L
+        );
 
         ReservationResponse reservationResponse = reservationService.addReservation(reservationAddRequest);
 
@@ -73,8 +76,12 @@ class ReservationServiceTest {
     @Test
     @DisplayName("존재하지 않는 time_id로 예약을 추가하면 예외를 발생시킨다.")
     void addReservationInvalidGetTimeGetId() {
-        ReservationAddRequest reservationAddRequest = new ReservationAddRequest(new Name("네오"),
-                LocalDate.now().plusDays(1), -1L, 1L);
+        ReservationAddRequest reservationAddRequest = new ReservationAddRequest(
+                "네오",
+                LocalDate.now().plusDays(1),
+                -1L,
+                1L
+        );
 
         assertThatThrownBy(() -> reservationService.addReservation(reservationAddRequest))
                 .isInstanceOf(ClientException.class);

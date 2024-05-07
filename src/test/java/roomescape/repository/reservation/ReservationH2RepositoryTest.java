@@ -19,8 +19,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.domain.Name;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservatorName;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
@@ -36,7 +36,7 @@ class ReservationH2RepositoryTest {
     @DisplayName("Reservation을 저장하면 id가 포함된 Reservation이 반환된다.")
     void save() {
         Reservation reservation = new Reservation(
-                new Name("네오"),
+                new ReservatorName("네오"),
                 RESERVATION_2.getDate(),
                 RESERVATION_2.getTime(),
                 THEME_2
@@ -51,7 +51,7 @@ class ReservationH2RepositoryTest {
     @DisplayName("시간과 날짜만 같고 테마가 다른 경우 예약에 성공한다.")
     void saveOnlySameGetDateGetTime() {
         Reservation reservation = new Reservation(
-                new Name("네오"),
+                new ReservatorName("네오"),
                 RESERVATION_2.getDate(),
                 RESERVATION_2.getTime(),
                 THEME_2
@@ -63,7 +63,7 @@ class ReservationH2RepositoryTest {
     @DisplayName("테마가 같고 날짜가 다른 경우 예약에 성공한다.")
     void saveOnlySameTheme() {
         Reservation reservation = new Reservation(
-                new Name("네오"),
+                new ReservatorName("네오"),
                 RESERVATION_2.getDate().plusDays(1),
                 RESERVATION_2.getTime(),
                 RESERVATION_2.getTheme()

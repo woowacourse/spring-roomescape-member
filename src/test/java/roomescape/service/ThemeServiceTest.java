@@ -33,7 +33,7 @@ class ThemeServiceTest {
     @DisplayName("중복된 테마를 저장하려고 하면 예외가 발생한다.")
     void saveDuplicatedTheme() {
         ThemeAddRequest themeAddRequest = new ThemeAddRequest(
-                THEME_1.getName().getName(),
+                THEME_1.getName().name(),
                 THEME_1.getDescription(),
                 THEME_1.getThumbnail()
         );

@@ -17,8 +17,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.domain.Name;
 import roomescape.domain.Theme;
+import roomescape.domain.ThemeName;
 import roomescape.exceptions.ClientException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
@@ -34,7 +34,7 @@ class ThemeH2RepositoryTest {
     @Test
     @DisplayName("Theme를 저장한다.")
     void save() {
-        Theme theme = new Theme(null, new Name("레벨2"), "레벨2 설명", "레벨2 썸네일");
+        Theme theme = new Theme(null, new ThemeName("레벨2"), "레벨2 설명", "레벨2 썸네일");
 
         Theme saved = themeH2Repository.save(theme);
 

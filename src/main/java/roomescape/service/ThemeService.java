@@ -3,8 +3,8 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.domain.Name;
 import roomescape.domain.Theme;
+import roomescape.domain.ThemeName;
 import roomescape.dto.request.ThemeAddRequest;
 import roomescape.dto.response.ThemeResponse;
 import roomescape.exceptions.ClientException;
@@ -20,7 +20,7 @@ public class ThemeService {
     }
 
     public ThemeResponse addTheme(ThemeAddRequest themeAddRequest) {
-        if (themeRepository.hasTheme(new Name(themeAddRequest.name()))) {
+        if (themeRepository.hasTheme(new ThemeName(themeAddRequest.name()))) {
             throw new ClientException("이미 존재하는 테마 이름입니다.");
         }
 
