@@ -25,7 +25,7 @@ class ReservationTimeControllerTest {
     @DisplayName("성공: 예약 시간 저장 -> 201")
     @Test
     void save() {
-        CreateTimeRequest request = new CreateTimeRequest(1L, "10:00");
+        CreateTimeRequest request = new CreateTimeRequest("10:00");
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
@@ -66,7 +66,7 @@ class ReservationTimeControllerTest {
     @DisplayName("실패: 잘못된 포맷의 예약 시간 저장 -> 400")
     @Test
     void save_IllegalTimeFormat() {
-        CreateTimeRequest request = new CreateTimeRequest(1L, "24:00");
+        CreateTimeRequest request = new CreateTimeRequest("24:00");
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
@@ -97,7 +97,7 @@ class ReservationTimeControllerTest {
     void save_Duplicate() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('10:00')");
 
-        CreateTimeRequest request = new CreateTimeRequest(1L, "10:00");
+        CreateTimeRequest request = new CreateTimeRequest("10:00");
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
