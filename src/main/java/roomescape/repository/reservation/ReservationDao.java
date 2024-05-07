@@ -157,20 +157,16 @@ public class ReservationDao implements ReservationRepository {
 
     @Override
     public boolean existsByTimeId(Long timeId) {
-        String sql = "SELECT id FROM reservation WHERE time_id = ? LIMIT 1";
-        List<Long> ids = jdbcTemplate.query(
-                sql, (rs, rowNum) -> rs.getLong("id"), timeId
-        );
-        return !ids.isEmpty();
+        String sql = "SELECT EXISTS(SELECT id FROM reservation WHERE time_id = ?)";
+        Boolean isExist = jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
+        return Boolean.TRUE.equals(isExist);
     }
 
     @Override
     public boolean existsByThemeId(Long themeId) {
-        String sql = "SELECT id FROM reservation WHERE theme_id = ? LIMIT 1";
-        List<Long> ids = jdbcTemplate.query(
-                sql, (rs, rowNum) -> rs.getLong("id"), themeId
-        );
-        return !ids.isEmpty();
+        String sql = "SELECT EXISTS(SELECT id FROM reservation WHERE theme_id = ?)";
+        Boolean isExist = jdbcTemplate.queryForObject(sql, Boolean.class, themeId);
+        return Boolean.TRUE.equals(isExist);
     }
 
     @Override
