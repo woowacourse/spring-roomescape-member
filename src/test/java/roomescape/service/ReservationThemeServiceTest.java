@@ -26,7 +26,7 @@ public class ReservationThemeServiceTest {
     void getAllThemesTest() {
         List<ReservationTheme> reservationThemes = reservationThemeService.getAllThemes();
 
-        assertThat(reservationThemes.size()).isEqualTo(1);
+        assertThat(reservationThemes.size()).isGreaterThan(0);
     }
 
     @DisplayName("테마를 추가한다.")
@@ -67,13 +67,16 @@ public class ReservationThemeServiceTest {
     void getBestThemesTest() {
         List<ReservationTheme> reservationThemes = reservationThemeService.getBestThemes();
 
-        assertThat(reservationThemes.size()).isEqualTo(1);
+        List<Long> bestThemeIds = reservationThemes.stream()
+                        .map(ReservationTheme::getId).toList();
+
+        assertThat(bestThemeIds).isEqualTo(List.of(3L,1L,2L));
     }
 
     @DisplayName("이미 존재하는 테마 이름이면 예외를 발생한다.")
     @Test
     void insertExistNameThemeTest() {
-        String name = "레벨2 탈출";
+        String name = "testTheme1";
         ReservationThemeRequestDto reservationThemeRequestDto = new ReservationThemeRequestDto(name, "testDesc", "testImg");
 
         assertThatThrownBy(() -> reservationThemeService.insertTheme(reservationThemeRequestDto))

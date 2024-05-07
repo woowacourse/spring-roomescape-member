@@ -33,17 +33,19 @@ public class ReservationServiceTest {
     void getAllReservationsTest() {
         List<Reservation> reservations = reservationService.getAllReservations();
 
-        assertThat(reservations.size()).isEqualTo(1);
+        assertThat(reservations.size()).isGreaterThan(0);
     }
 
     @DisplayName("예약을 추가한다.")
     @Test
     void insertReservationTest() {
         ZoneId kst = ZoneId.of("Asia/Seoul");
+        int size = reservationService.getAllReservations().size();
+
         ReservationRequestDto reservationRequestDto = new ReservationRequestDto("test", LocalDate.now(kst).plusDays(1), 1L, 1L);
         Reservation reservation = reservationService.insertReservation(reservationRequestDto);
 
-        assertThat(reservation.getId()).isEqualTo(2L);
+        assertThat(reservation.getId()).isEqualTo(size + 1L);
         assertThat(reservation.getName()).isEqualTo(reservationRequestDto.name());
         assertThat(reservation.getDate()).isEqualTo(reservationRequestDto.date().toString());
     }

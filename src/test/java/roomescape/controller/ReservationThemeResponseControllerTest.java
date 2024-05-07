@@ -37,7 +37,7 @@ public class ReservationThemeResponseControllerTest {
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", is(3));
     }
 
     @DisplayName("정상적인 테마 추가 요청 시 201으로 응답한다.")
@@ -103,6 +103,6 @@ public class ReservationThemeResponseControllerTest {
                 .when().get("/best-themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", is(3));
     }
 }
