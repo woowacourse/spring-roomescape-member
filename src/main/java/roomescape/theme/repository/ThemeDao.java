@@ -52,9 +52,9 @@ public class ThemeDao {
         return findById(id);
     }
 
-    public void delete(long themeID) {
+    public int delete(long themeID) {
         String query = "DELETE FROM THEME WHERE ID = ?";
-        jdbcTemplate.update(query, themeID);
+        return jdbcTemplate.update(query, themeID);
     }
 
     public List<RankTheme> getRank() {

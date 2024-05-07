@@ -13,7 +13,7 @@ import roomescape.time.repository.ReservationTimeDao;
 
 @Service
 public class ReservationTimeService {
-
+    private static final int DELETE_SUCCESS = 1;
     private final ReservationTimeDao reservationTimeDao;
     private final ReservationDao reservationDao;
 
@@ -41,7 +41,9 @@ public class ReservationTimeService {
         if (reservationDao.existsTime(id)) {
             throw new IllegalArgumentException("Cannot delete a reservation that refers to that time");
         }
-        reservationTimeDao.delete(id);
+        if (reservationTimeDao.delete(id) != DELETE_SUCCESS) {
+            throw new IllegalArgumentException("Cannot delete a reservationTime by given id");
+        }
     }
 
     public List<AvailableTime> available(LocalDate date, long themeId) {

@@ -17,7 +17,7 @@ import roomescape.time.repository.ReservationTimeDao;
 
 @Service
 public class ReservationService {
-
+    private static final int DELETE_SUCCESS=1;
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
@@ -53,7 +53,9 @@ public class ReservationService {
     }
 
     public void delete(long id) {
-        reservationDao.deleteById(id);
+        if(reservationDao.deleteById(id)!=DELETE_SUCCESS){
+            throw new IllegalArgumentException("Cannot delete a reservation by given id");
+        }
     }
 
     private void validateDateTime(LocalDate date, LocalTime time) {

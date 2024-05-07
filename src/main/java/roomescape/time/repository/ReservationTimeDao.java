@@ -64,8 +64,8 @@ public class ReservationTimeDao {
         return count != null && count > 0;
     }
 
-    public void delete(long id) {
-        jdbcTemplate.update("DELETE FROM RESERVATION_TIME WHERE ID = ?", id);
+    public int delete(long id) {
+        return jdbcTemplate.update("DELETE FROM RESERVATION_TIME WHERE ID = ?", id);
     }
 
     public List<AvailableTime> available(LocalDate date, long themeId) {

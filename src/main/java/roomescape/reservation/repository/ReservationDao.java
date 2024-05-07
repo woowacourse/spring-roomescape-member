@@ -88,8 +88,8 @@ public class ReservationDao {
         return count != null && count > 0;
     }
 
-    public void deleteById(long id) {
-        jdbcTemplate.update("DELETE FROM RESERVATION WHERE ID = ?", id);
+    public int deleteById(long id) {
+        return jdbcTemplate.update("DELETE FROM RESERVATION WHERE ID = ?", id);
     }
 
     public boolean existsByDateTime(LocalDate date, long timeId, long themeId) {
