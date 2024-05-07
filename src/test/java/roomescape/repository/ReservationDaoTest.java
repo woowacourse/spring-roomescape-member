@@ -60,7 +60,7 @@ class ReservationDaoTest {
         Optional<Reservation> actual = reservationRepository.findById(newReservation.getId());
 
         // then
-        assertThat(actual.isPresent()).isTrue();
+        assertThat(actual).isPresent();
     }
 
     @DisplayName("예약 DAO는 조회 요청이 들어오면 id에 맞는 값을 반환한다.")
@@ -70,7 +70,7 @@ class ReservationDaoTest {
         Optional<Reservation> actual = reservationRepository.findById(1L);
 
         // then
-        assertThat(actual.isPresent()).isTrue();
+        assertThat(actual).isPresent();
     }
 
     @DisplayName("예약 DAO는 조회 요청이 들어오면 저장한 모든 값을 반환한다.")
@@ -80,7 +80,7 @@ class ReservationDaoTest {
         List<Reservation> reservations = reservationRepository.findAll();
 
         // then
-        assertThat(reservations.size()).isEqualTo(7);
+        assertThat(reservations).hasSize(7);
     }
 
     @DisplayName("예약 DAO는 주어진 기간 동안의 모든 예약을 반환한다.")
@@ -122,6 +122,6 @@ class ReservationDaoTest {
         Optional<Reservation> actual = reservationRepository.findById(id);
 
         // then
-        assertThat(actual.isPresent()).isFalse();
+        assertThat(actual).isNotPresent();
     }
 }

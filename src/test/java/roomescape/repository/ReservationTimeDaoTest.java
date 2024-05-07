@@ -5,12 +5,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.Fixtures;
 import roomescape.domain.ReservationTime;
 import roomescape.repository.reservationtime.ReservationTimeDao;
 import roomescape.repository.reservationtime.ReservationTimeRepository;
 
 import javax.sql.DataSource;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,14 +31,14 @@ class ReservationTimeDaoTest {
     @Test
     void save() {
         // given
-        ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 10));
+        ReservationTime reservationTime = Fixtures.reservationTimeFixture;
 
         // when
         ReservationTime newReservationTime = reservationTimeRepository.save(reservationTime);
         Optional<ReservationTime> actual = reservationTimeRepository.findById(newReservationTime.getId());
 
         // then
-        assertThat(actual.isPresent()).isTrue();
+        assertThat(actual).isPresent();
     }
 
     @DisplayName("예약 시간 DAO는 조회 요청이 들어오면 id에 맞는 값을 반환한다.")
@@ -51,7 +51,7 @@ class ReservationTimeDaoTest {
         Optional<ReservationTime> reservationTime = reservationTimeRepository.findById(id);
 
         // then
-        assertThat(reservationTime.isPresent()).isTrue();
+        assertThat(reservationTime).isPresent();
     }
 
     @DisplayName("예약 시간 DAO는 조회 요청이 들어오면 저장된 모든 값을 반환한다.")
@@ -61,7 +61,7 @@ class ReservationTimeDaoTest {
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
 
         // then
-        assertThat(reservationTimes.size()).isEqualTo(2);
+        assertThat(reservationTimes).hasSize(2);
     }
 
     @DisplayName("예약 시간 DAO는 삭제 요청이 들어오면 id에 맞는 값을 삭제한다.")
@@ -75,6 +75,6 @@ class ReservationTimeDaoTest {
         Optional<ReservationTime> actual = reservationTimeRepository.findById(id);
 
         // then
-        assertThat(actual.isPresent()).isFalse();
+        assertThat(actual).isNotPresent();
     }
 }
