@@ -3,7 +3,7 @@ package roomescape.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Theme;
-import roomescape.dto.ThemeResponse;
+import roomescape.dto.response.ThemeResponse;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ThemeRepository;
 

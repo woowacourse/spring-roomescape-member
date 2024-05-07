@@ -5,9 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.AvailableReservationTimeResponse;
-import roomescape.dto.ReservationTimeResponse;
-import roomescape.dto.ReservationTimeSaveRequest;
+import roomescape.dto.response.AvailableReservationTimeResponse;
+import roomescape.dto.response.ReservationTimeResponse;
+import roomescape.dto.request.ReservationTimeSaveRequest;
 import roomescape.service.ReservationTimeService;
 
 import java.time.LocalDate;

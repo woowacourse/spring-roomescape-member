@@ -8,8 +8,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
-import roomescape.dto.ReservationTimeResponse;
-import roomescape.dto.ReservationTimeSaveRequest;
+import roomescape.dto.response.ReservationTimeResponse;
+import roomescape.dto.request.ReservationTimeSaveRequest;
 import roomescape.exception.ErrorResponse;
 
 import java.time.LocalTime;

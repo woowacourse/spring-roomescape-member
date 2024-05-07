@@ -11,10 +11,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.ReservationResponse;
-import roomescape.dto.ReservationTimeResponse;
-import roomescape.dto.ReservedThemeResponse;
-import roomescape.exception.NotFoundException;
+import roomescape.dto.response.ReservationResponse;
+import roomescape.dto.response.ReservationTimeResponse;
+import roomescape.dto.response.ReservedThemeResponse;
 import roomescape.exception.ViolationException;
 import roomescape.repository.ReservationRepository;
 

@@ -3,7 +3,7 @@ package roomescape.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
-import roomescape.dto.ReservationResponse;
+import roomescape.dto.response.ReservationResponse;
 import roomescape.exception.ViolationException;
 import roomescape.repository.ReservationRepository;
 

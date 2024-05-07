@@ -7,9 +7,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.AvailableReservationTimeResponse;
-import roomescape.dto.ReservationTimeResponse;
-import roomescape.dto.ReservationTimeSaveRequest;
+import roomescape.dto.response.AvailableReservationTimeResponse;
+import roomescape.dto.response.ReservationTimeResponse;
+import roomescape.dto.request.ReservationTimeSaveRequest;
 import roomescape.service.ReservationTimeService;
 
 import java.time.LocalTime;
