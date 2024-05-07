@@ -23,6 +23,10 @@ public class Reservation {
         this(id, new UserName(name), date, time, theme);
     }
 
+    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
+        this(null, new UserName(name), date, time, theme);
+    }
+
     public boolean isSameDate(LocalDate localDate) {
         return date.isEqual(localDate);
     }

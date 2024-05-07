@@ -30,7 +30,7 @@ class JdbcReservationTimeRepositoryTest {
 
     @BeforeEach
     void saveReservationTime() {
-        ReservationTime reservationTime = new ReservationTime(null, LocalTime.of(10, 0));
+        ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
         savedReservationTime = reservationTimeRepository.save(reservationTime);
     }
 

@@ -49,7 +49,7 @@ class JdbcReservationRepositoryTest {
         ThemeRequest themeRequest = new ThemeRequest("hi", "happy", "abcd.html");
         Theme theme = themeRepository.save(themeRequest.toEntity());
 
-        Reservation reservation = new Reservation(null, "parang", LocalDate.of(2999, 3, 28), reservationTime, theme);
+        Reservation reservation = new Reservation("parang", LocalDate.of(2999, 3, 28), reservationTime, theme);
         savedReservation = reservationRepository.save(reservation);
     }
 

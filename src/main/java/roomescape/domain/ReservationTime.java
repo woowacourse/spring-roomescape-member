@@ -13,6 +13,10 @@ public class ReservationTime {
         this.startAt = startAt;
     }
 
+    public ReservationTime(LocalTime startAt) {
+        this(null, startAt);
+    }
+
     public Long getId() {
         return id;
     }

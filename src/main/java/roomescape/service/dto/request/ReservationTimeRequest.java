@@ -8,6 +8,6 @@ public record ReservationTimeRequest(@JsonFormat(shape = JsonFormat.Shape.STRING
                                      LocalTime startAt) {
 
     public ReservationTime toEntity() {
-        return new ReservationTime(null, startAt);
+        return new ReservationTime(startAt);
     }
 }

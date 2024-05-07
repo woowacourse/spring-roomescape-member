@@ -21,6 +21,9 @@ public class Theme {
         this(id, new ThemeName(name), description, thumbnail);
     }
 
+    public Theme(String name, String description, String thumbnail) {
+        this(null, new ThemeName(name), description, thumbnail);
+    }
     private void validateBlank(String description, String thumbnail) {
         if (description == null || description.isBlank()) {
             throw new IllegalArgumentException("테마 설명은 필수로 입력해야 합니다.");

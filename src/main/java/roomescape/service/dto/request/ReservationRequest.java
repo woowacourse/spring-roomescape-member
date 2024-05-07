@@ -11,6 +11,6 @@ public record ReservationRequest(String name,
                                  LocalDate date, Long timeId, Long themeId) {
 
     public Reservation toEntity(ReservationTime reservationTime, Theme theme) {
-        return new Reservation(null, name, date, reservationTime, theme);
+        return new Reservation(name, date, reservationTime, theme);
     }
 }
