@@ -15,7 +15,7 @@
 |        | 400 BAD REQUEST |                        | 입력 양식으로 인한 예약 추가 실패 |                         | error message                                                               |
 | DELETE |                 | /reservations/{id}     | 예약 삭제               |                         |                                                                             |
 |        | 204 NO CONTENT  |                        | 예약 삭제 성공            |                         |                                                                             |
-|        | 400 BAD REQUEST |                        | 예약 삭제 실패            |                         | error message                                                               |
+|        | 404 NOT FOUND   |                        | 예약 삭제 실패            |                         | error message                                                               |
 | GET    |                 | /times                 | 모든 시간 조회            |                         |                                                                             |
 |        | 200 OK          |                        | 모든 시간 조회            |                         | {id, startAt}                                                               |
 | POST   |                 | /times                 | 시간 추가               |                         | startAt                                                                     |
@@ -31,4 +31,4 @@
 |        | 201 CREATED     | /themes/{id}           | 테마 추가 성공            |                         | id, name, description, thumbnail                                            |
 | DELETE |                 | /themes/{id}           | 테마 삭제               |                         |                                                                             |
 |        | 204 NO CONTENT  |                        | 테마 삭제 성공            |                         |                                                                             |
-|        | 400 BAD REQUEST |                        | 테마 삭제 실패            |                         | error message                                                               |
+|        | 404 NOT FOUND   |                        | 테마 삭제 실패            |                         | error message                                                               |
