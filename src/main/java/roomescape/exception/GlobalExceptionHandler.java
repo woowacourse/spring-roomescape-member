@@ -41,7 +41,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler()
     public ResponseEntity<ExceptionTemplate> handleException(Exception exception) {
-        return ResponseEntity.badRequest()
+        return ResponseEntity.internalServerError()
                 .body(new ExceptionTemplate(exception.getMessage()));
     }
 }
