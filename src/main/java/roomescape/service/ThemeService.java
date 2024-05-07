@@ -3,7 +3,9 @@ package roomescape.service;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
-import roomescape.exception.BadRequestException;
+import roomescape.exception.DuplicatedException;
+import roomescape.exception.ReferencedReservationExistException;
+import roomescape.exception.ResourceNotFoundException;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.theme.ThemeRepository;
 import roomescape.service.dto.theme.ThemeCreateRequest;
@@ -39,7 +41,7 @@ public class ThemeService {
         boolean isDuplicatedName = themeRepository.findAll().stream()
                 .anyMatch(theme::isDuplicated);
         if (isDuplicatedName) {
-            throw new BadRequestException("중복된 테마 이름입니다.");
+            throw new DuplicatedException("중복된 테마 이름입니다.");
         }
     }
 
@@ -68,13 +70,13 @@ public class ThemeService {
 
     public ThemeResponse readTheme(Long id) {
         Theme theme = themeRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException("존재하지 않는 테마입니다."));
+                .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 테마입니다."));
         return ThemeResponse.from(theme);
     }
 
     public void deleteTheme(Long id) {
         if (reservationRepository.existsByThemeId(id)) {
-            throw new BadRequestException("해당 테마에 예약이 존재합니다.");
+            throw new ReferencedReservationExistException("해당 테마에 예약이 존재합니다.");
         }
         themeRepository.deleteById(id);
     }

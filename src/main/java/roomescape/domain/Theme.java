@@ -1,6 +1,6 @@
 package roomescape.domain;
 
-import roomescape.exception.BadRequestException;
+import roomescape.exception.EmptyParameterException;
 
 public class Theme {
 
@@ -19,7 +19,7 @@ public class Theme {
 
     private void validateNotBlank(String name, String description, String thumbnail) {
         if (name.isBlank() || description.isBlank() || thumbnail.isBlank()) {
-            throw new BadRequestException("테마의 정보는 비어있을 수 없습니다.");
+            throw new EmptyParameterException("테마의 정보는 비어있을 수 없습니다.");
         }
     }
 

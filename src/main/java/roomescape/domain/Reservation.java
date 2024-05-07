@@ -1,8 +1,7 @@
 package roomescape.domain;
 
-import roomescape.exception.BadRequestException;
-
 import java.time.LocalDate;
+import roomescape.exception.EmptyParameterException;
 
 public class Reservation {
 
@@ -23,7 +22,7 @@ public class Reservation {
 
     private void validateName(String name) {
         if (name.isBlank()) {
-            throw new BadRequestException("이름은 공백일 수 없습니다.");
+            throw new EmptyParameterException("이름은 공백일 수 없습니다.");
         }
     }
 

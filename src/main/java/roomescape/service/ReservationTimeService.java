@@ -3,9 +3,10 @@ package roomescape.service;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.IllegalTimeException;
+import roomescape.exception.ReferencedReservationExistException;
 import roomescape.service.dto.reservationtime.ReservationTimeCreateRequest;
 import roomescape.service.dto.reservationtime.ReservationTimeResponse;
-import roomescape.exception.BadRequestException;
 import roomescape.exception.ResourceNotFoundException;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationtime.ReservationTimeRepository;
@@ -41,7 +42,7 @@ public class ReservationTimeService {
         boolean isDuplicated = reservationTimes.stream()
                 .anyMatch(reservationTime::isDuplicated);
         if (isDuplicated) {
-            throw new BadRequestException("중복된 예약 시간입니다.");
+            throw new IllegalTimeException("중복된 예약 시간입니다.");
         }
     }
 
@@ -75,7 +76,7 @@ public class ReservationTimeService {
 
     public void deleteTime(Long id) {
         if (reservationRepository.existsByTimeId(id)) {
-            throw new BadRequestException("해당 시간대에 예약이 존재합니다.");
+            throw new ReferencedReservationExistException("해당 시간대에 예약이 존재합니다.");
         }
         reservationTimeRepository.deleteById(id);
     }

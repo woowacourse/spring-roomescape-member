@@ -4,9 +4,9 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.IllegalTimeException;
 import roomescape.service.dto.reservation.ReservationCreateRequest;
 import roomescape.service.dto.reservation.ReservationResponse;
-import roomescape.exception.BadRequestException;
 import roomescape.exception.ResourceNotFoundException;
 import roomescape.repository.theme.ThemeRepository;
 import roomescape.repository.reservation.ReservationRepository;
@@ -58,14 +58,14 @@ public class ReservationService {
         boolean isDuplicated = reservationRepository.existsBy(reservation.getDate(), reservation.getTimeId(),
                 reservation.getThemeId());
         if (isDuplicated) {
-            throw new BadRequestException("해당 시간대에 이미 예약된 테마입니다.");
+            throw new IllegalTimeException("해당 시간대에 이미 예약된 테마입니다.");
         }
     }
 
     private void validateRequestedTime(Reservation reservation, ReservationTime reservationTime) {
         LocalDateTime requestedDateTime = LocalDateTime.of(reservation.getDate(), reservationTime.getStartAt());
         if (requestedDateTime.isBefore(LocalDateTime.now())) {
-            throw new BadRequestException("이미 지난 날짜는 예약할 수 없습니다.");
+            throw new IllegalTimeException("이미 지난 날짜는 예약할 수 없습니다.");
         }
     }
 

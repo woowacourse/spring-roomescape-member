@@ -10,6 +10,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.Fixtures;
 import roomescape.exception.BadRequestException;
+import roomescape.exception.IllegalTimeException;
 import roomescape.exception.ResourceNotFoundException;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationtime.ReservationTimeRepository;
@@ -110,7 +111,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.createReservation(request))
-                .isInstanceOf(BadRequestException.class)
+                .isInstanceOf(IllegalTimeException.class)
                 .hasMessage("이미 지난 날짜는 예약할 수 없습니다.");
     }
 
@@ -170,7 +171,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.createReservation(request))
-                .isInstanceOf(BadRequestException.class)
+                .isInstanceOf(IllegalTimeException.class)
                 .hasMessage("해당 시간대에 이미 예약된 테마입니다.");
     }
 

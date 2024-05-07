@@ -3,10 +3,9 @@ package roomescape.domain;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import roomescape.exception.BadRequestException;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
+import roomescape.exception.EmptyParameterException;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static roomescape.Fixtures.themeFixture;
@@ -20,7 +19,7 @@ class ReservationTest {
     void validateName(String blankName) {
         ReservationTime time = new ReservationTime(LocalTime.MAX);
         assertThatThrownBy(() -> new Reservation(blankName, LocalDate.MAX, time, themeFixture))
-                .isInstanceOf(BadRequestException.class)
+                .isInstanceOf(EmptyParameterException.class)
                 .hasMessage("이름은 공백일 수 없습니다.");
     }
 }

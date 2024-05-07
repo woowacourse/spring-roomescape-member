@@ -9,9 +9,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.Fixtures;
+import roomescape.exception.DuplicatedException;
+import roomescape.exception.ReferencedReservationExistException;
 import roomescape.service.dto.theme.ThemeCreateRequest;
 import roomescape.service.dto.theme.ThemeResponse;
-import roomescape.exception.BadRequestException;
 import roomescape.repository.theme.ThemeRepository;
 import roomescape.repository.reservation.ReservationRepository;
 
@@ -66,7 +67,7 @@ class ThemeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> themeService.createTheme(request))
-                .isInstanceOf(BadRequestException.class)
+                .isInstanceOf(DuplicatedException.class)
                 .hasMessage("중복된 테마 이름입니다.");
     }
 
@@ -127,7 +128,7 @@ class ThemeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> themeService.deleteTheme(id))
-                .isInstanceOf(BadRequestException.class)
+                .isInstanceOf(ReferencedReservationExistException.class)
                 .hasMessage("해당 테마에 예약이 존재합니다.");
     }
 }

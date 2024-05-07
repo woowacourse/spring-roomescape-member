@@ -4,7 +4,7 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import roomescape.exception.BadRequestException;
+import roomescape.exception.EmptyParameterException;
 
 @DisplayName("테마")
 class ThemeTest {
@@ -18,13 +18,13 @@ class ThemeTest {
 
         SoftAssertions softAssertions = new SoftAssertions();
         softAssertions.assertThatThrownBy(() -> new Theme(blank, "description", "thumbnail"))
-                .isInstanceOf(BadRequestException.class)
+                .isInstanceOf(EmptyParameterException.class)
                 .hasMessage(expectedMessage);
         softAssertions.assertThatThrownBy(() -> new Theme("name", blank, "thumbnail"))
-                .isInstanceOf(BadRequestException.class)
+                .isInstanceOf(EmptyParameterException.class)
                 .hasMessage(expectedMessage);
         softAssertions.assertThatThrownBy(() -> new Theme("name", "description", blank))
-                .isInstanceOf(BadRequestException.class)
+                .isInstanceOf(EmptyParameterException.class)
                 .hasMessage(expectedMessage);
         softAssertions.assertAll();
     }

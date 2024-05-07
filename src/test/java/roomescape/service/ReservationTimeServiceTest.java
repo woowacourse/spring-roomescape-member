@@ -10,9 +10,10 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.Fixtures;
 import roomescape.domain.Reservation;
+import roomescape.exception.IllegalTimeException;
+import roomescape.exception.ReferencedReservationExistException;
 import roomescape.service.dto.reservationtime.ReservationTimeCreateRequest;
 import roomescape.service.dto.reservationtime.ReservationTimeResponse;
-import roomescape.exception.BadRequestException;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationtime.ReservationTimeRepository;
 
@@ -59,7 +60,7 @@ class ReservationTimeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationTimeService.createTime(request))
-                .isInstanceOf(BadRequestException.class)
+                .isInstanceOf(IllegalTimeException.class)
                 .hasMessage("중복된 예약 시간입니다.");
     }
 
@@ -129,7 +130,7 @@ class ReservationTimeServiceTest {
                 .doesNotThrowAnyException();
     }
 
-    @DisplayName("예약 시간 서비스는 id에 맞는 시간에 예약이 존재하면 예외가 발생한다.")
+    @DisplayName("예약 시간 서비스는 시간 정보를 삭제할 때 id에 맞는 시간에 예약이 존재하면 예외가 발생한다.")
     @Test
     void deleteTimeWithExistsReservation() {
         // given
@@ -139,6 +140,6 @@ class ReservationTimeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationTimeService.deleteTime(id))
-                .isInstanceOf(BadRequestException.class);
+                .isInstanceOf(ReferencedReservationExistException.class);
     }
 }
