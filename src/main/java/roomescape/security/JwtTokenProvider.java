@@ -16,14 +16,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtTokenProvider {
 
-    private static final String CLAIM = "id";
+    private static final String CLAIM_ID = "id";
 
     private final SecretKey secretKey;
     private final Long expirationTime;
 
     public JwtTokenProvider(
-            @Value("security.jwt.secret-key") String secretKey,
-            @Value("security.jwt.expiration-time") Long expirationTime
+            @Value("${security.jwt.secret-key}") String secretKey,
+            @Value("${security.jwt.expiration-time}") Long expirationTime
     ) {
         this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
         this.expirationTime = expirationTime;
@@ -34,7 +34,7 @@ public class JwtTokenProvider {
         Date validity = new Date(now.getTime() + expirationTime);
 
         return Jwts.builder()
-                .claim(CLAIM, id)
+                .claim(CLAIM_ID, id)
                 .issuedAt(now)
                 .expiration(validity)
                 .signWith(secretKey, SIG.HS256)
@@ -44,7 +44,7 @@ public class JwtTokenProvider {
     public Long getMemberId(String token) {
         Claims claims = toClaims(token);
 
-        String memberId = claims.get(CLAIM, String.class);
+        String memberId = claims.get(CLAIM_ID, String.class);
         return Long.parseLong(memberId);
     }
 
