@@ -3,7 +3,9 @@ package roomescape.repository;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import javax.sql.DataSource;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -75,7 +77,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation findById(Long id) {
+    public Optional<Reservation> findById(Long id) {
         String sql = """
                 SELECT
                     r.id AS reservation_id,
@@ -92,7 +94,12 @@ public class JdbcReservationRepository implements ReservationRepository {
                 INNER JOIN theme AS th ON r.theme_id = th.id
                 WHERE r.id = ?
                 """;
-        return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
+
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(sql, ROW_MAPPER, id));
+        } catch (DataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -134,12 +141,6 @@ public class JdbcReservationRepository implements ReservationRepository {
     public void delete(Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
         jdbcTemplate.update(sql, id);
-    }
-
-    @Override
-    public Boolean existsById(Long id) {
-        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE id = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
     }
 
     @Override

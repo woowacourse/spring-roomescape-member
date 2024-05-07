@@ -34,7 +34,7 @@ public class ReservationService {
         ReservationTime reservationTime = findReservationTime(reservationRequest);
         Theme theme = findTheme(reservationRequest);
         validateReservationNotDuplicate(reservationRequest);
-        validateUnPassedDate(reservationRequest.date(),reservationTime.getStartAt());
+        validateUnPassedDate(reservationRequest.date(), reservationTime.getStartAt());
         Reservation reservationToSave = reservationRequest.toEntity(reservationTime, theme);
         return reservationRepository.save(reservationToSave);
     }
@@ -47,22 +47,21 @@ public class ReservationService {
     }
 
     public ReservationResponse getReservation(Long id) {
-        validateIdExist(id);
-        Reservation reservation = reservationRepository.findById(id);
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("id가 존재하지 않습니다 : " + id));
         return ReservationResponse.from(reservation);
     }
 
     public void deleteReservation(Long id) {
-        validateIdExist(id);
+        reservationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("id가 존재하지 않습니다 : " + id));
         reservationRepository.delete(id);
     }
 
     private ReservationTime findReservationTime(ReservationRequest reservationRequest) {
         Long timeId = reservationRequest.timeId();
-        if (!timeRepository.existsById(timeId)) {
-            throw new IllegalArgumentException("time_id가 존재하지 않습니다 : " + timeId);
-        }
-        return timeRepository.findById(timeId);
+        return timeRepository.findById(timeId)
+                .orElseThrow(() -> new IllegalArgumentException("time_id가 존재하지 않습니다 : " + timeId));
     }
 
     private Theme findTheme(ReservationRequest reservationRequest) {
@@ -85,14 +84,8 @@ public class ReservationService {
 
     private void validateUnPassedDate(LocalDate date, LocalTime time) {
         if ((date.isBefore(LocalDate.now()) && time.isBefore(LocalTime.now())) ||
-                date.isEqual(LocalDate.now()) && time.isBefore(LocalTime.now())) {
+            date.isEqual(LocalDate.now()) && time.isBefore(LocalTime.now())) {
             throw new IllegalArgumentException("지나간 날짜와 시간에 대한 예약 생성은 불가능합니다. : " + date + " " + time);
-        }
-    }
-
-    public void validateIdExist(Long id) {
-        if (!reservationRepository.existsById(id)) {
-            throw new IllegalArgumentException("id가 존재하지 않습니다 : " + id);
         }
     }
 }

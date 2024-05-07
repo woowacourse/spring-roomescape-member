@@ -39,8 +39,8 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponse getReservationTime(Long id) {
-        validateIdExist(id);
-        ReservationTime reservationTime = reservationTimeRepository.findById(id);
+        ReservationTime reservationTime = reservationTimeRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("id가 존재하지 않습니다 : " + id));
         return ReservationTimeResponse.from(reservationTime);
     }
 
@@ -58,17 +58,11 @@ public class ReservationTimeService {
     }
 
     public void deleteReservationTime(Long id) {
-        validateIdExist(id);
+        reservationTimeRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("id가 존재하지 않습니다 : " + id));
         if (reservationRepository.existsByTimeId(id)) {
             throw new IllegalArgumentException("해당 시간에 예약이 존재합니다.");
         }
         reservationRepository.delete(id);
-    }
-
-    public void validateIdExist(Long id) {
-        if (!reservationTimeRepository.existsById(id)) {
-            throw new IllegalArgumentException("id가 존재하지 않습니다 : " + id);
-        }
     }
 
     public void validateTimeDuplicate(LocalTime time) {
