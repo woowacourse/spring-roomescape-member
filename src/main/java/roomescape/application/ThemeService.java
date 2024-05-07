@@ -12,8 +12,6 @@ import roomescape.domain.theme.repository.ThemeRepository;
 
 @Service
 public class ThemeService {
-    private static final int INVALID_DELETED_COUNT = 0;
-
     private final Clock clock;
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
@@ -38,8 +36,8 @@ public class ThemeService {
 
     public void delete(long id) {
         validateReservedTheme(id);
-        int deletedCount = themeRepository.deleteById(id);
-        if (deletedCount == INVALID_DELETED_COUNT) {
+        boolean isDeleted = themeRepository.deleteById(id);
+        if (!isDeleted) {
             throw new IllegalArgumentException("존재하지 않는 테마입니다.");
         }
     }

@@ -15,5 +15,5 @@ public interface ReservationRepository {
 
     List<Reservation> findAll();
 
-    int deleteById(long id);
+    boolean deleteById(long id);
 }

@@ -42,16 +42,16 @@ class JdbcReservationTimeRepositoryTest {
 
     @Test
     void 예약_시간을_삭제한다() {
-        int deletedCount = reservationTimeRepository.deleteById(2L);
+        boolean isDeleted = reservationTimeRepository.deleteById(2L);
 
-        assertThat(deletedCount).isEqualTo(1);
+        assertThat(isDeleted).isTrue();
     }
 
     @Test
     void 존재하지_않는_예약_시간을_삭제하면_0을_반환한다() {
-        int deletedCount = reservationTimeRepository.deleteById(0L);
+        boolean isDeleted = reservationTimeRepository.deleteById(0L);
 
-        assertThat(deletedCount).isEqualTo(0);
+        assertThat(isDeleted).isFalse();
     }
 
     @Test

@@ -45,16 +45,16 @@ class JdbcThemeRepositoryTest {
 
     @Test
     void 테마를_삭제한다() {
-        int deleteCount = themeRepository.deleteById(2L);
+        boolean isDeleted = themeRepository.deleteById(2L);
 
-        assertThat(deleteCount).isEqualTo(1);
+        assertThat(isDeleted).isTrue();
     }
 
     @Test
     void 존재하지_않는_테마를_삭제하면_0을_반환한다() {
-        int deleteCount = themeRepository.deleteById(0L);
+        boolean isDeleted = themeRepository.deleteById(0L);
 
-        assertThat(deleteCount).isEqualTo(0);
+        assertThat(isDeleted).isFalse();
     }
 
     @Test

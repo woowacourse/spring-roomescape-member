@@ -15,5 +15,5 @@ public interface ReservationTimeRepository {
 
     Set<Long> findReservedTimeIds(long themeId, LocalDate date);
 
-    int deleteById(long id);
+    boolean deleteById(long id);
 }

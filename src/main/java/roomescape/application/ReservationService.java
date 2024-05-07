@@ -18,7 +18,6 @@ import roomescape.domain.time.repository.ReservationTimeRepository;
 @Service
 public class ReservationService {
     private static final int IN_ADVANCE_RESERVATION_DAYS = 1;
-    private static final int INVALID_DELETED_COUNT = 0;
 
     private final Clock clock;
     private final ReservationTimeRepository reservationTimeRepository;
@@ -70,8 +69,8 @@ public class ReservationService {
     }
 
     public void cancel(long id) {
-        int deletedCount = reservationRepository.deleteById(id);
-        if (deletedCount == INVALID_DELETED_COUNT) {
+        boolean isDeleted = reservationRepository.deleteById(id);
+        if (!isDeleted) {
             throw new IllegalArgumentException("존재하지 않는 예약입니다.");
         }
     }
