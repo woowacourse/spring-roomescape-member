@@ -80,11 +80,20 @@ class ReservationDaoTest {
         // given
         ReservationTime reservationTime = reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
         RoomTheme roomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);
+        Reservation reservation
+                = new Reservation(new Name("brown"), DATE_FIXTURE, reservationTime, roomTheme);
         // when
-        reservationDao.save(new Reservation(
-                new Name("aa"), DATE_FIXTURE, reservationTime, roomTheme));
+        Reservation savedReservation = reservationDao.save(reservation);
         // then
-        assertThat(reservationDao.findAll()).hasSize(1);
+        assertAll(
+                () -> assertThat(reservationDao.findAll()).hasSize(1),
+                () -> assertThat(savedReservation.getName()).isEqualTo(reservation.getName()),
+                () -> assertThat(savedReservation.getDate()).isEqualTo(reservation.getDate()),
+                () -> assertThat(savedReservation.getTime().getId())
+                        .isEqualTo(reservation.getTime().getId()),
+                () -> assertThat(savedReservation.getTheme().getId())
+                        .isEqualTo(reservation.getTheme().getId())
+        );
     }
 
     @DisplayName("해당 id의 예약을 삭제한다.")

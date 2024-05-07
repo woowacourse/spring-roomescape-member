@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.RoomTheme;
+import roomescape.exception.InvalidInputException;
 
 @Repository
 public class RoomThemeDao {
@@ -43,8 +44,12 @@ public class RoomThemeDao {
     }
 
     public RoomTheme findById(Long id) {
-        return jdbcTemplate.queryForObject("SELECT * FROM theme WHERE id = ?",
-                rowMapper, id);
+        List<RoomTheme> roomThemes = jdbcTemplate.query(
+                "SELECT * FROM theme WHERE id = ?", rowMapper, id);
+        if (roomThemes.size() == 1) {
+            return roomThemes.get(0);
+        }
+        throw new InvalidInputException("해당 테마가 존재하지 않습니다.");
     }
 
     public RoomTheme save(RoomTheme roomTheme) {

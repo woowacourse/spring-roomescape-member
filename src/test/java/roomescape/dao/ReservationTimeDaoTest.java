@@ -16,11 +16,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.dao.EmptyResultDataAccessException;
 import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
+import roomescape.exception.InvalidInputException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReservationTimeDaoTest {
@@ -61,9 +61,12 @@ class ReservationTimeDaoTest {
     @Test
     void save() {
         // given & when
-        reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
+        ReservationTime savedReservationTime = reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
         // then
-        assertThat(reservationTimeDao.findAll()).hasSize(1);
+        assertAll(
+                () -> assertThat(reservationTimeDao.findAll()).hasSize(1),
+                () -> assertThat(savedReservationTime.getStartAt()).isEqualTo(TIME_FIXTURE)
+        );
     }
 
     @DisplayName("해당 id의 예약 시간을 보여준다.")
@@ -80,7 +83,8 @@ class ReservationTimeDaoTest {
     @Test
     void findByNotExistingId() {
         assertThatThrownBy(() -> reservationTimeDao.findById(1L))
-                .isInstanceOf(EmptyResultDataAccessException.class);
+                .isInstanceOf(InvalidInputException.class)
+                .hasMessage("해당 예약 시간이 존재하지 않습니다.");
     }
 
     @DisplayName("중복된 예약 시간이 존재하는 지 여부를 반환한다.")
