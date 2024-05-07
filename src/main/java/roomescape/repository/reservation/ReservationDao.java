@@ -18,34 +18,30 @@ import java.util.Optional;
 
 @Repository
 public class ReservationDao implements ReservationRepository {
-
     private final JdbcTemplate jdbcTemplate;
-
     private final SimpleJdbcInsert simpleJdbcInsert;
+
+    private static final RowMapper<Reservation> rowMapper = (resultSet, rowNum) -> new Reservation(
+            resultSet.getLong("id"),
+            resultSet.getString("name"),
+            resultSet.getDate("date").toLocalDate(),
+            new ReservationTime(
+                    resultSet.getLong("time_id"),
+                    resultSet.getTime("start_at").toLocalTime()
+            ),
+            new Theme(
+                    resultSet.getLong("theme_id"),
+                    resultSet.getString("theme_name"),
+                    resultSet.getString("theme_description"),
+                    resultSet.getString("theme_thumbnail")
+            )
+    );
 
     public ReservationDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
-    }
-
-    private static RowMapper<Reservation> getReservationRowMapper() {
-        return (resultSet, rowNum) -> new Reservation(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getDate("date").toLocalDate(),
-                new ReservationTime(
-                        resultSet.getLong("time_id"),
-                        resultSet.getTime("start_at").toLocalTime()
-                ),
-                new Theme(
-                        resultSet.getLong("theme_id"),
-                        resultSet.getString("theme_name"),
-                        resultSet.getString("theme_description"),
-                        resultSet.getString("theme_thumbnail")
-                )
-        );
     }
 
     @Override
@@ -79,7 +75,7 @@ public class ReservationDao implements ReservationRepository {
                         ON r.time_id = t.id
                     INNER JOIN theme AS th
                         ON r.theme_id = th.id""";
-        return jdbcTemplate.query(sql, getReservationRowMapper());
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
     @Override
@@ -102,7 +98,7 @@ public class ReservationDao implements ReservationRepository {
                     INNER JOIN theme AS th
                         ON r.theme_id = th.id
                 WHERE r.id = ?""";
-            Reservation reservation = jdbcTemplate.queryForObject(sql, getReservationRowMapper(), id);
+            Reservation reservation = jdbcTemplate.queryForObject(sql, rowMapper, id);
             return Optional.ofNullable(reservation);
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
@@ -128,7 +124,7 @@ public class ReservationDao implements ReservationRepository {
                     INNER JOIN theme AS th
                         ON r.theme_id = th.id
                 WHERE r.date BETWEEN ? AND ?""";
-        return jdbcTemplate.query(sql, getReservationRowMapper(), start, end);
+        return jdbcTemplate.query(sql, rowMapper, start, end);
     }
 
     @Override
@@ -150,7 +146,7 @@ public class ReservationDao implements ReservationRepository {
                     INNER JOIN theme AS th
                         ON r.theme_id = th.id
                 WHERE r.date = ? AND th.id = ?""";
-        return jdbcTemplate.query(sql, getReservationRowMapper(), date, themeId);
+        return jdbcTemplate.query(sql, rowMapper, date, themeId);
     }
 
     @Override
