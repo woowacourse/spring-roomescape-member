@@ -15,8 +15,8 @@ import roomescape.exception.reservation.InvalidDateTimeReservationException;
 import roomescape.exception.reservation.NotFoundReservationException;
 import roomescape.exception.theme.NotFoundThemeException;
 import roomescape.exception.time.NotFoundTimeException;
-import roomescape.web.dto.ReservationRequest;
-import roomescape.web.dto.ReservationResponse;
+import roomescape.service.dto.ReservationRequest;
+import roomescape.service.dto.ReservationResponse;
 
 @Service
 public class ReservationService {

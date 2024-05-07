@@ -9,9 +9,9 @@ import roomescape.domain.ReservationTimeRepository;
 import roomescape.exception.time.DuplicatedTimeException;
 import roomescape.exception.time.NotFoundTimeException;
 import roomescape.exception.time.ReservationReferencedTimeException;
-import roomescape.web.dto.AvailableReservationTimeResponse;
-import roomescape.web.dto.ReservationTimeRequest;
-import roomescape.web.dto.ReservationTimeResponse;
+import roomescape.service.dto.AvailableReservationTimeResponse;
+import roomescape.service.dto.ReservationTimeRequest;
+import roomescape.service.dto.ReservationTimeResponse;
 
 @Service
 public class ReservationTimeService {

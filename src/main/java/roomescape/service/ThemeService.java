@@ -9,8 +9,8 @@ import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 import roomescape.exception.theme.NotFoundThemeException;
 import roomescape.exception.theme.ReservationReferencedThemeException;
-import roomescape.web.dto.ThemeRequest;
-import roomescape.web.dto.ThemeResponse;
+import roomescape.service.dto.ThemeRequest;
+import roomescape.service.dto.ThemeResponse;
 
 @Service
 public class ThemeService {

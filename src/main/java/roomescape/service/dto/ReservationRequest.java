@@ -1,4 +1,4 @@
-package roomescape.web.dto;
+package roomescape.service.dto;
 
 import java.time.DateTimeException;
 import java.time.LocalDate;
