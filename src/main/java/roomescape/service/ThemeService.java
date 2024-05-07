@@ -1,11 +1,11 @@
 package roomescape.service;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationRepository;
 import roomescape.dao.ThemeRepository;
+import roomescape.domain.ReservationTerm;
 import roomescape.domain.Theme;
 import roomescape.exception.InvalidReservationException;
 import roomescape.service.dto.ThemeRequest;
@@ -47,9 +47,10 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> findPopularThemes() {
-        String startDate = LocalDate.now().minusDays(7).format(DateTimeFormatter.ISO_DATE);
-        String endDate = LocalDate.now().minusDays(1).format(DateTimeFormatter.ISO_DATE);
-        List<Theme> themes = themeRepository.getReferenceByReservationTermAndCount(startDate, endDate, MAXIMUM_COUNT);
+        ReservationTerm reservationTerm = new ReservationTerm(
+                LocalDate.now().minusDays(7), LocalDate.now().minusDays(1));
+        List<Theme> themes = themeRepository.findByReservationTermAndCount(
+                reservationTerm.getStartDate(), reservationTerm.getEndDate(), MAXIMUM_COUNT);
         return themes.stream()
                 .map(ThemeResponse::new)
                 .toList();

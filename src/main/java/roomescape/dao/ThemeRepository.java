@@ -13,5 +13,5 @@ public interface ThemeRepository {
 
     Optional<Theme> findById(long id);
 
-    List<Theme> getReferenceByReservationTermAndCount(String startDate, String endDate, long count);
+    List<Theme> findByReservationTermAndCount(String startDate, String endDate, long count);
 }

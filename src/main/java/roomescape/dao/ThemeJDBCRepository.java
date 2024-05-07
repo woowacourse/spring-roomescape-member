@@ -67,7 +67,7 @@ public class ThemeJDBCRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> getReferenceByReservationTermAndCount(String startDate, String endDate, long count) {
+    public List<Theme> findByReservationTermAndCount(String startDate, String endDate, long count) {
         String sql = "SELECT id, name, description, thumbnail FROM theme "
                 + "LEFT JOIN "
                 + "(SELECT theme_id, COUNT(theme_id) as count FROM reservation "
