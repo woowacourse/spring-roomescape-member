@@ -17,3 +17,8 @@ VALUES ('브라운', '2024-04-29', 1, 1),
        ('아임', '2024-05-01', 1, 2),
        ('레디', '2024-05-01', 1, 3),
        ('레디', '2024-05-02', 4, 3);
+
+INSERT INTO MEMBER(NAME, EMAIL, PASSWORD)
+VALUES ('레디', 'redddy@gmail.com', '0000'),
+       ('재즈', 'gkatjraud1@redddybabo.com', '1234'),
+       ('제제', 'jinwuo0925@gmail.com', '486')
