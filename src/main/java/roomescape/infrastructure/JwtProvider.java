@@ -15,7 +15,15 @@ public class JwtProvider {
                 .setSubject(userPayload.id())
                 .claim("name", userPayload.name())
                 .claim("email", userPayload.email())
-                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .signWith(SignatureAlgorithm.HS256, secretKey.getBytes())
                 .compact();
+    }
+
+    public String getSubject(String accessToken) {
+        return Jwts.parser()
+                .setSigningKey(secretKey.getBytes())
+                .parseClaimsJwt(accessToken)
+                .getBody()
+                .getSubject();
     }
 }
