@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.test.annotation.DirtiesContext;
 import roomescape.controller.request.ReservationTimeRequest;
 import roomescape.model.ReservationTime;
 
@@ -21,7 +20,6 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class ReservationTimeControllerTest {
 
     private static final int INITIAL_TIME_COUNT = 2;
@@ -47,6 +45,7 @@ class ReservationTimeControllerTest {
     private void initDatabase() {
         jdbcTemplate.execute("ALTER TABLE reservation_time SET REFERENTIAL_INTEGRITY FALSE");
         jdbcTemplate.execute("TRUNCATE TABLE reservation_time RESTART IDENTITY");
+        jdbcTemplate.execute("TRUNCATE TABLE reservation RESTART IDENTITY");
     }
 
     private void insertReservationTime(String startAt) {
