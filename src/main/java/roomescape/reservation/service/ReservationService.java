@@ -1,5 +1,7 @@
 package roomescape.reservation.service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.domain.Reservation;
@@ -36,10 +38,18 @@ public class ReservationService {
         if (reservationRepository.existByTimeIdAndDate(reservationRequest.themeId(), reservationRequest.date())) {
             throw new CustomException(ExceptionCode.DUPLICATE_RESERVATION);
         }
+        validateIsPastTime(reservationRequest.date(), reservationTime);
 
         Reservation reservation = reservationRequest.toEntity(reservationTime, theme);
         Reservation savedReservation = reservationRepository.save(reservation);
         return ReservationResponse.from(savedReservation);
+    }
+
+    private void validateIsPastTime(LocalDate date, ReservationTime time) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
+        if (LocalDateTime.now().isAfter(reservationDateTime)) {
+            throw new CustomException(ExceptionCode.PAST_TIME_SLOT_RESERVATION);
+        }
     }
 
     public List<ReservationResponse> findAllReservations() {

@@ -1,10 +1,7 @@
 package roomescape.reservation.domain;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Objects;
-import roomescape.reservation.handler.exception.CustomException;
-import roomescape.reservation.handler.exception.ExceptionCode;
 
 public class Reservation {
 
@@ -15,8 +12,6 @@ public class Reservation {
     private final Theme theme;
 
     public Reservation(Long id, UserName userName, LocalDate date, ReservationTime time, Theme theme) {
-        validateDateTime(date, time);
-
         this.id = id;
         this.userName = userName;
         this.date = date;
@@ -26,13 +21,6 @@ public class Reservation {
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         this(id, new UserName(name), date, time, theme);
-    }
-
-    private void validateDateTime(LocalDate date, ReservationTime time) {
-        LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
-        if (LocalDateTime.now().isAfter(reservationDateTime)) {
-            throw new CustomException(ExceptionCode.PAST_TIME_SLOT_RESERVATION);
-        }
     }
 
     public boolean isSameDate(LocalDate localDate) {
