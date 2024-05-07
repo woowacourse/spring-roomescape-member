@@ -81,7 +81,7 @@ class ReservationServiceTest {
 
         //when
         List<AvailableReservationResponse> responses
-                = reservationService.findTimeByDateAndThemeID(today.toString(), theme.getId(), now);
+                = reservationService.findTimeByDateAndThemeID(today.toString(), theme.getId());
         AvailableReservationResponse alreadyBooked = responses.get(0);
         AvailableReservationResponse notBooked = responses.get(1);
 

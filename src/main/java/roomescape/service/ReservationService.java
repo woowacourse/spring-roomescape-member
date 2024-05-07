@@ -35,12 +35,11 @@ public class ReservationService {
                 .toList();
     }
 
-    public List<AvailableReservationResponse> findTimeByDateAndThemeID(String date, Long themeId, LocalDateTime now) {
+    public List<AvailableReservationResponse> findTimeByDateAndThemeID(String date, Long themeId) {
         ReservationDate reservationDate = ReservationDate.from(date);
         List<ReservationTime> allTimes = reservationTimeDao.readAll();
-        List<ReservationTime> filteredTimes = reservationDate.filterPastTime(allTimes, now);
         List<ReservationTime> times = reservationDao.readTimesByDateAndThemeId(reservationDate, themeId);
-        return filteredTimes.stream()
+        return allTimes.stream()
                 .map(filteredTime -> getAvailableReservationResponse(filteredTime, times))
                 .toList();
     }
