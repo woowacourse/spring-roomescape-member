@@ -44,14 +44,14 @@ class ReservationServiceTest {
     @DisplayName("예약 정보를 읽을 수 있다.")
     @Test
     void readReservations() {
+        ReservationService service = new ReservationService(null, reservationDao, timeDao, themeDao);
+
         LocalDate date = LocalDate.of(2023, 8, 5);
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
-        Theme theme = new Theme(1L, "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg");
-        List<Reservation> reservations = List.of(new Reservation(
-                1L, "브라운", date, time, theme
-        ));
+        Theme theme = new Theme(1L, "테마1", "설명1", "https://image.jpg");
+
+        List<Reservation> reservations = List.of(new Reservation(1L, "브라운", date, time, theme));
         when(reservationDao.readReservations()).thenReturn(reservations);
-        ReservationService service = new ReservationService(null, reservationDao, timeDao, themeDao);
 
         List<ReservationResponse> expected = List.of(new ReservationResponse(
                 1L, "브라운", date, TimeResponse.from(time), ThemeResponse.from(theme)
@@ -62,9 +62,13 @@ class ReservationServiceTest {
     @DisplayName("예약 정보를 추가할 수 있다.")
     @Test
     void createReservation() {
+        ReservationService service = new ReservationService(
+                () -> LocalDateTime.of(2023, 8, 5, 9, 59),
+                reservationDao, timeDao, themeDao);
+
         LocalDate date = LocalDate.of(2023, 8, 5);
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
-        Theme theme = new Theme(1L, "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg");
+        Theme theme = new Theme(1L, "테마1", "설명1", "https://image.jpg");
         Reservation reservation = new Reservation(1L, "브라운", date, time, theme);
 
         lenient().when(reservationDao.createReservation(any(Reservation.class)))
@@ -76,9 +80,6 @@ class ReservationServiceTest {
         lenient().when(themeDao.readThemeById(any(Long.class)))
                 .thenReturn(Optional.of(theme));
 
-        ReservationService service = new ReservationService(
-                () -> LocalDateTime.of(2023, 8, 5, 9, 59),
-                reservationDao, timeDao, themeDao);
 
         ReservationCreateRequest request =
                 new ReservationCreateRequest("브라운", date, 1L, 1L);
@@ -90,9 +91,13 @@ class ReservationServiceTest {
     @DisplayName("예약 시간 기존 시간보다 이전이면 예외를 던진다.")
     @Test
     void createReservation_whenReservationDateTimeBeforeCurrentTime() {
+        ReservationService service = new ReservationService(
+                () -> LocalDateTime.of(2023, 8, 5, 10, 1),
+                reservationDao, timeDao, themeDao);
+
         LocalDate date = LocalDate.of(2023, 8, 5);
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
-        Theme theme = new Theme(1L, "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg");
+        Theme theme = new Theme(1L, "테마1", "설명1", "https://image.jpg");
         Reservation reservation = new Reservation(1L, "브라운", date, time, theme);
 
         lenient().when(reservationDao.createReservation(any(Reservation.class)))
@@ -104,9 +109,6 @@ class ReservationServiceTest {
         lenient().when(themeDao.readThemeById(any(Long.class)))
                 .thenReturn(Optional.of(theme));
 
-        ReservationService service = new ReservationService(
-                () -> LocalDateTime.of(2023, 8, 5, 10, 1),
-                reservationDao, timeDao, themeDao);
 
         ReservationCreateRequest request =
                 new ReservationCreateRequest("브라운", date, 1L, 1L);
@@ -119,9 +121,13 @@ class ReservationServiceTest {
     @DisplayName("이미 존재하는 예약일 경우 예외를 던진다.")
     @Test
     void createReservation_whenAlreadyBookedReservation() {
+        ReservationService service = new ReservationService(
+                () -> LocalDateTime.of(2023, 8, 5, 9, 59),
+                reservationDao, timeDao, themeDao);
+
         LocalDate date = LocalDate.of(2023, 8, 5);
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
-        Theme theme = new Theme(1L, "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg");
+        Theme theme = new Theme(1L, "테마1", "설명1", "https://image.jpg");
 
         lenient().when(reservationDao.existsReservationByDateAndTimeIdAndThemeId(any(LocalDate.class), any(Long.class), any(Long.class)))
                 .thenReturn(true);
@@ -130,9 +136,6 @@ class ReservationServiceTest {
         lenient().when(themeDao.readThemeById(any(Long.class)))
                 .thenReturn(Optional.of(theme));
 
-        ReservationService service = new ReservationService(
-                () -> LocalDateTime.of(2023, 8, 5, 9, 59),
-                reservationDao, timeDao, themeDao);
 
         ReservationCreateRequest request =
                 new ReservationCreateRequest("브라운", date, 1L, 1L);
@@ -145,9 +148,12 @@ class ReservationServiceTest {
     @DisplayName("없는 예약 시간인 경우 예외를 던진다.")
     @Test
     void createReservation_whenNotExistsTime() {
+        ReservationService service = new ReservationService(
+                () -> LocalDateTime.of(2023, 8, 5, 9, 59),
+                reservationDao, timeDao, themeDao);
+
         LocalDate date = LocalDate.of(2023, 8, 5);
-        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
-        Theme theme = new Theme(1L, "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg");
+        Theme theme = new Theme(1L, "테마1", "설명1", "https://image.jpg");
 
         lenient().when(reservationDao.existsReservationByDateAndTimeIdAndThemeId(any(LocalDate.class), any(Long.class), any(Long.class)))
                 .thenReturn(false);
@@ -155,10 +161,6 @@ class ReservationServiceTest {
                 .thenReturn(Optional.empty());
         lenient().when(themeDao.readThemeById(any(Long.class)))
                 .thenReturn(Optional.of(theme));
-
-        ReservationService service = new ReservationService(
-                () -> LocalDateTime.of(2023, 8, 5, 9, 59),
-                reservationDao, timeDao, themeDao);
 
         ReservationCreateRequest request =
                 new ReservationCreateRequest("브라운", date, 1L, 1L);
@@ -171,9 +173,12 @@ class ReservationServiceTest {
     @DisplayName("없는 테마인 경우 예외를 던진다.")
     @Test
     void createReservation_whenNotExistsTheme() {
+        ReservationService service = new ReservationService(
+                () -> LocalDateTime.of(2023, 8, 5, 9, 59),
+                reservationDao, timeDao, themeDao);
+
         LocalDate date = LocalDate.of(2023, 8, 5);
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
-        Theme theme = new Theme(1L, "오리와 호랑이", "오리들과 호랑이들 사이에서 살아남기", "https://image.jpg");
 
         lenient().when(reservationDao.existsReservationByDateAndTimeIdAndThemeId(any(LocalDate.class), any(Long.class), any(Long.class)))
                 .thenReturn(false);
@@ -181,10 +186,6 @@ class ReservationServiceTest {
                 .thenReturn(Optional.of(time));
         lenient().when(themeDao.readThemeById(any(Long.class)))
                 .thenReturn(Optional.empty());
-
-        ReservationService service = new ReservationService(
-                () -> LocalDateTime.of(2023, 8, 5, 9, 59),
-                reservationDao, timeDao, themeDao);
 
         ReservationCreateRequest request =
                 new ReservationCreateRequest("브라운", date, 1L, 1L);
@@ -198,6 +199,8 @@ class ReservationServiceTest {
     @Test
     void deleteReservation() {
         ReservationService service = new ReservationService(null, reservationDao, timeDao, themeDao);
-        service.deleteReservation(1L);
+        assertThatCode(() -> service.deleteReservation(1L))
+                .doesNotThrowAnyException();
+        ;
     }
 }
