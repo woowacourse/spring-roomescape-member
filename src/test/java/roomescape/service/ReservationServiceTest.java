@@ -25,6 +25,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
+import roomescape.exception.InvalidInputException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReservationServiceTest {
@@ -86,7 +87,7 @@ class ReservationServiceTest {
         ReservationRequest reservationRequest = createReservationRequest(LocalDate.of(2000, 11, 9));
         // when & then
         assertThatThrownBy(() -> reservationService.save(reservationRequest))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InvalidInputException.class)
                 .hasMessage("지난 날짜에는 예약할 수 없습니다.");
     }
 

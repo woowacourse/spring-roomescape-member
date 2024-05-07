@@ -14,6 +14,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
+import roomescape.exception.InvalidInputException;
 import roomescape.exception.TargetNotExistException;
 
 @Service
@@ -58,14 +59,14 @@ public class ReservationService {
     private void validateOutdatedDateTime(LocalDate date, LocalTime time) {
         LocalDateTime now = LocalDateTime.now(Clock.systemDefaultZone());
         if (LocalDateTime.of(date, time).isBefore(now)) {
-            throw new IllegalArgumentException("지난 날짜에는 예약할 수 없습니다.");
+            throw new InvalidInputException("지난 날짜에는 예약할 수 없습니다.");
         }
     }
 
     private void validateDuplicatedDateTime(LocalDate date, Long timeId) {
         boolean exists = reservationDao.existsByDateTime(date, timeId);
         if (exists) {
-            throw new IllegalArgumentException("예약이 이미 존재합니다.");
+            throw new InvalidInputException("예약이 이미 존재합니다.");
         }
     }
 }

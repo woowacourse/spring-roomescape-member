@@ -27,6 +27,7 @@ import roomescape.dto.request.ReservationTimeRequest;
 import roomescape.dto.request.ReservationTimeWithBookStatusRequest;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.dto.response.ReservationTimeWithBookStatusResponse;
+import roomescape.exception.InvalidInputException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReservationTimeServiceTest {
@@ -110,8 +111,8 @@ class ReservationTimeServiceTest {
         reservationTimeService.save(reservationTimeRequest);
         // when & then
         assertThatThrownBy(() -> reservationTimeService.save(reservationTimeRequest))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미 예약된 시간입니다.");
+                .isInstanceOf(InvalidInputException.class)
+                .hasMessage("이미 존재하는 예약 시간입니다.");
     }
 
     @DisplayName("예약 시간을 삭제한다.")

@@ -9,6 +9,7 @@ import roomescape.dto.request.ReservationTimeRequest;
 import roomescape.dto.request.ReservationTimeWithBookStatusRequest;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.dto.response.ReservationTimeWithBookStatusResponse;
+import roomescape.exception.InvalidInputException;
 import roomescape.exception.TargetNotExistException;
 
 @Service
@@ -50,7 +51,7 @@ public class ReservationTimeService {
     private void validateTimeExistence(LocalTime startAt) {
         boolean exists = reservationTimeDao.existByStartAt(startAt);
         if (exists) {
-            throw new IllegalArgumentException("이미 예약된 시간입니다.");
+            throw new InvalidInputException("이미 존재하는 예약 시간입니다.");
         }
     }
 }

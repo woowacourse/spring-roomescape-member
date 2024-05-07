@@ -1,5 +1,7 @@
 package roomescape.domain;
 
+import roomescape.exception.InvalidInputException;
+
 public class Name {
     private final String name;
 
@@ -10,7 +12,7 @@ public class Name {
 
     public void validateEmpty(String name) {
         if (name.isBlank()) {
-            throw new IllegalArgumentException("이름에 공백을 입력할 수 없습니다.");
+            throw new InvalidInputException("이름에 공백을 입력할 수 없습니다.");
         }
     }
 

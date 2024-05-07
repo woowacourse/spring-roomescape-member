@@ -34,7 +34,7 @@ public class ReservationTimeDao {
     public List<ReservationTimeWithBookStatusResponse> findAllWithBookStatus(LocalDate bookedDate,
                                                                              Long bookedThemeId) {
         String sql = """
-                SELECT 
+                SELECT
                     t.id,
                     t.start_at,
                     EXISTS
@@ -59,9 +59,9 @@ public class ReservationTimeDao {
     }
 
     public boolean existByStartAt(LocalTime startAt) {
-        return jdbcTemplate.queryForObject(
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
                 "SELECT EXISTS(SELECT * FROM reservation_time WHERE start_at = ?)",
-                Boolean.class, startAt);
+                Boolean.class, startAt));
     }
 
     public ReservationTime save(ReservationTime reservationTime) {
