@@ -41,6 +41,11 @@ public class ReservationConsoleRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findAllByDateAndThemeId(String date, long themeId) {
+        return List.of();
+    }
+
+    @Override
     public boolean existByTimeId(final long timeId) {
         return false;
     }

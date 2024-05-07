@@ -100,6 +100,29 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findAllByDateAndThemeId(String date, long themeId) {
+        final String query = """
+                SELECT
+                    r.id AS reservation_id,
+                    r.name,
+                    r.date,
+                    t.id AS time_id,
+                    t.start_at AS time_value,
+                    m.id AS theme_id,
+                    m.name AS theme_name,
+                    m.description AS theme_description,
+                    m.thumbnail AS theme_thumbnail
+                FROM reservation AS r
+                INNER JOIN reservation_time AS t
+                ON r.time_id = t.id
+                INNER JOIN theme AS m
+                ON r.theme_id = m.id
+                WHERE r.date = ? AND r.theme_id = ?
+                """;
+        return jdbcTemplate.query(query, getReservationRowMapper(), date, themeId);
+    }
+
+    @Override
     public boolean existByTimeId(final long timeId) {
         final String query = "SELECT EXISTS(SELECT 1 FROM reservation WHERE time_id = ?)";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, timeId));

@@ -11,6 +11,8 @@ public interface ReservationRepository {
 
     List<BookingTimeResponseDto> findAllByDateNotOrThemeIdNot(final String date, final long themeId);
 
+    List<Reservation> findAllByDateAndThemeId(final String date, final long themeId);
+
     boolean existByTimeId(final long timeId);
 
     boolean existByThemeId(final long themeId);

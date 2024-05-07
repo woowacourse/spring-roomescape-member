@@ -42,7 +42,7 @@ public class ReservationTimeController {
     @GetMapping(params = {"date", "themeId"})
     public ResponseEntity<List<BookingTimeResponseDto>> findBookable(@RequestParam("date") String date,
                                                                      @RequestParam("themeId") Long themeId) {
-        return ResponseEntity.ok(reservationTimeService.findBookable(date, themeId));
+        return ResponseEntity.ok(reservationTimeService.findBookable2(date, themeId));
     }
 
     @DeleteMapping("/{id}")

@@ -1,8 +1,12 @@
 package roomescape.core.service;
 
+import static java.util.stream.Collectors.toSet;
+
 import java.util.List;
+import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.core.domain.Reservation;
 import roomescape.core.domain.ReservationTime;
 import roomescape.core.dto.BookingTimeResponseDto;
 import roomescape.core.dto.ReservationTimeRequestDto;
@@ -40,6 +44,25 @@ public class ReservationTimeService {
     @Transactional(readOnly = true)
     public List<BookingTimeResponseDto> findBookable(final String date, final long themeId) {
         return reservationRepository.findAllByDateNotOrThemeIdNot(date, themeId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<BookingTimeResponseDto> findBookable2(final String date, final long themeId) {
+        List<ReservationTime> times = reservationTimeRepository.findAll();
+        Set<Long> timeIdOfReservation = reservationRepository.findAllByDateAndThemeId(date, themeId)
+                .stream()
+                .map(Reservation::getTimeId)
+                .collect(toSet());
+        return times.stream()
+                .map(reservationTime -> createBookingTime(reservationTime, timeIdOfReservation))
+                .toList();
+    }
+
+    private BookingTimeResponseDto createBookingTime(final ReservationTime time, final Set<Long> timeIdOfReservation) {
+        if (timeIdOfReservation.contains(time.getId())) {
+            return new BookingTimeResponseDto(time.getId(), time.getStartAtString(), true);
+        }
+        return new BookingTimeResponseDto(time.getId(), time.getStartAtString(), false);
     }
 
     @Transactional
