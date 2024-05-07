@@ -1,5 +1,7 @@
 package roomescape.repository;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -26,17 +28,17 @@ class JdbcTemplateReservationRepositoryTest {
 
     @BeforeEach
     void init() {
-        jdbcTemplate.update("delete from reservation");
-        jdbcTemplate.update("ALTER TABLE reservation alter column id restart with 1");
+        jdbcTemplate.update("DELETE FROM reservation");
+        jdbcTemplate.update("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
 
-        jdbcTemplate.update("delete from reservation_time");
-        jdbcTemplate.update("ALTER TABLE reservation_time alter column id restart with 1");
-        jdbcTemplate.update("insert into reservation_time(start_at) values('11:56')");
+        jdbcTemplate.update("DELETE FROM reservation_time");
+        jdbcTemplate.update("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES('11:56')");
 
-        jdbcTemplate.update("delete from theme");
-        jdbcTemplate.update("ALTER TABLE theme alter column id restart with 1");
+        jdbcTemplate.update("DELETE FROM theme");
+        jdbcTemplate.update("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.update(
-                "insert into theme (name, description, thumbnail) values('name', 'description', 'thumbnail')");
+                "INSERT INTO theme (name, description, thumbnail) VALUES('name', 'description', 'thumbnail')");
 
     }
 
@@ -77,5 +79,51 @@ class JdbcTemplateReservationRepositoryTest {
 
         Assertions.assertThat(beforeSaveAndDelete)
                 .containsExactlyElementsOf(afterSaveAndDelete);
+    }
+
+    @Test
+    @DisplayName("특정 테마에 특정 날짜 특정 시간에 예약 여부를 잘 반환하는지 확인한다.")
+    void existsByThemeAndDateAndTime() {
+        LocalDate date1 = LocalDate.now();
+        LocalDate date2 = date1.plusDays(1);
+        reservationRepository.save(new Reservation("name", date1, DEFAULT_TIME, DEFAULT_THEME));
+
+        assertAll(
+                () -> Assertions.assertThat(
+                                reservationRepository.existsByThemeAndDateAndTime(DEFAULT_THEME, date1, DEFAULT_TIME))
+                        .isTrue(),
+                () -> Assertions.assertThat(
+                                reservationRepository.existsByThemeAndDateAndTime(DEFAULT_THEME, date2, DEFAULT_TIME))
+                        .isFalse()
+        );
+    }
+
+    @Test
+    @DisplayName("특정 시간에 예약이 있는지 확인한다.")
+    void existsByTime() {
+        LocalDate date = LocalDate.now();
+        reservationRepository.save(new Reservation("name", date, DEFAULT_TIME, DEFAULT_THEME));
+
+        assertAll(
+                () -> Assertions.assertThat(reservationRepository.existsByTime(DEFAULT_TIME))
+                        .isTrue(),
+                () -> Assertions.assertThat(
+                                reservationRepository.existsByTime(new ReservationTime(2L, LocalTime.of(12, 56))))
+                        .isFalse()
+        );
+    }
+
+    @Test
+    @DisplayName("특정 테마에 예약이 있는지 확인한다.")
+    void existsByTheme() {
+        LocalDate date = LocalDate.now();
+        reservationRepository.save(new Reservation("name", date, DEFAULT_TIME, DEFAULT_THEME));
+
+        assertAll(
+                () -> Assertions.assertThat(reservationRepository.existsByTheme(DEFAULT_THEME))
+                        .isTrue(),
+                () -> Assertions.assertThat(reservationRepository.existsByTheme(new Theme(2L, DEFAULT_THEME)))
+                        .isFalse()
+        );
     }
 }
