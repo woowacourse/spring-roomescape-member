@@ -6,8 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.domain.Reservation;
-import roomescape.dto.SaveReservationRequest;
+import roomescape.reservation.model.Reservation;
+import roomescape.reservation.dto.SaveReservationRequest;
+import roomescape.reservation.service.ReservationService;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

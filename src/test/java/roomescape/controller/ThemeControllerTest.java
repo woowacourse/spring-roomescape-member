@@ -9,8 +9,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.dto.SaveThemeRequest;
-import roomescape.dto.ThemeResponse;
+import roomescape.reservation.dto.SaveThemeRequest;
+import roomescape.reservation.dto.ThemeResponse;
 
 import java.util.List;
 

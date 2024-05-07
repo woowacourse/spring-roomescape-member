@@ -9,8 +9,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.dto.ReservationResponse;
-import roomescape.dto.SaveReservationRequest;
+import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservation.dto.SaveReservationRequest;
 
 import java.time.LocalDate;
 import java.util.List;

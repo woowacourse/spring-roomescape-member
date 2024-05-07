@@ -2,7 +2,8 @@ package roomescape.dto;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.ReservationTime;
+import roomescape.reservation.dto.SaveReservationTimeRequest;
+import roomescape.reservation.model.ReservationTime;
 
 import java.time.LocalTime;
 
