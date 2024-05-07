@@ -1,4 +1,4 @@
 package roomescape.dto.exception;
 
-public record ErrorResponse(int statusCode, String url, String method, String message) {
+public record ErrorResponse(String url, String method, String message) {
 }
