@@ -12,6 +12,7 @@ import java.util.NoSuchElementException;
 
 @Service
 public class ThemeService {
+    public static final int MAXIMUM_THEME_COUNT = 10;
     private final ThemeRepository themeRepository;
 
     public ThemeService(ThemeRepository themeRepository) {
@@ -38,12 +39,10 @@ public class ThemeService {
         }
     }
 
-
     public List<Theme> getPopularThemes() {
         final ReservationDate startAt = new ReservationDate(LocalDate.now().minusDays(7));
         final ReservationDate endAt = new ReservationDate(LocalDate.now().minusDays(1));
-        final int maximumThemeCount = 10;
 
-        return themeRepository.findPopularThemes(startAt, endAt, maximumThemeCount);
+        return themeRepository.findPopularThemes(startAt, endAt, MAXIMUM_THEME_COUNT);
     }
 }
