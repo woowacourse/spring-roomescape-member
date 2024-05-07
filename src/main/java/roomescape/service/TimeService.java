@@ -2,8 +2,8 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.domain.TimeSlot;
-import roomescape.domain.dto.TimeSlotRequest;
-import roomescape.domain.dto.TimeSlotResponse;
+import roomescape.dto.request.TimeSlotRequest;
+import roomescape.dto.response.TimeSlotResponse;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.TimeDao;
 

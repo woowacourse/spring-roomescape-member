@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.TimeSlot;
-import roomescape.domain.dto.TimeSlotRequest;
+import roomescape.dto.request.TimeSlotRequest;
 
 import java.time.LocalTime;
 import java.util.List;

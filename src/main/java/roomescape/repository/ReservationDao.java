@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.TimeSlot;
-import roomescape.domain.dto.ReservationRequest;
+import roomescape.dto.request.ReservationRequest;
 
 import java.time.LocalDate;
 import java.util.List;

@@ -1,4 +1,4 @@
-package roomescape.domain.dto;
+package roomescape.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import roomescape.domain.TimeSlot;
