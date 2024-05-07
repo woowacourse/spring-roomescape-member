@@ -41,12 +41,18 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String verifyToken(String token) {
+    public Long getMemberId(String token) {
+        Claims claims = toClaims(token);
+
+        String memberId = claims.get(CLAIM, String.class);
+        return Long.parseLong(memberId);
+    }
+
+    public Claims toClaims(String token) {
         try {
             Jws<Claims> claimsJws = getClaimsJws(token);
-            Claims payload = claimsJws.getPayload();
 
-            return payload.get(CLAIM, String.class);
+            return claimsJws.getPayload();
         } catch (SignatureException e) {
             throw new IllegalArgumentException("Invalid token");
         } catch (ExpiredJwtException e) {

@@ -46,4 +46,10 @@ public class MemberService {
                 .map(MemberResponse::from)
                 .toList();
     }
+
+    public MemberResponse getById(Long id) {
+        Member member = memberRepository.getById(id);
+
+        return MemberResponse.from(member);
+    }
 }

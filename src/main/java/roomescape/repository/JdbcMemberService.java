@@ -78,4 +78,16 @@ public class JdbcMemberService implements MemberRepository {
             return Optional.empty();
         }
     }
+
+    @Override
+    public Optional<Member> findById(Long id) {
+        String sql = "SELECT * FROM member WHERE id = ?";
+
+        try {
+            Member member = jdbcTemplate.queryForObject(sql, rowMapper, id);
+            return Optional.of(member);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
 }

@@ -18,4 +18,11 @@ public interface MemberRepository {
     }
 
     Optional<Member> findByEmail(String email);
+
+    default Member getById(Long id) {
+        return findById(id)
+                .orElseThrow(() -> new NoSuchElementException("해당 id의 회원이 존재하지 않습니다."));
+    }
+
+    Optional<Member> findById(Long id);
 }
