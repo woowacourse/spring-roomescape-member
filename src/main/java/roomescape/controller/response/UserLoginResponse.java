@@ -1,4 +1,6 @@
 package roomescape.controller.response;
 
-public record UserLoginResponse(String token) {
+import jakarta.servlet.http.Cookie;
+
+public record UserLoginResponse(Cookie cookie) {
 }

@@ -31,3 +31,6 @@ values ('피케이', '2024-04-29', 1, 1),
        ('망쵸', '2024-04-30', 2, 1),
        ('비토', '2024-04-28', 4, 2),
        ('호돌', '2024-04-29', 1, 1);
+
+insert into user_table (name, email, password)
+values ('dd', 'ona386418@gmail.com', 'qwer');

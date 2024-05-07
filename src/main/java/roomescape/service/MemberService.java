@@ -3,7 +3,7 @@ package roomescape.service;
 import org.springframework.stereotype.Service;
 import roomescape.controller.request.UserLoginRequest;
 import roomescape.controller.request.UserSignUpRequest;
-import roomescape.controller.response.UserLoginResponse;
+import roomescape.controller.response.UserResponse;
 import roomescape.domain.User;
 import roomescape.infrastructure.JwtTokenProvider;
 import roomescape.repository.MemberRepository;
@@ -13,8 +13,9 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private JwtTokenProvider jwtTokenProvider;
 
-    public MemberService(MemberRepository memberRepository) {
+    public MemberService(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
         this.memberRepository = memberRepository;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     public void save(UserSignUpRequest userSignUpRequest) {
@@ -23,16 +24,18 @@ public class MemberService {
         memberRepository.save(user);
     }
 
-    public UserLoginResponse createToken(UserLoginRequest userLoginRequest) {
-        if (checkInvalidLogin(userLoginRequest.email(), userLoginRequest.password())) {
-            throw new IllegalArgumentException();
+    public String createToken(UserLoginRequest userLoginRequest) {
+        if (!checkInvalidLogin(userLoginRequest.email(), userLoginRequest.password())) {
+            throw new IllegalArgumentException("사용자 없음");
         }
-
-        String accessToken = jwtTokenProvider.createToken(userLoginRequest.email());
-        return new UserLoginResponse(accessToken);
+        return jwtTokenProvider.createToken(userLoginRequest.email());
     }
 
     private boolean checkInvalidLogin(String email, String password) {
         return memberRepository.checkExistMember(email, password);
+    }
+
+    public UserResponse findByEmail(String email) {
+        return memberRepository.findByEmail(email);
     }
 }
