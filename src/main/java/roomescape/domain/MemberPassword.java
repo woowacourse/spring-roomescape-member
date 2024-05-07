@@ -3,11 +3,11 @@ package roomescape.domain;
 import io.micrometer.common.util.StringUtils;
 import java.util.Objects;
 
-public class UserPassword {
+public class MemberPassword {
 
     private final String password;
 
-    public UserPassword(String password) {
+    public MemberPassword(String password) {
         validate(password);
         this.password = password;
     }
@@ -30,7 +30,7 @@ public class UserPassword {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        UserPassword that = (UserPassword) o;
+        MemberPassword that = (MemberPassword) o;
         return Objects.equals(password, that.password);
     }
 

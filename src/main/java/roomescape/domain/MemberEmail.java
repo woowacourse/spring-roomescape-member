@@ -4,13 +4,13 @@ import io.micrometer.common.util.StringUtils;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-public class UserEmail {
+public class MemberEmail {
 
     private static final Pattern VALID_EMAIL_ADDRESS_REGEX =
         Pattern.compile("^[A-z0-9]+@[A-z0-9.-]+\\.[A-z]{2,6}$");
     private final String email;
 
-    public UserEmail(String email) {
+    public MemberEmail(String email) {
         validate(email);
         this.email = email;
     }
@@ -33,8 +33,8 @@ public class UserEmail {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        UserEmail userEmail = (UserEmail) o;
-        return Objects.equals(email, userEmail.email);
+        MemberEmail memberEmail = (MemberEmail) o;
+        return Objects.equals(email, memberEmail.email);
     }
 
     @Override

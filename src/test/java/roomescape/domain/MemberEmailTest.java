@@ -8,13 +8,13 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-class UserEmailTest {
+class MemberEmailTest {
 
     @DisplayName("올바른 이메일 형식이면 생성된다.")
     @ParameterizedTest
     @ValueSource(strings = {"kims123@gmail.com", "aaa123@snu.ac.kr", "zzzz@naver.com"})
     void create(String input) {
-        assertThatCode(() -> new UserEmail(input))
+        assertThatCode(() -> new MemberEmail(input))
             .doesNotThrowAnyException();
     }
 
@@ -23,7 +23,7 @@ class UserEmailTest {
     @NullAndEmptySource
     @ValueSource(strings = {"12@ad@bbb.com", "aa.aa@aa.com"})
     void create_Fail(String input) {
-        assertThatThrownBy(() -> new UserEmail(input))
+        assertThatThrownBy(() -> new MemberEmail(input))
             .isInstanceOf(IllegalArgumentException.class);
     }
 }

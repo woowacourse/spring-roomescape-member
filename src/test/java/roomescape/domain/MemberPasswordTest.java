@@ -8,12 +8,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 
-class UserPasswordTest {
+class MemberPasswordTest {
 
     @DisplayName("올바른 비밀 번호 형식이면 생성된다.")
     @Test
     void create() {
-        assertThatCode(() -> new UserPassword("abc1234"))
+        assertThatCode(() -> new MemberPassword("abc1234"))
             .doesNotThrowAnyException();
     }
 
@@ -21,7 +21,7 @@ class UserPasswordTest {
     @ParameterizedTest
     @NullAndEmptySource
     void create_Fail(String input) {
-        assertThatThrownBy(() -> new UserPassword(input))
+        assertThatThrownBy(() -> new MemberPassword(input))
             .isInstanceOf(IllegalArgumentException.class);
     }
 }
