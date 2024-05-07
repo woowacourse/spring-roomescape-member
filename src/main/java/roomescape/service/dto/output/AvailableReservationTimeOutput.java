@@ -1,18 +1,18 @@
 package roomescape.service.dto.output;
 
-import roomescape.domain.AvailableReservationTime;
+import roomescape.dao.dto.AvailableReservationTimeResult;
 
 import java.util.List;
 
 public record AvailableReservationTimeOutput(long timeId, String startAt, boolean alreadyBooked) {
 
-    public static AvailableReservationTimeOutput toOutput(final AvailableReservationTime availableReservationTime) {
+    public static AvailableReservationTimeOutput toOutput(final AvailableReservationTimeResult availableReservationTimeResult) {
 
-        return new AvailableReservationTimeOutput(availableReservationTime.timeId(), availableReservationTime.startAt(), availableReservationTime.isBooked());
+        return new AvailableReservationTimeOutput(availableReservationTimeResult.timeId(), availableReservationTimeResult.startAt(), availableReservationTimeResult.isBooked());
     }
 
-    public static List<AvailableReservationTimeOutput> toOutputs(final List<AvailableReservationTime> availableReservationTime) {
-        return availableReservationTime.stream()
+    public static List<AvailableReservationTimeOutput> toOutputs(final List<AvailableReservationTimeResult> availableReservationTimeResult) {
+        return availableReservationTimeResult.stream()
                 .map(AvailableReservationTimeOutput::toOutput)
                 .toList();
     }

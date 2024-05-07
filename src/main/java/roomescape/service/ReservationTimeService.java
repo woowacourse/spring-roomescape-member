@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
-import roomescape.domain.AvailableReservationTime;
+import roomescape.dao.dto.AvailableReservationTimeResult;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.AlreadyExistsException;
@@ -47,9 +47,9 @@ public class ReservationTimeService {
     }
 
     public List<AvailableReservationTimeOutput> getAvailableTimes(final AvailableReservationTimeInput input) {
-        final List<AvailableReservationTime> availableReservationTimes =
+        final List<AvailableReservationTimeResult> availableReservationTimeResults =
                 reservationTimeDao.getAvailable(new ReservationDate(input.date()), input.themeId());
-        return AvailableReservationTimeOutput.toOutputs(availableReservationTimes);
+        return AvailableReservationTimeOutput.toOutputs(availableReservationTimeResults);
     }
 
     public void deleteReservationTime(final long id) {
