@@ -9,7 +9,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DisplayName("어드민 컨트롤러")
-public class AdminControllerTest {
+class AdminControllerTest {
 
     @LocalServerPort
     private int port;
@@ -28,7 +28,7 @@ public class AdminControllerTest {
                 .statusCode(200);
     }
 
-    @DisplayName("어드민 컨트롤러는 /admin/reservation으로 GET 요청이 들어오면 예약 목록을 페이지를 반환한다.")
+    @DisplayName("어드민 컨트롤러는 /admin/reservation으로 GET 요청이 들어오면 예약 목록 페이지를 반환한다.")
     @Test
     void readReservations() {
         RestAssured.given().log().all()
@@ -37,7 +37,7 @@ public class AdminControllerTest {
                 .statusCode(200);
     }
 
-    @DisplayName("어드민 컨트롤러는 /admin/time으로 GET 요청이 들어오면 시간 목록을 페이지를 반환한다.")
+    @DisplayName("어드민 컨트롤러는 /admin/time으로 GET 요청이 들어오면 시간 목록 페이지를 반환한다.")
     @Test
     void readTimes() {
         RestAssured.given().log().all()

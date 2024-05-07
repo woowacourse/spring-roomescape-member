@@ -1,10 +1,10 @@
 package roomescape.service;
 
 import org.assertj.core.api.SoftAssertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -24,17 +24,12 @@ import static roomescape.Fixtures.themeFixture;
 @ExtendWith(MockitoExtension.class)
 @DisplayName("테마 서비스")
 class ThemeServiceTest {
-
+    @InjectMocks
     private ThemeService themeService;
     @Mock
     private ThemeRepository themeRepository;
     @Mock
     private ReservationRepository reservationRepository;
-
-    @BeforeEach
-    void setUp() {
-        this.themeService = new ThemeService(themeRepository, reservationRepository);
-    }
 
     @DisplayName("테마 서비스는 테마를 생성한다.")
     @Test

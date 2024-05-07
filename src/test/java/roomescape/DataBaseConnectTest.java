@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @JdbcTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DisplayName("데이터베이스")
-public class DataBaseConnectTest {
+class DataBaseConnectTest {
 
     private final JdbcTemplate jdbcTemplate;
 
