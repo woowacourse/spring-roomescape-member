@@ -93,4 +93,22 @@ class ThemeTest {
                 .statusCode(400)
                 .body(containsString("[ERROR] 테마 등록 시 빈 값은 허용하지 않습니다"));
     }
+
+    @DisplayName("테마 등록 시 썸네일 주소가 올바르지 않을 경우 400 오류를 반환한다.")
+    @ParameterizedTest
+    @CsvSource({"test,test,test", "test,test,123"})
+    void given_when_saveThemeWithInvalidThumbnail_then_statusCodeIsBadRequest(String name, String description, String thumbNail) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("description", description);
+        params.put("thumbnail", thumbNail);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(400)
+                .body(containsString("[ERROR] 썸네일 URL 형식이 올바르지 않습니다"));
+    }
 }
