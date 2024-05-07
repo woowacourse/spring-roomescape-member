@@ -9,7 +9,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.IntStream;
 import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -29,7 +28,7 @@ class ReservationControllerTest extends ControllerTest {
 
     @Test
     void 예약을_생성한다() throws Exception {
-        ReservationResponse response = ReservationResponse.from(ReservationFixture.reservation());
+        ReservationResponse response = ReservationResponse.from(ReservationFixture.DEFAULT_RESERVATION);
         when(reservationService.reserve(any())).thenReturn(response);
         ReservationRequest request = new ReservationRequest(response.name(), response.date(), response.time().id(),
                 response.theme().id());
@@ -160,10 +159,11 @@ class ReservationControllerTest extends ControllerTest {
 
     @Test
     void 전체_예약을_조회한다() throws Exception {
-        List<ReservationResponse> reservations = IntStream.range(0, 3)
-                .mapToObj(ReservationFixture::reservation)
-                .map(ReservationResponse::from)
-                .toList();
+        List<ReservationResponse> reservations = List.of(
+                ReservationResponse.from(ReservationFixture.DEFAULT_RESERVATION),
+                ReservationResponse.from(ReservationFixture.DEFAULT_RESERVATION),
+                ReservationResponse.from(ReservationFixture.DEFAULT_RESERVATION)
+        );
         when(reservationService.findReservations()).thenReturn(reservations);
 
         ResultActions result = SimpleMockMvc.get(mockMvc, "/reservations");

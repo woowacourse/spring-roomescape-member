@@ -33,7 +33,7 @@ class ThemeControllerTest extends ControllerTest {
 
     @Test
     void 테마를_생성한다() throws Exception {
-        ThemeResponse response = ThemeResponse.from(ThemeFixture.theme(1L, "레모네와 함께 탐험", "설명", "https://lemone.com"));
+        ThemeResponse response = ThemeResponse.from(ThemeFixture.DEFAULT_THEME);
         when(themeService.save(any())).thenReturn(response);
         ThemeRequest request = new ThemeRequest(response.name(), response.description(), response.thumbnail());
         String content = objectMapper.writeValueAsString(request);
@@ -98,8 +98,8 @@ class ThemeControllerTest extends ControllerTest {
     @Test
     void 전체_테마를_조회한다() throws Exception {
         List<ThemeResponse> themes = List.of(
-                ThemeResponse.from(ThemeFixture.theme()),
-                ThemeResponse.from(ThemeFixture.theme())
+                ThemeResponse.from(ThemeFixture.DEFAULT_THEME),
+                ThemeResponse.from(ThemeFixture.DEFAULT_THEME)
         );
         when(themeService.findThemes()).thenReturn(themes);
 
@@ -139,8 +139,8 @@ class ThemeControllerTest extends ControllerTest {
     @Test
     void 인기_테마를_조회한다() throws Exception {
         List<ThemeResponse> popularThemes = List.of(
-                ThemeResponse.from(ThemeFixture.theme()),
-                ThemeResponse.from(ThemeFixture.theme())
+                ThemeResponse.from(ThemeFixture.DEFAULT_THEME),
+                ThemeResponse.from(ThemeFixture.DEFAULT_THEME)
         );
         when(themeService.findPopularThemes()).thenReturn(popularThemes);
 

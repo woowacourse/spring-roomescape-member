@@ -8,7 +8,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
-import java.util.stream.IntStream;
 import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -18,7 +17,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import roomescape.application.ReservationTimeService;
 import roomescape.application.dto.response.ReservationTimeResponse;
 import roomescape.controller.dto.ReservationTimeRequest;
-import roomescape.fixture.ReservationFixture;
+import roomescape.fixture.ReservationTimeFixture;
 import roomescape.support.ControllerTest;
 import roomescape.support.SimpleMockMvc;
 
@@ -28,7 +27,8 @@ class ReservationTimeControllerTest extends ControllerTest {
 
     @Test
     void 예약_시간을_생성한다() throws Exception {
-        ReservationTimeResponse response = ReservationTimeResponse.from(ReservationFixture.reservationTime());
+        ReservationTimeResponse response = ReservationTimeResponse.from(
+                ReservationTimeFixture.DEFAULT_RESERVATION_TIME);
         when(reservationTimeService.register(any())).thenReturn(response);
         ReservationTimeRequest request = new ReservationTimeRequest(response.startAt());
         String content = objectMapper.writeValueAsString(request);
@@ -37,8 +37,8 @@ class ReservationTimeControllerTest extends ControllerTest {
 
         result.andExpectAll(
                         status().isCreated(),
-                        jsonPath("$.id").value(ReservationFixture.reservationTime().getId()),
-                        jsonPath("$.startAt").value(ReservationFixture.reservationTime().getStartAt().toString())
+                        jsonPath("$.id").value(response.id()),
+                        jsonPath("$.startAt").value(response.startAt().toString())
                 )
                 .andDo(print());
     }
@@ -75,10 +75,11 @@ class ReservationTimeControllerTest extends ControllerTest {
 
     @Test
     void 전체_예약_시간을_조회한다() throws Exception {
-        List<ReservationTimeResponse> reservationTimes = IntStream.range(0, 3)
-                .mapToObj(ReservationFixture::reservationTime)
-                .map(ReservationTimeResponse::from)
-                .toList();
+        List<ReservationTimeResponse> reservationTimes = List.of(
+                ReservationTimeResponse.from(ReservationTimeFixture.DEFAULT_RESERVATION_TIME),
+                ReservationTimeResponse.from(ReservationTimeFixture.DEFAULT_RESERVATION_TIME),
+                ReservationTimeResponse.from(ReservationTimeFixture.DEFAULT_RESERVATION_TIME)
+        );
         when(reservationTimeService.findReservationTimes()).thenReturn(reservationTimes);
 
         ResultActions result = SimpleMockMvc.get(mockMvc, "/times");

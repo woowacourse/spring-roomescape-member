@@ -16,7 +16,7 @@ import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.time.ReservationTime;
 import roomescape.domain.time.repository.ReservationTimeRepository;
-import roomescape.fixture.ReservationFixture;
+import roomescape.fixture.ReservationTimeFixture;
 import roomescape.fixture.ThemeFixture;
 import roomescape.support.annotation.FixedClock;
 import roomescape.support.extension.MockClockExtension;
@@ -26,8 +26,8 @@ import roomescape.support.extension.TableTruncateExtension;
 @ExtendWith({TableTruncateExtension.class, MockClockExtension.class})
 @FixedClock(date = "2024-04-20")
 public class ReservationServiceTest {
-    private final ReservationTime time = ReservationFixture.reservationTime();
-    private final Theme theme = ThemeFixture.theme();
+    private final ReservationTime time = ReservationTimeFixture.DEFAULT_RESERVATION_TIME;
+    private final Theme theme = ThemeFixture.DEFAULT_THEME;
 
     @Autowired
     private ReservationService reservationService;

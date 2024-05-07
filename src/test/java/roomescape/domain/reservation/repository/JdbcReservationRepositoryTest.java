@@ -17,6 +17,7 @@ import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.time.ReservationTime;
 import roomescape.domain.time.repository.JdbcReservationTimeRepository;
 import roomescape.fixture.ReservationFixture;
+import roomescape.fixture.ReservationTimeFixture;
 import roomescape.fixture.ThemeFixture;
 
 @JdbcTest
@@ -36,8 +37,8 @@ class JdbcReservationRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        time = reservationTimeRepository.save(ReservationFixture.reservationTime());
-        theme = themeRepository.save(ThemeFixture.theme());
+        time = reservationTimeRepository.save(ReservationTimeFixture.DEFAULT_RESERVATION_TIME);
+        theme = themeRepository.save(ThemeFixture.DEFAULT_THEME);
     }
 
     @Test

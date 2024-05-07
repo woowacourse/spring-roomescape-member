@@ -24,7 +24,7 @@ class JdbcThemeRepositoryTest {
 
     @Test
     void 테마를_저장한다() {
-        Theme theme = ThemeFixture.theme();
+        Theme theme = ThemeFixture.DEFAULT_THEME;
 
         Theme savedTheme = themeRepository.save(theme);
 
@@ -52,7 +52,7 @@ class JdbcThemeRepositoryTest {
 
     @Test
     void 테마를_삭제한다() {
-        Theme theme = ThemeFixture.theme();
+        Theme theme = ThemeFixture.DEFAULT_THEME;
         theme = themeRepository.save(theme);
 
         int deleteCount = themeRepository.deleteById(theme.getId());

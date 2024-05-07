@@ -3,19 +3,9 @@ package roomescape.fixture;
 import roomescape.domain.theme.Theme;
 
 public class ThemeFixture {
-    public static Theme theme() {
-        return theme(1L);
-    }
-
-    public static Theme theme(long id) {
-        return theme(id, "테마1", "설명", "링크");
-    }
+    public static final Theme DEFAULT_THEME = theme("셜록홈즈");
 
     public static Theme theme(String name) {
-        return theme(1L, name, "설명", "링크");
-    }
-
-    public static Theme theme(long id, String name, String description, String thumbnail) {
-        return new Theme(id, name, description, thumbnail);
+        return new Theme(1L, name, "설명입니다.", "https://lemone.com");
     }
 }

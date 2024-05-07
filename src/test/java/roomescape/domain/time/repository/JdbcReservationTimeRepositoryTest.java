@@ -13,7 +13,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.time.ReservationTime;
-import roomescape.fixture.ReservationFixture;
+import roomescape.fixture.ReservationTimeFixture;
 
 @JdbcTest
 class JdbcReservationTimeRepositoryTest {
@@ -27,7 +27,7 @@ class JdbcReservationTimeRepositoryTest {
     @Test
     void 예약_시간을_저장한다() {
         String startAt = "13:00";
-        ReservationTime reservationTime = ReservationFixture.reservationTime(startAt);
+        ReservationTime reservationTime = ReservationTimeFixture.reservationTime(startAt);
 
         ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
 
@@ -36,8 +36,8 @@ class JdbcReservationTimeRepositoryTest {
 
     @Test
     void 모든_예약_시간을_조회한다() {
-        ReservationTime reservationTime1 = ReservationFixture.reservationTime("10:00");
-        ReservationTime reservationTime2 = ReservationFixture.reservationTime("15:00");
+        ReservationTime reservationTime1 = ReservationTimeFixture.reservationTime("10:00");
+        ReservationTime reservationTime2 = ReservationTimeFixture.reservationTime("15:00");
         reservationTimeRepository.save(reservationTime1);
         reservationTimeRepository.save(reservationTime2);
 
@@ -51,7 +51,7 @@ class JdbcReservationTimeRepositoryTest {
 
     @Test
     void 예약_시간을_삭제한다() {
-        ReservationTime reservationTime = ReservationFixture.reservationTime();
+        ReservationTime reservationTime = ReservationTimeFixture.DEFAULT_RESERVATION_TIME;
         reservationTime = reservationTimeRepository.save(reservationTime);
 
         int deletedCount = reservationTimeRepository.deleteById(reservationTime.getId());
