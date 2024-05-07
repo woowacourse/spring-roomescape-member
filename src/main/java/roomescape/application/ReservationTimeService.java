@@ -10,7 +10,6 @@ import roomescape.application.dto.response.ReservationTimeResponse;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
-import roomescape.exception.RoomescapeException;
 
 @Service
 public class ReservationTimeService {
@@ -26,7 +25,7 @@ public class ReservationTimeService {
     @Transactional
     public ReservationTimeResponse create(ReservationTimeRequest request) {
         if (reservationTimeRepository.existsByStartAt(request.startAt())) {
-            throw new RoomescapeException("이미 존재하는 예약입니다.");
+            throw new IllegalArgumentException("이미 존재하는 예약입니다.");
         }
         ReservationTime reservationTime = reservationTimeRepository.create(request.toReservationTime());
         return ReservationTimeResponse.from(reservationTime);
@@ -43,7 +42,7 @@ public class ReservationTimeService {
     public void deleteById(long id) {
         ReservationTime time = reservationTimeRepository.getById(id);
         if (reservationRepository.existsByTimeId(time.getId())) {
-            throw new RoomescapeException("연관된 예약이 존재하여 삭제할 수 없습니다.");
+            throw new IllegalArgumentException("연관된 예약이 존재하여 삭제할 수 없습니다.");
         }
         reservationTimeRepository.deleteById(time.getId());
     }

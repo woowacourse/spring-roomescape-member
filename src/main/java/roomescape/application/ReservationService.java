@@ -13,7 +13,6 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
-import roomescape.exception.RoomescapeException;
 
 
 @Service
@@ -39,11 +38,11 @@ public class ReservationService {
         ReservationTime reservationTime = reservationTimeRepository.getById(request.timeId());
 
         if (reservationRepository.existsBy(request.date(), request.timeId(), request.themeId())) {
-            throw new RoomescapeException("이미 존재하는 예약입니다.");
+            throw new IllegalArgumentException("이미 존재하는 예약입니다.");
         }
         Reservation reservation = request.toReservation(reservationTime, theme);
         if (reservation.isBefore(LocalDateTime.now(clock))) {
-            throw new RoomescapeException("현재 시간보다 과거로 예약할 수 없습니다.");
+            throw new IllegalArgumentException("현재 시간보다 과거로 예약할 수 없습니다.");
         }
         return ReservationResponse.from(reservationRepository.create(reservation));
     }

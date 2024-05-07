@@ -20,7 +20,6 @@ import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeName;
 import roomescape.domain.ThemeRepository;
-import roomescape.exception.RoomescapeException;
 
 @ServiceTest
 class ReservationTimeServiceTest {
@@ -51,7 +50,7 @@ class ReservationTimeServiceTest {
         LocalTime startAt = createTime(10, 0).getStartAt();
         ReservationTimeRequest request = new ReservationTimeRequest(startAt);
         assertThatCode(() -> reservationTimeService.create(request))
-                .isInstanceOf(RoomescapeException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 존재하는 예약입니다.");
     }
 
@@ -82,7 +81,7 @@ class ReservationTimeServiceTest {
                 new PlayerName("오리"), LocalDate.parse("2024-01-01"), reservationTime, theme
         ));
         assertThatCode(() -> reservationTimeService.deleteById(reservationTime.getId()))
-                .isInstanceOf(RoomescapeException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("연관된 예약이 존재하여 삭제할 수 없습니다.");
     }
 

@@ -20,7 +20,6 @@ import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeName;
 import roomescape.domain.ThemeRepository;
-import roomescape.exception.RoomescapeException;
 
 @ServiceTest
 class ReservationServiceTest {
@@ -95,7 +94,7 @@ class ReservationServiceTest {
         reservationRepository.create(request.toReservation(time, theme));
 
         assertThatCode(() -> reservationService.create(request))
-                .isInstanceOf(RoomescapeException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 존재하는 예약입니다.");
     }
 
@@ -110,7 +109,7 @@ class ReservationServiceTest {
         );
 
         assertThatCode(() -> reservationService.create(reservationRequest))
-                .isInstanceOf(RoomescapeException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("현재 시간보다 과거로 예약할 수 없습니다.");
     }
 

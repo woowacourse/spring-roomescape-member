@@ -13,7 +13,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import roomescape.exception.RoomescapeException;
 
 @RestControllerAdvice
 public class RoomescapeControllerAdvice {
@@ -33,12 +32,6 @@ public class RoomescapeControllerAdvice {
         problemDetail.setTitle("요청 값 검증에 실패했습니다.");
         problemDetail.setProperties(Map.of("details", parameters));
         return problemDetail;
-    }
-
-    @ExceptionHandler(RoomescapeException.class)
-    public ProblemDetail handleIllegalArgumentException(RoomescapeException exception) {
-        logger.error(exception.getMessage(), exception);
-        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exception.getMessage());
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)

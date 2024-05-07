@@ -14,7 +14,6 @@ import roomescape.application.dto.response.ThemeResponse;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeName;
 import roomescape.domain.ThemeRepository;
-import roomescape.exception.RoomescapeException;
 
 @ServiceTest
 class ThemeServiceTest {
@@ -63,7 +62,7 @@ class ThemeServiceTest {
     @Sql("/insert-single-reservation.sql")
     void shouldThrowEntityReferenceOnDeleteExceptionWhenDeleteThemeWithReservation() {
         assertThatCode(() -> themeService.deleteById(1L))
-                .isInstanceOf(RoomescapeException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("연관된 예약이 존재하여 삭제할 수 없습니다.");
     }
 

@@ -9,7 +9,6 @@ import roomescape.application.dto.request.ThemeRequest;
 import roomescape.application.dto.response.ThemeResponse;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
-import roomescape.exception.RoomescapeException;
 
 @Service
 public class ThemeService {
@@ -37,7 +36,7 @@ public class ThemeService {
     public void deleteById(long id) {
         Theme theme = themeRepository.getById(id);
         if (themeRepository.existsByTimeId(theme.getId())) {
-            throw new RoomescapeException("연관된 예약이 존재하여 삭제할 수 없습니다.");
+            throw new IllegalArgumentException("연관된 예약이 존재하여 삭제할 수 없습니다.");
         }
         themeRepository.deleteById(theme.getId());
     }

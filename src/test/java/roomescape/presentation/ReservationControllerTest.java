@@ -25,7 +25,6 @@ import roomescape.application.dto.request.ReservationRequest;
 import roomescape.application.dto.response.ReservationResponse;
 import roomescape.application.dto.response.ReservationTimeResponse;
 import roomescape.application.dto.response.ThemeResponse;
-import roomescape.exception.RoomescapeException;
 
 @WebMvcTest(ReservationController.class)
 class ReservationControllerTest extends ControllerTest {
@@ -65,7 +64,7 @@ class ReservationControllerTest extends ControllerTest {
     @DisplayName("존재하지 않는 새로운 예약을 저장하면 201 Created 응답과 ReservationResponse가 반환된다.")
     @Test
     void shouldReturn201CreatedWithReservationResponseWhenNotExistReservationCreate() throws Exception {
-        ReservationRequest reservationRequest = new ReservationRequest("test", LocalDate.of(2024, 12,25), 1L, 1L);
+        ReservationRequest reservationRequest = new ReservationRequest("test", LocalDate.of(2024, 12, 25), 1L, 1L);
         String reservationRequestJson = objectMapper.writeValueAsString(reservationRequest);
 
         ReservationResponse reservationResponse = new ReservationResponse(
@@ -91,13 +90,13 @@ class ReservationControllerTest extends ControllerTest {
         String reservationRequestJson = objectMapper.writeValueAsString(reservationRequest);
 
         given(reservationService.create(any(ReservationRequest.class)))
-                .willThrow(new RoomescapeException("존재하지 않는 예약 시간 입니다."));
+                .willThrow(new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
 
         mvc.perform(post("/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(reservationRequestJson))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string(containsString("존재하지 않는 예약 시간 입니다.")));
+                .andExpect(content().string(containsString("존재하지 않는 예약 시간입니다.")));
     }
 
     @DisplayName("이미 존재하는 예약을 생성하려고 하면 400 Bad Request 응답을 반환한다.")
@@ -107,7 +106,7 @@ class ReservationControllerTest extends ControllerTest {
         String reservationRequestJson = objectMapper.writeValueAsString(reservationRequest);
 
         given(reservationService.create(reservationRequest))
-                .willThrow(new RoomescapeException("이미 존재하는 예약입니다."));
+                .willThrow(new IllegalArgumentException("이미 존재하는 예약입니다."));
 
         mvc.perform(post("/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -128,7 +127,7 @@ class ReservationControllerTest extends ControllerTest {
     @DisplayName("존재하지 않는 예약의 id로 삭제 요청을 하면 400 Bad Request 응답을 반환한다.")
     @Test
     void shouldReturn400BadRequestWhenReservationIdNotExist() throws Exception {
-        doThrow(new RoomescapeException("존재하지 않는 예약입니다."))
+        doThrow(new IllegalArgumentException("존재하지 않는 예약입니다."))
                 .when(reservationService).deleteById(1L);
 
         mvc.perform(delete("/reservations/1"))
