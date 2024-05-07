@@ -31,7 +31,7 @@ public class Theme {
     private void validateBlank() {
         if (StringUtils.isBlank(name) || StringUtils.isBlank(description) || StringUtils.isBlank(thumbnail)) {
             throw new ValidateException(ErrorType.THEME_REQUEST_DATA_BLANK,
-                    String.format("테마(Theme) 생성에 유효하지 않은 값이 입력되었습니다. [values : %s]", this));
+                    String.format("테마(Theme) 생성에 유효하지 않은 값(null OR 공백)이 입력되었습니다. [values : %s]", this));
         }
     }
 

@@ -33,7 +33,7 @@ public class Reservation {
     private void validateBlank() {
         if (StringUtils.isBlank(name) || date == null || time == null || theme == null) {
             throw new ValidateException(ErrorType.RESERVATION_REQUEST_DATA_BLANK,
-                    String.format("예약(Reservation) 생성에 유효하지 않은 값이 입력되었습니다. [values: %s]", this));
+                    String.format("예약(Reservation) 생성에 유효하지 않은 값(null OR 공백)이 입력되었습니다. [values: %s]", this));
         }
     }
 
