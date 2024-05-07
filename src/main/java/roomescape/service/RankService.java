@@ -2,7 +2,7 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
-import roomescape.domain.dto.ThemeResponse;
+import roomescape.dto.response.ThemeResponse;
 import roomescape.repository.RankDao;
 
 import java.time.LocalDate;

@@ -3,8 +3,8 @@ package roomescape.controller;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.domain.dto.TimeSlotRequest;
-import roomescape.domain.dto.TimeSlotResponse;
+import roomescape.dto.request.TimeSlotRequest;
+import roomescape.dto.response.TimeSlotResponse;
 import roomescape.service.TimeService;
 
 import java.net.URI;
