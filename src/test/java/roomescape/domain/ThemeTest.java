@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
+import roomescape.exception.RoomescapeException;
 
 class ThemeTest {
 
@@ -24,7 +25,7 @@ class ThemeTest {
     @NullAndEmptySource
     void construct_IllegalName(String name) {
         assertThatThrownBy(() -> new Theme(name, "description", "https://"))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(RoomescapeException.class)
             .hasMessage("테마 이름은 null이거나 비어 있을 수 없습니다.");
     }
 
@@ -34,7 +35,7 @@ class ThemeTest {
     @NullAndEmptySource
     void construct_IllegalDescription(String description) {
         assertThatThrownBy(() -> new Theme("name", description, "https://"))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(RoomescapeException.class)
             .hasMessage("테마 설명은 null이거나 비어 있을 수 없습니다.");
     }
 
@@ -44,7 +45,7 @@ class ThemeTest {
     @NullAndEmptySource
     void construct_IllegalThumbnail(String url) {
         assertThatThrownBy(() -> new Theme("name", "description", url))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(RoomescapeException.class)
             .hasMessage("썸네일 URL은 https://로 시작해야 합니다.");
     }
 }

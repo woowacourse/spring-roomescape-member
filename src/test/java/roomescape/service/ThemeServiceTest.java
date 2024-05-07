@@ -17,8 +17,7 @@ import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.exception.DuplicatedThemeException;
-import roomescape.exception.ReservationExistsException;
+import roomescape.exception.RoomescapeException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.service.dto.SaveThemeDto;
@@ -46,7 +45,7 @@ class ThemeServiceTest {
     void save_IllegalName(String invalidName) {
         assertThatThrownBy(
             () -> themeService.save(new SaveThemeDto(invalidName, description, thumbnail))
-        ).isInstanceOf(IllegalArgumentException.class);
+        ).isInstanceOf(RoomescapeException.class);
     }
 
     @DisplayName("실패: description이 null 또는 빈 값이면 예외 발생")
@@ -55,7 +54,7 @@ class ThemeServiceTest {
     void save_IllegalDescription(String invalidDescription) {
         assertThatThrownBy(
             () -> themeService.save(new SaveThemeDto(name, invalidDescription, thumbnail))
-        ).isInstanceOf(IllegalArgumentException.class);
+        ).isInstanceOf(RoomescapeException.class);
     }
 
     @DisplayName("thumbnail 형식이 잘못된 경우 예외 발생")
@@ -65,7 +64,7 @@ class ThemeServiceTest {
     void save_IllegalThumbnail(String invalidThumbnail) {
         assertThatThrownBy(
             () -> themeService.save(new SaveThemeDto(name, description, invalidThumbnail))
-        ).isInstanceOf(IllegalArgumentException.class);
+        ).isInstanceOf(RoomescapeException.class);
     }
 
     @DisplayName("실패: 이름이 동일한 방탈출 테마를 저장하면 예외 발생")
@@ -75,7 +74,7 @@ class ThemeServiceTest {
 
         assertThatThrownBy(
             () -> themeService.save(new SaveThemeDto(name, "d", "https://d"))
-        ).isInstanceOf(DuplicatedThemeException.class);
+        ).isInstanceOf(RoomescapeException.class);
     }
 
     @DisplayName("실패: 예약에 사용되는 테마 삭제 시도 시 예외 발생")
@@ -89,6 +88,6 @@ class ThemeServiceTest {
             new Reservation("name", LocalDate.parse("2060-01-01"), savedTime, savedTheme));
 
         assertThatThrownBy(() -> themeService.delete(savedTheme.getId()))
-            .isInstanceOf(ReservationExistsException.class);
+            .isInstanceOf(RoomescapeException.class);
     }
 }

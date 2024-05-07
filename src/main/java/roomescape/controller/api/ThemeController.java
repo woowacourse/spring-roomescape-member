@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,11 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.CreateThemeRequest;
 import roomescape.controller.dto.CreateThemeResponse;
-import roomescape.controller.dto.ErrorMessageResponse;
 import roomescape.controller.dto.FindThemeResponse;
 import roomescape.domain.Theme;
-import roomescape.exception.DuplicatedThemeException;
-import roomescape.exception.ReservationExistsException;
 import roomescape.service.ThemeService;
 import roomescape.service.dto.SaveThemeDto;
 
@@ -78,17 +74,5 @@ public class ThemeController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         themeService.delete(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @ExceptionHandler(DuplicatedThemeException.class)
-    public ResponseEntity<ErrorMessageResponse> handleDuplicatedThemeException(DuplicatedThemeException e) {
-        ErrorMessageResponse response = new ErrorMessageResponse(e.getMessage());
-        return ResponseEntity.badRequest().body(response);
-    }
-
-    @ExceptionHandler(ReservationExistsException.class)
-    public ResponseEntity<ErrorMessageResponse> handleReservationExistsException(ReservationExistsException e) {
-        ErrorMessageResponse response = new ErrorMessageResponse(e.getMessage());
-        return ResponseEntity.badRequest().body(response);
     }
 }

@@ -3,8 +3,7 @@ package roomescape.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
-import roomescape.exception.DuplicatedThemeException;
-import roomescape.exception.ReservationExistsException;
+import roomescape.exception.RoomescapeException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.service.dto.SaveThemeDto;
@@ -32,13 +31,13 @@ public class ThemeService {
 
     private void validateDuplication(SaveThemeDto request) {
         if (themeRepository.isExists(request.name())) {
-            throw new DuplicatedThemeException();
+            throw new RoomescapeException("같은 이름의 테마가 이미 존재합니다.");
         }
     }
 
     public int delete(Long id) {
         if (reservationRepository.isThemeIdUsed(id)) {
-            throw new ReservationExistsException();
+            throw new RoomescapeException("해당 테마를 사용하는 예약이 존재하여 삭제할 수 없습니다.");
         }
         return themeRepository.deleteById(id);
     }

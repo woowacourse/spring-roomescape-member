@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.controller.dto.ErrorMessageResponse;
+import roomescape.exception.RoomescapeException;
 
 @RestControllerAdvice
 public class ControllerAdvice {
@@ -14,8 +15,8 @@ public class ControllerAdvice {
         return ResponseEntity.internalServerError().body(errorMessageResponse);
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorMessageResponse> handleIllegalArgumentException(IllegalArgumentException e) {
+    @ExceptionHandler(RoomescapeException.class)
+    public ResponseEntity<ErrorMessageResponse> handleIllegalArgumentException(RoomescapeException e) {
         ErrorMessageResponse response = new ErrorMessageResponse(e.getMessage());
         return ResponseEntity.badRequest().body(response);
     }

@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,13 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.CreateReservationRequest;
 import roomescape.controller.dto.CreateReservationResponse;
-import roomescape.controller.dto.ErrorMessageResponse;
 import roomescape.controller.dto.FindReservationResponse;
 import roomescape.domain.Reservation;
-import roomescape.exception.DuplicatedReservationException;
-import roomescape.exception.PastReservationException;
-import roomescape.exception.ReservationTimeNotFoundException;
-import roomescape.exception.ThemeNotFoundException;
 import roomescape.service.ReservationService;
 import roomescape.service.dto.SaveReservationDto;
 
@@ -74,30 +68,5 @@ public class ReservationController {
             )).toList();
 
         return ResponseEntity.ok(createReservationResponse);
-    }
-
-    @ExceptionHandler(ReservationTimeNotFoundException.class)
-    public ResponseEntity<ErrorMessageResponse> handleReservationTimeNotFoundException(
-        ReservationTimeNotFoundException e) {
-        ErrorMessageResponse response = new ErrorMessageResponse(e.getMessage());
-        return ResponseEntity.badRequest().body(response);
-    }
-
-    @ExceptionHandler(ThemeNotFoundException.class)
-    public ResponseEntity<ErrorMessageResponse> handleThemeNotFoundException(ThemeNotFoundException e) {
-        ErrorMessageResponse response = new ErrorMessageResponse(e.getMessage());
-        return ResponseEntity.badRequest().body(response);
-    }
-
-    @ExceptionHandler(PastReservationException.class)
-    public ResponseEntity<ErrorMessageResponse> handlePastReservationException(PastReservationException e) {
-        ErrorMessageResponse response = new ErrorMessageResponse(e.getMessage());
-        return ResponseEntity.badRequest().body(response);
-    }
-
-    @ExceptionHandler(DuplicatedReservationException.class)
-    public ResponseEntity<ErrorMessageResponse> handleDuplicatedReservationException(DuplicatedReservationException e) {
-        ErrorMessageResponse response = new ErrorMessageResponse(e.getMessage());
-        return ResponseEntity.badRequest().body(response);
     }
 }

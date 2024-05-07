@@ -7,8 +7,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.exception.DuplicatedReservationTimeException;
-import roomescape.exception.ReservationExistsException;
+import roomescape.exception.RoomescapeException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.service.dto.FindTimeAndAvailabilityDto;
@@ -38,19 +37,19 @@ public class ReservationTimeService {
         try {
             return LocalTime.parse(rawTime);
         } catch (DateTimeParseException | NullPointerException e) {
-            throw new IllegalArgumentException("잘못된 시간 형식입니다.");
+            throw new RoomescapeException("잘못된 시간 형식입니다.");
         }
     }
 
     private void validateDuplication(LocalTime parsedTime) {
         if (reservationTimeRepository.isStartTimeExists(parsedTime)) {
-            throw new DuplicatedReservationTimeException();
+            throw new RoomescapeException("이미 존재하는 시간은 추가할 수 없습니다.");
         }
     }
 
     public int delete(Long id) {
         if (reservationRepository.isTimeIdUsed(id)) {
-            throw new ReservationExistsException();
+            throw new RoomescapeException("해당 시간을 사용하는 예약이 존재하여 삭제할 수 없습니다.");
         }
         return reservationTimeRepository.deleteById(id);
     }

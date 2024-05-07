@@ -8,10 +8,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.exception.DuplicatedReservationException;
-import roomescape.exception.PastReservationException;
-import roomescape.exception.ReservationTimeNotFoundException;
-import roomescape.exception.ThemeNotFoundException;
+import roomescape.exception.RoomescapeException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -49,44 +46,44 @@ public class ReservationService {
         try {
             return LocalDate.parse(rawDate);
         } catch (DateTimeParseException | NullPointerException e) {
-            throw new IllegalArgumentException("잘못된 날짜 형식입니다.");
+            throw new RoomescapeException("잘못된 날짜 형식입니다.");
         }
     }
 
     private ReservationTime findTime(Long timeId) {
         if (timeId == null) {
-            throw new IllegalArgumentException("시간 ID는 null일 수 없습니다.");
+            throw new RoomescapeException("시간 ID는 null일 수 없습니다.");
         }
         try {
             return reservationTimeRepository.findById(timeId);
         } catch (EmptyResultDataAccessException e) {
-            throw new ReservationTimeNotFoundException();
+            throw new RoomescapeException("입력한 시간 ID에 해당하는 데이터가 존재하지 않습니다.");
         }
     }
 
     private Theme findTheme(Long themeId) {
         if (themeId == null) {
-            throw new IllegalArgumentException("테마 ID는 null일 수 없습니다.");
+            throw new RoomescapeException("테마 ID는 null일 수 없습니다.");
         }
         try {
             return themeRepository.findById(themeId);
         } catch (EmptyResultDataAccessException e) {
-            throw new ThemeNotFoundException();
+            throw new RoomescapeException("입력한 테마 ID에 해당하는 데이터가 존재하지 않습니다.");
         }
     }
 
     private void validatePastReservation(LocalDate date, ReservationTime time) {
         if (date.isBefore(LocalDate.now())) {
-            throw new PastReservationException();
+            throw new RoomescapeException("과거 예약을 추가할 수 없습니다.");
         }
         if (date.isEqual(LocalDate.now()) && time.isBeforeNow()) {
-            throw new PastReservationException();
+            throw new RoomescapeException("과거 예약을 추가할 수 없습니다.");
         }
     }
 
     private void validateDuplication(LocalDate date, Long timeId, Long themeId) {
         if (reservationRepository.isDuplicated(date, timeId, themeId)) {
-            throw new DuplicatedReservationException();
+            throw new RoomescapeException("해당 시간에 예약이 이미 존재합니다.");
         }
     }
 

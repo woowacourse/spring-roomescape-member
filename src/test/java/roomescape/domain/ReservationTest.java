@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
+import roomescape.exception.RoomescapeException;
 
 class ReservationTest {
 
@@ -33,6 +34,6 @@ class ReservationTest {
     void construct_IllegalName(String invalidName) {
         assertThatThrownBy(
             () -> new Reservation(invalidName, validDate, validReservationTime, validTheme)
-        ).isInstanceOf(IllegalArgumentException.class);
+        ).isInstanceOf(RoomescapeException.class);
     }
 }

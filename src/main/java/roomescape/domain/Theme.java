@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.util.Objects;
+import roomescape.exception.RoomescapeException;
 
 public class Theme {
 
@@ -25,19 +26,19 @@ public class Theme {
 
     private void validateName(String name) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("테마 이름은 null이거나 비어 있을 수 없습니다.");
+            throw new RoomescapeException("테마 이름은 null이거나 비어 있을 수 없습니다.");
         }
     }
 
     private void validateDescription(String description) {
         if (description == null || description.isBlank()) {
-            throw new IllegalArgumentException("테마 설명은 null이거나 비어 있을 수 없습니다.");
+            throw new RoomescapeException("테마 설명은 null이거나 비어 있을 수 없습니다.");
         }
     }
 
     private void validateThumbnail(String thumbnail) {
         if (thumbnail == null || !thumbnail.startsWith("https://")) {
-            throw new IllegalArgumentException("썸네일 URL은 https://로 시작해야 합니다.");
+            throw new RoomescapeException("썸네일 URL은 https://로 시작해야 합니다.");
         }
     }
 
