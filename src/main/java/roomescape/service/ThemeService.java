@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.time.LocalDate;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Name;
 import roomescape.domain.Theme;
@@ -8,8 +9,6 @@ import roomescape.dto.request.ThemeAddRequest;
 import roomescape.dto.response.ThemeResponse;
 import roomescape.exceptions.ClientException;
 import roomescape.repository.theme.ThemeRepository;
-
-import java.util.List;
 
 @Service
 public class ThemeService {
@@ -26,13 +25,13 @@ public class ThemeService {
         }
 
         Theme theme = themeRepository.save(themeAddRequest.toTheme());
-        return ThemeResponse.from(theme);
+        return new ThemeResponse(theme);
     }
 
     public List<ThemeResponse> findThemes() {
         return themeRepository.findAll()
                 .stream()
-                .map(ThemeResponse::from)
+                .map(ThemeResponse::new)
                 .toList();
     }
 
@@ -43,12 +42,12 @@ public class ThemeService {
 
         return themeRepository.findTrendings(trendingStatsStart, trendingStatsEnd, limit)
                 .stream()
-                .map(ThemeResponse::from)
+                .map(ThemeResponse::new)
                 .toList();
     }
 
     public ThemeResponse getTheme(Long id) {
-        return ThemeResponse.from(getValidTheme(id));
+        return new ThemeResponse(getValidTheme(id));
     }
 
     private Theme getValidTheme(Long id) {

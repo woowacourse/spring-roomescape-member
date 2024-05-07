@@ -5,11 +5,20 @@ import java.time.format.DateTimeFormatter;
 import roomescape.domain.ReservationTime;
 
 public record ReservationTimeResponse(Long id, String startAt, Boolean alreadyBooked) {
-    public static ReservationTimeResponse from(ReservationTime reservationTime) {
-        return new ReservationTimeResponse(
+
+    public ReservationTimeResponse(ReservationTime reservationTime) {
+        this(
                 reservationTime.getId(),
                 reservationTime.getStartAt(DateTimeFormatter.ofPattern("HH:mm")),
-                reservationTime.getAlreadyBooked()
+                null
+        );
+    }
+
+    public ReservationTimeResponse(ReservationTime reservationTime, Boolean alreadyBooked) {
+        this(
+                reservationTime.getId(),
+                reservationTime.getStartAt(DateTimeFormatter.ofPattern("HH:mm")),
+                alreadyBooked
         );
     }
 

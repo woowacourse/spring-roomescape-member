@@ -23,25 +23,26 @@ public class ReservationTimeService {
             throw new ClientException("이미 존재하는 시간입니다.");
         }
         ReservationTime reservationTime = reservationTimeRepository.save(reservationTimeAddRequest.toReservationTime());
-        return ReservationTimeResponse.from(reservationTime);
+        return new ReservationTimeResponse(reservationTime);
     }
 
     public List<ReservationTimeResponse> findTimes() {
         return reservationTimeRepository.findAll()
                 .stream()
-                .map(ReservationTimeResponse::from)
+                .map(ReservationTimeResponse::new)
                 .toList();
     }
 
     public List<ReservationTimeResponse> findTimesWithAlreadyBooked(LocalDate date, Long themeId) {
         return reservationTimeRepository.findAllWithAlreadyBooked(date, themeId)
+                .entrySet()
                 .stream()
-                .map(ReservationTimeResponse::from)
+                .map(e -> new ReservationTimeResponse(e.getKey(), e.getValue()))
                 .toList();
     }
 
     public ReservationTimeResponse getTime(Long id) {
-        return ReservationTimeResponse.from(getValidReservationTime(id));
+        return new ReservationTimeResponse(getValidReservationTime(id));
     }
 
     private ReservationTime getValidReservationTime(Long id) {

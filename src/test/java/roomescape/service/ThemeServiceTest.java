@@ -3,9 +3,9 @@ package roomescape.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static roomescape.InitialDataFixture.INITIAL_THEME_COUNT;
+import static roomescape.InitialDataFixture.NOT_RESERVATION_THEME;
 import static roomescape.InitialDataFixture.THEME_1;
 import static roomescape.InitialDataFixture.THEME_2;
-import static roomescape.InitialDataFixture.NOT_RESERVATION_THEME;
 
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -69,7 +69,7 @@ class ThemeServiceTest {
     void findTrendingThemes() {
         List<ThemeResponse> themes = themeService.findTrendingThemes(1L);
 
-        assertThat(themes).containsExactly(ThemeResponse.from(THEME_1));
+        assertThat(themes).containsExactly(new ThemeResponse(THEME_1));
     }
 
     @Test
@@ -77,7 +77,7 @@ class ThemeServiceTest {
     void getTheme() {
         ThemeResponse themeResponse = themeService.getTheme(THEME_2.getId());
 
-        assertThat(themeResponse).isEqualTo(ThemeResponse.from(THEME_2));
+        assertThat(themeResponse).isEqualTo(new ThemeResponse(THEME_2));
     }
 
     @Test

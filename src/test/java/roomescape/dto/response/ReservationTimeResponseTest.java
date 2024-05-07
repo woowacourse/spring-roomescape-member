@@ -12,10 +12,10 @@ class ReservationTimeResponseTest {
     @Test
     @DisplayName("ReservationTime 객체로 ReservationTimeResponse를 만든다.")
     void createReservationGetTimeResponse() {
-        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
         ReservationTimeResponse expected = new ReservationTimeResponse(1L, "10:00", null);
 
-        ReservationTimeResponse reservationTimeResponse = ReservationTimeResponse.from(time);
+        ReservationTimeResponse reservationTimeResponse = new ReservationTimeResponse(reservationTime);
 
         assertThat(reservationTimeResponse).isEqualTo(expected);
     }

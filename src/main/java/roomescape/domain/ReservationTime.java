@@ -11,21 +11,15 @@ public class ReservationTime {
 
     private final Long id;
     private final LocalTime startAt;
-    private final Boolean alreadyBooked;
 
-    public ReservationTime(Long id, LocalTime startAt, Boolean alreadyBooked) {
+    public ReservationTime(Long id, LocalTime startAt) {
         validate(startAt);
         this.id = id;
         this.startAt = startAt;
-        this.alreadyBooked = alreadyBooked;
-    }
-
-    public ReservationTime(Long id, LocalTime startAt) {
-        this(id, startAt, null);
     }
 
     public ReservationTime(LocalTime startAt) {
-        this(null, startAt, null);
+        this(null, startAt);
     }
 
     private void validate(LocalTime startAt) {
@@ -51,10 +45,6 @@ public class ReservationTime {
 
     public String getStartAt(DateTimeFormatter formatter) {
         return startAt.format(formatter);
-    }
-
-    public Boolean getAlreadyBooked() {
-        return alreadyBooked;
     }
 
     @Override
