@@ -1,6 +1,8 @@
 package roomescape.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,7 +46,7 @@ public class ReservationTimeController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTimeResponse> addReservationTime(@RequestBody SaveReservationTimeRequest request) {
+    public ResponseEntity<ReservationTimeResponse> addReservationTime(@RequestBody @Valid SaveReservationTimeRequest request) {
         ReservationTime reservationTime = reservationTimeService.createReservationTime(request);
         return ResponseEntity.created(URI.create("times/" + reservationTime.getId()))
                 .body(ReservationTimeResponse.of(reservationTime));
