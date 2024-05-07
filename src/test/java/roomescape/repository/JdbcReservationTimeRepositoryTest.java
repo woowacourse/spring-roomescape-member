@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,37 +18,33 @@ import roomescape.domain.ReservationTime;
 class JdbcReservationTimeRepositoryTest {
 
     private final JdbcTemplate jdbcTemplate;
-    private final JdbcReservationTimeRepository jdbcReservationTimeDao;
+    private final ReservationTimeRepository reservationTimeRepository;
 
     private ReservationTime savedReservationTime;
 
     @Autowired
     private JdbcReservationTimeRepositoryTest(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        jdbcReservationTimeDao = new JdbcReservationTimeRepository(jdbcTemplate);
+        reservationTimeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
     }
 
     @BeforeEach
     void saveReservationTime() {
         ReservationTime reservationTime = new ReservationTime(null, LocalTime.of(10, 0));
-        savedReservationTime = jdbcReservationTimeDao.save(reservationTime);
-    }
-
-    @AfterEach
-    void setUp() {
-        jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN `id` RESTART");
+        savedReservationTime = reservationTimeRepository.save(reservationTime);
     }
 
     @DisplayName("DB 시간 추가 테스트")
     @Test
     void save() {
-        assertThat(savedReservationTime.getStartAt()).isEqualTo(LocalTime.of(10, 0));
+        Optional<ReservationTime> findReservation = reservationTimeRepository.findById(savedReservationTime.getId());
+        assertThat(findReservation).isPresent();
     }
 
     @DisplayName("DB 모든 시간 조회 테스트")
     @Test
     void findAllReservationTimes() {
-        List<ReservationTime> reservationTimes = jdbcReservationTimeDao.findAllReservationTimes();
+        List<ReservationTime> reservationTimes = reservationTimeRepository.findAllReservationTimes();
 
         assertThat(reservationTimes).hasSize(1);
     }
@@ -55,8 +52,8 @@ class JdbcReservationTimeRepositoryTest {
     @DisplayName("DB 시간 삭제 테스트")
     @Test
     void delete() {
-        jdbcReservationTimeDao.delete(savedReservationTime.getId());
-        List<ReservationTime> reservationTimes = jdbcReservationTimeDao.findAllReservationTimes();
+        reservationTimeRepository.delete(savedReservationTime.getId());
+        List<ReservationTime> reservationTimes = reservationTimeRepository.findAllReservationTimes();
 
         assertThat(reservationTimes).isEmpty();
     }

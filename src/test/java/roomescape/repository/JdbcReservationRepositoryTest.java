@@ -12,35 +12,43 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.service.dto.request.ReservationTimeRequest;
+import roomescape.service.dto.request.ThemeRequest;
 
 @JdbcTest
 class JdbcReservationRepositoryTest {
 
     private final JdbcTemplate jdbcTemplate;
-    private final JdbcReservationRepository jdbcReservationDao;
+    private final ReservationRepository reservationRepository;
+    private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
 
     private Reservation savedReservation;
 
     @Autowired
     private JdbcReservationRepositoryTest(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.jdbcReservationDao = new JdbcReservationRepository(jdbcTemplate);
+        this.reservationRepository = new JdbcReservationRepository(jdbcTemplate);
+        this.reservationTimeRepository = new JdbcReservationTimeRepository(jdbcTemplate);
+        this.themeRepository = new JdbcThemeRepository(jdbcTemplate);
     }
+
 
     @BeforeEach
     void saveReservation() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES(?)", LocalTime.of(10, 0));
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
+        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.of(10, 0));
+        ReservationTime reservationTime = reservationTimeRepository.save(reservationTimeRequest.toEntity());
 
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES(?, ?, ?)", "happy", "hi", "abcd.html");
-        Theme theme = new Theme(1L, "happy", "hi", "abcd.html");
+        ThemeRequest themeRequest = new ThemeRequest("hi", "happy", "abcd.html");
+        Theme theme = themeRepository.save(themeRequest.toEntity());
 
         Reservation reservation = new Reservation(null, "parang", LocalDate.of(2999, 3, 28), reservationTime, theme);
-        savedReservation = jdbcReservationDao.save(reservation);
+        savedReservation = reservationRepository.save(reservation);
     }
 
     @AfterEach
@@ -53,21 +61,21 @@ class JdbcReservationRepositoryTest {
     @DisplayName("DB 예약 추가 테스트")
     @Test
     void save() {
-        Assertions.assertThat(savedReservation.getName()).isEqualTo("parang");
+        Assertions.assertThat(savedReservation.getId()).isEqualTo(1);
     }
 
     @DisplayName("DB 모든 예약 조회 테스트")
     @Test
     void findAllReservations() {
-        List<Reservation> reservations = jdbcReservationDao.findAllReservations();
+        List<Reservation> reservations = reservationRepository.findAllReservations();
         assertThat(reservations).hasSize(1);
     }
 
     @DisplayName("DB 예약 삭제 테스트")
     @Test
     void delete() {
-        jdbcReservationDao.delete(savedReservation.getId());
-        List<Reservation> reservations = jdbcReservationDao.findAllReservations();
+        reservationRepository.delete(savedReservation.getId());
+        List<Reservation> reservations = reservationRepository.findAllReservations();
         assertThat(reservations).isEmpty();
     }
 }
