@@ -60,8 +60,6 @@ class AdminReservationServiceTest {
         Theme theme = new Theme(1L, "dummy", "description", "url");
 
         Reservation reservation = new Reservation(null, "lib", AFTER_ONE_DAYS_DATE, reservationTime, theme);
-        fakeReservationTimeRepository.insert(reservationTime);
-        fakeThemeRepository.insert(theme);
         fakeReservationRepository.insert(reservation);
 
         ReservationAddRequest conflictRequest = new ReservationAddRequest(AFTER_ONE_DAYS_DATE, "dodo",

@@ -20,7 +20,7 @@ public class FakeThemeRepository implements ThemeRepository {
 
     @Override
     public Theme insert(Theme theme) {
-        long id = atomicLong.getAndIncrement();
+        long id = atomicLong.incrementAndGet();
         Theme savedTheme = new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
         themes.put(id, savedTheme);
         return savedTheme;
