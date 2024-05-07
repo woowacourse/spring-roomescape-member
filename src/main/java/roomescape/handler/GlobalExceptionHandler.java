@@ -14,12 +14,12 @@ import roomescape.exception.TargetNotExistException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ExceptionDto> handleException(IllegalArgumentException e) {
+    public ResponseEntity<ExceptionDto> handleIllegalArgumentException(IllegalArgumentException e) {
         return ResponseEntity.badRequest().body(new ExceptionDto(e.getMessage()));
     }
 
     @ExceptionHandler(TargetNotExistException.class)
-    public ResponseEntity<ExceptionDto> handleTargetNotExistException() {
+    public ResponseEntity<Void> handleTargetNotExistException() {
         return ResponseEntity.notFound().build();
     }
 
@@ -44,5 +44,10 @@ public class GlobalExceptionHandler {
                 .map(ExceptionDto::new)
                 .toList();
         return ResponseEntity.badRequest().body(exceptionDtos);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Void> handleException() {
+        return ResponseEntity.internalServerError().build();
     }
 }
