@@ -8,7 +8,7 @@ import roomescape.exception.IllegalUserRequestException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.service.dto.SaveReservationRequest;
+import roomescape.service.dto.ReservationSaveRequest;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -29,7 +29,7 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public Reservation createReservation(SaveReservationRequest request) {
+    public Reservation createReservation(ReservationSaveRequest request) {
         ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
                 .orElseThrow(() -> new IllegalUserRequestException("존재하지 않는 예약 시간 입니다."));
 
@@ -42,7 +42,7 @@ public class ReservationService {
             throw new IllegalUserRequestException("해당 시간에 이미 예약된 테마입니다.");
         }
 
-        Reservation reservation = SaveReservationRequest.toEntity(request, reservationTime, theme);
+        Reservation reservation = ReservationSaveRequest.toEntity(request, reservationTime, theme);
         return reservationRepository.save(reservation);
     }
 

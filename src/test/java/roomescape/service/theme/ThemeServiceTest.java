@@ -9,14 +9,9 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Theme;
 import roomescape.exception.IllegalUserRequestException;
 import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.service.ReservationService;
 import roomescape.service.ThemeService;
-import roomescape.service.dto.SaveReservationRequest;
 
-import java.sql.Date;
-import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;

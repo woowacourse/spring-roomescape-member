@@ -11,7 +11,7 @@ import roomescape.exception.IllegalUserRequestException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.service.ReservationTimeService;
-import roomescape.service.dto.SaveReservationTimeRequest;
+import roomescape.service.dto.ReservationTimeSaveRequest;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -40,7 +40,7 @@ class ReservationTimeServiceTest {
     @Test
     @DisplayName("존재하지 않는 예약 시간인 경우 생성에 성공한다")
     void checkDuplicateTime_Success() {
-        SaveReservationTimeRequest request = new SaveReservationTimeRequest(LocalTime.of(12, 0));
+        ReservationTimeSaveRequest request = new ReservationTimeSaveRequest(LocalTime.of(12, 0));
 
         assertThatCode(() -> reservationTimeService.createReservationTime(request))
                 .doesNotThrowAnyException();
@@ -50,7 +50,7 @@ class ReservationTimeServiceTest {
     @DisplayName("이미 존재하는 예약 시간을 생성하는 경우 예외가 발생한다.")
     @Sql("/theme-time-data.sql")
     void checkDuplicateTime_Failure() {
-        SaveReservationTimeRequest request = new SaveReservationTimeRequest(LocalTime.of(10, 0));
+        ReservationTimeSaveRequest request = new ReservationTimeSaveRequest(LocalTime.of(10, 0));
 
         assertThatThrownBy(() -> reservationTimeService.createReservationTime(request))
                 .isInstanceOf(IllegalUserRequestException.class)
@@ -65,7 +65,7 @@ class ReservationTimeServiceTest {
 
         assertThat(reservationTimeService.findIsBooked(date, 1L))
                 .isEqualTo(Map.of(
-                        new ReservationTime(1L, LocalTime.of    (10, 0)), true,
+                        new ReservationTime(1L, LocalTime.of(10, 0)), true,
                         new ReservationTime(2L, LocalTime.of(11, 0)), false
                 ));
     }

@@ -14,7 +14,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.dto.ReservationTimeIsBookedResponse;
 import roomescape.service.dto.ReservationTimeResponse;
-import roomescape.service.dto.SaveReservationTimeRequest;
+import roomescape.service.dto.ReservationTimeSaveRequest;
 
 import java.net.URI;
 import java.time.LocalDate;
@@ -45,7 +45,7 @@ public class ReservationTimeController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTimeResponse> addReservationTime(@RequestBody @Valid SaveReservationTimeRequest request) {
+    public ResponseEntity<ReservationTimeResponse> addReservationTime(@RequestBody @Valid ReservationTimeSaveRequest request) {
         ReservationTime reservationTime = reservationTimeService.createReservationTime(request);
         return ResponseEntity.created(URI.create("/times/" + reservationTime.getId()))
                 .body(ReservationTimeResponse.of(reservationTime));

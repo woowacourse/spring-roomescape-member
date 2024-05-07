@@ -11,7 +11,7 @@ import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.service.ReservationService;
-import roomescape.service.dto.SaveReservationRequest;
+import roomescape.service.dto.ReservationSaveRequest;
 
 import java.time.LocalDate;
 
@@ -40,7 +40,7 @@ class ReservationServiceTest {
     @DisplayName("예약 가능한 시간인 경우 성공한다.")
     void checkDuplicateReservationTime_Success() {
         // given
-        SaveReservationRequest request = new SaveReservationRequest(
+        ReservationSaveRequest request = new ReservationSaveRequest(
                 "capy", LocalDate.now().plusDays(1L), 1L, 1L);
 
         // when & then
@@ -52,7 +52,7 @@ class ReservationServiceTest {
     @DisplayName("이미 예약된 시간인 경우 예외가 발생한다.")
     void checkDuplicateReservationTime_Failure() {
         // given
-        SaveReservationRequest request = new SaveReservationRequest(
+        ReservationSaveRequest request = new ReservationSaveRequest(
                 "capy", LocalDate.now().plusDays(1L), 1L, 1L);
         reservationService.createReservation(request);
 
@@ -65,7 +65,7 @@ class ReservationServiceTest {
     @Test
     @DisplayName("지나간 날짜와 시간에 대한 예약 생성시 예외가 발생한다.")
     void checkReservationDateTimeIsFuture_Failure() {
-        SaveReservationRequest request = new SaveReservationRequest(
+        ReservationSaveRequest request = new ReservationSaveRequest(
                 "capy", LocalDate.now().minusDays(1L), 1L, 1L);
 
         assertThatThrownBy(() -> reservationService.createReservation(request))

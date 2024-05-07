@@ -5,7 +5,7 @@ import roomescape.domain.Theme;
 import roomescape.exception.IllegalUserRequestException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.service.dto.SaveThemeRequest;
+import roomescape.service.dto.ThemeSaveRequest;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -26,8 +26,8 @@ public class ThemeService {
     }
 
 
-    public Theme createTheme(SaveThemeRequest request) {
-        Theme theme = SaveThemeRequest.toEntity(request);
+    public Theme createTheme(ThemeSaveRequest request) {
+        Theme theme = ThemeSaveRequest.toEntity(request);
         return themeRepository.save(theme);
     }
 

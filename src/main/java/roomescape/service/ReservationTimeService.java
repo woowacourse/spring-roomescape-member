@@ -5,7 +5,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.exception.IllegalUserRequestException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
-import roomescape.service.dto.SaveReservationTimeRequest;
+import roomescape.service.dto.ReservationTimeSaveRequest;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -23,12 +23,12 @@ public class ReservationTimeService {
         this.reservationRepository = reservationRepository;
     }
 
-    public ReservationTime createReservationTime(SaveReservationTimeRequest request) {
+    public ReservationTime createReservationTime(ReservationTimeSaveRequest request) {
         if (reservationTimeRepository.findByStartAt(request.startAt()).isPresent()) {
             throw new IllegalUserRequestException("이미 존재하는 예약 시간입니다.");
         }
 
-        ReservationTime newReservationTime = SaveReservationTimeRequest.toEntity(request);
+        ReservationTime newReservationTime = ReservationTimeSaveRequest.toEntity(request);
         return reservationTimeRepository.save(newReservationTime);
     }
 

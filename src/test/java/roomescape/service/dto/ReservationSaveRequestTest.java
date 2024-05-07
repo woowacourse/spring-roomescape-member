@@ -6,24 +6,26 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import roomescape.exception.IllegalUserRequestException;
 
+import java.time.LocalDate;
+
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class SaveThemeRequestTest {
+class ReservationSaveRequestTest {
 
     @Test
-    @DisplayName("테마 이름이 정상 입력될 경우 성공한다.")
-    void checkThemeNameBlank_Success() {
-        assertThatCode(() -> new SaveThemeRequest("capy", "description", "thumbnail"))
+    @DisplayName("이름이 정상 입력될 경우 성공한다.")
+    void checkNameBlank_Success() {
+        assertThatCode(() -> new ReservationSaveRequest("capy", LocalDate.now(), 1L, 1L))
                 .doesNotThrowAnyException();
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"", " ", "  "})
-    @DisplayName("테마 이름이 빈칸인 경우 예외가 발생한다.")
-    void checkThemeNameBlank_Failure(String name) {
-        assertThatThrownBy(() -> new SaveThemeRequest(name, "description", "thumbnail"))
+    @DisplayName("이름이 빈칸인 경우 예외가 발생한다.")
+    void checkNameBlank_Failure(String name) {
+        assertThatThrownBy(() -> new ReservationSaveRequest(name, LocalDate.now(), 1L, 1L))
                 .isInstanceOf(IllegalUserRequestException.class)
-                .hasMessage("테마 이름은 빈칸일 수 없습니다.");
+                .hasMessage("이름은 빈칸일 수 없습니다.");
     }
 }
