@@ -13,29 +13,35 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.service.dto.request.ReservationRequest;
+import roomescape.service.dto.request.ReservationTimeRequest;
+import roomescape.service.dto.request.ThemeRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-class ReservationTest {
-
-    @LocalServerPort
-    int port;
-
-    @BeforeEach
-    void setUp() {
-        RestAssured.port = port;
-    }
+class ReservationTest extends AcceptanceTest{
 
     @BeforeEach
     void insert() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES(?)", LocalTime.of(10, 0));
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES(?, ?, ?)", "hi", "happy", "abcd.html");
-        jdbcTemplate.update("INSERT INTO reservation (name, reservation_date, time_id, theme_id) VALUES(?, ?, ?, ?)",
-                "rush", LocalDate.of(2030, 12, 12), 1, 1);
+        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.of(10, 0));
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationTimeRequest)
+                .post("/times");
+
+        ThemeRequest themeRequest = new ThemeRequest("hi", "happy", "abcd.html");
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(themeRequest)
+                .post("/themes");
+
+        ReservationRequest reservationRequest = new ReservationRequest("rush", LocalDate.of(2030, 12, 12), 1L, 1L);
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationRequest)
+                .post("/reservations");
     }
 
     @Autowired
