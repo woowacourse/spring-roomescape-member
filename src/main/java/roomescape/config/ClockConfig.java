@@ -12,4 +12,3 @@ public class ClockConfig {
         return Clock.system(ZoneId.of("Asia/Seoul"));
     }
 }
-
