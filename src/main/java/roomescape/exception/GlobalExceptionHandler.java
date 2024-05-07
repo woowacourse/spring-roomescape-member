@@ -32,9 +32,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<ErrorResponse> handle(final Exception exception) {
         return ResponseEntity.internalServerError()
-                .body(new ErrorResponse(
-                        INTERNAL_SERVER_ERROR,
-                        "[ERROR] 서버 내부 오류입니다.")
-                );
+                .body(new ErrorResponse(INTERNAL_SERVER_ERROR, "[ERROR] 서버 내부 오류입니다."));
     }
 }
