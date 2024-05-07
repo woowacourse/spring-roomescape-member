@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Reservation;
 import roomescape.exception.IllegalUserRequestException;
+import roomescape.service.ReservationService;
 import roomescape.service.dto.ReservationResponse;
 import roomescape.service.dto.SaveReservationRequest;
-import roomescape.service.ReservationService;
 
 import java.net.URI;
 import java.util.List;
@@ -37,7 +37,7 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<ReservationResponse> addReservation(@RequestBody @Valid SaveReservationRequest request) {
         Reservation newReservation = reservationService.createReservation(request);
-        return ResponseEntity.created(URI.create("reservations/" + newReservation.getId()))
+        return ResponseEntity.created(URI.create("/reservations/" + newReservation.getId()))
                 .body(ReservationResponse.of(newReservation));
     }
 
