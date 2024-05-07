@@ -56,7 +56,7 @@ public class ReservationDao {
         return jdbcTemplate.update(sql, id);
     }
 
-    public boolean checkExistReservationOf(final LocalDate date, final long timeId, final long themeId) {
+    public boolean checkExistByReservation(final LocalDate date, final long timeId, final long themeId) {
         String sql = """
                 SELECT CASE WHEN COUNT(*) > 0 THEN TRUE ELSE FALSE END 
                 FROM reservation AS r 
@@ -66,7 +66,6 @@ public class ReservationDao {
                 ON r.theme_id = t.id 
                 WHERE r.date = ? AND rt.id = ? AND t.id = ?
                 """;
-
         Boolean result = jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
         return Boolean.TRUE.equals(result);
     }

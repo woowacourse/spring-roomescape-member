@@ -64,9 +64,9 @@ class ReservationDaoTest {
 
     @Test
     @DisplayName("특정 날짜, 시간, 테마에 예약이 존재하는지 알 수 있다.")
-    void checkExistReservationOf() {
+    void checkExistByReservation() {
         save();
-        assertThat(reservationDao.checkExistReservationOf(
+        assertThat(reservationDao.checkExistByReservation(
                 reservation.getDate(),
                 reservationTime.getId(),
                 theme.getId())
@@ -75,7 +75,7 @@ class ReservationDaoTest {
 
     @Test
     @DisplayName("특정 테마 예약이 존재하는지 알 수 있다.")
-    void checkExistReservationByTheme() {
+    void checkExistByReservationTheme() {
         save();
         assertThat(reservationDao.checkExistReservationByTheme(
                 theme.getId())
@@ -84,7 +84,7 @@ class ReservationDaoTest {
 
     @Test
     @DisplayName("특정 시간 예약이 존재하는지 알 수 있다.")
-    void checkExistReservationByTime() {
+    void checkExistByReservationTime() {
         save();
         assertThat(reservationDao.checkExistReservationByTime(
                 reservationTime.getId())

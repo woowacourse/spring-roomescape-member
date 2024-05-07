@@ -47,7 +47,7 @@ class ReservationServiceTest {
         Theme theme = new Theme(1L, "정글 모험", "열대 정글의 심연을 탐험하세요.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         when(reservationTimeDao.findById(id)).thenReturn(Optional.of(reservationTime));
         when(themeDao.findById(id)).thenReturn(Optional.of(theme));
-        when(reservationDao.checkExistReservationOf(any(LocalDate.class), anyLong(), anyLong())).thenReturn(true);
+        when(reservationDao.checkExistByReservation(any(LocalDate.class), anyLong(), anyLong())).thenReturn(true);
         assertAll(
                 () -> assertThatThrownBy(() -> reservationService.save(
                         new ReservationRequestDto("hotea", LocalDate.MAX.toString(), id, id)))

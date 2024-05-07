@@ -67,7 +67,7 @@ public class ReservationService {
         if (date.equals(LocalDate.now()) && time.checkPastTime()) {
             throw new PastTimeReservationException("날짜가 오늘인 경우 지나간 시간에 대한 예약이 불가능 합니다.");
         }
-        boolean isExist = reservationDao.checkExistReservationOf(date, time.getId(), theme.getId());
+        boolean isExist = reservationDao.checkExistByReservation(date, time.getId(), theme.getId());
         if (isExist) {
             throw new DuplicatedDataException("이미 해당 날짜, 시간에 예약이 존재합니다.");
         }
