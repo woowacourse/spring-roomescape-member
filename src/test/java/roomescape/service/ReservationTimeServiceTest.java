@@ -28,6 +28,7 @@ import roomescape.dto.request.ReservationTimeWithBookStatusRequest;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.dto.response.ReservationTimeWithBookStatusResponse;
 import roomescape.exception.InvalidInputException;
+import roomescape.exception.TargetNotExistException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReservationTimeServiceTest {
@@ -125,5 +126,13 @@ class ReservationTimeServiceTest {
         reservationTimeService.deleteById(response.id());
         // then
         assertThat(reservationTimeService.findAll()).isEmpty();
+    }
+
+    @DisplayName("존재하지 않는 id의 대상을 삭제하려 하면 예외가 발생한다.")
+    @Test
+    void deleteByNotExistingId() {
+        assertThatThrownBy(() -> reservationTimeService.deleteById(-1L))
+                .isInstanceOf(TargetNotExistException.class)
+                .hasMessage("삭제할 예약 시간이 존재하지 않습니다.");
     }
 }

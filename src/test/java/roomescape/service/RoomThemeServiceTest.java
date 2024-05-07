@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
@@ -15,6 +16,7 @@ import roomescape.dao.RoomThemeDao;
 import roomescape.domain.RoomTheme;
 import roomescape.dto.request.RoomThemeCreateRequest;
 import roomescape.dto.response.RoomThemeResponse;
+import roomescape.exception.TargetNotExistException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class RoomThemeServiceTest {
@@ -75,5 +77,13 @@ class RoomThemeServiceTest {
         roomThemeService.deleteById(roomThemeResponse.id());
         // then
         assertThat(roomThemeService.findAll()).isEmpty();
+    }
+
+    @DisplayName("존재하지 않는 id의 대상을 삭제하려 하면 예외가 발생한다.")
+    @Test
+    void deleteByNotExistingId() {
+        assertThatThrownBy(() -> roomThemeService.deleteById(-1L))
+                .isInstanceOf(TargetNotExistException.class)
+                .hasMessage("삭제할 테마가 존재하지 않습니다.");
     }
 }

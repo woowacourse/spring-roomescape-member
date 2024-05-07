@@ -39,7 +39,7 @@ public class RoomThemeService {
     public void deleteById(Long id) {
         boolean deleted = roomThemeDao.deleteById(id);
         if (!deleted) {
-            throw new TargetNotExistException("삭제 대상 테마가 존재하지 않습니다.");
+            throw new TargetNotExistException("삭제할 테마가 존재하지 않습니다.");
         }
     }
 }

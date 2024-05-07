@@ -60,13 +60,13 @@ class ReservationDaoTest {
         // given
         ReservationTime savedReservationTime = reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
         RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);
-        boolean existsFalse
-                = reservationDao.existsByDateTime(DATE_FIXTURE, savedReservationTime.getId());
+        boolean existsFalse = reservationDao.exists(
+                DATE_FIXTURE, savedReservationTime.getId(), savedRoomTheme.getId());
         reservationDao.save(new Reservation(new Name("asd"), DATE_FIXTURE,
                 savedReservationTime, savedRoomTheme));
         // when
-        boolean existsTrue
-                = reservationDao.existsByDateTime(DATE_FIXTURE, savedReservationTime.getId());
+        boolean existsTrue = reservationDao.exists(
+                DATE_FIXTURE, savedReservationTime.getId(), savedRoomTheme.getId());
         // then
         assertAll(
                 () -> assertThat(existsFalse).isFalse(),

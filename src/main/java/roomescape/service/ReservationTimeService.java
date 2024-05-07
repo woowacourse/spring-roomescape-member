@@ -28,15 +28,14 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponse save(ReservationTimeRequest reservationTimeRequest) {
+        validateTimeExistence(reservationTimeRequest.startAt());
+
         ReservationTime reservationTime = reservationTimeRequest.toReservationTime();
-
-        validateTimeExistence(reservationTime.getStartAt());
-
         ReservationTime savedReservationTime = reservationTimeDao.save(reservationTime);
         return ReservationTimeResponse.fromReservationTime(savedReservationTime);
     }
 
-    public void deleteById(long id) {
+    public void deleteById(Long id) {
         boolean deleted = reservationTimeDao.deleteById(id);
         if (!deleted) {
             throw new TargetNotExistException("삭제할 예약 시간이 존재하지 않습니다.");

@@ -26,6 +26,7 @@ import roomescape.domain.RoomTheme;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.exception.InvalidInputException;
+import roomescape.exception.TargetNotExistException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReservationServiceTest {
@@ -82,13 +83,25 @@ class ReservationServiceTest {
 
     @DisplayName("지난 예약을 저장하려 하면 예외가 발생한다.")
     @Test
-    void pastReservationSaveThrowsException() {
+    void pastReservationSave() {
         // given
         ReservationRequest reservationRequest = createReservationRequest(LocalDate.of(2000, 11, 9));
         // when & then
         assertThatThrownBy(() -> reservationService.save(reservationRequest))
                 .isInstanceOf(InvalidInputException.class)
                 .hasMessage("지난 날짜에는 예약할 수 없습니다.");
+    }
+
+    @DisplayName("중복 예약을 저장하려 하면 예외가 발생한다.")
+    @Test
+    void duplicatedReservationSave() {
+        // given
+        ReservationRequest reservationRequest = createReservationRequest(DATE_FIXTURE);
+        reservationService.save(reservationRequest);
+        // when & then
+        assertThatThrownBy(() -> reservationService.save(reservationRequest))
+                .isInstanceOf(InvalidInputException.class)
+                .hasMessage("예약이 이미 존재합니다.");
     }
 
     @DisplayName("삭제 테스트")
@@ -101,6 +114,14 @@ class ReservationServiceTest {
         reservationService.deleteById(response.id());
         // then
         assertThat(reservationService.findAll()).isEmpty();
+    }
+
+    @DisplayName("존재하지 않는 id의 대상을 삭제하려 하면 예외가 발생한다.")
+    @Test
+    void deleteByNotExistingId() {
+        assertThatThrownBy(() -> reservationService.deleteById(-1L))
+                .isInstanceOf(TargetNotExistException.class)
+                .hasMessage("삭제할 예약이 존재하지 않습니다.");
     }
 
     private ReservationRequest createReservationRequest(LocalDate date) {

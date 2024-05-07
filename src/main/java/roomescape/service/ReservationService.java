@@ -39,17 +39,17 @@ public class ReservationService {
 
     public ReservationResponse save(ReservationRequest reservationRequest) {
         ReservationTime reservationTime = reservationTimeDao.findById(reservationRequest.timeId());
+        validateOutdatedDateTime(reservationRequest.date(), reservationTime.getStartAt());
         RoomTheme roomTheme = roomThemeDao.findById(reservationRequest.themeId());
+        validateDuplicatedReservation(
+                reservationRequest.date(), reservationTime.getId(), roomTheme.getId());
+
         Reservation reservation = reservationRequest.toReservation(reservationTime, roomTheme);
-
-        validateOutdatedDateTime(reservation.getDate(), reservationTime.getStartAt());
-        validateDuplicatedDateTime(reservation.getDate(), reservationTime.getId());
-
         Reservation savedReservation = reservationDao.save(reservation);
         return ReservationResponse.fromReservation(savedReservation);
     }
 
-    public void deleteById(long id) {
+    public void deleteById(Long id) {
         boolean deleted = reservationDao.deleteById(id);
         if (!deleted) {
             throw new TargetNotExistException("삭제할 예약이 존재하지 않습니다.");
@@ -63,8 +63,8 @@ public class ReservationService {
         }
     }
 
-    private void validateDuplicatedDateTime(LocalDate date, Long timeId) {
-        boolean exists = reservationDao.existsByDateTime(date, timeId);
+    private void validateDuplicatedReservation(LocalDate date, Long timeId, Long themeId) {
+        boolean exists = reservationDao.exists(date, timeId, themeId);
         if (exists) {
             throw new InvalidInputException("예약이 이미 존재합니다.");
         }
