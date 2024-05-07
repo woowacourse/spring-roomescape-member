@@ -53,7 +53,8 @@ public class ThemeAcceptanceTest extends BasicAcceptanceTest {
     }
 
     private long postTheme(int expectedHttpCode) {
-        Map<?, ?> requestBody = Map.of("name", "테마", "description", "설명서", "thumbnail", "썸네일");
+        Map<?, ?> requestBody = Map.of("name", "테마", "description", "설명서", "thumbnail",
+                "https://i.postimg.cc/cLqW2JLB/theme-SOS-SOS.jpg");
 
         Response response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

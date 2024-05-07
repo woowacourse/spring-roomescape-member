@@ -63,7 +63,8 @@ class H2ReservationRepositoryTest {
     void when_saveReservationWithNonExistentThemeAndTime_then_throwException() {
         // when, then
         assertThatThrownBy(() -> {
-            Reservation reservation = new Reservation("피케이", Fixture.tomorrow, Fixture.unkownReservationTime, Fixture.unkownTheme);
+            Reservation reservation = new Reservation("피케이", Fixture.tomorrow, Fixture.unkownReservationTime,
+                    Fixture.unkownTheme);
             reservationRepository.save(reservation);
         }).isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약 정보가 올바르지 않습니다.");
@@ -76,7 +77,8 @@ class H2ReservationRepositoryTest {
         ReservationTime savedReservationTime = reservationTimeRepository.save(Fixture.reservationTime);
         Theme savedTheme = themeRepository.save(Fixture.theme);
         for (int i = 0; i < 3; i++) {
-            Reservation reservation = new Reservation("피케이", LocalDate.now().plusDays(i), savedReservationTime, savedTheme);
+            Reservation reservation = new Reservation("피케이", LocalDate.now().plusDays(i), savedReservationTime,
+                    savedTheme);
             reservationRepository.save(reservation);
         }
 
@@ -92,7 +94,8 @@ class H2ReservationRepositoryTest {
         ReservationTime savedReservationTime = reservationTimeRepository.save(Fixture.reservationTime);
         Theme savedTheme = themeRepository.save(Fixture.theme);
         for (int i = 1; i < 4; i++) {
-            Reservation reservation = new Reservation("피케이", LocalDate.now().plusDays(i), savedReservationTime, savedTheme);
+            Reservation reservation = new Reservation("피케이", LocalDate.now().plusDays(i), savedReservationTime,
+                    savedTheme);
             reservationRepository.save(reservation);
         }
 
@@ -113,7 +116,8 @@ class H2ReservationRepositoryTest {
         ReservationTime savedReservationTime = reservationTimeRepository.save(Fixture.reservationTime);
         Theme savedTheme = themeRepository.save(Fixture.theme);
         for (int i = 1; i < 5; i++) {
-            Reservation reservation = new Reservation("피케이", LocalDate.now().plusDays(i), savedReservationTime, savedTheme);
+            Reservation reservation = new Reservation("피케이", LocalDate.now().plusDays(i), savedReservationTime,
+                    savedTheme);
             reservationRepository.save(reservation);
         }
 
@@ -145,11 +149,11 @@ class H2ReservationRepositoryTest {
     }
 
     private static class Fixture {
-        public static final Theme theme = new Theme("테마", "테마 설명", "테마 썸네일");
+        public static final Theme theme = new Theme("테마", "테마 설명", "https://1.jpg");
         public static final ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
         public static final LocalDate tomorrow = LocalDate.now().plusDays(1);
 
-        public static final Theme unkownTheme = new Theme(100L, "테마", "테마 설명", "테마 썸네일");
+        public static final Theme unkownTheme = new Theme(100L, "테마", "테마 설명", "https://1.jpg");
         public static final ReservationTime unkownReservationTime = new ReservationTime(100L, LocalTime.of(10, 0));
     }
 }

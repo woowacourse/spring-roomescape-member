@@ -126,6 +126,6 @@ public class H2ReservationTimeRepositoryTest {
 
     private static class Fixture {
         private static final ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
-        private static final Theme theme = new Theme("테마", "테마 설명", "테마 썸네일");
+        private static final Theme theme = new Theme("테마", "테마 설명", "https://1.jpg");
     }
 }

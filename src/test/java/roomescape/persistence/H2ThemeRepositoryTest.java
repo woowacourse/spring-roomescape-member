@@ -108,10 +108,10 @@ class H2ThemeRepositoryTest {
     }
 
     private class Fixture {
-        private static final Theme theme = new Theme("테마", "테마 설명", "테마 썸네일");
-        private static final Theme theme1 = new Theme("테마1", "테마1 설명", "테마1 썸네일");
-        private static final Theme theme2 = new Theme("테마1", "테마1 설명", "테마1 썸네일");
-        private static final Theme theme3 = new Theme("테마1", "테마1 설명", "테마1 썸네일");
+        private static final Theme theme = new Theme("테마", "테마 설명", "https://1.jpg");
+        private static final Theme theme1 = new Theme("테마1", "테마1 설명", "https://1.jpg");
+        private static final Theme theme2 = new Theme("테마1", "테마1 설명", "https://1.jpg");
+        private static final Theme theme3 = new Theme("테마1", "테마1 설명", "https://1.jpg");
         private static final ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
     }
 }

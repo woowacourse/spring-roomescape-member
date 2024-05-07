@@ -10,9 +10,9 @@ import static java.util.Objects.isNull;
 
 public class Theme {
     private static final Pattern URL_PATTERN = Pattern.compile(
-            "^(http(s)?://)?([\\w-]+\\.)+[\\w-]+(/[\\w- ./?%&=]*)?$");
+            "^http(s)?:\\/\\/.*\\.(?:png|jpe?g|gif|bmp)$");
     private static final int NAME_LENGTH_MIN = 2;
-    private static final int NAME_LENGTH_MAX = 10;
+    private static final int NAME_LENGTH_MAX = 20;
     private static final int DESCRIPTION_LENGTH_MAX = 255;
     private static final int THUMBNAIL_LENGTH_MAX = 255;
 
@@ -68,7 +68,7 @@ public class Theme {
                     THUMBNAIL_LENGTH_MAX));
         }
         Matcher matcher = URL_PATTERN.matcher(thumbnail);
-        if (matcher.matches()) {
+        if (!matcher.matches()) {
             throw new InvalidDomainObjectException("thumbnail must be a valid URL");
         }
     }
