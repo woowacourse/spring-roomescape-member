@@ -26,8 +26,4 @@ public class ReservationTime {
     public LocalTime getStartAt() {
         return startAt;
     }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 }

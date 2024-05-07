@@ -37,10 +37,6 @@ public class Reservation {
         return time;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public Theme getTheme() {
         return theme;
     }
