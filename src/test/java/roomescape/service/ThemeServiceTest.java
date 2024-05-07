@@ -9,6 +9,7 @@ import static roomescape.exception.ExceptionType.DUPLICATE_THEME;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -16,27 +17,27 @@ import org.junit.jupiter.api.Test;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.dto.ReservationRequest;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
 import roomescape.exception.RoomescapeException;
 import roomescape.repository.CollectionReservationRepository;
 import roomescape.repository.CollectionReservationTimeRepository;
 import roomescape.repository.CollectionThemeRepository;
-import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 
 class ThemeServiceTest {
 
     private ThemeRepository themeRepository;
     private CollectionReservationTimeRepository reservationTimeRepository;
-    private ReservationRepository reservationRepository;
+    private CollectionReservationRepository reservationRepository;
     private ThemeService themeService;
 
     @BeforeEach
     void initService() {
-        themeRepository = new CollectionThemeRepository();
         reservationTimeRepository = new CollectionReservationTimeRepository();
         reservationRepository = new CollectionReservationRepository();
+        themeRepository = new CollectionThemeRepository();
         themeService = new ThemeService(themeRepository, reservationRepository);
     }
 
@@ -54,6 +55,45 @@ class ThemeServiceTest {
 
         //then
         assertThat(themeResponses).hasSize(4);
+    }
+
+    @DisplayName("인기 테마를 조회할 수 있다.")
+    @Test
+    void findAndOrderByPopularity() {
+        themeRepository = new CollectionThemeRepository(reservationRepository);
+        themeService = new ThemeService(themeRepository, reservationRepository);
+        LocalDate date = LocalDate.now().plusDays(1);
+
+        addReservations(date);
+
+        LocalDate end = date.plusDays(6);
+        List<Long> themeIds = themeService.findAndOrderByPopularity(date, end, 10)
+                .stream()
+                .map(ThemeResponse::id)
+                .toList();
+        Assertions.assertThat(themeIds)
+                .containsExactly(2L, 1L, 3L);
+    }
+
+    private void addReservations(LocalDate date) {
+        Theme theme1 = themeRepository.save(new Theme("name1", "description1", "thumbnail1"));
+        Theme theme2 = themeRepository.save(new Theme("name2", "description2", "thumbnail2"));
+        Theme theme3 = themeRepository.save(new Theme("name3", "description3", "thumbnail3"));
+        ReservationTime reservationTime1 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(1, 30)));
+        ReservationTime reservationTime2 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(2, 30)));
+        ReservationTime reservationTime3 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(3, 30)));
+
+        ReservationService reservationService = new ReservationService(reservationRepository, reservationTimeRepository,
+                themeRepository);
+
+        reservationService.save(new ReservationRequest(date, "name", reservationTime2.getId(), theme2.getId()));
+        reservationService.save(new ReservationRequest(date, "name", reservationTime1.getId(), theme2.getId()));
+        reservationService.save(new ReservationRequest(date, "name", reservationTime3.getId(), theme2.getId()));
+
+        reservationService.save(new ReservationRequest(date, "name", reservationTime1.getId(), theme1.getId()));
+        reservationService.save(new ReservationRequest(date, "name", reservationTime2.getId(), theme1.getId()));
+
+        reservationService.save(new ReservationRequest(date, "name", reservationTime1.getId(), theme3.getId()));
     }
 
     @DisplayName("테마, 시간이 하나 존재할 때")
