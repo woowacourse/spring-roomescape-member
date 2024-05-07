@@ -13,7 +13,7 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class MissionStepTest {
+class MissionStepTest { //TODO 이름 변경하기
 
     @LocalServerPort
     int port;
@@ -108,5 +108,14 @@ class MissionStepTest {
                 .when().delete("/reservations/9")
                 .then().log().all()
                 .statusCode(400);
+    }
+
+    @Test
+    @DisplayName("로그인 페이지를 반환")
+    void showLoginPage() {
+        RestAssured.given().log().all()
+                .when().get("/login")
+                .then().log().all()
+                .statusCode(200);
     }
 }
