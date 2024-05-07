@@ -5,13 +5,13 @@ import org.springframework.validation.BindingResult;
 
 public class ExceptionDetails {
     private final String message;
-    private final String field;
-    private final String value;
+    private final String rejectedField;
+    private final String rejectedValue;
 
-    private ExceptionDetails(final String message, final String field, final String value) {
+    private ExceptionDetails(final String message, final String rejectedField, final String rejectedValue) {
         this.message = message;
-        this.field = field;
-        this.value = value;
+        this.rejectedField = rejectedField;
+        this.rejectedValue = rejectedValue;
     }
 
     public static List<ExceptionDetails> create(final BindingResult bindingResult) {
@@ -27,11 +27,11 @@ public class ExceptionDetails {
         return message;
     }
 
-    public String getField() {
-        return field;
+    public String getRejectedField() {
+        return rejectedField;
     }
 
-    public String getValue() {
-        return value;
+    public String getRejectedValue() {
+        return rejectedValue;
     }
 }
