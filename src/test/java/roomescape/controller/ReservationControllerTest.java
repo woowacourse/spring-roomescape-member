@@ -141,7 +141,8 @@ public class ReservationControllerTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(400)
+                .body("message", is("시간이 입력되지 않았습니다."));
     }
 
     @DisplayName("테마가 입력되지 않으면 400으로 응답한다.")
@@ -158,6 +159,7 @@ public class ReservationControllerTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(400)
+                .body("message", is("테마가 입력되지 않았습니다."));
     }
 }
