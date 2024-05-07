@@ -33,7 +33,7 @@ public class ReservationTimeResponseController {
         return ResponseEntity.ok().body(reservationTimes);
     }
 
-    @GetMapping("/times/user")
+    @GetMapping("/times/filter")
     public ResponseEntity<List<ReservationTimeResponseDto>> getTimesByDateAndTheme(@DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam String date, @RequestParam Long themeId) {
         List<ReservationTime> reservationTimes = reservationTimeService.getAllReservationTimes();
         List<ReservationTimeResponseDto> timeResponses = reservationTimes.stream()
