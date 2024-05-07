@@ -22,6 +22,7 @@ public class MockClockExtension implements BeforeEachCallback {
         Objects.requireNonNull(fixedClockAnnotation, "@FixedClock 어노테이션이 필요합니다");
         String date = getDate(fixedClockAnnotation);
         when(clockBean.instant()).thenReturn(fixClock(date).instant());
+        when(clockBean.getZone()).thenReturn(fixClock(date).getZone());
     }
 
     private String getDate(FixedClock fixedClockAnnotation) {
