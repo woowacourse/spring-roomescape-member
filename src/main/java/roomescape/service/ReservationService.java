@@ -44,7 +44,7 @@ public class ReservationService {
 
     private void validateDuplicatedReservation(final LocalDate requestReservationDate, final ReservationTime requestReservationTime) {
         if (reservationDAO.existReservationOf(requestReservationDate, requestReservationTime)) {
-            throw new IllegalArgumentException("해당 날짜와 시간에 예약이 이미 존재합니다.");
+            throw new IllegalStateException("해당 날짜와 시간에 예약이 이미 존재합니다.");
         }
     }
 

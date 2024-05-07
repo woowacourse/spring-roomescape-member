@@ -68,7 +68,7 @@ class ReservationTimeServiceTest {
         reservationService.save(new ReservationRequest("abc", LocalDate.now().plusDays(1), savedReservationTime.getId(), savedTheme.getId()));
 
         assertThatThrownBy(() -> reservationTimeService.delete(savedReservationTime.getId()))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("해당 시간에 대한 예약이 존재하여 삭제할 수 없습니다.");
     }
 
@@ -79,7 +79,7 @@ class ReservationTimeServiceTest {
         reservationTimeService.save(new ReservationTimeRequest(localTime));
 
         assertThatThrownBy(() -> reservationTimeService.save(new ReservationTimeRequest(localTime)))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("중복된 시간을 예약할 수 없습니다.");
     }
 

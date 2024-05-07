@@ -76,7 +76,7 @@ class ReservationServiceTest {
         reservationService.save(new ReservationRequest("abc", date, 1L, 1L));
 
         assertThatThrownBy(() -> reservationService.save(new ReservationRequest("abcde", date, 1L, 1L)))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("해당 날짜와 시간에 예약이 이미 존재합니다.");
     }
 

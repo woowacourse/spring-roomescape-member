@@ -34,7 +34,7 @@ public class ThemeService {
 
     public void delete(final Long id) {
         if (reservationDAO.existTheme(id)) {
-            throw new IllegalArgumentException("해당 테마에 대한 예약이 존재하여 삭제할 수 없습니다.");
+            throw new IllegalStateException("해당 테마에 대한 예약이 존재하여 삭제할 수 없습니다.");
         }
         themeDAO.deleteById(id);
     }

@@ -68,7 +68,7 @@ class ThemeServiceTest {
         reservationService.save(new ReservationRequest("abc", LocalDate.now().plusDays(1), reservationTime.getId(), savedTheme.getId()));
 
         assertThatThrownBy(() -> themeService.delete(savedTheme.getId()))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("해당 테마에 대한 예약이 존재하여 삭제할 수 없습니다.");
     }
 

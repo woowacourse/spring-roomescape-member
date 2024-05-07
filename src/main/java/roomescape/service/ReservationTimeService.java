@@ -31,7 +31,7 @@ public class ReservationTimeService {
 
     private void validateDuplicatedTime(final LocalTime requestReservationTime) {
         if (reservationTimeDAO.existReservationTimeOf(requestReservationTime)) {
-            throw new IllegalArgumentException("중복된 시간을 예약할 수 없습니다.");
+            throw new IllegalStateException("중복된 시간을 예약할 수 없습니다.");
         }
     }
 
@@ -45,7 +45,7 @@ public class ReservationTimeService {
 
     public void delete(final Long id) {
         if (reservationDAO.existReservationTime(id)) {
-            throw new IllegalArgumentException("해당 시간에 대한 예약이 존재하여 삭제할 수 없습니다.");
+            throw new IllegalStateException("해당 시간에 대한 예약이 존재하여 삭제할 수 없습니다.");
         }
         reservationTimeDAO.deleteById(id);
     }

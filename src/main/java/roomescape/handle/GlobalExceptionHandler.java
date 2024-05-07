@@ -10,9 +10,9 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(value = IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgumentException(final IllegalArgumentException illegalArgumentException) {
-        return new ResponseEntity<>(illegalArgumentException.getMessage(), HttpStatus.BAD_REQUEST);
+    @ExceptionHandler(value = {IllegalArgumentException.class, IllegalStateException.class})
+    public ResponseEntity<String> handleIllegalArgumentException(final RuntimeException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(value = NoResourceFoundException.class)
