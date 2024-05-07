@@ -29,11 +29,15 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<Void> login(HttpServletResponse response, @RequestBody LoginRequest loginRequest) {
         authService.authenticate(loginRequest);
-        Cookie cookie = new Cookie(SESSION_KEY, authService.createToken(loginRequest).accessToken());
+        setCookie(response, authService.createToken(loginRequest).accessToken());
+        return ResponseEntity.ok().build();
+    }
+
+    private void setCookie(HttpServletResponse response, String token) {
+        Cookie cookie = new Cookie(SESSION_KEY, token);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         response.addCookie(cookie);
-        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/login/check")
@@ -49,5 +53,17 @@ public class AuthController {
             }
         }
         return "";
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        expireCookie(response);
+        return ResponseEntity.ok().build();
+    }
+
+    private static void expireCookie(HttpServletResponse response) {
+        Cookie cookie = new Cookie(SESSION_KEY, null);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
     }
 }

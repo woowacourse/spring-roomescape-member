@@ -48,7 +48,7 @@ class AuthControllerTest extends ControllerTest {
                 .statusCode(200);
     }
 
-    @DisplayName("토큰을 통해 회원을 검증한다.")
+    @DisplayName("토큰을 통해 회원을 검증할 경우, 200을 반환한다.")
     @Test
     void checkLogin() {
         //given
@@ -76,5 +76,35 @@ class AuthControllerTest extends ControllerTest {
 
         //then
         assertThat(member.name()).isEqualTo("초코칩");
+    }
+
+    @DisplayName("로그아웃 시, 200을 반환한다.")
+    @Test
+    void logout() {
+        //given
+        Map<String, String> params = new HashMap<>();
+        params.put("email", "dev.chocochip@gmail.com");
+        params.put("password", "1234");
+
+        //when & then
+        String token = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().all().extract().cookie("token");
+
+        //when
+        String cookie = RestAssured
+                .given().log().all()
+                .cookie("token", token)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/logout")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value()).extract().cookie("token");
+
+        //then
+        assertThat(cookie).isBlank();
     }
 }
