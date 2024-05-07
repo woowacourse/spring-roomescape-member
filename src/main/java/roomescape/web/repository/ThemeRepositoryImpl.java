@@ -50,12 +50,12 @@ public class ThemeRepositoryImpl implements ThemeRepository {
 
     private RowMapper<Theme> getThemeRowMapper() {
         return (resultSet, rowNum) -> {
-            final Long timeId = resultSet.getLong("id");
+            final Long themeId = resultSet.getLong("id");
             final String name = resultSet.getString("name");
             final String description = resultSet.getString("description");
             final String thumbnail = resultSet.getString("thumbnail");
 
-            return new Theme(timeId, name, description, thumbnail);
+            return new Theme(themeId, name, description, thumbnail);
         };
     }
 
