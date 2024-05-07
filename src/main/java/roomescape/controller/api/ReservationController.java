@@ -16,6 +16,7 @@ import roomescape.controller.dto.CreateReservationResponse;
 import roomescape.controller.dto.CreateThemeResponse;
 import roomescape.controller.dto.CreateTimeResponse;
 import roomescape.controller.dto.ErrorMessageResponse;
+import roomescape.controller.dto.FindReservationResponse;
 import roomescape.domain.Reservation;
 import roomescape.exception.DuplicatedReservationException;
 import roomescape.exception.PastReservationException;
@@ -56,10 +57,10 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CreateReservationResponse>> findAll() {
+    public ResponseEntity<List<FindReservationResponse>> findAll() {
         List<Reservation> reservations = reservationService.findAll();
-        List<CreateReservationResponse> createReservationResponse = reservations.stream().
-            map(reservation -> new CreateReservationResponse(
+        List<FindReservationResponse> createReservationResponse = reservations.stream().
+            map(reservation -> new FindReservationResponse(
                 reservation.getId(),
                 reservation.getName(),
                 reservation.getDate(),

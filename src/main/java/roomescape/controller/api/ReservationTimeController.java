@@ -17,6 +17,7 @@ import roomescape.controller.dto.CreateTimeRequest;
 import roomescape.controller.dto.CreateTimeResponse;
 import roomescape.controller.dto.ErrorMessageResponse;
 import roomescape.controller.dto.FindTimeAndAvailabilityResponse;
+import roomescape.controller.dto.FindTimeResponse;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.DuplicatedReservationTimeException;
 import roomescape.exception.ReservationExistsException;
@@ -41,10 +42,7 @@ public class ReservationTimeController {
         Long id = newReservationTime.getId();
 
         return ResponseEntity.created(URI.create("/times/" + id))
-            .body(new CreateTimeResponse(
-                id,
-                newReservationTime.getStartAt()
-            ));
+            .body(new CreateTimeResponse(id, newReservationTime.getStartAt()));
     }
 
     @DeleteMapping("/{id}")
@@ -55,14 +53,15 @@ public class ReservationTimeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CreateTimeResponse>> findAll() {
-        List<ReservationTime> reservationTimes = reservationTimeService.findAll();
-        List<CreateTimeResponse> createReservationTimeRespons = reservationTimes.stream()
-            .map(reservationTime -> new CreateTimeResponse(reservationTime.getId(),
-                reservationTime.getStartAt()))
-            .toList();
+    public ResponseEntity<List<FindTimeResponse>> findAll() {
+        List<FindTimeResponse> response = reservationTimeService.findAll()
+            .stream()
+            .map(time -> new FindTimeResponse(
+                time.getId(),
+                time.getStartAt()
+            )).toList();
 
-        return ResponseEntity.ok(createReservationTimeRespons);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/user")
@@ -75,8 +74,8 @@ public class ReservationTimeController {
             .map(response -> new FindTimeAndAvailabilityResponse(
                 response.id(),
                 response.startAt(),
-                response.alreadyBooked())
-            ).toList();
+                response.alreadyBooked()
+            )).toList();
 
         return ResponseEntity.ok(webResponses);
     }
@@ -88,7 +87,8 @@ public class ReservationTimeController {
     }
 
     @ExceptionHandler(DuplicatedReservationTimeException.class)
-    public ResponseEntity<ErrorMessageResponse> handleDuplicatedReservationTimeException(DuplicatedReservationTimeException e) {
+    public ResponseEntity<ErrorMessageResponse> handleDuplicatedReservationTimeException(
+        DuplicatedReservationTimeException e) {
         ErrorMessageResponse response = new ErrorMessageResponse(e.getMessage());
         return ResponseEntity.badRequest().body(response);
     }

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.CreateThemeRequest;
 import roomescape.controller.dto.CreateThemeResponse;
 import roomescape.controller.dto.ErrorMessageResponse;
+import roomescape.controller.dto.FindThemeResponse;
 import roomescape.domain.Theme;
 import roomescape.exception.DuplicatedThemeException;
 import roomescape.exception.ReservationExistsException;
@@ -46,33 +47,31 @@ public class ThemeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CreateThemeResponse>> findAll() {
-        List<CreateThemeResponse> response = themeService.findAll()
+    public ResponseEntity<List<FindThemeResponse>> findAll() {
+        List<FindThemeResponse> response = themeService.findAll()
             .stream()
-            .map(theme -> new CreateThemeResponse(
+            .map(theme -> new FindThemeResponse(
                 theme.getId(),
                 theme.getName(),
                 theme.getDescription(),
                 theme.getThumbnail())
             ).toList();
 
-        return ResponseEntity.ok()
-            .body(response);
+        return ResponseEntity.ok().body(response);
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<CreateThemeResponse>> findPopular() {
-        List<CreateThemeResponse> response = themeService.findPopular()
+    public ResponseEntity<List<FindThemeResponse>> findPopular() {
+        List<FindThemeResponse> response = themeService.findPopular()
             .stream()
-            .map(theme -> new CreateThemeResponse(
+            .map(theme -> new FindThemeResponse(
                 theme.getId(),
                 theme.getName(),
                 theme.getDescription(),
                 theme.getThumbnail())
             ).toList();
 
-        return ResponseEntity.ok()
-            .body(response);
+        return ResponseEntity.ok().body(response);
     }
 
     @DeleteMapping("/{id}")
