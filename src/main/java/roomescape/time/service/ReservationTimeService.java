@@ -11,7 +11,6 @@ import java.util.NoSuchElementException;
 
 @Service
 public class ReservationTimeService {
-
     private final ReservationTimeRepository reservationTimeRepository;
 
     public ReservationTimeService(final ReservationTimeRepository reservationTimeRepository) {
