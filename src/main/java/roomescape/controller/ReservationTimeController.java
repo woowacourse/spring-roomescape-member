@@ -31,7 +31,7 @@ public class ReservationTimeController {
         return reservationTimeService.readReservationTimes(date, themeId);
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public ReservationTimeResponse readTime(@PathVariable Long id) {
         return reservationTimeService.readReservationTime(id);
 
