@@ -6,14 +6,20 @@ public class Member {
 
     private static final String EMAIL_PATTERN = "^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$";
 
+    private final Long id;
     private final String name;
     private final String email;
     private final String password;
 
     public Member(String name, String email, String password) {
+        this(null, name, email, password);
+    }
+
+    public Member(Long id, String name, String email, String password) {
         validateName(name);
         validateEmail(email);
         validatePassword(password);
+        this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
@@ -39,5 +45,21 @@ public class Member {
         if (password == null || password.isBlank()) {
             throw new BadRequestException("비밀번호에 빈값을 입력할 수 없습니다.");
         }
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPassword() {
+        return password;
     }
 }
