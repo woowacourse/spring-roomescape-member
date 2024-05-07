@@ -13,6 +13,7 @@ import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,9 +32,9 @@ class ReservationRepositoryTest {
     @Autowired
     private ThemeRepository themeRepository;
 
-    private final ReservationTime reservationTime = new ReservationTime(1L, "10:00");
+    private final ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
     private final Theme theme = new Theme(1L, "정글 모험", "열대 정글의 심연을 탐험하세요.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-    private final Reservation reservation = new Reservation(1L, "hotea", LocalDate.MAX.toString(), reservationTime, theme);
+    private final Reservation reservation = new Reservation(1L, "hotea", LocalDate.of(3000, 10, 10), reservationTime, theme);
 
     @Test
     @DisplayName("특정 예약을 생성할 수 있다.")

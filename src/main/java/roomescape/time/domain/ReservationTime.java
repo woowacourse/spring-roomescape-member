@@ -1,5 +1,6 @@
 package roomescape.time.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import roomescape.exception.InvalidTimeException;
 
 import java.time.LocalTime;
@@ -10,15 +11,16 @@ public class ReservationTime {
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
 
     private final Long id;
+    @JsonFormat(pattern = "HH:MM")
     private final LocalTime startAt;
 
-    public ReservationTime(final Long id, final String startAt) {
+    public ReservationTime(final Long id, final LocalTime startAt) {
         validateTimeIsNotNull(startAt);
         this.id = id;
-        this.startAt = LocalTime.parse(startAt, TIME_FORMAT);
+        this.startAt = startAt;
     }
 
-    private void validateTimeIsNotNull(final String time) {
+    private void validateTimeIsNotNull(final LocalTime time) {
         if (Objects.isNull(time)) {
             throw new InvalidTimeException("시간이 비어있습니다.");
         }

@@ -47,6 +47,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<String> handleNoSuchElement() {
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.notFound().build();
     }
 }

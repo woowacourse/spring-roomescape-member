@@ -19,10 +19,10 @@ public class ReservationRepository {
             new Reservation(
                     resultSet.getLong("reservation_id"),
                     resultSet.getString("reservation_name"),
-                    resultSet.getString("date"),
+                    resultSet.getDate("date").toLocalDate(),
                     new ReservationTime(
                             resultSet.getLong("time_id"),
-                            resultSet.getString("time_value")
+                            resultSet.getTime("time_value").toLocalTime()
                     ),
                     new Theme(
                             resultSet.getLong("theme_id"),

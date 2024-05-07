@@ -17,11 +17,11 @@ public class ReservationTimeRepository {
     private static final RowMapper<ReservationTime> TIME_ROW_MAPPER = (resultSet, rowNum) ->
             new ReservationTime(
                     resultSet.getLong("id"),
-                    resultSet.getString("start_at"));
+                    resultSet.getTime("start_at").toLocalTime());
     private static final RowMapper<ReservationUserTime> USER_TIME_ROW_MAPPER = (resultSet, rowNum) ->
             new ReservationUserTime(
                     resultSet.getLong("id"),
-                    resultSet.getString("start_at"),
+                    resultSet.getTime("start_at").toString(),
                     resultSet.getBoolean("already_booked"));
 
     private final JdbcTemplate jdbcTemplate;

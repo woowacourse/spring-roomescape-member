@@ -87,7 +87,7 @@ public class ReservationAcceptanceTest {
                 .statusCode(201);
 
 
-        ReservationRequestDto reservationRequestDto = new ReservationRequestDto("hi", LocalDate.MAX.toString(), 1, 1);
+        ReservationRequestDto reservationRequestDto = new ReservationRequestDto("hi", LocalDate.MAX, 1, 1);
 
         RestAssured.given()
                 .log()

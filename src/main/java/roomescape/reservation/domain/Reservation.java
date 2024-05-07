@@ -6,24 +6,21 @@ import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Reservation {
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
     private final Long id;
     private final String name;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(final Long id, final String name, final String date, final ReservationTime time, final Theme theme) {
+    public Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time, final Theme theme) {
         validateNameExist(name);
         validateDateExist(date);
         this.id = id;
         this.name = name;
-        this.date = LocalDate.parse(date, DATE_FORMAT);
+        this.date = date;
         this.time = time;
         this.theme = theme;
     }
@@ -42,8 +39,8 @@ public class Reservation {
         }
     }
 
-    private void validateDateExist(final String date) {
-        if (Objects.isNull(date) || date.isBlank()) {
+    private void validateDateExist(final LocalDate date) {
+        if (Objects.isNull(date)) {
             throw new InvalidDateException("날짜가 비어있습니다.");
         }
     }
