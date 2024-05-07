@@ -3,7 +3,6 @@ package roomescape.dao;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,8 +13,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
 
 @JdbcTest
 @Sql(scripts = "/test_data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
@@ -24,28 +21,25 @@ class ReservationJDBCRepositoryTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    private ReservationTimeRepository reservationTimeRepository;
+    private ThemeRepository themeRepository;
     private String date;
-    private ReservationTime reservationTime;
-    private Theme theme;
 
     @BeforeEach
     void setUp() {
         reservationRepository = new ReservationJDBCRepository(jdbcTemplate);
-        ReservationTimeRepository reservationTimeRepository = new ReservationTimeJDBCRepository(jdbcTemplate);
-        ThemeRepository themeRepository = new ThemeJDBCRepository(jdbcTemplate);
+        reservationTimeRepository = new ReservationTimeJDBCRepository(jdbcTemplate);
+        themeRepository = new ThemeJDBCRepository(jdbcTemplate);
 
         date = LocalDate.now().plusDays(1).toString();
-        String startAt = LocalTime.now().toString();
-        reservationTime = reservationTimeRepository.save(new ReservationTime(startAt));
-        theme = themeRepository.save(new Theme("레벨5 탈출", "우테코 레벨5를 탈출하는 내용입니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
     }
 
     @DisplayName("새로운 예약을 저장한다.")
     @Test
     void saveReservation() {
         //given
-        Reservation reservation = new Reservation("브라운", date, reservationTime, theme);
+        Reservation reservation = new Reservation(
+                "브라운", date, reservationTimeRepository.findById(1).get(), themeRepository.findById(1).get());
 
         //when
         Reservation result = reservationRepository.save(reservation);
@@ -94,7 +88,7 @@ class ReservationJDBCRepositoryTest {
     @Test
     void notExistsByTimeIdTest() {
         //when
-        boolean result = reservationRepository.existsByTimeId(reservationTime.getId());
+        boolean result = reservationRepository.existsByTimeId(2);
 
         //then
         assertThat(result).isFalse();
@@ -114,7 +108,7 @@ class ReservationJDBCRepositoryTest {
     @Test
     void notExistsByThemeIdTest() {
         //when
-        boolean result = reservationRepository.existsByThemeId(theme.getId());
+        boolean result = reservationRepository.existsByThemeId(2);
 
         //then
         assertThat(result).isFalse();
