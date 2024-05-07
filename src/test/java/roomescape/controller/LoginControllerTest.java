@@ -22,9 +22,9 @@ class LoginControllerTest {
     }
 
     @Test
-    @DisplayName("로그인 요청")
+    @DisplayName("유효한 회원의 로그인 요청")
     void login() {
-        final Map<String, String> params = Map.of("password", "1234", "email", "admin@email.com");
+        final Map<String, String> params = Map.of("password", "0000", "email", "redddy@gmail.com");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -32,7 +32,7 @@ class LoginControllerTest {
                 .when().post("/login")
                 .then().log().all()
                 .statusCode(200)
-                .cookie("token", "admin@email.com")
+                .cookie("token", "ë \u0088ë\u0094\u0094")
                 .header("Keep-Alive", "timeout=60");
     }
 }
