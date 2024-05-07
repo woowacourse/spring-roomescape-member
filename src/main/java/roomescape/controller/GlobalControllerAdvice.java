@@ -25,8 +25,13 @@ public class GlobalControllerAdvice {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleHttpMessageNotReadableException(HttpServletRequest request,
-                                                               InvalidFormatException e) {
+    public ErrorResponse handleInvalidFormatException(HttpServletRequest request, InvalidFormatException e) {
+        if (e.getMessage().contains("시간")) {
+            return new ErrorResponse(request.getRequestURI(), request.getMethod(), "시간이 입력되지 않았습니다.");
+        }
+        if (e.getMessage().contains("테마")) {
+            return new ErrorResponse(request.getRequestURI(), request.getMethod(), "테마가 입력되지 않았습니다.");
+        }
         return handleRuntimeExceptionWith(request, e);
     }
 
