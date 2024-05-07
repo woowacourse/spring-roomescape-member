@@ -63,21 +63,21 @@ class ReservationTimeTest {
         @DisplayName("주어진 시간보다 예약 시간이 이전인 경우 참을 반환한다.")
         void isBefore() {
             ReservationTime reservationTime = new ReservationTime(null, LocalTime.of(1, 2));
-            assertTrue(reservationTime.isBefore(LocalTime.of(2, 1)));
+            assertTrue(reservationTime.isNotAfter(LocalTime.of(1, 3)));
         }
 
         @Test
         @DisplayName("주어진 시간보다 예약 시간이 이후인 경우 거짓을 반환한다.")
         void isBefore_WhenReservationTimeIsAfter() {
             ReservationTime reservationTime = new ReservationTime(null, LocalTime.of(1, 2));
-            assertFalse(reservationTime.isBefore(LocalTime.of(1, 1)));
+            assertTrue(reservationTime.isNotAfter(LocalTime.of(1, 2)));
         }
 
         @Test
         @DisplayName("주어진 시간보다 예약 시간이 같은 시간인 경우 거짓을 반환한다.")
         void isBefore_WhenReservationTimeIsSame() {
             ReservationTime reservationTime = new ReservationTime(null, LocalTime.of(1, 2));
-            assertFalse(reservationTime.isBefore(LocalTime.of(1, 2)));
+            assertFalse(reservationTime.isNotAfter(LocalTime.of(1, 1)));
         }
     }
 }

@@ -1,7 +1,7 @@
 package roomescape.reservation.service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -34,10 +34,11 @@ public class ReservationService {
 
     public CreateReservationResponse createReservation(final CreateReservationRequest createReservationRequest) {
         ReservationTime reservationTime = findReservationTime(createReservationRequest.timeId());
-        Theme theme = findTheme(createReservationRequest.themeId());
-        Reservation reservation = createReservationRequest.toReservation(reservationTime, theme);
+        checkDateTimeToCreateIsPast(createReservationRequest.date(), reservationTime);
 
-        validateReservationIsPast(reservation);
+        Theme theme = findTheme(createReservationRequest.themeId());
+
+        Reservation reservation = createReservationRequest.toReservation(reservationTime, theme);
         validateAlreadyExistReservation(reservationTime, theme, reservation);
 
         return CreateReservationResponse.from(reservationRepository.save(reservation));
@@ -53,15 +54,30 @@ public class ReservationService {
                 .orElseThrow(() -> new NoSuchElementException("생성하려는 테마가 존재하지 않습니다."));
     }
 
-    private void validateReservationIsPast(final Reservation reservation) {
-        if (reservation.isBeforeDateTimeThanNow(LocalDateTime.now())) {
-            throw new IllegalArgumentException("지나간 날짜와 시간에 대한 예약 생성은 불가능합니다.");
+    private void checkDateTimeToCreateIsPast(final LocalDate dateToCreate, final ReservationTime reservationTime) {
+        LocalDate now = LocalDate.now();
+        checkDateToCreateIsPast(dateToCreate, now);
+        checkTimeToCreateIsPastWhenSameDate(dateToCreate, now, reservationTime);
+    }
+
+    private void checkDateToCreateIsPast(final LocalDate dateToCreate, final LocalDate now) {
+        if (dateToCreate.isBefore(now)) {
+            throw new IllegalArgumentException("지나간 날짜에 대한 예약 생성은 불가능합니다.");
+        }
+    }
+
+    private void checkTimeToCreateIsPastWhenSameDate(final LocalDate dateToCreate,
+                                                     final LocalDate now,
+                                                     final ReservationTime timeToCreate) {
+        if (dateToCreate.isEqual(now) && timeToCreate.isNotAfter(LocalTime.now())) {
+            throw new IllegalArgumentException("지나간 시간 또는 현재 시간에 대한 예약 생성은 불가능합니다.");
         }
     }
 
     private void validateAlreadyExistReservation(final ReservationTime reservationTime, final Theme theme,
                                                  final Reservation reservation) {
-        if (reservationRepository.existsByDateAndTimeAndTheme(reservation.getDate(), reservationTime.getId(), theme.getId())) {
+        if (reservationRepository.existsByDateAndTimeAndTheme(reservation.getDate(), reservationTime.getId(),
+                theme.getId())) {
             throw new IllegalStateException("동일한 시간의 예약이 존재합니다.");
         }
     }

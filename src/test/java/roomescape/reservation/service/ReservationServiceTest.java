@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.junit.jupiter.api.BeforeEach;
@@ -88,7 +90,7 @@ class ReservationServiceTest {
             reservationTimeRepository.save(ReservationTimeFixture.getOne());
 
             CreateReservationRequest createReservationRequest = new CreateReservationRequest(
-                    LocalDate.of(10, 10, 10), "포비", 1L, 1L);
+                    LocalDate.of(2024, 10, 10), "포비", 1L, 1L);
 
             // when & then
             assertThatThrownBy(() -> reservationService.createReservation(createReservationRequest))
@@ -115,8 +117,8 @@ class ReservationServiceTest {
         }
 
         @Test
-        @DisplayName("예약 생성 시 지나간 날짜와 시간에 대한 예약인 경우 예외가 발생한다.")
-        void createReservation_validateReservationDateTime_throwException() {
+        @DisplayName("예약 생성 시 지나간 날짜에 대한 예약인 경우 예외가 발생한다.")
+        void createReservation_checkDateToCreateIsPast_throwException() {
             // given
             reservationTimeRepository.save(ReservationTimeFixture.getOne());
             themeRepository.save(ThemeFixture.getOne());
@@ -127,7 +129,24 @@ class ReservationServiceTest {
             // when & then
             assertThatThrownBy(() -> reservationService.createReservation(createReservationRequest))
                     .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage("지나간 날짜와 시간에 대한 예약 생성은 불가능합니다.");
+                    .hasMessage("지나간 날짜에 대한 예약 생성은 불가능합니다.");
+        }
+
+        @Test
+        @DisplayName("예약 생성 시 현재 시간에 대한 예약인 경우 예외가 발생한다.")
+        void createReservation_checkDateTimeToCreateIsPast_throwException() {
+            // given
+            LocalDateTime now = LocalDateTime.now();
+            ReservationTime reservationTime = reservationTimeRepository.save(new ReservationTime(null, now.toLocalTime()));
+            themeRepository.save(ThemeFixture.getOne());
+
+            CreateReservationRequest createReservationRequest = new CreateReservationRequest(
+                    now.toLocalDate(), "포비", reservationTime.getId(), 1L);
+
+            // when & then
+            assertThatThrownBy(() -> reservationService.createReservation(createReservationRequest))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("지나간 시간 또는 현재 시간에 대한 예약 생성은 불가능합니다.");
         }
     }
 

@@ -90,17 +90,6 @@ public class Reservation {
         return Objects.equals(this.date, date);
     }
 
-    public boolean isBeforeDateTimeThanNow(final LocalDateTime now) {
-        if (date.isBefore(now.toLocalDate())) {
-            return true;
-        }
-
-        if (date.isAfter(now.toLocalDate())) {
-            return false;
-        }
-        return reservationTime.isBefore(now.toLocalTime());
-    }
-
     public Long getId() {
         return id;
     }
