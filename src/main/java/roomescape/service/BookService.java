@@ -11,16 +11,14 @@ import java.util.List;
 
 @Service
 public class BookService {
-    private final ReservationDao reservationDao;
     private final TimeDao timeDao;
 
     public BookService(final ReservationDao reservationDao, final TimeDao timeDao) {
-        this.reservationDao = reservationDao;
         this.timeDao = timeDao;
     }
 
     public List<BookResponse> findAvaliableBookList(final LocalDate date, final Long themeId) {
-        List<TimeSlot> reservationTimeSlots = reservationDao.findByDateAndThemeId(date, themeId);
+        List<TimeSlot> reservationTimeSlots = timeDao.findByDateAndThemeId(date, themeId);
         List<TimeSlot> timeSlots = timeDao.findAll();
         return timeSlots.stream().map(timeSlot -> {
             Boolean alreadyBooked = reservationTimeSlots.stream()

@@ -12,7 +12,6 @@ import roomescape.domain.TimeSlot;
 import roomescape.domain.dto.ReservationResponse;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 @Repository
@@ -88,18 +87,5 @@ public class ReservationDao {
     public boolean isExistsThemeId(final Long themeId) {
         String sql = "select count(*) from reservation where theme_id = ?";
         return jdbcTemplate.queryForObject(sql, Integer.class, themeId) != 0;
-    }
-
-    public List<TimeSlot> findByDateAndThemeId(final LocalDate date, final Long themeId) {
-        String sql = """
-                SELECT
-                    t.id as time_id,
-                    t.start_at as time_value,
-                FROM reservation as r
-                INNER JOIN reservation_time as t ON r.time_id = t.id
-                INNER JOIN theme as th ON r.theme_id = th.id where date = ? and theme_id = ?
-                """;
-        return jdbcTemplate.query(sql, (rowMapper, rowNumber) ->
-                new TimeSlot(rowMapper.getLong("time_id"), LocalTime.parse(rowMapper.getString("time_value"))), date, themeId);
     }
 }

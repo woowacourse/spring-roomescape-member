@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.TimeSlot;
 import roomescape.domain.dto.TimeSlotRequest;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -62,5 +63,18 @@ public class TimeDao {
     public boolean isExist(LocalTime localTime) {
         String sql = "select count(*) from reservation_time where start_at = ?";
         return jdbcTemplate.queryForObject(sql, Integer.class, localTime) != 0;
+    }
+
+    public List<TimeSlot> findByDateAndThemeId(final LocalDate date, final Long themeId) {
+        String sql = """
+                SELECT
+                    t.id as time_id,
+                    t.start_at as time_value,
+                FROM reservation as r
+                INNER JOIN reservation_time as t ON r.time_id = t.id
+                INNER JOIN theme as th ON r.theme_id = th.id where date = ? and theme_id = ?
+                """;
+        return jdbcTemplate.query(sql, (rowMapper, rowNumber) ->
+                new TimeSlot(rowMapper.getLong("time_id"), LocalTime.parse(rowMapper.getString("time_value"))), date, themeId);
     }
 }
