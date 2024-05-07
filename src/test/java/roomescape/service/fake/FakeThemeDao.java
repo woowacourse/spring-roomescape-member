@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.service.fake;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -11,11 +11,7 @@ import roomescape.repository.ThemeDao;
 
 public class FakeThemeDao implements ThemeDao {
 
-    private final List<Theme> themes = new ArrayList<>(List.of(
-            new Theme(1L, "에버", "공포", "공포.jpg"),
-            new Theme(2L, "배키", "미스터리", "미스터리.jpg"),
-            new Theme(3L, "포비", "스릴러", "스릴러.jpg")
-    ));
+    private final List<Theme> themes = new ArrayList<>();
 
     private final AtomicLong index = new AtomicLong(1L);
 

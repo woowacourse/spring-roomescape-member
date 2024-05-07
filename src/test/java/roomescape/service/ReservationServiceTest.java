@@ -18,6 +18,9 @@ import roomescape.exception.NotFoundException;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.repository.ReservationRepository;
+import roomescape.service.fake.FakeReservationDao;
+import roomescape.service.fake.FakeReservationTimeDao;
+import roomescape.service.fake.FakeThemeDao;
 
 class ReservationServiceTest {
 

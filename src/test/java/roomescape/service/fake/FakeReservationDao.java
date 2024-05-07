@@ -1,25 +1,17 @@
-package roomescape.service;
+package roomescape.service.fake;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
-import roomescape.model.Theme;
 import roomescape.repository.ReservationDao;
 
-class FakeReservationDao implements ReservationDao {
+public class FakeReservationDao implements ReservationDao {
 
-    private final List<Reservation> reservations = new ArrayList<>(List.of(
-            new Reservation(1L, "브라운", LocalDate.of(2030, 8, 5),
-                    new ReservationTime(2L, LocalTime.of(11, 0)),
-                    new Theme(1L, "에버", "공포", "공포.jpg")),
-            new Reservation(2L, "리사", LocalDate.of(2030, 8, 1),
-                    new ReservationTime(2L, LocalTime.of(11, 0)),
-                    new Theme(2L, "배키", "스릴러", "스릴러.jpg"))));
+    private final List<Reservation> reservations = new ArrayList<>();
 
     @Override
     public List<Reservation> getAllReservations() {

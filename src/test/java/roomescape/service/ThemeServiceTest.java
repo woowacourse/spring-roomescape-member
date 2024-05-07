@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import roomescape.controller.request.ThemeRequest;
 import roomescape.model.Theme;
+import roomescape.service.fake.FakeThemeDao;
 
 class ThemeServiceTest {
 

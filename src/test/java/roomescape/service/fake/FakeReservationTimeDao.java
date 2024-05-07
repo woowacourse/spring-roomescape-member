@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.service.fake;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -9,12 +9,9 @@ import java.util.NoSuchElementException;
 import roomescape.model.ReservationTime;
 import roomescape.repository.ReservationTimeDao;
 
-class FakeReservationTimeDao implements ReservationTimeDao {
+public class FakeReservationTimeDao implements ReservationTimeDao {
 
-    private final List<ReservationTime> reservationTimes = new ArrayList<>(List.of(
-            new ReservationTime(1L, LocalTime.of(10, 0)),
-            new ReservationTime(2L, LocalTime.of(11, 0))
-    ));
+    private final List<ReservationTime> reservationTimes = new ArrayList<>();
 
     public void add(ReservationTime reservationTime) {
         reservationTimes.add(reservationTime);
