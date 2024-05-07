@@ -4,10 +4,8 @@ import roomescape.exception.ErrorType;
 import roomescape.exception.InvalidClientRequestException;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 public record ReservationRequest(String name, LocalDate date, Long timeId, Long themeId) {
-    private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public ReservationRequest {
         isValid(name, date, timeId, themeId);
