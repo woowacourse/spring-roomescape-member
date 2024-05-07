@@ -66,7 +66,7 @@ class ReservationEndPointTest {
     }
 
     @DisplayName("[예약 추가, 동일한 예약 추가] 예외 발생")
-    @TestFactory
+    @Test
     void validateReservationIsDuplicatedFail() {
         ReservationRequest duplicated = new ReservationRequest(
                 "알파카",
