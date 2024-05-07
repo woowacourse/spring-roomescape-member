@@ -68,22 +68,22 @@ public class ReservationService {
         }
     }
 
-    public void deleteReservation(Long id) {
+    public void deleteReservation(long id) {
         Reservation reservation = findReservationById(id);
         reservationRepository.delete(reservation);
     }
 
-    private Reservation findReservationById(Long id) {
+    private Reservation findReservationById(long id) {
         return reservationRepository.findById(id)
                 .orElseThrow(NotFoundReservationException::new);
     }
 
-    private ReservationTime findReservationTimeById(Long id) {
+    private ReservationTime findReservationTimeById(long id) {
         return reservationTimeRepository.findById(id)
                 .orElseThrow(NotFoundTimeException::new);
     }
 
-    private Theme findThemeById(Long id) {
+    private Theme findThemeById(long id) {
         return themeRepository.findById(id)
                 .orElseThrow(NotFoundThemeException::new);
     }

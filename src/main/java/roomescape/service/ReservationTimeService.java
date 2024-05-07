@@ -31,7 +31,7 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    public List<AvailableReservationTimeResponse> findAllAvailableReservationTime(LocalDate date, Long themeId) {
+    public List<AvailableReservationTimeResponse> findAllAvailableReservationTime(LocalDate date, long themeId) {
         List<Long> unavailableTimeIds = reservationRepository.findTimeIdByDateAndThemeId(date, themeId);
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
         return reservationTimes.stream()
@@ -58,7 +58,7 @@ public class ReservationTimeService {
         return new ReservationTimeResponse(savedReservationTime);
     }
 
-    public void deleteReservationTime(Long id) {
+    public void deleteReservationTime(long id) {
         ReservationTime reservationTime = findReservationTimeById(id);
         if (reservationRepository.existsByTimeId(reservationTime.getId())) {
             throw new ReservationReferencedTimeException();
@@ -66,7 +66,7 @@ public class ReservationTimeService {
         reservationTimeRepository.delete(reservationTime);
     }
 
-    private ReservationTime findReservationTimeById(Long id) {
+    private ReservationTime findReservationTimeById(long id) {
         return reservationTimeRepository.findById(id)
                 .orElseThrow(NotFoundTimeException::new);
     }

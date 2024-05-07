@@ -7,17 +7,17 @@ import java.util.Optional;
 public interface ReservationRepository {
     List<Reservation> findAll();
 
-    Optional<Reservation> findById(Long id);
+    Optional<Reservation> findById(long id);
 
-    List<Long> findTimeIdByDateAndThemeId(LocalDate date, Long themeId);
+    List<Long> findTimeIdByDateAndThemeId(LocalDate date, long themeId);
 
     List<Theme> findThemeWithMostPopularReservation(String startDate, String endDate);
 
-    boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId);
+    boolean existsByDateAndTimeIdAndThemeId(LocalDate date, long timeId, long themeId);
 
-    boolean existsByTimeId(Long timeId);
+    boolean existsByTimeId(long timeId);
 
-    boolean existsByThemeId(Long themeId);
+    boolean existsByThemeId(long themeId);
 
     Reservation save(Reservation reservation);
 

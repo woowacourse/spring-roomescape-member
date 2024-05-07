@@ -46,7 +46,7 @@ public class ThemeService {
         return new ThemeResponse(savedTheme);
     }
 
-    public void deleteTheme(Long id) {
+    public void deleteTheme(long id) {
         Theme theme = findThemeById(id);
         if (reservationRepository.existsByThemeId(theme.getId())) {
             throw new ReservationReferencedThemeException();
@@ -54,7 +54,7 @@ public class ThemeService {
         themeRepository.delete(theme);
     }
 
-    private Theme findThemeById(Long id) {
+    private Theme findThemeById(long id) {
         return themeRepository.findById(id)
                 .orElseThrow(NotFoundThemeException::new);
     }

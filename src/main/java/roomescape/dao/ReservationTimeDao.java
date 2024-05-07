@@ -37,7 +37,7 @@ public class ReservationTimeDao implements ReservationTimeRepository {
     }
 
     @Override
-    public Optional<ReservationTime> findById(Long id) {
+    public Optional<ReservationTime> findById(long id) {
         String sql = "SELECT * FROM reservation_time WHERE id = ?";
         List<ReservationTime> time = jdbcTemplate.query(sql, timeRowMapper, id);
         return DataAccessUtils.optionalResult(time);

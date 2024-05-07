@@ -49,7 +49,7 @@ public class ReservationDao implements ReservationRepository {
     }
 
     @Override
-    public Optional<Reservation> findById(Long id) {
+    public Optional<Reservation> findById(long id) {
         String sql = """
                 SELECT reservation.id, reservation.name, reservation.date, 
                 `time`.id AS time_id, `time`.start_at AS time_start_at, 
@@ -65,7 +65,7 @@ public class ReservationDao implements ReservationRepository {
     }
 
     @Override
-    public List<Long> findTimeIdByDateAndThemeId(LocalDate date, Long themeId) {
+    public List<Long> findTimeIdByDateAndThemeId(LocalDate date, long themeId) {
         String sql = """
                 SELECT time_id
                 FROM reservation
@@ -89,19 +89,19 @@ public class ReservationDao implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, long timeId, long themeId) {
         String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?)";
         return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId));
     }
 
     @Override
-    public boolean existsByTimeId(Long timeId) {
+    public boolean existsByTimeId(long timeId) {
         String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE time_id = ?)";
         return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, Boolean.class, timeId));
     }
 
     @Override
-    public boolean existsByThemeId(Long themeId) {
+    public boolean existsByThemeId(long themeId) {
         String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE theme_id = ?)";
         return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, Boolean.class, themeId));
     }
