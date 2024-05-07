@@ -11,8 +11,15 @@ public class MemberEmail {
     private final String value;
 
     public MemberEmail(String value) {
+        validateNullAndBlank(value);
         validateEmailPattern(value);
         this.value = value;
+    }
+
+    private void validateNullAndBlank(String value) {
+        if (value == null || value.isBlank()) {
+            throw new IllegalArgumentException("이메일은 비어있을 수 없습니다.");
+        }
     }
 
     private void validateEmailPattern(String value) {
@@ -20,6 +27,10 @@ public class MemberEmail {
         if (!matcher.matches()) {
             throw new IllegalArgumentException("이메일 형식이 올바르지 않습니다.");
         }
+    }
+
+    public String extractName() {
+        return value.substring(0, value.indexOf("@"));
     }
 
     public String getValue() {
