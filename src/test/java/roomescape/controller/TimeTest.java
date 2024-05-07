@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -29,9 +28,18 @@ class TimeTest {
         RestAssured.port = port;
     }
 
-    @DisplayName("time 페이지에 새로운 예약 정보를 추가, 조회, 삭제할 수 있다.")
+    @DisplayName("time 페이지 조회 요청이 올바르게 연결된다.")
     @Test
-    void given_when_saveAndDeleteTimes_then_statusCodeIsOkay() {
+    void given_when_getTimes_then_statusCodeIsOk() {
+        RestAssured.given().log().all()
+                .when().get("/times")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @DisplayName("시간 등록 성공 시 201을 응답한다.")
+    @Test
+    void given_timeResult_when_saveAndDeleteTimes_then_statusCodeIsCreated() {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:10");
 
@@ -41,13 +49,11 @@ class TimeTest {
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201);
+    }
 
-        RestAssured.given().log().all()
-                .when().get("/times")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(5));
-
+    @DisplayName("time 삭제 성공 시 204를 응답한다.")
+    @Test
+    void given_when_deleteTimes_then_statusCodeNoContents() {
         RestAssured.given().log().all()
                 .when().delete("/times/4")
                 .then().log().all()

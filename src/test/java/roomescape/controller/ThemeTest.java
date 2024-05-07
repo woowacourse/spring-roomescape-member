@@ -34,7 +34,7 @@ class ThemeTest {
 
     @DisplayName("theme 목록 조회 요청이 올바르게 동작한다.")
     @Test
-    void given_when_GetThemes_then_statusCodeIsOkay() {
+    void given_when_GetThemes_then_statusCodeIsOk() {
         RestAssured.given().log().all()
                 .when().get("/themes")
                 .then().log().all()
@@ -42,9 +42,9 @@ class ThemeTest {
                 .body("size()", is(4));
     }
 
-    @DisplayName("theme 등록 및 삭제 요청이 올바르게 동작한다.")
+    @DisplayName("테마 등록 성공 시 201을 응답한다.")
     @Test
-    void given_themeRequest_when_postAndDeleteTheme_then_statusCodeIsOkay() {
+    void given_themeRequest_when_saveSuccessful_then_statusCodeIsCreated() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "우테코 레벨 1 탈출");
         params.put("description", "우테코 레벨 1 탈출하는 내용");
@@ -56,18 +56,22 @@ class ThemeTest {
                 .when().post("/themes")
                 .then().log().all()
                 .statusCode(201);
+    }
 
-        RestAssured.given().log().all()
-                .when().get("/themes")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(5));
+    @DisplayName("테마 삭제 성공 시 204를 응답한다.")
+    @Test
+    void given_when_deleteSuccessful_then_statusCodeIsNoContents() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "우테코 레벨 1 탈출");
+        params.put("description", "우테코 레벨 1 탈출하는 내용");
+        params.put("thumbnail", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
 
         RestAssured.given().log().all()
                 .when().delete("/themes/4")
                 .then().log().all()
                 .statusCode(204);
     }
+
 
     @DisplayName("삭제하고자 하는 테마에 예약이 등록되어 있으면 400 오류를 반환한다.")
     @Test

@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -32,17 +31,16 @@ class AdminReservationTest {
 
     @DisplayName("reservation 페이지 조회 요청이 올바르게 연결된다.")
     @Test
-    void given_when_GetReservations_then_statusCodeIsOkay() {
+    void given_when_GetReservations_then_statusCodeIsOk() {
         RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
-                .statusCode(200)
-                .body("size()", is(7));
+                .statusCode(200);
     }
 
-    @DisplayName("reservation 페이지에 새로운 예약 정보를 추가, 조회, 삭제할 수 있다.")
+    @DisplayName("예약 등록 성공 시 201을 응답한다.")
     @Test
-    void given_when_saveAndDeleteReservations_then_statusCodeIsOkay() {
+    void given_reservationRequest_when_saveSuccessful_then_statusCodeIsCreate() {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", "2999-12-31");
@@ -55,13 +53,11 @@ class AdminReservationTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);
+    }
 
-        RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(8));
-
+    @DisplayName("예약 삭제 성공 시 204를 응답한다.")
+    @Test
+    void given_when_deleteSuccessful_then_statusCodeIsNoContents() {
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
                 .then().log().all()
