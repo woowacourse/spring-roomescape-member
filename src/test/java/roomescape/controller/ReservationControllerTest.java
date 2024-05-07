@@ -75,7 +75,8 @@ class ReservationControllerTest {
                 ReservationTimeFixtures.createReservationTimeResponse(1L, expectedStartAt),
                 ThemeFixtures.createThemeResponse(1L, "방탈출1", "1번 방탈출", "썸네일1")
         );
-        given(reservationService.add(givenRequest)).willReturn(response);
+        given(reservationService.add(givenRequest))
+                .willReturn(response);
         String givenJsonRequest = objectMapper.writeValueAsString(givenRequest);
 
         //when //then

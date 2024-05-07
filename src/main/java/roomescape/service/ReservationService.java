@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -22,11 +23,13 @@ public class ReservationService {
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
+    private final Clock clock;
 
-    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao, ThemeDao themeDao) {
+    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao, ThemeDao themeDao, Clock clock) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
         this.themeDao = themeDao;
+        this.clock = clock;
     }
 
     public List<ReservationResponse> findAll() {
@@ -48,9 +51,9 @@ public class ReservationService {
     public ReservationResponse add(ReservationCreateRequest request) {
         Reservation reservation =
                 request.toDomain(findReservationTime(request.timeId()), findTheme(request.themeId()));
-        validateDate(reservation, request.today());
+        validateDate(reservation, LocalDate.now(clock));
         validateDuplicate(reservation);
-        validatePastTimeWhenToday(reservation, request.today(), request.now());
+        validatePastTimeWhenToday(reservation, LocalDate.now(clock), LocalTime.now(clock));
         return ReservationResponse.from(reservationDao.create(reservation));
     }
 

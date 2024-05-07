@@ -139,9 +139,7 @@ function saveRow(event) {
     name: nameInput.value,
     themeId: themeSelect.value,
     date: dateInput.value,
-    timeId: timeSelect.value,
-    today: getToday(),
-    now: getNowTime()
+    timeId: timeSelect.value
   };
   console.log(reservation)
 
@@ -194,23 +192,4 @@ function requestRead(endpoint) {
         if (response.status === 200) return response.json();
         throw new Error('Read failed');
       });
-}
-
-function getToday() {
-  const today = new Date();
-
-  const year = today.getFullYear();
-  const month = (today.getMonth() + 1).toString().padStart(2, '0');
-  const day = today.getDate().toString().padStart(2, '0');
-
-  return year + '-' + month + '-' + day;
-}
-
-function getNowTime() {
-  const today = new Date();
-
-  const hh = String(today.getHours()).padStart(2, '0');
-  const mm = String(today.getMinutes()).padStart(2, '0');
-
-  return hh + ':' + mm;
 }

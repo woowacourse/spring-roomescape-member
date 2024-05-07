@@ -3,8 +3,6 @@ package roomescape.dto.reservation;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.reservation.ReservationName;
@@ -23,16 +21,10 @@ public record ReservationCreateRequest(
         Long timeId,
 
         @NotNull(message = "테마 ID를 입력해주세요.")
-        Long themeId,
+        Long themeId) {
 
-        @NotNull(message = "오늘 날짜를 입력해주세요.")
-        LocalDate today,
-
-        @NotNull(message = "현재 시간을 입력해주세요.")
-        LocalTime now) {
-
-    public static ReservationCreateRequest of(String name, String date, Long timeId, Long themeId, LocalDate today , LocalTime now) {
-        return new ReservationCreateRequest(name, date, timeId, themeId, today, now);
+    public static ReservationCreateRequest of(String name, String date, Long timeId, Long themeId) {
+        return new ReservationCreateRequest(name, date, timeId, themeId);
     }
 
     public Reservation toDomain(ReservationTime reservationTime, Theme theme) {

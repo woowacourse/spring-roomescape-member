@@ -91,17 +91,13 @@
 | date    | String | 예약한 날짜 `연-월-일`로 입력(ex. 2024-05-05) |
 | timeId  | Number | 예약 시간 ID(고유한 값)                    |
 | themeId | Number | 예약 테마 ID(고유한 값)                    |
-| today   | Date   | 현재 날짜 `연-월-일`로 입력(ex. 2024-05-05)  |
-| now     | Time   | 현재 시각 `시간:분`으로 입력(ex 13:00)        |
 
 ``` json
 {
     "name" : "브라운",
     "date" : "2024-05-05",
     "timeId" : 1,
-    "themeId" : 1,
-    "today": "2024-05-05",
-    "now": "13:00"
+    "themeId" : 1
 }
 ```
 
@@ -269,10 +265,10 @@ id : 1
 
 ### 인기 테마 조회
 
-| HTTP Method | GET                          |
-|-------------|------------------------------|
-| End Point   | /themes/populars?date={date} |
-| Status Code | 200 OK                       |
+| HTTP Method | GET              |
+|-------------|------------------|
+| End Point   | /themes/populars |
+| Status Code | 200 OK           |
 
 #### Response Body
 

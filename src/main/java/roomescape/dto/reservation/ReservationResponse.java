@@ -1,6 +1,5 @@
 package roomescape.dto.reservation;
 
-import java.util.Objects;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationDate;
 import roomescape.dto.reservationtime.ReservationTimeResponse;
