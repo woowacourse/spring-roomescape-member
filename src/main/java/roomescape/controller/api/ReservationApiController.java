@@ -31,7 +31,7 @@ public class ReservationApiController {
     public ResponseEntity<ReservationResponse> createReservation(@RequestBody final ReservationRequest request) {
         final ReservationOutput output = reservationService.createReservation(request.toInput());
         return ResponseEntity.created(URI.create("/reservations/" + output.id()))
-                             .body(ReservationResponse.toResponse(output));
+                .body(ReservationResponse.toResponse(output));
     }
 
     @GetMapping
@@ -44,6 +44,6 @@ public class ReservationApiController {
     public ResponseEntity<Void> deleteReservation(@PathVariable final long id) {
         reservationService.deleteReservation(id);
         return ResponseEntity.noContent()
-                             .build();
+                .build();
     }
 }

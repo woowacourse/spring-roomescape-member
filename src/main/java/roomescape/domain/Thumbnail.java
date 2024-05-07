@@ -27,8 +27,7 @@ public record Thumbnail(String value) {
     }
 
     private void validateExt(final String url) {
-        if (!ALLOW_EXTENSIONS_PATTERN.matcher(url.toLowerCase())
-                                     .matches()) {
+        if (!ALLOW_EXTENSIONS_PATTERN.matcher(url.toLowerCase()).matches()) {
             throw new IllegalArgumentException(String.format("%s 확장자만 가능합니다.", ALLOW_EXTENSIONS_FORMAT));
         }
     }

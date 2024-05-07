@@ -11,15 +11,14 @@ public record ReservationOutput(long id, String name, ThemeOutput theme, String 
                 reservation.getId(),
                 reservation.getNameAsString(),
                 ThemeOutput.toOutput(reservation.getTheme()),
-                reservation.getDate()
-                           .asString(),
+                reservation.getDate().asString(),
                 ReservationTimeOutput.toOutput(reservation.getTime())
         );
     }
 
     public static List<ReservationOutput> toOutputs(final List<Reservation> reservations) {
         return reservations.stream()
-                           .map(ReservationOutput::toOutput)
-                           .toList();
+                .map(ReservationOutput::toOutput)
+                .toList();
     }
 }

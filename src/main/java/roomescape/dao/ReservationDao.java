@@ -30,14 +30,10 @@ public class ReservationDao {
     public Reservation create(final Reservation reservation) {
         final SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.getNameAsString())
-                .addValue("date", reservation.getDate()
-                                             .asString())
-                .addValue("time_id", reservation.getTime()
-                                                .getId())
-                .addValue("theme_id", reservation.getTheme()
-                                                 .getId());
-        long id = jdbcInsert.executeAndReturnKey(params)
-                            .longValue();
+                .addValue("date", reservation.getDate().asString())
+                .addValue("time_id", reservation.getTime().getId())
+                .addValue("theme_id", reservation.getTheme().getId());
+        long id = jdbcInsert.executeAndReturnKey(params).longValue();
         return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
                 reservation.getTheme());
     }

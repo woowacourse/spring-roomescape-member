@@ -36,7 +36,7 @@ public class ThemeDao {
                 .addValue("thumbnail", theme.getThumbnailAsString());
 
         final long id = jdbcInsert.executeAndReturnKey(params)
-                                  .longValue();
+                .longValue();
         return Theme.of(id, theme.getName(), theme.getDescription(), theme.getThumbnailAsString());
     }
 
@@ -51,8 +51,8 @@ public class ThemeDao {
 
     public List<Theme> getPopularWeekendTheme(final VisitDate visitDate) {
         return getPopularTheme(visitDate.beforeWeek()
-                                        .asString(), visitDate.beforeDay()
-                                                              .asString());
+                .asString(), visitDate.beforeDay()
+                .asString());
     }
 
     private List<Theme> getPopularTheme(final String startDate, final String endDate) {

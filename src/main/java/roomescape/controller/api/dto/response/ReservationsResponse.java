@@ -9,8 +9,8 @@ public record ReservationsResponse(List<ReservationResponse> data) {
     public static ReservationsResponse toResponse(final List<ReservationOutput> outputs) {
         return new ReservationsResponse(
                 outputs.stream()
-                       .map(ReservationResponse::toResponse)
-                       .toList()
+                        .map(ReservationResponse::toResponse)
+                        .toList()
         );
     }
 }

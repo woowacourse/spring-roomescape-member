@@ -48,13 +48,13 @@ public class ReservationTimeService {
 
     public List<AvailableReservationTimeOutput> getAvailableTimes(final AvailableReservationTimeInput input) {
         final List<AvailableReservationTime> availableReservationTimes =
-                reservationTimeDao.getAvailable(ReservationDate.from(input.date()), input.themeId());
+                reservationTimeDao.getAvailable(new ReservationDate(input.date()), input.themeId());
         return AvailableReservationTimeOutput.toOutputs(availableReservationTimes);
     }
 
     public void deleteReservationTime(final long id) {
         final ReservationTime reservationTime = reservationTimeDao.find(id)
-                                                                  .orElseThrow(() -> new NotExistException(RESERVATION_TIME, id));
+                .orElseThrow(() -> new NotExistException(RESERVATION_TIME, id));
 
         if (reservationDao.isExistByTimeId(id)) {
             throw new ExistReservationException(RESERVATION_TIME, id);

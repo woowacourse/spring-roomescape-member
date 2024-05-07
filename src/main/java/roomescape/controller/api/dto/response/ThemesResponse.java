@@ -8,8 +8,8 @@ public record ThemesResponse(List<ThemeResponse> data) {
     public static ThemesResponse toResponse(final List<ThemeOutput> outputs) {
         return new ThemesResponse(
                 outputs.stream()
-                       .map(ThemeResponse::toResponse)
-                       .toList()
+                        .map(ThemeResponse::toResponse)
+                        .toList()
         );
     }
 }

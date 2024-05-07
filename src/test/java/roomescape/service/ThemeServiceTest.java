@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -107,8 +108,9 @@ class ThemeServiceTest {
                 ReservationTime.from(timeOutput.id(), timeOutput.startAt()),
                 Theme.of(themeOutput.id(), themeOutput.name(), themeOutput.description(), themeOutput.thumbnail())
         ));
+        final var themeId = themeOutput.id();
 
-        assertThatThrownBy(() -> themeService.deleteTheme(themeOutput.id()))
+        assertThatThrownBy(() -> themeService.deleteTheme(themeId))
                 .isInstanceOf(ExistReservationException.class);
     }
 
@@ -146,7 +148,7 @@ class ThemeServiceTest {
                 Theme.of(themeOutput2.id(), themeOutput2.name(), themeOutput2.description(), themeOutput2.thumbnail())
         ));
 
-        final List<ThemeOutput> popularThemes = themeService.getPopularThemes("2024-06-04");
+        final List<ThemeOutput> popularThemes = themeService.getPopularThemes(LocalDate.parse("2024-06-04"));
 
         assertThat(popularThemes).containsExactly(
                 new ThemeOutput(themeOutput1.id(), themeOutput1.name(), themeOutput1.description(),

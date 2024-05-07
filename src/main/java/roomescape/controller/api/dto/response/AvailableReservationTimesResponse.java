@@ -8,8 +8,8 @@ public record AvailableReservationTimesResponse(List<AvailReservationTimeRespons
     public static AvailableReservationTimesResponse toResponse(final List<AvailableReservationTimeOutput> outputs) {
         return new AvailableReservationTimesResponse(
                 outputs.stream()
-                       .map(AvailReservationTimeResponse::toResponse)
-                       .toList()
+                        .map(AvailReservationTimeResponse::toResponse)
+                        .toList()
         );
     }
 }

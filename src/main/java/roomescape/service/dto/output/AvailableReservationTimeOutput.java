@@ -13,7 +13,7 @@ public record AvailableReservationTimeOutput(long timeId, String startAt, boolea
 
     public static List<AvailableReservationTimeOutput> toOutputs(final List<AvailableReservationTime> availableReservationTime) {
         return availableReservationTime.stream()
-                                       .map(AvailableReservationTimeOutput::toOutput)
-                                       .toList();
+                .map(AvailableReservationTimeOutput::toOutput)
+                .toList();
     }
 }
