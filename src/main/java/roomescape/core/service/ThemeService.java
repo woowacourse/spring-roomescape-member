@@ -20,20 +20,15 @@ public class ThemeService {
     }
 
     @Transactional
-    public ThemeResponseDto create(final ThemeRequestDto request) {
-        final Theme theme = new Theme(request.getName(), request.getDescription(), request.getThumbnail());
+    public Theme create(final Theme theme) {
         validateDuplicatedName(theme);
         final Long id = themeRepository.save(theme);
-
-        return new ThemeResponseDto(id, theme);
+        return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 
     @Transactional(readOnly = true)
-    public List<ThemeResponseDto> findAll() {
-        return themeRepository.findAll()
-                .stream()
-                .map(ThemeResponseDto::new)
-                .toList();
+    public List<Theme> findAll() {
+        return themeRepository.findAll();
     }
 
     @Transactional
@@ -45,11 +40,8 @@ public class ThemeService {
         themeRepository.deleteById(id);
     }
 
-    public List<ThemeResponseDto> findPopular() {
-        return themeRepository.findPopular()
-                .stream()
-                .map(ThemeResponseDto::new)
-                .toList();
+    public List<Theme> findPopular() {
+        return themeRepository.findPopular();
     }
 
     private void validateDuplicatedName(final Theme theme) {
