@@ -9,8 +9,7 @@ import java.util.regex.Pattern;
 import static java.util.Objects.isNull;
 
 public class Theme {
-    private static final Pattern URL_PATTERN = Pattern.compile(
-            "^http(s)?:\\/\\/.*\\.(?:png|jpe?g|gif|bmp)$");
+    private static final Pattern URL_PATTERN = Pattern.compile("^http(s)?:\\/\\/.*\\.(?:png|jpe?g|gif|bmp)$");
     private static final int NAME_LENGTH_MIN = 2;
     private static final int NAME_LENGTH_MAX = 20;
     private static final int DESCRIPTION_LENGTH_MAX = 255;
