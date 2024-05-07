@@ -20,7 +20,8 @@ public enum ExceptionType {
     DELETE_USED_THEME(BAD_REQUEST, "예약이 존재하는 테마는 삭제할 수 없습니다."),
     NOT_FOUND_RESERVATION_TIME(BAD_REQUEST, "존재하지 않는 시간입니다."),
     NOT_FOUND_THEME(BAD_REQUEST, "없는 테마입니다."),
-    ;
+    NOT_FOUND_USER(BAD_REQUEST, "존재하지 않는 유저입니다."),
+    WRONG_PASSWORD(BAD_REQUEST, "잘못된 비밀번호입니다.");
 
     private final HttpStatus status;
     private final String message;
