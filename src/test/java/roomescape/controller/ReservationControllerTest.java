@@ -12,8 +12,6 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.SaveReservationRequest;
-import roomescape.dto.SaveReservationTimeRequest;
-import roomescape.dto.SaveThemeRequest;
 import roomescape.service.ReservationService;
 
 import java.time.LocalDate;
@@ -22,18 +20,14 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.BDDMockito.doThrow;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willDoNothing;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.BDDMockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(ReservationApiController.class)
-class ReservationApiControllerTest {
+@WebMvcTest(ReservationController.class)
+class ReservationControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -110,41 +104,6 @@ class ReservationApiControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    @DisplayName("전체 예약 시간 정보를 조회한다.")
-    @Test
-    void getReservationTimesTest() throws Exception {
-        // Given
-        final List<ReservationTime> reservationTimes = List.of(
-                new ReservationTime(1L, LocalTime.now().plusHours(3)),
-                new ReservationTime(2L, LocalTime.now().plusHours(4)),
-                new ReservationTime(3L, LocalTime.now().plusHours(5))
-        );
-        given(reservationService.getReservationTimes()).willReturn(reservationTimes);
-
-        // When & Then
-        mockMvc.perform(get("/times"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(3)));
-    }
-
-    @DisplayName("예약 시간 정보를 저장한다.")
-    @Test
-    void saveReservationTimeTest() throws Exception {
-        final SaveReservationTimeRequest saveReservationTimeRequest = new SaveReservationTimeRequest(LocalTime.now().plusHours(3));
-        final ReservationTime savedReservationTime = new ReservationTime(1L, LocalTime.now().plusHours(3));
-        given(reservationService.saveReservationTime(saveReservationTimeRequest)).willReturn(savedReservationTime);
-
-        // When & Then
-        mockMvc.perform(post("/times")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsBytes(saveReservationTimeRequest))
-                )
-                .andDo(print())
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(1));
-    }
-
     @DisplayName("존재하지 않는 예약 시간을 포함한 예약 저장 요청을 하면 400코드가 응답된다.")
     @Test
     void saveReservationWithNoExistReservationTime() throws Exception {
@@ -181,34 +140,6 @@ class ReservationApiControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    @DisplayName("예약 시간 정보를 삭제한다.")
-    @Test
-    void deleteReservationTimeTest() throws Exception {
-        // Given
-        final long reservationTimeId = 1;
-        willDoNothing().given(reservationService).deleteReservationTime(reservationTimeId);
-
-        // When & Then
-        mockMvc.perform(delete("/times/" + reservationTimeId))
-                .andDo(print())
-                .andExpect(status().isNoContent());
-    }
-
-    @DisplayName("존재하지 않는 예약 시간 정보를 삭제하려고 하면 400코드가 응답된다.")
-    @Test
-    void deleteNoExistReservationTimeTest() throws Exception {
-        // Given
-        final long reservationTimeId = 1;
-        doThrow(new NoSuchElementException("해당 id의 예약 시간이 존재하지 않습니다."))
-                .when(reservationService)
-                .deleteReservationTime(reservationTimeId);
-
-        // When & Then
-        mockMvc.perform(delete("/times/" + reservationTimeId))
-                .andDo(print())
-                .andExpect(status().isBadRequest());
-    }
-
     @DisplayName("유효하지 않은 사용자 이름을 포함한 예약 저장 요청을 하면 400코드가 응답된다.")
     @Test
     void saveReservationWithInvalidName() throws Exception {
@@ -225,61 +156,5 @@ class ReservationApiControllerTest {
                 )
                 .andDo(print())
                 .andExpect(status().isBadRequest());
-    }
-
-    @DisplayName("전체 테마 정보를 조회한다.")
-    @Test
-    void getThemesTest() throws Exception {
-        // Given
-        final List<Theme> themes = List.of(
-                Theme.of(1L, "켈리 탈출", "켈리와 탈출", "켈리 사진"),
-                Theme.of(2L, "테바 탈출", "테봐와 탈출", "테바 사진"),
-                Theme.of(3L, "커비 탈출", "커비와 탈출", "커비 사진")
-        );
-
-        given(reservationService.getThemes()).willReturn(themes);
-
-        // When & Then
-        mockMvc.perform(get("/themes"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(3)));
-    }
-
-    @DisplayName("테마 정보를 저장한다.")
-    @Test
-    void saveThemeTest() throws Exception {
-        final String themeName = "켈리의 탈출";
-        final String themeDescription = "켈리와 탈출!";
-        final String themeThumbnail = "켈리 사진";
-        final SaveThemeRequest saveThemeRequest = new SaveThemeRequest(themeName, themeDescription, themeThumbnail);
-        final Theme savedTheme = Theme.of(1L, themeName, themeDescription, themeThumbnail);
-
-        given(reservationService.saveTheme(saveThemeRequest)).willReturn(savedTheme);
-
-        // When & Then
-        mockMvc.perform(post("/themes")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsBytes(saveThemeRequest))
-                )
-                .andDo(print())
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.themeId").value(1))
-                .andExpect(jsonPath("$.name").value(themeName))
-                .andExpect(jsonPath("$.description").value(themeDescription))
-                .andExpect(jsonPath("$.thumbnail").value(themeThumbnail));
-    }
-
-    @DisplayName("예약 시간 정보를 삭제한다.")
-    @Test
-    void deleteThemeTest() throws Exception {
-        // Given
-        final Long themeId = 1L;
-        willDoNothing().given(reservationService).deleteTheme(themeId);
-
-        // When & Then
-        mockMvc.perform(delete("/themes/" + themeId))
-                .andDo(print())
-                .andExpect(status().isNoContent());
     }
 }

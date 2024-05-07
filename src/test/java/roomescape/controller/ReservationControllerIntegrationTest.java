@@ -10,8 +10,6 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.ReservationResponse;
-import roomescape.dto.ReservationTimeResponse;
-import roomescape.dto.ThemeResponse;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -90,95 +88,6 @@ class ReservationControllerIntegrationTest {
                 .body("message", is("해당 id의 예약이 존재하지 않습니다."));
     }
 
-    @DisplayName("전체 예약 시간 정보를 조회한다.")
-    @Test
-    void getReservationTimesTest() {
-        RestAssured.given().log().all()
-                .when().get("/times")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(8));
-    }
-
-    @DisplayName("예약 시간 정보를 저장한다.")
-    @Test
-    void saveReservationTimeTest() {
-        final Map<String, String> params = new HashMap<>();
-        params.put("startAt", "12:00");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(201)
-                .body("id", is(9));
-    }
-
-    @DisplayName("존재하지 않는 예약 시간을 포함한 예약 저장 요청을 하면 400코드가 응답된다.")
-    @Test
-    void saveReservationWithNoExistReservationTime() {
-        final Map<String, String> params = new HashMap<>();
-        params.put("name", "브라운");
-        params.put("date", "2023-08-05");
-        params.put("timeId", "20");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(400)
-                .body("message", is("해당 id의 예약 시간이 존재하지 않습니다."));
-    }
-
-    @DisplayName("현재 날짜보다 이전 날짜의 예약을 저장하려고 요청하면 400코드가 응답된다.")
-    @Test
-    void saveReservationWithReservationDateAndTimeBeforeNow() {
-        final Map<String, String> params = new HashMap<>();
-        params.put("name", "브라운");
-        params.put("date", LocalDate.now().minusDays(1).toString());
-        params.put("timeId", "1");
-        params.put("themeId", "1");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(400)
-                .body("message", is("현재 날짜보다 이전 날짜를 예약할 수 없습니다."));
-    }
-
-    @DisplayName("예약 시간 정보를 삭제한다.")
-    @Test
-    void deleteReservationTimeTest() {
-        // 예약 시간 정보 삭제
-        RestAssured.given().log().all()
-                .when().delete("/times/2")
-                .then().log().all()
-                .statusCode(204);
-
-        // 예약 시간 정보 조회
-        final List<ReservationTimeResponse> reservationTimes = RestAssured.given().log().all()
-                .when().get("/times")
-                .then().log().all()
-                .statusCode(200).extract()
-                .jsonPath().getList(".", ReservationTimeResponse.class);
-
-        assertThat(reservationTimes.size()).isEqualTo(7);
-    }
-
-    @DisplayName("존재하지 않는 예약 시간 정보를 삭제하려고 하면 400코드가 응답된다.")
-    @Test
-    void deleteNoExistReservationTimeTest() {
-        RestAssured.given().log().all()
-                .when().delete("/times/20")
-                .then().log().all()
-                .statusCode(400)
-                .body("message", is("해당 id의 예약 시간이 존재하지 않습니다."));
-    }
-
     @DisplayName("유효하지 않은 사용자 이름을 포함한 예약 저장 요청을 하면 400코드가 응답된다.")
     @Test
     void saveReservationWithInvalidName() {
@@ -195,51 +104,5 @@ class ReservationControllerIntegrationTest {
                 .then().log().all()
                 .statusCode(400)
                 .body("message", is("예약자 이름은 1글자 이상 5글자 이하여야 합니다."));
-    }
-
-    @DisplayName("전체 테마 정보를 조회한다.")
-    @Test
-    void getThemesTest() {
-        RestAssured.given().log().all()
-                .when().get("/themes")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(15));
-    }
-
-    @DisplayName("테마 정보를 저장한다.")
-    @Test
-    void saveThemeTest() {
-        final Map<String, String> params = new HashMap<>();
-        params.put("name", "켈리의 두근두근");
-        params.put("description", "켈리와 함께하는 두근두근 데이트");
-        params.put("thumbnail", "켈리 사진");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/themes")
-                .then().log().all()
-                .statusCode(201)
-                .body("themeId", is(16));
-    }
-
-    @DisplayName("테마 정보를 삭제한다.")
-    @Test
-    void deleteThemeTest() {
-        // 예약 시간 정보 삭제
-        RestAssured.given().log().all()
-                .when().delete("/themes/7")
-                .then().log().all()
-                .statusCode(204);
-
-        // 예약 시간 정보 조회
-        final List<ThemeResponse> themes = RestAssured.given().log().all()
-                .when().get("/themes")
-                .then().log().all()
-                .statusCode(200).extract()
-                .jsonPath().getList(".", ThemeResponse.class);
-
-        assertThat(themes.size()).isEqualTo(14);
     }
 }

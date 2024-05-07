@@ -91,7 +91,7 @@ function fetchAvailableTimes(date, themeId) {
   TODO: [3단계] 사용자 예약 - 예약 가능 시간 조회 API 호출
         요청 포맷에 맞게 설정
   */
-  fetch(`/available-reservation-times?date=${date}&theme-id=${themeId}`, { // 예약 가능 시간 조회 API endpoint
+  fetch(`times/available-reservation-times?date=${date}&theme-id=${themeId}`, { // 예약 가능 시간 조회 API endpoint
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
