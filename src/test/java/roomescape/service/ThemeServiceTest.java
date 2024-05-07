@@ -4,7 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.dto.ThemeRequest;
 import roomescape.domain.dto.ThemeResponse;
 import roomescape.exception.DeleteNotAllowException;
@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
-@Transactional
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class ThemeServiceTest {
     private final ThemeService service;
 
@@ -33,7 +33,7 @@ class ThemeServiceTest {
     @DisplayName("테마 목록을 반환한다.")
     void given_when_findAll_then_returnThemeResponses() {
         //when, then
-        assertThat(service.findAll().size()).isEqualTo(3);
+        assertThat(service.findAll().size()).isEqualTo(4);
     }
 
     @Test

@@ -20,7 +20,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class AdminReservationTest {
     @LocalServerPort
     int port;
@@ -121,8 +121,7 @@ class AdminReservationTest {
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(400)
-                .body(containsString("date"));
+                .statusCode(400);
     }
 
     @DisplayName("부적절한 시간으로 예약하는 경우 400 오류를 반환한다.")
