@@ -2,6 +2,7 @@ package roomescape.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -75,8 +76,10 @@ class ReservationDaoTest {
 
         Reservation actual = reservationDao.createReservation(reservation);
 
-        assertThat(actual).isEqualTo(expected);
-        assertThat(countSavedReservation()).isEqualTo(1);
+        assertAll(
+                () -> assertThat(actual).isEqualTo(expected),
+                () -> assertThat(countSavedReservation()).isEqualTo(1)
+        );
     }
 
     @DisplayName("날짜, 시간, 테마가 모두 겹치는 예약이 있다면, 예약을 생성할 수 없다.")

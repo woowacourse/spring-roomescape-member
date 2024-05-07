@@ -2,6 +2,7 @@ package roomescape.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -98,8 +99,10 @@ class ThemeDaoTest {
 
         Theme actual = themeDao.createTheme(theme);
 
-        assertThat(actual).isEqualTo(expected);
-        assertThat(countSavedTheme()).isEqualTo(1);
+        assertAll(
+                () -> assertThat(actual).isEqualTo(expected),
+                () -> assertThat(countSavedTheme()).isEqualTo(1)
+        );
     }
 
     @DisplayName("이미 해당 테마 이름이 존재한다면, 테마를 생성할 수 없다.")

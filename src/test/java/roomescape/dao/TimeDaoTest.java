@@ -2,6 +2,7 @@ package roomescape.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -88,8 +89,10 @@ class TimeDaoTest {
 
         ReservationTime actual = timeDao.createTime(time);
 
-        assertThat(actual).isEqualTo(expected);
-        assertThat(countSavedReservationTime()).isEqualTo(1);
+        assertAll(
+                () -> assertThat(actual).isEqualTo(expected),
+                () -> assertThat(countSavedReservationTime()).isEqualTo(1)
+        );
     }
 
     @DisplayName("이미 존재하는 예약 시간이면, 예약 시간을 생성할 수 없다.")
