@@ -27,15 +27,6 @@ public class H2ThemeRepository implements ThemeRepository {
                 .usingGeneratedKeyColumns("ID");
     }
 
-    private Theme mapRowTheme(ResultSet rs, int rowNum) throws SQLException {
-        return new Theme(
-                rs.getLong("ID"),
-                rs.getString("NAME"),
-                rs.getString("DESCRIPTION"),
-                rs.getString("THUMBNAIL")
-        );
-    }
-
     @Override
     public List<Theme> findAll() {
         final String sql = "SELECT * FROM THEME";
@@ -75,5 +66,14 @@ public class H2ThemeRepository implements ThemeRepository {
         final String sql = "DELETE FROM THEME WHERE ID = ?";
 
         jdbcTemplate.update(sql, id);
+    }
+
+    private Theme mapRowTheme(ResultSet rs, int rowNum) throws SQLException {
+        return new Theme(
+                rs.getLong("ID"),
+                rs.getString("NAME"),
+                rs.getString("DESCRIPTION"),
+                rs.getString("THUMBNAIL")
+        );
     }
 }
