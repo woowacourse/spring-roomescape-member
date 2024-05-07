@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.core.domain.ReservationTime;
 import roomescape.core.repository.ReservationTimeRepository;
+import roomescape.web.exception.NotFoundException;
 
 @Repository
 public class ReservationTimeRepositoryImpl implements ReservationTimeRepository {
@@ -33,8 +34,7 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
 
     @Override
     public List<ReservationTime> findAll() {
-        return jdbcTemplate.query("SELECT id, start_at FROM reservation_time",
-                getReservationTimeRowMapper());
+        return jdbcTemplate.query("SELECT id, start_at FROM reservation_time", getReservationTimeRowMapper());
     }
 
     @Override
@@ -43,17 +43,8 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
             final String query = "SELECT id, start_at FROM reservation_time WHERE id = ?";
             return jdbcTemplate.queryForObject(query, getReservationTimeRowMapper(), id);
         } catch (DataAccessException e) {
-            throw new IllegalArgumentException("Reservation time not found");
+            throw new NotFoundException("예약을 찾을 수 없습니다.");
         }
-    }
-
-    private RowMapper<ReservationTime> getReservationTimeRowMapper() {
-        return (resultSet, rowNum) -> {
-            final Long timeId = resultSet.getLong("id");
-            final String timeValue = resultSet.getString("start_at");
-
-            return new ReservationTime(timeId, timeValue);
-        };
     }
 
     @Override
@@ -65,5 +56,12 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
     @Override
     public void deleteById(final long id) {
         jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
+    }
+
+    private RowMapper<ReservationTime> getReservationTimeRowMapper() {
+        return (resultSet, rowNum) -> new ReservationTime(
+                resultSet.getLong("id"),
+                resultSet.getString("start_at")
+        );
     }
 }

@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
+import roomescape.web.exception.BadRequestException;
 
 class ReservationTest {
     @Test
@@ -26,7 +27,7 @@ class ReservationTest {
     @DisplayName("예약 생성 시, id가 null이면 예외가 발생한다")
     void throwExceptionWhenNullId() {
         assertThatThrownBy(() -> new Reservation(null, USER_NAME, DATE, RESERVATION_TIME, THEME))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(BadRequestException.class)
                 .hasMessage("예약 id는 null일 수 없습니다.");
     }
 
@@ -36,7 +37,7 @@ class ReservationTest {
     @ValueSource(strings = {" ", "\n"})
     void throwExceptionWhenEmptyName(String emptyName) {
         assertThatThrownBy(() -> new Reservation(ID, emptyName, DATE, RESERVATION_TIME, THEME))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(BadRequestException.class)
                 .hasMessage("예약 이름은 null이나 빈 값일 수 없습니다.");
     }
 
@@ -46,7 +47,7 @@ class ReservationTest {
     @ValueSource(strings = {" ", "\n"})
     void throwExceptionWhenEmptyDate(String emptyDate) {
         assertThatThrownBy(() -> new Reservation(ID, USER_NAME, emptyDate, RESERVATION_TIME, THEME))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(BadRequestException.class)
                 .hasMessage("예약 날짜는 null이나 빈 값일 수 없습니다.");
     }
 
@@ -54,7 +55,7 @@ class ReservationTest {
     @DisplayName("예약 생성 시, date가 유효한 날짜 형식이 아니면 예외가 발생한다")
     void throwExceptionWhenInvalidDateFormat() {
         assertThatThrownBy(() -> new Reservation(ID, USER_NAME, "2024/5/5", RESERVATION_TIME, THEME))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(BadRequestException.class)
                 .hasMessage("예약 날짜 형식이 잘못되었습니다.");
     }
 
@@ -62,7 +63,7 @@ class ReservationTest {
     @DisplayName("예약 생성 시, reservationTime이 null이 들어오면 예외가 발생한다.")
     void throwExceptionWhenNullReservationTime() {
         assertThatThrownBy(() -> new Reservation(ID, USER_NAME, DATE, null, THEME))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(BadRequestException.class)
                 .hasMessage("예약 시간은 null일 수 없습니다.");
     }
 
@@ -70,7 +71,7 @@ class ReservationTest {
     @DisplayName("예약 생성 시, theme가 null이 들어오면 예외가 발생한다.")
     void throwExceptionWhenNullTheme() {
         assertThatThrownBy(() -> new Reservation(ID, USER_NAME, DATE, RESERVATION_TIME, null))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(BadRequestException.class)
                 .hasMessage("예약 테마는 null일 수 없습니다.");
     }
 }

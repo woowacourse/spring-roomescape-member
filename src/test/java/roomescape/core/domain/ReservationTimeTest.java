@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
+import roomescape.web.exception.BadRequestException;
 
 class ReservationTimeTest {
     @Test
@@ -23,7 +24,7 @@ class ReservationTimeTest {
     @DisplayName("시간 생성 시, id가 null이면 예외가 발생한다")
     void throwExceptionWhenNullId() {
         assertThatThrownBy(() -> new ReservationTime(null, START_AT))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(BadRequestException.class)
                 .hasMessage("시간 id는 null일 수 없습니다.");
     }
 
@@ -33,7 +34,7 @@ class ReservationTimeTest {
     @ValueSource(strings = {" ", "\n"})
     void throwExceptionWhenEmptyStartAt(String emptyStartAt) {
         assertThatThrownBy(() -> new ReservationTime(ID, emptyStartAt))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(BadRequestException.class)
                 .hasMessage("시간은 null이나 빈 값일 수 없습니다.");
     }
 
@@ -41,7 +42,7 @@ class ReservationTimeTest {
     @DisplayName("시간 생성 시, startAt아 유효한 시간 형식이 아니면 예외가 발생한다")
     void throwExceptionWhenInvalidTimeFormat() {
         assertThatThrownBy(() -> new ReservationTime(ID, "1시"))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(BadRequestException.class)
                 .hasMessage("시간 형식이 잘못되었습니다.");
     }
 }

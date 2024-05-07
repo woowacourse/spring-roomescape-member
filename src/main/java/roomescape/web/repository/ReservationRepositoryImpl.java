@@ -58,24 +58,6 @@ public class ReservationRepositoryImpl implements ReservationRepository {
         return jdbcTemplate.query(query, getReservationRowMapper());
     }
 
-    private RowMapper<Reservation> getReservationRowMapper() {
-        return (resultSet, rowNum) -> {
-            final Long id = resultSet.getLong("id");
-            final String name = resultSet.getString("name");
-            final String date = resultSet.getString("date");
-            final Long tId = resultSet.getLong("time_id");
-            final String timeValue = resultSet.getString("time_value");
-            final ReservationTime time = new ReservationTime(tId, timeValue);
-            final Long mId = resultSet.getLong("theme_id");
-            final String themeName = resultSet.getString("theme_name");
-            final String themeDescription = resultSet.getString("theme_description");
-            final String themeThumbnail = resultSet.getString("theme_thumbnail");
-            final Theme theme = new Theme(mId, themeName, themeDescription, themeThumbnail);
-
-            return new Reservation(id, name, date, time, theme);
-        };
-    }
-
     @Override
     public List<BookingTimeResponseDto> findAllByDateNotOrThemeIdNot(final String date, final long themeId) {
         final String query = """
@@ -87,16 +69,6 @@ public class ReservationRepositoryImpl implements ReservationRepository {
                 ON t.id = r.time_id;
                 """;
         return jdbcTemplate.query(query, getBookingTimeRowMapper(), date, themeId);
-    }
-
-    private RowMapper<BookingTimeResponseDto> getBookingTimeRowMapper() {
-        return (resultSet, rowNum) -> {
-            final Long timeId = resultSet.getLong("id");
-            final String timeValue = resultSet.getString("start_at");
-            final boolean alreadyBooked = resultSet.getBoolean("already_booked");
-
-            return new BookingTimeResponseDto(timeId, timeValue, alreadyBooked);
-        };
     }
 
     @Override
@@ -143,5 +115,37 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     @Override
     public void deleteById(final long id) {
         jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
+    }
+
+    private RowMapper<Reservation> getReservationRowMapper() {
+        return (resultSet, rowNum) -> {
+            final ReservationTime time = new ReservationTime(
+                    resultSet.getLong("time_id"),
+                    resultSet.getString("time_value")
+            );
+
+            final Theme theme = new Theme(
+                    resultSet.getLong("theme_id"),
+                    resultSet.getString("theme_name"),
+                    resultSet.getString("theme_description"),
+                    resultSet.getString("theme_thumbnail")
+            );
+
+            return new Reservation(
+                    resultSet.getLong("id"),
+                    resultSet.getString("name"),
+                    resultSet.getString("date"),
+                    time,
+                    theme
+            );
+        };
+    }
+
+    private RowMapper<BookingTimeResponseDto> getBookingTimeRowMapper() {
+        return (resultSet, rowNum) -> new BookingTimeResponseDto(
+                resultSet.getLong("id"),
+                resultSet.getString("start_at"),
+                resultSet.getBoolean("already_booked")
+        );
     }
 }

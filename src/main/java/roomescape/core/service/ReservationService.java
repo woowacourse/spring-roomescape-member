@@ -11,6 +11,7 @@ import roomescape.core.dto.ReservationResponseDto;
 import roomescape.core.repository.ReservationRepository;
 import roomescape.core.repository.ReservationTimeRepository;
 import roomescape.core.repository.ThemeRepository;
+import roomescape.web.exception.BadRequestException;
 
 @Service
 public class ReservationService {
@@ -50,10 +51,10 @@ public class ReservationService {
 
     private void validateDateTimeIsNotPast(final Reservation reservation, final ReservationTime reservationTime) {
         if (reservation.isDatePast()) {
-            throw new IllegalArgumentException("지난 날짜에는 예약할 수 없습니다.");
+            throw new BadRequestException("지난 날짜에는 예약할 수 없습니다.");
         }
         if (reservation.isDateToday() && reservationTime.isPast()) {
-            throw new IllegalArgumentException("지난 시간에는 예약할 수 없습니다.");
+            throw new BadRequestException("지난 시간에는 예약할 수 없습니다.");
         }
     }
 
@@ -64,7 +65,7 @@ public class ReservationService {
                 reservation.getTheme().getId()
         );
         if (exist) {
-            throw new IllegalArgumentException("예약 내역이 존재합니다.");
+            throw new BadRequestException("예약 내역이 존재합니다.");
         }
     }
 }

@@ -3,6 +3,7 @@ package roomescape.core.domain;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import roomescape.web.exception.BadRequestException;
 
 public class ReservationTime {
     private static final Long DEFAULT_ID = 0L;
@@ -23,10 +24,10 @@ public class ReservationTime {
 
     private void validateEmpty(Long id, String startAt) {
         if (id == null) {
-            throw new IllegalArgumentException("시간 id는 null일 수 없습니다.");
+            throw new BadRequestException("시간 id는 null일 수 없습니다.");
         }
         if (startAt == null || startAt.isBlank()) {
-            throw new IllegalArgumentException("시간은 null이나 빈 값일 수 없습니다.");
+            throw new BadRequestException("시간은 null이나 빈 값일 수 없습니다.");
         }
     }
 
@@ -34,7 +35,7 @@ public class ReservationTime {
         try {
             return LocalTime.parse(startAt);
         } catch (final DateTimeParseException e) {
-            throw new IllegalArgumentException("시간 형식이 잘못되었습니다.");
+            throw new BadRequestException("시간 형식이 잘못되었습니다.");
         }
     }
 

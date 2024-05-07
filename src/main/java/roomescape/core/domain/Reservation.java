@@ -3,6 +3,7 @@ package roomescape.core.domain;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import roomescape.web.exception.BadRequestException;
 
 public class Reservation {
     private static final Long DEFAULT_ID = 0L;
@@ -30,19 +31,19 @@ public class Reservation {
     private void validateEmpty(final Long id, final String name, final String date, final ReservationTime time,
                                final Theme theme) {
         if (id == null) {
-            throw new IllegalArgumentException("예약 id는 null일 수 없습니다.");
+            throw new BadRequestException("예약 id는 null일 수 없습니다.");
         }
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("예약 이름은 null이나 빈 값일 수 없습니다.");
+            throw new BadRequestException("예약 이름은 null이나 빈 값일 수 없습니다.");
         }
         if (date == null || date.isBlank()) {
-            throw new IllegalArgumentException("예약 날짜는 null이나 빈 값일 수 없습니다.");
+            throw new BadRequestException("예약 날짜는 null이나 빈 값일 수 없습니다.");
         }
         if (time == null) {
-            throw new IllegalArgumentException("예약 시간은 null일 수 없습니다.");
+            throw new BadRequestException("예약 시간은 null일 수 없습니다.");
         }
         if (theme == null) {
-            throw new IllegalArgumentException("예약 테마는 null일 수 없습니다.");
+            throw new BadRequestException("예약 테마는 null일 수 없습니다.");
         }
     }
 
@@ -50,7 +51,7 @@ public class Reservation {
         try {
             return LocalDate.parse(date);
         } catch (final DateTimeParseException e) {
-            throw new IllegalArgumentException("예약 날짜 형식이 잘못되었습니다.");
+            throw new BadRequestException("예약 날짜 형식이 잘못되었습니다.");
         }
     }
 

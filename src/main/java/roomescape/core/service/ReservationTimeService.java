@@ -12,6 +12,7 @@ import roomescape.core.dto.BookingTimeResponseDto;
 import roomescape.core.dto.ReservationTimeRequestDto;
 import roomescape.core.repository.ReservationRepository;
 import roomescape.core.repository.ReservationTimeRepository;
+import roomescape.web.exception.BadRequestException;
 
 @Service
 public class ReservationTimeService {
@@ -65,7 +66,7 @@ public class ReservationTimeService {
     public void delete(final long id) {
         final boolean exist = reservationRepository.existByTimeId(id);
         if (exist) {
-            throw new IllegalArgumentException("해당 시간에 예약한 내역이 존재하여 삭제할 수 없습니다.");
+            throw new BadRequestException("해당 시간에 예약한 내역이 존재하여 삭제할 수 없습니다.");
         }
         reservationTimeRepository.deleteById(id);
     }
@@ -73,7 +74,7 @@ public class ReservationTimeService {
     private void validateDuplicatedStartAt(final ReservationTime reservationTime) {
         final boolean exist = reservationTimeRepository.existByStartAt(reservationTime.getStartAtString());
         if (exist) {
-            throw new IllegalArgumentException("해당 시간이 이미 존재합니다.");
+            throw new BadRequestException("해당 시간이 이미 존재합니다.");
         }
     }
 }

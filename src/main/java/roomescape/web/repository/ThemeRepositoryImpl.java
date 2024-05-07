@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.core.domain.Theme;
 import roomescape.core.repository.ThemeRepository;
+import roomescape.web.exception.NotFoundException;
 
 @Repository
 public class ThemeRepositoryImpl implements ThemeRepository {
@@ -36,8 +37,8 @@ public class ThemeRepositoryImpl implements ThemeRepository {
 
     @Override
     public List<Theme> findAll() {
-        return jdbcTemplate.query("SELECT id, name, description, thumbnail FROM theme",
-                getThemeRowMapper());
+        final String query = "SELECT id, name, description, thumbnail FROM theme";
+        return jdbcTemplate.query(query, getThemeRowMapper());
     }
 
     @Override
@@ -48,7 +49,8 @@ public class ThemeRepositoryImpl implements ThemeRepository {
         final String query = """
                 SELECT t.id, t.name, t.description, t.thumbnail
                 FROM theme AS t
-                JOIN reservation AS r ON t.id = r.theme_id
+                JOIN reservation AS r
+                ON t.id = r.theme_id
                 WHERE r.date BETWEEN ? AND ?
                 GROUP BY t.id
                 ORDER BY count(r.id) DESC
@@ -63,19 +65,8 @@ public class ThemeRepositoryImpl implements ThemeRepository {
             final String query = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
             return jdbcTemplate.queryForObject(query, getThemeRowMapper(), id);
         } catch (DataAccessException e) {
-            throw new IllegalArgumentException("Theme not found");
+            throw new NotFoundException("테마를 찾을 수 없습니다.");
         }
-    }
-
-    private RowMapper<Theme> getThemeRowMapper() {
-        return (resultSet, rowNum) -> {
-            final Long timeId = resultSet.getLong("id");
-            final String name = resultSet.getString("name");
-            final String description = resultSet.getString("description");
-            final String thumbnail = resultSet.getString("thumbnail");
-
-            return new Theme(timeId, name, description, thumbnail);
-        };
     }
 
     @Override
@@ -87,5 +78,14 @@ public class ThemeRepositoryImpl implements ThemeRepository {
     @Override
     public void deleteById(final long id) {
         jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id);
+    }
+
+    private RowMapper<Theme> getThemeRowMapper() {
+        return (resultSet, rowNum) -> new Theme(
+                resultSet.getLong("id"),
+                resultSet.getString("name"),
+                resultSet.getString("description"),
+                resultSet.getString("thumbnail")
+        );
     }
 }

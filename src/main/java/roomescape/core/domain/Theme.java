@@ -1,5 +1,7 @@
 package roomescape.core.domain;
 
+import roomescape.web.exception.BadRequestException;
+
 public class Theme {
     private static final Long DEFAULT_ID = 0L;
 
@@ -22,16 +24,16 @@ public class Theme {
 
     private void validateEmpty(final Long id, final String name, final String description, final String thumbnail) {
         if (id == null) {
-            throw new IllegalArgumentException("테마 id는 null일 수 없습니다.");
+            throw new BadRequestException("테마 id는 null일 수 없습니다.");
         }
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("테마 이름은 null이나 빈 값일 수 없습니다.");
+            throw new BadRequestException("테마 이름은 null이나 빈 값일 수 없습니다.");
         }
         if (description == null || description.isBlank()) {
-            throw new IllegalArgumentException("테마 설명은 null이나 빈 값일 수 없습니다.");
+            throw new BadRequestException("테마 설명은 null이나 빈 값일 수 없습니다.");
         }
         if (thumbnail == null || thumbnail.isBlank()) {
-            throw new IllegalArgumentException("테마 이미지는 null이나 빈 값일 수 없습니다.");
+            throw new BadRequestException("테마 이미지는 null이나 빈 값일 수 없습니다.");
         }
     }
 
