@@ -7,17 +7,15 @@ public class Theme {
     private final String description;
     private final String thumbnail;
 
-    public Theme(String name, String description, String thumbnail) {
-        this.name = name;
-        this.description = description;
-        this.thumbnail = thumbnail;
-    }
-
     public Theme(Long id, String name, String description, String thumbnail) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
+    }
+
+    public Theme(String name, String description, String thumbnail) {
+        this(null, name, description, thumbnail);
     }
 
     public boolean isSameTheme(Long id) {
