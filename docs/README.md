@@ -165,7 +165,7 @@ Content-Type: application/json
     },
     {
         "id": 2,
-        "name": "비밥",
+        "name": "피케이",
         "date": "2023-08-05",
         "time" : {
             "id": 1,
