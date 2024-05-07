@@ -89,4 +89,8 @@ public class ReservationService {
 
         return ReservationResponse.from(requestedReservation);
     }
+
+    public UserResponse findByEmail(String email) {
+        return memberRepository.findByEmail(email);
+    }
 }
