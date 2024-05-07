@@ -2,18 +2,28 @@ package roomescape.controller;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql("/truncate-data.sql")
 public class ThemeControllerTest {
+
+    @LocalServerPort
+    private int port;
+
+    @BeforeEach
+    void setUp() {
+        RestAssured.port = port;
+    }
 
     @Test
     @DisplayName("테마 조회를 정상적으로 수행한다.")
@@ -38,8 +48,7 @@ public class ThemeControllerTest {
                 .body(params)
                 .when().post("/themes")
                 .then().log().all()
-                .statusCode(201)
-                .body("id", is(1));
+                .statusCode(201);
 
         RestAssured.given().log().all()
                 .when().get("/themes")
@@ -56,16 +65,19 @@ public class ThemeControllerTest {
                 "thumbnail", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
         );
 
-        RestAssured.given().log().all()
+        String location = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/themes")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(1));
+                .extract().header("Location");
+
+        String id = location.substring(location.lastIndexOf("/") + 1);
+
 
         RestAssured.given().log().all()
-                .when().delete("/themes/1")
+                .when().delete("/themes/" + id)
                 .then().log().all()
                 .statusCode(204);
 
