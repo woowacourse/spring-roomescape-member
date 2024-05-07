@@ -45,6 +45,6 @@ class ReservationTest {
         // When & Then
         assertThatThrownBy(() -> Reservation.of("켈리", dateBeforeNow, reservationTime, theme))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("현재 날짜보다 이전 날짜를 예약할 수 없습니다.");
+                .hasMessage("예약 일시는 현재 시간 이후여야 합니다.");
     }
 }

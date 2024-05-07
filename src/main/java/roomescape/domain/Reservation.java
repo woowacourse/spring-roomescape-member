@@ -33,7 +33,7 @@ public class Reservation {
     private static void validateReservationDateAndTime(final ReservationDate date, final ReservationTime time) {
         LocalDateTime reservationLocalDateTime = LocalDateTime.of(date.getValue(), time.getStartAt());
         if (reservationLocalDateTime.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("현재 날짜보다 이전 날짜를 예약할 수 없습니다.");
+            throw new IllegalArgumentException("예약 일시는 현재 시간 이후여야 합니다.");
         }
     }
 

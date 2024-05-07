@@ -90,7 +90,7 @@ class ReservationTimeControllerIntegrationTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400)
-                .body("message", is("현재 날짜보다 이전 날짜를 예약할 수 없습니다."));
+                .body("message", is("예약 일시는 현재 시간 이후여야 합니다."));
     }
 
     @DisplayName("예약 시간 정보를 삭제한다.")
