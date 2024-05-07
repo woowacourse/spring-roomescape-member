@@ -14,8 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
+import roomescape.domain.ThemeRepository;
 import roomescape.service.dto.request.ReservationTimeRequest;
 import roomescape.service.dto.request.ThemeRequest;
 
