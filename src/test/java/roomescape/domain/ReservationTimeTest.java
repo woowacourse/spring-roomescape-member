@@ -18,7 +18,7 @@ class ReservationTimeTest {
         final Long initialIndex = 3L;
 
         // When
-        final ReservationTime initIndexReservationTime = reservationTime.initializeIndex(initialIndex);
+        final ReservationTime initIndexReservationTime = reservationTime.copyWithId(initialIndex);
 
         // Then
         assertThat(initIndexReservationTime.getId()).isEqualTo(initialIndex);

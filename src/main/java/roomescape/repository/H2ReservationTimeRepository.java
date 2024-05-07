@@ -60,7 +60,7 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
 
         final long savedReservationTimeId = keyHolder.getKey().longValue();
 
-        return reservationTime.initializeIndex(savedReservationTimeId);
+        return reservationTime.copyWithId(savedReservationTimeId);
     }
 
     @Override

@@ -24,8 +24,7 @@ public class Theme {
         return new Theme(id, new ThemeName(name), new ThemeDescription(description), thumbnail);
     }
 
-    // TODO : 이름 변경
-    public Theme initializeIndex(final Long themeId) {
+    public Theme copyWithId(final Long themeId) {
         return new Theme(themeId, name, description, thumbnail);
     }
 

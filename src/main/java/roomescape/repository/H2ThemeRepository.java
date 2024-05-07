@@ -66,7 +66,7 @@ public class H2ThemeRepository implements ThemeRepository {
 
         final long savedThemeId = keyHolder.getKey().longValue();
 
-        return theme.initializeIndex(savedThemeId);
+        return theme.copyWithId(savedThemeId);
     }
 
     @Override
