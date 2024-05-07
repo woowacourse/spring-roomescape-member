@@ -53,13 +53,12 @@ public class ReservationTimeService {
     }
 
     public void deleteReservationTime(final long id) {
-        final ReservationTime reservationTime = reservationTimeDao.find(id)
-                .orElseThrow(() -> new NotExistException(RESERVATION_TIME, id));
-
         if (reservationDao.isExistByTimeId(id)) {
             throw new ExistReservationException(RESERVATION_TIME, id);
         }
-
-        reservationTimeDao.delete(reservationTime.getId());
+        if (reservationTimeDao.delete(id)) {
+            return;
+        }
+        throw new NotExistException(RESERVATION_TIME, id);
     }
 }

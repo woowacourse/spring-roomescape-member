@@ -42,12 +42,12 @@ public class ThemeService {
     }
 
     public void deleteTheme(final long id) {
-        Theme theme = themeDao.find(id)
-                .orElseThrow(() -> new NotExistException(THEME, id));
-        if (reservationDao.isExistByThemeId(theme.getId())) {
-            throw new ExistReservationException(THEME, theme.getId());
+        if (reservationDao.isExistByThemeId(id)) {
+            throw new ExistReservationException(THEME, id);
         }
-
-        themeDao.delete(theme.getId());
+        if (themeDao.delete(id)) {
+            return;
+        }
+        throw new NotExistException(THEME, id);
     }
 }

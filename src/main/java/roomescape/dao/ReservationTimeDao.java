@@ -37,7 +37,8 @@ public class ReservationTimeDao {
     public ReservationTime create(final ReservationTime reservationTime) {
         final SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("start_at", reservationTime.getStartAtAsString());
-        final long id = jdbcInsert.executeAndReturnKey(params).longValue();
+        final long id = jdbcInsert.executeAndReturnKey(params)
+                .longValue();
         return ReservationTime.from(id, reservationTime.getStartAtAsString());
     }
 
@@ -73,8 +74,8 @@ public class ReservationTimeDao {
         return jdbcTemplate.query(sql, availableReservationTimeMapper, themeId, date.asString());
     }
 
-    public void delete(final long id) {
+    public boolean delete(final long id) {
         final String sql = "DELETE FROM reservation_time WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        return jdbcTemplate.update(sql, id) == 1 ? Boolean.TRUE : Boolean.FALSE;
     }
 }

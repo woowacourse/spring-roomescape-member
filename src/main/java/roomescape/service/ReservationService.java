@@ -35,9 +35,9 @@ public class ReservationService {
     }
 
     public void deleteReservation(final long id) {
-        if (!reservationDao.isExistById(id)) {
-            throw new NotExistException(RESERVATION, id);
+        if (reservationDao.delete(id)) {
+            return;
         }
-        reservationDao.delete(id);
+        throw new NotExistException(RESERVATION, id);
     }
 }

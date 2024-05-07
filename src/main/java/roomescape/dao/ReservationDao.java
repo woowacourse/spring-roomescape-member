@@ -30,10 +30,14 @@ public class ReservationDao {
     public Reservation create(final Reservation reservation) {
         final SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.getNameAsString())
-                .addValue("date", reservation.getDate().asString())
-                .addValue("time_id", reservation.getTime().getId())
-                .addValue("theme_id", reservation.getTheme().getId());
-        long id = jdbcInsert.executeAndReturnKey(params).longValue();
+                .addValue("date", reservation.getDate()
+                        .asString())
+                .addValue("time_id", reservation.getTime()
+                        .getId())
+                .addValue("theme_id", reservation.getTheme()
+                        .getId());
+        long id = jdbcInsert.executeAndReturnKey(params)
+                .longValue();
         return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
                 reservation.getTheme());
     }
@@ -81,8 +85,8 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public void delete(final long id) {
+    public boolean delete(final long id) {
         final String sql = "DELETE FROM reservation WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        return jdbcTemplate.update(sql, id) == 1 ? Boolean.TRUE : Boolean.FALSE;
     }
 }

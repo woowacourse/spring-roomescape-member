@@ -78,8 +78,8 @@ public class ThemeDao {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public void delete(final long id) {
+    public boolean delete(final long id) {
         final String sql = "DELETE FROM theme WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        return jdbcTemplate.update(sql, id) == 1 ? Boolean.TRUE : Boolean.FALSE;
     }
 }
