@@ -2,6 +2,8 @@ package roomescape.model;
 
 import java.util.Objects;
 
+import roomescape.exception.BadRequestException;
+
 public class Theme {
 
     private Long themeId;
@@ -13,6 +15,9 @@ public class Theme {
     }
 
     public Theme(Long themeId, String name, String description, String thumbnail) {
+        validateNullOrBlank(name, "name");
+        validateNullOrBlank(description, "description");
+        validateNullOrBlank(thumbnail, "thumbnail");
         this.themeId = themeId;
         this.name = name;
         this.description = description;
@@ -21,6 +26,12 @@ public class Theme {
 
     public Theme(String name, String description, String thumbnail) {
         this(null, name, description, thumbnail);
+    }
+
+    private void validateNullOrBlank(String value, String fieldName) {
+        if (value == null || value.isBlank()) {
+            throw new BadRequestException(value, fieldName);
+        }
     }
 
     public long getThemeId() {

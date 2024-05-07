@@ -30,7 +30,7 @@ public class ReservationTimeService {
     }
 
     public ReservationTime addReservationTime(ReservationTimeRequest request) {
-        LocalTime startAt = request.getStartAt();
+        LocalTime startAt = request.startAt();
         validateExistTime(startAt);
         ReservationTime reservationTime = new ReservationTime(startAt);
         return reservationTimeRepository.addReservationTime(reservationTime);

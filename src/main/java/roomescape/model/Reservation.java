@@ -3,6 +3,8 @@ package roomescape.model;
 import java.time.LocalDate;
 import java.util.Objects;
 
+import roomescape.exception.BadRequestException;
+
 public class Reservation {
 
     private Long id;
@@ -15,6 +17,7 @@ public class Reservation {
     }
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+        validateNullOrBlank(name, "name");
         this.id = id;
         this.name = name;
         this.date = date;
@@ -24,6 +27,12 @@ public class Reservation {
 
     public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
         this(null, name, date, time, theme);
+    }
+
+    private void validateNullOrBlank(String value, String fieldName) {
+        if (value == null || value.isBlank()) {
+            throw new BadRequestException(value, fieldName);
+        }
     }
 
     public long getId() {

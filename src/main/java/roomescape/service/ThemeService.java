@@ -23,7 +23,7 @@ public class ThemeService {
     }
 
     public Theme addTheme(ThemeRequest themeRequest) {
-        Theme theme = new Theme(themeRequest.getName(), themeRequest.getDescription(), themeRequest.getThumbnail());
+        Theme theme = new Theme(themeRequest.name(), themeRequest.description(), themeRequest.thumbnail());
         return themeDao.addTheme(theme);
     }
 
