@@ -1,8 +1,9 @@
 ### 회원 가입 API
-POST http://localhost:8080/sighup
+POST http://localhost:8080/signup
 Content-Type: application/json
 
 {
+  "name" : "어드민",
   "email": "admin@email.com",
   "password": "password"
 }
