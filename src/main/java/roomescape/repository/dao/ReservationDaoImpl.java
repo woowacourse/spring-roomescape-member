@@ -1,4 +1,4 @@
-package roomescape.repository;
+package roomescape.repository.dao;
 
 import java.time.LocalDate;
 import java.util.HashMap;

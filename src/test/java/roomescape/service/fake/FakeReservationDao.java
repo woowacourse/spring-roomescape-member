@@ -7,7 +7,7 @@ import java.util.NoSuchElementException;
 
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
-import roomescape.repository.ReservationDao;
+import roomescape.repository.dao.ReservationDao;
 
 public class FakeReservationDao implements ReservationDao {
 

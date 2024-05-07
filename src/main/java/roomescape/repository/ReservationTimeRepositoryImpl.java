@@ -7,6 +7,8 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 
 import roomescape.model.ReservationTime;
+import roomescape.repository.dao.ReservationDao;
+import roomescape.repository.dao.ReservationTimeDao;
 
 @Repository
 public class ReservationTimeRepositoryImpl {

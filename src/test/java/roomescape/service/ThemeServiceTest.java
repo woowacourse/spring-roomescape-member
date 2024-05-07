@@ -4,21 +4,31 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import roomescape.controller.request.ThemeRequest;
 import roomescape.model.Theme;
 import roomescape.service.fake.FakeThemeDao;
+import roomescape.service.fake.FakeThemeRepository;
 
 class ThemeServiceTest {
 
-    private final ThemeService themeService = new ThemeService(new FakeThemeDao());
+    private final FakeThemeRepository themeRepository = new FakeThemeRepository(new FakeThemeDao());
+    private final ThemeService themeService = new ThemeService(themeRepository);
+
+    @BeforeEach
+    void setUp() {
+        themeRepository.clear();
+    }
 
     @DisplayName("테마를 조회한다.")
     @Test
     void should_find_all_themes() {
-        assertThat(themeService.findAllThemes()).hasSize(3);
+        themeRepository.addTheme(new Theme("리사", "공포", "image.jpg"));
+        themeRepository.addTheme(new Theme("네오", "스릴러", "image1.jpg"));
+        assertThat(themeService.findAllThemes()).hasSize(2);
     }
 
     @DisplayName("테마를 저장한다.")
@@ -26,20 +36,23 @@ class ThemeServiceTest {
     void should_add_theme() {
         ThemeRequest themeRequest = new ThemeRequest("에버", "공포", "공포.jpg");
         themeService.addTheme(themeRequest);
-        assertThat(themeService.findAllThemes()).hasSize(4);
+        assertThat(themeService.findAllThemes()).hasSize(1);
     }
 
     @DisplayName("테마를 삭제한다.")
     @Test
     void should_delete_theme() {
+        themeRepository.addTheme(new Theme(1L, "리사", "공포", "image.jpg"));
+        themeRepository.addTheme(new Theme(2L, "네오", "스릴러", "image1.jpg"));
         themeService.deleteTheme(1L);
-        assertThat(themeService.findAllThemes()).hasSize(2);
+        assertThat(themeService.findAllThemes()).hasSize(1);
     }
 
     @DisplayName("최근 일주일 간 가장 인기 있는 테마 10개를 조회한다.")
     @Test
     void should_find_popular_theme_of_week() {
         List<Theme> popularThemes = themeService.findPopularThemes();
+
         assertThat(popularThemes).containsExactly(
                 new Theme(10L, "name10", "description10", "thumbnail10"),
                 new Theme(9L, "name9", "description9", "thumbnail9"),

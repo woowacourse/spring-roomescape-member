@@ -1,22 +1,24 @@
-package roomescape.repository;
+package roomescape.service.fake;
 
 import java.time.LocalDate;
 import java.util.List;
 
-import org.springframework.stereotype.Repository;
-
 import roomescape.model.Theme;
-import roomescape.repository.dao.ThemeDao;
+import roomescape.repository.ThemeRepository;
 
-@Repository
-public class ThemeRepositoryImpl implements ThemeRepository {
+public class FakeThemeRepository implements ThemeRepository {
 
-    private final ThemeDao themeDao;
+    private final FakeThemeDao themeDao;
 
-    public ThemeRepositoryImpl(ThemeDao themeDao) {
+    public FakeThemeRepository(FakeThemeDao themeDao) {
         this.themeDao = themeDao;
     }
 
+    public void clear() {
+        themeDao.clear();
+    }
+
+    @Override
     public List<Theme> findAllThemes() {
         return themeDao.findAllThemes();
     }

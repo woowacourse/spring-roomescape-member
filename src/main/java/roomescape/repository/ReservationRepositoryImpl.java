@@ -14,6 +14,9 @@ import roomescape.exception.DuplicatedException;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
+import roomescape.repository.dao.ReservationDao;
+import roomescape.repository.dao.ReservationTimeDao;
+import roomescape.repository.dao.ThemeDao;
 
 @Repository
 public class ReservationRepositoryImpl {
