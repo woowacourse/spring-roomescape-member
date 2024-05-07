@@ -1,11 +1,11 @@
 package roomescape.controller.reservation;
 
+import java.time.format.DateTimeParseException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.time.format.DateTimeParseException;
 import roomescape.exceptions.ClientException;
 
 @RestControllerAdvice
@@ -17,9 +17,17 @@ public class GlobalExceptionHandler {
         return e.getMessage();
     }
 
-    @ExceptionHandler(value = DateTimeParseException.class)
+    @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleDateTimeParseException() {
+    public String handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        if (e.getCause() instanceof DateTimeParseException) {
+            return handleDateTimeParseException();
+        } else {
+            return "요청 본문을 읽는 도중 오류가 발생했습니다.";
+        }
+    }
+
+    private String handleDateTimeParseException() {
         return "올바르지 않은 날짜 / 시간 형식입니다.";
     }
 
