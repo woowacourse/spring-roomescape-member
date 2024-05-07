@@ -58,8 +58,8 @@
     - [x] 최근 일주일을 기준으로, 해당 기간 내에 방문하는 예약이 많은 테마 10개를 확인한다.
 - [x] `/` 요청 시 인기 테마 페이지를 응답한다.
     - [x]  페이지는 `templates/index.html` 파일을 이용한다.
-- [ ] 사용자 도메인을 추가한다.
-  - [ ] 사용자는 name(사용자 이름), email(email), password(비밀번호)를 가진다.
+- [x] 사용자 도메인을 추가한다.
+  - [x] 사용자는 name(사용자 이름), email(email), password(비밀번호)를 가진다.
 - [ ] 로그인 기능을 구현한다.
   - [ ] `GET /login` 요청 시 로그인 폼이 있는 페이지`templates/login.htm`를 응답한다.
   - `POST /login` 요청 시 로그인 폼에 입력한 email, password 값을 body에 포함한다.

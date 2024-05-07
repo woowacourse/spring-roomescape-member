@@ -43,7 +43,8 @@ public class ReservationService {
         validateThemeExist(theme, reservationRequest.themeId());
         validateReservationDuplicate(reservationRequest, date);
 
-        Member member = memberRepository.save(new Member(reservationRequest.name()));
+        //TODO 로직 수정 예정
+        Member member = memberRepository.save(new Member(reservationRequest.name(), "email", "password"));
         Reservation reservation = reservationRepository.save(
                 new Reservation(reservationRequest.name(), date, reservationTime, theme));
         reservationRepository.saveReservationList(member.getId(), reservation.getId());

@@ -13,10 +13,14 @@ class MemberTest {
         long id1 = 1;
         String name1 = "name1";
         String name2 = "name2";
+        String email1 = "email1";
+        String email2 = "email2";
+        String password1 = "password1";
+        String password2 = "password2";
 
         //when
-        Member member1 = new Member(id1, name1);
-        Member member2 = new Member(id1, name2);
+        Member member1 = new Member(id1, name1, email1, password1);
+        Member member2 = new Member(id1, name2, email2, password2);
 
         //then
         assertThat(member1).isEqualTo(member2);

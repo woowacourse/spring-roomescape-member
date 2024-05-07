@@ -22,8 +22,8 @@ VALUES ('예약2', DATEADD('YEAR', 1, CURRENT_DATE()), 2, 2);
 INSERT INTO reservation(name, date, time_id, theme_id)
 VALUES ('예약3', DATEADD('DAY', 4, CURRENT_DATE()), 3, 2);
 
-INSERT INTO member(name)
-VALUES ('choco');
+INSERT INTO member(name, email, password)
+VALUES ('choco', 'admin@email.com', 'password');
 
 INSERT INTO reservation_list(member_id, reservation_id)
 VALUES (1, 1);

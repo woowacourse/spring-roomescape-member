@@ -13,7 +13,8 @@ public class FakeMemberDao implements MemberRepository {
         members.put((long) members.size() + 1, member);
         return new Member(
                 (long) members.size(),
-                member.getName()
-        );
+                member.getName(),
+                member.getEmail(),
+                member.getPassword());
     }
 }

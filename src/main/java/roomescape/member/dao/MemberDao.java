@@ -21,9 +21,11 @@ public class MemberDao implements MemberRepository {
     @Override
     public Member save(Member member) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", member.getName());
+                .addValue("name", member.getName())
+                .addValue("email", member.getEmail())
+                .addValue("password", member.getPassword());
         Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
 
-        return new Member(id, member.getName());
+        return new Member(id, member.getName(), member.getEmail(), member.getPassword());
     }
 }
