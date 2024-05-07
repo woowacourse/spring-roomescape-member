@@ -44,6 +44,10 @@
             "time": {
                 "id": 1,
                 "startAt": "15:00"
+            },
+            "theme": {
+                "id": 1,
+                "name": "레벨2 탈출"
             }
          },
          {
@@ -53,6 +57,10 @@
             "time": {
                 "id": 1,
                 "startAt": "15:00"
+            },
+            "theme": {
+                "id": 1,
+                "name": "레벨2 탈출"
             }
          }
       ]
@@ -66,12 +74,13 @@
       {
           "date": "2023-08-05",
           "name": "브라운",
-          "timeId": 1
+          "timeId": 1,
+          "themeId": 1
       }
       ```
     - Response
       ```  
-      HTTP/1.1 200
+      HTTP/1.1 201
       Content-Type: application/json
     
       {
@@ -81,6 +90,10 @@
          "time": {
               "id": 1,
               "startAt": "15:00"
+         },
+         "theme": {
+              "id": 1,
+              "name": "레벨2 탈출"
          }
       }
       ```
@@ -91,7 +104,7 @@
       ```
     - Response
       ```  
-      HTTP/1.1 200
+      HTTP/1.1 204
       ```
 
 ### 예약 시간 API
@@ -128,7 +141,7 @@
       ```
     - Response
       ```  
-      HTTP/1.1 200
+      HTTP/1.1 201
       Content-Type: application/json
     
       {
@@ -143,7 +156,7 @@
       ```
     - Response
       ```  
-      HTTP/1.1 200
+      HTTP/1.1 204
       ```
 ### 테마 API
 - [x] 조회 <br>
@@ -199,7 +212,10 @@
       ```  
       HTTP/1.1 204
       ```
-- [x] 인기 테마 조회
+- [x] 인기 테마 조회 
+
+  최근 일주일을 기준으로 하여 해당 기간 내에 방문하는 예약이 많은 테마 10개를 조회한다.
+
     - Request
       ``` 
       GET /themes/popular HTTP/1.1
