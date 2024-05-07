@@ -110,7 +110,7 @@ class ThemeTest {
         final List<ThemeResponse> themeResponses = RestAssured.given().log().all()
                 .when().get("/themes/rank?startDate={startDate}&endDate={endDate}&count={count}", startDate, endDate, count)
                 .then().extract().body()
-                .jsonPath().getList("", ThemeResponse.class);
+                .jsonPath().getList("data", ThemeResponse.class);
         ThemeResponse actual = themeResponses.get(0);
         assertThat(actual.id()).isEqualTo(2L);
     }
