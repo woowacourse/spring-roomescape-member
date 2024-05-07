@@ -95,7 +95,7 @@ public class Reservation {
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (!(o instanceof final Reservation that)) return false;
-        return id == that.id;
+        return id.equals(that.id);
     }
 
     @Override
