@@ -1,6 +1,8 @@
 package roomescape.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
@@ -36,7 +38,7 @@ class ThemeControllerTest {
     @DisplayName("성공: 테마 생성 -> 201")
     @Test
     void create() {
-        ThemeWebRequest request = new ThemeWebRequest("방탈출", "대충 설명", "https://url.jpg");
+        ThemeWebRequest request = new ThemeWebRequest("방탈출3", "설명3", "https://url3");
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
@@ -44,7 +46,10 @@ class ThemeControllerTest {
             .when().post("/themes")
             .then().log().all()
             .statusCode(201)
-            .body("id", is(3));
+            .body("id", is(3))
+            .body("name", is("방탈출3"))
+            .body("description", is("설명3"))
+            .body("thumbnail", is("https://url3"));
     }
 
     @DisplayName("성공: 테마 삭제 -> 204")
@@ -55,9 +60,9 @@ class ThemeControllerTest {
             .then().log().all()
             .statusCode(204);
 
-        Long count = jdbcTemplate.queryForObject("SELECT COUNT(id) FROM theme", Long.class);
-
-        assertThat(count).isEqualTo(1L);
+        assertThat(
+            jdbcTemplate.queryForObject("SELECT COUNT(id) FROM theme", Long.class)
+        ).isEqualTo(1L);
     }
 
     @DisplayName("성공: 테마 조회 -> 200")
@@ -68,7 +73,11 @@ class ThemeControllerTest {
             .when().get("/themes")
             .then().log().all()
             .statusCode(200)
-            .body("size()", is(2));
+            .body("size()", is(2))
+            .body("id", hasItems(1, 2))
+            .body("name", hasItems("방탈출1", "방탈출2"))
+            .body("description", hasItems("설명1", "설명2"))
+            .body("thumbnail", hasItems("https://url1", "https://url2"));
     }
 
     @DisplayName("실패: 잘못된 포맷으로 테마 생성 -> 400")
@@ -100,9 +109,10 @@ class ThemeControllerTest {
     @DisplayName("실패: 예약에서 사용되는 테마 삭제 -> 400")
     @Test
     void delete_ReservationExists() {
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "12:00");
-        jdbcTemplate.update("INSERT INTO reservation(name,date,time_id,theme_id) VALUES (?,?,?,?)", "brown",
-            "2026-02-01", 1L, 1L);
+        jdbcTemplate.update("""
+            INSERT INTO reservation_time(start_at) VALUES ('12:00');
+            INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('brown', '2026-01-01', 1, 1);
+            """);
 
         RestAssured.given().log().all()
             .when().delete("/themes/1")
@@ -118,6 +128,6 @@ class ThemeControllerTest {
             .when().get("/themes/popular")
             .then().log().all()
             .statusCode(200)
-            .body("size()", is(5));
+            .body("id", contains(1, 3, 2, 4, 5));
     }
 }
