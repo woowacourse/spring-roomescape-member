@@ -61,7 +61,8 @@ public class ThemeRepository {
                 "on t.id = r.theme_id " +
                 "where r.date between ? and ? " +
                 "group by t.id " +
-                "order by count(t.id) desc";
+                "order by count(t.id) desc " +
+                "LIMIT 10";
         return jdbcTemplate.query(sql, themeRowMapper, Date.valueOf(start), Date.valueOf(end));
     }
 

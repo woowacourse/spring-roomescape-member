@@ -6,10 +6,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.domain.Theme;
 import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
+import roomescape.service.ReservationService;
 import roomescape.service.ThemeService;
+import roomescape.service.dto.SaveReservationRequest;
 
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -44,5 +53,18 @@ class ThemeServiceTest {
         assertThatThrownBy(() -> themeService.deleteTheme(1L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 예약중인 테마는 삭제할 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("최근 7일간 가장 예약이 많이된 테마 10개를 조회한다.")
+    @Sql("/theme-rank-test-data.sql")
+    void test() {
+        List<Long> themeIds = themeService.findTop10Recent7Days().stream()
+                .map(Theme::getId)
+                .toList();
+        assertThat(themeIds)
+                .isEqualTo(List.of(
+                        5L, 2L, 3L, 7L, 10L, 1L, 4L, 6L, 8L, 9L
+                ));
     }
 }
