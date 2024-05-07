@@ -23,9 +23,8 @@ public class MemberName {
         }
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(value);
+    public String getValue() {
+        return value;
     }
 
     @Override
@@ -40,7 +39,8 @@ public class MemberName {
         return Objects.equals(value, memberName.value);
     }
 
-    public String getValue() {
-        return value;
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
     }
 }

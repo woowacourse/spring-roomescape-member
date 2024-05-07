@@ -22,9 +22,8 @@ public class ReservationDate {
         }
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(value);
+    public String getValue() {
+        return value.format(DateTimeFormatter.ISO_DATE);
     }
 
     @Override
@@ -39,7 +38,8 @@ public class ReservationDate {
         return Objects.equals(value, that.value);
     }
 
-    public String getValue() {
-        return value.format(DateTimeFormatter.ISO_DATE);
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
     }
 }

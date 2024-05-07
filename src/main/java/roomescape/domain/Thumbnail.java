@@ -23,6 +23,10 @@ public class Thumbnail {
         }
     }
 
+    public String getValue() {
+        return value;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -38,9 +42,5 @@ public class Thumbnail {
     @Override
     public int hashCode() {
         return Objects.hash(value);
-    }
-
-    public String getValue() {
-        return value;
     }
 }

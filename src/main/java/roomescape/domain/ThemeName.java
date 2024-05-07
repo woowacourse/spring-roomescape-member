@@ -22,6 +22,10 @@ public class ThemeName {
         }
     }
 
+    public String getValue() {
+        return value;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -37,9 +41,5 @@ public class ThemeName {
     @Override
     public int hashCode() {
         return Objects.hash(value);
-    }
-
-    public String getValue() {
-        return value;
     }
 }
