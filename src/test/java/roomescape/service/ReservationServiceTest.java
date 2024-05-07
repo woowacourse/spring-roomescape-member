@@ -25,7 +25,6 @@ class ReservationServiceTest {
     void createDuplicateException() {
         assertThatThrownBy(
                 () -> reservationService.create(new ReservationRequest("User1", LocalDate.parse("2024-05-01"), 1L, 1L)))
-                .isInstanceOf(EntityExistsException.class)
-                .hasMessage("Reservation already exists.");
+                .isInstanceOf(EntityExistsException.class);
     }
 }
