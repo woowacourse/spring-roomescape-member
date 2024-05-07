@@ -19,11 +19,11 @@ public class JwtTokenProvider {
     private static final String CLAIM_ID = "id";
 
     private final SecretKey secretKey;
-    private final Long expirationTime;
+    private final long expirationTime;
 
     public JwtTokenProvider(
             @Value("${security.jwt.secret-key}") String secretKey,
-            @Value("${security.jwt.expiration-time}") Long expirationTime
+            @Value("${security.jwt.expiration-time}") long expirationTime
     ) {
         this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
         this.expirationTime = expirationTime;
