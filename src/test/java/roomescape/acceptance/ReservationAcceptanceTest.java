@@ -17,7 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.dto.reservation.ReservationResponse;
+import roomescape.application.dto.response.ReservationResponse;
 import roomescape.support.AcceptanceTest;
 import roomescape.support.SimpleRestAssured;
 import roomescape.support.annotation.FixedClock;

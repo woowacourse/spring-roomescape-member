@@ -1,8 +1,8 @@
-package roomescape.dto.theme;
+package roomescape.controller.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import roomescape.application.dto.ThemeCreationRequest;
+import roomescape.application.dto.request.ThemeCreationRequest;
 
 public record ThemeRequest(
         @NotBlank(message = "테마명은 필수입니다.")

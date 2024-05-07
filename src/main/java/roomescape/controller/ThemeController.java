@@ -19,9 +19,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.application.ReservationTimeService;
 import roomescape.application.ThemeService;
-import roomescape.dto.reservationtime.AvailableTimeResponse;
-import roomescape.dto.theme.ThemeRequest;
-import roomescape.dto.theme.ThemeResponse;
+import roomescape.application.dto.response.AvailableTimeResponse;
+import roomescape.application.dto.response.ThemeResponse;
+import roomescape.controller.dto.ThemeRequest;
 
 @RestController
 @RequestMapping("/themes")

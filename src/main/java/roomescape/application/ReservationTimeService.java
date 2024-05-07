@@ -4,12 +4,12 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import org.springframework.stereotype.Service;
-import roomescape.application.dto.ReservationTimeCreationRequest;
+import roomescape.application.dto.request.ReservationTimeCreationRequest;
+import roomescape.application.dto.response.AvailableTimeResponse;
+import roomescape.application.dto.response.ReservationTimeResponse;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.time.ReservationTime;
 import roomescape.domain.time.repository.ReservationTimeRepository;
-import roomescape.dto.reservationtime.AvailableTimeResponse;
-import roomescape.dto.reservationtime.ReservationTimeResponse;
 
 @Service
 public class ReservationTimeService {

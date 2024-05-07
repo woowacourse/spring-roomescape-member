@@ -13,9 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.application.dto.ReservationTimeCreationRequest;
-import roomescape.dto.reservationtime.AvailableTimeResponse;
-import roomescape.dto.reservationtime.ReservationTimeResponse;
+import roomescape.application.dto.request.ReservationTimeCreationRequest;
+import roomescape.application.dto.response.AvailableTimeResponse;
+import roomescape.application.dto.response.ReservationTimeResponse;
 import roomescape.support.extension.TableTruncateExtension;
 
 @SpringBootTest
