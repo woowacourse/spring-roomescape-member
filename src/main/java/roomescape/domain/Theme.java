@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.util.Objects;
+import roomescape.exception.InvalidInputException;
 
 public class Theme {
 
@@ -26,8 +27,11 @@ public class Theme {
     }
 
     private void validateNull(final String name, final String description) {
-        if (name.isBlank() || description.isBlank()) {
-            throw new IllegalArgumentException("이름과 설명은 공백일 수 없습니다");
+        if (name.isBlank()) {
+            throw InvalidInputException.of("name", name);
+        }
+        if (description.isBlank()) {
+            throw InvalidInputException.of("description", description);
         }
     }
 

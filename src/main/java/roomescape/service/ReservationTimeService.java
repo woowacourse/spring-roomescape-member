@@ -6,9 +6,8 @@ import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
-import roomescape.exception.ExistReservationInReservationTimeException;
-import roomescape.exception.NotExistReservationTimeException;
-import roomescape.exception.ReservationTimeAlreadyExistsException;
+import roomescape.exception.ExistsException;
+import roomescape.exception.NotExistsException;
 import roomescape.service.dto.input.ReservationTimeInput;
 import roomescape.service.dto.output.AvailableReservationTimeOutput;
 import roomescape.service.dto.output.ReservationTimeOutput;
@@ -28,7 +27,7 @@ public class ReservationTimeService {
         final ReservationTime reservationTime = input.toReservationTime();
 
         if (reservationTimeDao.isExistByStartAt(reservationTime.getStartAtAsString())) {
-            throw new ReservationTimeAlreadyExistsException(reservationTime.getStartAtAsString());
+            throw ExistsException.of(String.format("startAt 이 %s 인 reservationTime", reservationTime.getStartAtAsString()));
         }
 
         final ReservationTime savedReservationTime = reservationTimeDao.create(reservationTime);
@@ -46,10 +45,10 @@ public class ReservationTimeService {
 
     public void deleteReservationTime(final long id) {
         final ReservationTime reservationTime = reservationTimeDao.find(id)
-                .orElseThrow(() -> new NotExistReservationTimeException(id));
+                .orElseThrow(() -> NotExistsException.of("reservationTimeId", id));
 
         if (reservationDao.isExistByTimeId(id)) {
-            throw new ExistReservationInReservationTimeException(id);
+            throw ExistsException.of(String.format("reservationTimeId 가 %d 인 reservation", id));
         }
 
         reservationTimeDao.delete(reservationTime.getId());

@@ -2,6 +2,7 @@ package roomescape.domain;
 
 import java.time.DateTimeException;
 import java.time.LocalDate;
+import roomescape.exception.InvalidInputException;
 
 public record VisitDate(LocalDate date) {
 
@@ -9,7 +10,7 @@ public record VisitDate(LocalDate date) {
         try {
             return new VisitDate(LocalDate.parse(date));
         } catch (final DateTimeException exception) {
-            throw new IllegalArgumentException(String.format("%s 는 유효하지 않은 값입니다.(EX: 10:00)", date));
+            throw InvalidInputException.of("date", date);
         }
     }
 

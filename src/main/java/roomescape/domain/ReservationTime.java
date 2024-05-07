@@ -3,6 +3,7 @@ package roomescape.domain;
 import java.time.DateTimeException;
 import java.time.LocalTime;
 import java.util.Objects;
+import roomescape.exception.InvalidInputException;
 
 public class ReservationTime {
 
@@ -18,7 +19,7 @@ public class ReservationTime {
         try {
             return new ReservationTime(id, LocalTime.parse(startAt));
         } catch (final DateTimeException exception) {
-            throw new IllegalArgumentException(String.format("%s 는 유효하지 않은 값입니다.(EX: 10:00)", startAt));
+            throw InvalidInputException.of("startAt", startAt);
         }
     }
 

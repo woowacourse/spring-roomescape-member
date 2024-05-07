@@ -15,9 +15,8 @@ import roomescape.dao.ReservationDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.exception.ExistReservationInReservationTimeException;
-import roomescape.exception.NotExistReservationTimeException;
-import roomescape.exception.ReservationTimeAlreadyExistsException;
+import roomescape.exception.ExistsException;
+import roomescape.exception.NotExistsException;
 import roomescape.fixture.ThemeFixture;
 import roomescape.service.dto.input.ReservationInput;
 import roomescape.service.dto.input.ReservationTimeInput;
@@ -70,7 +69,7 @@ public class ReservationTimeServiceTest {
     @DisplayName("존재하지 않는 시간 ID 를 삭제하려 하면 에외를 발생한다.")
     void throw_exception_when_not_exist_id() {
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(-1))
-                .isInstanceOf(NotExistReservationTimeException.class);
+                .isInstanceOf(NotExistsException.class);
     }
 
     @Test
@@ -88,7 +87,7 @@ public class ReservationTimeServiceTest {
         ));
 
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(timeOutput.id()))
-                .isInstanceOf(ExistReservationInReservationTimeException.class);
+                .isInstanceOf(ExistsException.class);
     }
 
     @Test
@@ -96,7 +95,7 @@ public class ReservationTimeServiceTest {
     void throw_exception_when_duplicate_reservationTime() {
         reservationTimeService.createReservationTime(new ReservationTimeInput("10:00"));
         assertThatThrownBy(() -> reservationTimeService.createReservationTime(new ReservationTimeInput("10:00")))
-                .isInstanceOf(ReservationTimeAlreadyExistsException.class);
+                .isInstanceOf(ExistsException.class);
     }
 
     @Test

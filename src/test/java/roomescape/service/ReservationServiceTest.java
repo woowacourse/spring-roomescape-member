@@ -12,9 +12,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.ReservationTime;
-import roomescape.exception.NotExistReservationException;
-import roomescape.exception.PastTimeReservationException;
-import roomescape.exception.ReservationAlreadyExistsException;
+import roomescape.exception.ExistsException;
+import roomescape.exception.InvalidInputException;
+import roomescape.exception.NotExistsException;
 import roomescape.fixture.ThemeFixture;
 import roomescape.service.dto.input.ReservationInput;
 import roomescape.service.util.DateTimeFormatter;
@@ -59,7 +59,7 @@ public class ReservationServiceTest {
     @DisplayName("존재하지 않는 예약 ID 를 삭제하려 하면 에외를 발생한다.")
     void throw_exception_when_not_exist_id() {
         assertThatThrownBy(() -> reservationService.deleteReservation(-1))
-                .isInstanceOf(NotExistReservationException.class);
+                .isInstanceOf(NotExistsException.class);
     }
 
     @Test
@@ -71,7 +71,7 @@ public class ReservationServiceTest {
 
         assertThatThrownBy(
                 () -> reservationService.createReservation(new ReservationInput("제리", "2025-11-24", timeId, themeId)))
-                .isInstanceOf(ReservationAlreadyExistsException.class);
+                .isInstanceOf(ExistsException.class);
     }
 
     @Test
@@ -81,6 +81,6 @@ public class ReservationServiceTest {
         Long themeId = themeDao.create(ThemeFixture.getDomain()).getId();
         assertThatThrownBy(
                 () -> reservationService.createReservation(new ReservationInput("제리", "1900-03-10", timeId, themeId)))
-                .isInstanceOf(PastTimeReservationException.class);
+                .isInstanceOf(InvalidInputException.class);
     }
 }

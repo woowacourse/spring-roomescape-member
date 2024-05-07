@@ -15,8 +15,8 @@ import roomescape.dao.ReservationDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.exception.ExistReservationInThemeException;
-import roomescape.exception.NotExistThemeException;
+import roomescape.exception.ExistsException;
+import roomescape.exception.NotExistsException;
 import roomescape.fixture.ThemeFixture;
 import roomescape.service.dto.input.ReservationTimeInput;
 import roomescape.service.dto.input.ThemeInput;
@@ -87,7 +87,7 @@ class ThemeServiceTest {
     @DisplayName("존재하지 않는 테마 ID 를 삭제하려 하면 에외를 발생한다.")
     void throw_exception_when_not_exist_id() {
         assertThatThrownBy(() -> themeService.deleteTheme(-1))
-                .isInstanceOf(NotExistThemeException.class);
+                .isInstanceOf(NotExistsException.class);
     }
 
     @Test
@@ -108,7 +108,7 @@ class ThemeServiceTest {
         ));
 
         assertThatThrownBy(() -> themeService.deleteTheme(themeOutput.id()))
-                .isInstanceOf(ExistReservationInThemeException.class);
+                .isInstanceOf(ExistsException.class);
     }
 
     @Test
