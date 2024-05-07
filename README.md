@@ -230,7 +230,7 @@
 
 ### Request
 
-> GET /availableTimes?date=${date}&themeId=${themeId}
+> GET /times/book-able?date=${date}&themeId=${themeId}
 
 ### response
 
