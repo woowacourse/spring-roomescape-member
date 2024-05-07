@@ -32,4 +32,19 @@ public class MemberRepository {
                 user.getEmail(),
                 user.getPassword());
     }
+
+    public boolean checkExistMember(String email, String password) {
+        String sql = """
+                SELECT 
+                CASE WHEN EXISTS (
+                        SELECT 1
+                        FROM user_table
+                        WHERE email = ? AND password = ?
+                    )
+                    THEN TRUE
+                    ELSE FALSE
+                END
+                """;
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, email, password));
+    }
 }
