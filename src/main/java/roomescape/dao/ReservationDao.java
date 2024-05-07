@@ -38,14 +38,14 @@ public class ReservationDao {
     public List<Reservation> findAll() {
         String sql = """
                 SELECT
-                    r.id AS reservation_id, 
-                    r.name AS reservation_name, 
+                    r.id AS reservation_id,
+                    r.name AS reservation_name,
                     r.date AS reservation_date,
-                    t.id AS time_id, 
+                    t.id AS time_id,
                     t.start_at AS time_value,
-                    th.id AS theme_id, 
-                    th.name AS theme_name, 
-                    th.description AS theme_description, 
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
                     th.thumbnail AS theme_thumbnail
                 FROM reservation AS r
                 INNER JOIN reservation_time AS t

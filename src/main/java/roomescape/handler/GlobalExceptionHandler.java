@@ -2,7 +2,6 @@ package roomescape.handler;
 
 import java.util.List;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -22,11 +21,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(TargetNotExistException.class)
     public ResponseEntity<Void> handleTargetNotExistException() {
         return ResponseEntity.notFound().build();
-    }
-
-    @ExceptionHandler(IncorrectResultSizeDataAccessException.class)
-    public ResponseEntity<ExceptionDto> handleIncorrectResultSizeDataAccessException() {
-        return ResponseEntity.badRequest().body(new ExceptionDto("해당 예약 시간 혹은 테마가 존재하지 않습니다."));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
