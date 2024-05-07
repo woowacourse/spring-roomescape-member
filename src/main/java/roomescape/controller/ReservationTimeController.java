@@ -12,14 +12,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.ReservationTime;
 import roomescape.service.ReservationTimeService;
-import roomescape.service.dto.ReservationTimeIsBookedResponse;
+import roomescape.service.dto.ReservationTimeAvailabilityResponse;
 import roomescape.service.dto.ReservationTimeResponse;
 import roomescape.service.dto.ReservationTimeSaveRequest;
 
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/times")
@@ -41,15 +40,14 @@ public class ReservationTimeController {
     }
 
     @GetMapping("/available")
-    public ResponseEntity<List<ReservationTimeIsBookedResponse>> getReservationTimesIsBooked(@RequestParam LocalDate date,
-                                                                                             @RequestParam Long themeId) {
-        Map<ReservationTime, Boolean> isBooked = reservationTimeService.findIsBooked(date, themeId);
-        List<ReservationTimeIsBookedResponse> reservationTimeIsBookedResponses = isBooked.keySet().stream()
-                .map(reservationTime -> ReservationTimeIsBookedResponse.of(
-                        reservationTime,
-                        isBooked.get(reservationTime))
-                ).toList();
-        return ResponseEntity.ok(reservationTimeIsBookedResponses);
+    public ResponseEntity<List<ReservationTimeAvailabilityResponse>> getReservationTimeAvailability(@RequestParam LocalDate date,
+                                                                                                    @RequestParam Long themeId) {
+        List<ReservationTimeAvailabilityResponse> reservationTimeAvailabilities =
+                reservationTimeService.findReservationTimeAvailability(date, themeId).stream()
+                        .map(ReservationTimeAvailabilityResponse::of)
+                        .toList();
+
+        return ResponseEntity.ok(reservationTimeAvailabilities);
     }
 
     @PostMapping

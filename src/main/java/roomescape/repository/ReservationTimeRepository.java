@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.ReservationTimeAvailability;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -58,19 +59,28 @@ public class ReservationTimeRepository {
                 .findAny();
     }
 
-    public List<ReservationTime> findReservedBy(LocalDate date, Long themeId) {
-        String sql = "SELECT rt.id, rt.start_at " +
-                "FROM reservation_time AS rt " +
-                "INNER JOIN reservation AS r " +
-                "ON rt.id = r.reservation_time_id " +
-                "WHERE r.date = ? AND r.theme_id = ?";
-        return jdbcTemplate.query(sql, reservationTimeRowMapper, Date.valueOf(date), themeId);
-    }
-
     public List<ReservationTime> findAll() {
         String sql = "SELECT id, start_at " +
                 "FROM reservation_time";
         return jdbcTemplate.query(sql, reservationTimeRowMapper);
+    }
+
+    public List<ReservationTimeAvailability> findReservationTimeAvailabilities(LocalDate date, Long themeId) {
+        String sql = "SELECT rt.id, rt.start_at, " +
+                "CASE WHEN r.id IS NULL " +
+                "THEN FALSE ELSE TRUE END AS already_booked " +
+                "FROM reservation_time AS rt " +
+                "LEFT JOIN (" +
+                "SELECT id, reservation_time_id " +
+                "FROM reservation " +
+                "WHERE date = ? AND theme_id = ?) AS r " +
+                "ON rt.id = r.reservation_time_id";
+
+        return jdbcTemplate.query(sql, (rs, rowNum) ->
+                new ReservationTimeAvailability(
+                        new ReservationTime(rs.getLong("id"), rs.getTime("start_at").toLocalTime()),
+                        rs.getBoolean("already_booked")
+                ), Date.valueOf(date), themeId);
     }
 
     public int deleteById(Long id) {

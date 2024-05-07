@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.ReservationTimeAvailability;
 import roomescape.exception.IllegalUserRequestException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -15,7 +16,7 @@ import roomescape.service.dto.ReservationTimeSaveRequest;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Map;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -63,10 +64,11 @@ class ReservationTimeServiceTest {
     void findAvailabilityByDateAndTheme() {
         LocalDate date = LocalDate.of(2100, 12, 31);
 
-        assertThat(reservationTimeService.findIsBooked(date, 1L))
-                .isEqualTo(Map.of(
-                        new ReservationTime(1L, LocalTime.of(10, 0)), true,
-                        new ReservationTime(2L, LocalTime.of(11, 0)), false
+        assertThat(reservationTimeService.findReservationTimeAvailability(date, 1L))
+                .usingRecursiveFieldByFieldElementComparator()
+                .isEqualTo(List.of(
+                        new ReservationTimeAvailability(new ReservationTime(1L, LocalTime.of(10, 0)), true),
+                        new ReservationTimeAvailability(new ReservationTime(2L, LocalTime.of(11, 0)), false)
                 ));
     }
 
