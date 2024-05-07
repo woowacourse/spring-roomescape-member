@@ -3,6 +3,7 @@ package roomescape.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import roomescape.config.deserializer.LocalDateDeserializerWithValidation;
@@ -11,6 +12,7 @@ import roomescape.config.deserializer.LongDeserializerWithValidation;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 @Configuration
 public class ObjectMapperConfiguration {
@@ -24,6 +26,7 @@ public class ObjectMapperConfiguration {
         simpleModule.addDeserializer(LocalDate.class, new LocalDateDeserializerWithValidation());
         simpleModule.addDeserializer(LocalTime.class, new LocalTimeDeserializerWithValidation());
         simpleModule.addDeserializer(Long.class, new LongDeserializerWithValidation());
+        simpleModule.addSerializer(LocalDate.class, new LocalDateSerializer(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         mapper.registerModule(simpleModule);
         return mapper;
     }
