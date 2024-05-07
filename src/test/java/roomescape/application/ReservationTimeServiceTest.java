@@ -75,12 +75,13 @@ class ReservationTimeServiceTest {
     @DisplayName("예약에 사용된 예약 시간을 삭제 요청하면, 예외가 발생한다.")
     @Test
     void shouldThrowsExceptionReservationWhenReservedInTime() {
-        ReservationTime reservationTime = createTime(10, 0);
+        ReservationTime time = createTime(10, 0);
+        long timeId = time.getId();
         Theme theme = themeRepository.create(new Theme(new ThemeName("테마1"), "테마1 설명", "url"));
-        Reservation reservation = reservationRepository.create(new Reservation(
-                new PlayerName("오리"), LocalDate.parse("2024-01-01"), reservationTime, theme
+        reservationRepository.create(new Reservation(
+                new PlayerName("오리"), LocalDate.parse("2024-01-01"), time, theme
         ));
-        assertThatCode(() -> reservationTimeService.deleteById(reservationTime.getId()))
+        assertThatCode(() -> reservationTimeService.deleteById(timeId))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("연관된 예약이 존재하여 삭제할 수 없습니다.");
     }
