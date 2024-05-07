@@ -22,7 +22,7 @@ public class JwtProvider {
     public String getSubject(String accessToken) {
         return Jwts.parser()
                 .setSigningKey(secretKey.getBytes())
-                .parseClaimsJwt(accessToken)
+                .parseClaimsJws(accessToken)
                 .getBody()
                 .getSubject();
     }
