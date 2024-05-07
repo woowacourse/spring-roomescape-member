@@ -13,7 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchTimes();
 });
 
-function render(data) {
+function render(response) {
+    const data = response.data;
     const tableBody = document.getElementById('table-body');
     tableBody.innerHTML = '';
 

@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
 import roomescape.domain.dto.ThemeRequest;
 import roomescape.domain.dto.ThemeResponse;
+import roomescape.domain.dto.ThemeResponses;
 import roomescape.exception.DeleteNotAllowException;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ThemeDao;
@@ -21,11 +22,12 @@ public class ThemeService {
         this.reservationDao = reservationDao;
     }
 
-    public List<ThemeResponse> findAll() {
-        return themeDao.findAll()
+    public ThemeResponses findAll() {
+        final List<ThemeResponse> themeResponses = themeDao.findAll()
                 .stream()
                 .map(ThemeResponse::from)
                 .toList();
+        return new ThemeResponses(themeResponses);
     }
 
     public ThemeResponse create(final ThemeRequest themeRequest) {
@@ -39,9 +41,10 @@ public class ThemeService {
         themeDao.delete(id);
     }
 
-    public List<ThemeResponse> getPopularThemeList(final LocalDate startDate, final LocalDate endDate, final Long count) {
+    public ThemeResponses getPopularThemeList(final LocalDate startDate, final LocalDate endDate, final Long count) {
         final List<Theme> themes = themeDao.findPopularThemeByDate(startDate, endDate, count);
-        return themes.stream().map(ThemeResponse::from).toList();
+        final List<ThemeResponse> themeResponses = themes.stream().map(ThemeResponse::from).toList();
+        return new ThemeResponses(themeResponses);
     }
 
     private void validateExistReservation(final Long id) {

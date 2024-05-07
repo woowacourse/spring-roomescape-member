@@ -7,10 +7,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.dto.ThemeRequest;
 import roomescape.domain.dto.ThemeResponse;
+import roomescape.domain.dto.ThemeResponses;
 import roomescape.exception.DeleteNotAllowException;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -26,14 +26,14 @@ class ThemeServiceTest {
     }
 
     private long getThemeSize() {
-        return service.findAll().size();
+        return service.findAll().getData().size();
     }
 
     @Test
     @DisplayName("테마 목록을 반환한다.")
     void given_when_findAll_then_returnThemeResponses() {
         //when, then
-        assertThat(service.findAll().size()).isEqualTo(4);
+        assertThat(service.findAll().getData().size()).isEqualTo(4);
     }
 
     @Test
@@ -81,7 +81,7 @@ class ThemeServiceTest {
         LocalDate endDate = LocalDate.parse("2024-05-02");
         Long count = 10L;
         //when
-        final List<ThemeResponse> popularThemeList = service.getPopularThemeList(startDate, endDate, count);
-        assertThat(popularThemeList.get(0).id()).isEqualTo(2L);
+        final ThemeResponses popularThemeList = service.getPopularThemeList(startDate, endDate, count);
+        assertThat(popularThemeList.getData().get(0).id()).isEqualTo(2L);
     }
 }

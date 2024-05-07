@@ -26,14 +26,14 @@ class ReservationServiceTest {
     }
 
     private long getReservationSize() {
-        return service.findEntireReservationList().size();
+        return service.findEntireReservationList().getData().size();
     }
 
     @Test
     @DisplayName("예약 목록을 반환한다.")
     void given_when_findEntireReservationList_then_returnReservationResponses() {
         //when, then
-        assertThat(service.findEntireReservationList().size()).isEqualTo(7);
+        assertThat(service.findEntireReservationList().getData().size()).isEqualTo(7);
     }
 
     @Test

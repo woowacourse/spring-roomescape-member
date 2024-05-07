@@ -7,6 +7,7 @@ import roomescape.domain.Theme;
 import roomescape.domain.TimeSlot;
 import roomescape.domain.dto.ReservationRequest;
 import roomescape.domain.dto.ReservationResponse;
+import roomescape.domain.dto.ReservationResponses;
 import roomescape.exception.ErrorType;
 import roomescape.exception.InvalidClientRequestException;
 import roomescape.exception.ReservationFailException;
@@ -28,11 +29,12 @@ public class ReservationService {
         this.themeDao = themeDao;
     }
 
-    public List<ReservationResponse> findEntireReservationList() {
-        return reservationDao.findAll()
+    public ReservationResponses findEntireReservationList() {
+        final List<ReservationResponse> reservationResponses = reservationDao.findAll()
                 .stream()
                 .map(ReservationResponse::from)
                 .toList();
+        return new ReservationResponses(reservationResponses);
     }
 
     public ReservationResponse create(final ReservationRequest reservationRequest) {

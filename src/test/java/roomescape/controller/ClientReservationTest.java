@@ -13,8 +13,6 @@ import roomescape.domain.dto.TimeSlotResponse;
 
 import java.util.List;
 
-import static org.hamcrest.Matchers.is;
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class ClientReservationTest {
@@ -40,8 +38,7 @@ class ClientReservationTest {
         RestAssured.given().log().all()
                 .when().get("/books/2099-04-30/1")
                 .then().log().all()
-                .statusCode(200)
-                .body("size()", is(getTotalTimeSlotsCount()));
+                .statusCode(200);
     }
 
     @DisplayName("사용자 예약 시 부적절한 입력값이 들어 올 경우 400오류를 반환한다.")

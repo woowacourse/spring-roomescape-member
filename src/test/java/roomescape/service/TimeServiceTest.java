@@ -25,14 +25,14 @@ class TimeServiceTest {
     }
 
     private long getTimeSlotSize() {
-        return service.findAll().size();
+        return service.findAll().getData().size();
     }
 
     @Test
     @DisplayName("시간 목록을 반환한다.")
     void given_when_findAll_then_returnTimeSlotResponses() {
         //when, then
-        assertThat(service.findAll().size()).isEqualTo(4);
+        assertThat(service.findAll().getData().size()).isEqualTo(4);
     }
 
     @Test

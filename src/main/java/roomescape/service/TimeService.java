@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.TimeSlot;
 import roomescape.domain.dto.TimeSlotRequest;
 import roomescape.domain.dto.TimeSlotResponse;
+import roomescape.domain.dto.TimeSlotResponses;
 import roomescape.exception.DeleteNotAllowException;
 import roomescape.exception.DuplicateNotAllowException;
 import roomescape.repository.ReservationDao;
@@ -21,11 +22,12 @@ public class TimeService {
         this.reservationDao = reservationDao;
     }
 
-    public List<TimeSlotResponse> findAll() {
-        return timeDao.findAll()
+    public TimeSlotResponses findAll() {
+        final List<TimeSlotResponse> timeSlotResponses = timeDao.findAll()
                 .stream()
                 .map(TimeSlotResponse::from)
                 .toList();
+        return new TimeSlotResponses(timeSlotResponses);
     }
 
     public TimeSlotResponse create(TimeSlotRequest timeSlotRequest) {

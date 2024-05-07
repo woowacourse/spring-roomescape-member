@@ -26,7 +26,7 @@ class BookServiceTest {
     @Test
     void given_when_findAvaliableBookList_thenReturnBookResponse() {
         //when
-        final List<BookResponse> bookResponses = bookService.findAvaliableBookList(LocalDate.parse("2099-05-08"), 1L);
+        final List<BookResponse> bookResponses = bookService.findAvaliableBookList(LocalDate.parse("2099-05-08"), 1L).getData();
         //then
         assertThat(bookResponses.size()).isEqualTo(4);
     }

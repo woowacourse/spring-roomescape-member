@@ -4,10 +4,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.domain.dto.TimeSlotRequest;
 import roomescape.domain.dto.TimeSlotResponse;
+import roomescape.domain.dto.TimeSlotResponses;
 import roomescape.service.TimeService;
 
 import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequestMapping("/times")
@@ -19,9 +19,8 @@ public class TimeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TimeSlotResponse>> findAll() {
-        List<TimeSlotResponse> timeSlots = timeService.findAll();
-        return ResponseEntity.ok(timeSlots);
+    public ResponseEntity<TimeSlotResponses> findAll() {
+        return ResponseEntity.ok(timeService.findAll());
     }
 
     @PostMapping

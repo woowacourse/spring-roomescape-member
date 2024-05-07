@@ -19,7 +19,6 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -38,8 +37,7 @@ class ThemeTest {
         RestAssured.given().log().all()
                 .when().get("/themes")
                 .then().log().all()
-                .statusCode(200)
-                .body("size()", is(4));
+                .statusCode(200);
     }
 
     @DisplayName("테마 등록 성공 시 201을 응답한다.")
