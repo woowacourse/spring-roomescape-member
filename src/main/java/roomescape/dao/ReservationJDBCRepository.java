@@ -21,13 +21,12 @@ public class ReservationJDBCRepository implements ReservationRepository {
                 resultSet.getString("start_at"));
         Theme theme = new Theme(resultSet.getLong("theme_id"), resultSet.getString("theme_name"),
                 resultSet.getString("description"), resultSet.getString("thumbnail"));
-        Reservation reservation = new Reservation(
+        return new Reservation(
                 resultSet.getLong("reservation_id"),
                 resultSet.getString("reservation_name"),
                 resultSet.getString("date"),
                 reservationTime,
                 theme);
-        return reservation;
     };
 
     public ReservationJDBCRepository(final JdbcTemplate jdbcTemplate) {

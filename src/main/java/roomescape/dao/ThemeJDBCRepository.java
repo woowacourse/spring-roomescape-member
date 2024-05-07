@@ -24,14 +24,12 @@ public class ThemeJDBCRepository implements ThemeRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
-    private final RowMapper<Theme> rowMapper = (resultSet, rowNum) -> {
-        return new Theme(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getString("description"),
-                resultSet.getString("thumbnail")
-        );
-    };
+    private final RowMapper<Theme> rowMapper = (resultSet, rowNum) -> new Theme(
+            resultSet.getLong("id"),
+            resultSet.getString("name"),
+            resultSet.getString("description"),
+            resultSet.getString("thumbnail")
+    );
 
     @Override
     public Theme save(Theme theme) {
