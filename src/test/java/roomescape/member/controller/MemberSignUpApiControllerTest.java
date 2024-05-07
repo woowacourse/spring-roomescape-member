@@ -28,7 +28,7 @@ class MemberSignUpApiControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @DisplayName("회원가입에 성공하면 301 응답과 Location 헤더에 이동할 URI 받는다.")
+    @DisplayName("회원가입에 성공하면 201 응답과 Location 헤더에 리소스 저장 경로를 받는다.")
     @Test
     void signup() throws Exception {
         MemberSignUpRequest memberSignUpRequest = new MemberSignUpRequest("카키", "kaki@email.com", "1234");
@@ -36,11 +36,11 @@ class MemberSignUpApiControllerTest {
         doReturn(1L).when(memberSignUpService)
                 .save(memberSignUpRequest);
 
-        mockMvc.perform(post("/signup")
+        mockMvc.perform(post("/members")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(memberSignUpRequest))
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isMovedPermanently())
-                .andExpect(header().string("Location", "/reservation/1"));
+                .andExpect(status().isCreated())
+                .andExpect(header().string("Location", "/members/1"));
     }
 }

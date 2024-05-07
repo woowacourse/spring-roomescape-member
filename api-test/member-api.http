@@ -1,5 +1,5 @@
 ### 회원 가입 API
-POST http://localhost:8080/signup
+POST http://localhost:8080/members
 Content-Type: application/json
 
 {
