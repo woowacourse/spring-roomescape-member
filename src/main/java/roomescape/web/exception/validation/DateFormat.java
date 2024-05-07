@@ -1,4 +1,4 @@
-package roomescape.web.exception;
+package roomescape.web.exception.validation;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
@@ -16,11 +16,11 @@ import static java.lang.annotation.ElementType.TYPE_USE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Documented
-@Constraint(validatedBy = TimeFormatValidator.class)
+@Constraint(validatedBy = DateFormatValidator.class)
 @Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE_USE})
 @Retention(RUNTIME)
-public @interface TimeFormat {
-    String message() default "시간 형식이 아닙니다";
+public @interface DateFormat {
+    String message() default "날짜 형식이 아닙니다";
 
     Class<?>[] groups() default {};
 
