@@ -1,6 +1,8 @@
 package roomescape.repository;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -61,5 +63,28 @@ public class MemberRepository {
                 """;
         UserResponse userResponse = jdbcTemplate.queryForObject(sql, UserResponse.class, email);
         return userResponse;
+    }
+
+    public Optional<UserResponse> findById(Long memberId) {
+        String sql = """
+                SELECT
+                    name
+                FROM
+                    user_table
+                WHERE
+                    id = ?
+                """;
+        UserResponse userResponse = jdbcTemplate.queryForObject(sql, UserResponse.class, memberId);
+        return Optional.ofNullable(userResponse);
+    }
+
+    public List<User> findAll() {
+        String sql = "SELECT * FROM user_table";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new User(
+                rs.getLong("id"),
+                rs.getString("name"),
+                rs.getString("email"),
+                rs.getString("password")
+        ));
     }
 }

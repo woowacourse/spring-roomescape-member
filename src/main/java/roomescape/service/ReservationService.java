@@ -1,32 +1,37 @@
 package roomescape.service;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.controller.request.ReservationRequest;
+import roomescape.controller.request.ReservationRequest2;
 import roomescape.controller.response.ReservationResponse;
+import roomescape.controller.response.UserResponse;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final MemberRepository memberRepository;
 
     public ReservationService(
             ReservationRepository reservationRepository,
             ReservationTimeRepository reservationTimeRepository,
-            ThemeRepository themeRepository
+            ThemeRepository themeRepository,
+            MemberRepository memberRepository
     ) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.memberRepository = memberRepository;
     }
 
     public List<ReservationResponse> findAll() {
@@ -72,5 +77,16 @@ public class ReservationService {
 
     public void deleteById(Long id) {
         reservationRepository.deleteById(id);
+    }
+
+    public ReservationResponse findMember(ReservationRequest2 reservationRequest2) {
+        ReservationTime requestedReservationTime = reservationTimeRepository.findById(reservationRequest2.timeId())
+                .orElseThrow(() -> new IllegalArgumentException("예약할 수 없는 시간입니다. timeId: " + reservationRequest2.timeId()));
+        Theme requestedTheme = themeRepository.findById(reservationRequest2.themeId())
+                .orElseThrow(() -> new IllegalArgumentException("예약할 수 없는 테마입니다. themeId: " + reservationRequest2.themeId()));
+        UserResponse userResponse = memberRepository.findById(reservationRequest2.memberId()).orElseThrow();
+        Reservation requestedReservation = reservationRepository.save(new Reservation(userResponse.name(), reservationRequest2.date(), requestedReservationTime, requestedTheme));
+
+        return ReservationResponse.from(requestedReservation);
     }
 }

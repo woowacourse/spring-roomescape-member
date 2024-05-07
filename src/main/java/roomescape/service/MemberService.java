@@ -1,8 +1,10 @@
 package roomescape.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.controller.request.UserLoginRequest;
 import roomescape.controller.request.UserSignUpRequest;
+import roomescape.controller.response.MemberResponse;
 import roomescape.controller.response.UserResponse;
 import roomescape.domain.User;
 import roomescape.infrastructure.JwtTokenProvider;
@@ -37,5 +39,13 @@ public class MemberService {
 
     public UserResponse findByEmail(String email) {
         return memberRepository.findByEmail(email);
+    }
+
+    public List<MemberResponse> findAll() {
+        List<User> users = memberRepository.findAll();
+
+        return users.stream()
+                .map(MemberResponse::from)
+                .toList();
     }
 }

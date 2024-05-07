@@ -33,4 +33,5 @@ values ('피케이', '2024-04-29', 1, 1),
        ('호돌', '2024-04-29', 1, 1);
 
 insert into user_table (name, email, password)
-values ('dd', 'ona386418@gmail.com', 'qwer');
+values ('name1', 'email1', 'qq1'),
+       ('name2', 'email2', 'qq2');
