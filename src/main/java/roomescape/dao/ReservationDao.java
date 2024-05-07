@@ -113,7 +113,7 @@ public class ReservationDao implements ReservationRepository {
         parameters.put("date", reservation.getDate());
         parameters.put("time_id", reservation.getTime().getId());
         parameters.put("theme_id", reservation.getTheme().getId());
-        Long id = (Long) jdbcInsert.executeAndReturnKey(parameters);
+        long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
         return new Reservation(
                 id, reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
     }

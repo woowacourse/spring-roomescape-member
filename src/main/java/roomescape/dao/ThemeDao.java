@@ -46,7 +46,7 @@ public class ThemeDao implements ThemeRepository {
         parameters.put("name", theme.getName());
         parameters.put("description", theme.getDescription());
         parameters.put("thumbnail", theme.getThumbnail());
-        Long id = (Long) jdbcInsert.executeAndReturnKey(parameters);
+        long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
         return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 
