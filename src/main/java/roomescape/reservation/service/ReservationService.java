@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import roomescape.ranking.RankTheme;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationDao;
 import roomescape.reservation.request.ReservationRequest;
@@ -34,7 +33,7 @@ public class ReservationService {
     }
 
     public Reservation save(ReservationRequest request) {
-        if (reservationDao.existsByDateTime(request.date(), request.timeId(),request.themeId())) {
+        if (reservationDao.existsByDateTime(request.date(), request.timeId(), request.themeId())) {
             throw new IllegalArgumentException("Reservation already exists");
         }
         ReservationTime reservationTime = reservationTimeDao.findById(request.timeId());
@@ -43,7 +42,7 @@ public class ReservationService {
     }
 
     public Reservation validateFutureAndSave(ReservationRequest request) {
-        if (reservationDao.existsByDateTime(request.date(), request.timeId(),request.themeId())) {
+        if (reservationDao.existsByDateTime(request.date(), request.timeId(), request.themeId())) {
             throw new IllegalArgumentException("Reservation already exists");
         }
         ReservationTime reservationTime = reservationTimeDao.findById(request.timeId());
@@ -55,10 +54,6 @@ public class ReservationService {
 
     public void delete(long id) {
         reservationDao.deleteById(id);
-    }
-
-    public List<RankTheme> getRanking(){
-        return themeDao.getRanking();
     }
 
     private void validateDateTime(LocalDate date, LocalTime time) {

@@ -1,7 +1,6 @@
 package roomescape.reservation.repository;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -35,11 +34,6 @@ public class ReservationDao {
                     resultSet.getString("theme_description"),
                     resultSet.getString("theme_thumbnail")
             )
-    );
-
-    private final RowMapper<ReservationTime> reservationTimeRowMapper = (resultSet, __) -> new ReservationTime(
-            resultSet.getLong("id"),
-            LocalTime.parse(resultSet.getString("start_at"))
     );
 
     public ReservationDao(JdbcTemplate jdbcTemplate) {
@@ -103,17 +97,4 @@ public class ReservationDao {
         Integer count = jdbcTemplate.queryForObject(query, Integer.class, timeId, date, themeId);
         return count != null && count > 0;
     }
-
-    //    public List<RankTheme> getRanking(){
-//        String query="SELECT t.name, t.thumbnail, t.description, COUNT(*) AS count "
-//                + "FROM RESERVATION r "
-//                + "INNER JOIN THEME t ON r.theme_id = t.id "
-//                + "GROUP BY r.theme_id "
-//                + "ORDER BY count DESC "
-//                + "LIMIT 10";
-//        return jdbcTemplate.query(query, themeRowMapper);
-//
-//
-//    }
-
 }

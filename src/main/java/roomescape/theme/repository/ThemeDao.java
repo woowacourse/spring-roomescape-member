@@ -9,7 +9,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
-import roomescape.ranking.RankTheme;
 import roomescape.theme.domain.Theme;
 
 @Repository
@@ -23,12 +22,6 @@ public class ThemeDao {
             resultSet.getString("name"),
             resultSet.getString("description"),
             resultSet.getString("thumbnail")
-    );
-
-    private final RowMapper<RankTheme> rankThemeRowMapper = (resultSet, __) -> new RankTheme(
-            resultSet.getString("name"),
-            resultSet.getString("thumbnail"),
-            resultSet.getString("description")
     );
 
     public ThemeDao(JdbcTemplate jdbcTemplate) {
@@ -57,16 +50,4 @@ public class ThemeDao {
         jdbcTemplate.update(query, themeID);
     }
 
-    public List<RankTheme> getRanking() {
-        String query = "SELECT t.id, t.name, t.description, t.thumbnail, COUNT(r.id) AS reservation_count " +
-                "FROM theme t " +
-                "INNER JOIN reservation r ON t.id = r.theme_id " +
-                "WHERE r.date >=( TIMESTAMPADD(DAY, -7, CURRENT_DATE)) " +
-                "AND r.date <= ( TIMESTAMPADD(DAY, -1, CURRENT_DATE)) " +
-                "GROUP BY t.id, t.name, t.description, t.thumbnail " +
-                "ORDER BY reservation_count DESC " +
-                "LIMIT 10";
-
-        return jdbcTemplate.query(query, rankThemeRowMapper);
-    }
 }
