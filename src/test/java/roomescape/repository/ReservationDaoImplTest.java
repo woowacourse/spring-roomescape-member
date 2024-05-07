@@ -1,6 +1,7 @@
 package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -10,6 +11,7 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,7 +24,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
-import roomescape.repository.dao.ReservationDao;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -146,7 +147,8 @@ class ReservationDaoImplTest {
     void should_get_reservation_times_when_date_and_theme_given() {
         LocalDate date = LocalDate.of(2023, 8, 5);
         List<ReservationTime> times = reservationDao.findReservationTimeByDateAndTheme(date, 1);
-        assertThat(times).hasSize(1);
-        assertThat(times).containsExactly(new ReservationTime(1L, LocalTime.of(10, 0)));
+        assertSoftly(softAssertions -> {
+                    softAssertions.assertThat(times).hasSize(1);
+                    softAssertions.assertThat(times).containsExactly(new ReservationTime(1L, LocalTime.of(10, 0)));});
     }
 }

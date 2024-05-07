@@ -1,4 +1,4 @@
-package roomescape.repository.dao;
+package roomescape.repository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -17,7 +17,7 @@ public interface ReservationTimeDao {
 
     void deleteReservationTime(long id);
 
-    Long countReservationTimeById(long id);
+    long countReservationTimeById(long id);
 
-    Long countReservationTimeByStartAt(LocalTime startAt);
+    long countReservationTimeByStartAt(LocalTime startAt);
 }

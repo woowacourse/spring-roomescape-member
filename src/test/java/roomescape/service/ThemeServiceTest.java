@@ -11,23 +11,23 @@ import org.junit.jupiter.api.Test;
 import roomescape.controller.request.ThemeRequest;
 import roomescape.model.Theme;
 import roomescape.service.fake.FakeThemeDao;
-import roomescape.service.fake.FakeThemeRepository;
 
 class ThemeServiceTest {
 
-    private final FakeThemeRepository themeRepository = new FakeThemeRepository(new FakeThemeDao());
-    private final ThemeService themeService = new ThemeService(themeRepository);
+    private final FakeThemeDao fakeThemeDao = new FakeThemeDao();
+    private final ThemeService themeService = new ThemeService(fakeThemeDao);
 
     @BeforeEach
     void setUp() {
-        themeRepository.clear();
+        fakeThemeDao.clear();
     }
 
     @DisplayName("테마를 조회한다.")
     @Test
     void should_find_all_themes() {
-        themeRepository.addTheme(new Theme("리사", "공포", "image.jpg"));
-        themeRepository.addTheme(new Theme("네오", "스릴러", "image1.jpg"));
+        fakeThemeDao.addTheme(new Theme("리사", "공포", "image.jpg"));
+        fakeThemeDao.addTheme(new Theme("네오", "스릴러", "image1.jpg"));
+
         assertThat(themeService.findAllThemes()).hasSize(2);
     }
 
@@ -35,16 +35,20 @@ class ThemeServiceTest {
     @Test
     void should_add_theme() {
         ThemeRequest themeRequest = new ThemeRequest("에버", "공포", "공포.jpg");
+
         themeService.addTheme(themeRequest);
+
         assertThat(themeService.findAllThemes()).hasSize(1);
     }
 
     @DisplayName("테마를 삭제한다.")
     @Test
     void should_delete_theme() {
-        themeRepository.addTheme(new Theme(1L, "리사", "공포", "image.jpg"));
-        themeRepository.addTheme(new Theme(2L, "네오", "스릴러", "image1.jpg"));
+        fakeThemeDao.addTheme(new Theme(1L, "리사", "공포", "image.jpg"));
+        fakeThemeDao.addTheme(new Theme(2L, "네오", "스릴러", "image1.jpg"));
+
         themeService.deleteTheme(1L);
+
         assertThat(themeService.findAllThemes()).hasSize(1);
     }
 

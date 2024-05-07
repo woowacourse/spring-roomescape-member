@@ -5,17 +5,16 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.concurrent.atomic.AtomicLong;
 
 import roomescape.model.ReservationTime;
-import roomescape.repository.dao.ReservationTimeDao;
+import roomescape.repository.ReservationTimeDao;
 
 public class FakeReservationTimeDao implements ReservationTimeDao {
 
     private final List<ReservationTime> reservationTimes = new ArrayList<>();
 
-    public void add(ReservationTime reservationTime) {
-        reservationTimes.add(reservationTime);
-    }
+    private final AtomicLong index = new AtomicLong(1L);
 
     @Override
     public List<ReservationTime> findAllReservationTimes() {
@@ -24,7 +23,7 @@ public class FakeReservationTimeDao implements ReservationTimeDao {
 
     @Override
     public List<ReservationTime> findAllReservedTimes(LocalDate date, long themeId) {
-        return List.of(reservationTimes.get(1));
+        return List.of(reservationTimes.get(0));
     }
 
     @Override
@@ -37,8 +36,9 @@ public class FakeReservationTimeDao implements ReservationTimeDao {
 
     @Override
     public ReservationTime addReservationTime(ReservationTime reservationTime) {
-        reservationTimes.add(reservationTime);
-        return new ReservationTime(3L, reservationTime.getStartAt());
+        ReservationTime newReservationTime = new ReservationTime(index.getAndIncrement(), reservationTime.getStartAt());
+        reservationTimes.add(newReservationTime);
+        return newReservationTime;
     }
 
     @Override
@@ -52,16 +52,25 @@ public class FakeReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public Long countReservationTimeById(long id) {
+    public long countReservationTimeById(long id) {
         return reservationTimes.stream()
                 .filter(reservationTime -> reservationTime.getId() == id)
                 .count();
     }
 
     @Override
-    public Long countReservationTimeByStartAt(LocalTime startAt) {
+    public long countReservationTimeByStartAt(LocalTime startAt) {
         return reservationTimes.stream()
                 .filter(reservationTime -> reservationTime.getStartAt() == startAt)
                 .count();
+    }
+
+    public void add(ReservationTime reservationTime) {
+        reservationTimes.add(reservationTime);
+    }
+
+    public void clear() {
+        index.set(1L);
+        reservationTimes.clear();
     }
 }

@@ -4,14 +4,17 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.concurrent.atomic.AtomicLong;
 
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
-import roomescape.repository.dao.ReservationDao;
+import roomescape.repository.ReservationDao;
 
 public class FakeReservationDao implements ReservationDao {
 
     private final List<Reservation> reservations = new ArrayList<>();
+
+    private final AtomicLong index = new AtomicLong(1L);
 
     @Override
     public List<Reservation> getAllReservations() {
@@ -20,8 +23,10 @@ public class FakeReservationDao implements ReservationDao {
 
     @Override
     public Reservation addReservation(Reservation reservation) {
-        reservations.add(reservation);
-        return reservation;
+        Reservation newReservation = new Reservation(index.getAndIncrement(), reservation.getName(),
+                        reservation.getDate(), reservation.getTime(), reservation.getTheme());
+        reservations.add(newReservation);
+        return newReservation;
     }
 
     @Override
@@ -64,5 +69,10 @@ public class FakeReservationDao implements ReservationDao {
                 .map(reservation -> new ReservationTime(reservation.getTime().getId(),
                         reservation.getTime().getStartAt()))
                 .toList();
+    }
+
+    public void clear() {
+        index.set(1L);
+        reservations.clear();
     }
 }

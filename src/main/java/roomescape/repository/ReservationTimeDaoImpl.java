@@ -1,4 +1,4 @@
-package roomescape.repository.dao;
+package roomescape.repository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -72,26 +72,25 @@ public class ReservationTimeDaoImpl implements ReservationTimeDao {
     }
 
     @Override
-    public Long countReservationTimeById(long id) {
+    public long countReservationTimeById(long id) {
         String sql = "SELECT count(id) FROM reservation_time WHERE id = ?";
         Long countReservationTime =
                 jdbcTemplate.queryForObject(sql, (resultSet, ignored) -> resultSet.getLong(1), id);
-        validateNullResult(countReservationTime);
-        return countReservationTime;
+        return returnZeroIfNull(countReservationTime);
     }
 
     @Override
-    public Long countReservationTimeByStartAt(LocalTime startAt) {
+    public long countReservationTimeByStartAt(LocalTime startAt) {
         String sql = "SELECT count(id) FROM reservation_time WHERE start_at = ?";
         Long countReservationTime =
                 jdbcTemplate.queryForObject(sql, (resultSet, ignored) -> resultSet.getLong(1), startAt);
-        validateNullResult(countReservationTime);
-        return countReservationTime;
+        return returnZeroIfNull(countReservationTime);
     }
 
-    private void validateNullResult(Long queryResult) {
+    private long returnZeroIfNull(Long queryResult) {
         if (queryResult == null) {
-            throw new NullPointerException("쿼리 실행 결과가 null 입니다.");
+            return 0;
         }
+        return queryResult;
     }
 }

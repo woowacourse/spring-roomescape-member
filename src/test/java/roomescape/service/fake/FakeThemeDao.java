@@ -7,7 +7,7 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicLong;
 
 import roomescape.model.Theme;
-import roomescape.repository.dao.ThemeDao;
+import roomescape.repository.ThemeDao;
 
 public class FakeThemeDao implements ThemeDao {
 
@@ -22,8 +22,7 @@ public class FakeThemeDao implements ThemeDao {
 
     @Override
     public Theme addTheme(Theme theme) {
-        Theme newTheme = new Theme(index.getAndIncrement(), theme.getName(), theme.getDescription(),
-                theme.getThumbnail());
+        Theme newTheme = new Theme(index.getAndIncrement(), theme.getName(), theme.getDescription(), theme.getThumbnail());
         themes.add(newTheme);
         return newTheme;
     }
@@ -62,6 +61,7 @@ public class FakeThemeDao implements ThemeDao {
     }
 
     public void clear() {
+        index.set(1L);
         themes.clear();
     }
 }
