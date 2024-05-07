@@ -5,6 +5,6 @@ import roomescape.exception.RoomescapeException;
 
 public class DuplicatedReservationException extends RoomescapeException {
     public DuplicatedReservationException() {
-        super("중복된 예약입니다.", HttpStatus.CONFLICT);
+        super("해당 테마의 해당 시간대에 이미 예약이 존재합니다.", HttpStatus.CONFLICT);
     }
 }
