@@ -20,6 +20,7 @@ import roomescape.dto.web.ThemeWebResponse;
 import roomescape.exception.DuplicatedReservationException;
 import roomescape.exception.PastReservationException;
 import roomescape.exception.ReservationTimeNotFoundException;
+import roomescape.exception.ThemeNotFoundException;
 import roomescape.service.ReservationService;
 
 @RestController
@@ -72,6 +73,11 @@ public class ReservationController {
 
     @ExceptionHandler(ReservationTimeNotFoundException.class)
     public ResponseEntity<String> handleReservationTimeNotFoundException(ReservationTimeNotFoundException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(ThemeNotFoundException.class)
+    public ResponseEntity<String> handleThemeNotFoundException(ThemeNotFoundException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
