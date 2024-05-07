@@ -63,7 +63,7 @@ public class ReservationRepository {
         return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
     }
 
-    public long save(final Reservation reservation) {
+    public Long save(final Reservation reservation) {
         final SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
                 .addValue("date", reservation.getDate())
@@ -72,13 +72,13 @@ public class ReservationRepository {
         return simpleJdbcInsert.executeAndReturnKey(params).longValue();
     }
 
-    public int deleteById(final long id) {
+    public Integer deleteById(final long id) {
         final String sql = """
                 DELETE FROM reservation WHERE id = ?""";
         return jdbcTemplate.update(sql, id);
     }
 
-    public boolean checkReservationExists(final String date, final long timeId, final long themeId) {
+    public Boolean checkReservationExists(final String date, final long timeId, final long themeId) {
         final String sql = """
                 SELECT CASE WHEN COUNT(*) > 0 THEN TRUE ELSE FALSE END\s
                 FROM reservation AS r\s
@@ -87,7 +87,6 @@ public class ReservationRepository {
                 INNER JOIN theme AS t\s
                 ON r.theme_id = t.id\s
                 WHERE r.date = ? AND rt.id = ? AND t.id = ?""";
-        final Boolean result = jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
-        return Boolean.TRUE.equals(result);
+        return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
     }
 }

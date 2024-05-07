@@ -2,6 +2,7 @@ package roomescape.reservation.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationRequestDto;
 import roomescape.reservation.dto.ReservationResponseDto;
 import roomescape.reservation.service.ReservationService;
@@ -20,20 +21,37 @@ public class ReservationController {
 
     @GetMapping
     public ResponseEntity<List<ReservationResponseDto>> findAll() {
-        return ResponseEntity.ok(reservationService.findAll());
+        final List<Reservation> reservations = reservationService.findAll();
+
+        final List<ReservationResponseDto> reservationResponseDtos = changeToReservationResponseDtos(reservations);
+
+        return ResponseEntity.ok(reservationResponseDtos);
     }
 
     @PostMapping
     public ResponseEntity<ReservationResponseDto> save(@RequestBody final ReservationRequestDto request) {
-        final ReservationResponseDto responseDto = reservationService.save(request);
-        final String url = "/reservations/" + responseDto.id();
-        
-        return ResponseEntity.created(URI.create(url)).body(responseDto);
+        final Reservation reservation = reservationService.save(request);
+
+        final ReservationResponseDto reservationResponseDto = changeToReservationResponseDto(reservation);
+        final String url = "/reservations/" + reservationResponseDto.id();
+
+        return ResponseEntity.created(URI.create(url)).body(reservationResponseDto);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") final long id) {
         reservationService.deleteById(id);
+
         return ResponseEntity.noContent().build();
+    }
+
+    private ReservationResponseDto changeToReservationResponseDto(final Reservation reservation) {
+        return new ReservationResponseDto(reservation);
+    }
+
+    private List<ReservationResponseDto> changeToReservationResponseDtos(final List<Reservation> reservations) {
+        return reservations.stream()
+                .map(this::changeToReservationResponseDto)
+                .toList();
     }
 }

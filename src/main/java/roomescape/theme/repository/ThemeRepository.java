@@ -36,7 +36,13 @@ public class ThemeRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
-    public long save(final Theme theme) {
+    public Theme findById(long themeId) {
+        final String sql = """
+                SELECT * FROM theme WHERE id = ?""";
+        return jdbcTemplate.queryForObject(sql, ROW_MAPPER, themeId);
+    }
+
+    public Long save(final Theme theme) {
         final SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", theme.getName())
                 .addValue("description", theme.getDescription())
@@ -44,7 +50,7 @@ public class ThemeRepository {
         return simpleJdbcInsert.executeAndReturnKey(params).longValue();
     }
 
-    public int deleteById(final long id) {
+    public Integer deleteById(final long id) {
         final String sql = """
                 DELETE FROM theme WHERE id = ?""";
         return jdbcTemplate.update(sql, id);

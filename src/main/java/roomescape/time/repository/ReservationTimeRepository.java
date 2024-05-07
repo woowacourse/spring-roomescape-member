@@ -34,10 +34,10 @@ public class ReservationTimeRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public long save(final ReservationTime reservationTime) {
-        final SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("start_at", reservationTime.getStartAt().toString());
-        return simpleJdbcInsert.executeAndReturnKey(params).longValue();
+    public List<ReservationTime> findAll() {
+        final String sql = """
+                SELECT * FROM reservation_time""";
+        return jdbcTemplate.query(sql, TIME_ROW_MAPPER);
     }
 
     public ReservationTime findById(final long id) {
@@ -46,10 +46,10 @@ public class ReservationTimeRepository {
         return jdbcTemplate.queryForObject(sql, TIME_ROW_MAPPER, id);
     }
 
-    public List<ReservationTime> findAll() {
-        final String sql = """
-                SELECT * FROM reservation_time""";
-        return jdbcTemplate.query(sql, TIME_ROW_MAPPER);
+    public long save(final ReservationTime reservationTime) {
+        final SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("start_at", reservationTime.getStartAt().toString());
+        return simpleJdbcInsert.executeAndReturnKey(params).longValue();
     }
 
     public int deleteById(final long id) {
