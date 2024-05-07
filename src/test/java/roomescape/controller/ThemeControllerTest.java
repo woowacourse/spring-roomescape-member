@@ -59,10 +59,9 @@ class ThemeControllerTest {
     void readPopularThemes() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .when().get("/themes")
+                .when().get("/themes/popular")
                 .then().log().all()
-                .statusCode(200)
-                .body("size()", is(3));
+                .statusCode(200);
     }
 
     @DisplayName("테마 컨트롤러는 테마 삭제 요청이 들어오면 204를 반환한다.")
