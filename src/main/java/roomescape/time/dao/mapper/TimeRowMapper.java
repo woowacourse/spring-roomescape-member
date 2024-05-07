@@ -13,7 +13,7 @@ public class TimeRowMapper implements RowMapper<ReservationTime> {
 
     @Override
     public ReservationTime mapRow(ResultSet resultSet, int rowNum) throws SQLException {
-        return ReservationTime.of(
+        return ReservationTime.createWithId(
                 resultSet.getLong("id"),
                 resultSet.getString("start_at")
         );

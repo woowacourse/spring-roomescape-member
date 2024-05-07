@@ -14,6 +14,6 @@ public record ReservationRequestDto(
         @Min(value = 1, message = "올바른 예약 테마 ID를 입력해야 합니다.") long themeId) {
 
     public Reservation toReservation(final ReservationTime reservationTime, final Theme theme) {
-        return Reservation.of(null, name, date, reservationTime, theme);
+        return Reservation.createWithOutId(name, date, reservationTime, theme);
     }
 }

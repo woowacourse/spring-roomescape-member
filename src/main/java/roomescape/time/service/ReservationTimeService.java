@@ -29,12 +29,12 @@ public class ReservationTimeService {
     }
 
     public ReservationTime save(final ReservationTimeRequestDto requestDto) {
-        final ReservationTime reservationTime = ReservationTime.of(null, requestDto.startAt());
+        final ReservationTime reservationTime = ReservationTime.createWithOutId(requestDto.startAt());
         if (reservationTimeDao.checkExistTime(reservationTime)) {
             throw new DuplicatedDataException("이미 해당 예약 시간이 존재합니다.");
         }
         final long id = reservationTimeDao.save(requestDto.toReservationTime());
-        return new ReservationTime(id, reservationTime);
+        return ReservationTime.createWithId(id, reservationTime);
     }
 
     public void deleteById(final long id) {

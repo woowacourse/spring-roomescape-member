@@ -22,7 +22,7 @@ class TimeRowMapperTest {
         rs.addRow(1, "23:59");
         rs.next();
 
-        ReservationTime reservationTime = ReservationTime.of(1L, "23:59");
+        ReservationTime reservationTime = ReservationTime.createWithId(1L, "23:59");
         assertThat(timeRowMapper.mapRow(rs, 1)).isEqualTo(reservationTime);
     }
 }

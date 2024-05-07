@@ -15,15 +15,15 @@ public class ReservationRowMapper implements RowMapper<Reservation> {
 
     @Override
     public Reservation mapRow(final ResultSet resultSet, final int rowNum) throws SQLException {
-        return Reservation.of(
+        return Reservation.createWithId(
                 resultSet.getLong("reservation_id"),
                 resultSet.getString("reservation_name"),
                 resultSet.getString("date"),
-                ReservationTime.of(
+                ReservationTime.createWithId(
                         resultSet.getLong("time_id"),
                         resultSet.getString("time_value")
                 ),
-                new Theme(
+                Theme.createWithId(
                         resultSet.getLong("theme_id"),
                         resultSet.getString("theme_name"),
                         resultSet.getString("description"),

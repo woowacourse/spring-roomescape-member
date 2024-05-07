@@ -42,9 +42,9 @@ public class ReservationService {
         final Reservation reservation = requestDto.toReservation(reservationTime, theme);
 
         validateReservationAvailable(reservation);
-        
+
         final long reservationId = reservationDao.save(reservation);
-        return new Reservation(reservationId, reservation);
+        return Reservation.createWithId(reservationId, reservation);
     }
 
     private Theme findTheme(final ReservationRequestDto requestDto) {

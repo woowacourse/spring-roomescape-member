@@ -17,31 +17,35 @@ public class Reservation {
     private final ReservationTime time;
     private final Theme theme;
 
-    private Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time, final Theme theme) {
+    private Reservation(final Long id, final String name, final String date, final ReservationTime time, final Theme theme) {
+        validateInvalidName(name);
+        validateDateIsNotNull(date);
         this.id = id;
         this.name = name;
-        this.date = date;
+        this.date = LocalDate.parse(date, DATE_FORMAT);
         this.time = time;
         this.theme = theme;
     }
 
-    public Reservation(final Long id, final Reservation reservation) {
-        this(id, reservation.name, reservation.date, reservation.getTime(), reservation.getTheme());
+    public static Reservation createWithId(final Long id, final String name, final String date, final ReservationTime time, final Theme theme) {
+        return new Reservation(id, name, date, time, theme);
     }
 
-    public static Reservation of(final Long id, final String name, final String date, final ReservationTime time, final Theme theme) {
-        validateInvalidName(name);
-        validateDateIsNotNull(date);
-        return new Reservation(id, name, LocalDate.parse(date, DATE_FORMAT), time, theme);
+    public static Reservation createWithId(final Long id, final Reservation reservation) {
+        return new Reservation(id, reservation.name, reservation.date.toString(), reservation.time, reservation.theme);
     }
 
-    private static void validateInvalidName(final String name) {
+    public static Reservation createWithOutId(final String name, final String date, final ReservationTime time, final Theme theme) {
+        return new Reservation(null, name, date, time, theme);
+    }
+
+    private void validateInvalidName(final String name) {
         if (Objects.isNull(name) || name.isBlank()) {
             throw new InvalidNameException("예약자명이 null 이거나 공백인 경우 저장을 할 수 없습니다.");
         }
     }
 
-    private static void validateDateIsNotNull(final String date) {
+    private void validateDateIsNotNull(final String date) {
         if (Objects.isNull(date)) {
             throw new NullPointerException("날짜가 null인 경우 저장을 할 수 없습니다.");
         }

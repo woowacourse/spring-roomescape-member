@@ -14,11 +14,11 @@ class ReservationTimeTest {
     @Test
     void validateTimeExist() {
         assertAll(
-                () -> assertThatThrownBy(() -> ReservationTime.of(1L, null))
+                () -> assertThatThrownBy(() -> ReservationTime.createWithId(1L, (String) null))
                         .isInstanceOf(NullPointerException.class),
-                () -> assertThatThrownBy(() -> ReservationTime.of(1L, "25:00"))
+                () -> assertThatThrownBy(() -> ReservationTime.createWithId(1L, "25:00"))
                         .isInstanceOf(DateTimeParseException.class),
-                () -> assertThatThrownBy(() -> ReservationTime.of(1L, "15:68"))
+                () -> assertThatThrownBy(() -> ReservationTime.createWithId(1L, "15:68"))
                         .isInstanceOf(DateTimeParseException.class)
         );
     }

@@ -10,24 +10,28 @@ public class ReservationTime {
     private final Long id;
     private final LocalTime startAt;
 
-    private ReservationTime(final Long id, final LocalTime startAt) {
-        this.id = id;
-        this.startAt = startAt;
-    }
-
-    public static ReservationTime of(final Long id, final String startAt) {
+    private ReservationTime(final Long id, final String startAt) {
         validateTimeIsNotNull(startAt);
-        return new ReservationTime(id, LocalTime.parse(startAt, TIME_FORMAT));
+        this.id = id;
+        this.startAt = LocalTime.parse(startAt, TIME_FORMAT);
     }
 
-    private static void validateTimeIsNotNull(final String time) {
+    public static ReservationTime createWithOutId(final String startAt) {
+        return new ReservationTime(null, startAt);
+    }
+
+    public static ReservationTime createWithId(final Long id, final ReservationTime reservationTime) {
+        return new ReservationTime(id, reservationTime.startAt.toString());
+    }
+
+    public static ReservationTime createWithId(final Long id, final String startAt) {
+        return new ReservationTime(id, startAt);
+    }
+
+    private void validateTimeIsNotNull(final String time) {
         if (Objects.isNull(time)) {
             throw new NullPointerException("시간인 null인 경우 저장을 할 수 없습니다.");
         }
-    }
-
-    public ReservationTime(final Long id, final ReservationTime reservationTime) {
-        this(id, reservationTime.startAt);
     }
 
     public boolean checkPastTime() {

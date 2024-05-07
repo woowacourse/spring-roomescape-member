@@ -32,9 +32,9 @@ class ReservationRowMapperTest {
         rs.addRow(1, "hotea", LocalDate.MAX.toString(), 1, "10:00", 1, "정글 모험", "열대 정글의 심연을 탐험하세요.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         rs.next();
 
-        Reservation reservation = Reservation.of(1L, "hotea", LocalDate.MAX.toString(),
-                ReservationTime.of(1L, "10:00"),
-                new Theme(1L, "정글 모험", "열대 정글의 심연을 탐험하세요.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg")
+        Reservation reservation = Reservation.createWithId(1L, "hotea", LocalDate.MAX.toString(),
+                ReservationTime.createWithId(1L, "10:00"),
+                Theme.createWithId(1L, "정글 모험", "열대 정글의 심연을 탐험하세요.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg")
         );
         assertThat(reservationRowMapper.mapRow(rs, 1)).isEqualTo(reservation);
     }

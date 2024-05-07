@@ -33,7 +33,7 @@ public class ThemeService {
             throw new DuplicatedDataException("이미 해당 테마가 존재합니다.");
         }
         final long id = themeDao.save(theme);
-        return new Theme(id, theme);
+        return Theme.createWithId(id, theme);
     }
 
     public void deleteById(final long id) {

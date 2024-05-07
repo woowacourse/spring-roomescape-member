@@ -32,9 +32,9 @@ class ReservationDaoTest {
     @Autowired
     private ThemeDao themeDao;
 
-    private final ReservationTime reservationTime = ReservationTime.of(1L, "10:00");
-    private final Theme theme = new Theme(1L, "정글 모험", "열대 정글의 심연을 탐험하세요.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-    private final Reservation reservation = Reservation.of(1L, "hotea", LocalDate.MAX.toString(), reservationTime, theme);
+    private final ReservationTime reservationTime = ReservationTime.createWithId(1L, "10:00");
+    private final Theme theme = Theme.createWithId(1L, "정글 모험", "열대 정글의 심연을 탐험하세요.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+    private final Reservation reservation = Reservation.createWithId(1L, "hotea", LocalDate.MAX.toString(), reservationTime, theme);
 
     @Test
     @DisplayName("특정 예약을 생성할 수 있다.")
