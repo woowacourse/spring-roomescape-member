@@ -179,7 +179,7 @@ class AdminReservationTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400)
-                .body(containsString("[ERROR] 예약이 찼어요 ㅜㅜ 죄송해요~~"));
+                .body(containsString("[ERROR] 예약이 종료되었습니다"));
     }
 
     @DisplayName("부적절한 테마로 예약하는 경우 400 오류를 반환한다.")

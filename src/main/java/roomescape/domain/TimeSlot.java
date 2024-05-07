@@ -7,10 +7,6 @@ public class TimeSlot {
     private final LocalTime startAt;
 
     public TimeSlot(Long id, LocalTime startAt) {
-        if (startAt == null) {
-            throw new IllegalArgumentException("올바르지 않은 예약 시간입니다.");
-        }
-
         this.id = id;
         this.startAt = startAt;
     }
