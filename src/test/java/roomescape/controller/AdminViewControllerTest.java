@@ -1,48 +1,38 @@
 package roomescape.controller;
 
-import io.restassured.RestAssured;
-import org.junit.jupiter.api.BeforeEach;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@WebMvcTest(AdminViewController.class)
 class AdminViewControllerTest {
 
-    @LocalServerPort
-    private int port;
-
-    @BeforeEach
-    void setUp() {
-        RestAssured.port = port;
-    }
+    @Autowired
+    private MockMvc mockMvc;
 
     @Test
     @DisplayName("홈 화면을 요청하면 200 OK을 응답한다.")
-    void adminPageTest() {
-        RestAssured.given().log().all()
-                .when().get("/admin")
-                .then().log().all()
-                .statusCode(200);
+    void adminPageTest() throws Exception {
+        mockMvc.perform(get("/admin"))
+                .andExpect(status().isOk());
     }
 
     @Test
     @DisplayName("예약 관리 페이지를 요청하면 200 OK를 반환한다.")
-    void reservationPageTest() {
-        RestAssured.given().log().all()
-                .when().get("/admin/reservation")
-                .then().log().all()
-                .statusCode(200);
+    void reservationPageTest() throws Exception {
+        mockMvc.perform(get("/admin/reservation"))
+                .andExpect(status().isOk());
     }
 
     @Test
     @DisplayName("테마 관리 페이지를 요청하면 200 OK를 반환한다.")
-    void themePageTest() {
-        RestAssured.given().log().all()
-                .when().get("/admin/theme")
-                .then().log().all()
-                .statusCode(200);
+    void themePageTest() throws Exception {
+        mockMvc.perform(get("/admin/theme"))
+                .andExpect(status().isOk());
     }
 }
