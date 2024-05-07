@@ -89,12 +89,12 @@ public class ReservationDao {
         return Optional.ofNullable(DataAccessUtils.singleResult(reservations));
     }
 
-    public Boolean hasTime(Long timeId) {
+    public Boolean hasReservationForTimeId(Long timeId) {
         String sql = "SELECT EXISTS(SELECT * FROM reservation WHERE time_id = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
     }
 
-    public Boolean hasTheme(Long themeId) {
+    public Boolean hasReservationForThemeId(Long themeId) {
         String sql = "SELECT EXISTS(SELECT * FROM reservation WHERE theme_id = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, themeId);
     }

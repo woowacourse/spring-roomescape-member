@@ -38,7 +38,7 @@ public class ReservationThemeService {
     }
 
     public void deleteTheme(Long id) {
-        if (reservationDao.hasTheme(id)) {
+        if (reservationDao.hasReservationForThemeId(id)) {
             throw new IllegalStateException("예약이 존재하는 테마는 삭제할 수 없습니다.");
         }
         reservationThemeDao.deleteById(id);

@@ -26,7 +26,7 @@ public class ReservationTimeService {
         this.reservationThemeDao = reservationThemeDao;
     }
 
-    public TimeResponse insertReservationTime(TimeRequest timeRequest) {
+    public TimeResponse insertTime(TimeRequest timeRequest) {
         validateDuplicate(timeRequest.startAt());
         TimeInsertCondition insertCondition = new TimeInsertCondition(timeRequest.startAt());
         ReservationTime inserted = reservationTimeDao.insert(insertCondition);
@@ -34,7 +34,7 @@ public class ReservationTimeService {
         return new TimeResponse(inserted);
     }
 
-    public List<TimeResponse> getAllReservationTimes() {
+    public List<TimeResponse> getAllTimes() {
         return reservationTimeDao.findAll().stream()
                 .map(TimeResponse::new)
                 .toList();
@@ -49,8 +49,8 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    public void deleteReservationTime(Long id) {
-        if (reservationDao.hasTime(id)) {
+    public void deleteTime(Long id) {
+        if (reservationDao.hasReservationForTimeId(id)) {
             throw new IllegalStateException("예약이 존재하는 시간은 삭제할 수 없습니다.");
         }
         reservationTimeDao.deleteById(id);
