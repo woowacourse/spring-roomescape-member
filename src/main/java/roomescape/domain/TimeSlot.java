@@ -1,5 +1,8 @@
 package roomescape.domain;
 
+import roomescape.exception.ErrorType;
+import roomescape.exception.InvalidClientRequestException;
+
 import java.time.LocalTime;
 
 public class TimeSlot {
@@ -8,7 +11,7 @@ public class TimeSlot {
 
     public TimeSlot(Long id, LocalTime startAt) {
         if (startAt == null) {
-            throw new IllegalArgumentException("올바르지 않은 예약 시간입니다.");
+            throw new InvalidClientRequestException(ErrorType.EMPTY_VALUE_NOT_ALLOWED, "startAt", "");
         }
 
         this.id = id;
