@@ -3,8 +3,6 @@ package roomescape.reservation.service;
 import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import roomescape.reservation.repository.ReservationRepository;
-import roomescape.reservation.repository.ReservationTimeRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.dto.request.AvailableTimeRequest;
@@ -13,6 +11,8 @@ import roomescape.reservation.dto.response.AvailableTimeResponse;
 import roomescape.reservation.dto.response.ReservationTimeResponse;
 import roomescape.reservation.handler.exception.CustomException;
 import roomescape.reservation.handler.exception.ExceptionCode;
+import roomescape.reservation.repository.ReservationRepository;
+import roomescape.reservation.repository.ReservationTimeRepository;
 
 @Service
 public class ReservationTimeService {
