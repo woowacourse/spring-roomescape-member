@@ -37,9 +37,5 @@ public record ReservationRequest(String name, LocalDate date, Long timeId, Long 
         if (themeId <= 0) {
             throw new InvalidClientRequestException(ErrorType.INVALID_THEME, "themeId", themeId.toString());
         }
-
-        if (date.isBefore(LocalDate.now())) {
-            throw new InvalidClientRequestException(ErrorType.PAST_DATE_NOT_ALLOWED, "date", date.format(DATE_TIME_FORMAT));
-        }
     }
 }
