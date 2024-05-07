@@ -30,19 +30,16 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> findEntireReservationList() {
-        return reservationDao.findAll()
-                .stream()
-                .map(ReservationResponse::from)
-                .toList();
+        return reservationDao.findAll();
     }
 
     public ReservationResponse create(final ReservationRequest reservationRequest) {
         TimeSlot timeSlot = getTimeSlot(reservationRequest);
         Theme theme = getTheme(reservationRequest);
-        validate(reservationRequest.date(), timeSlot, theme);
-        Long reservationId = reservationDao.create(reservationRequest);
-        Reservation reservation = reservationRequest.toEntity(reservationId, timeSlot, theme);
-        return ReservationResponse.from(reservation);
+        validateDuplicatedReservation(reservationRequest.date(), timeSlot.getId(), theme.getId());
+        Reservation newReservation = new Reservation(reservationRequest.name(), reservationRequest.date(), timeSlot, theme);
+        Long reservationId = reservationDao.create(newReservation);
+        return ReservationResponse.from(reservationId, newReservation);
     }
 
     private TimeSlot getTimeSlot(final ReservationRequest reservationRequest) {
@@ -53,17 +50,6 @@ public class ReservationService {
     private Theme getTheme(final ReservationRequest reservationRequest) {
         return themeDao.findById(reservationRequest.themeId())
                 .orElseThrow(() -> new InvalidClientRequestException(ErrorType.NOT_EXIST_TIME, "themeId", reservationRequest.themeId().toString()));
-    }
-
-    private void validate(final LocalDate date, final TimeSlot timeSlot, final Theme theme) {
-        validateReservation(date, timeSlot);
-        validateDuplicatedReservation(date, timeSlot.getId(), theme.getId());
-    }
-
-    private void validateReservation(final LocalDate date, final TimeSlot time) {
-        if (time == null || (time.isTimeBeforeNow() && !date.isAfter(LocalDate.now()))) {
-            throw new ReservationFailException("지나간 날짜와 시간으로 예약할 수 없습니다.");
-        }
     }
 
     private void validateDuplicatedReservation(final LocalDate date, final Long timeId, final Long themeId) {

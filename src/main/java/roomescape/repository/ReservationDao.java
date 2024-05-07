@@ -9,15 +9,16 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.TimeSlot;
-import roomescape.domain.dto.ReservationRequest;
+import roomescape.domain.dto.ReservationResponse;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Repository
 public class ReservationDao {
-    private static final RowMapper<Reservation> rowMapper =
-            (resultSet, rowNum) -> new Reservation(
+    private static final RowMapper<ReservationResponse> rowMapper =
+            (resultSet, rowNum) -> new ReservationResponse(
                     resultSet.getLong("id"),
                     resultSet.getString("name"),
                     LocalDate.parse(resultSet.getString("date")),
@@ -36,7 +37,7 @@ public class ReservationDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public List<Reservation> findAll() {
+    public List<ReservationResponse> findAll() {
         String sql = """
                 SELECT
                     r.id as reservation_id,
@@ -55,12 +56,12 @@ public class ReservationDao {
         return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public Long create(final ReservationRequest reservationRequest) {
+    public Long create(final Reservation reservation) {
         SqlParameterSource parameterSource = new MapSqlParameterSource()
-                .addValue("name", reservationRequest.name())
-                .addValue("date", reservationRequest.date())
-                .addValue("time_id", reservationRequest.timeId())
-                .addValue("theme_id", reservationRequest.themeId());
+                .addValue("name", reservation.getName())
+                .addValue("date", reservation.getDate())
+                .addValue("time_id", reservation.getTime().getId())
+                .addValue("theme_id", reservation.getTheme().getId());
         return jdbcInsert.executeAndReturnKey(parameterSource).longValue();
     }
 
@@ -72,7 +73,7 @@ public class ReservationDao {
     public boolean isExists(final LocalDate date, final Long timeId, final Long themeId) {
         String sql = """
                 SELECT
-                count(*)
+                    count(*)
                 FROM reservation
                 WHERE date = ? AND time_id = ? AND theme_id = ?
                 """;
@@ -89,22 +90,16 @@ public class ReservationDao {
         return jdbcTemplate.queryForObject(sql, Integer.class, themeId) != 0;
     }
 
-    public List<Reservation> findByDateAndThemeId(final LocalDate date, final Long themeId) {
+    public List<TimeSlot> findByDateAndThemeId(final LocalDate date, final Long themeId) {
         String sql = """
-                    SELECT
-                    r.id as reservation_id,
-                    r.name,
-                    r.date,
+                SELECT
                     t.id as time_id,
                     t.start_at as time_value,
-                    th.id as theme_id,
-                    th.name as theme_name,
-                    th.description as theme_description,
-                    th.thumbnail as theme_thumbnail
-                    FROM reservation as r
-                    INNER JOIN reservation_time as t ON r.time_id = t.id
-                    INNER JOIN theme as th ON r.theme_id = th.id where date = ? and theme_id = ?
+                FROM reservation as r
+                INNER JOIN reservation_time as t ON r.time_id = t.id
+                INNER JOIN theme as th ON r.theme_id = th.id where date = ? and theme_id = ?
                 """;
-        return jdbcTemplate.query(sql, rowMapper, date, themeId);
+        return jdbcTemplate.query(sql, (rowMapper, rowNumber) ->
+                new TimeSlot(rowMapper.getLong("time_id"), LocalTime.parse(rowMapper.getString("time_value"))), date, themeId);
     }
 }

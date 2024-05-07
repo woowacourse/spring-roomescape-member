@@ -1,8 +1,5 @@
 package roomescape.domain.dto;
 
-import roomescape.domain.Reservation;
-import roomescape.domain.Theme;
-import roomescape.domain.TimeSlot;
 import roomescape.exception.ErrorType;
 import roomescape.exception.InvalidClientRequestException;
 
@@ -14,10 +11,6 @@ public record ReservationRequest(String name, LocalDate date, Long timeId, Long 
 
     public ReservationRequest {
         isValid(name, date, timeId, themeId);
-    }
-
-    public Reservation toEntity(final Long id, final TimeSlot time, final Theme theme) {
-        return new Reservation(id, name, date, time, theme);
     }
 
     private void isValid(final String name, final LocalDate date, final Long timeId, final Long themeId) {
