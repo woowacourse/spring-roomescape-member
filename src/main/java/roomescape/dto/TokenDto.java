@@ -1,6 +1,6 @@
 package roomescape.dto;
 
-public record TokenResponse(
+public record TokenDto(
         String accessToken
 ) {
 }
