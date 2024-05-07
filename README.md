@@ -316,7 +316,7 @@ id : long
   - email을 로그인의 id로, password를 비밀번호로 사용
 - [x] GET /login 요청 시 로그인 폼이 있는 페이지 응답(templates/login.html)
 - [x] GET /signup 요청 시 회원가입 폼이 있는 페이지 응답(templates/signup.html)
-- [ ] POST /signup 요청 시 로그인 폼에 입력한 email, password 값을 body에 포함
+- [x] POST /signup 요청 시 로그인 폼에 입력한 email, password 값을 body에 포함
   - 응답 시 201 created 응답
   - /login 으로 로케이터 지정
 - [ ] POST /login 요청 시 로그인 폼에 입력한 email, password 값을 body에 포함

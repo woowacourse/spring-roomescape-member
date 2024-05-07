@@ -4,13 +4,9 @@ public class MemberName {
 
     private final String value;
 
-    private MemberName(String value) {
+    public MemberName(String value) {
         validateValue(value);
         this.value = value;
-    }
-
-    public MemberName(MemberEmail email) {
-        this(email.extractName());
     }
 
     private void validateValue(String value) {

@@ -29,10 +29,6 @@ public class MemberEmail {
         }
     }
 
-    public String extractName() {
-        return value.substring(0, value.indexOf("@"));
-    }
-
     public String getValue() {
         return value;
     }
