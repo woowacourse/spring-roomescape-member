@@ -20,7 +20,7 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.ReservationTime;
 import roomescape.exceptions.ClientException;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 @Sql("/initial_test_data.sql")
 class ReservationTimeH2RepositoryTest {

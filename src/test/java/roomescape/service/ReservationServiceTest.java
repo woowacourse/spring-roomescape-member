@@ -21,7 +21,7 @@ import roomescape.dto.request.ReservationAddRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.exceptions.ClientException;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @Sql("/initial_test_data.sql")
 class

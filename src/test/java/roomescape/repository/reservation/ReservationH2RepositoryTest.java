@@ -22,7 +22,7 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 @Sql("/initial_test_data.sql")
 class ReservationH2RepositoryTest {
