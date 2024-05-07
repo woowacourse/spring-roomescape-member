@@ -10,9 +10,17 @@ public record ThemeRequest(
 ) {
 
     public ThemeRequest {
-        Objects.requireNonNull(name);
-        Objects.requireNonNull(description);
-        Objects.requireNonNull(thumbnail);
+        validateNonNull();
+    }
+
+    private void validateNonNull() {
+        try {
+            Objects.requireNonNull(name);
+            Objects.requireNonNull(description);
+            Objects.requireNonNull(thumbnail);
+        } catch (NullPointerException e) {
+            throw new IllegalArgumentException("null 값이 될 수 없습니다.");
+        }
     }
 
     public Theme toEntity() {

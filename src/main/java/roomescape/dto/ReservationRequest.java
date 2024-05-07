@@ -15,10 +15,18 @@ public record ReservationRequest(
 ) {
 
     public ReservationRequest {
-        Objects.requireNonNull(name);
-        Objects.requireNonNull(date);
-        Objects.requireNonNull(timeId);
-        Objects.requireNonNull(themeId);
+        validateNonNull();
+    }
+
+    private void validateNonNull() {
+        try {
+            Objects.requireNonNull(name);
+            Objects.requireNonNull(date);
+            Objects.requireNonNull(timeId);
+            Objects.requireNonNull(themeId);
+        } catch (NullPointerException e) {
+            throw new IllegalArgumentException("null 값이 될 수 없습니다.");
+        }
     }
 
     public Reservation toEntity(ReservationTime reservationTime, Theme theme) {
