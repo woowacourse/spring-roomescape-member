@@ -7,9 +7,9 @@ import roomescape.domain.TimeSlot;
 import java.time.LocalDate;
 
 public record ReservationResponse(Long id, String name, LocalDate date, TimeSlot time, Theme theme) {
-    public static ReservationResponse from(final Long id, final Reservation reservation) {
+    public static ReservationResponse from(final Reservation reservation) {
         return new ReservationResponse(
-                id,
+                reservation.getId(),
                 reservation.getName(),
                 reservation.getDate(),
                 reservation.getTime(),

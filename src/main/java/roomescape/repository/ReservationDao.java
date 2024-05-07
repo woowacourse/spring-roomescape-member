@@ -9,15 +9,14 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.TimeSlot;
-import roomescape.domain.dto.ReservationResponse;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Repository
 public class ReservationDao {
-    private static final RowMapper<ReservationResponse> rowMapper =
-            (resultSet, rowNum) -> new ReservationResponse(
+    private static final RowMapper<Reservation> rowMapper =
+            (resultSet, rowNum) -> new Reservation(
                     resultSet.getLong("id"),
                     resultSet.getString("name"),
                     LocalDate.parse(resultSet.getString("date")),
@@ -36,7 +35,7 @@ public class ReservationDao {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public List<ReservationResponse> findAll() {
+    public List<Reservation> findAll() {
         String sql = """
                 SELECT
                     r.id as reservation_id,

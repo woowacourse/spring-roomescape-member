@@ -29,7 +29,10 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> findEntireReservationList() {
-        return reservationDao.findAll();
+        return reservationDao.findAll()
+                .stream()
+                .map(ReservationResponse::from)
+                .toList();
     }
 
     public ReservationResponse create(final ReservationRequest reservationRequest) {
@@ -38,8 +41,8 @@ public class ReservationService {
         final Theme theme = getTheme(reservationRequest);
         final ReservationCreateValidator reservationCreateValidator = new ReservationCreateValidator(reservationRequest, timeSlot, theme);
         final Reservation newReservation = reservationCreateValidator.create();
-        final Long reservationId = reservationDao.create(newReservation);
-        return ReservationResponse.from(reservationId, newReservation);
+        final Long id = reservationDao.create(newReservation);
+        return ReservationResponse.from(newReservation.with(id));
     }
 
     private TimeSlot getTimeSlot(final ReservationRequest reservationRequest) {
