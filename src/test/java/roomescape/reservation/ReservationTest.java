@@ -54,11 +54,11 @@ class ReservationTest {
                 .statusCode(201)
                 .body("id", is(2));
 
-//        RestAssured.given().log().all()
-//                .when().get("/reservations")
-//                .then().log().all()
-//                .statusCode(200)
-//                .body("size()", is(2));
+        RestAssured.given().log().all()
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(2));
     }
 
     @DisplayName("예약 조회 API 테스트")
