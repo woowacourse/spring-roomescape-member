@@ -35,7 +35,7 @@ class ClientRankTest {
         String endDate = "2024-05-02";
         String count = "10";
         final List<ThemeResponse> themeResponses = RestAssured.given().log().all()
-                .when().get("/rank?startDate={startDate}&endDate={endDate}&count={count}", startDate, endDate, count)
+                .when().get("/themes/rank?startDate={startDate}&endDate={endDate}&count={count}", startDate, endDate, count)
                 .then().extract().body()
                 .jsonPath().getList("", ThemeResponse.class);
         ThemeResponse actual = themeResponses.get(0);
@@ -50,7 +50,7 @@ class ClientRankTest {
         String endDate = "2024-05-02";
         String count = "10";
         RestAssured.given().log().all()
-                .when().get("/rank?startDate={startDate}&endDate={endDate}&count={count}", invalidStartDate, endDate, count)
+                .when().get("/themes/rank?startDate={startDate}&endDate={endDate}&count={count}", invalidStartDate, endDate, count)
                 .then().log().all()
                 .statusCode(400)
                 .body(containsString("startDate"));

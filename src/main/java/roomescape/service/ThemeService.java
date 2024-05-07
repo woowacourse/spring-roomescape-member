@@ -8,6 +8,7 @@ import roomescape.exception.DeleteNotAllowException;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ThemeDao;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -36,6 +37,11 @@ public class ThemeService {
     public void delete(final Long id) {
         validateExistReservation(id);
         themeDao.delete(id);
+    }
+
+    public List<ThemeResponse> getPopularThemeList(final LocalDate startDate, final LocalDate endDate, final Long count) {
+        final List<Theme> themes = themeDao.findPopularThemeByDate(startDate, endDate, count);
+        return themes.stream().map(ThemeResponse::from).toList();
     }
 
     private void validateExistReservation(final Long id) {

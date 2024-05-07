@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
 import roomescape.domain.dto.ThemeRequest;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,5 +61,17 @@ public class ThemeDao {
         } catch (DataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    public List<Theme> findPopularThemeByDate(final LocalDate fromDate, final LocalDate toDate, final Long count) {
+        String sql = """
+                 select theme.id, theme.name, theme.description, theme.thumbnail
+                 from theme
+                 left join reservation on reservation.theme_id = theme.id
+                 and reservation.date between ? and ?
+                 group by theme.id
+                 order by count(theme_id) desc limit ?;
+                """;
+        return jdbcTemplate.query(sql, rowMapper, fromDate, toDate, count);
     }
 }

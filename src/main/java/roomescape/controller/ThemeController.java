@@ -7,6 +7,7 @@ import roomescape.domain.dto.ThemeResponse;
 import roomescape.service.ThemeService;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -34,5 +35,10 @@ public class ThemeController {
     public ResponseEntity<Void> delete(@PathVariable final Long id) {
         themeService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/rank")
+    public ResponseEntity<List<ThemeResponse>> read(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate, @RequestParam Long count) {
+        return ResponseEntity.ok(themeService.getPopularThemeList(startDate, endDate, count));
     }
 }
