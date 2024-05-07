@@ -36,8 +36,8 @@ public class ThemeService {
                 .toList();
     }
 
-    public List<FindPopularThemesResponse> getPopularThemes() {
-        return themeRepository.findOrderByReservation().stream()
+    public List<FindPopularThemesResponse> getPopularThemes(int size) {
+        return themeRepository.findOrderByReservation(size).stream()
                 .map(FindPopularThemesResponse::from)
                 .toList();
     }

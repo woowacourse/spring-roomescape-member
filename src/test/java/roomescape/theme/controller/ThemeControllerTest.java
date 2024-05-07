@@ -1,5 +1,6 @@
 package roomescape.theme.controller;
 
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -8,7 +9,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -18,8 +18,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import roomescape.common.DateTimeFormatConfiguration;
-import roomescape.reservationtime.controller.ReservationTimeController;
-import roomescape.reservationtime.dto.response.CreateReservationTimeResponse;
 import roomescape.theme.dto.request.CreateThemeRequest;
 import roomescape.theme.dto.response.CreateThemeResponse;
 import roomescape.theme.dto.response.FindPopularThemesResponse;
@@ -105,30 +103,43 @@ class ThemeControllerTest {
     @DisplayName("인기 테마 목록 조회 요청 성공 시 200과 해당 정보를 반환한다.")
     void getPopularThemes() throws Exception {
         // given
-        List<Theme> themes = ThemeFixture.get(2);
-        Theme theme1 = themes.get(0);
-        Theme theme2 = themes.get(1);
+        int size = 3;
+        List<Theme> themes = ThemeFixture.get(size);
+        List<FindPopularThemesResponse> findPopularThemesResponses = themes.stream()
+                .map(FindPopularThemesResponse::from)
+                .toList();
 
         // stub
-        Mockito.when(themeService.getPopularThemes())
-                .thenReturn(List.of(
-                        FindPopularThemesResponse.from(theme1),
-                        FindPopularThemesResponse.from(theme2)));
+        Mockito.when(themeService.getPopularThemes(size))
+                .thenReturn(findPopularThemesResponses);
+
+        // when & then
+        mockMvc.perform(MockMvcRequestBuilders.get("/themes/popular?size=" + size)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpectAll(
+                        jsonPath("size()").value(size),
+                        status().isOk()
+                );
+    }
+
+    @Test
+    @DisplayName("인기 테마 목록 조회 시 갯수를 지정하지 않을 경우, 항상 10개를 반환한다.")
+    void getPopularThemes_WithoutSize() throws Exception {
+        // given
+        List<Theme> themes = ThemeFixture.get(20);
+        List<FindPopularThemesResponse> findPopularThemesResponses = themes.stream()
+                .map(FindPopularThemesResponse::from)
+                .toList();
+
+        // stub
+        Mockito.when(themeService.getPopularThemes(anyInt()))
+                .thenReturn(findPopularThemesResponses);
 
         // when & then
         mockMvc.perform(MockMvcRequestBuilders.get("/themes/popular")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpectAll(
-                        jsonPath("$[0].id").value(theme1.getId()),
-                        jsonPath("$[0].name").value(theme1.getName()),
-                        jsonPath("$[0].description").value(theme1.getDescription()),
-                        jsonPath("$[0].thumbnail").value(theme1.getThumbnail()),
-
-                        jsonPath("$[1].id").value(theme2.getId()),
-                        jsonPath("$[1].name").value(theme2.getName()),
-                        jsonPath("$[1].description").value(theme2.getDescription()),
-                        jsonPath("$[1].thumbnail").value(theme2.getThumbnail()),
-
+                        jsonPath("size()").value(10),
                         status().isOk()
                 );
     }

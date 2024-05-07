@@ -75,7 +75,7 @@ class ThemeServiceTest {
         reservationRepository.save(ReservationFixture.getOne(savedThemes.get(5)));
 
         // when & then
-        assertThat(themeService.getPopularThemes()).containsExactly(
+        assertThat(themeService.getPopularThemes(10)).containsExactly(
                 FindPopularThemesResponse.from(savedThemes.get(7)),
                 FindPopularThemesResponse.from(savedThemes.get(7)),
                 FindPopularThemesResponse.from(savedThemes.get(5))

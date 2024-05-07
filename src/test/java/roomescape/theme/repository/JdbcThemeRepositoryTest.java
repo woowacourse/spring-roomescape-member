@@ -86,7 +86,7 @@ class JdbcThemeRepositoryTest {
         reservationRepository.save(ReservationFixture.getOne(secondTheme));
 
         // when
-        List<Theme> orderByReservations = themeRepository.findOrderByReservation();
+        List<Theme> orderByReservations = themeRepository.findOrderByReservation(10);
 
         // then
         assertAll(

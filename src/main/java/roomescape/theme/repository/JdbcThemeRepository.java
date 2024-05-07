@@ -66,7 +66,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findOrderByReservation() {
+    public List<Theme> findOrderByReservation(int size) {
         String sql = """
                 select t.id, t.name, t.description, t.thumbnail, count(t.id) as count
                 from theme as t
@@ -74,9 +74,9 @@ public class JdbcThemeRepository implements ThemeRepository {
                 on r.theme_id = t.id
                 group by t.id
                 order by count desc
-                limit 10
+                limit ? 
                 """;
-        return jdbcTemplate.query(sql, themeRowMapper);
+        return jdbcTemplate.query(sql, themeRowMapper, size);
     }
 
     @Override

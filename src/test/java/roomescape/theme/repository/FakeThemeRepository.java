@@ -46,13 +46,14 @@ public class FakeThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findOrderByReservation() {
+    public List<Theme> findOrderByReservation(int size) {
         Map<Theme, List<Reservation>> reservationsByTheme = reservationRepository.findAll().stream()
                 .collect(Collectors.groupingBy(Reservation::getTheme));
 
         return reservationsByTheme.entrySet().stream()
                 .sorted(Comparator.comparing(entry -> -entry.getValue().size()))
                 .flatMap(themeListEntry -> themeListEntry.getValue().stream().map(Reservation::getTheme))
+                .limit(size)
                 .toList();
     }
 
