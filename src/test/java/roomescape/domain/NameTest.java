@@ -22,6 +22,6 @@ class NameTest {
     void EmptyValueThrowsException(String value) {
         assertThatThrownBy(() -> new Name(value))
                 .isInstanceOf(InvalidInputException.class)
-                .hasMessage("이름에 공백을 입력할 수 없습니다.");
+                .hasMessage("사용자 이름에 공백을 입력할 수 없습니다.");
     }
 }

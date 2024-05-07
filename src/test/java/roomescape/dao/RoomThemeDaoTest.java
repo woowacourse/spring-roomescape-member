@@ -129,4 +129,13 @@ class RoomThemeDaoTest {
         // then
         assertThat(roomThemeDao.findAll()).isEmpty();
     }
+
+    @DisplayName("삭제 대상이 존재하지 않으면 false를 반환한다.")
+    @Test
+    void returnFalseWhenNotDeleted() {
+        // given & when
+        boolean deleted = roomThemeDao.deleteById(1L);
+        // then
+        assertThat(deleted).isFalse();
+    }
 }

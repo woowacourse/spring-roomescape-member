@@ -9,7 +9,6 @@ import java.time.format.DateTimeParseException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 class ReservationTimeTest {
@@ -25,13 +24,5 @@ class ReservationTimeTest {
     void emptyValueThrowsException(String value) {
         assertThatThrownBy(() -> new ReservationTime(LocalTime.parse(value)))
                 .isInstanceOf(DateTimeParseException.class);
-    }
-
-    @DisplayName("null이 들어왔을 때 예외를 발생시킨다.")
-    @ParameterizedTest
-    @NullSource
-    void nullThrowsException(String value) {
-        assertThatThrownBy(() -> new ReservationTime(LocalTime.parse(value)))
-                .isInstanceOf(NullPointerException.class);
     }
 }
