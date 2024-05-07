@@ -3,11 +3,11 @@ package roomescape.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
-import roomescape.dto.app.ThemeAppRequest;
 import roomescape.exception.DuplicatedThemeException;
 import roomescape.exception.ReservationExistsException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
+import roomescape.service.dto.SaveThemeDto;
 
 @Service
 public class ThemeService {
@@ -22,13 +22,13 @@ public class ThemeService {
         this.reservationRepository = reservationRepository;
     }
 
-    public Theme save(ThemeAppRequest request) {
+    public Theme save(SaveThemeDto request) {
         Theme theme = new Theme(request.name(), request.description(), request.thumbnail());
         validateDuplication(request);
         return themeRepository.save(theme);
     }
 
-    private void validateDuplication(ThemeAppRequest request) {
+    private void validateDuplication(SaveThemeDto request) {
         if (themeRepository.isNameExists(request.name())) {
             throw new DuplicatedThemeException();
         }

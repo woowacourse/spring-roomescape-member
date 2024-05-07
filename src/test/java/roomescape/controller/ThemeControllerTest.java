@@ -15,7 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
-import roomescape.dto.web.ThemeWebRequest;
+import roomescape.controller.dto.CreateThemeRequest;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
@@ -37,7 +37,7 @@ class ThemeControllerTest {
     @DisplayName("성공: 테마 생성 -> 201")
     @Test
     void create() {
-        ThemeWebRequest request = new ThemeWebRequest("방탈출3", "설명3", "https://url3");
+        CreateThemeRequest request = new CreateThemeRequest("방탈출3", "설명3", "https://url3");
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
@@ -82,7 +82,7 @@ class ThemeControllerTest {
     @DisplayName("실패: 잘못된 포맷으로 테마 생성 -> 400")
     @Test
     void create_IllegalTheme() {
-        ThemeWebRequest request = new ThemeWebRequest("방탈출3", "설명3", "ftp://url3");
+        CreateThemeRequest request = new CreateThemeRequest("방탈출3", "설명3", "ftp://url3");
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
@@ -95,7 +95,7 @@ class ThemeControllerTest {
     @DisplayName("실패: 중복 테마 추가 -> 400")
     @Test
     void create_Duplicate() {
-        ThemeWebRequest request = new ThemeWebRequest("방탈출1", "설명1", "https://url1");
+        CreateThemeRequest request = new CreateThemeRequest("방탈출1", "설명1", "https://url1");
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)

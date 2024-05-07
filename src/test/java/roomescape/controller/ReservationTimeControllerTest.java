@@ -13,7 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
-import roomescape.dto.web.ReservationTimeWebRequest;
+import roomescape.controller.dto.CreateTimeRequest;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
@@ -25,7 +25,7 @@ class ReservationTimeControllerTest {
     @DisplayName("성공: 예약 시간 저장 -> 201")
     @Test
     void create() {
-        ReservationTimeWebRequest request = new ReservationTimeWebRequest(1L, "10:00");
+        CreateTimeRequest request = new CreateTimeRequest(1L, "10:00");
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
@@ -66,7 +66,7 @@ class ReservationTimeControllerTest {
     @DisplayName("실패: 잘못된 포맷의 예약 시간 저장 -> 400")
     @Test
     void create_IllegalTimeFormat() {
-        ReservationTimeWebRequest request = new ReservationTimeWebRequest(1L, "24:00");
+        CreateTimeRequest request = new CreateTimeRequest(1L, "24:00");
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
@@ -97,7 +97,7 @@ class ReservationTimeControllerTest {
     void create_Duplicate() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('10:00')");
 
-        ReservationTimeWebRequest request = new ReservationTimeWebRequest(1L, "10:00");
+        CreateTimeRequest request = new CreateTimeRequest(1L, "10:00");
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)

@@ -14,7 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
-import roomescape.dto.web.ReservationWebRequest;
+import roomescape.controller.dto.CreateReservationRequest;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
@@ -34,7 +34,7 @@ class ReservationControllerTest {
     @DisplayName("성공: 예약 저장 -> 201")
     @Test
     void reserve() {
-        ReservationWebRequest request = new ReservationWebRequest("brown", "2060-01-01", 1L, 1L);
+        CreateReservationRequest request = new CreateReservationRequest("brown", "2060-01-01", 1L, 1L);
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
@@ -85,7 +85,7 @@ class ReservationControllerTest {
     @DisplayName("실패: 존재하지 않는 time id 예약 -> 400")
     @Test
     void reserve_TimeIdNotFound() {
-        ReservationWebRequest request = new ReservationWebRequest("tre", "2060-01-01", 2L, 1L);
+        CreateReservationRequest request = new CreateReservationRequest("tre", "2060-01-01", 2L, 1L);
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
@@ -98,7 +98,7 @@ class ReservationControllerTest {
     @DisplayName("실패: 존재하지 않는 theme id 예약 -> 400")
     @Test
     void reserve_ThemeIdNotFound() {
-        ReservationWebRequest request = new ReservationWebRequest("tre", "2060-01-01", 1L, 2L);
+        CreateReservationRequest request = new CreateReservationRequest("tre", "2060-01-01", 1L, 2L);
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
@@ -114,7 +114,7 @@ class ReservationControllerTest {
         jdbcTemplate.update(
             "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('brown', '2060-01-01', 1, 1)");
 
-        ReservationWebRequest request = new ReservationWebRequest("tre", "2060-01-01", 1L, 1L);
+        CreateReservationRequest request = new CreateReservationRequest("tre", "2060-01-01", 1L, 1L);
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
@@ -127,7 +127,7 @@ class ReservationControllerTest {
     @DisplayName("실패: 과거 시간 예약 -> 400")
     @Test
     void reserve_PastTime() {
-        ReservationWebRequest request = new ReservationWebRequest("brown", "2000-01-01", 1L, 1L);
+        CreateReservationRequest request = new CreateReservationRequest("brown", "2000-01-01", 1L, 1L);
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)

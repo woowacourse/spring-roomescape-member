@@ -13,16 +13,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.controller.dto.CreateTimeRequest;
+import roomescape.controller.dto.CreateTimeResponse;
+import roomescape.controller.dto.ErrorMessageResponse;
+import roomescape.controller.dto.GetTimeAndAvailabilityResponse;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.app.ReservationTimeAppRequest;
-import roomescape.dto.app.ReservationTimeAppResponse;
-import roomescape.dto.web.ErrorMessageResponse;
-import roomescape.dto.web.ReservationTimeUserWebResponse;
-import roomescape.dto.web.ReservationTimeWebRequest;
-import roomescape.dto.web.ReservationTimeWebResponse;
 import roomescape.exception.DuplicatedReservationTimeException;
 import roomescape.exception.ReservationExistsException;
 import roomescape.service.ReservationTimeService;
+import roomescape.service.dto.FindTimeAndAvailabilityDto;
+import roomescape.service.dto.SaveReservationTimeDto;
 
 @RestController
 @RequestMapping("/times")
@@ -35,13 +35,13 @@ public class ReservationTimeController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTimeWebResponse> create(@RequestBody ReservationTimeWebRequest request) {
+    public ResponseEntity<CreateTimeResponse> create(@RequestBody CreateTimeRequest request) {
         ReservationTime newReservationTime = reservationTimeService.save(
-            new ReservationTimeAppRequest(request.startAt()));
+            new SaveReservationTimeDto(request.startAt()));
         Long id = newReservationTime.getId();
 
         return ResponseEntity.created(URI.create("/times/" + id))
-            .body(new ReservationTimeWebResponse(
+            .body(new CreateTimeResponse(
                 id,
                 newReservationTime.getStartAt()
             ));
@@ -55,24 +55,24 @@ public class ReservationTimeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationTimeWebResponse>> getReservationTimes() {
+    public ResponseEntity<List<CreateTimeResponse>> getReservationTimes() {
         List<ReservationTime> reservationTimes = reservationTimeService.findAll();
-        List<ReservationTimeWebResponse> reservationTimeWebResponses = reservationTimes.stream()
-            .map(reservationTime -> new ReservationTimeWebResponse(reservationTime.getId(),
+        List<CreateTimeResponse> createReservationTimeRespons = reservationTimes.stream()
+            .map(reservationTime -> new CreateTimeResponse(reservationTime.getId(),
                 reservationTime.getStartAt()))
             .toList();
 
-        return ResponseEntity.ok(reservationTimeWebResponses);
+        return ResponseEntity.ok(createReservationTimeRespons);
     }
 
     @GetMapping("/user")
-    public ResponseEntity<List<ReservationTimeUserWebResponse>> getReservationTimesWithAvailability(
+    public ResponseEntity<List<GetTimeAndAvailabilityResponse>> getReservationTimesWithAvailability(
         @RequestParam LocalDate date, @RequestParam Long id) {
 
-        List<ReservationTimeAppResponse> appResponses = reservationTimeService
+        List<FindTimeAndAvailabilityDto> appResponses = reservationTimeService
             .findAllWithBookAvailability(date, id);
-        List<ReservationTimeUserWebResponse> webResponses = appResponses.stream()
-            .map(response -> new ReservationTimeUserWebResponse(
+        List<GetTimeAndAvailabilityResponse> webResponses = appResponses.stream()
+            .map(response -> new GetTimeAndAvailabilityResponse(
                 response.id(),
                 response.startAt(),
                 response.alreadyBooked())

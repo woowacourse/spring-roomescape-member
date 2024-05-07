@@ -11,18 +11,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.controller.dto.CreateReservationRequest;
+import roomescape.controller.dto.CreateReservationResponse;
+import roomescape.controller.dto.CreateThemeResponse;
+import roomescape.controller.dto.CreateTimeResponse;
+import roomescape.controller.dto.ErrorMessageResponse;
 import roomescape.domain.Reservation;
-import roomescape.dto.app.ReservationAppRequest;
-import roomescape.dto.web.ErrorMessageResponse;
-import roomescape.dto.web.ReservationTimeWebResponse;
-import roomescape.dto.web.ReservationWebRequest;
-import roomescape.dto.web.ReservationWebResponse;
-import roomescape.dto.web.ThemeWebResponse;
 import roomescape.exception.DuplicatedReservationException;
 import roomescape.exception.PastReservationException;
 import roomescape.exception.ReservationTimeNotFoundException;
 import roomescape.exception.ThemeNotFoundException;
 import roomescape.service.ReservationService;
+import roomescape.service.dto.SaveReservationDto;
 
 @RestController
 @RequestMapping("/reservations")
@@ -35,18 +35,17 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationWebResponse> reserve(@RequestBody ReservationWebRequest request) {
+    public ResponseEntity<CreateReservationResponse> reserve(@RequestBody CreateReservationRequest request) {
         Reservation newReservation = reservationService.save(
-            new ReservationAppRequest(request.name(), request.date(), request.timeId(), request.themeId()));
+            new SaveReservationDto(request.name(), request.date(), request.timeId(), request.themeId()));
         Long id = newReservation.getId();
 
-        ReservationWebResponse reservationWebResponse = new ReservationWebResponse(id, newReservation.getName(),
+        CreateReservationResponse response = new CreateReservationResponse(id, newReservation.getName(),
             newReservation.getDate(),
-            ReservationTimeWebResponse.from(newReservation),
-            ThemeWebResponse.from(newReservation));
+            CreateTimeResponse.from(newReservation),
+            CreateThemeResponse.from(newReservation));
 
-        return ResponseEntity.created(URI.create("/reservations/" + id))
-            .body(reservationWebResponse);
+        return ResponseEntity.created(URI.create("/reservations/" + id)).body(response);
     }
 
     @DeleteMapping("/{id}")
@@ -57,23 +56,23 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationWebResponse>> getReservations() {
+    public ResponseEntity<List<CreateReservationResponse>> getReservations() {
         List<Reservation> reservations = reservationService.findAll();
-        List<ReservationWebResponse> reservationWebResponse = reservations.stream().
-            map(reservation -> new ReservationWebResponse(
+        List<CreateReservationResponse> createReservationResponse = reservations.stream().
+            map(reservation -> new CreateReservationResponse(
                 reservation.getId(),
                 reservation.getName(),
                 reservation.getDate(),
-                ReservationTimeWebResponse.from(reservation),
-                ThemeWebResponse.from(reservation)
+                CreateTimeResponse.from(reservation),
+                CreateThemeResponse.from(reservation)
             )).toList();
 
-        return ResponseEntity.ok(reservationWebResponse);
+        return ResponseEntity.ok(createReservationResponse);
     }
 
-
     @ExceptionHandler(ReservationTimeNotFoundException.class)
-    public ResponseEntity<ErrorMessageResponse> handleReservationTimeNotFoundException(ReservationTimeNotFoundException e) {
+    public ResponseEntity<ErrorMessageResponse> handleReservationTimeNotFoundException(
+        ReservationTimeNotFoundException e) {
         ErrorMessageResponse response = new ErrorMessageResponse(e.getMessage());
         return ResponseEntity.badRequest().body(response);
     }

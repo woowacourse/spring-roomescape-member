@@ -7,12 +7,12 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.app.ReservationTimeAppRequest;
-import roomescape.dto.app.ReservationTimeAppResponse;
 import roomescape.exception.DuplicatedReservationTimeException;
 import roomescape.exception.ReservationExistsException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.service.dto.FindTimeAndAvailabilityDto;
+import roomescape.service.dto.SaveReservationTimeDto;
 
 @Service
 public class ReservationTimeService {
@@ -26,8 +26,8 @@ public class ReservationTimeService {
         this.reservationRepository = reservationRepository;
     }
 
-    public ReservationTime save(ReservationTimeAppRequest request) {
-        LocalTime parsedTime = parseTime(request.startAt());
+    public ReservationTime save(SaveReservationTimeDto dto) {
+        LocalTime parsedTime = parseTime(dto.startAt());
         validateDuplication(parsedTime);
         ReservationTime newReservationTime = new ReservationTime(parsedTime);
 
@@ -59,14 +59,14 @@ public class ReservationTimeService {
         return reservationTimeRepository.findAll();
     }
 
-    public List<ReservationTimeAppResponse> findAllWithBookAvailability(LocalDate date, Long themeId) {
+    public List<FindTimeAndAvailabilityDto> findAllWithBookAvailability(LocalDate date, Long themeId) {
         List<Reservation> reservations = reservationRepository.findAllByDateAndThemeId(date, themeId);
         List<ReservationTime> reservedTimes = reservations.stream()
             .map(Reservation::getTime)
             .toList();
 
         return findAll().stream()
-            .map(time -> new ReservationTimeAppResponse(
+            .map(time -> new FindTimeAndAvailabilityDto(
                     time.getId(),
                     time.getStartAt(),
                     reservedTimes.contains(time)

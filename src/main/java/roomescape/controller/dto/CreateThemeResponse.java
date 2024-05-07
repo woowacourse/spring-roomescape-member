@@ -1,11 +1,11 @@
-package roomescape.dto.web;
+package roomescape.controller.dto;
 
 import roomescape.domain.Reservation;
 
-public record ThemeWebResponse(Long id, String name, String description, String thumbnail) {
+public record CreateThemeResponse(Long id, String name, String description, String thumbnail) {
 
-    public static ThemeWebResponse from(Reservation newReservation) {
-        return new ThemeWebResponse(
+    public static CreateThemeResponse from(Reservation newReservation) {
+        return new CreateThemeResponse(
             newReservation.getTheme().getId(),
             newReservation.getTheme().getName(),
             newReservation.getTheme().getDescription(),

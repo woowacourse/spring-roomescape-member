@@ -19,11 +19,11 @@ import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.app.ReservationTimeAppRequest;
 import roomescape.exception.DuplicatedReservationTimeException;
 import roomescape.exception.ReservationExistsException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
+import roomescape.service.dto.SaveReservationTimeDto;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
@@ -44,7 +44,7 @@ class ReservationTimeServiceTest {
     @DisplayName("성공: 예약 시간을 저장하고, id 값과 함께 반환한다.")
     @Test
     void save() {
-        ReservationTime saved = reservationTimeService.save(new ReservationTimeAppRequest(rawTime));
+        ReservationTime saved = reservationTimeService.save(new SaveReservationTimeDto(rawTime));
         assertThat(saved).isEqualTo(new ReservationTime(saved.getId(), localTime));
     }
 
@@ -54,23 +54,23 @@ class ReservationTimeServiceTest {
     @NullAndEmptySource
     void save_IllegalTimeFormat(String invalidRawTime) {
         assertThatThrownBy(
-            () -> reservationTimeService.save(new ReservationTimeAppRequest(invalidRawTime))
+            () -> reservationTimeService.save(new SaveReservationTimeDto(invalidRawTime))
         ).isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("실패: 이미 존재하는 시간을 추가할 수 없다.")
     @Test
     void save_TimeAlreadyExists() {
-        reservationTimeService.save(new ReservationTimeAppRequest(rawTime));
+        reservationTimeService.save(new SaveReservationTimeDto(rawTime));
         assertThatThrownBy(
-            () -> reservationTimeService.save(new ReservationTimeAppRequest(rawTime))
+            () -> reservationTimeService.save(new SaveReservationTimeDto(rawTime))
         ).isInstanceOf(DuplicatedReservationTimeException.class);
     }
 
     @DisplayName("실패: 시간을 사용하는 예약이 존재하는 경우 시간을 삭제할 수 없다.")
     @Test
     void delete_ReservationExists() {
-        ReservationTime savedTime = reservationTimeService.save(new ReservationTimeAppRequest(rawTime));
+        ReservationTime savedTime = reservationTimeService.save(new SaveReservationTimeDto(rawTime));
 
         Theme savedTheme = themeRepository.save(
             new Theme("themeName", "themeDesc", "https://")

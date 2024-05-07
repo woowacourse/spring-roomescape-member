@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.app.ReservationAppRequest;
 import roomescape.exception.DuplicatedReservationException;
 import roomescape.exception.PastReservationException;
 import roomescape.exception.ReservationTimeNotFoundException;
@@ -16,6 +15,7 @@ import roomescape.exception.ThemeNotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
+import roomescape.service.dto.SaveReservationDto;
 
 @Service
 public class ReservationService {
@@ -34,13 +34,13 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public Reservation save(ReservationAppRequest request) {
-        LocalDate date = parseDate(request.date());
-        ReservationTime time = findTime(request.timeId());
-        Theme theme = findTheme(request.themeId());
-        Reservation reservation = new Reservation(request.name(), date, time, theme);
+    public Reservation save(SaveReservationDto dto) {
+        LocalDate date = parseDate(dto.date());
+        ReservationTime time = findTime(dto.timeId());
+        Theme theme = findTheme(dto.themeId());
+        Reservation reservation = new Reservation(dto.name(), date, time, theme);
         validatePastReservation(date, time);
-        validateDuplication(date, request.timeId(), request.themeId());
+        validateDuplication(date, dto.timeId(), dto.themeId());
 
         return reservationRepository.save(reservation);
     }

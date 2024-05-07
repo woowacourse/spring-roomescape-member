@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.controller.dto.CreateThemeRequest;
+import roomescape.controller.dto.CreateThemeResponse;
+import roomescape.controller.dto.ErrorMessageResponse;
 import roomescape.domain.Theme;
-import roomescape.dto.app.ThemeAppRequest;
-import roomescape.dto.web.ErrorMessageResponse;
-import roomescape.dto.web.ThemeWebRequest;
-import roomescape.dto.web.ThemeWebResponse;
 import roomescape.exception.DuplicatedThemeException;
 import roomescape.exception.ReservationExistsException;
 import roomescape.service.ThemeService;
+import roomescape.service.dto.SaveThemeDto;
 
 @RestController
 @RequestMapping("/themes")
@@ -31,13 +31,13 @@ public class ThemeController {
     }
 
     @PostMapping
-    public ResponseEntity<ThemeWebResponse> create(@RequestBody ThemeWebRequest request) {
+    public ResponseEntity<CreateThemeResponse> create(@RequestBody CreateThemeRequest request) {
         Theme newTheme = themeService.save(
-            new ThemeAppRequest(request.name(), request.description(), request.thumbnail()));
+            new SaveThemeDto(request.name(), request.description(), request.thumbnail()));
         Long id = newTheme.getId();
 
         return ResponseEntity.created(URI.create("/themes/" + id))
-            .body(new ThemeWebResponse(
+            .body(new CreateThemeResponse(
                 id,
                 newTheme.getName(),
                 newTheme.getDescription(),
@@ -46,10 +46,10 @@ public class ThemeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ThemeWebResponse>> findAll() {
-        List<ThemeWebResponse> response = themeService.findAll()
+    public ResponseEntity<List<CreateThemeResponse>> findAll() {
+        List<CreateThemeResponse> response = themeService.findAll()
             .stream()
-            .map(theme -> new ThemeWebResponse(
+            .map(theme -> new CreateThemeResponse(
                 theme.getId(),
                 theme.getName(),
                 theme.getDescription(),
@@ -61,10 +61,10 @@ public class ThemeController {
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<ThemeWebResponse>> findPopular() {
-        List<ThemeWebResponse> response = themeService.findPopular()
+    public ResponseEntity<List<CreateThemeResponse>> findPopular() {
+        List<CreateThemeResponse> response = themeService.findPopular()
             .stream()
-            .map(theme -> new ThemeWebResponse(
+            .map(theme -> new CreateThemeResponse(
                 theme.getId(),
                 theme.getName(),
                 theme.getDescription(),

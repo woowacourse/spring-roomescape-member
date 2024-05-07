@@ -17,11 +17,11 @@ import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.app.ThemeAppRequest;
 import roomescape.exception.DuplicatedThemeException;
 import roomescape.exception.ReservationExistsException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.service.dto.SaveThemeDto;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
@@ -45,7 +45,7 @@ class ThemeServiceTest {
     @NullAndEmptySource
     void save_IllegalName(String invalidName) {
         assertThatThrownBy(
-            () -> themeService.save(new ThemeAppRequest(invalidName, description, thumbnail))
+            () -> themeService.save(new SaveThemeDto(invalidName, description, thumbnail))
         ).isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -54,7 +54,7 @@ class ThemeServiceTest {
     @NullAndEmptySource
     void save_IllegalDescription(String invalidDescription) {
         assertThatThrownBy(
-            () -> themeService.save(new ThemeAppRequest(name, invalidDescription, thumbnail))
+            () -> themeService.save(new SaveThemeDto(name, invalidDescription, thumbnail))
         ).isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -64,24 +64,24 @@ class ThemeServiceTest {
     @ValueSource(strings = {"ftp://hello.jpg"})
     void save_IllegalThumbnail(String invalidThumbnail) {
         assertThatThrownBy(
-            () -> themeService.save(new ThemeAppRequest(name, description, invalidThumbnail))
+            () -> themeService.save(new SaveThemeDto(name, description, invalidThumbnail))
         ).isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("실패: 이름이 동일한 방탈출 테마를 저장하면 예외 발생")
     @Test
     void save_DuplicatedName() {
-        themeService.save(new ThemeAppRequest(name, description, thumbnail));
+        themeService.save(new SaveThemeDto(name, description, thumbnail));
 
         assertThatThrownBy(
-            () -> themeService.save(new ThemeAppRequest(name, "d", "https://d"))
+            () -> themeService.save(new SaveThemeDto(name, "d", "https://d"))
         ).isInstanceOf(DuplicatedThemeException.class);
     }
 
     @DisplayName("실패: 예약에 사용되는 테마 삭제 시도 시 예외 발생")
     @Test
     void delete_ReservationExists() {
-        Theme savedTheme = themeService.save(new ThemeAppRequest(name, description, thumbnail));
+        Theme savedTheme = themeService.save(new SaveThemeDto(name, description, thumbnail));
 
         ReservationTime savedTime = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("10:00")));
 

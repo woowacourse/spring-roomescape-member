@@ -20,11 +20,11 @@ import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.app.ReservationAppRequest;
 import roomescape.exception.DuplicatedReservationException;
 import roomescape.exception.PastReservationException;
 import roomescape.exception.ReservationTimeNotFoundException;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.service.dto.SaveReservationDto;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
@@ -57,7 +57,7 @@ class ReservationServiceTest {
     @DisplayName("성공: 예약을 저장하고, 해당 예약을 id값과 함께 반환한다.")
     @Test
     void save() {
-        Reservation saved = reservationService.save(new ReservationAppRequest(name, rawDate, timeId, themeId));
+        Reservation saved = reservationService.save(new SaveReservationDto(name, rawDate, timeId, themeId));
         assertThat(saved)
             .isEqualTo(new Reservation(saved.getId(), name, date, reservationTime, theme));
     }
@@ -67,7 +67,7 @@ class ReservationServiceTest {
     @NullAndEmptySource
     void save_IllegalName(String invalidName) {
         assertThatThrownBy(
-            () -> reservationService.save(new ReservationAppRequest(invalidName, rawDate, timeId, themeId))
+            () -> reservationService.save(new SaveReservationDto(invalidName, rawDate, timeId, themeId))
         ).isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -76,7 +76,7 @@ class ReservationServiceTest {
     @ValueSource(strings = {"2030-13-01", "2030-12-32"})
     void save_IllegalDate(String invalidRawDate) {
         assertThatThrownBy(
-            () -> reservationService.save(new ReservationAppRequest(name, invalidRawDate, timeId, themeId))
+            () -> reservationService.save(new SaveReservationDto(name, invalidRawDate, timeId, themeId))
         ).isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -84,17 +84,17 @@ class ReservationServiceTest {
     @Test
     void save_TimeIdDoesntExist() {
         assertThatThrownBy(
-            () -> reservationService.save(new ReservationAppRequest(name, rawDate, 2L, themeId))
+            () -> reservationService.save(new SaveReservationDto(name, rawDate, 2L, themeId))
         ).isInstanceOf(ReservationTimeNotFoundException.class);
     }
 
     @DisplayName("실패: 중복 예약을 생성하면 예외가 발생한다.")
     @Test
     void save_Duplication() {
-        reservationService.save(new ReservationAppRequest(name, rawDate, timeId, themeId));
+        reservationService.save(new SaveReservationDto(name, rawDate, timeId, themeId));
 
         assertThatThrownBy(
-            () -> reservationService.save(new ReservationAppRequest(name, rawDate, timeId, themeId))
+            () -> reservationService.save(new SaveReservationDto(name, rawDate, timeId, themeId))
         ).isInstanceOf(DuplicatedReservationException.class);
     }
 
@@ -104,7 +104,7 @@ class ReservationServiceTest {
         String yesterday = LocalDate.now().minusDays(1).toString();
 
         assertThatThrownBy(
-            () -> reservationService.save(new ReservationAppRequest(name, yesterday, timeId, themeId))
+            () -> reservationService.save(new SaveReservationDto(name, yesterday, timeId, themeId))
         ).isInstanceOf(PastReservationException.class);
     }
 
@@ -117,7 +117,7 @@ class ReservationServiceTest {
         ReservationTime savedTime = reservationTimeRepository.save(new ReservationTime(oneMinuteAgo));
 
         assertThatThrownBy(
-            () -> reservationService.save(new ReservationAppRequest(name, today, savedTime.getId(), themeId))
+            () -> reservationService.save(new SaveReservationDto(name, today, savedTime.getId(), themeId))
         ).isInstanceOf(PastReservationException.class);
     }
 }
