@@ -9,8 +9,8 @@ import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.dto.response.ThemeResponse;
-import roomescape.dto.request.ThemeSaveRequest;
+import roomescape.reservation.dto.request.ThemeSaveRequest;
+import roomescape.reservation.dto.response.ThemeResponse;
 
 import java.util.Arrays;
 import java.util.List;

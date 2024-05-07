@@ -10,10 +10,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.dto.response.ReservationTimeResponse;
-import roomescape.dto.request.ReservationTimeSaveRequest;
-import roomescape.dto.response.ThemeResponse;
-import roomescape.dto.request.ThemeSaveRequest;
+import roomescape.reservation.dto.request.ReservationTimeSaveRequest;
+import roomescape.reservation.dto.request.ThemeSaveRequest;
+import roomescape.reservation.dto.response.ReservationTimeResponse;
+import roomescape.reservation.dto.response.ThemeResponse;
 
 import java.time.LocalTime;
 

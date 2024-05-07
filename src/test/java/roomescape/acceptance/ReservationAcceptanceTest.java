@@ -8,9 +8,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
-import roomescape.dto.response.ReservationResponse;
-import roomescape.dto.request.ReservationSaveRequest;
 import roomescape.exception.ErrorResponse;
+import roomescape.reservation.dto.request.ReservationSaveRequest;
+import roomescape.reservation.dto.response.ReservationResponse;
 
 import java.util.Arrays;
 import java.util.List;
