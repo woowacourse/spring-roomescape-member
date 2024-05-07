@@ -33,15 +33,23 @@ public class ReservationTimeController {
 
     @GetMapping
     public ResponseEntity<List<ReservationTimeResponse>> getReservationTimes() {
-        List<ReservationTime> reservationTimes = reservationTimeService.findReservationTimes();
-        return ResponseEntity.ok(ReservationTimeResponse.listOf(reservationTimes));
+        List<ReservationTimeResponse> reservationTimeResponses = reservationTimeService.findReservationTimes().stream()
+                .map(ReservationTimeResponse::of)
+                .toList();
+        ;
+        return ResponseEntity.ok(reservationTimeResponses);
     }
 
     @GetMapping("/available")
     public ResponseEntity<List<ReservationTimeIsBookedResponse>> getReservationTimesIsBooked(@RequestParam LocalDate date,
                                                                                              @RequestParam Long themeId) {
         Map<ReservationTime, Boolean> isBooked = reservationTimeService.findIsBooked(date, themeId);
-        return ResponseEntity.ok(ReservationTimeIsBookedResponse.listOf(isBooked));
+        List<ReservationTimeIsBookedResponse> reservationTimeIsBookedResponses = isBooked.keySet().stream()
+                .map(reservationTime -> ReservationTimeIsBookedResponse.of(
+                        reservationTime,
+                        isBooked.get(reservationTime))
+                ).toList();
+        return ResponseEntity.ok(reservationTimeIsBookedResponses);
     }
 
     @PostMapping

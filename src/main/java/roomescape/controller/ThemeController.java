@@ -29,14 +29,18 @@ public class ThemeController {
 
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> getThemes() {
-        List<Theme> themes = themeService.findThemes();
-        return ResponseEntity.ok(ThemeResponse.listOf(themes));
+        List<ThemeResponse> themeResponses = themeService.findThemes().stream()
+                .map(ThemeResponse::of)
+                .toList();
+        return ResponseEntity.ok(themeResponses);
     }
 
     @GetMapping("/ranks")
     public ResponseEntity<List<ThemeResponse>> getThemeRanks() {
-        List<Theme> themes = themeService.findTop10Recent7Days();
-        return ResponseEntity.ok(ThemeResponse.listOf(themes));
+        List<ThemeResponse> themeResponses = themeService.findTop10Recent7Days().stream()
+                .map(ThemeResponse::of)
+                .toList();
+        return ResponseEntity.ok(themeResponses);
     }
 
     @PostMapping
