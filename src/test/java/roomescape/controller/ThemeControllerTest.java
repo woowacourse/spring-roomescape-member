@@ -104,9 +104,9 @@ class ThemeControllerTest {
         //given
         ThemeRequest themeRequest = new ThemeRequest("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        long id = (int) RestAssured.given().contentType(ContentType.JSON).body(themeRequest)
+        long id = ((Number) RestAssured.given().contentType(ContentType.JSON).body(themeRequest)
                 .when().post("/themes")
-                .then().extract().body().jsonPath().get("id");
+                .then().extract().body().jsonPath().get("id")).longValue();
 
         //when&then
         RestAssured.given().log().all()
@@ -125,10 +125,10 @@ class ThemeControllerTest {
     @Test
     void findPopularThemes() {
         //given
-        long timeId = (int) RestAssured.given().contentType(ContentType.JSON)
+        long timeId = ((Number) RestAssured.given().contentType(ContentType.JSON)
                 .body(new ReservationTimeCreateRequest("10:00"))
                 .when().post("/times")
-                .then().extract().response().jsonPath().get("id");
+                .then().extract().response().jsonPath().get("id")).longValue();
 
         long theme1Id = createThemeByName("레벨1 탈출");
         long theme2Id = createThemeByName("레벨2 탈출");
@@ -154,9 +154,9 @@ class ThemeControllerTest {
     private long createThemeByName(String name) {
         ThemeRequest themeRequest = new ThemeRequest(name, "우테코 레벨2를 탈출하는 내용입니다.",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        long themeId = (int) RestAssured.given().contentType(ContentType.JSON).body(themeRequest)
+        long themeId = ((Number) RestAssured.given().contentType(ContentType.JSON).body(themeRequest)
                 .when().post("/themes")
-                .then().extract().response().jsonPath().get("id");
+                .then().extract().response().jsonPath().get("id")).longValue();
         return themeId;
     }
 }
