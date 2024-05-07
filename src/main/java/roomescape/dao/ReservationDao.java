@@ -1,7 +1,6 @@
 package roomescape.dao;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,46 +9,29 @@ import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.dao.rowmapper.ReservationRowMapper;
+import roomescape.dao.rowmapper.ThemeRowMapper;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
-import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 @Repository
 public class ReservationDao implements ReservationRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
-    private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> new Reservation(
-            resultSet.getLong("id"),
-            resultSet.getString("name"),
-            LocalDate.parse(resultSet.getString("date")),
-            new ReservationTime(
-                    resultSet.getLong("time_id"),
-                    LocalTime.parse(resultSet.getString("time_start_at"))
-            ),
-            new Theme(
-                    resultSet.getLong("theme_id"),
-                    resultSet.getString("theme_name"),
-                    resultSet.getString("theme_description"),
-                    resultSet.getString("theme_thumbnail")
-            )
-    );
+    private final ReservationRowMapper reservationRowMapper;
+    private final ThemeRowMapper themeRowMapper;
 
-    private final RowMapper<Theme> themeRowMapper = (resultSet, rowNum) -> new Theme(
-            resultSet.getLong("id"),
-            resultSet.getString("name"),
-            resultSet.getString("description"),
-            resultSet.getString("thumbnail")
-    );
-
-    public ReservationDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+    public ReservationDao(JdbcTemplate jdbcTemplate, DataSource dataSource,
+                          ReservationRowMapper reservationRowMapper, ThemeRowMapper themeRowMapper) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
+        this.reservationRowMapper = reservationRowMapper;
+        this.themeRowMapper = themeRowMapper;
     }
 
     @Override

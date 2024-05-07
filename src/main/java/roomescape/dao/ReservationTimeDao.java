@@ -9,9 +9,9 @@ import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.dao.rowmapper.ReservationTimeRowMapper;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 
@@ -19,16 +19,15 @@ import roomescape.domain.ReservationTimeRepository;
 public class ReservationTimeDao implements ReservationTimeRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
-    private final RowMapper<ReservationTime> timeRowMapper = (resultSet, rowNum) -> new ReservationTime(
-            resultSet.getLong("id"),
-            LocalTime.parse(resultSet.getString("start_at"))
-    );
+    private final ReservationTimeRowMapper timeRowMapper;
 
-    public ReservationTimeDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+    public ReservationTimeDao(JdbcTemplate jdbcTemplate, DataSource dataSource,
+                              ReservationTimeRowMapper timeRowMapper) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation_time")
                 .usingGeneratedKeyColumns("id");
+        this.timeRowMapper = timeRowMapper;
     }
 
     @Override

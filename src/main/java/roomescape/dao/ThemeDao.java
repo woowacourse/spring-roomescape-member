@@ -7,9 +7,9 @@ import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.dao.rowmapper.ThemeRowMapper;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 
@@ -17,18 +17,14 @@ import roomescape.domain.ThemeRepository;
 public class ThemeDao implements ThemeRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
-    private final RowMapper<Theme> themeRowMapper = (resultSet, rowNum) -> new Theme(
-            resultSet.getLong("id"),
-            resultSet.getString("name"),
-            resultSet.getString("description"),
-            resultSet.getString("thumbnail")
-    );
+    private final ThemeRowMapper themeRowMapper;
 
-    public ThemeDao(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+    public ThemeDao(JdbcTemplate jdbcTemplate, DataSource dataSource, ThemeRowMapper themeRowMapper) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("theme")
                 .usingGeneratedKeyColumns("id");
+        this.themeRowMapper = themeRowMapper;
     }
 
     @Override
