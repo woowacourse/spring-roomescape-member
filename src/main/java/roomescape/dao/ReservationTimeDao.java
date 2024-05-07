@@ -59,6 +59,11 @@ public class ReservationTimeDao {
         jdbcTemplate.update(sql, id);
     }
 
+    public Boolean hasSameTime(LocalTime time) {
+        String sql = "SELECT EXISTS(SELECT start_at FROM reservation_time WHERE start_at = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, time.toString());
+    }
+
     private RowMapper<ReservationTime> getReservationTimeRowMapper() {
         return (resultSet, numRow) -> new ReservationTime(
                 resultSet.getLong("id"),

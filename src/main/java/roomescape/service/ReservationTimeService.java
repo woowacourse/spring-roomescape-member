@@ -1,6 +1,6 @@
 package roomescape.service;
 
-import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
@@ -27,6 +27,7 @@ public class ReservationTimeService {
     }
 
     public TimeResponse insertReservationTime(TimeRequest timeRequest) {
+        validateDuplicate(timeRequest.startAt());
         TimeInsertCondition insertCondition = new TimeInsertCondition(timeRequest.startAt());
         ReservationTime inserted = reservationTimeDao.insert(insertCondition);
 
@@ -57,5 +58,11 @@ public class ReservationTimeService {
 
     private Boolean isBooked(String date, Long timeId, Long themeId) {
         return reservationDao.hasSameReservation(date, timeId, themeId);
+    }
+
+    private void validateDuplicate(LocalTime time) {
+        if (reservationTimeDao.hasSameTime(time)) {
+            throw new IllegalArgumentException("동일한 시간이 존재합니다.");
+        }
     }
 }
