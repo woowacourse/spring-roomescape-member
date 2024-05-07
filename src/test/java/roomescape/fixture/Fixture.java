@@ -19,7 +19,7 @@ public class Fixture {
     public static final Reservation RESERVATION_1 = new Reservation(1L, "마크", LocalDate.of(2124, 5, 1),
             RESERVATION_TIME_1, THEME_1);
     public static final Reservation RESERVATION_2 = new Reservation(2L, "러너덕", LocalDate.of(2124, 5, 2),
-            RESERVATION_TIME_2, THEME_2);
+            RESERVATION_TIME_1, THEME_2);
     public static final Reservation RESERVATION_3 = new Reservation(3L, "러너덕", LocalDate.of(2124, 5, 3),
-            RESERVATION_TIME_2, THEME_2);
+            RESERVATION_TIME_1, THEME_2);
 }

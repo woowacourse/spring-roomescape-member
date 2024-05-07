@@ -20,6 +20,11 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
+    private static final RowMapper<ReservationTime> ROW_MAPPER =
+            (resultSet, rowNum) -> new ReservationTime(
+                    resultSet.getLong("id"),
+                    resultSet.getTime("start_at").toLocalTime()
+            );
 
     public JdbcReservationTimeRepository(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
@@ -27,12 +32,6 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 .withTableName("reservation_time")
                 .usingGeneratedKeyColumns("id");
     }
-
-    private final RowMapper<ReservationTime> reservationTimeRowMapper =
-            (resultSet, rowNum) -> new ReservationTime(
-                    resultSet.getLong("id"),
-                    resultSet.getTime("start_at").toLocalTime()
-            );
 
     public ReservationTime save(final ReservationTime reservationTime) {
         SqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
@@ -44,14 +43,14 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public List<ReservationTime> findAll() {
         String sql = "select id, start_at from reservation_time";
-        return jdbcTemplate.query(sql, reservationTimeRowMapper);
+        return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
     @Override
     public Optional<ReservationTime> findById(final Long timeId) {
         String sql = "select id, start_at from reservation_time where id = ?";
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, reservationTimeRowMapper, timeId));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, ROW_MAPPER, timeId));
         } catch (EmptyResultDataAccessException emptyResultDataAccessException) {
             return Optional.empty();
         }

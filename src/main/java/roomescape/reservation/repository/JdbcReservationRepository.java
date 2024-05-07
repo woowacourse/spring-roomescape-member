@@ -23,15 +23,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
-
-    public JdbcReservationRepository(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName("reservation")
-                .usingGeneratedKeyColumns("id");
-    }
-
-    private final RowMapper<Reservation> reservationRowMapper =
+    private static final RowMapper<Reservation> ROW_MAPPER =
             (resultSet, rowNum) -> new Reservation(
                     resultSet.getLong("id"),
                     resultSet.getString("name"),
@@ -45,6 +37,13 @@ public class JdbcReservationRepository implements ReservationRepository {
                             resultSet.getString("thumbnail")
                     )
             );
+
+    public JdbcReservationRepository(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName("reservation")
+                .usingGeneratedKeyColumns("id");
+    }
 
     @Override
     public Reservation save(final Reservation reservation) {
@@ -77,7 +76,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 inner join theme as t
                 on r.theme_id = t.id 
                 """;
-        return jdbcTemplate.query(sql, reservationRowMapper);
+        return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
     @Override
@@ -94,7 +93,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 where r.id = ?
                 """;
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, reservationRowMapper, id));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, ROW_MAPPER, id));
         } catch (EmptyResultDataAccessException emptyResultDataAccessException) {
             return Optional.empty();
         }
@@ -113,13 +112,13 @@ public class JdbcReservationRepository implements ReservationRepository {
                 on r.theme_id = t.id 
                 where r.time_id = ?
                 """;
-        return jdbcTemplate.query(sql, reservationRowMapper, timeId);
+        return jdbcTemplate.query(sql, ROW_MAPPER, timeId);
     }
 
     @Override
     public List<Reservation> findAllByThemeId(final Long themeId) {
         String sql = """
-                select r.id, r.name, r.date, 
+                select r.id, r.name, r.date,
                     rt.id as time_id, rt.start_at,
                     t.id as theme_id, t.name as theme_name, t.description, t.thumbnail
                 from reservation as r
@@ -129,13 +128,13 @@ public class JdbcReservationRepository implements ReservationRepository {
                 on r.theme_id = t.id 
                 where r.theme_id = ?
                 """;
-        return jdbcTemplate.query(sql, reservationRowMapper, themeId);
+        return jdbcTemplate.query(sql, ROW_MAPPER, themeId);
     }
 
     @Override
     public List<Reservation> findAllByDateAndThemeId(final LocalDate date, final Long themeId) {
         String sql = """
-                select r.id, r.name, r.date, 
+                select r.id, r.name, r.date,
                     rt.id as time_id, rt.start_at,
                     t.id as theme_id, t.name as theme_name, t.description, t.thumbnail
                 from reservation as r
@@ -145,21 +144,22 @@ public class JdbcReservationRepository implements ReservationRepository {
                 on r.theme_id = t.id 
                 where r.date = ? and r.theme_id = ?
                 """;
-        return jdbcTemplate.query(sql, reservationRowMapper, date, themeId);
+        return jdbcTemplate.query(sql, ROW_MAPPER, date, themeId);
     }
 
     @Override
     public boolean existsByDateAndTimeAndTheme(final LocalDate date, final Long timeId, final Long themeId) {
         String sql = """
-                select count(*)
-                from reservation as r
-                inner join reservation_time as rt
-                on r.time_id = rt.id
-                inner join theme as t
-                on r.theme_id = t.id
-                where r.date = ? and r.time_id = ? and r.theme_id = ?
+                select exists (
+                    select 1
+                    from reservation as r
+                    inner join reservation_time as rt
+                    on r.time_id = rt.id
+                    inner join theme as t
+                    on r.theme_id = t.id
+                    where r.date = ? and r.time_id = ? and r.theme_id = ?)
                 """;
-        return jdbcTemplate.queryForObject(sql, Integer.class, date, timeId, themeId) != 0;
+        return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
     }
 
     @Override

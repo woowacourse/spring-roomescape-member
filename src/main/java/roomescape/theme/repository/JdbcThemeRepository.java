@@ -18,6 +18,13 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
+    private static final RowMapper<Theme> ROW_MAPPER =
+            (resultSet, rowNum) -> new Theme(
+                    resultSet.getLong("id"),
+                    resultSet.getString("name"),
+                    resultSet.getString("description"),
+                    resultSet.getString("thumbnail")
+            );
 
     public JdbcThemeRepository(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
@@ -25,14 +32,6 @@ public class JdbcThemeRepository implements ThemeRepository {
                 .withTableName("theme")
                 .usingGeneratedKeyColumns("id");
     }
-
-    private final RowMapper<Theme> themeRowMapper =
-            (resultSet, rowNum) -> new Theme(
-                    resultSet.getLong("id"),
-                    resultSet.getString("name"),
-                    resultSet.getString("description"),
-                    resultSet.getString("thumbnail")
-            );
 
     @Override
     public Theme save(final Theme theme) {
@@ -49,14 +48,14 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public List<Theme> findAll() {
         String sql = "select id, name, description, thumbnail from theme";
-        return jdbcTemplate.query(sql, themeRowMapper);
+        return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
     @Override
     public Optional<Theme> findById(final Long id) {
         String sql = " select id, name, description, thumbnail from theme where id = ? ";
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, themeRowMapper, id));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, ROW_MAPPER, id));
         } catch (EmptyResultDataAccessException emptyResultDataAccessException) {
             return Optional.empty();
         }
@@ -73,7 +72,7 @@ public class JdbcThemeRepository implements ThemeRepository {
                 order by count desc
                 limit 10
                 """;
-        return jdbcTemplate.query(sql, themeRowMapper);
+        return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
     @Override
