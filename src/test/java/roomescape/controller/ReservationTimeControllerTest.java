@@ -1,6 +1,6 @@
 package roomescape.controller;
 
-import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
@@ -59,8 +59,8 @@ class ReservationTimeControllerTest {
             .when().get("/times")
             .then().log().all()
             .statusCode(200)
-            .body("id", hasItems(1, 2))
-            .body("startAt", hasItems("10:00", "11:00"));
+            .body("id", contains(1, 2))
+            .body("startAt", contains("10:00", "11:00"));
     }
 
     @DisplayName("실패: 잘못된 포맷의 예약 시간 저장 -> 400")

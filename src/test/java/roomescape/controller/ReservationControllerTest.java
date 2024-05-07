@@ -1,6 +1,6 @@
 package roomescape.controller;
 
-import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
@@ -76,10 +76,10 @@ class ReservationControllerTest {
             .then().log().all()
             .statusCode(200)
             .body("size()", is(2))
-            .body("id", hasItems(1, 2))
-            .body("name", hasItems("brown", "tre"))
-            .body("time.id", hasItems(1))
-            .body("theme.id", hasItems(1));
+            .body("id", contains(1, 2))
+            .body("name", contains("brown", "tre"))
+            .body("time.id", contains(1, 1))
+            .body("theme.id", contains(1, 1));
     }
 
     @DisplayName("실패: 존재하지 않는 time id 예약 -> 400")

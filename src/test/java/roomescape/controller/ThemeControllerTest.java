@@ -2,7 +2,6 @@ package roomescape.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
@@ -74,10 +73,10 @@ class ThemeControllerTest {
             .then().log().all()
             .statusCode(200)
             .body("size()", is(2))
-            .body("id", hasItems(1, 2))
-            .body("name", hasItems("방탈출1", "방탈출2"))
-            .body("description", hasItems("설명1", "설명2"))
-            .body("thumbnail", hasItems("https://url1", "https://url2"));
+            .body("id", contains(1, 2))
+            .body("name", contains("방탈출1", "방탈출2"))
+            .body("description", contains("설명1", "설명2"))
+            .body("thumbnail", contains("https://url1", "https://url2"));
     }
 
     @DisplayName("실패: 잘못된 포맷으로 테마 생성 -> 400")
