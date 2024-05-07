@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,7 +39,7 @@ public class ReservationController {
 
     @PostMapping("/validate")
     public ResponseEntity<Reservation> createAndValidateFuture(@RequestBody ReservationRequest request) {
-        Reservation createdReservation = reservationService.validateFutureAndSave(request);
+        Reservation createdReservation = reservationService.validatePastAndSave(request);
         return ResponseEntity.created(URI.create("/reservations/" + createdReservation.id())).body(createdReservation);
     }
 

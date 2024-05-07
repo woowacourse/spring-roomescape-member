@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationDateTime;
 import roomescape.reservation.repository.ReservationDao;
 import roomescape.reservation.request.ReservationRequest;
 import roomescape.theme.domain.Theme;
@@ -39,10 +40,10 @@ public class ReservationService {
         return reservationDao.save(new Reservation(request.name(), request.date(), reservationTime, theme));
     }
 
-    public Reservation validateFutureAndSave(ReservationRequest request) {
+    public Reservation validatePastAndSave(ReservationRequest request) {
         validateDuplicate(request);
         ReservationTime reservationTime = reservationTimeDao.findById(request.timeId());
-        validateDateTime(request.date(), reservationTime.startAt());
+        new ReservationDateTime(request, reservationTime).validatePast();
         Theme theme = themeDao.findById(request.themeId());
         return reservationDao.save(new Reservation(request.name(), request.date(), reservationTime, theme));
 
@@ -60,10 +61,4 @@ public class ReservationService {
         }
     }
 
-    private void validateDateTime(LocalDate date, LocalTime time) {
-        LocalDateTime dateTime = LocalDateTime.of(date, time);
-        if (dateTime.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Cannot create a reservation for a past date and time.");
-        }
-    }
 }
