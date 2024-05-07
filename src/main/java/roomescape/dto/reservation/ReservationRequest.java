@@ -1,7 +1,6 @@
 package roomescape.dto.reservation;
 
 import io.micrometer.common.util.StringUtils;
-import org.springframework.format.annotation.DateTimeFormat;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.Time;
@@ -13,7 +12,6 @@ import java.time.LocalDate;
 public record ReservationRequest(
         String name,
 
-        @DateTimeFormat(pattern = "yyyy-MM-dd")
         LocalDate date,
 
         Long timeId,

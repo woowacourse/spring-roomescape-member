@@ -1,7 +1,6 @@
 package roomescape.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -40,7 +39,7 @@ public class ReservationController {
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<ReservationTimeInfosResponse> getReservationTimeInfos(
             @PathVariable final Long themeId,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") final LocalDate date) {
+            @RequestParam final LocalDate date) {
         return ApiResponse.success(reservationService.findReservationsByDateAndThemeId(date, themeId));
     }
 
