@@ -17,8 +17,10 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
+import roomescape.core.dto.auth.TokenRequest;
 import roomescape.core.dto.reservation.ReservationRequest;
 import roomescape.core.dto.reservationtime.ReservationTimeRequest;
 import roomescape.core.dto.theme.ThemeRequest;
@@ -27,12 +29,25 @@ import roomescape.core.dto.theme.ThemeRequest;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @TestPropertySource(properties = {"spring.config.location = classpath:application-test.yml"})
 class ThemeControllerTest {
+    private static final String EMAIL = "test@email.com";
+    private static final String PASSWORD = "password";
+
+    private String accessToken;
+
     @LocalServerPort
     private int port;
 
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+
+        accessToken = RestAssured
+                .given().log().all()
+                .body(new TokenRequest(EMAIL, PASSWORD))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().cookies().extract().cookie("token");
     }
 
     @ParameterizedTest
@@ -110,7 +125,7 @@ class ThemeControllerTest {
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(11));
+                .body("size()", is(5));
     }
 
     @Test
@@ -150,13 +165,16 @@ class ThemeControllerTest {
     }
 
     private void createReservations() {
-        ReservationRequest firstThemeReservationRequest = new ReservationRequest("브라운",
-                LocalDate.now().format(DateTimeFormatter.ISO_DATE), 2L, 2L);
+        ReservationRequest firstThemeReservationRequest = new ReservationRequest(
+                LocalDate.now().format(DateTimeFormatter.ISO_DATE),
+                4L, 2L);
 
-        ReservationRequest firstThemeReservationRequest2 = new ReservationRequest("브라운",
-                LocalDate.now().format(DateTimeFormatter.ISO_DATE), 3L, 2L);
+        ReservationRequest firstThemeReservationRequest2 = new ReservationRequest(
+                LocalDate.now().format(DateTimeFormatter.ISO_DATE),
+                5L, 2L);
 
         RestAssured.given().log().all()
+                .cookies("token", accessToken)
                 .contentType(ContentType.JSON)
                 .body(firstThemeReservationRequest)
                 .when().post("/reservations")
@@ -164,18 +182,9 @@ class ThemeControllerTest {
                 .statusCode(201);
 
         RestAssured.given().log().all()
+                .cookies("token", accessToken)
                 .contentType(ContentType.JSON)
                 .body(firstThemeReservationRequest2)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(201);
-
-        ReservationRequest secondThemeReservationRequest = new ReservationRequest("브라운",
-                LocalDate.now().format(DateTimeFormatter.ISO_DATE), 2L, 1L);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(secondThemeReservationRequest)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);

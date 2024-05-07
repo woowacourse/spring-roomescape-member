@@ -56,7 +56,7 @@ class ReservationTimeControllerTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", is(3));
     }
 
     @Test
@@ -66,7 +66,7 @@ class ReservationTimeControllerTest {
                 .when().get("/times?date=" + TOMORROW_DATE + "&themeId=1")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", is(3));
     }
 
     @Test
