@@ -1,4 +1,4 @@
-package roomescape.dto;
+package roomescape.reservation.dto;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
