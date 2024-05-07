@@ -19,7 +19,7 @@ import roomescape.domain.Theme;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
-class JdbcReservationRepositoryImplTest {
+class JdbcReservationRepositoryTest {
 
     @Autowired
     private ReservationRepository reservationRepository;

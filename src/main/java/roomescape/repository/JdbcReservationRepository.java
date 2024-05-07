@@ -13,12 +13,12 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 @Repository
-public class JdbcReservationRepositoryImpl implements ReservationRepository {
+public class JdbcReservationRepository implements ReservationRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public JdbcReservationRepositoryImpl(JdbcTemplate jdbcTemplate) {
+    public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         simpleJdbcInsert = new SimpleJdbcInsert(Objects.requireNonNull(jdbcTemplate.getDataSource()))
             .withTableName("reservation")

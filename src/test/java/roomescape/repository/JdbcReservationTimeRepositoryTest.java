@@ -15,7 +15,7 @@ import roomescape.domain.ReservationTime;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
-class JdbcReservationTimeRepositoryImplTest {
+class JdbcReservationTimeRepositoryTest {
 
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;

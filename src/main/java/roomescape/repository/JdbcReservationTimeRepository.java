@@ -11,12 +11,12 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
 
 @Repository
-public class JdbcReservationTimeRepositoryImpl implements ReservationTimeRepository {
+public class JdbcReservationTimeRepository implements ReservationTimeRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public JdbcReservationTimeRepositoryImpl(JdbcTemplate jdbcTemplate) {
+    public JdbcReservationTimeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(Objects.requireNonNull(jdbcTemplate.getDataSource()))
             .withTableName("reservation_time")
