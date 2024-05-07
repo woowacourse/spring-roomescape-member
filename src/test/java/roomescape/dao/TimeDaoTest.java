@@ -21,8 +21,8 @@ import roomescape.domain.ReservationTime;
 @JdbcTest
 @Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 class TimeDaoTest {
-    private JdbcTemplate jdbcTemplate;
-    private TimeDao timeDao;
+    private final JdbcTemplate jdbcTemplate;
+    private final TimeDao timeDao;
 
     @Autowired
     TimeDaoTest(JdbcTemplate jdbcTemplate) {

@@ -23,8 +23,8 @@ import roomescape.domain.Theme;
 @JdbcTest
 @Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 class ReservationDaoTest {
-    private JdbcTemplate jdbcTemplate;
-    private ReservationDao reservationDao;
+    private final JdbcTemplate jdbcTemplate;
+    private final ReservationDao reservationDao;
 
     @Autowired
     ReservationDaoTest(JdbcTemplate jdbcTemplate) {
