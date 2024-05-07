@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicNode;
 import org.junit.jupiter.api.DynamicTest;
@@ -16,14 +17,12 @@ import org.junit.jupiter.api.TestFactory;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.jdbc.Sql;
 import roomescape.application.dto.response.ReservationResponse;
 import roomescape.support.AcceptanceTest;
 import roomescape.support.SimpleRestAssured;
 import roomescape.support.annotation.FixedClock;
 import roomescape.support.extension.MockClockExtension;
 
-@Sql("/init.sql")
 @ExtendWith(MockClockExtension.class)
 @FixedClock(date = "2023-08-04")
 class ReservationAcceptanceTest extends AcceptanceTest {
@@ -37,6 +36,12 @@ class ReservationAcceptanceTest extends AcceptanceTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @BeforeEach
+    void insertData() {
+        jdbcTemplate.update("INSERT INTO theme (id, name, description, thumbnail) VALUES (1L, '테마1', '설명', '썸네일')");
+        jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (1L, '09:00')");
+    }
 
     @DisplayName("[2단계 - 예약 조회]")
     @TestFactory
