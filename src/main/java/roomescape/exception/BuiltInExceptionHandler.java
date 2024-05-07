@@ -29,12 +29,12 @@ public class BuiltInExceptionHandler {
     @ExceptionHandler
     protected ResponseEntity<ErrorResponse> handleInternalServerError(final InternalServerError e) {
         log.error(e.getMessage());
-        return ResponseEntity.badRequest().body(new ErrorResponse("예기치 못한 서버 에러가 발생하였습니다."));
+        return ResponseEntity.internalServerError().body(new ErrorResponse("예기치 못한 서버 에러가 발생하였습니다."));
     }
 
     @ExceptionHandler
     protected ResponseEntity<ErrorResponse> handleException(final Exception e) {
         log.error(e.getMessage());
-        return ResponseEntity.badRequest().body(new ErrorResponse("예기치 못한 에러가 발생하였습니다."));
+        return ResponseEntity.internalServerError().body(new ErrorResponse("예기치 못한 에러가 발생하였습니다."));
     }
 }
