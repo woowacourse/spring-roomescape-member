@@ -44,8 +44,14 @@ public class ReservationService {
         this.clock = clock;
     }
 
-    public List<ReservationResponse> getAllReservations() {
-        List<Reservation> reservations = reservationRepository.findAll();
+    public List<ReservationResponse> getReservations(
+            Long memberId,
+            Long themeId,
+            LocalDate dateFrom,
+            LocalDate dateTo
+    ) {
+        List<Reservation> reservations = reservationRepository
+                .findAll(memberId, themeId, dateFrom, dateTo);
 
         return reservations.stream()
                 .map(ReservationResponse::from)

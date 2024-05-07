@@ -2,6 +2,7 @@ package roomescape.repository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -55,11 +56,10 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAll() {
+    public List<Reservation> findAll(Long memberId, Long themeId, LocalDate dateFrom, LocalDate dateTo) {
         String sql = """
                     SELECT
                         r.id,
-                        r.name,
                         r.date,
                         m.id AS member_id,
                         m.email AS member_email,
@@ -81,7 +81,45 @@ public class JdbcReservationRepository implements ReservationRepository {
                     ON r.theme_id = th.id
                 """;
 
-        return jdbcTemplate.query(sql, rowMapper);
+        List<Object> params = new ArrayList<>();
+        boolean isFirstCondition = true;
+
+        if (memberId != null) {
+            sql += " WHERE m.id = ?";
+            isFirstCondition = false;
+            params.add(memberId);
+        }
+
+        if (themeId != null) {
+            if (isFirstCondition) {
+                sql += " WHERE th.id = ?";
+                isFirstCondition = false;
+            } else {
+                sql += " AND th.id = ?";
+            }
+            params.add(themeId);
+        }
+
+        if (dateFrom != null) {
+            if (isFirstCondition) {
+                sql += " WHERE r.date >= ?";
+                isFirstCondition = false;
+            } else {
+                sql += " AND r.date >= ?";
+            }
+            params.add(dateFrom);
+        }
+
+        if (dateTo != null) {
+            if (isFirstCondition) {
+                sql += " WHERE r.date <= ?";
+            } else {
+                sql += " AND r.date <= ?";
+            }
+            params.add(dateTo);
+        }
+
+        return jdbcTemplate.query(sql, rowMapper, params.toArray());
     }
 
     @Override

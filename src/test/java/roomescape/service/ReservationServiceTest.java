@@ -52,10 +52,10 @@ class ReservationServiceTest {
     @DisplayName("모든 예약들을 조회한다.")
     void getAllReservations() {
         Reservation reservation = getReservation();
-        BDDMockito.given(reservationRepository.findAll())
+        BDDMockito.given(reservationRepository.findAll(memberId, themeId, dateFrom, dateTo))
                 .willReturn(List.of(reservation));
 
-        List<ReservationResponse> reservationResponses = reservationService.getAllReservations();
+        List<ReservationResponse> reservationResponses = reservationService.getReservations();
 
         ReservationResponse expected = ReservationResponse.from(reservation);
         assertThat(reservationResponses).containsExactly(expected);

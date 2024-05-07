@@ -40,7 +40,7 @@ class JdbcReservationRepositoryTest {
     void findAll() {
         createReservation();
 
-        List<Reservation> reservations = reservationRepository.findAll();
+        List<Reservation> reservations = reservationRepository.findAll(memberId, themeId, dateFrom, dateTo);
         Reservation reservation = reservations.get(0);
 
         SoftAssertions.assertSoftly(softly -> {

@@ -15,7 +15,7 @@ VALUES ('09:00'),
        ('21:00');
 
 INSERT INTO member (email, password, name, role)
-VALUES ('alstn@gmail.com', '$2a$10$MbGFqyn/u4wfggRK7HAqDeC1y9s1mESgmXV3b7e7GZT5u1JkIT.gm', '어드민',
+VALUES ('alstn113@gmail.com', '$2a$10$MbGFqyn/u4wfggRK7HAqDeC1y9s1mESgmXV3b7e7GZT5u1JkIT.gm', '어드민',
         'ADMIN'), -- password: 1234
        ('alstn1@gmail.com', '1234', '구름1', 'USER'),
        ('alstn2@gmail.com', '1234', '구름2', 'USER'),
