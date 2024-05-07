@@ -1,27 +1,22 @@
 package roomescape.service;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
-import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.request.ReservationTimeRequest;
 import roomescape.dto.request.ReservationTimeWithBookStatusRequest;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.dto.response.ReservationTimeWithBookStatusResponse;
+import roomescape.exception.TargetNotExistException;
 
 @Service
 public class ReservationTimeService {
     private final ReservationTimeDao reservationTimeDao;
-    private final ReservationDao reservationDao;
 
-    public ReservationTimeService(ReservationTimeDao reservationTimeDao,
-                                  ReservationDao reservationDao) {
+    public ReservationTimeService(ReservationTimeDao reservationTimeDao) {
         this.reservationTimeDao = reservationTimeDao;
-        this.reservationDao = reservationDao;
     }
 
     public List<ReservationTimeResponse> findAll() {
@@ -40,25 +35,16 @@ public class ReservationTimeService {
         return ReservationTimeResponse.fromReservationTime(savedReservationTime);
     }
 
-    public boolean deleteById(long id) {
-        return reservationTimeDao.deleteById(id);
+    public void deleteById(long id) {
+        boolean deleted = reservationTimeDao.deleteById(id);
+        if (!deleted) {
+            throw new TargetNotExistException("삭제할 예약 시간이 존재하지 않습니다.");
+        }
     }
 
     public List<ReservationTimeWithBookStatusResponse> findReservationTimesWithBookStatus(
             ReservationTimeWithBookStatusRequest timeRequest) {
         return reservationTimeDao.findAllWithBookStatus(timeRequest.date(), timeRequest.themeId());
-    }
-
-    private boolean isReservationTimeBooked(
-            List<Reservation> reservations,
-            ReservationTimeWithBookStatusRequest timeRequest,
-            ReservationTime reservationTime) {
-        LocalDate reservationDate = LocalDate.parse(timeRequest.date());
-        Long themeId = timeRequest.themeId();
-
-        return reservations.stream()
-                .anyMatch(reservation -> reservation.hasCharacteristic(
-                        reservationDate, reservationTime, themeId));
     }
 
     private void validateTimeExistence(LocalTime startAt) {

@@ -45,10 +45,7 @@ public class RoomThemeController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ExceptionDto> deleteRoomTheme(@PathVariable Long id) {
-        boolean isDeleted = roomThemeService.deleteById(id);
-        if (isDeleted) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.badRequest().body(new ExceptionDto("대상 테마가 존재하지 않습니다."));
+        roomThemeService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

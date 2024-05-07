@@ -6,6 +6,7 @@ import roomescape.dao.RoomThemeDao;
 import roomescape.domain.RoomTheme;
 import roomescape.dto.request.RoomThemeCreateRequest;
 import roomescape.dto.response.RoomThemeResponse;
+import roomescape.exception.TargetNotExistException;
 
 @Service
 public class RoomThemeService {
@@ -35,7 +36,10 @@ public class RoomThemeService {
         return RoomThemeResponse.fromRoomTheme(savedRoomTheme);
     }
 
-    public boolean deleteById(Long id) {
-        return roomThemeDao.deleteById(id);
+    public void deleteById(Long id) {
+        boolean deleted = roomThemeDao.deleteById(id);
+        if (!deleted) {
+            throw new TargetNotExistException("삭제 대상 테마가 존재하지 않습니다.");
+        }
     }
 }

@@ -40,10 +40,7 @@ public class ReservationController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ExceptionDto> deleteReservation(@PathVariable Long id) {
-        boolean isDeleted = reservationService.deleteById(id);
-        if (isDeleted) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.badRequest().body(new ExceptionDto("대상 예약이 존재하지 않습니다."));
+        reservationService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

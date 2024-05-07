@@ -54,10 +54,7 @@ public class ReservationTimeController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ExceptionDto> deleteTime(@PathVariable Long id) {
-        boolean isDeleted = reservationTimeService.deleteById(id);
-        if (isDeleted) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.badRequest().body(new ExceptionDto("대상 예약 시간이 존재하지 않습니다."));
+        reservationTimeService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

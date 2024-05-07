@@ -9,12 +9,18 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.dto.ExceptionDto;
+import roomescape.exception.TargetNotExistException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ExceptionDto> handleException(IllegalArgumentException e) {
         return ResponseEntity.badRequest().body(new ExceptionDto(e.getMessage()));
+    }
+
+    @ExceptionHandler(TargetNotExistException.class)
+    public ResponseEntity<ExceptionDto> handleTargetNotExistException() {
+        return ResponseEntity.notFound().build();
     }
 
     @ExceptionHandler(IncorrectResultSizeDataAccessException.class)

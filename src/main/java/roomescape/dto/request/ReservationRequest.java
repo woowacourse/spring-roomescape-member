@@ -15,11 +15,4 @@ public record ReservationRequest(
     public Reservation toReservation(ReservationTime reservationTime, RoomTheme roomTheme) {
         return new Reservation(new Name(name), LocalDate.parse(date), reservationTime, roomTheme);
     }
-
-    public ReservationRequest {
-        validateNull(name, date, timeId, themeId);
-    }
-
-    private void validateNull(String name, String date, Long timeId, Long themeId) {
-    }
 }

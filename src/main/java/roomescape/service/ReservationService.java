@@ -14,6 +14,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
+import roomescape.exception.TargetNotExistException;
 
 @Service
 public class ReservationService {
@@ -47,8 +48,11 @@ public class ReservationService {
         return ReservationResponse.fromReservation(savedReservation);
     }
 
-    public boolean deleteById(long id) {
-        return reservationDao.deleteById(id);
+    public void deleteById(long id) {
+        boolean deleted = reservationDao.deleteById(id);
+        if (!deleted) {
+            throw new TargetNotExistException("삭제할 예약이 존재하지 않습니다.");
+        }
     }
 
     private void validateOutdatedDateTime(LocalDate date, LocalTime time) {

@@ -93,9 +93,10 @@ class ReservationServiceTest {
     @Test
     void deleteById() {
         // given
-        createReservationRequest(VALID_STRING_DATE_FIXTURE);
+        ReservationRequest request = createReservationRequest(VALID_STRING_DATE_FIXTURE);
+        ReservationResponse response = reservationService.save(request);
         // when
-        reservationService.deleteById(1);
+        reservationService.deleteById(response.id());
         // then
         assertThat(reservationService.findAll()).isEmpty();
     }
