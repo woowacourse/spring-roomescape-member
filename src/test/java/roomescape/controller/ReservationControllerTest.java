@@ -7,7 +7,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ThemeRequest;
 import roomescape.service.ReservationTimeService;
@@ -20,17 +22,23 @@ import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@Sql(value = "/testdata.sql")
 class ReservationControllerTest {
 
     @Autowired
     ReservationTimeService reservationTimeService;
+
     @Autowired
     ThemeService themeService;
 
+    @LocalServerPort
+    private int port;
+
     @BeforeEach
     void setUp() {
+        RestAssured.port = port;
         reservationTimeService.save(new ReservationTimeRequest(LocalTime.of(15, 40)));
         themeService.save(new ThemeRequest("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
     }
@@ -42,7 +50,7 @@ class ReservationControllerTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("size()", is(8));
     }
 
     @Test
@@ -56,13 +64,13 @@ class ReservationControllerTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(1));
+                .body("id", is(9));
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", is(9));
     }
 
     @Test
@@ -70,16 +78,16 @@ class ReservationControllerTest {
     void deleteReservation() {
         Map<String, String> params = getParams();
 
-        RestAssured.given().log().all()
+        int id = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(1));
+                .extract().path("id");
 
         RestAssured.given().log().all()
-                .when().delete("/reservations/1")
+                .when().delete("/reservations/" + id)
                 .then().log().all()
                 .statusCode(204);
 
@@ -87,7 +95,7 @@ class ReservationControllerTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("size()", is(id - 1));
     }
 
     private Map<String, String> getParams() {
@@ -98,7 +106,6 @@ class ReservationControllerTest {
         params.put("date", localDate.toString());
         params.put("timeId", "1");
         params.put("themeId", "1");
-
 
         return params;
     }

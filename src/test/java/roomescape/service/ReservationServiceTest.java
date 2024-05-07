@@ -11,6 +11,7 @@ import roomescape.dao.ThemeDAO;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.exception.InvalidReservationTimeException;
 import roomescape.dto.ReservationRequest;
 
 import java.time.LocalDate;
@@ -20,14 +21,16 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationServiceTest {
 
     @Autowired
     ReservationService reservationService;
+
     @Autowired
     ReservationTimeDAO reservationTimeDAO;
+
     @Autowired
     ThemeDAO themeDAO;
 
@@ -35,7 +38,6 @@ class ReservationServiceTest {
     void setUp() {
         reservationTimeDAO.insert(new ReservationTime(LocalTime.now().plusHours(1)));
         themeDAO.insert(new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
-
     }
 
     @Test
@@ -74,13 +76,13 @@ class ReservationServiceTest {
         reservationService.save(new ReservationRequest("abc", date, 1L, 1L));
 
         assertThatThrownBy(() -> reservationService.save(new ReservationRequest("abcde", date, 1L, 1L)))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidReservationTimeException.class);
     }
 
     @Test
     @DisplayName("예약 날짜가 현재 날짜보다 이전이라면 예외가 발생한다.")
     void invalidDate() {
         assertThatThrownBy(() -> reservationService.save(new ReservationRequest("abc", LocalDate.of(2024, 3, 30), 1L, 1L)))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidReservationTimeException.class);
     }
 }

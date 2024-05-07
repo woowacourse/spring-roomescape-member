@@ -7,9 +7,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.exception.InvalidReservationTimeException;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ThemeRequest;
+import roomescape.service.exception.DeleteException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -18,14 +20,16 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationTimeServiceTest {
 
     @Autowired
     ReservationTimeService reservationTimeService;
+
     @Autowired
     ReservationService reservationService;
+
     @Autowired
     ThemeService themeService;
 
@@ -68,7 +72,7 @@ class ReservationTimeServiceTest {
         reservationService.save(new ReservationRequest("abc", LocalDate.now(), savedReservationTime.getId(), savedTheme.getId()));
 
         assertThatThrownBy(() -> reservationTimeService.delete(savedReservationTime.getId()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(DeleteException.class);
     }
 
     @Test
@@ -78,6 +82,6 @@ class ReservationTimeServiceTest {
         reservationTimeService.save(new ReservationTimeRequest(localTime));
 
         assertThatThrownBy(() -> reservationTimeService.save(new ReservationTimeRequest(localTime)))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidReservationTimeException.class);
     }
 }

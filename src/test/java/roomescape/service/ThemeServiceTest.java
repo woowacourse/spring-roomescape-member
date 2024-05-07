@@ -1,10 +1,13 @@
 package roomescape.service;
 
+import io.restassured.RestAssured;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Theme;
@@ -14,12 +17,20 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ThemeServiceTest {
 
+    @LocalServerPort
+    int port;
+
     @Autowired
     ThemeService themeService;
+
+    @BeforeEach
+    void setup() {
+        RestAssured.port = port;
+    }
 
     @Test
     @DisplayName("테마를 저장할 수 있다.")
@@ -50,10 +61,10 @@ class ThemeServiceTest {
         assertThat(theme).hasSize(0);
     }
 
-    @Test
-    @DisplayName("많이 예약한 순으로 10개를 추출한다.")
+    @DisplayName("많이 예약한 순으로 10개를 정렬한다.")
     @Sql("/testdata.sql")
-    void rankingTest() {
+    @Test
+    void popularThemeTest() {
         List<Theme> topRanking = themeService.findTopRanking();
         Assertions.assertAll(
                 () -> assertThat(topRanking.get(0).getName()).isEqualTo("테마 2"),
