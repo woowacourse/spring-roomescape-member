@@ -10,7 +10,6 @@ import roomescape.core.domain.Reservation;
 import roomescape.core.domain.ReservationTime;
 import roomescape.core.dto.BookingTimeResponseDto;
 import roomescape.core.dto.ReservationTimeRequestDto;
-import roomescape.core.dto.ReservationTimeResponseDto;
 import roomescape.core.repository.ReservationRepository;
 import roomescape.core.repository.ReservationTimeRepository;
 
@@ -26,7 +25,8 @@ public class ReservationTimeService {
     }
 
     @Transactional
-    public ReservationTime create(final ReservationTime time) {
+    public ReservationTime create(final ReservationTimeRequestDto request) {
+        final ReservationTime time = new ReservationTime(request.getStartAt());
         validateDuplicatedStartAt(time);
         final Long id = reservationTimeRepository.save(time);
         return new ReservationTime(id, time.getStartAtString());

@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.core.domain.Theme;
 import roomescape.core.dto.ThemeRequestDto;
-import roomescape.core.dto.ThemeResponseDto;
 import roomescape.core.repository.ReservationRepository;
 import roomescape.core.repository.ThemeRepository;
 
@@ -20,7 +19,8 @@ public class ThemeService {
     }
 
     @Transactional
-    public Theme create(final Theme theme) {
+    public Theme create(final ThemeRequestDto request) {
+        final Theme theme = new Theme(request.getName(), request.getDescription(), request.getThumbnail());
         validateDuplicatedName(theme);
         final Long id = themeRepository.save(theme);
         return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
