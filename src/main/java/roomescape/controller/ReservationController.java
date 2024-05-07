@@ -48,7 +48,7 @@ public class ReservationController {
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<ReservationResponse> saveReservation(
             @RequestBody final ReservationRequest reservationRequest,
-            HttpServletResponse response
+            final HttpServletResponse response
     ) {
         ReservationResponse reservationResponse = reservationService.addReservation(reservationRequest);
 

@@ -1,7 +1,6 @@
 package roomescape.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,25 +31,24 @@ public class ThemeController {
     @GetMapping("/themes")
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<ThemesResponse> getAllThemes() {
-
         return ApiResponse.success(themeService.findAllThemes());
     }
 
     @GetMapping("/themes/top")
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<ThemesResponse> getTopNThemesBetweenDate(
-            @RequestParam final int count,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") final LocalDate startAt,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") final LocalDate endAt
+            @RequestParam(required = false, defaultValue = "10") final int count,
+            @RequestParam(required = false, defaultValue = "#{T(java.time.LocalDate).now().minusDays(7)}") final LocalDate startAt,
+            @RequestParam(required = false, defaultValue = "#{T(java.time.LocalDate).now().minusDays(1)}") final LocalDate endAt
     ) {
-        return ApiResponse.success(themeService.findTopNThemes(count, startAt, endAt));
+        return ApiResponse.success(themeService.findTopNThemesBetweenDate(count, startAt, endAt));
     }
 
     @PostMapping("/themes")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<ThemeResponse> saveTheme(
             @RequestBody final ThemeRequest request,
-            HttpServletResponse response
+            final HttpServletResponse response
     ) {
         ThemeResponse themeResponse = themeService.addTheme(request);
         response.setHeader(HttpHeaders.LOCATION, "/themes/" + themeResponse.id());

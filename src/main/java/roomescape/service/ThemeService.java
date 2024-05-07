@@ -28,7 +28,7 @@ public class ThemeService {
         return new ThemesResponse(response);
     }
 
-    public ThemesResponse findTopNThemes(
+    public ThemesResponse findTopNThemesBetweenDate(
             final int count, final LocalDate startDate, final LocalDate endDate) {
 
         List<ThemeResponse> response = themeDao.findByStartDateAndEndDateWithLimit(startDate, endDate, count)
