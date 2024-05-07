@@ -7,7 +7,7 @@ import roomescape.dto.time.TimeResponse;
 
 public record ReservationResponse(Long id, String name, String date, TimeResponse time, ThemeResponse theme) {
 
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yy-MM-dd");
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public ReservationResponse(Reservation reservation) {
         this(reservation.getId(), reservation.getName(), reservation.getDate().format(DATE_FORMATTER),
