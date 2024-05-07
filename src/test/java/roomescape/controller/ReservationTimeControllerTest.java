@@ -5,17 +5,17 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.TestFixture.DATE_FIXTURE;
 import static roomescape.TestFixture.RESERVATION_TIME_FIXTURE;
 import static roomescape.TestFixture.ROOM_THEME_FIXTURE;
-import static roomescape.TestFixture.VALID_STRING_TIME_FIXTURE;
+import static roomescape.TestFixture.TIME_FIXTURE;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -71,18 +71,21 @@ class ReservationTimeControllerTest {
     void createReservationTime() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new ReservationTimeRequest(VALID_STRING_TIME_FIXTURE))
+                .body(new ReservationTimeRequest(TIME_FIXTURE))
                 .when().post("/times")
                 .then().log().all().assertThat().statusCode(HttpStatus.CREATED.value());
     }
 
-    @DisplayName("시간 생성에서 잘못된 값 입력시 400을 응답한다.")
-    @ParameterizedTest
-    @ValueSource(strings = {"", " ", "24:01", "12:60"})
-    void invalidTypeReservationTime(String startAt) {
+    @DisplayName("잘못된 양식의 시간 입력 시 400을 응답한다.")
+    @Test
+    void invalidTimeInput() {
+        // given
+        Map<String, String> reservationTimeRequest = new HashMap<>();
+        reservationTimeRequest.put("startAt", "00:61");
+        // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new ReservationTimeRequest(startAt))
+                .body(reservationTimeRequest)
                 .when().post("/times")
                 .then().log().all().assertThat().statusCode(HttpStatus.BAD_REQUEST.value());
     }
@@ -95,7 +98,7 @@ class ReservationTimeControllerTest {
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new ReservationTimeRequest(VALID_STRING_TIME_FIXTURE))
+                .body(new ReservationTimeRequest(TIME_FIXTURE))
                 .when().post("/times")
                 .then().log().all().assertThat().statusCode(HttpStatus.BAD_REQUEST.value());
     }

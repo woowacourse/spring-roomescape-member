@@ -3,12 +3,13 @@ package roomescape.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static roomescape.TestFixture.DATE_FIXTURE;
 import static roomescape.TestFixture.RESERVATION_TIME_FIXTURE;
 import static roomescape.TestFixture.ROOM_THEME_FIXTURE;
-import static roomescape.TestFixture.VALID_STRING_DATE_FIXTURE;
-import static roomescape.TestFixture.VALID_STRING_TIME_FIXTURE;
+import static roomescape.TestFixture.TIME_FIXTURE;
 
 import io.restassured.RestAssured;
+import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -66,15 +67,15 @@ class ReservationServiceTest {
     @Test
     void save() {
         // given
-        ReservationRequest reservationRequest = createReservationRequest(VALID_STRING_DATE_FIXTURE);
+        ReservationRequest reservationRequest = createReservationRequest(DATE_FIXTURE);
         // when
         ReservationResponse response = reservationService.save(reservationRequest);
         // then
         assertAll(
                 () -> assertThat(reservationService.findAll()).hasSize(1),
                 () -> assertThat(response.name()).isEqualTo("aa"),
-                () -> assertThat(response.date()).isEqualTo(VALID_STRING_DATE_FIXTURE),
-                () -> assertThat(response.time().startAt()).isEqualTo(VALID_STRING_TIME_FIXTURE)
+                () -> assertThat(response.date()).isEqualTo(DATE_FIXTURE),
+                () -> assertThat(response.time().startAt()).isEqualTo(TIME_FIXTURE)
         );
     }
 
@@ -82,7 +83,7 @@ class ReservationServiceTest {
     @Test
     void pastReservationSaveThrowsException() {
         // given
-        ReservationRequest reservationRequest = createReservationRequest("2000-11-09");
+        ReservationRequest reservationRequest = createReservationRequest(LocalDate.of(2000, 11, 9));
         // when & then
         assertThatThrownBy(() -> reservationService.save(reservationRequest))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -93,7 +94,7 @@ class ReservationServiceTest {
     @Test
     void deleteById() {
         // given
-        ReservationRequest request = createReservationRequest(VALID_STRING_DATE_FIXTURE);
+        ReservationRequest request = createReservationRequest(DATE_FIXTURE);
         ReservationResponse response = reservationService.save(request);
         // when
         reservationService.deleteById(response.id());
@@ -101,7 +102,7 @@ class ReservationServiceTest {
         assertThat(reservationService.findAll()).isEmpty();
     }
 
-    private ReservationRequest createReservationRequest(String date) {
+    private ReservationRequest createReservationRequest(LocalDate date) {
         ReservationTime savedReservationTime = reservationTimeDao.save(
                 RESERVATION_TIME_FIXTURE);
         RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);

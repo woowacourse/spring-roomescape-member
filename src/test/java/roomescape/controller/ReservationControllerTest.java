@@ -4,11 +4,13 @@ import static roomescape.TestFixture.DATE_FIXTURE;
 import static roomescape.TestFixture.RESERVATION_TIME_FIXTURE;
 import static roomescape.TestFixture.ROOM_THEME_FIXTURE;
 import static roomescape.TestFixture.TIME_FIXTURE;
-import static roomescape.TestFixture.VALID_STRING_DATE_FIXTURE;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -68,8 +70,7 @@ class ReservationControllerTest {
     @Test
     void createReservation() {
         // given
-        ReservationRequest reservationRequest = createReservationRequest("브라운",
-                VALID_STRING_DATE_FIXTURE);
+        ReservationRequest reservationRequest = createReservationRequest("브라운", DATE_FIXTURE);
         // then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -83,8 +84,7 @@ class ReservationControllerTest {
     @ValueSource(strings = {"", " "})
     void invalidNameReservation(String value) {
         // given
-        ReservationRequest reservationRequest = createReservationRequest(value,
-                VALID_STRING_DATE_FIXTURE);
+        ReservationRequest reservationRequest = createReservationRequest(value, DATE_FIXTURE);
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -93,12 +93,15 @@ class ReservationControllerTest {
                 .then().log().all().assertThat().statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("날짜 양식을 잘못 입력할 시 400을 응답한다.")
-    @ParameterizedTest
-    @ValueSource(strings = {"20223-10-11", "2024-13-1", "2024-11-31"})
-    void invalidDateReservation(String value) {
+    @DisplayName("잘못된 양식의 날짜 입력 시 400을 응답한다.")
+    @Test
+    void invalidDateInput() {
         // given
-        ReservationRequest reservationRequest = createReservationRequest("브라운", value);
+        Map<String, String> reservationRequest = new HashMap<>();
+        reservationRequest.put("name", "브라운");
+        reservationRequest.put("date", "20223-11-09");
+        reservationRequest.put("timeId", "1");
+        reservationRequest.put("themeId", "1");
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -111,7 +114,8 @@ class ReservationControllerTest {
     @Test
     void outdatedReservation() {
         // given
-        ReservationRequest reservationRequest = createReservationRequest("브라운", "2023-12-12");
+        ReservationRequest reservationRequest = createReservationRequest("브라운",
+                LocalDate.of(2023, 12, 12));
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -125,7 +129,7 @@ class ReservationControllerTest {
     void duplicateReservation() {
         // given
         ReservationRequest reservationRequest = createReservationRequest("브라운",
-                VALID_STRING_DATE_FIXTURE);
+                DATE_FIXTURE);
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservationRequest)
@@ -144,7 +148,7 @@ class ReservationControllerTest {
     void noPrimaryKeyReservation() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new ReservationRequest("브라운", VALID_STRING_DATE_FIXTURE, 1L, 1L))
+                .body(new ReservationRequest("브라운", DATE_FIXTURE, 1L, 1L))
                 .when().post("/reservations")
                 .then().log().all().assertThat().statusCode(HttpStatus.BAD_REQUEST.value());
     }
@@ -177,7 +181,7 @@ class ReservationControllerTest {
                 .then().log().all().assertThat().statusCode(HttpStatus.NOT_FOUND.value());
     }
 
-    private ReservationRequest createReservationRequest(String name, String date) {
+    private ReservationRequest createReservationRequest(String name, LocalDate date) {
         ReservationTime savedReservationTime = reservationTimeDao.save(RESERVATION_TIME_FIXTURE);
         RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME_FIXTURE);
         return new ReservationRequest(name, date, savedReservationTime.getId(),

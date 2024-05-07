@@ -6,10 +6,8 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
 
 public class TestFixture {
-    public static String VALID_STRING_DATE_FIXTURE = "9999-12-31";
-    public static LocalDate DATE_FIXTURE = LocalDate.parse(VALID_STRING_DATE_FIXTURE);
-    public static String VALID_STRING_TIME_FIXTURE = "10:00";
-    public static LocalTime TIME_FIXTURE = LocalTime.parse(VALID_STRING_TIME_FIXTURE);
+    public static LocalDate DATE_FIXTURE = LocalDate.of(9999, 12, 31);
+    public static LocalTime TIME_FIXTURE = LocalTime.of(10, 0);
     public static ReservationTime RESERVATION_TIME_FIXTURE = new ReservationTime(TIME_FIXTURE);
     public static RoomTheme ROOM_THEME_FIXTURE = new RoomTheme("레벨 2 탈출",
             "우테코 레벨2를 탈출하는 내용입니다.",

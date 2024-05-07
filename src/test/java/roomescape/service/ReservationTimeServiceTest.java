@@ -6,10 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.TestFixture.DATE_FIXTURE;
 import static roomescape.TestFixture.RESERVATION_TIME_FIXTURE;
 import static roomescape.TestFixture.ROOM_THEME_FIXTURE;
-import static roomescape.TestFixture.VALID_STRING_TIME_FIXTURE;
+import static roomescape.TestFixture.TIME_FIXTURE;
 
 import io.restassured.RestAssured;
-import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -75,7 +74,7 @@ class ReservationTimeServiceTest {
         reservationDao.save(new Reservation(new Name("brown"), DATE_FIXTURE,
                 savedReservationTime, savedRoomTheme));
         ReservationTimeWithBookStatusRequest timeRequest = new ReservationTimeWithBookStatusRequest(
-                DATE_FIXTURE.toString(), savedRoomTheme.getId());
+                DATE_FIXTURE, savedRoomTheme.getId());
         // when
         List<ReservationTimeWithBookStatusResponse> timeResponses =
                 reservationTimeService.findReservationTimesWithBookStatus(timeRequest);
@@ -83,7 +82,7 @@ class ReservationTimeServiceTest {
         ReservationTimeWithBookStatusResponse timeResponse = timeResponses.get(0);
         assertAll(
                 () -> assertThat(timeResponse.id()).isEqualTo(savedReservationTime.getId()),
-                () -> assertThat(LocalTime.parse(timeResponse.startAt())).isEqualTo(
+                () -> assertThat(timeResponse.startAt()).isEqualTo(
                         savedReservationTime.getStartAt()),
                 () -> assertThat(timeResponse.booked()).isTrue()
         );
@@ -93,14 +92,13 @@ class ReservationTimeServiceTest {
     @Test
     void save() {
         // given
-        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(
-                VALID_STRING_TIME_FIXTURE);
+        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(TIME_FIXTURE);
         // when
         ReservationTimeResponse response = reservationTimeService.save(reservationTimeRequest);
         // then
         assertAll(
                 () -> assertThat(reservationTimeService.findAll()).hasSize(1),
-                () -> assertThat(response.startAt()).isEqualTo(VALID_STRING_TIME_FIXTURE)
+                () -> assertThat(response.startAt()).isEqualTo(TIME_FIXTURE)
         );
     }
 
@@ -108,8 +106,7 @@ class ReservationTimeServiceTest {
     @Test
     void duplicatedTimeSaveThrowsException() {
         // given
-        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(
-                VALID_STRING_TIME_FIXTURE);
+        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(TIME_FIXTURE);
         reservationTimeService.save(reservationTimeRequest);
         // when & then
         assertThatThrownBy(() -> reservationTimeService.save(reservationTimeRequest))
@@ -122,7 +119,7 @@ class ReservationTimeServiceTest {
     void deleteById() {
         // given
         ReservationTimeResponse response = reservationTimeService
-                .save(new ReservationTimeRequest(VALID_STRING_TIME_FIXTURE));
+                .save(new ReservationTimeRequest(TIME_FIXTURE));
         // when
         reservationTimeService.deleteById(response.id());
         // then

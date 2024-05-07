@@ -1,6 +1,6 @@
 package roomescape.dao;
 
-import java.sql.Date;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -31,7 +31,7 @@ public class ReservationTimeDao {
         return jdbcTemplate.query("SELECT * FROM reservation_time", rowMapper);
     }
 
-    public List<ReservationTimeWithBookStatusResponse> findAllWithBookStatus(String bookedDate,
+    public List<ReservationTimeWithBookStatusResponse> findAllWithBookStatus(LocalDate bookedDate,
                                                                              Long bookedThemeId) {
         String sql = """
                 SELECT 
@@ -50,7 +50,7 @@ public class ReservationTimeDao {
                                 rs.getTime("start_at").toLocalTime()),
                         rs.getBoolean("booked"));
 
-        return jdbcTemplate.query(sql, mapper, Date.valueOf(bookedDate), bookedThemeId);
+        return jdbcTemplate.query(sql, mapper, bookedDate, bookedThemeId);
     }
 
     public ReservationTime findById(Long id) {
