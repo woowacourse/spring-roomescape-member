@@ -16,14 +16,14 @@ import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
 
 @Repository
-public class ReservationRepository {
+public class ReservationRepositoryImpl {
 
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
 
-    public ReservationRepository(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao,
-                                 ThemeDao themeDao) {
+    public ReservationRepositoryImpl(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao,
+                                     ThemeDao themeDao) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
         this.themeDao = themeDao;

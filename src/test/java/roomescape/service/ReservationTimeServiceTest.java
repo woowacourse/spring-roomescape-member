@@ -17,14 +17,14 @@ import roomescape.exception.BadRequestException;
 import roomescape.exception.DuplicatedException;
 import roomescape.exception.NotFoundException;
 import roomescape.model.ReservationTime;
-import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ReservationTimeRepositoryImpl;
 import roomescape.service.fake.FakeReservationDao;
 import roomescape.service.fake.FakeReservationTimeDao;
 
 class ReservationTimeServiceTest {
 
     private final ReservationTimeService reservationTimeService = new ReservationTimeService(
-            new ReservationTimeRepository(new FakeReservationDao(), new FakeReservationTimeDao())
+            new ReservationTimeRepositoryImpl(new FakeReservationDao(), new FakeReservationTimeDao())
     );
 
     @DisplayName("모든 예약 시간을 반환한다")

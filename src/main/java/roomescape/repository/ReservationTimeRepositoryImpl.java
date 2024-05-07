@@ -9,12 +9,12 @@ import org.springframework.stereotype.Repository;
 import roomescape.model.ReservationTime;
 
 @Repository
-public class ReservationTimeRepository {
+public class ReservationTimeRepositoryImpl {
 
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
 
-    public ReservationTimeRepository(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao) {
+    public ReservationTimeRepositoryImpl(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
     }

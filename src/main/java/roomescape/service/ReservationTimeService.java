@@ -13,43 +13,43 @@ import roomescape.exception.BadRequestException;
 import roomescape.exception.DuplicatedException;
 import roomescape.exception.NotFoundException;
 import roomescape.model.ReservationTime;
-import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ReservationTimeRepositoryImpl;
 
 @Service
 public class ReservationTimeService {
 
-    private final ReservationTimeRepository reservationTimeRepository;
+    private final ReservationTimeRepositoryImpl reservationTimeRepositoryImpl;
 
-    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository) {
-        this.reservationTimeRepository = reservationTimeRepository;
+    public ReservationTimeService(ReservationTimeRepositoryImpl reservationTimeRepositoryImpl) {
+        this.reservationTimeRepositoryImpl = reservationTimeRepositoryImpl;
     }
 
 
     public List<ReservationTime> findAllReservationTimes() {
-        return reservationTimeRepository.findAllReservationTimes();
+        return reservationTimeRepositoryImpl.findAllReservationTimes();
     }
 
     public ReservationTime addReservationTime(ReservationTimeRequest request) {
         LocalTime startAt = request.startAt();
         validateExistTime(startAt);
         ReservationTime reservationTime = new ReservationTime(startAt);
-        return reservationTimeRepository.addReservationTime(reservationTime);
+        return reservationTimeRepositoryImpl.addReservationTime(reservationTime);
     }
 
     private void validateExistTime(LocalTime startAt) {
-        Long countReservationTimeByStartAt = reservationTimeRepository.countReservationTimeByStartAt(startAt);
+        Long countReservationTimeByStartAt = reservationTimeRepositoryImpl.countReservationTimeByStartAt(startAt);
         if (countReservationTimeByStartAt == null || countReservationTimeByStartAt > 0) {
             throw new DuplicatedException("이미 존재하는 시간입니다.");
         }
     }
 
     public ReservationTime findReservationTime(long id) {
-        return reservationTimeRepository.findReservationById(id);
+        return reservationTimeRepositoryImpl.findReservationById(id);
     }
 
     public List<IsReservedTimeResponse> getIsReservedTime(LocalDate date, long themeId) {
-        List<ReservationTime> allTimes = reservationTimeRepository.findAllReservationTimes();
-        List<ReservationTime> bookedTimes = reservationTimeRepository.findAllReservedTimes(date, themeId);
+        List<ReservationTime> allTimes = reservationTimeRepositoryImpl.findAllReservationTimes();
+        List<ReservationTime> bookedTimes = reservationTimeRepositoryImpl.findAllReservedTimes(date, themeId);
         List<ReservationTime> notBookedTimes = filterNotBookedTimes(allTimes, bookedTimes);
         List<IsReservedTimeResponse> bookedResponse = mapToResponse(bookedTimes, true);
         List<IsReservedTimeResponse> notBookedResponse = mapToResponse(notBookedTimes, false);
@@ -59,18 +59,18 @@ public class ReservationTimeService {
     public void deleteReservationTime(long id) {
         validateNotExistReservationTime(id);
         validateReservedTime(id);
-        reservationTimeRepository.deleteReservationTime(id);
+        reservationTimeRepositoryImpl.deleteReservationTime(id);
     }
 
     private void validateReservedTime(long id) {
-        Long countedReservationByTime = reservationTimeRepository.countReservedTime(id);
+        Long countedReservationByTime = reservationTimeRepositoryImpl.countReservedTime(id);
         if (countedReservationByTime == null || countedReservationByTime > 0) {
             throw new BadRequestException("해당 시간에 예약이 존재하여 삭제할 수 없습니다.");
         }
     }
 
     private void validateNotExistReservationTime(long id) {
-        Long countedReservationTime = reservationTimeRepository.countReservationTime(id);
+        Long countedReservationTime = reservationTimeRepositoryImpl.countReservationTime(id);
         if (countedReservationTime == null || countedReservationTime <= 0) {
             throw new NotFoundException("id(%s)에 해당하는 예약 시간이 존재하지 않습니다.".formatted(id));
         }

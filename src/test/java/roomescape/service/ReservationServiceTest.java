@@ -17,7 +17,7 @@ import roomescape.exception.DuplicatedException;
 import roomescape.exception.NotFoundException;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
-import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationRepositoryImpl;
 import roomescape.service.fake.FakeReservationDao;
 import roomescape.service.fake.FakeReservationTimeDao;
 import roomescape.service.fake.FakeThemeDao;
@@ -27,7 +27,7 @@ class ReservationServiceTest {
     private final FakeReservationTimeDao reservationTimeRepository = new FakeReservationTimeDao();
 
     private final ReservationService reservationService = new ReservationService(
-            new ReservationRepository(new FakeReservationDao(), reservationTimeRepository, new FakeThemeDao())
+            new ReservationRepositoryImpl(new FakeReservationDao(), reservationTimeRepository, new FakeThemeDao())
     );
 
     @DisplayName("모든 예약 시간을 반환한다")
