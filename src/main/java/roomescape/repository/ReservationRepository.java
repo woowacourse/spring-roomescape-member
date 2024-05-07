@@ -18,13 +18,16 @@ public class ReservationRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> new Reservation(
+    private final RowMapper<Reservation> reservationRowMapper = (
+            resultSet, rowNum) -> new Reservation(
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getDate("date").toLocalDate(),
-            new ReservationTime(resultSet.getLong("reservation_time_id"),
+            new ReservationTime(
+                    resultSet.getLong("reservation_time_id"),
                     resultSet.getTime("time_value").toLocalTime()),
-            new Theme(resultSet.getLong("theme_id"),
+            new Theme(
+                    resultSet.getLong("theme_id"),
                     resultSet.getString("theme_name"),
                     resultSet.getString("theme_description"),
                     resultSet.getString("theme_thumbnail")
@@ -37,31 +40,30 @@ public class ReservationRepository {
 
     public List<Reservation> findAll() {
         String sql = "SELECT " +
-                "    r.id as reservation_id, " +
-                "    r.name, " +
-                "    r.date, " +
-                "    t.id as reservation_time_id, " +
-                "    t.start_at as time_value, " +
-                "    th.id as theme_id, " +
-                "    th.name as theme_name, " +
-                "    th.description as theme_description, " +
-                "    th.thumbnail as theme_thumbnail " +
-                "FROM reservation as r " +
-                "inner join reservation_time as t " +
-                "on r.reservation_time_id = t.id " +
-                "inner join theme as th " +
-                "on r.theme_id = th.id";
+                "r.id AS reservation_id, " +
+                "r.name, " +
+                "r.date, " +
+                "t.id AS reservation_time_id, " +
+                "t.start_at AS time_value, " +
+                "th.id AS theme_id, " +
+                "th.name AS theme_name, " +
+                "th.description AS theme_description, " +
+                "th.thumbnail AS theme_thumbnail " +
+                "FROM reservation AS r " +
+                "INNER JOIN reservation_time AS t " +
+                "ON r.reservation_time_id = t.id " +
+                "INNER JOIN theme as th " +
+                "ON r.theme_id = th.id";
         return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
     public Reservation save(Reservation reservation) {
-        String sql = "INSERT INTO reservation (name, date, reservation_time_id, theme_id) values (?, ?, ?, ?)";
+        String sql = "INSERT INTO reservation (name, date, reservation_time_id, theme_id) " +
+                "VALUES (?, ?, ?, ?)";
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(con -> {
-            PreparedStatement ps = con.prepareStatement(
-                    sql,
-                    new String[]{"id"});
+            PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, reservation.getName());
             ps.setDate(2, Date.valueOf(reservation.getDate()));
             ps.setLong(3, reservation.getReservationTime().getId());
@@ -74,27 +76,33 @@ public class ReservationRepository {
     }
 
     public int deleteById(Long id) {
-        String sql = "DELETE FROM reservation where id = ?";
+        String sql = "DELETE FROM reservation " +
+                "WHERE id = ?";
         return jdbcTemplate.update(sql, id);
     }
 
     public boolean existsByReservationTimeId(Long reservationTimeId) {
-        String sql = "SELECT exists(SELECT 1 FROM reservation " +
-                "where reservation_time_id = ?)";
+        String sql = "SELECT EXISTS (" +
+                "SELECT 1 " +
+                "FROM reservation " +
+                "WHERE reservation_time_id = ?)";
 
         return jdbcTemplate.queryForObject(sql, Boolean.class, reservationTimeId);
     }
 
     public boolean existsByReservationThemeId(Long themeId) {
-        String sql = "SELECT exists(SELECT 1 FROM reservation " +
-                "where theme_id = ?)";
+        String sql = "SELECT EXISTS (" +
+                "SELECT 1 FROM reservation " +
+                "WHERE theme_id = ?)";
 
         return jdbcTemplate.queryForObject(sql, Boolean.class, themeId);
     }
 
     public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long reservationTimeId, Long themeId) {
-        String sql = "SELECT exists(SELECT 1 FROM reservation " +
-                "where date = ? and reservation_time_id = ? and theme_id = ?)";
+        String sql = "SELECT EXISTS (" +
+                "SELECT 1 " +
+                "FROM reservation " +
+                "WHERE date = ? AND reservation_time_id = ? AND theme_id = ?)";
 
         return jdbcTemplate.queryForObject(sql, Boolean.class, Date.valueOf(date), reservationTimeId, themeId);
     }

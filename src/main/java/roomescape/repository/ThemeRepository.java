@@ -29,13 +29,12 @@ public class ThemeRepository {
     }
 
     public Theme save(Theme theme) {
-        String sql = "INSERT INTO theme (name, description, thumbnail) values (?, ? ,?)";
+        String sql = "INSERT INTO theme (name, description, thumbnail) " +
+                "VALUES (?, ? ,?)";
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(con -> {
-            PreparedStatement ps = con.prepareStatement(
-                    sql,
-                    new String[]{"id"});
+            PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, theme.getName());
             ps.setString(2, theme.getDescription());
             ps.setString(3, theme.getThumbnail());
@@ -45,29 +44,34 @@ public class ThemeRepository {
     }
 
     public Optional<Theme> findById(Long id) {
-        String sql = "SELECT id, name, description, thumbnail FROM theme where id = ?";
+        String sql = "SELECT id, name, description, thumbnail " +
+                "FROM theme " +
+                "WHERE id = ?";
         List<Theme> themes = jdbcTemplate.query(sql, themeRowMapper, id);
         return themes.isEmpty() ? Optional.empty() : Optional.of(themes.get(0));
     }
 
     public List<Theme> findAll() {
-        String sql = "SELECT id, name, description, thumbnail FROM theme";
+        String sql = "SELECT id, name, description, thumbnail " +
+                "FROM theme";
         return jdbcTemplate.query(sql, themeRowMapper);
     }
 
     public List<Theme> findRanksBetween(LocalDate start, LocalDate end, int rankCount) {
-        String sql = "select t.id, t.name, t.description, t.thumbnail " +
-                "from theme as t inner join reservation as r " +
-                "on t.id = r.theme_id " +
-                "where r.date between ? and ? " +
-                "group by t.id " +
-                "order by count(t.id) desc " +
+        String sql = "SELECT t.id, t.name, t.description, t.thumbnail " +
+                "FROM theme AS t " +
+                "INNER JOIN join reservation AS r " +
+                "ON t.id = r.theme_id " +
+                "WHERE r.date BETWEEN ? AND ? " +
+                "GROUP BY t.id " +
+                "ORDER BY COUNT(t.id) DESC " +
                 "LIMIT ?";
         return jdbcTemplate.query(sql, themeRowMapper, Date.valueOf(start), Date.valueOf(end), rankCount);
     }
 
     public int deleteById(Long id) {
-        String sql = "DELETE FROM theme WHERE id = ?";
+        String sql = "DELETE FROM theme " +
+                "WHERE id = ?";
         return jdbcTemplate.update(sql, id);
     }
 }
