@@ -7,12 +7,12 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
-import roomescape.exception.RoomEscapeException;
 
 import java.sql.PreparedStatement;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class TimeDao {
@@ -40,12 +40,12 @@ public class TimeDao {
         return keyHolder.getKey().longValue();
     }
 
-    public ReservationTime findById(long id) {
+    public Optional<ReservationTime> findById(Long id) {
         String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
         try {
-            return jdbcTemplate.queryForObject(sql, timeRowMapper, id);
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, timeRowMapper, id));
         } catch (EmptyResultDataAccessException e) {
-            throw new RoomEscapeException("[ERROR] 예약 시간을 찾을 수 없습니다");
+            return Optional.empty();
         }
     }
 

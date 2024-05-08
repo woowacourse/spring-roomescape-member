@@ -46,10 +46,6 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    public ReservationTime findTimeById(Long id) {
-        return timeDao.findById(id);
-    }
-
     public TimeResponse saveTime(TimeSaveRequest request) {
         ReservationTime reservationTime = timeMapper.mapToTime(request);
 

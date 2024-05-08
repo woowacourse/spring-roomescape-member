@@ -7,11 +7,11 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
-import roomescape.exception.RoomEscapeException;
 
 import java.sql.PreparedStatement;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class ThemeDao {
@@ -43,12 +43,12 @@ public class ThemeDao {
         return keyHolder.getKey().longValue();
     }
 
-    public Theme findById(long id) {
+    public Optional<Theme> findById(long id) {
         String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
         try {
-            return jdbcTemplate.queryForObject(sql, themeRowMapper, id);
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, themeRowMapper, id));
         } catch (EmptyResultDataAccessException e) {
-            throw new RoomEscapeException("[ERROR] 테마를 찾을 수 없습니다");
+            return Optional.empty();
         }
     }
 
