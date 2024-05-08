@@ -18,4 +18,12 @@ public class User {
     public String getNameValue() {
         return name.getValue();
     }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
 }
