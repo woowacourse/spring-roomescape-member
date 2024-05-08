@@ -1,7 +1,7 @@
 package roomescape.repository;
 
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Theme;
+import roomescape.domain.reservation.Theme;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,7 +1,7 @@
 package roomescape.repository;
 
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Reservation;
+import roomescape.domain.reservation.Reservation;
 
 import java.time.LocalDate;
 import java.util.List;

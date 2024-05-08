@@ -3,9 +3,9 @@ package roomescape.dto.request;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationTime;
+import roomescape.domain.reservation.Theme;
 
 import java.time.LocalDate;
 
