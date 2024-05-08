@@ -25,5 +25,4 @@ class NameTest {
         assertThatThrownBy(() -> new Name(invalidName))
                 .isInstanceOf(InvalidInputException.class);
     }
-
 }

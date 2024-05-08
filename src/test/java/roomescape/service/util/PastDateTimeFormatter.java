@@ -7,12 +7,11 @@ public class PastDateTimeFormatter implements DateTimeFormatter {
 
     @Override
     public LocalDate getDate() {
-        return LocalDate.parse("1999-12-31");
+        return LocalDate.parse("2024-01-02");
     }
 
     @Override
     public LocalTime getTime() {
-        return LocalTime.parse("11:11");
+        return LocalTime.parse("10:00");
     }
-
 }

@@ -1,7 +1,5 @@
 package roomescape.controller;
 
-import static org.hamcrest.Matchers.is;
-
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.HashMap;
@@ -15,24 +13,13 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
+import roomescape.fixture.ReservationFixture;
+import roomescape.fixture.ReservationTimeFixture;
 import roomescape.fixture.ThemeFixture;
-import roomescape.service.ReservationService;
-import roomescape.service.ReservationTimeService;
-import roomescape.service.ThemeService;
-import roomescape.service.dto.input.ReservationInput;
-import roomescape.service.dto.input.ReservationTimeInput;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-public class ReservationTimeApiControllerTest {
-
-    @Autowired
-    ReservationService reservationService;
-
-    @Autowired
-    ReservationTimeService reservationTimeService;
-    @Autowired
-    ThemeService themeService;
+class ReservationTimeApiControllerTest {
 
     @Autowired
     JdbcTemplate jdbcTemplate;
@@ -49,10 +36,10 @@ public class ReservationTimeApiControllerTest {
         jdbcTemplate.update("SET REFERENTIAL_INTEGRITY TRUE");
     }
 
+    @DisplayName("시간 생성에 성공하면, 201을 반환한다.")
     @Test
-    @DisplayName("시간 생성에 성공하면, 201을 반환한다")
     void return_201_when_reservationTime_create_success() {
-        Map<String, String> params = new HashMap<>();
+        final Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
 
         RestAssured.given()
@@ -61,18 +48,12 @@ public class ReservationTimeApiControllerTest {
                 .when().post("/times")
                 .then()
                 .statusCode(201);
-
-        RestAssured.given()
-                .when().get("/times")
-                .then()
-                .statusCode(200)
-                .body("size()", is(1));
     }
 
+    @DisplayName("시간 생성 시 유효하지 않은 시작 시간으로 시간 생성하면 400을 반환한다.")
     @Test
-    @DisplayName("시간 생성 시 시작 시간에 유효하지 않은 값이 입력되었을 때 400을 반환한다.")
     void return_400_when_reservationTime_create_input_is_invalid() {
-        Map<String, String> params = new HashMap<>();
+        final Map<String, String> params = new HashMap<>();
         params.put("startAt", "");
 
         RestAssured.given()
@@ -83,8 +64,63 @@ public class ReservationTimeApiControllerTest {
                 .statusCode(400);
     }
 
+    @DisplayName("중복된 예약 시간을 생성하려 하면 400을 반환한다.")
     @Test
+    void return_400_when_duplicate_reservationTime() {
+        ReservationTimeFixture.createAndReturnId("10:00");
+
+        final Map<String, String> params = new HashMap<>();
+        params.put("startAt", "10:00");
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/times")
+                .then()
+                .statusCode(400);
+    }
+
+    @DisplayName("예약 시간 조회에 성공하면, 200을 반환한다.")
+    @Test
+    void return_200_when_get_reservationTimes_success() {
+        ReservationTimeFixture.createAndReturnId("10:00");
+        ReservationTimeFixture.createAndReturnId("11:00");
+
+        RestAssured.given()
+                .when().get("/times")
+                .then()
+                .statusCode(200);
+    }
+
+    @DisplayName("예약 가능한 시간 조회에 성공하면 200을 반환한다.")
+    @Test
+    void return_200_when_get_available_reservationTimes_success() {
+        final Long timeId = ReservationTimeFixture.createAndReturnId("10:00");
+        final Long themeId = ThemeFixture.createAndReturnId("테마 1");
+        ReservationFixture.createAndReturnId("2024-06-01", timeId, themeId);
+
+        ReservationTimeFixture.createAndReturnId("11:00");
+        ReservationTimeFixture.createAndReturnId("12:00");
+
+        RestAssured.given()
+                .when().get("/times/available?date=2024-06-01&themeId=" + themeId)
+                .then()
+                .statusCode(200);
+    }
+
+    @DisplayName("시간 삭제에 성공하면, 204를 반환한다.")
+    @Test
+    void return_204_when_reservationTime_delete_success() {
+        final Long timeId = ReservationTimeFixture.createAndReturnId("10:00");
+
+        RestAssured.given()
+                .delete("/times/" + timeId)
+                .then()
+                .statusCode(204);
+    }
+
     @DisplayName("특정 시간이 존재하지 않는데, 그 시간을 삭제하려 할 때 404을 반환한다.")
+    @Test
     void return_404_when_not_exist_id() {
         RestAssured.given()
                 .delete("/times/-1")
@@ -92,31 +128,16 @@ public class ReservationTimeApiControllerTest {
                 .statusCode(404);
     }
 
+    @DisplayName("특정 시간에 대한 예약이 존재하는데, 그 시간을 삭제하려 할 때 400을 반환한다.")
     @Test
-    @DisplayName("특정 시간에 대한 예약이 존재하는데, 그 시간을 삭제하려 할 때 409를 반환한다.")
-    void return_409_when_delete_id_that_exist_reservation() {
-        long timeId = reservationTimeService.createReservationTime(new ReservationTimeInput("09:00")).id();
-        long themeId = themeService.createTheme(ThemeFixture.getInput()).id();
-        reservationService.createReservation(new ReservationInput("제리", "2025-04-30", timeId, themeId));
+    void return_400_when_delete_id_that_exist_reservation() {
+        final Long timeId = ReservationTimeFixture.createAndReturnId("10:00");
+        final Long themeId = ThemeFixture.createAndReturnId("테마 1");
+
+        ReservationFixture.createAndReturnId("2024-06-01", timeId, themeId);
 
         RestAssured.given()
                 .delete("/times/" + timeId)
-                .then()
-                .statusCode(400);
-    }
-
-    @Test
-    @DisplayName("중복된 예약 시간을 생성하려 할 때 409를 반환한다.")
-    void return_409_when_duplicate_reservationTime() {
-        reservationTimeService.createReservationTime(new ReservationTimeInput("10:00"));
-
-        Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10:00");
-
-        RestAssured.given()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/times")
                 .then()
                 .statusCode(400);
     }

@@ -1,9 +1,28 @@
 package roomescape.fixture;
 
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import io.restassured.response.Response;
+import java.util.HashMap;
+import java.util.Map;
 import roomescape.domain.Theme;
 import roomescape.service.dto.input.ThemeInput;
 
 public class ThemeFixture {
+
+    public static Long createAndReturnId(final String name) {
+        final Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("description", "테마 설명");
+        params.put("thumbnail", "image.jpg");
+
+        final Response response = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes");
+
+        return Long.parseLong(response.then().extract().jsonPath().getString("id"));
+    }
 
     public static ThemeInput getInput() {
         return new ThemeInput(
