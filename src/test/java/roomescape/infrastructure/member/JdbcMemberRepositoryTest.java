@@ -10,7 +10,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.member.Member;
-import roomescape.infrastructure.member.JdbcMemberRepository;
 
 @JdbcTest
 @Import(JdbcMemberRepository.class)
@@ -34,7 +33,8 @@ class JdbcMemberRepositoryTest {
     @DisplayName("이메일로 회원이 존재하는지 확인한다.")
     @Test
     void existsByEmailTest() {
-        jdbcTemplate.execute("insert into member (name, email, password) values ('name', 'email@test.com', 'password')");
+        String sql = "insert into member (name, email, password) values ('name', 'email@test.com', 'password')";
+        jdbcTemplate.execute(sql);
         boolean existsByEmail = jdbcMemberRepository.existsByEmail("email@test.com");
         assertThat(existsByEmail).isTrue();
     }
@@ -45,6 +45,15 @@ class JdbcMemberRepositoryTest {
         String sql = "insert into member (id, name, email, password) values (1, 'name', 'email@test.com', 'password')";
         jdbcTemplate.execute(sql);
         Optional<Member> actual = jdbcMemberRepository.findById(1);
+        assertThat(actual).isPresent();
+    }
+
+    @Test
+    @DisplayName("이메일로 회원을 조회한다.")
+    void findByEmailTest() {
+        String sql = "insert into member (name, email, password) values ('name', 'email@test.com', 'password')";
+        jdbcTemplate.execute(sql);
+        Optional<Member> actual = jdbcMemberRepository.findByEmail("email@test.com");
         assertThat(actual).isPresent();
     }
 

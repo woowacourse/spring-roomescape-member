@@ -1,6 +1,7 @@
 package roomescape.infrastructure.member;
 
 import java.util.Optional;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -53,7 +54,7 @@ public class JdbcMemberRepository implements MemberRepository {
         try {
             Member member = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> MemberRowMapper.mapRow(rs), email);
             return Optional.ofNullable(member);
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             return Optional.empty();
         }
     }
