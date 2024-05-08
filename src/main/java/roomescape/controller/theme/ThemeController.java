@@ -26,8 +26,8 @@ public class ThemeController {
     }
 
     @GetMapping
-    public List<ThemeResponse> getThemes() {
-        return themeService.getThemes();
+    public ResponseEntity<List<ThemeResponse>> getThemes() {
+        return ResponseEntity.ok(themeService.getThemes());
     }
 
     @PostMapping
@@ -44,15 +44,14 @@ public class ThemeController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable final Long id) {
         themeService.deleteTheme(id);
-        return ResponseEntity.noContent()
-                .build();
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/popular")
-    public List<PopularThemeResponse> getPopularThemes(
+    public ResponseEntity<List<PopularThemeResponse>> getPopularThemes(
             @RequestParam final int days,
             @RequestParam final int limit
     ) {
-        return themeService.getPopularThemes(new PopularThemeRequest(days, limit));
+        return ResponseEntity.ok(themeService.getPopularThemes(new PopularThemeRequest(days, limit)));
     }
 }
