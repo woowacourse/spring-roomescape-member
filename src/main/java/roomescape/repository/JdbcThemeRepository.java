@@ -1,7 +1,9 @@
 package roomescape.repository;
 
 import java.util.List;
+import java.util.Optional;
 import javax.sql.DataSource;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -47,21 +49,19 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public Theme findById(Long id) {
-        String sql = "SELECT * FROM theme WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
+    public Optional<Theme> findById(Long id) {
+        try {
+            String sql = "SELECT * FROM theme WHERE id = ?";
+            return Optional.of(jdbcTemplate.queryForObject(sql, ROW_MAPPER, id));
+        } catch (DataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public void delete(Long id) {
         String sql = "DELETE FROM theme WHERE id = ?";
         jdbcTemplate.update(sql, id);
-    }
-
-    @Override
-    public Boolean existsById(Long id) {
-        String sql = "SELECT EXISTS (SELECT 1 FROM theme WHERE id = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
     }
 
     @Override
