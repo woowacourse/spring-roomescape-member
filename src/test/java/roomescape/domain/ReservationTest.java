@@ -63,7 +63,7 @@ class ReservationTest {
     @DisplayName("유효하지 않은 날짜인경우 예외가 발생한다.")
     @NullAndEmptySource
     @ValueSource(strings = {"202020-12-13", "1-13-4", "2024-14-15"})
-    void validateFormat(String date) {
+    void validateFormat(final String date) {
         assertThatThrownBy(() -> new Reservation(null, "Seyang", date, null, null))
                 .isInstanceOf(InvalidDateException.class);
     }

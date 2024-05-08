@@ -29,7 +29,7 @@ public class H2ThemeRepository implements ThemeRepository {
                 .usingGeneratedKeyColumns("ID");
     }
 
-    private Theme mapRowTheme(ResultSet rs, int rowNum) throws SQLException {
+    private Theme mapRowTheme(final ResultSet rs, final int rowNum) throws SQLException {
         return new Theme(
                 rs.getLong("ID"),
                 rs.getString("NAME"),
@@ -38,7 +38,7 @@ public class H2ThemeRepository implements ThemeRepository {
         );
     }
 
-    private Theme mapRowThemeWithTableName(ResultSet rs, int rowNum) throws SQLException {
+    private Theme mapRowThemeWithTableName(final ResultSet rs, final int rowNum) throws SQLException {
         return new Theme(
                 rs.getLong(TABLE_NAME + ".ID"),
                 rs.getString(TABLE_NAME + ".NAME"),

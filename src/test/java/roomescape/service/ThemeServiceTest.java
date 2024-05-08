@@ -176,13 +176,17 @@ class ThemeServiceTest {
                 .isInstanceOf(RowsLimitException.class);
     }
 
-    private void createRandomReservations(int days, List<ThemeResponse> themes, ReservationTime time, List<Reservation> reservations) {
+    private void createRandomReservations(
+            final int days,
+            final List<ThemeResponse> themes,
+            final ReservationTime time,
+            final List<Reservation> reservations) {
         final Random random = new Random();
         for (int day = 1; day < days * 2; day++) {
-            LocalDate date = LocalDate.now().minusDays(day);
-            for (ThemeResponse theme : themes) {
+            final LocalDate date = LocalDate.now().minusDays(day);
+            for (final ThemeResponse theme : themes) {
                 if (random.nextBoolean()) {
-                    Reservation reservation = new Reservation(
+                    final Reservation reservation = new Reservation(
                             null,
                             new ReserveName("Person"),
                             date,
@@ -195,7 +199,7 @@ class ThemeServiceTest {
         }
     }
 
-    private PopularThemeResponse createPopularThemeResponseFromReservation(Reservation reservation) {
+    private PopularThemeResponse createPopularThemeResponseFromReservation(final Reservation reservation) {
         return new PopularThemeResponse(
                 reservation.getTheme().getName(),
                 reservation.getTheme().getThumbnail(),

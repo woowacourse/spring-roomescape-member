@@ -69,23 +69,23 @@ public class ReservationService {
         return ReservationResponse.from(savedReservation);
     }
 
-    private ReservationTime getWithValidateTimeNotFound(Long timeId) {
+    private ReservationTime getWithValidateTimeNotFound(final Long timeId) {
         return reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new TimeNotFoundException("존재하지 않은 시간입니다."));
     }
 
-    private Theme getWithValidateThemeNotFound(Long themeId) {
+    private Theme getWithValidateThemeNotFound(final Long themeId) {
         return themeRepository.findById(themeId)
                 .orElseThrow(() -> new ThemeNotFoundException("존재하지 않는 테마입니다."));
     }
 
-    private void validateTimeDuplicated(boolean isExistsReservation) {
+    private void validateTimeDuplicated(final boolean isExistsReservation) {
         if (isExistsReservation) {
             throw new ReservationDuplicatedException("중복된 시간으로 예약이 불가합니다.");
         }
     }
 
-    private void validatePreviousTime(LocalDateTime reservationDateTime) {
+    private void validatePreviousTime(final LocalDateTime reservationDateTime) {
         if (reservationDateTime.isBefore(LocalDateTime.now())) {
             throw new PreviousTimeException("지난 시간으로 예약할 수 없습니다.");
         }

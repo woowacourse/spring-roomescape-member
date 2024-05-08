@@ -100,11 +100,11 @@ class TimeServiceTest {
     @DisplayName("예약 시간을 추가한다.")
     void addTIme() {
         // given
-        TimeRequest timeRequest = sampleTimes.get(0);
+        final TimeRequest timeRequest = sampleTimes.get(0);
 
         // when
-        TimeResponse actual = timeService.addTime(timeRequest);
-        TimeResponse expected = new TimeResponse(actual.id(), timeRequest.startAt(), false);
+        final TimeResponse actual = timeService.addTime(timeRequest);
+        final TimeResponse expected = new TimeResponse(actual.id(), timeRequest.startAt(), false);
 
         // then
         assertThat(actual).isEqualTo(expected);
@@ -114,7 +114,7 @@ class TimeServiceTest {
     @DisplayName("이미 예약된 시간을 추가할 경우 예외가 발생한다.")
     void addTimeDuplicated() {
         // given
-        TimeRequest timeRequest = sampleTimes.get(0);
+        final TimeRequest timeRequest = sampleTimes.get(0);
 
         // when
         timeService.addTime(timeRequest);

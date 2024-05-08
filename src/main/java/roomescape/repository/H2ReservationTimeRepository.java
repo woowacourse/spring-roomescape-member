@@ -55,7 +55,7 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
     }
 
     @Override
-    public boolean existByStartAt(LocalTime startAt) {
+    public boolean existByStartAt(final LocalTime startAt) {
         final String sql = "SELECT * FROM RESERVATION_TIME WHERE START_AT = ? LIMIT 1";
         final String formattedStartAt = startAt.format(DateTimeFormatter.ofPattern("HH:mm"));
 

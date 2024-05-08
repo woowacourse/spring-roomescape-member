@@ -29,7 +29,7 @@ public class ThemeService {
         this.themeRepository = themeRepository;
     }
 
-    private static void validateNotFound(int deletedCount) {
+    private static void validateNotFound(final int deletedCount) {
         if (deletedCount == 0) {
             throw new ThemeNotFoundException("테마가 존재하지 않습니다.");
         }
@@ -57,13 +57,13 @@ public class ThemeService {
         return deletedCount;
     }
 
-    private void validateUsed(Long id) {
+    private void validateUsed(final Long id) {
         if (reservationRepository.existsByThemeId(id)) {
             throw new ThemeUsedException("예약된 테마는 삭제할 수 없습니다.");
         }
     }
 
-    public List<PopularThemeResponse> getPopularThemes(PopularThemeRequest popularThemeRequest) {
+    public List<PopularThemeResponse> getPopularThemes(final PopularThemeRequest popularThemeRequest) {
         validateDaysLimit(popularThemeRequest.days());
         validateRowsLimit(popularThemeRequest.limit());
         final LocalDate fromDate = getFromDate(popularThemeRequest.days());
@@ -75,19 +75,19 @@ public class ThemeService {
                 .toList();
     }
 
-    private void validateDaysLimit(int days) {
+    private void validateDaysLimit(final int days) {
         if (days > DAYS_LIMIT) {
             throw new DaysLimitException("기간은 " + DAYS_LIMIT + "일을 넘을 수 없습니다.");
         }
     }
 
-    private void validateRowsLimit(int limit) {
+    private void validateRowsLimit(final int limit) {
         if (limit > ROWS_LIMIT) {
             throw new RowsLimitException("조회할 최대 개수는 " + ROWS_LIMIT + "개를 넘을 수 없습니다.");
         }
     }
 
-    private LocalDate getFromDate(int days) {
+    private LocalDate getFromDate(final int days) {
         return LocalDate.now().minusDays(days);
     }
 

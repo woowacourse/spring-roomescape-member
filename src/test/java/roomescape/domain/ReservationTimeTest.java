@@ -32,7 +32,7 @@ class ReservationTimeTest {
     @NullAndEmptySource
     @ValueSource(strings = {"1:300", "112:33"})
     @DisplayName("유효하지 않은 시간을 입력할 경우 예외가 발생한다.")
-    void validateTime(String time) {
+    void validateTime(final String time) {
         assertThatThrownBy(() -> new ReservationTime(null, time))
                 .isInstanceOf(InvalidTimeException.class);
     }
