@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.domain.theme.Theme;
 import roomescape.dto.ThemeRequest;
@@ -33,15 +34,16 @@ public class ThemeService {
     }
 
     public ThemeResponse getTheme(Long id) {
-        validateIdExist(id);
-        Theme theme = themeRepository.findById(id);
+        Theme theme = themeRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 id가 존재하지 않습니다."));
         return ThemeResponse.from(theme);
     }
 
     public void deleteTheme(Long id) {
-        validateIdExist(id);
-        if (reservationRepository.existsByThemeId(id)) {
-            throw new IllegalArgumentException("해당 테마는 예약이 존재합니다.");
+        themeRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 id가 존재하지 않습니다."));
+        if(reservationRepository.existsByThemeId(id)){
+            throw new IllegalArgumentException("예약이 되어있어 해당 테마를 지울 수 없습니다.");
         }
         themeRepository.delete(id);
     }
@@ -50,14 +52,9 @@ public class ThemeService {
         List<Long> popularThemeIds = reservationRepository.findPopularThemesByReservation(7, 1, 10);
         return popularThemeIds.stream()
                 .map(themeRepository::findById)
+                .map(optional -> optional.orElseThrow(() -> new IllegalArgumentException("해당하는 id가 존재하지 않습니다.")))
                 .map(ThemeResponse::from)
                 .toList();
-    }
-
-    private void validateIdExist(Long id) {
-        if (!themeRepository.existsById(id)) {
-            throw new IllegalArgumentException("id가 존재하지 않습니다 : " + id);
-        }
     }
 
     public void validateNameDuplicate(String name) {
