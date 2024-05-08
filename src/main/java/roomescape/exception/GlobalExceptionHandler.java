@@ -27,19 +27,19 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(new ExceptionTemplate(exception.getMessage()));
     }
 
-    @ExceptionHandler()
+    @ExceptionHandler
     public ResponseEntity<ExceptionTemplate> handleNullPointerException(NullPointerException exception) {
         return ResponseEntity.badRequest()
                 .body(new ExceptionTemplate(exception.getMessage()));
     }
 
-    @ExceptionHandler()
+    @ExceptionHandler
     public ResponseEntity<ExceptionTemplate> handleDuplicateKeyException(DuplicateKeyException exception) {
         return ResponseEntity.badRequest()
                 .body(new ExceptionTemplate(exception.getMessage()));
     }
 
-    @ExceptionHandler()
+    @ExceptionHandler
     public ResponseEntity<ExceptionTemplate> handleException(Exception exception) {
         return ResponseEntity.internalServerError()
                 .body(new ExceptionTemplate(exception.getMessage()));
