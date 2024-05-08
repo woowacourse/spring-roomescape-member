@@ -1,5 +1,6 @@
 package roomescape.infrastructure.member;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -30,6 +31,12 @@ public class JdbcMemberRepository implements MemberRepository {
                 .addValue("password", member.getEncryptedPassword());
         long id = jdbcInsert.executeAndReturnKey(params).longValue();
         return member.withId(id);
+    }
+
+    @Override
+    public List<Member> findAll() {
+        String sql = "select id, name, email, password from member";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> MemberRowMapper.mapRow(rs));
     }
 
     public Optional<Member> findById(long id) {

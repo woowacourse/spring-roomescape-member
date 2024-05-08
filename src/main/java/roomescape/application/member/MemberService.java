@@ -1,5 +1,6 @@
 package roomescape.application.member;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.application.member.dto.request.MemberLoginRequest;
@@ -37,5 +38,12 @@ public class MemberService {
     public MemberResponse findById(Long memberId) {
         Member member = memberRepository.getById(memberId);
         return MemberResponse.from(member);
+    }
+
+    public List<MemberResponse> findAll() {
+        return memberRepository.findAll()
+                .stream()
+                .map(MemberResponse::from)
+                .toList();
     }
 }

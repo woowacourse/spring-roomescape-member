@@ -2,6 +2,7 @@ package roomescape.infrastructure.member;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,6 +31,20 @@ class JdbcMemberRepositoryTest {
         assertThat(totalRowCount).isEqualTo(1);
     }
 
+    @Test
+    @DisplayName("모든 회원을 조회한다.")
+    void findAllTest() {
+        String sql = """
+                insert into member (name, email, password) values
+                ('name1', 'test@test1.com', '12341234'),
+                ('name2', 'test@test2.com', '12341234'),
+                ('name3', 'test@test3.com', '12341234')
+                """;
+        jdbcTemplate.execute(sql);
+        List<Member> actual = jdbcMemberRepository.findAll();
+        assertThat(actual).hasSize(3);
+    }
+
     @DisplayName("이메일로 회원이 존재하는지 확인한다.")
     @Test
     void existsByEmailTest() {
@@ -56,6 +71,7 @@ class JdbcMemberRepositoryTest {
         Optional<Member> actual = jdbcMemberRepository.findByEmail("email@test.com");
         assertThat(actual).isPresent();
     }
+
 
 
     private int getTotalRowCount() {
