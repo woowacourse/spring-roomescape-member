@@ -94,6 +94,7 @@ function signup() {
 }
 
 function register(event) {
+    event.preventDefault();
   // 폼 데이터 수집
   const email = document.getElementById('email').value;
   const password = document.getElementById('password').value;
@@ -136,9 +137,6 @@ function register(event) {
         // 에러 처리
         console.error('Error during signup:', error);
       });
-
-  // 폼 제출에 의한 페이지 리로드 방지
-  event.preventDefault();
 }
 
 function base64DecodeUnicode(str) {

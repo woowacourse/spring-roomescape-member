@@ -3,10 +3,10 @@ document.addEventListener('DOMContentLoaded', () => {
     TODO: [3단계] 인기 테마 - 인기 테마 목록 조회 API 호출
     */
     const today = new Date();
-    const startDay = today - 7;
+    const startDay = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-    const startDate = createDate(startDay);
-    const endDate = createDate(today)
+    const startDate = createDate(today);
+    const endDate = createDate(startDate);
     const limit = 10;
 
     requestRead(`/themes/popular?startDate=${startDate}&endDate=${endDate}&limit=${limit}`) // 인기 테마 목록 조회 API endpoint
@@ -15,10 +15,12 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function createDate(input) {
-    const year = input.getFullYear();
-    const month = ('0' + (input.getMonth() + 1)).slice(-2);
-    const day = ('0' + input.getDate()).slice(-2);
-    return year + '-' + month + '-' + day;
+    var dd = new Date(input);
+
+    const year = dd.getFullYear();
+    const month = ('0' + (dd.getMonth() + 1)).slice(-2);
+    const day = ('0' + dd.getDate()).slice(-2);
+    return `${year}-${month}-${day}`;
 }
 
 function render(data) {
