@@ -1,6 +1,6 @@
 package roomescape.domain.member;
 
-import roomescape.domain.PlayerName;
+import roomescape.domain.reservation.PlayerName;
 
 public class Member {
     private final Long id;

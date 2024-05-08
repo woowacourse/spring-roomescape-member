@@ -25,8 +25,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.domain.Reservation;
-import roomescape.presentation.ReservationController;
+import roomescape.domain.reservation.Reservation;
+import roomescape.presentation.reservation.ReservationController;
 
 @Disabled
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
