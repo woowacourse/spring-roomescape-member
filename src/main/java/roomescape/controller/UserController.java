@@ -9,4 +9,9 @@ public class UserController {
     public String loadUserReservationPage() {
         return "/reservation";
     }
+
+    @GetMapping("/login")
+    public String loadLoginPage() {
+        return "/login";
+    }
 }

@@ -69,7 +69,7 @@
 - [x] `user-reservation.js` renderTheme 함수, fetchAvailableTimes 함수 등 수정
 
 ## 4단계 기능 요구 사항
-- [ ] 로그인 폼이 있는 페이지를 응답 [GET /login] (templates/login.html 파일을 이용)
+- [x] 로그인 폼이 있는 페이지를 응답 [GET /login] (templates/login.html 파일을 이용)
 - [ ] 사용자 도메인을 추가
   - [ ] name, email, password로 구성
 - [ ] 로그인 기능 구현 [POST /login]
