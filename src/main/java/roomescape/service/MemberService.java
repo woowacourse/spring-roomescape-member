@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.controller.TokenProvider;
 import roomescape.dao.MemberDao;
@@ -17,6 +18,12 @@ public class MemberService {
     public MemberService(MemberDao memberDao, TokenProvider tokenProvider) {
         this.memberDao = memberDao;
         this.tokenProvider = tokenProvider;
+    }
+
+    public List<MemberResponse> findAll() {
+        return memberDao.findAll().stream()
+                .map(MemberResponse::from)
+                .toList();
     }
 
     public String login(LoginRequest loginRequest) {

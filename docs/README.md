@@ -49,5 +49,5 @@
 - [ ] 5단계 클라이언트코드 수정
 
 - [x] DB 스키마 member_id로 변경
-- [ ] /reservations 응답값 변경
-- [ ] js 파일 랜더링 확인
+- [x] /reservations 응답값 변경
+- [x] js 파일 랜더링 확인

@@ -3,6 +3,7 @@ package roomescape.controller;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,13 +15,13 @@ import roomescape.service.dto.request.LoginRequest;
 import roomescape.service.dto.response.MemberResponse;
 
 @RestController
-public class UserController {
+public class MemberController {
 
     private static final String TOKEN_NAME = "token";
 
     private final MemberService memberService;
 
-    public UserController(MemberService memberService) {
+    public MemberController(MemberService memberService) {
         this.memberService = memberService;
     }
 
@@ -42,6 +43,12 @@ public class UserController {
 
         MemberResponse memberResponse = memberService.findMember(token);
         return ResponseEntity.ok().body(memberResponse);
+    }
+
+    @GetMapping("/members")
+    public ResponseEntity<List<MemberResponse>> findMembers() {
+        List<MemberResponse> members = memberService.findAll();
+        return ResponseEntity.ok(members);
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {

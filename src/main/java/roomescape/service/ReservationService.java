@@ -6,13 +6,16 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.dao.MemberDao;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.RoomThemeDao;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
 import roomescape.exception.BadRequestException;
+import roomescape.exception.NotFoundException;
 import roomescape.service.dto.request.ReservationRequest;
 import roomescape.service.dto.response.ReservationResponse;
 
@@ -21,15 +24,18 @@ public class ReservationService {
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
     private final RoomThemeDao roomThemeDao;
+    private final MemberDao memberDao;
 
     public ReservationService(
             ReservationDao reservationDao,
             ReservationTimeDao reservationTimeDao,
-            RoomThemeDao roomThemeDao)
+            RoomThemeDao roomThemeDao,
+            MemberDao memberDao)
     {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
         this.roomThemeDao = roomThemeDao;
+        this.memberDao = memberDao;
     }
 
     public List<ReservationResponse> findAll() {
@@ -43,8 +49,11 @@ public class ReservationService {
         ReservationTime reservationTime = reservationTimeDao.findById(reservationRequest.timeId());
         validateOutdatedDateTime(reservationRequest.date(), reservationTime.getStartAt());
 
+        Member member = memberDao.findById(reservationRequest.memberId())
+                .orElseThrow(() -> new NotFoundException("사용자를 찾을 수 없습니다."));
+
         RoomTheme roomTheme = roomThemeDao.findById(reservationRequest.themeId());
-        Reservation reservation = reservationRequest.toReservation(reservationTime, roomTheme);
+        Reservation reservation = reservationRequest.toReservation(member, reservationTime, roomTheme);
 
         validateDuplicatedDateTime(reservation.getDate(), reservationTime.getId(), roomTheme.getId());
 
