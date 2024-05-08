@@ -94,8 +94,8 @@ class ThemeApiControllerTest {
     }
 
     @Test
-    @DisplayName("특정 테마에 대한 예약이 존재하는데, 그 테마를 삭제하려 할 때 409를 반환한다.")
-    void return_409_when_delete_id_that_exist_reservation() {
+    @DisplayName("특정 테마에 대한 예약이 존재하는데, 그 테마를 삭제하려 할 때 400를 반환한다.")
+    void return_400_when_delete_id_that_exist_reservation() {
         long timeId = reservationTimeService.createReservationTime(new ReservationTimeInput("09:00")).id();
         long themeId = themeService.createTheme(ThemeFixture.getInput()).id();
         reservationService.createReservation(new ReservationInput("제리", "2025-04-30", timeId, themeId));

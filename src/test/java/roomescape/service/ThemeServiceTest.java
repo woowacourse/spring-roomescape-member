@@ -148,7 +148,7 @@ class ThemeServiceTest {
                 Theme.of(themeOutput2.id(), themeOutput2.name(), themeOutput2.description(), themeOutput2.thumbnail())
         ));
 
-        final List<ThemeOutput> popularThemes = themeService.findPopularThemes("2024-06-04");
+        final List<ThemeOutput> popularThemes = themeService.findPopularThemes("2024-06-04", 10);
 
         assertThat(popularThemes).containsExactly(
                 new ThemeOutput(themeOutput1.id(), themeOutput1.name(), themeOutput1.description(),
@@ -156,5 +156,35 @@ class ThemeServiceTest {
                 new ThemeOutput(themeOutput2.id(), themeOutput2.name(), themeOutput2.description(),
                         themeOutput2.thumbnail())
         );
+    }
+
+    @Test
+    @DisplayName("지정된 개수만큼 인기 테마를 조회한다.")
+    void get_popular_themes_up_to_limit() {
+        final ThemeOutput themeOutput1 = themeService.createTheme(new ThemeInput("테마 1", "테마 설명", "image.png"));
+        final ThemeOutput themeOutput2 = themeService.createTheme(new ThemeInput("테마 2", "테마 설명", "image.png"));
+        final ThemeOutput themeOutput3 = themeService.createTheme(new ThemeInput("테마 3", "테마 설명", "image.png"));
+
+        final ReservationTimeOutput timeOutput =
+                reservationTimeService.createReservationTime(new ReservationTimeInput("10:00"));
+
+        createReservations(themeOutput1, timeOutput, 1, 1);
+        createReservations(themeOutput2, timeOutput, 2, 2);
+        createReservations(themeOutput3, timeOutput, 4, 3);
+
+        final List<ThemeOutput> popularThemes = themeService.findPopularThemes("2024-06-07", 2);
+
+        assertThat(popularThemes).containsExactly(themeOutput3, themeOutput2);
+    }
+
+    private void createReservations(final ThemeOutput themeOutput, final ReservationTimeOutput timeOutput, final int startDate, final int count) {
+        final Theme theme = Theme.of(themeOutput.id(), themeOutput.name(), themeOutput.description(), themeOutput.thumbnail());
+        final ReservationTime time = ReservationTime.from(timeOutput.id(), timeOutput.startAt());
+
+        for (int i = startDate; i < startDate + count; i++) {
+            final String date = String.format("2024-06-0%d", i);
+            final Reservation reservation = Reservation.from(null, "제리", date, time, theme);
+            reservationDao.create(reservation);
+        }
     }
 }

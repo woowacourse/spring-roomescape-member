@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.dao.mapper.ThemeRowMapper;
+import roomescape.domain.Limit;
 import roomescape.domain.Theme;
 import roomescape.domain.VisitDate;
 
@@ -47,7 +48,7 @@ public class ThemeDao {
         }
     }
 
-    public List<Theme> findPopular(final VisitDate visitDate) {
+    public List<Theme> findPopular(final VisitDate visitDate, final Limit limit) {
         final String sql = """
                 SELECT
                     t.id AS theme_id,
@@ -59,9 +60,9 @@ public class ThemeDao {
                 WHERE r.date BETWEEN ? AND ?
                 GROUP BY t.id
                 ORDER BY COUNT(r.id) DESC
-                LIMIT 10;
+                LIMIT ?;
                 """;
-        return jdbcTemplate.query(sql, rowMapper, visitDate.beforeWeek().asString(), visitDate.beforeDay().asString());
+        return jdbcTemplate.query(sql, rowMapper, visitDate.beforeWeek().asString(), visitDate.beforeDay().asString(), limit.value());
     }
 
     public List<Theme> getAll() {

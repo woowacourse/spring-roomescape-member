@@ -41,8 +41,10 @@ public class ThemeApiController {
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<ThemesResponse> findPopularThemes(@RequestParam final String date) {
-        final List<ThemeOutput> outputs = themeService.findPopularThemes(date);
+    public ResponseEntity<ThemesResponse> findPopularThemes(
+            @RequestParam final String date,
+            @RequestParam(required = false, defaultValue = "10") final int limit) {
+        final List<ThemeOutput> outputs = themeService.findPopularThemes(date, limit);
         return ResponseEntity.ok().body(ThemesResponse.from(outputs));
     }
 

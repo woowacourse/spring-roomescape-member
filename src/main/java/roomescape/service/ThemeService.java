@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
+import roomescape.domain.Limit;
 import roomescape.domain.Theme;
 import roomescape.domain.VisitDate;
 import roomescape.exception.ExistsException;
@@ -32,8 +33,8 @@ public class ThemeService {
         return ThemeOutput.list(themes);
     }
 
-    public List<ThemeOutput> findPopularThemes(final String date) {
-        final List<Theme> themes = themeDao.findPopular(VisitDate.from(date));
+    public List<ThemeOutput> findPopularThemes(final String date, final int limit) {
+        final List<Theme> themes = themeDao.findPopular(VisitDate.from(date), Limit.from(limit));
         return ThemeOutput.list(themes);
     }
 
