@@ -25,7 +25,7 @@ class ReservationAcceptanceTest extends AcceptanceTest {
     private static final String PATH = "/reservations";
     private static final Map<String, Object> BODY = Map.of(
             "name", "브라운",
-            "date", LocalDate.now().plusDays(1).toString(),
+            "date", LocalDate.now().plusDays(2).toString(),
             "timeId", 1L,
             "themeId", 1L
     );
@@ -72,7 +72,7 @@ class ReservationAcceptanceTest extends AcceptanceTest {
     @DisplayName("[5단계 - 데이터 조회하기] 데이터 삽입 후 조회 API와 쿼리 결과를 비교한다")
     @Test
     void step5() {
-        LocalDate date = LocalDate.of(2023, 8, 5);
+        LocalDate date = LocalDate.now().plusDays(2);
         jdbcTemplate.update("INSERT INTO reservation (name, reservation_date, time_id, theme_id) VALUES (?, ?, ?, ?)",
                 "브라운", date, 1L, 1L);
 
