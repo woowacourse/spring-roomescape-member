@@ -44,8 +44,8 @@ public class H2ReservationRepository implements ReservationRepository {
 
         return new Reservation(
                 reservationId,
-                reservation.getUser(),
                 reservation.getDate(),
+                reservation.getUser(),
                 reservation.getTime(),
                 reservation.getTheme());
     }
@@ -108,12 +108,12 @@ public class H2ReservationRepository implements ReservationRepository {
         public Reservation mapRow(ResultSet rs, int rowNum) throws SQLException {
             return new Reservation(
                     rs.getLong("reservation_id"),
+                    rs.getDate("date").toLocalDate(),
                     new Member(rs.getLong("user_id"),
                             rs.getString("user_name"),
                             rs.getString("email"),
                             rs.getString("user_password"),
                             Role.getR(rs.getString("user_role"))),
-                    rs.getDate("date").toLocalDate(),
                     new ReservationTime(
                             rs.getLong("time_id"),
                             rs.getTime("time_value").toLocalTime()),

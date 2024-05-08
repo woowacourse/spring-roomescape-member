@@ -6,19 +6,19 @@ import java.util.Objects;
 
 public class Reservation {
     private final Long id;
-    private final Member member;
     private final LocalDate date;
+    private final Member member;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(Member member, LocalDate date, ReservationTime time, Theme theme) {
-        this(null, member, date, time, theme);
+    public Reservation(LocalDate date, Member member, ReservationTime time, Theme theme) {
+        this(null, date, member, time, theme);
     }
 
-    public Reservation(Long id, Member member, LocalDate date, ReservationTime time, Theme theme) {
+    public Reservation(Long id, LocalDate date, Member member, ReservationTime time, Theme theme) {
         this.id = id;
-        this.member = member;
         this.date = date;
+        this.member = member;
         this.time = time;
         this.theme = theme;
     }

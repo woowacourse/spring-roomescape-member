@@ -13,7 +13,7 @@ import roomescape.repository.MemberRepository;
 @Service
 public class MemberService {
     private final MemberRepository memberRepository;
-    private JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenProvider jwtTokenProvider;
 
     public MemberService(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
         this.memberRepository = memberRepository;

@@ -49,7 +49,7 @@ public class ReservationService {
         Theme requestedTheme = themeRepository.findById(adminReservationRequest.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("예약할 수 없는 테마입니다. themeId: " + adminReservationRequest.themeId()));
         Member member = memberRepository.findById(adminReservationRequest.memberId()).orElseThrow();
-        Reservation requestedReservation = new Reservation(member, adminReservationRequest.date(), requestedReservationTime, requestedTheme);
+        Reservation requestedReservation = new Reservation(adminReservationRequest.date(), member, requestedReservationTime, requestedTheme);
 
         rejectPastTimeReservation(requestedReservation);
         rejectDuplicateReservation(requestedReservation);
@@ -87,7 +87,7 @@ public class ReservationService {
         Theme requestedTheme = themeRepository.findById(adminReservationRequest.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("예약할 수 없는 테마입니다. themeId: " + adminReservationRequest.themeId()));
         Member member = memberRepository.findById(adminReservationRequest.memberId()).orElseThrow();
-        Reservation requestedReservation = reservationRepository.save(new Reservation(member, adminReservationRequest.date(), requestedReservationTime, requestedTheme));
+        Reservation requestedReservation = reservationRepository.save(new Reservation(adminReservationRequest.date(), member, requestedReservationTime, requestedTheme));
 
         return ReservationResponse.from(requestedReservation);
     }
