@@ -21,7 +21,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
-import roomescape.core.dto.BookingTimeResponseDto;
+import roomescape.core.dto.ReservationTimeWithStateDto;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -119,17 +119,17 @@ class ReservationTimeControllerTest {
                 .then().log().all()
                 .statusCode(201);
 
-        List<BookingTimeResponseDto> times = RestAssured.given().log().all()
+        List<ReservationTimeWithStateDto> times = RestAssured.given().log().all()
                 .when().get("/times?date=" + TOMORROW_DATE + "&themeId=1")
                 .then().log().all()
                 .statusCode(200).extract()
-                .jsonPath().getList(".", BookingTimeResponseDto.class);
+                .jsonPath().getList(".", ReservationTimeWithStateDto.class);
 
         assertThat(times).hasSize(countReservationTime())
                 .allMatch(response -> validateBookingTime(response, 1));
     }
 
-    private boolean validateBookingTime(final BookingTimeResponseDto bookingTime, final int timeId) {
+    private boolean validateBookingTime(final ReservationTimeWithStateDto bookingTime, final int timeId) {
         if (bookingTime.getId() == timeId) {
             return bookingTime.isAlreadyBooked();
         }

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.core.domain.Reservation;
 import roomescape.core.domain.ReservationTime;
-import roomescape.core.dto.BookingTimeResponseDto;
+import roomescape.core.dto.ReservationTimeWithStateDto;
 import roomescape.core.dto.ReservationTimeRequestDto;
 import roomescape.core.repository.ReservationRepository;
 import roomescape.core.repository.ReservationTimeRepository;
@@ -41,7 +41,7 @@ public class ReservationTimeService {
     }
 
     @Transactional(readOnly = true)
-    public List<BookingTimeResponseDto> findBookable(final String date, final long themeId) {
+    public List<ReservationTimeWithStateDto> findBookable(final String date, final long themeId) {
         List<ReservationTime> times = reservationTimeRepository.findAll();
         Set<Long> timeIdOfReservation = reservationRepository.findAllByDateAndThemeId(date, themeId)
                 .stream()
@@ -52,11 +52,11 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    private BookingTimeResponseDto createBookingTime(final ReservationTime time, final Set<Long> timeIdOfReservation) {
+    private ReservationTimeWithStateDto createBookingTime(final ReservationTime time, final Set<Long> timeIdOfReservation) {
         if (timeIdOfReservation.contains(time.getId())) {
-            return new BookingTimeResponseDto(time.getId(), time.getStartAtString(), true);
+            return new ReservationTimeWithStateDto(time.getId(), time.getStartAtString(), true);
         }
-        return new BookingTimeResponseDto(time.getId(), time.getStartAtString(), false);
+        return new ReservationTimeWithStateDto(time.getId(), time.getStartAtString(), false);
     }
 
     @Transactional

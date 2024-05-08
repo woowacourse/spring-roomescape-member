@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.core.domain.ReservationTime;
-import roomescape.core.dto.BookingTimeResponseDto;
+import roomescape.core.dto.ReservationTimeWithStateDto;
 import roomescape.core.repository.ReservationTimeRepository;
 import roomescape.web.exception.NotFoundException;
 
@@ -39,7 +39,7 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
     }
 
     @Override
-    public List<BookingTimeResponseDto> findAllWithReservationState(final String date, final long themeId) {
+    public List<ReservationTimeWithStateDto> findAllWithReservationState(final String date, final long themeId) {
         final String query = """
                 SELECT t.id, t.start_at, r.id IS NOT NULL AS already_booked
                 FROM reservation_time AS t 
@@ -79,8 +79,8 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
         );
     }
 
-    private RowMapper<BookingTimeResponseDto> getBookingTimeRowMapper() {
-        return (resultSet, rowNum) -> new BookingTimeResponseDto(
+    private RowMapper<ReservationTimeWithStateDto> getBookingTimeRowMapper() {
+        return (resultSet, rowNum) -> new ReservationTimeWithStateDto(
                 resultSet.getLong("id"),
                 resultSet.getString("start_at"),
                 resultSet.getBoolean("already_booked")

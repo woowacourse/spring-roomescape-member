@@ -1,14 +1,14 @@
 package roomescape.core.dto;
 
-public class BookingTimeResponseDto {
+public class ReservationTimeWithStateDto {
     private Long id;
     private String startAt;
     private boolean alreadyBooked;
 
-    public BookingTimeResponseDto() {
+    public ReservationTimeWithStateDto() {
     }
 
-    public BookingTimeResponseDto(
+    public ReservationTimeWithStateDto(
             final Long id,
             final String startAt,
             final boolean alreadyBooked
