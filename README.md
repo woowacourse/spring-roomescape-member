@@ -62,12 +62,12 @@
 ### Request
 
 - POST /reservations
+- cookie: token={token}
 - content-type: application/json
 
 ```json
 {
   "date": "2023-08-05",
-  "name": "브라운",
   "timeId": 1,
   "themeId": 1
 }
