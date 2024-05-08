@@ -72,9 +72,9 @@
 - [x] 로그인 폼이 있는 페이지를 응답 [GET /login] (templates/login.html 파일을 이용)
 - [x] 사용자 도메인을 추가
   - [x] name, email, password로 구성
-- [ ] 로그인 기능 구현 [POST /login]
-  - [ ] 요청 시 로그인 폼에 입력한 email, password 값을 body에 포함
-  - [ ] 응답 Cookie에 "token"값으로 토큰이 포함
-- [ ] 로그인 후 Cookie를 이용하여 사용자의 정보를 조회하는 API를 구현 [GET /login/check]
-  - [ ] 요청 시 쿠키 값을 요청
-  - [ ] 응답 시 이름을 반환
+- [x] 로그인 기능 구현 [POST /login]
+  - [x] 요청 시 로그인 폼에 입력한 email, password 값을 body에 포함
+  - [x] 응답 Cookie에 "token"값으로 토큰이 포함
+- [x] 로그인 후 Cookie를 이용하여 사용자의 정보를 조회하는 API를 구현 [GET /login/check]
+  - [x] 요청 시 쿠키 값을 요청
+  - [x] 응답 시 이름을 반환
