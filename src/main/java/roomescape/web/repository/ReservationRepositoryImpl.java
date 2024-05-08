@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.core.domain.Member;
 import roomescape.core.domain.Reservation;
 import roomescape.core.domain.ReservationTime;
+import roomescape.core.domain.Role;
 import roomescape.core.domain.Theme;
 import roomescape.core.repository.ReservationRepository;
 
@@ -47,6 +48,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
                     m.name as member_name,
                     m.email as member_email,
                     m.password as member_password,
+                    m.role as member_role,
                     t.id as time_id,
                     t.start_at as time_value,
                     h.id as theme_id,
@@ -69,10 +71,11 @@ public class ReservationRepositoryImpl implements ReservationRepository {
         return (resultSet, rowNum) -> {
             final Long id = resultSet.getLong("id");
             final Long memberId = resultSet.getLong("member_id");
-            final String name = resultSet.getString("name");
-            final String email = resultSet.getString("email");
-            final String password = resultSet.getString("password");
-            final Member member = new Member(memberId, name, email, password);
+            final String name = resultSet.getString("member_name");
+            final String email = resultSet.getString("member_email");
+            final String password = resultSet.getString("member_password");
+            final Role role = Role.valueOf(resultSet.getString("member_role"));
+            final Member member = new Member(memberId, name, email, password, role);
             final String date = resultSet.getString("date");
             final Long timeId = resultSet.getLong("time_id");
             final String timeValue = resultSet.getString("time_value");
@@ -97,6 +100,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
                     m.name as member_name,
                     m.email as member_email,
                     m.password as member_password,
+                    m.role as member_role,
                     t.id as time_id,
                     t.start_at as time_value,
                     h.id as theme_id,
@@ -113,6 +117,37 @@ public class ReservationRepositoryImpl implements ReservationRepository {
                 WHERE r.date = ? AND r.theme_id = ?
                 """;
         return jdbcTemplate.query(query, getReservationRowMapper(), date, themeId);
+    }
+
+    @Override
+    public List<Reservation> findAllByMemberAndThemeAndPeriod(final Long memberId, final Long themeId,
+                                                              final String dateFrom, final String dateTo) {
+        final String query = """
+                SELECT
+                    r.id as reservation_id,
+                    r.date,
+                    m.id as member_id,
+                    m.name as member_name,
+                    m.email as member_email,
+                    m.password as member_password,
+                    m.role as member_role,
+                    t.id as time_id,
+                    t.start_at as time_value,
+                    h.id as theme_id,
+                    h.name as theme_name,
+                    h.description as theme_description,
+                    h.thumbnail as theme_thumbnail
+                FROM reservation as r
+                inner join member as m
+                on r.member_id = m.id
+                inner join reservation_time as t
+                on r.time_id = t.id
+                inner join theme as h
+                on r.theme_id = h.id
+                WHERE r.member_id = ? AND r.theme_id = ? AND r.date BETWEEN ? AND ?
+                """;
+
+        return jdbcTemplate.query(query, getReservationRowMapper(), memberId, themeId, dateFrom, dateTo);
     }
 
     @Override

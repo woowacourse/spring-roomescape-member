@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.core.dto.member.LoginMember;
 import roomescape.core.dto.reservation.ReservationRequest;
@@ -28,7 +29,7 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<ReservationResponse> create(@Valid @RequestBody final ReservationRequest request,
                                                       final LoginMember member) {
-        final ReservationResponse result = reservationService.create(request, member);
+        final ReservationResponse result = reservationService.createWithLogin(request, member);
         return ResponseEntity.created(URI.create("/reservations/" + result.getId()))
                 .body(result);
     }
@@ -36,6 +37,16 @@ public class ReservationController {
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> findAll() {
         return ResponseEntity.ok(reservationService.findAll());
+    }
+
+    @GetMapping(params = {"member", "theme", "date-from", "date-to"})
+    public ResponseEntity<List<ReservationResponse>> findAllByMemberAndThemeAndPeriod(
+            @RequestParam("member") final Long memberId,
+            @RequestParam("theme") final Long themeId,
+            @RequestParam("date-from") final String dateFrom,
+            @RequestParam("date-to") final String dateTo) {
+        return ResponseEntity.ok(
+                reservationService.findAllByMemberAndThemeAndPeriod(memberId, themeId, dateFrom, dateTo));
     }
 
     @DeleteMapping("/{id}")

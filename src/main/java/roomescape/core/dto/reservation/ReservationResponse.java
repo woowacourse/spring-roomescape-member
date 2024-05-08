@@ -12,9 +12,6 @@ public class ReservationResponse {
     private ReservationTimeResponse time;
     private ThemeResponse theme;
 
-    public ReservationResponse() {
-    }
-
     public ReservationResponse(final Reservation reservation) {
         this(reservation.getId(), reservation);
     }

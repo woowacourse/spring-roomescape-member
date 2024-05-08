@@ -9,4 +9,6 @@ public interface MemberRepository {
     Member findByEmail(final String email);
 
     List<Member> findAll();
+
+    Member findById(final Long id);
 }

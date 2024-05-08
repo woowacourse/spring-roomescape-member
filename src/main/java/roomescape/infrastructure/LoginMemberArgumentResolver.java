@@ -1,8 +1,7 @@
 package roomescape.infrastructure;
 
-import jakarta.servlet.http.Cookie;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.Arrays;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -15,10 +14,13 @@ import roomescape.core.service.MemberService;
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
     private static final String COOKIE_NAME = "token";
-    private final MemberService memberService;
 
-    public LoginMemberArgumentResolver(final MemberService memberService) {
+    private final MemberService memberService;
+    private final TokenProvider tokenProvider;
+
+    public LoginMemberArgumentResolver(final MemberService memberService, final TokenProvider tokenProvider) {
         this.memberService = memberService;
+        this.tokenProvider = tokenProvider;
     }
 
     @Override
@@ -31,12 +33,12 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                                   final NativeWebRequest webRequest, final WebDataBinderFactory binderFactory)
             throws Exception {
         final HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        final String token = Arrays.stream(request.getCookies())
-                .filter(cookie -> cookie.getName().equals(COOKIE_NAME))
-                .findFirst()
-                .map(Cookie::getValue)
-                .orElseThrow(() -> new IllegalArgumentException("토큰이 존재하지 않습니다."));
+        final String token = tokenProvider.getTokenFromCookies(request);
 
-        return memberService.findLoginMemberByToken(token);
+        try {
+            return memberService.findLoginMemberByToken(token);
+        } catch (JwtException e) {
+            throw new JwtException("로그인이 필요합니다.");
+        }
     }
 }

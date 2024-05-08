@@ -38,9 +38,9 @@ public class ReservationTimeController {
         return ResponseEntity.ok(reservationTimeService.findAll());
     }
 
-    @GetMapping(params = {"date", "themeId"})
+    @GetMapping(params = {"date", "theme"})
     public ResponseEntity<List<BookedTimeResponse>> findAllWithBookable(@RequestParam("date") String date,
-                                                                        @RequestParam("themeId") Long themeId) {
+                                                                        @RequestParam("theme") Long themeId) {
         return ResponseEntity.ok(reservationTimeService.findAllWithBookable(date, themeId));
     }
 

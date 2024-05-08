@@ -2,6 +2,7 @@ package roomescape.core.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.core.domain.Member;
 import roomescape.core.dto.auth.TokenRequest;
 import roomescape.core.dto.auth.TokenResponse;
@@ -25,18 +26,20 @@ public class MemberService {
         if (member == null) {
             throw new IllegalArgumentException("올바르지 않은 이메일 또는 비밀번호입니다.");
         }
-        return new TokenResponse(tokenProvider.createToken(member.getEmail()));
+        return new TokenResponse(tokenProvider.createToken(member.getEmail(), member.getRole().name()));
     }
 
+    @Transactional(readOnly = true)
     public MemberResponse findMemberByToken(final String token) {
         final String email = tokenProvider.getPayload(token);
         final Member member = memberRepository.findByEmail(email);
         if (member == null) {
             throw new IllegalArgumentException("존재하지 않는 사용자입니다.");
         }
-        return new MemberResponse(member.getName());
+        return new MemberResponse(member.getId(), member.getName());
     }
 
+    @Transactional(readOnly = true)
     public LoginMember findLoginMemberByToken(final String token) {
         final String email = tokenProvider.getPayload(token);
         final Member member = memberRepository.findByEmail(email);
@@ -46,6 +49,7 @@ public class MemberService {
         return new LoginMember(member);
     }
 
+    @Transactional(readOnly = true)
     public List<MemberResponse> findAll() {
         return memberRepository.findAll()
                 .stream()
