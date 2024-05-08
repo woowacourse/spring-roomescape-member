@@ -86,14 +86,6 @@ class ReservationTimeServiceTest {
                 .hasMessage("연관된 예약이 존재하여 삭제할 수 없습니다.");
     }
 
-    @DisplayName("존재하지 않는 예약 시간을 삭제 요청하면, 예외가 발생한다.")
-    @Test
-    void shouldThrowsIllegalArgumentExceptionWhenReservationTimeDoesNotExist() {
-        assertThatCode(() -> reservationTimeService.deleteById(99L))
-                .isInstanceOf(NoSuchElementException.class)
-                .hasMessage("존재하지 않는 예약 시간입니다.");
-    }
-
     private ReservationTime createTime(int hour, int minute) {
         LocalTime startAt = LocalTime.of(hour, minute);
         return reservationTimeRepository.create(new ReservationTime(startAt));

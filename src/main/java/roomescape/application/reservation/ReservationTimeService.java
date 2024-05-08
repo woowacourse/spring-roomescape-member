@@ -40,11 +40,10 @@ public class ReservationTimeService {
 
     @Transactional
     public void deleteById(long id) {
-        ReservationTime time = reservationTimeRepository.getById(id);
-        if (reservationRepository.existsByTimeId(time.getId())) {
+        if (reservationRepository.existsByTimeId(id)) {
             throw new IllegalArgumentException("연관된 예약이 존재하여 삭제할 수 없습니다.");
         }
-        reservationTimeRepository.deleteById(time.getId());
+        reservationTimeRepository.deleteById(id);
     }
 
     public List<AvailableTimeResponse> findAvailableTimes(LocalDate date, long themeId) {
