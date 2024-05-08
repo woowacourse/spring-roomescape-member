@@ -16,11 +16,6 @@ public record ReservationRequest(
         @NotNull(message = "원하는 테마를 지정해 주세요") long themeId
 ) {
     public Reservation toEntity(final ReservationTime reservationTime, final Theme theme) {
-        return Reservation.builder()
-                .name(name)
-                .date(date)
-                .time(reservationTime)
-                .theme(theme)
-                .build();
+        return new Reservation(name, date, reservationTime, theme);
     }
 }

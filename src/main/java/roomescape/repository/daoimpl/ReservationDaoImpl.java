@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.repository.ReservationDao;
 
@@ -140,13 +141,13 @@ class ReservationDaoImpl implements ReservationDao {
     }
 
     private Reservation makeSavedReservation(Reservation reservation, long id) {
-        return Reservation.builder()
-                .id(id)
-                .name(reservation.getName())
-                .date(reservation.getDate())
-                .time(reservation.getTime())
-                .theme(reservation.getTheme())
-                .build();
+        return new Reservation(
+                id,
+                new Name(reservation.getName()),
+                reservation.getDate(),
+                reservation.getTime(),
+                reservation.getTheme()
+        );
     }
 
     private MapSqlParameterSource makeInsertParams(Reservation reservation) {

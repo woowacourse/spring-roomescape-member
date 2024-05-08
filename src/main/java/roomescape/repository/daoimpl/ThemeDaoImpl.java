@@ -67,12 +67,12 @@ class ThemeDaoImpl implements ThemeDao {
     }
 
     private Theme makeSavedTheme(Theme theme, long id) {
-        return Theme.builder()
-                .themeId(id)
-                .name(theme.getName())
-                .description(theme.getDescription())
-                .thumbnail(theme.getThumbnail())
-                .build();
+        return new Theme(
+                id,
+                theme.getName(),
+                theme.getDescription(),
+                theme.getThumbnail()
+        );
     }
 
     private MapSqlParameterSource makeInsertParams(Theme theme) {

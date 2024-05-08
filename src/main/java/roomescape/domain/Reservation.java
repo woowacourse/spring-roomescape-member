@@ -1,8 +1,5 @@
 package roomescape.domain;
 
-import roomescape.domain.builder.ReservationBuilder;
-import roomescape.domain.builder.builderimpl.ReservationBuilderImpl;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -27,8 +24,8 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public static ReservationBuilder builder() {
-        return new ReservationBuilderImpl();
+    public Reservation(String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
+        this(null, new Name(name), date, reservationTime, theme);
     }
 
     public boolean isBeforeThan(LocalDateTime otherTime) {

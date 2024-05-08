@@ -12,10 +12,10 @@ public class ReservationTimeRowMapper implements RowMapper<ReservationTime> {
     @Override
     public ReservationTime mapRow(final ResultSet resultSet, final int rowNumber) {
         try {
-            return ReservationTime.builder()
-                    .timeId(resultSet.getLong("id"))
-                    .startAt(resultSet.getString("start_at"))
-                    .build();
+            return new ReservationTime(
+                    resultSet.getLong("id"),
+                    resultSet.getString("start_at")
+            );
         } catch (SQLException exception) {
             throw new RuntimeException(exception);
         }

@@ -1,8 +1,5 @@
 package roomescape.domain;
 
-import roomescape.domain.builder.ReservationTimeBuilder;
-import roomescape.domain.builder.builderimpl.ReservationTimeBuilderImpl;
-
 import java.time.LocalTime;
 
 public class ReservationTime {
@@ -15,8 +12,8 @@ public class ReservationTime {
         this.startAt = startAt;
     }
 
-    public static ReservationTimeBuilder builder() {
-        return new ReservationTimeBuilderImpl();
+    public ReservationTime(long id, String startAt) {
+        this(id, LocalTime.parse(startAt));
     }
 
     private void validateTime(final LocalTime startAt) {

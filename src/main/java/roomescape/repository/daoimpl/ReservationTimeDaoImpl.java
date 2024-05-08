@@ -76,9 +76,6 @@ class ReservationTimeDaoImpl implements ReservationTimeDao {
     }
 
     private ReservationTime makeSavedTime(ReservationTime reservationTime, long id) {
-        return ReservationTime.builder()
-                .timeId(id)
-                .startAt(reservationTime.getStartAt())
-                .build();
+        return new ReservationTime(id, reservationTime.getStartAt());
     }
 }

@@ -1,8 +1,5 @@
 package roomescape.domain;
 
-import roomescape.domain.builder.ThemeBuilder;
-import roomescape.domain.builder.builderimpl.ThemeBuilderImpl;
-
 import java.util.Objects;
 
 public class Theme {
@@ -16,10 +13,6 @@ public class Theme {
         this.name = Objects.requireNonNull(name);
         this.description = Objects.requireNonNull(description);
         this.thumbnail = Objects.requireNonNull(thumbnail);
-    }
-
-    public static ThemeBuilder builder() {
-        return new ThemeBuilderImpl();
     }
 
     public long getId() {
