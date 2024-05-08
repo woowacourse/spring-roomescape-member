@@ -1,6 +1,9 @@
 package roomescape.dao;
 
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
 
@@ -9,11 +12,17 @@ public class MemberDao {
 
     private final JdbcTemplate jdbcTemplate;
 
+    private final RowMapper<Member> memberRowMapper = (rs, rowNum) -> new Member(
+            rs.getLong("member_id"),
+            rs.getString("member_name"),
+            rs.getString("member_email"),
+            rs.getString("member_password"));
+
     public MemberDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Member findByEmailAndPassword(String email, String password) {
+    public Optional<Member> findByEmailAndPassword(String email, String password) {
         String selectSQL = """
                SELECT
                    m.ID as member_id,
@@ -24,15 +33,14 @@ public class MemberDao {
                WHERE m.EMAIL = ? and m.PASSWORD = ?
                """;
 
-        return jdbcTemplate.queryForObject(selectSQL, (rs, rowNum) -> new Member(
-                rs.getLong("member_id"),
-                rs.getString("member_name"),
-                rs.getString("member_email"),
-                rs.getString("member_password")
-        ), email, password);
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(selectSQL, memberRowMapper, email, password));
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
     }
 
-    public Member findById(Long id) {
+    public Optional<Member> findById(Long id) {
         String selectSQL = """
                SELECT
                    m.ID as member_id,
@@ -43,11 +51,10 @@ public class MemberDao {
                WHERE m.ID = ?
                """;
 
-        return jdbcTemplate.queryForObject(selectSQL, (rs, rowNum) -> new Member(
-                rs.getLong("member_id"),
-                rs.getString("member_name"),
-                rs.getString("member_email"),
-                rs.getString("member_password")
-        ), id);
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(selectSQL, memberRowMapper, id));
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
     }
 }

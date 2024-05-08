@@ -7,6 +7,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.exception.BadRequestException;
+import roomescape.exception.NotFoundException;
 import roomescape.handler.dto.ExceptionResponse;
 
 @RestControllerAdvice
@@ -18,6 +19,14 @@ public class GlobalExceptionHandler {
 
         ExceptionResponse exceptionResponse = new ExceptionResponse(HttpStatus.BAD_REQUEST, exception.getMessage());
         return ResponseEntity.badRequest().body(exceptionResponse);
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleException(NotFoundException exception) {
+        exception.printStackTrace();
+
+        ExceptionResponse exceptionResponse = new ExceptionResponse(HttpStatus.NOT_FOUND, exception.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionResponse);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

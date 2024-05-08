@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import roomescape.controller.TokenProvider;
 import roomescape.dao.MemberDao;
 import roomescape.domain.Member;
+import roomescape.exception.NotFoundException;
 import roomescape.service.dto.request.LoginRequest;
 import roomescape.service.dto.response.MemberResponse;
 
@@ -20,15 +21,17 @@ public class UserService {
 
     public String login(LoginRequest loginRequest) {
         Member member = memberDao.findByEmailAndPassword(
-                loginRequest.email(), 
-                loginRequest.password());
+                        loginRequest.email(),
+                        loginRequest.password())
+                .orElseThrow(() -> new NotFoundException("사용자를 찾을 수 없습니다."));
 
         return tokenProvider.createToken(member);
     }
 
     public MemberResponse findMember(String token) {
         String payload = tokenProvider.getPayload(token);
-        Member member = memberDao.findById(Long.valueOf(payload));
+        Member member = memberDao.findById(Long.valueOf(payload))
+                .orElseThrow(() -> new NotFoundException("사용자를 찾을 수 없습니다."));
 
         return MemberResponse.from(member);
     }
