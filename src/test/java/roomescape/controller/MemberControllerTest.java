@@ -13,7 +13,7 @@ import roomescape.service.dto.request.LoginRequest;
 import roomescape.service.dto.response.MemberResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class UserControllerTest {
+class MemberControllerTest {
 
     @LocalServerPort
     private int port;

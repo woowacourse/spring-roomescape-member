@@ -1,6 +1,7 @@
 package roomescape.controller;
 
 import static roomescape.TestFixture.DATE;
+import static roomescape.TestFixture.MEMBER_BROWN;
 import static roomescape.TestFixture.RESERVATION_TIME_10AM;
 import static roomescape.TestFixture.ROOM_THEME1;
 import static roomescape.TestFixture.TIME;
@@ -19,9 +20,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import roomescape.dao.MemberDao;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.RoomThemeDao;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
@@ -38,6 +41,8 @@ class ReservationControllerTest {
     private ReservationTimeDao reservationTimeDao;
     @Autowired
     private RoomThemeDao roomThemeDao;
+    @Autowired
+    private MemberDao memberDao;
 
     @BeforeEach
     void setUp() {
@@ -54,6 +59,10 @@ class ReservationControllerTest {
         for (RoomTheme roomTheme : roomThemes) {
             roomThemeDao.deleteById(roomTheme.getId());
         }
+        List<Member> members = memberDao.findAll();
+        for (Member member : members) {
+            memberDao.deleteById(member.getId());
+        }
     }
 
     @DisplayName("모든 예약 내역 조회")
@@ -68,7 +77,7 @@ class ReservationControllerTest {
     @Test
     void createReservation() {
         // given
-        Map reservationRequest = createReservationRequest("브라운",
+        Map reservationRequest = createReservationRequest(MEMBER_BROWN,
                 VALID_STRING_DATE);
         // then
         RestAssured.given().log().all()
@@ -78,27 +87,12 @@ class ReservationControllerTest {
                 .then().log().all().assertThat().statusCode(HttpStatus.CREATED.value());
     }
 
-    @DisplayName("사용자 이름에 빈문자열 입력시 400을 응답한다.")
-    @ParameterizedTest
-    @ValueSource(strings = {"", " "})
-    void invalidNameReservation(String value) {
-        // given
-        Map reservationRequest = createReservationRequest(value,
-                VALID_STRING_DATE);
-        // when & then
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservationRequest)
-                .when().post("/reservations")
-                .then().log().all().assertThat().statusCode(HttpStatus.BAD_REQUEST.value());
-    }
-
     @DisplayName("날짜 양식을 잘못 입력할 시 400을 응답한다.")
     @ParameterizedTest
     @ValueSource(strings = {"20223-10-11", "2024-13-1"})
     void invalidDateReservation(String value) {
         // given
-        Map reservationRequest = createReservationRequest("브라운", value);
+        Map reservationRequest = createReservationRequest(MEMBER_BROWN, value);
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -111,7 +105,7 @@ class ReservationControllerTest {
     @Test
     void outdatedReservation() {
         // given
-        Map reservationRequest = createReservationRequest("브라운", "2023-12-12");
+        Map reservationRequest = createReservationRequest(MEMBER_BROWN, "2023-12-12");
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -124,7 +118,7 @@ class ReservationControllerTest {
     @Test
     void duplicateReservation() {
         // given
-        Map reservationRequest = createReservationRequest("브라운",
+        Map reservationRequest = createReservationRequest(MEMBER_BROWN,
                 VALID_STRING_DATE);
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -142,9 +136,10 @@ class ReservationControllerTest {
     @DisplayName("참조키가 존재하지 않음으로 인한 예약 추가 실패 테스트")
     @Test
     void noPrimaryKeyReservation() {
+
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(new ReservationRequest("브라운", DATE, 1L, 1L))
+                .body(new ReservationRequest(1L, DATE, 1L, 1L))
                 .when().post("/reservations")
                 .then().log().all().assertThat().statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
@@ -153,12 +148,12 @@ class ReservationControllerTest {
     @Test
     void deleteReservationSuccess() {
         // given
+        Member member = memberDao.save(MEMBER_BROWN);
         ReservationTime savedReservationTime = reservationTimeDao.save(
                 new ReservationTime(TIME));
         RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME1);
         Reservation savedReservation = reservationDao.save(
-                new Reservation("브라운", DATE, savedReservationTime,
-                        savedRoomTheme));
+                new Reservation(member, DATE, savedReservationTime, savedRoomTheme));
         // when & then
         Long id = savedReservation.getId();
         RestAssured.given().log().all()
@@ -177,12 +172,13 @@ class ReservationControllerTest {
                 .then().log().all().assertThat().statusCode(HttpStatus.NOT_FOUND.value());
     }
 
-    private Map createReservationRequest(String name, String date) {
+    private Map createReservationRequest(Member member, String date) {
+        Member savedMember = memberDao.save(member);
         ReservationTime savedReservationTime = reservationTimeDao.save(RESERVATION_TIME_10AM);
         RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME1);
 
         return Map.of(
-                "name", name,
+                "memberId", savedMember.getId(),
                 "date", date,
                 "timeId", savedReservationTime.getId(),
                 "themeId", savedRoomTheme.getId());

@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
@@ -20,7 +21,12 @@ public class ReservationDao {
 
     private final RowMapper<Reservation> reservationMapper = (rs, rowNum) -> new Reservation(
             rs.getLong("reservation_id"),
-            rs.getString("reservation_name"),
+            new Member(
+                    rs.getLong("member_id"),
+                    rs.getString("member_name"),
+                    rs.getString("member_email"),
+                    rs.getString("member_password")
+            ),
             rs.getDate("reservation_date").toLocalDate(),
             new ReservationTime(
                     rs.getLong("time_id"),
@@ -45,7 +51,10 @@ public class ReservationDao {
         String selectSql = """
                 SELECT
                     r.ID AS reservation_id,
-                    r.NAME AS reservation_name,
+                    m.ID AS member_id,
+                    m.NAME AS member_name,
+                    m.EMAIL AS member_email,
+                    m.PASSWORD AS member_password, //TODO 패스워드 가져와도 되나??
                     r.DATE AS reservation_date,
                     t.ID AS time_id,
                     t.START_AT AS time_value,
@@ -58,6 +67,8 @@ public class ReservationDao {
                 ON r.time_id = t.id
                 INNER JOIN theme AS th
                 ON r.theme_id = th.id
+                INNER JOIN member AS m
+                ON r.member_id = m.id
                 """;
         return jdbcTemplate.query(selectSql, reservationMapper);
     }
@@ -66,7 +77,10 @@ public class ReservationDao {
         String SELECT_SQL = """
                 SELECT
                     r.ID AS reservation_id,
-                    r.NAME AS reservation_name,
+                    m.ID AS member_id,
+                    m.NAME AS member_name,
+                    m.EMAIL AS member_email,
+                    m.PASSWORD AS member_password,
                     r.DATE AS reservation_date,
                     t.ID AS time_id,
                     t.START_AT AS time_value,
@@ -79,6 +93,8 @@ public class ReservationDao {
                 ON r.time_id = t.id
                 INNER JOIN theme AS th
                 ON r.theme_id = th.id
+                INNER JOIN member AS m
+                ON r.member_id = m.id
                 WHERE r.THEME_ID = ?
                 """;
         return jdbcTemplate.query(SELECT_SQL, reservationMapper, themeId);
@@ -104,7 +120,7 @@ public class ReservationDao {
             throw new BadRequestException("예약이 빈값일 수 없습니다.");
         }
         SqlParameterSource parameterSource = new MapSqlParameterSource()
-                .addValue("name", reservation.getName())
+                .addValue("member_id", reservation.getMember().getId())
                 .addValue("date", reservation.getDate())
                 .addValue("time_id", reservation.getTime().getId())
                 .addValue("theme_id", reservation.getTheme().getId());

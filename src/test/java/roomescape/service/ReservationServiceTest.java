@@ -3,6 +3,7 @@ package roomescape.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static roomescape.TestFixture.MEMBER_BROWN;
 import static roomescape.TestFixture.RESERVATION_TIME_10AM;
 import static roomescape.TestFixture.ROOM_THEME1;
 import static roomescape.TestFixture.VALID_STRING_DATE;
@@ -17,9 +18,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import roomescape.dao.MemberDao;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.RoomThemeDao;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
@@ -40,6 +43,8 @@ class ReservationServiceTest {
     private ReservationTimeDao reservationTimeDao;
     @Autowired
     private RoomThemeDao roomThemeDao;
+    @Autowired
+    private MemberDao memberDao;
 
     @BeforeEach
     void setUp() {
@@ -55,6 +60,10 @@ class ReservationServiceTest {
         List<RoomTheme> roomThemes = roomThemeDao.findAll();
         for (RoomTheme roomTheme : roomThemes) {
             roomThemeDao.deleteById(roomTheme.getId());
+        }
+        List<Member> members = memberDao.findAll();
+        for (Member member : members) {
+            memberDao.deleteById(member.getId());
         }
     }
 
@@ -74,7 +83,7 @@ class ReservationServiceTest {
         // then
         assertAll(
                 () -> assertThat(reservationService.findAll()).hasSize(1),
-                () -> assertThat(response.name()).isEqualTo("aa"),
+                () -> assertThat(response.member().name()).isEqualTo("브라운"),
                 () -> assertThat(response.date()).isEqualTo(VALID_STRING_DATE),
                 () -> assertThat(response.time().startAt()).isEqualTo(VALID_STRING_TIME)
         );
@@ -103,10 +112,11 @@ class ReservationServiceTest {
     }
 
     private ReservationRequest createReservationRequest(String date) {
+        Member member = memberDao.save(MEMBER_BROWN);
         ReservationTime savedReservationTime = reservationTimeDao.save(
                 RESERVATION_TIME_10AM);
         RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME1);
-        return new ReservationRequest("aa", LocalDate.parse(date),
+        return new ReservationRequest(member.getId(), LocalDate.parse(date),
                 savedReservationTime.getId(), savedRoomTheme.getId());
     }
 }

@@ -47,6 +47,10 @@ public class Member {
         }
     }
 
+    public Member setId(Long id) {
+        return new Member(id, name, email, password);
+    }
+
     public Long getId() {
         return id;
     }

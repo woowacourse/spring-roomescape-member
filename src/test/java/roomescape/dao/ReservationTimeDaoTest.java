@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.TestFixture.DATE;
+import static roomescape.TestFixture.MEMBER_BROWN;
 import static roomescape.TestFixture.RESERVATION_TIME_10AM;
 import static roomescape.TestFixture.ROOM_THEME1;
 import static roomescape.TestFixture.TIME;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.dao.EmptyResultDataAccessException;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
@@ -32,6 +34,8 @@ class ReservationTimeDaoTest {
     private ReservationTimeDao reservationTimeDao;
     @Autowired
     private RoomThemeDao roomThemeDao;
+    @Autowired
+    private MemberDao memberDao;
 
     @BeforeEach
     void setUp() {
@@ -47,6 +51,10 @@ class ReservationTimeDaoTest {
         List<RoomTheme> roomThemes = roomThemeDao.findAll();
         for (RoomTheme roomTheme : roomThemes) {
             roomThemeDao.deleteById(roomTheme.getId());
+        }
+        List<Member> members = memberDao.findAll();
+        for (Member member : members) {
+            memberDao.deleteById(member.getId());
         }
     }
 
@@ -112,10 +120,10 @@ class ReservationTimeDaoTest {
     @Test
     void deleteByIdDeletesReservationAlso() {
         // given
+        Member member = memberDao.save(MEMBER_BROWN);
         ReservationTime reservationTime = reservationTimeDao.save(RESERVATION_TIME_10AM);
         RoomTheme roomTheme = roomThemeDao.save(ROOM_THEME1);
-        reservationDao.save(new Reservation("브라운", DATE,
-                reservationTime, roomTheme));
+        reservationDao.save(new Reservation(member, DATE, reservationTime, roomTheme));
         // when
         reservationTimeDao.deleteById(reservationTime.getId());
         // then

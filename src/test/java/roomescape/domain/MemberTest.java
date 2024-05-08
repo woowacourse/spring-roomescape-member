@@ -41,7 +41,7 @@ class MemberTest {
     @ParameterizedTest
     @NullAndEmptySource
     void nullEmptyPassword(String value) {
-        Assertions.assertThatThrownBy(() -> new Member("제제", value, "zeze"))
+        Assertions.assertThatThrownBy(() -> new Member("제제", "zeze@gmail.com" , value))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage("비밀번호에 빈값을 입력할 수 없습니다.");
     }

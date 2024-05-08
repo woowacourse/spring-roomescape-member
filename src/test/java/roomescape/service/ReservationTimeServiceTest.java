@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.TestFixture.DATE;
+import static roomescape.TestFixture.MEMBER_BROWN;
 import static roomescape.TestFixture.RESERVATION_TIME_10AM;
 import static roomescape.TestFixture.RESERVATION_TIME_11AM;
 import static roomescape.TestFixture.ROOM_THEME1;
@@ -19,9 +20,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import roomescape.dao.MemberDao;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.RoomThemeDao;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
@@ -44,6 +47,8 @@ class ReservationTimeServiceTest {
     private ReservationTimeDao reservationTimeDao;
     @Autowired
     private RoomThemeDao roomThemeDao;
+    @Autowired
+    private MemberDao memberDao;
 
     @BeforeEach
     void setUp() {
@@ -60,6 +65,10 @@ class ReservationTimeServiceTest {
         for (RoomTheme roomTheme : roomThemes) {
             roomThemeDao.deleteById(roomTheme.getId());
         }
+        List<Member> members = memberDao.findAll();
+        for (Member member : members) {
+            memberDao.deleteById(member.getId());
+        }
     }
 
     @DisplayName("존재하는 모든 예약 시간을 반환한다.")
@@ -75,12 +84,13 @@ class ReservationTimeServiceTest {
         // 시간 저장
         ReservationTime savedReservationTime10AM = reservationTimeDao.save(RESERVATION_TIME_10AM);
         ReservationTime savedReservationTime11AM = reservationTimeDao.save(RESERVATION_TIME_11AM);
+        Member member = memberDao.save(MEMBER_BROWN);
 
         // 테마 저장
         RoomTheme savedRoomTheme = roomThemeDao.save(ROOM_THEME1);
 
         // 예약 저장
-        reservationDao.save(new Reservation("브라운", DATE, savedReservationTime10AM, savedRoomTheme));
+        reservationDao.save(new Reservation(member, DATE, savedReservationTime10AM, savedRoomTheme));
 
         ReservationAvailabilityTimeRequest timeRequest = new ReservationAvailabilityTimeRequest(
                 DATE, savedRoomTheme.getId());
@@ -109,13 +119,14 @@ class ReservationTimeServiceTest {
         // 시간 저장
         ReservationTime savedReservationTime10AM = reservationTimeDao.save(RESERVATION_TIME_10AM);
         ReservationTime savedReservationTime11AM = reservationTimeDao.save(RESERVATION_TIME_11AM);
+        Member member = memberDao.save(MEMBER_BROWN);
 
         // 테마 저장
         RoomTheme savedRoomTheme1 = roomThemeDao.save(ROOM_THEME1);
         RoomTheme savedRoomTheme2 = roomThemeDao.save(ROOM_THEME2);
 
         // 예약 저장
-        reservationDao.save(new Reservation("브라운", DATE, savedReservationTime10AM, savedRoomTheme1));
+        reservationDao.save(new Reservation(member, DATE, savedReservationTime10AM, savedRoomTheme1));
 
         ReservationAvailabilityTimeRequest timeRequest = new ReservationAvailabilityTimeRequest(
                 DATE, savedRoomTheme2.getId());
