@@ -29,6 +29,7 @@ CREATE TABLE reservation
 CREATE TABLE member
 (
     id   BIGINT       NOT NULL AUTO_INCREMENT,
+    user_name VARCHAR(255) NOT NULL,
     user_email VARCHAR(255) NOT NULL,
     user_password VARCHAR(255) NOT NULL,
     PRIMARY KEY (id)
