@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.stereotype.Service;
 import roomescape.controller.member.dto.MemberLoginRequest;
 import roomescape.domain.Member;
@@ -38,8 +39,12 @@ public class MemberService {
         if (token == null || token.isBlank()) {
             return null;
         }
-        final String payload = jwtTokenProvider.getPayload(token);
-        return findMember(payload);
+        try {
+            final String payload = jwtTokenProvider.getPayload(token);
+            return findMember(payload);
+        } catch (final ExpiredJwtException e) {
+            return null;
+        }
     }
 
     private Member findMember(final String principal) {
