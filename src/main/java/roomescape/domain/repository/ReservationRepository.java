@@ -1,8 +1,10 @@
-package roomescape.domain;
+package roomescape.domain.repository;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+
+import roomescape.domain.Reservation;
 
 public interface ReservationRepository {
     List<Reservation> findAll();

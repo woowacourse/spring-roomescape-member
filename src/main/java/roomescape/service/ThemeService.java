@@ -7,8 +7,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import roomescape.domain.Theme;
-import roomescape.domain.ThemeRepository;
 import roomescape.domain.policy.RankingPolicy;
+import roomescape.domain.repository.ThemeRepository;
 import roomescape.exception.theme.NotFoundThemeException;
 import roomescape.exception.theme.ReservationReferencedThemeException;
 import roomescape.web.dto.request.ThemeRequest;

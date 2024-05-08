@@ -14,12 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
-import roomescape.domain.ThemeRepository;
 import roomescape.domain.policy.FixedDateWeeklyRankingPolicy;
+import roomescape.domain.repository.ReservationRepository;
+import roomescape.domain.repository.ReservationTimeRepository;
+import roomescape.domain.repository.ThemeRepository;
 import roomescape.web.dto.response.ThemeResponse;
 
 @SpringBootTest

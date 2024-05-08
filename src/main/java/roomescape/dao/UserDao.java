@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import roomescape.domain.User;
-import roomescape.domain.UserRepository;
+import roomescape.domain.repository.UserRepository;
 
 @Repository
 public class UserDao implements UserRepository {

@@ -1,4 +1,6 @@
-package roomescape.domain;
+package roomescape.domain.repository;
+
+import roomescape.domain.User;
 
 public interface UserRepository {
     User save(User user);

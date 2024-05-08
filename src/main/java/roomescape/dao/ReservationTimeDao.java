@@ -16,7 +16,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import roomescape.domain.ReservationTime;
-import roomescape.domain.ReservationTimeRepository;
+import roomescape.domain.repository.ReservationTimeRepository;
 import roomescape.exception.time.NotFoundTimeException;
 
 @Repository

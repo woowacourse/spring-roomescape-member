@@ -6,11 +6,11 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
-import roomescape.domain.ThemeRepository;
+import roomescape.domain.repository.ReservationRepository;
+import roomescape.domain.repository.ReservationTimeRepository;
+import roomescape.domain.repository.ThemeRepository;
 import roomescape.exception.reservation.DuplicatedReservationException;
 import roomescape.exception.reservation.InvalidDateTimeReservationException;
 import roomescape.exception.reservation.NotFoundReservationException;

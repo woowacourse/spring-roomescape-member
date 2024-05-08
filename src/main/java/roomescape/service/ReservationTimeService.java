@@ -6,9 +6,9 @@ import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.ReservationTimeRepository;
+import roomescape.domain.repository.ReservationRepository;
+import roomescape.domain.repository.ReservationTimeRepository;
 import roomescape.exception.time.DuplicatedTimeException;
 import roomescape.exception.time.NotFoundTimeException;
 import roomescape.exception.time.ReservationReferencedTimeException;
