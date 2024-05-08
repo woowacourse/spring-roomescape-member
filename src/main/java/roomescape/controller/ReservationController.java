@@ -1,8 +1,6 @@
 package roomescape.controller;
 
-import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.request.ReservationRequest2;
 import roomescape.controller.request.ReservationRequest3;
 import roomescape.controller.response.ReservationResponse;
-import roomescape.controller.response.UserResponse;
+import roomescape.domain.Member;
 import roomescape.service.ReservationService;
+import roomescape.ui.AuthenticationPrincipal;
 
 @RestController
 @RequestMapping("/reservations")
@@ -36,17 +35,8 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> save(HttpServletRequest request, @RequestBody ReservationRequest3 reservationRequest3) {
-        Cookie[] cookies = request.getCookies();
-        String token = extractTokenFromCookie(cookies);
-        String secret = Jwts.parser()
-                .setSigningKey("secret")
-                .parseClaimsJws(token)
-                .getBody().getSubject();
-        UserResponse userResponse = reservationService.findByEmail(secret);
-        /*ReservationRequest reservationRequest = new ReservationRequest(userResponse.name(), reservationRequest3.date().toString(), reservationRequest3.timeId(),
-                reservationRequest3.themeId());*/
-        ReservationResponse reservationResponse = reservationService.save(new ReservationRequest2(userResponse.id(), reservationRequest3.date(), reservationRequest3.timeId(), reservationRequest3.themeId()));
+    public ResponseEntity<ReservationResponse> save(@AuthenticationPrincipal Member member, @RequestBody ReservationRequest3 reservationRequest3) {
+        ReservationResponse reservationResponse = reservationService.save(new ReservationRequest2(member.getId(), reservationRequest3.date(), reservationRequest3.timeId(), reservationRequest3.themeId()));
 
         return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.id()))
                 .body(reservationResponse);
