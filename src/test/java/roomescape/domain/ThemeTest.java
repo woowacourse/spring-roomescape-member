@@ -12,7 +12,7 @@ class ThemeTest {
     @ParameterizedTest
     @NullSource
     @ValueSource(strings = {" "})
-    @DisplayName("테마 이름에 공백 또는 빈 문자열이 입력되면 예외가 발생한다.")
+    @DisplayName("테마 이름에 공백 또는 빈 문자열이 입력되면 IllegalArgumentException 발생")
     void nameException(String name) {
         assertThatThrownBy(() -> new Theme(0, name, "description", "thumbnail"))
                 .isInstanceOf(IllegalArgumentException.class)
