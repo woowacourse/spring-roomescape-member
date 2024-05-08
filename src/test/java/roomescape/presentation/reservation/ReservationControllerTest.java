@@ -26,7 +26,6 @@ import roomescape.application.reservation.dto.response.ReservationResponse;
 import roomescape.application.reservation.dto.response.ReservationTimeResponse;
 import roomescape.application.reservation.dto.response.ThemeResponse;
 import roomescape.presentation.ControllerTest;
-import roomescape.presentation.reservation.ReservationController;
 
 @WebMvcTest(ReservationController.class)
 class ReservationControllerTest extends ControllerTest {

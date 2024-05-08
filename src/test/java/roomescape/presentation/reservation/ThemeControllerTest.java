@@ -17,7 +17,6 @@ import roomescape.application.reservation.ThemeService;
 import roomescape.application.reservation.dto.request.ThemeRequest;
 import roomescape.application.reservation.dto.response.ThemeResponse;
 import roomescape.presentation.ControllerTest;
-import roomescape.presentation.reservation.ThemeController;
 
 @WebMvcTest(ThemeController.class)
 class ThemeControllerTest extends ControllerTest {

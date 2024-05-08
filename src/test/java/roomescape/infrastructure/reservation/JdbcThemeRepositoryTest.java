@@ -14,7 +14,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.reservation.Theme;
 import roomescape.domain.reservation.ThemeRepository;
-import roomescape.infrastructure.reservation.JdbcThemeRepository;
 
 @JdbcTest
 @Import(JdbcThemeRepository.class)

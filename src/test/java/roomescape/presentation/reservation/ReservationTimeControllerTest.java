@@ -23,7 +23,6 @@ import roomescape.application.reservation.ReservationTimeService;
 import roomescape.application.reservation.dto.request.ReservationTimeRequest;
 import roomescape.application.reservation.dto.response.ReservationTimeResponse;
 import roomescape.presentation.ControllerTest;
-import roomescape.presentation.reservation.ReservationTimeController;
 
 @WebMvcTest(ReservationTimeController.class)
 class ReservationTimeControllerTest extends ControllerTest {

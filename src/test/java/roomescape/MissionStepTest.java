@@ -40,14 +40,13 @@ class MissionStepTest {
 
     @LocalServerPort
     private int port;
+    @MockBean
+    private Clock clock;
 
     @BeforeEach
     public void setUp() {
         RestAssured.port = this.port;
     }
-
-    @MockBean
-    private Clock clock;
 
     @Test
     void 일단계() {

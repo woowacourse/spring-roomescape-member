@@ -2,10 +2,10 @@ package roomescape.infrastructure.member.rowmapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import roomescape.domain.reservation.PlayerName;
 import roomescape.domain.member.Email;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.Password;
+import roomescape.domain.reservation.PlayerName;
 
 public class MemberRowMapper {
 

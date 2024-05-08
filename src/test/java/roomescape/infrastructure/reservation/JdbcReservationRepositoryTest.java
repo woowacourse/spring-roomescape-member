@@ -20,9 +20,6 @@ import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.reservation.ReservationTimeRepository;
 import roomescape.domain.reservation.Theme;
 import roomescape.domain.reservation.ThemeRepository;
-import roomescape.infrastructure.reservation.JdbcReservationRepository;
-import roomescape.infrastructure.reservation.JdbcReservationTimeRepository;
-import roomescape.infrastructure.reservation.JdbcThemeRepository;
 
 @JdbcTest
 @Import(value = {JdbcReservationRepository.class, JdbcReservationTimeRepository.class, JdbcThemeRepository.class})

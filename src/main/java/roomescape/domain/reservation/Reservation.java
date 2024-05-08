@@ -35,11 +35,6 @@ public class Reservation {
         }
     }
 
-    public boolean isBefore(LocalDateTime dateTime) {
-        LocalDateTime reservedDateTime = LocalDateTime.of(date, time.getStartAt());
-        return reservedDateTime.isBefore(dateTime);
-    }
-
     public Long getId() {
         return id;
     }

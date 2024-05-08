@@ -17,7 +17,6 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.reservation.ReservationTimeRepository;
 import roomescape.domain.reservation.TimeSlot;
-import roomescape.infrastructure.reservation.JdbcReservationTimeRepository;
 
 @JdbcTest
 @Import(JdbcReservationTimeRepository.class)
