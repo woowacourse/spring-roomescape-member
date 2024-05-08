@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.AvailableReservationTimeResponse;
@@ -17,7 +16,6 @@ import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.service.ReservationTimeService;
 
-@RequestMapping("/times")
 @RestController
 public class TimeController {
 
@@ -27,7 +25,7 @@ public class TimeController {
         this.reservationTimeService = reservationTimeService;
     }
 
-    @GetMapping
+    @GetMapping("/times")
     public ResponseEntity<List<ReservationTimeResponse>> getTimes() {
         List<ReservationTimeResponse> responses = reservationTimeService.getAllReservationTimes();
 
@@ -35,7 +33,7 @@ public class TimeController {
                 .body(responses);
     }
 
-    @PostMapping
+    @PostMapping("/times")
     public ResponseEntity<ReservationTimeResponse> addTime(@RequestBody ReservationTimeRequest request) {
         ReservationTimeResponse response = reservationTimeService.addReservationTime(
                 request);
@@ -45,7 +43,7 @@ public class TimeController {
                 .body(response);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/times/{id}")
     public ResponseEntity<Void> deleteTime(@PathVariable("id") Long id) {
         reservationTimeService.deleteReservationTimeById(id);
 
@@ -53,7 +51,7 @@ public class TimeController {
                 .build();
     }
 
-    @GetMapping("/available")
+    @GetMapping("/times/available")
     public ResponseEntity<List<AvailableReservationTimeResponse>> getReservationTimeBookedStatus(
             @RequestParam LocalDate date,
             @RequestParam Long themeId) {

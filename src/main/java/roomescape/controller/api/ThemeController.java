@@ -8,14 +8,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
 import roomescape.service.ThemeService;
 
 @RestController
-@RequestMapping("/themes")
 public class ThemeController {
 
     private final ThemeService themeService;
@@ -24,7 +22,7 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
-    @GetMapping
+    @GetMapping("/themes")
     public ResponseEntity<List<ThemeResponse>> getAllThemes() {
         List<ThemeResponse> responses = themeService.getAllThemes();
 
@@ -32,7 +30,7 @@ public class ThemeController {
                 .body(responses);
     }
 
-    @PostMapping
+    @PostMapping("/themes")
     public ResponseEntity<ThemeResponse> addTheme(@RequestBody ThemeRequest request) {
         ThemeResponse response = themeService.addTheme(request);
         URI location = URI.create("/theme/" + response.id());
@@ -41,7 +39,7 @@ public class ThemeController {
                 .body(response);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/themes/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
         themeService.deleteThemeById(id);
 
@@ -49,7 +47,7 @@ public class ThemeController {
                 .build();
     }
 
-    @GetMapping("/rankings")
+    @GetMapping("/themes/rankings")
     public ResponseEntity<List<ThemeResponse>> getTopThemes() {
         List<ThemeResponse> responses = themeService.getTopThemes();
 
