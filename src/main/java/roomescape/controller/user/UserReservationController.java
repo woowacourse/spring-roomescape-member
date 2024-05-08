@@ -23,7 +23,6 @@ public class UserReservationController {
     public ResponseEntity<List<BookableTimeResponse>> getTimesWithStatus(
             @RequestParam("date") LocalDate date,
             @RequestParam("themeId") Long themeId) {
-        System.out.println("들옴");
         return ResponseEntity.ok(userReservationService.findBookableTimes(new BookableTimesRequest(date, themeId)));
     }
 }
