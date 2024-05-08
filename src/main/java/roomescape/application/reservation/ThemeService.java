@@ -34,11 +34,10 @@ public class ThemeService {
 
     @Transactional
     public void deleteById(long id) {
-        Theme theme = themeRepository.getById(id);
-        if (themeRepository.existsByTimeId(theme.getId())) {
+        if (themeRepository.existsByTimeId(id)) {
             throw new IllegalArgumentException("연관된 예약이 존재하여 삭제할 수 없습니다.");
         }
-        themeRepository.deleteById(theme.getId());
+        themeRepository.deleteById(id);
     }
 
     public List<ThemeResponse> findPopularThemes() {

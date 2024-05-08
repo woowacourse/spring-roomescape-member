@@ -50,14 +50,6 @@ class ThemeServiceTest {
         assertThat(themes).isEmpty();
     }
 
-    @DisplayName("존재하지 않는 id로 테마를 삭제하면 예외가 발생한다.")
-    @Test
-    void shouldThrowIllegalArgumentExceptionWhenDeleteWithNonExistId() {
-        assertThatCode(() -> themeService.deleteById(1L))
-                .isInstanceOf(NoSuchElementException.class)
-                .hasMessage("존재하지 않는 테마입니다.");
-    }
-
     @DisplayName("예약이 존재하는 테마를 삭제하는 경우, 예외가 발생한다.")
     @Test
     @Sql("/insert-single-reservation.sql")
