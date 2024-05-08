@@ -12,6 +12,7 @@ import roomescape.domain.theme.ThemeRepository;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -84,6 +85,21 @@ public class H2ThemeRepository implements ThemeRepository {
         } catch (DataIntegrityViolationException e) {
             throw new IllegalStateException("해당 테마를 참조하는 예약이 존재합니다.");
         }
+    }
+
+    public List<Theme> findPastReservations(LocalDate startDate, LocalDate endDate, int limitCount) {
+        String sql = """
+                    select t.id, t.name, t.description, t.thumbnail
+                    from theme as t
+                    left join reservation as r
+                    on t.id = r.theme_id
+                    and convert(r.date, date) between ? and ?
+                    group by t.id
+                    order by count(r.id) desc, t.id asc
+                    limit ?
+                """;
+
+        return jdbcTemplate.query(sql, rowMapper, startDate, endDate, limitCount);
     }
 
     private static class ThemeRowMapper implements RowMapper<Theme> {

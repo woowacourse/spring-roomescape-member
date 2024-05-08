@@ -1,18 +1,14 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.domain.reservation.ReservationRepository;
+import roomescape.domain.theme.Theme;
+import roomescape.domain.theme.ThemeRepository;
 import roomescape.service.dto.request.ThemeRequest;
 import roomescape.service.dto.response.ThemeResponse;
-import roomescape.domain.reservation.Reservation;
-import roomescape.domain.theme.Theme;
-import roomescape.domain.reservation.ReservationRepository;
-import roomescape.domain.theme.ThemeRepository;
 
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class ThemeService {
@@ -45,28 +41,11 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> findTopThemes() {
-        List<Reservation> pastReservations = findPastReservations(START_DATE_DIFF, END_DATE_DIFF);
+        List<Theme> pastReservations = themeRepository.findPastReservations(LocalDate.now().minusDays(START_DATE_DIFF),
+                LocalDate.now().minusDays(END_DATE_DIFF), TOP_LIMIT_COUNT);
 
-        return findMostReservedThemes(pastReservations, TOP_LIMIT_COUNT).stream()
+        return pastReservations.stream()
                 .map(ThemeResponse::from)
-                .toList();
-    }
-
-    private List<Reservation> findPastReservations(long startDateDiff, long endDateDiff) {
-        LocalDate currentDate = LocalDate.now();
-        LocalDate startDate = currentDate.minusDays(startDateDiff);
-        LocalDate endDate = currentDate.minusDays(endDateDiff);
-        return reservationRepository.findByPeriod(startDate, endDate);
-    }
-
-    private List<Theme> findMostReservedThemes(List<Reservation> reservations, int limitCount) {
-        Map<Theme, Long> reservationsGroupedByTheme = reservations.stream()
-                .collect(Collectors.groupingBy(Reservation::getTheme, Collectors.counting()));
-
-        return reservationsGroupedByTheme.entrySet().stream()
-                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                .limit(limitCount)
-                .map(Map.Entry::getKey)
                 .toList();
     }
 
