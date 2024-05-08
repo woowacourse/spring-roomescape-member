@@ -22,17 +22,13 @@ public class MemberController {
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@Valid @RequestBody MemberLoginRequest request, HttpServletResponse response) {
-        String token = memberService.login(request);
+        Token token = memberService.login(request);
 
-        if (token == null) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-
-        Cookie cookie = new Cookie("token", token);
+        Cookie cookie = new Cookie("token", token.value());
         cookie.setHttpOnly(true);
         cookie.setPath("/");
 
         response.addCookie(cookie);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.ok().build();
     }
 }

@@ -18,9 +18,11 @@ public class MemberService {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    public String login(MemberLoginRequest request) {
+    public Token login(MemberLoginRequest request) {
         Member findMember = memberRepository.findByEmailAndPassword(request.email(), request.password())
-                .orElseThrow(() -> new NoSuchElementException("올바르지 않은 회원 정보입니다."));
+                .orElseThrow(() -> new AuthenticationException("올바르지 않은 회원 정보입니다."));
+        return new Token(jwtTokenProvider.createToken(findMember));
+    }
 
         return jwtTokenProvider.createToken(findMember);
     }
