@@ -10,10 +10,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class TokenProvider {
 
-    @Value("${security.jwt.token.secret-key}")
-    private String secretKey;
-    @Value("${security.jwt.token.expire-length}")
-    private long validityInMilliseconds;
+    private final String secretKey;
+    private final long validityInMilliseconds;
+
+    public TokenProvider(@Value("${security.jwt.token.secret-key}") final String secretKey,
+                         @Value("${security.jwt.token.expire-length}") final long validityInMilliseconds) {
+        this.secretKey = secretKey;
+        this.validityInMilliseconds = validityInMilliseconds;
+    }
 
     public String createToken(final String payload) {
         Claims claims = Jwts.claims().setSubject(payload);

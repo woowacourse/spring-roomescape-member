@@ -45,5 +45,5 @@
 - 로그인 API
   - [x] 로그인 페이지 조회
     - GET `/login` 요청 시 `templates/login.html` 반환
-  - [ ] 로그인 기능 구현
+  - [x] 로그인 기능 구현
 - [ ] 인증 정보 조회 API 
