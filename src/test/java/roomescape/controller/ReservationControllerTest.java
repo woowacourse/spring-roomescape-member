@@ -46,7 +46,7 @@ class ReservationControllerTest {
     @Test
     void createReservation() {
         Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
+        reservation.put("memberId", 1);
         reservation.put("date", LocalDate.MAX.toString());
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
@@ -108,7 +108,7 @@ class ReservationControllerTest {
                 .statusCode(200)
                 .extract()
                 .body()
-                .jsonPath().get("name");
+                .jsonPath().get("member.name");
 
         // then
         assertThat(name).isEqualTo("클로버");

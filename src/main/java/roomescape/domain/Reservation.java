@@ -7,27 +7,27 @@ import java.time.LocalDate;
 public class Reservation {
 
     private final Long id;
-    private final String name;
+    private final Member member;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        validate(name, date, time, theme);
+    public Reservation(Long id, Member member, LocalDate date, ReservationTime time, Theme theme) {
+        validate(member, date, time, theme);
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
     }
 
-    private void validate(String name, LocalDate date, ReservationTime time, Theme theme) {
-        validateNullField(name, date, time, theme);
-        validateName(name);
+    private void validate(Member member, LocalDate date, ReservationTime time, Theme theme) {
+        validateNullField(member, date, time, theme);
+        validateName(member.getName());
     }
 
-    private void validateNullField(String name, LocalDate date, ReservationTime time, Theme theme) {
-        if (name == null || date == null || time == null || theme == null) {
+    private void validateNullField(Member member, LocalDate date, ReservationTime time, Theme theme) {
+        if (member == null || date == null || time == null || theme == null) {
             throw new BadRequestException("예약 필드에는 빈 값이 들어올 수 없습니다.");
         }
     }
@@ -38,12 +38,12 @@ public class Reservation {
         }
     }
 
-    public Reservation(String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
-        this(null, name, date, reservationTime, theme);
+    public Reservation(Member member, LocalDate date, ReservationTime reservationTime, Theme theme) {
+        this(null, member, date, reservationTime, theme);
     }
 
     public Reservation(Long id, Reservation reservation) {
-        this(id, reservation.name, reservation.date, reservation.time, reservation.theme);
+        this(id, reservation.member, reservation.date, reservation.time, reservation.theme);
     }
 
     public boolean isDuplicated(Reservation other) {
@@ -53,15 +53,15 @@ public class Reservation {
     }
 
     public boolean isSameUser(Reservation other) {
-        return name.equals(other.getName());
+        return member.equals(other.getMember());
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public Member getMember() {
+        return member;
     }
 
     public LocalDate getDate() {

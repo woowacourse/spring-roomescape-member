@@ -19,8 +19,10 @@ class ReservationTest {
     @ParameterizedTest
     void validateName(String blankName) {
         ReservationTime time = new ReservationTime(LocalTime.MAX);
-        assertThatThrownBy(() -> new Reservation(blankName, LocalDate.MAX, time, themeFixture))
-                .isInstanceOf(BadRequestException.class)
+        assertThatThrownBy(() -> new Reservation(
+                    new Member(1L, "", "tester@gmail.com", "password"),
+                    LocalDate.MAX, time, themeFixture)
+                ).isInstanceOf(BadRequestException.class)
                 .hasMessage("이름은 공백일 수 없습니다.");
     }
 }

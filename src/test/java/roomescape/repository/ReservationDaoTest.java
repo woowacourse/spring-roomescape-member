@@ -49,7 +49,7 @@ class ReservationDaoTest {
                 .longValue();
         ReservationTime newReservationTime = new ReservationTime(reservationTimeId, reservationTime.getStartAt());
         Reservation reservation = new Reservation(
-                "브라운",
+                Fixtures.memberFixture,
                 LocalDate.of(2024, 11, 16),
                 newReservationTime,
                 new Theme(1L, themeFixture)

@@ -8,13 +8,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.Fixtures;
-import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.service.dto.reservationtime.ReservationTimeCreateRequest;
-import roomescape.service.dto.reservationtime.ReservationTimeResponse;
 import roomescape.exception.BadRequestException;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationtime.ReservationTimeRepository;
+import roomescape.service.dto.reservationtime.ReservationTimeCreateRequest;
+import roomescape.service.dto.reservationtime.ReservationTimeResponse;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -111,7 +110,7 @@ class ReservationTimeServiceTest {
         LocalDate date = LocalDate.of(2024, 12, 2);
         Long themeId = 2L;
         Mockito.when(reservationRepository.findByDateAndThemeId(date, themeId))
-                .thenReturn(List.of(new Reservation("클로버", date, reservationTimeFixture, Fixtures.themeFixture)));
+                .thenReturn(List.of(Fixtures.reservationFixture));
         Mockito.when(reservationTimeRepository.findAll())
                 .thenReturn(List.of(reservationTimeFixture));
 

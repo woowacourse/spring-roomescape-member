@@ -15,6 +15,6 @@ public record MemberReservationCreateRequest(
 ) {
 
     public Reservation toReservation(Member member, ReservationTime time, Theme theme) {
-        return new Reservation(member.getName(), date, time, theme);
+        return new Reservation(member, date, time, theme);
     }
 }

@@ -5,6 +5,7 @@ import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.repository.user.MemberRepository;
 import roomescape.service.dto.reservation.MemberReservationCreateRequest;
 import roomescape.service.dto.reservation.ReservationCreateRequest;
 import roomescape.service.dto.reservation.ReservationResponse;
@@ -23,27 +24,36 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final MemberRepository memberRepository;
 
     public ReservationService(
             ReservationRepository reservationRepository,
             ReservationTimeRepository reservationTimeRepository,
-            ThemeRepository themeRepository
+            ThemeRepository themeRepository,
+            MemberRepository memberRepository
     ) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.memberRepository = memberRepository;
     }
 
     public ReservationResponse createReservation(ReservationCreateRequest request) {
         ReservationTime reservationTime = findReservationTimeById(request.timeId());
         Theme theme = findThemeById(request.themeId());
-        Reservation reservation = request.toReservation(reservationTime, theme);
+        Member member = findMemberById(request.memberId());
+        Reservation reservation = request.toReservation(member, reservationTime, theme);
 
         validateDuplicated(reservation);
         validateRequestedTime(reservation, reservationTime);
 
         Reservation savedReservation = reservationRepository.save(reservation);
         return ReservationResponse.from(savedReservation);
+    }
+
+    private Member findMemberById(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 사용자입니다."));
     }
 
     public ReservationResponse createReservation(MemberReservationCreateRequest request, Member member) {

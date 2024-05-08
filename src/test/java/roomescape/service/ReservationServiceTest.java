@@ -15,6 +15,7 @@ import roomescape.exception.ResourceNotFoundException;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationtime.ReservationTimeRepository;
 import roomescape.repository.theme.ThemeRepository;
+import roomescape.repository.user.MemberRepository;
 import roomescape.service.dto.reservation.MemberReservationCreateRequest;
 import roomescape.service.dto.reservation.ReservationCreateRequest;
 import roomescape.service.dto.reservation.ReservationResponse;
@@ -38,6 +39,8 @@ class ReservationServiceTest {
     private ReservationRepository reservationRepository;
     @Mock
     private ThemeRepository themeRepository;
+    @Mock
+    private MemberRepository memberRepository;
     private Long id;
     private String name;
     private LocalDate date;
@@ -47,7 +50,8 @@ class ReservationServiceTest {
         this.reservationService = new ReservationService(
                 reservationRepository,
                 reservationTimeRepository,
-                themeRepository
+                themeRepository,
+                memberRepository
         );
         this.id = 1L;
         this.name = "클로버";
@@ -81,7 +85,7 @@ class ReservationServiceTest {
         // then
         SoftAssertions softAssertions = new SoftAssertions();
         softAssertions.assertThat(reservation.date()).isEqualTo(date);
-        softAssertions.assertThat(reservation.name()).isEqualTo(name);
+        softAssertions.assertThat(reservation.member().getName()).isEqualTo(name);
         softAssertions.assertAll();
     }
 
@@ -93,7 +97,9 @@ class ReservationServiceTest {
                 .thenReturn(Optional.of(Fixtures.reservationTimeFixture));
         Mockito.when(themeRepository.findById(id))
                 .thenReturn(Optional.of(Fixtures.themeFixture));
-        ReservationCreateRequest request = new ReservationCreateRequest(name, date, 1L, 1L);
+        Mockito.when(memberRepository.findById(id))
+                .thenReturn(Optional.of(Fixtures.memberFixture));
+        ReservationCreateRequest request = new ReservationCreateRequest(1L, date, 1L, 1L);
         Mockito.when(reservationRepository.save(any()))
                 .thenReturn(Fixtures.reservationFixture);
 
@@ -103,7 +109,7 @@ class ReservationServiceTest {
         // then
         SoftAssertions softAssertions = new SoftAssertions();
         softAssertions.assertThat(reservation.date()).isEqualTo(date);
-        softAssertions.assertThat(reservation.name()).isEqualTo(name);
+        softAssertions.assertThat(reservation.member().getName()).isEqualTo(name);
         softAssertions.assertThat(reservation.time().getStartAt()).isEqualTo(LocalTime.of(10, 10));
         softAssertions.assertAll();
     }
@@ -127,7 +133,7 @@ class ReservationServiceTest {
         // then
         SoftAssertions softAssertions = new SoftAssertions();
         softAssertions.assertThat(reservation.date()).isEqualTo(date);
-        softAssertions.assertThat(reservation.name()).isEqualTo(name);
+        softAssertions.assertThat(reservation.member().getName()).isEqualTo(name);
         softAssertions.assertThat(reservation.time().getStartAt()).isEqualTo(LocalTime.of(10, 10));
         softAssertions.assertAll();
     }
@@ -140,9 +146,11 @@ class ReservationServiceTest {
                 .thenReturn(Optional.of(Fixtures.reservationTimeFixture));
         Mockito.when(themeRepository.findById(id))
                 .thenReturn(Optional.of(Fixtures.themeFixture));
+        Mockito.when(memberRepository.findById(id))
+                .thenReturn(Optional.of(Fixtures.memberFixture));
 
         LocalDate date = LocalDate.MIN;
-        ReservationCreateRequest request = new ReservationCreateRequest(name, date, id, id);
+        ReservationCreateRequest request = new ReservationCreateRequest(1L, date, id, id);
 
         // when & then
         assertThatThrownBy(() -> reservationService.createReservation(request))
@@ -158,10 +166,12 @@ class ReservationServiceTest {
                 .thenReturn(Optional.of(Fixtures.reservationTimeFixture));
         Mockito.when(themeRepository.findById(id))
                 .thenReturn(Optional.of(Fixtures.themeFixture));
+        Mockito.when(memberRepository.findById(id))
+                .thenReturn(Optional.of(Fixtures.memberFixture));
         Mockito.when(reservationRepository.findAll())
                 .thenReturn(List.of(Fixtures.reservationFixture));
         ReservationCreateRequest request = new ReservationCreateRequest(
-                Fixtures.reservationFixture.getName(),
+                Fixtures.reservationFixture.getMember().getId(),
                 Fixtures.reservationFixture.getDate(),
                 id,
                 id
@@ -180,7 +190,7 @@ class ReservationServiceTest {
         Mockito.when(reservationTimeRepository.findById(id))
                 .thenReturn(Optional.empty());
 
-        ReservationCreateRequest request = new ReservationCreateRequest(name, date, id, id);
+        ReservationCreateRequest request = new ReservationCreateRequest(id, date, id, id);
 
         // when & then
         assertThatThrownBy(() -> reservationService.createReservation(request))
@@ -198,7 +208,9 @@ class ReservationServiceTest {
                 .thenReturn(Optional.of(Fixtures.themeFixture));
         Mockito.when(reservationRepository.findAll())
                 .thenReturn(List.of(Fixtures.reservationFixture));
-        ReservationCreateRequest request = new ReservationCreateRequest("페드로", date, id, id);
+        Mockito.when(memberRepository.findById(id))
+                .thenReturn(Optional.of(Fixtures.memberFixtures.get(0)));
+        ReservationCreateRequest request = new ReservationCreateRequest(id, date, id, id);
 
         // when & then
         assertThatThrownBy(() -> reservationService.createReservation(request))
