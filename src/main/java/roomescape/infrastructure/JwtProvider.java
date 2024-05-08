@@ -3,18 +3,18 @@ package roomescape.infrastructure;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.stereotype.Component;
-import roomescape.dto.UserPayload;
+import roomescape.dto.MemberPayload;
 
 @Component
 public class JwtProvider {
 
     private final String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E";
 
-    public String createToken(UserPayload userPayload) {
+    public String createToken(MemberPayload memberPayload) {
         return Jwts.builder()
-                .setSubject(userPayload.id())
-                .claim("name", userPayload.name())
-                .claim("email", userPayload.email())
+                .setSubject(memberPayload.id())
+                .claim("name", memberPayload.name())
+                .claim("email", memberPayload.email())
                 .signWith(SignatureAlgorithm.HS256, secretKey.getBytes())
                 .compact();
     }
