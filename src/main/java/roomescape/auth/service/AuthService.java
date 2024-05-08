@@ -2,7 +2,7 @@ package roomescape.auth.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.auth.TokenProvider;
-import roomescape.auth.dto.response.CheckMemberResponse;
+import roomescape.auth.dto.response.GetAuthInfoResponse;
 import roomescape.auth.dto.response.LoginResponse;
 import roomescape.member.domain.Member;
 import roomescape.auth.dto.request.LoginRequest;
@@ -41,8 +41,8 @@ public class AuthService {
         }
     }
 
-    public CheckMemberResponse checkMember(final String token) {
+    public GetAuthInfoResponse checkMember(final String token) {
         String email = tokenProvider.extractPayload(token);
-        return CheckMemberResponse.from(findUser(email));
+        return GetAuthInfoResponse.from(findUser(email));
     }
 }

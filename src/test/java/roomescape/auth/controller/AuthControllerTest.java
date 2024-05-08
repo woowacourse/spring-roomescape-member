@@ -18,7 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import roomescape.auth.dto.request.LoginRequest;
-import roomescape.auth.dto.response.CheckMemberResponse;
+import roomescape.auth.dto.response.GetAuthInfoResponse;
 import roomescape.auth.dto.response.LoginResponse;
 import roomescape.auth.service.AuthService;
 import roomescape.common.DateTimeFormatConfiguration;
@@ -63,7 +63,7 @@ class AuthControllerTest {
     @DisplayName("인증 정보 조회 시 요청 받은 쿠키의 토큰 값으로부터 유저 정보를 반환한다.")
     void checkLogin() throws Exception {
         // stub
-        Mockito.when(authService.checkMember(any())).thenReturn(new CheckMemberResponse("hi"));
+        Mockito.when(authService.checkMember(any())).thenReturn(new GetAuthInfoResponse("hi"));
 
         // when & then
         mockMvc.perform(MockMvcRequestBuilders.get("/login/check")
