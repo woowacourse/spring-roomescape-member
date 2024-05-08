@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -22,6 +23,12 @@ public class MemberDao implements MemberRepository {
 
     public MemberDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    @Override
+    public List<Member> findAll() {
+        String sql = "SELECT * FROM member";
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
     @Override
