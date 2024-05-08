@@ -1,0 +1,17 @@
+package roomescape.domain;
+
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import roomescape.exception.RoomEscapeException;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+class MemberTest {
+
+    @ParameterizedTest
+    @CsvSource(value = {",password", "tenny@wooteco.com,"})
+    public void user_NullEmailOrPassword_ThrownException(String email, String password) {
+        assertThatThrownBy(() -> new Member(0L, "테니", email, password))
+                .isInstanceOf(RoomEscapeException.class);
+    }
+}
