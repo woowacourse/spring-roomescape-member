@@ -9,6 +9,9 @@ public record ThemeRequest(
         String thumbnail
 ) {
     public Theme toDomain() {
+        if (thumbnail == null || thumbnail.isBlank()) {
+            return new Theme(name, description);
+        }
         return new Theme(name, description, thumbnail);
     }
 }

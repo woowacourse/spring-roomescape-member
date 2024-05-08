@@ -71,6 +71,17 @@ class H2ThemeRepositoryTest {
                 .isNotNull();
     }
 
+    @DisplayName("썸네일이 존재하지 않은 테마를 저장한다")
+    @Test
+    void when_saveThemeWithoutThumbnail_then_saved() {
+        // when
+        Theme savedTheme = themeRepository.save(new Theme("테마", "테마 설명"));
+
+        // then
+        assertThat(savedTheme.getId())
+                .isNotNull();
+    }
+
     @DisplayName("존재하지 않는 테마를 삭제할 경우, 예외가 발생하지 않는다")
     @Test
     void when_deleteThemeDoesNotExist_then_doesNotThrowsException() {
