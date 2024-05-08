@@ -1,4 +1,4 @@
-package roomescape.login;
+package roomescape.login.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import roomescape.ControllerTest;
+import roomescape.login.dto.LoginRequest;
 
 class LoginControllerTest extends ControllerTest {
 
