@@ -1,4 +1,4 @@
-package roomescape.controller.api;
+package roomescape.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;

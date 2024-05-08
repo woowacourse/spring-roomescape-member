@@ -1,4 +1,4 @@
-package roomescape.controller.api;
+package roomescape.controller.login;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,8 +13,6 @@ import roomescape.auth.application.AuthService;
 import roomescape.auth.dto.MemberResponse;
 import roomescape.auth.dto.TokenRequest;
 import roomescape.auth.infrastructure.AuthorizationExtractor;
-import roomescape.controller.login.Login;
-import roomescape.controller.login.LoginMember;
 
 @Controller
 public class LoginController {
