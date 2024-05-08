@@ -42,7 +42,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Void> handleException() {
-        return ResponseEntity.internalServerError().build();
+    public ResponseEntity<ExceptionDto> handleException() {
+        return ResponseEntity.internalServerError()
+                .body(new ExceptionDto("서버에서 요청을 처리할 수 없습니다."));
     }
 }
