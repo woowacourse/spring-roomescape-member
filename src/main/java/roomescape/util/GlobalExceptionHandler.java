@@ -1,4 +1,4 @@
-package roomescape.handler;
+package roomescape.util;
 
 import java.util.List;
 import org.springframework.context.support.DefaultMessageSourceResolvable;

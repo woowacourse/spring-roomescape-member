@@ -9,7 +9,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class UserControllerTest {
+class MemberControllerTest {
     @LocalServerPort
     private int port;
 
@@ -36,7 +36,7 @@ class UserControllerTest {
 
     @DisplayName("로그인 페이지 접근 성공 테스트")
     @Test
-    void responseUserPage() {
+    void responseLoginPage() {
         RestAssured.given().log().all()
                 .when().get("/login")
                 .then().log().all().assertThat().statusCode(HttpStatus.OK.value());

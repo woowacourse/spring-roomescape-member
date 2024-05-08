@@ -37,3 +37,5 @@
 | DELETE |                 | /themes/{id}           | 테마 삭제               |                         |                                                                             |
 |        | 204 NO CONTENT  |                        | 테마 삭제 성공            |                         |                                                                             |
 |        | 404 NOT FOUND   |                        | 테마 삭제 실패            |                         | error message                                                               |
+| POST   |                 | /login                 | 사용자 로그인             |                         | email, password                                                             |
+|        | 200 OK          |                        | 사용자 로그인             |                         | Header(Set-Cookie, Keep-Alive)                                              |
