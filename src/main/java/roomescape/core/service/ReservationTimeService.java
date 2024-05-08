@@ -40,11 +40,6 @@ public class ReservationTimeService {
 
     @Transactional(readOnly = true)
     public List<BookingTimeResponseDto> findBookable(final String date, final long themeId) {
-        return reservationRepository.findAllByDateNotOrThemeIdNot(date, themeId);
-    }
-
-    @Transactional(readOnly = true)
-    public List<BookingTimeResponseDto> findBookable2(final String date, final long themeId) {
         List<ReservationTime> times = reservationTimeRepository.findAll();
         Set<Long> timeIdOfReservation = reservationRepository.findAllByDateAndThemeId(date, themeId)
                 .stream()

@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.core.domain.ReservationTime;
+import roomescape.core.dto.BookingTimeResponseDto;
 import roomescape.core.repository.ReservationTimeRepository;
 import roomescape.web.exception.NotFoundException;
 
@@ -38,6 +39,19 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
     }
 
     @Override
+    public List<BookingTimeResponseDto> findAllByDateNotOrThemeIdNot(final String date, final long themeId) {
+        final String query = """
+                SELECT t.id, t.start_at, r.id IS NOT NULL AS already_booked
+                FROM reservation_time AS t 
+                LEFT JOIN (
+                    SELECT * FROM reservation WHERE date LIKE ? AND theme_id = ?
+                ) AS r
+                ON t.id = r.time_id;
+                """;
+        return jdbcTemplate.query(query, getBookingTimeRowMapper(), date, themeId);
+    }
+
+    @Override
     public ReservationTime findById(final long id) {
         try {
             final String query = "SELECT id, start_at FROM reservation_time WHERE id = ?";
@@ -62,6 +76,14 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
         return (resultSet, rowNum) -> new ReservationTime(
                 resultSet.getLong("id"),
                 resultSet.getString("start_at")
+        );
+    }
+
+    private RowMapper<BookingTimeResponseDto> getBookingTimeRowMapper() {
+        return (resultSet, rowNum) -> new BookingTimeResponseDto(
+                resultSet.getLong("id"),
+                resultSet.getString("start_at"),
+                resultSet.getBoolean("already_booked")
         );
     }
 }

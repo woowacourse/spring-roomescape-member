@@ -11,7 +11,6 @@ import org.springframework.stereotype.Repository;
 import roomescape.core.domain.Reservation;
 import roomescape.core.domain.ReservationTime;
 import roomescape.core.domain.Theme;
-import roomescape.core.dto.BookingTimeResponseDto;
 import roomescape.core.repository.ReservationRepository;
 
 @Repository
@@ -56,19 +55,6 @@ public class ReservationRepositoryImpl implements ReservationRepository {
                 ON r.theme_id = m.id
                 """;
         return jdbcTemplate.query(query, getReservationRowMapper());
-    }
-
-    @Override
-    public List<BookingTimeResponseDto> findAllByDateNotOrThemeIdNot(final String date, final long themeId) {
-        final String query = """
-                SELECT t.id, t.start_at, r.id IS NOT NULL AS already_booked
-                FROM reservation_time AS t 
-                LEFT JOIN (
-                    SELECT * FROM reservation WHERE date LIKE ? AND theme_id = ?
-                ) AS r
-                ON t.id = r.time_id;
-                """;
-        return jdbcTemplate.query(query, getBookingTimeRowMapper(), date, themeId);
     }
 
     @Override
@@ -139,13 +125,5 @@ public class ReservationRepositoryImpl implements ReservationRepository {
                     theme
             );
         };
-    }
-
-    private RowMapper<BookingTimeResponseDto> getBookingTimeRowMapper() {
-        return (resultSet, rowNum) -> new BookingTimeResponseDto(
-                resultSet.getLong("id"),
-                resultSet.getString("start_at"),
-                resultSet.getBoolean("already_booked")
-        );
     }
 }
