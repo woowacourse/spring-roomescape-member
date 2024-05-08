@@ -19,4 +19,13 @@ public class JwtTokenProvider {
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
+
+    public Long getMemberId(final String token) {
+        final String tokenSubject = Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+        return Long.valueOf(tokenSubject);
+    }
 }

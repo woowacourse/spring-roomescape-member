@@ -45,4 +45,24 @@ public class MemberRepository {
             return Optional.empty();
         }
     }
+
+    public Optional<Member> findById(final Long memberId) {
+        final String selectQuery = """
+            SELECT
+                id,
+                name,
+                email,
+                password,
+                role
+            FROM member
+            WHERE id = ?
+            LIMIT 1
+        """;
+        try {
+            final Member member = jdbcTemplate.queryForObject(selectQuery, ROW_MAPPER, memberId);
+            return Optional.ofNullable(member);
+        } catch (EmptyResultDataAccessException exception) {
+            return Optional.empty();
+        }
+    }
 }

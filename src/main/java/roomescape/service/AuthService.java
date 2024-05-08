@@ -2,8 +2,10 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.auth.JwtTokenProvider;
+import roomescape.dto.MemberResponse;
 import roomescape.dto.TokenRequest;
 import roomescape.dto.TokenResponse;
+import roomescape.exception.AuthenticationException;
 import roomescape.exception.AuthorizationException;
 import roomescape.model.Member;
 import roomescape.repository.MemberRepository;
@@ -28,5 +30,12 @@ public class AuthService {
         }
         final String accessToken = tokenProvider.createToken(member);
         return new TokenResponse(accessToken);
+    }
+
+    public MemberResponse findMemberByToken(final String token) {
+        final Long memberId = tokenProvider.getMemberId(token);
+        final Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new AuthenticationException("존재하지 않는 멤버입니다."));
+        return new MemberResponse(member);
     }
 }
