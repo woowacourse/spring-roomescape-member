@@ -4,12 +4,12 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class AdminControllerTest {
+class AdminPageControllerTest {
     @Test
     @DisplayName("관리자 메인 페이지 경로를 정해진 경로로 매핑한다.")
     void mainPage() {
-        AdminController adminController = new AdminController();
-        String mainPage = adminController.mainPage();
+        AdminPageController adminPageController = new AdminPageController();
+        String mainPage = adminPageController.mainPage();
         Assertions.assertThat(mainPage)
                 .isEqualTo("admin/index");
     }
@@ -17,8 +17,8 @@ class AdminControllerTest {
     @Test
     @DisplayName("관리자 예약 정보 페이지 경로를 정해진 경로로 매핑한다.")
     void reservationPage() {
-        AdminController adminController = new AdminController();
-        String reservationPage = adminController.reservationPage();
+        AdminPageController adminPageController = new AdminPageController();
+        String reservationPage = adminPageController.reservationPage();
         Assertions.assertThat(reservationPage)
                 .isEqualTo("admin/reservation-new");
     }
@@ -26,8 +26,8 @@ class AdminControllerTest {
     @Test
     @DisplayName("시간 관리 페이지 경로를 정해진 경로로 매핑한다.")
     void reservationTimePage() {
-        AdminController adminController = new AdminController();
-        String reservationTimePage = adminController.reservationTimePage();
+        AdminPageController adminPageController = new AdminPageController();
+        String reservationTimePage = adminPageController.reservationTimePage();
         Assertions.assertThat(reservationTimePage)
                 .isEqualTo("admin/time");
     }
