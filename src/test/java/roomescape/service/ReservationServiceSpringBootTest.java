@@ -8,13 +8,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.Time;
 import roomescape.dto.reservation.ReservationRequest;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.TimeRepository;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.NONE)
 class ReservationServiceSpringBootTest {
 
     @Autowired
