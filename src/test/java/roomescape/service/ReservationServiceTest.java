@@ -46,7 +46,7 @@ class ReservationServiceTest {
     @DisplayName("예약을 저장한다")
     @Test
     void save() {
-        reservationService.save(TestFixtures.RESERVATION_REQUEST_3);
+        reservationService.saveByUser(TestFixtures.RESERVATION_REQUEST_3);
 
         assertThat(reservationService.findAll()).isEqualTo(List.of(TestFixtures.RESERVATION_RESPONSE_1, TestFixtures.RESERVATION_RESPONSE_2, TestFixtures.RESERVATION_RESPONSE_3));
     }
@@ -54,7 +54,7 @@ class ReservationServiceTest {
     @DisplayName("과거 시간의 예약을 저장할 경우 예외를 발생시킨다")
     @Test
     void save2() {
-        assertThatThrownBy(() -> reservationService.save(TestFixtures.PAST_RESERVATION_REQUEST))
+        assertThatThrownBy(() -> reservationService.saveByUser(TestFixtures.PAST_RESERVATION_REQUEST))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("이미 지난 시간입니다.");
     }
@@ -62,7 +62,7 @@ class ReservationServiceTest {
     @DisplayName("이미 저장된 예약을 저장할 시 예외를 발생시킨다")
     @Test
     void save3() {
-        assertThatThrownBy(() -> reservationService.save(TestFixtures.RESERVATION_REQUEST_2))
+        assertThatThrownBy(() -> reservationService.saveByUser(TestFixtures.RESERVATION_REQUEST_2))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("중복된 예약이 존재합니다.");
     }
