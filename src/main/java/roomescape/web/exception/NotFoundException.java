@@ -3,7 +3,7 @@ package roomescape.web.exception;
 import org.springframework.http.HttpStatus;
 
 public class NotFoundException extends CustomException {
-    public NotFoundException(String message) {
+    public NotFoundException(final String message) {
         super(message, HttpStatus.NOT_FOUND);
     }
 }

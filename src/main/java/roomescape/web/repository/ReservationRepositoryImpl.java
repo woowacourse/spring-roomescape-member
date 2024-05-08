@@ -58,7 +58,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAllByDateAndThemeId(String date, long themeId) {
+    public List<Reservation> findAllByDateAndThemeId(final String date, final long themeId) {
         final String query = """
                 SELECT
                     r.id AS reservation_id,
