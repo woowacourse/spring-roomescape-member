@@ -7,8 +7,8 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
+import roomescape.web.dto.ReservationTimeListResponse;
 
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
@@ -78,9 +78,9 @@ public class ReservationTimeAcceptanceTest extends BasicAcceptanceTest {
                 .statusCode(expectedHttpCode)
                 .extract().response();
 
-        List<?> reservationTimeResponses = response.as(List.class);
+        ReservationTimeListResponse reservationTimeListResponses = response.as(ReservationTimeListResponse.class);
 
-        assertThat(reservationTimeResponses).hasSize(expectedReservationsSize);
+        assertThat(reservationTimeListResponses.getReservationTimes()).hasSize(expectedReservationsSize);
     }
 
     private void deleteReservation(long reservationId, int expectedHttpCode) {

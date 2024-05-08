@@ -16,6 +16,7 @@ import roomescape.service.dto.request.ReservationTimeRequest;
 import roomescape.service.dto.response.AvailableReservationTimeResponse;
 import roomescape.service.dto.response.ReservationTimeResponse;
 import roomescape.service.dto.validation.DateFormat;
+import roomescape.web.dto.ReservationTimeListResponse;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -36,21 +37,21 @@ public class ReservationTimeController {
     }
 
     @GetMapping("/times")
-    public ResponseEntity<List<ReservationTimeResponse>> findAll() {
+    public ResponseEntity<ReservationTimeListResponse> findAll() {
         List<ReservationTimeResponse> reservationTimeResponses = reservationTimeService.findAll();
 
-        return ResponseEntity.ok(reservationTimeResponses);
+        return ResponseEntity.ok(new ReservationTimeListResponse(reservationTimeResponses));
     }
 
     @GetMapping("/times/available")
-    public ResponseEntity<List<AvailableReservationTimeResponse>> findAvailableByThemeAndDate(
+    public ResponseEntity<ReservationTimeListResponse> findAvailableByThemeAndDate(
             @DateFormat @RequestParam("date") String date,
             @Positive @RequestParam("themeId") Long themeId
     ) {
         List<AvailableReservationTimeResponse> reservationTimeResponses =
                 reservationTimeService.findAllWithAvailability(LocalDate.parse(date), themeId);
 
-        return ResponseEntity.ok(reservationTimeResponses);
+        return ResponseEntity.ok(new ReservationTimeListResponse(reservationTimeResponses));
     }
 
     @DeleteMapping("/times/{id}")

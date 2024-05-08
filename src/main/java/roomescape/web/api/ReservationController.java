@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.service.ReservationService;
 import roomescape.service.dto.request.ReservationRequest;
 import roomescape.service.dto.response.ReservationResponse;
+import roomescape.web.dto.ReservationListResponse;
 
 import java.net.URI;
 import java.util.List;
@@ -32,10 +33,10 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations")
-    public ResponseEntity<List<ReservationResponse>> findAll() {
+    public ResponseEntity<ReservationListResponse> findAll() {
         List<ReservationResponse> reservationResponses = reservationService.findAll();
 
-        return ResponseEntity.ok(reservationResponses);
+        return ResponseEntity.ok(new ReservationListResponse(reservationResponses));
     }
 
     @DeleteMapping("/reservations/{id}")

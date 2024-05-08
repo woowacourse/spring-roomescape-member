@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.web.dto.ThemeListResponse;
 
 import java.util.List;
 import java.util.Map;
@@ -78,9 +79,9 @@ public class ThemeAcceptanceTest extends BasicAcceptanceTest {
                 .statusCode(expectedHttpCode)
                 .extract().response();
 
-        List<?> themeResponses = response.as(List.class);
+        ThemeListResponse themeResponses = response.as(ThemeListResponse.class);
 
-        assertThat(themeResponses).hasSize(expectedthemesSize);
+        assertThat(themeResponses.getThemes()).hasSize(expectedthemesSize);
     }
 
     private void deleteTheme(long themeId, int expectedHttpCode) {
