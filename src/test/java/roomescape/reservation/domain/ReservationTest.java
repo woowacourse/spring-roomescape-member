@@ -8,7 +8,8 @@ import java.time.format.DateTimeParseException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import roomescape.exception.InvalidNameException;
+import roomescape.exception.RoomEscapeException;
+import roomescape.exception.message.ExceptionMessage;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
@@ -21,11 +22,14 @@ class ReservationTest {
     void validateNameExist() {
         assertAll(
                 () -> assertThatThrownBy(() -> Reservation.createWithId(1L, null, "2024-04-30", reservationTime, theme))
-                        .isInstanceOf(InvalidNameException.class),
+                        .isInstanceOf(RoomEscapeException.class)
+                        .hasMessage(ExceptionMessage.INVALID_USER_NAME.getMessage()),
                 () -> assertThatThrownBy(() -> Reservation.createWithId(1L, "", "2024-04-30", reservationTime, theme))
-                        .isInstanceOf(InvalidNameException.class),
+                        .isInstanceOf(RoomEscapeException.class)
+                        .hasMessage(ExceptionMessage.INVALID_USER_NAME.getMessage()),
                 () -> assertThatThrownBy(() -> Reservation.createWithId(1L, " ", "2024-04-30", reservationTime, theme))
-                        .isInstanceOf(InvalidNameException.class)
+                        .isInstanceOf(RoomEscapeException.class)
+                        .hasMessage(ExceptionMessage.INVALID_USER_NAME.getMessage())
         );
     }
 

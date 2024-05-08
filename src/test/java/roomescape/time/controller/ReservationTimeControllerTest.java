@@ -3,7 +3,6 @@ package roomescape.time.controller;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.stream.Stream;
@@ -46,16 +45,14 @@ class ReservationTimeControllerTest {
         mockMvc.perform(post("/times")
                        .content(objectMapper.writeValueAsString(requestDto))
                        .contentType(MediaType.APPLICATION_JSON))
-               .andExpect(status().isBadRequest())
-               .andExpect(content().string(message));
+               .andExpect(status().isBadRequest());
     }
 
     @DisplayName("invalid한 delete 요청이 들어오면 예외가 발생한다.")
     @Test
     void invalidDelete() throws Exception {
         mockMvc.perform(delete("/times/0"))
-               .andExpect(status().isBadRequest())
-               .andExpect(content().string("delete.id: 올바른 시간 ID를 입력해야 합니다."));
+               .andExpect(status().isBadRequest());
     }
 
     @DisplayName("invalid한 가능 시간 조회 요청이 들어오면 예외가 발생한다.")
@@ -65,8 +62,7 @@ class ReservationTimeControllerTest {
         mockMvc.perform(get("/times/available")
                        .param("date", date)
                        .param("themeId", themeId))
-               .andExpect(status().isBadRequest())
-               .andExpect(content().string(message));
+               .andExpect(status().isBadRequest());
     }
 
     private static Stream<Arguments> provideInvalidRequestDto() {

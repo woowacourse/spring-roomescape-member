@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import roomescape.exception.DuplicatedDataException;
-import roomescape.exception.UnableDeleteDataException;
+import roomescape.exception.RoomEscapeException;
+import roomescape.exception.message.ExceptionMessage;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.theme.dao.ThemeDao;
 import roomescape.theme.domain.Theme;
@@ -29,7 +29,7 @@ public class ThemeService {
     public Theme save(final ThemeRequestDto request) {
         final Theme theme = request.toTheme();
         if (themeDao.checkExistThemes(theme)) {
-            throw new DuplicatedDataException("이미 해당 테마가 존재합니다.");
+            throw new RoomEscapeException(ExceptionMessage.DUPLICATE_THEME);
         }
         final long id = themeDao.save(theme);
         return Theme.createWithId(id, theme);
@@ -37,7 +37,7 @@ public class ThemeService {
 
     public void deleteById(final long id) {
         if (reservationDao.checkExistReservationByTheme(id)) {
-            throw new UnableDeleteDataException("해당 테마를 예약한 예약내역이 존재하여 삭제가 불가합니다.");
+            throw new RoomEscapeException(ExceptionMessage.EXIST_REFER_THEME);
         }
         themeDao.deleteById(id);
     }

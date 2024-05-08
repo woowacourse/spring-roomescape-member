@@ -6,7 +6,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 
-import roomescape.exception.InvalidNameException;
+import roomescape.exception.RoomEscapeException;
+import roomescape.exception.message.ExceptionMessage;
 
 class ThemeTest {
 
@@ -15,7 +16,7 @@ class ThemeTest {
     @NullAndEmptySource
     void validateInvalidName(final String name) {
         assertThatThrownBy(() -> Theme.createWithId(1L, name, "description", "thumbnail"))
-                .isInstanceOf(InvalidNameException.class)
-                .hasMessage("테마 이름이 null 이거나 공백인 경우 저장을 할 수 없습니다.");
+                .isInstanceOf(RoomEscapeException.class)
+                .hasMessage(ExceptionMessage.INVALID_THEME_NAME.getMessage());
     }
 }

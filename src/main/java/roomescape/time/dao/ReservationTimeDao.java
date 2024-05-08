@@ -12,7 +12,8 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
-import roomescape.exception.EmptyDataAccessException;
+import roomescape.exception.RoomEscapeException;
+import roomescape.exception.message.ExceptionMessage;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.domain.ReservationUserTime;
 
@@ -43,7 +44,7 @@ public class ReservationTimeDao {
         try {
             return jdbcTemplate.queryForObject(sql, timeRowMapper, id);
         } catch (final EmptyResultDataAccessException exception) {
-            throw new EmptyDataAccessException("timeId : %d에 해당하는 시간이 존재하지 않습니다.", id);
+            throw new RoomEscapeException(ExceptionMessage.NOT_FOUND_TIME);
         }
     }
 

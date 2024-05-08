@@ -2,7 +2,8 @@ package roomescape.theme.domain;
 
 import java.util.Objects;
 
-import roomescape.exception.InvalidNameException;
+import roomescape.exception.RoomEscapeException;
+import roomescape.exception.message.ExceptionMessage;
 
 public class Theme {
     private final Long id;
@@ -32,7 +33,7 @@ public class Theme {
 
     private void validateInvalidName(final String name) {
         if (Objects.isNull(name) || name.isBlank()) {
-            throw new InvalidNameException("테마 이름이 null 이거나 공백인 경우 저장을 할 수 없습니다.");
+            throw new RoomEscapeException(ExceptionMessage.INVALID_THEME_NAME);
         }
     }
 

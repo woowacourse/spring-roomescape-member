@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import roomescape.exception.DuplicatedDataException;
-import roomescape.exception.UnableDeleteDataException;
+import roomescape.exception.RoomEscapeException;
+import roomescape.exception.message.ExceptionMessage;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.time.dao.ReservationTimeDao;
 import roomescape.time.domain.ReservationTime;
@@ -30,7 +30,7 @@ public class ReservationTimeService {
     public ReservationTime save(final ReservationTimeRequestDto requestDto) {
         final ReservationTime reservationTime = ReservationTime.createWithOutId(requestDto.startAt());
         if (reservationTimeDao.checkExistTime(reservationTime)) {
-            throw new DuplicatedDataException("이미 해당 예약 시간이 존재합니다.");
+            throw new RoomEscapeException(ExceptionMessage.DUPLICATE_TIME);
         }
         final long id = reservationTimeDao.save(requestDto.toReservationTime());
         return ReservationTime.createWithId(id, reservationTime);
@@ -38,7 +38,7 @@ public class ReservationTimeService {
 
     public void deleteById(final long id) {
         if (reservationDao.checkExistReservationByTime(id)) {
-            throw new UnableDeleteDataException("해당 시간을 예약한 예약내역이 존재하여 삭제가 불가합니다.");
+            throw new RoomEscapeException(ExceptionMessage.EXIST_REFER_TIME);
         }
         reservationTimeDao.deleteById(id);
     }

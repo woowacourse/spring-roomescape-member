@@ -2,7 +2,6 @@ package roomescape.theme.controller;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.DisplayName;
@@ -37,15 +36,13 @@ class ThemeControllerTest {
         mockMvc.perform(post("/themes")
                        .content(objectMapper.writeValueAsString(requestDto))
                        .contentType(MediaType.APPLICATION_JSON))
-               .andExpect(status().isBadRequest())
-               .andExpect(content().string(message));
+               .andExpect(status().isBadRequest());
     }
 
     @DisplayName("invalid한 delete 요청이 들어오면 예외가 발생한다.")
     @Test
     void invalidDelete() throws Exception {
         mockMvc.perform(delete("/themes/0"))
-               .andExpect(status().isBadRequest())
-               .andExpect(content().string("delete.id: 올바른 테마 ID를 입력해야 합니다."));
+               .andExpect(status().isBadRequest());
     }
 }

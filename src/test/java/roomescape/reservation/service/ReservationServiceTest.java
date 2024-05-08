@@ -15,9 +15,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import roomescape.exception.DuplicatedDataException;
-import roomescape.exception.PastDateReservationException;
-import roomescape.exception.PastTimeReservationException;
+import roomescape.exception.RoomEscapeException;
+import roomescape.exception.message.ExceptionMessage;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.dto.ReservationRequestDto;
 import roomescape.theme.dao.ThemeDao;
@@ -50,13 +49,16 @@ class ReservationServiceTest {
         assertAll(
                 () -> assertThatThrownBy(() -> reservationService.save(
                         new ReservationRequestDto("hotea", LocalDate.MAX.toString(), id, id)))
-                        .isInstanceOf(DuplicatedDataException.class),
+                        .isInstanceOf(RoomEscapeException.class)
+                        .hasMessage(ExceptionMessage.DUPLICATE_DATE_TIME.getMessage()),
                 () -> assertThatThrownBy(() -> reservationService.save(
                         new ReservationRequestDto("hotea", LocalDate.now().minusDays(1).toString(), id, id)))
-                        .isInstanceOf(PastDateReservationException.class),
+                        .isInstanceOf(RoomEscapeException.class)
+                        .hasMessage(ExceptionMessage.PAST_DATE_RESERVATION.getMessage()),
                 () -> assertThatThrownBy(() -> reservationService.save(
                         new ReservationRequestDto("hotea", LocalDate.now().toString(), id, id)))
-                        .isInstanceOf(PastTimeReservationException.class)
+                        .isInstanceOf(RoomEscapeException.class)
+                        .hasMessage(ExceptionMessage.PAST_TIME_RESERVATION.getMessage())
         );
     }
 }
