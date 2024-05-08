@@ -1,0 +1,22 @@
+###
+POST http://localhost:8080/reservations
+Content-Type: application/json
+
+{
+  "date": "2024-08-05",
+  "name": "브라운",
+  "timeId": 1,
+  "themeId": 1
+}
+
+###
+GET http://localhost:8080/reservations
+
+###
+GET http://localhost:8080/reservations/1
+
+###
+GET http://localhost:8080/reservations/times
+
+###
+DELETE http://localhost:8080/reservations/2

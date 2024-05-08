@@ -1,0 +1,18 @@
+###
+POST http://localhost:8080/themes
+Content-Type: application/json
+
+{
+  "name":  "테마",
+  "description": "테마 설명" ,
+  "thumbnail": "썸네일 URL"
+}
+
+###
+GET http://localhost:8080/themes
+
+###
+GET http://localhost:8080/themes/popular
+
+###
+DELETE http://localhost:8080/themes/1
