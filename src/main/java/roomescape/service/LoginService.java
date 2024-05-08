@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.domain.User;
 import roomescape.dto.LoginRequest;
+import roomescape.dto.LoginResponse;
 import roomescape.exception.RoomescapeException;
 import roomescape.repository.UserRepository;
 
@@ -34,5 +35,10 @@ public class LoginService {
                 "name", findUser.getName(),
                 "email", findUser.getEmail()
         ));
+    }
+
+    public LoginResponse checkLogin(String token) {
+        String name = jwtGenerator.getValue(token, "name").toString();
+        return new LoginResponse(name);
     }
 }

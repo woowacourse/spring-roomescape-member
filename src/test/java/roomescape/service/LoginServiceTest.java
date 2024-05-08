@@ -7,12 +7,14 @@ import static roomescape.exception.ExceptionType.NOT_FOUND_USER;
 import static roomescape.exception.ExceptionType.WRONG_PASSWORD;
 
 import io.jsonwebtoken.Claims;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.User;
 import roomescape.dto.LoginRequest;
+import roomescape.dto.LoginResponse;
 import roomescape.exception.RoomescapeException;
 import roomescape.repository.CollectionUserRepository;
 import roomescape.repository.UserRepository;
@@ -77,6 +79,23 @@ class LoginServiceTest {
             )))
                     .isInstanceOf(RoomescapeException.class)
                     .hasMessage(WRONG_PASSWORD.getMessage());
+        }
+
+        @DisplayName("로그인이 되었을 때 토큰으로 사용자 이름을 찾을 수 있다.")
+        @Test
+        void loginTokenContainsUserNameTest() {
+            //given
+            String token = JWT_GENERATOR.generateWith(Map.of(
+                    "name", DEFAULT_USER.getName(),
+                    "email", DEFAULT_USER.getEmail()
+            ));
+
+            //when
+            LoginResponse loginResponse = loginService.checkLogin(token);
+
+            //then
+            assertThat(loginResponse.name())
+                    .isEqualTo(DEFAULT_USER.getName());
         }
     }
 }

@@ -29,4 +29,9 @@ public class JwtGenerator {
                 .parseClaimsJws(token)
                 .getBody();
     }
+
+    public Object getValue(String token, String key) {
+        Claims claims = decodePayload(token);
+        return claims.get(key);
+    }
 }

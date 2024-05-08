@@ -9,6 +9,7 @@ import io.restassured.http.ContentType;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -82,5 +83,37 @@ class LoginControllerTest {
                 .then().log().all()
                 .statusCode(400)
                 .body("message", is(WRONG_PASSWORD.getMessage()));
+    }
+
+    @DisplayName("로그인을 해 토큰이 생성된 경우")
+    @Nested
+    class WhenLogin {
+        private String token;
+
+        @BeforeEach
+        void getToken() {
+            token = RestAssured.given().log().all()
+                    .when().body(Map.of(
+                            "email", defaultUser.getEmail(),
+                            "password", defaultUser.getPassword()
+                    ))
+                    .contentType(ContentType.JSON)
+                    .post("/login")
+                    .then().log().all()
+                    .statusCode(200)
+                    .extract()
+                    .cookie("token");
+        }
+
+        @DisplayName("토큰을 이용해 로그인된 유저의 이름을 볼 수 있다.")
+        @Test
+        void loginCheckTest() {
+            RestAssured.given().log().all()
+                    .cookie("token", token)
+                    .get("/login/check")
+                    .then().log().all()
+                    .statusCode(200)
+                    .body("name", is(defaultUser.getName()));
+        }
     }
 }
