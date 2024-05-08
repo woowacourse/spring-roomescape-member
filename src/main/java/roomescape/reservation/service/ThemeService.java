@@ -38,10 +38,7 @@ public class ThemeService {
             throw new BusinessException(ErrorType.RESERVATION_NOT_DELETED);
         }
 
-        if (!themeRepository.deleteById(themeId)) {
-            throw new BusinessException(ErrorType.RESERVATION_TIME_NOT_FOUND);
-        }
-
+        themeRepository.deleteById(themeId);
     }
 
     public List<ThemeResponse> findPopularThemes(LocalDate startDate, LocalDate endDate, int limit) {

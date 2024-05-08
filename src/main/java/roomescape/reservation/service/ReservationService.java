@@ -40,8 +40,8 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse createMemberReservation(Member member, ReservationRequest reservationRequest) {
-        ReservationTime reservationTime = findAndValidateReservationTime(reservationRequest.timeId());
-        Theme theme = findAndValidateTheme(reservationRequest.themeId());
+        ReservationTime reservationTime = getReservationTime(reservationRequest.timeId());
+        Theme theme = getTheme(reservationRequest.themeId());
 
         LocalDate date = LocalDate.parse(reservationRequest.date());
         if (date.isBefore(LocalDate.now())) {
@@ -59,8 +59,8 @@ public class ReservationService {
     }
 
     public long create(MemberReservationRequest memberReservationRequest) {
-        ReservationTime reservationTime = findAndValidateReservationTime(memberReservationRequest.timeId());
-        Theme theme = findAndValidateTheme(memberReservationRequest.themeId());
+        ReservationTime reservationTime = getReservationTime(memberReservationRequest.timeId());
+        Theme theme = getTheme(memberReservationRequest.themeId());
 
         LocalDate date = LocalDate.parse(memberReservationRequest.date());
 
@@ -74,27 +74,22 @@ public class ReservationService {
         return reservation.getId();
     }
 
-    public void deleteMemberReservation(long reservationMemberId) {
-        if (!reservationRepository.deleteMemberReservationById(reservationMemberId)) {
-            throw new BusinessException(ErrorType.MEMBER_RESERVATION_NOT_FOUND);
-        }
+    public void deleteMemberReservation(long memberReservationId) {
+        reservationRepository.deleteMemberReservationById(memberReservationId);
     }
 
     @Transactional
     public void delete(long reservationId) {
         reservationRepository.deleteMemberReservationByReservationId(reservationId);
-        boolean deleted = reservationRepository.delete(reservationId);
-        if (!deleted) {
-            throw new BusinessException(ErrorType.DUPLICATED_RESERVATION_ERROR);
-        }
+        reservationRepository.delete(reservationId);
     }
 
-    private ReservationTime findAndValidateReservationTime(long timeId) {
+    private ReservationTime getReservationTime(long timeId) {
         return reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new BusinessException(ErrorType.RESERVATION_TIME_NOT_FOUND));
     }
 
-    private Theme findAndValidateTheme(long themeId) {
+    private Theme getTheme(long themeId) {
         return themeRepository.findById(themeId)
                 .orElseThrow(() -> new BusinessException(ErrorType.THEME_NOT_FOUND));
     }

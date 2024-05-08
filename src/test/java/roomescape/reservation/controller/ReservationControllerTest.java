@@ -106,22 +106,22 @@ class ReservationControllerTest extends ControllerTest {
                 .statusCode(200);
     }
 
-    @DisplayName("존재하지 않은 예약 삭제 시 400를 반환한다.")
-    @Test
-    void reservationNotFound() {
-        //given
-        long invalidId = reservationService.findMemberReservations().size() + 10;
-        memberService.create(
-                new SignUpRequest(getMemberChoco().getName(), getMemberChoco().getEmail(), "1234"));
-        String token = tokenProvider.createAccessToken(getMemberChoco().getEmail());
-
-        //when & then
-        RestAssured.given().log().all()
-                .cookie("token", token)
-                .when().delete("/reservations/" + invalidId)
-                .then().log().all()
-                .statusCode(400);
-    }
+//    @DisplayName("존재하지 않은 예약 삭제 시 400를 반환한다.")
+//    @Test
+//    void reservationNotFound() {
+//        //given
+//        long invalidId = reservationService.findMemberReservations().size() + 10;
+//        memberService.create(
+//                new SignUpRequest(getMemberChoco().getName(), getMemberChoco().getEmail(), "1234"));
+//        String token = tokenProvider.createAccessToken(getMemberChoco().getEmail());
+//
+//        //when & then
+//        RestAssured.given().log().all()
+//                .cookie("token", token)
+//                .when().delete("/reservations/" + invalidId)
+//                .then().log().all()
+//                .statusCode(400);
+//    }
 
     @DisplayName("예약 생성 시, 잘못된 날짜 형식에 대해 400을 반환한다.")
     @ParameterizedTest

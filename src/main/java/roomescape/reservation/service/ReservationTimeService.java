@@ -47,10 +47,7 @@ public class ReservationTimeService {
         if (reservationRepository.existsByTimeId(timeId)) {
             throw new BusinessException(ErrorType.RESERVATION_NOT_DELETED);
         }
-
-        if (!reservationTimeRepository.deleteById(timeId)) {
-            throw new BusinessException(ErrorType.DUPLICATED_RESERVATION_TIME_ERROR);
-        }
+        reservationTimeRepository.deleteById(timeId);
     }
 
     public List<AvailableTimeResponse> findAvailableTimes(LocalDate date, long themeId) {

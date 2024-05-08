@@ -29,12 +29,8 @@ public class FakeReservationDao implements ReservationRepository {
     }
 
     @Override
-    public boolean deleteMemberReservationById(long memberReservationId) {
-        if (!memberReservation.containsKey(memberReservationId)) {
-            return false;
-        }
+    public void deleteMemberReservationById(long memberReservationId) {
         memberReservation.remove(memberReservationId);
-        return true;
     }
 
     @Override
@@ -46,12 +42,8 @@ public class FakeReservationDao implements ReservationRepository {
 
 
     @Override
-    public boolean delete(final long reservationId) {
-        if (!reservations.containsKey(reservationId)) {
-            return false;
-        }
+    public void delete(final long reservationId) {
         reservations.remove(reservationId);
-        return true;
     }
 
     @Override

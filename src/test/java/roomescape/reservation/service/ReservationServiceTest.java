@@ -68,7 +68,8 @@ class ReservationServiceTest {
                 theme.getId());
 
         //when
-        ReservationResponse reservationResponse = reservationService.createMemberReservation(member, reservationRequest);
+        ReservationResponse reservationResponse = reservationService.createMemberReservation(member,
+                reservationRequest);
 
         //then
         assertAll(

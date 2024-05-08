@@ -85,10 +85,9 @@ public class ReservationDao implements ReservationRepository {
     }
 
     @Override
-    public boolean deleteMemberReservationById(long memberReservationId) {
+    public void deleteMemberReservationById(long memberReservationId) {
         String sql = "DELETE FROM member_reservation WHERE id = ?;";
-        int updateId = jdbcTemplate.update(sql, memberReservationId);
-        return updateId != 0;
+        jdbcTemplate.update(sql, memberReservationId);
     }
 
     @Override
@@ -98,10 +97,9 @@ public class ReservationDao implements ReservationRepository {
     }
 
     @Override
-    public boolean delete(final long reservationId) {
+    public void delete(final long reservationId) {
         String sql = "DELETE FROM reservation WHERE id = ?;";
-        int updateId = jdbcTemplate.update(sql, reservationId);
-        return updateId != 0;
+        jdbcTemplate.update(sql, reservationId);
     }
 
     @Override

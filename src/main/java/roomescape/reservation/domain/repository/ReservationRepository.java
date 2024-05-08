@@ -10,11 +10,11 @@ public interface ReservationRepository {
 
     List<ReservationMember> findAllMemberReservation();
 
-    boolean deleteMemberReservationById(long memberReservationId);
+    void deleteMemberReservationById(long memberReservationId);
 
     void deleteMemberReservationByReservationId(long reservationId);
 
-    boolean delete(long reservationId);
+    void delete(long reservationId);
 
     boolean existsByTimeId(long timeId);
 
