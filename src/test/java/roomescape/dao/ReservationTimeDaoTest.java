@@ -13,7 +13,6 @@ import roomescape.exception.time.NotFoundTimeException;
 
 @SpringBootTest
 class ReservationTimeDaoTest {
-
     @Autowired
     private ReservationTimeDao reservationTimeDao;
 
