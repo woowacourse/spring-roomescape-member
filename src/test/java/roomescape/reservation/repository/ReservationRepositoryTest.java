@@ -8,7 +8,6 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.reservation.model.Reservation;
 import roomescape.reservation.model.ReservationTime;
 import roomescape.reservation.model.Theme;
-import roomescape.reservation.repository.ReservationRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
