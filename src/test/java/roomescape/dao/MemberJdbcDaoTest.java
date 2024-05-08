@@ -26,9 +26,10 @@ class MemberJdbcDaoTest extends DaoTest {
         // then
         assertThat(savedMember.getId()).isNotNull();
     }
+
     @Test
     @DisplayName("Id에 해당하는 사용자를 조회한다.")
-    void findMemberByEmail() {
+    void findMemberById() {
         // given
         final Member savedMember = memberDao.save(new Member(new Name("냥인"), "nyangin@email.com", "1234"));
 
@@ -36,6 +37,45 @@ class MemberJdbcDaoTest extends DaoTest {
         final Optional<Member> member = memberDao.findById(savedMember.getId());
 
         // then
-        assertThat(member).isPresent();
+        assertThat(member).hasValue(savedMember);
+    }
+
+    @Test
+    @DisplayName("Id에 해당하는 사용자가 없으면 빈 옵셔널을 조회한다.")
+    void returnEmptyOptionalWhenFindMemberByNotExistingId() {
+        // given
+        final Long notExistingId = 1L;
+
+        // when
+        final Optional<Member> member = memberDao.findById(notExistingId);
+
+        // then
+        assertThat(member).isEmpty();
+    }
+
+    @Test
+    @DisplayName("email에 해당하는 사용자를 조회한다.")
+    void findMemberByEmail() {
+        // given
+        final Member savedMember = memberDao.save(new Member(new Name("냥인"), "nyangin@email.com", "1234"));
+
+        // when
+        final Optional<Member> member = memberDao.findByEmail(savedMember.getEmail());
+
+        // then
+        assertThat(member).hasValue(savedMember);
+    }
+
+    @Test
+    @DisplayName("email에 해당하는 사용자가 없으면 빈 옵셔널을 조회한다.")
+    void returnEmptyOptionalWhenFindMemberByNotExistingEmail() {
+        // given
+        final String notExistingEmail = "odd@email.com";
+
+        // when
+        final Optional<Member> member = memberDao.findByEmail(notExistingEmail);
+
+        // then
+        assertThat(member).isEmpty();
     }
 }

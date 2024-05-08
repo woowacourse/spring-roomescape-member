@@ -18,10 +18,10 @@ public class MemberJdbcDao implements MemberDao {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
     private final RowMapper<Member> rowMapper = (resultSet, rowNumber) -> new Member(
-        resultSet.getLong("id"),
-        new Name(resultSet.getString("name")),
-        resultSet.getString("email"),
-        resultSet.getString("password"));
+            resultSet.getLong("id"),
+            new Name(resultSet.getString("name")),
+            resultSet.getString("email"),
+            resultSet.getString("password"));
 
     public MemberJdbcDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -36,9 +36,9 @@ public class MemberJdbcDao implements MemberDao {
         final String email = member.getEmail();
         final String password = member.getPassword();
         final Long id = jdbcInsert.executeAndReturnKey(
-                Map.of("name", name,
-                        "email", email,
-                        "password", password))
+                        Map.of("name", name.getName(),
+                                "email", email,
+                                "password", password))
                 .longValue();
         return new Member(Objects.requireNonNull(id), name, email, password);
     }
@@ -48,6 +48,16 @@ public class MemberJdbcDao implements MemberDao {
         final String sql = "SELECT * FROM member WHERE id = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<Member> findByEmail(final String email) {
+        final String sql = "SELECT * FROM member WHERE email = ?";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, email));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
