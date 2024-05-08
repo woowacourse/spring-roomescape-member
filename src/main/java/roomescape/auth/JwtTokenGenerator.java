@@ -2,7 +2,6 @@ package roomescape.auth;
 
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -14,8 +13,6 @@ import java.util.Date;
 @Component
 @PropertySource("classpath:application.properties")
 public class JwtTokenGenerator {
-    private static final SignatureAlgorithm SIGNATURE_ALGORITHM = SignatureAlgorithm.HS256;
-
     private final long expirationTime;
     private final String secretKey;
     private final JwtParser jwtParser;
@@ -43,7 +40,7 @@ public class JwtTokenGenerator {
                         .setExpiration(expiration)
                         .claim("name", member.getName())
                         .claim("email", member.getEmail())
-                        .signWith(SIGNATURE_ALGORITHM, secretKey)
+                        .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                         .compact()
         );
     }
