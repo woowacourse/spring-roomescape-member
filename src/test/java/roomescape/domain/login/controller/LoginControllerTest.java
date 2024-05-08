@@ -1,6 +1,7 @@
 package roomescape.domain.login.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +39,27 @@ class LoginControllerTest extends ControllerTest {
                 .extract().header("Set-Cookie").split(";")[0];
 
         assertThat(cookie).isNotNull();
+    }
+
+    @DisplayName("Cookie와 함께 사용자 정보 조회 시, name과 함께 응답받는다.")
+    @Test
+    void should_response_with_name_when_get_check_member_with_cookie() {
+        LoginRequest loginRequest = new LoginRequest(EMAIL, PASSWORD);
+        String cookie = RestAssured.given().log().all()
+                .body(loginRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200)
+                .extract().header("Set-Cookie").split(";")[0];
+
+        RestAssured.given().log().all()
+                .header("Cookie", cookie)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/login/check")
+                .then().log().all()
+                .statusCode(200)
+                .body("name", is("어드민"));
     }
 
 }
