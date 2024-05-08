@@ -17,4 +17,10 @@ public class FakeMemberDao implements MemberRepository {
                 member.getEmail(),
                 member.getPassword());
     }
+
+    @Override
+    public boolean existBy(String email, String password) {
+        return members.values().stream()
+                .anyMatch(member -> member.getEmail().equals(email) && member.getPassword().equals(password));
+    }
 }
