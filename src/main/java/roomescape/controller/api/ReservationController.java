@@ -3,6 +3,7 @@ package roomescape.controller.api;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import roomescape.model.LoginMember;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationSaveRequest;
 import roomescape.service.ReservationService;
@@ -28,8 +29,9 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> saveReservation(
-            @RequestBody @Valid final ReservationSaveRequest reservationSaveRequest) {
-        final ReservationResponse reservationResponse = reservationService.saveReservation(reservationSaveRequest);
+            @RequestBody @Valid final ReservationSaveRequest reservationSaveRequest,
+            final LoginMember loginMember) {
+        final ReservationResponse reservationResponse = reservationService.saveReservation(reservationSaveRequest, loginMember);
         return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.id()))
                 .body(reservationResponse);
     }

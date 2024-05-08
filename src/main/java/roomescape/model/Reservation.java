@@ -6,19 +6,19 @@ import java.time.LocalDateTime;
 public class Reservation {
 
     private final Long id;
-    private final ReservationName name;
+    private final Member member;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(final String name, final LocalDate date, final ReservationTime time, final Theme theme) {
-        this(null, name, date, time, theme);
+    public Reservation(final Member member, final LocalDate date, final ReservationTime time, final Theme theme) {
+        this(null, member, date, time, theme);
     }
 
-    public Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time, final Theme theme) {
+    public Reservation(final Long id, final Member member, final LocalDate date, final ReservationTime time, final Theme theme) {
         validateDate(date);
         this.id = id;
-        this.name = new ReservationName(name);
+        this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
@@ -51,8 +51,12 @@ public class Reservation {
         return id;
     }
 
-    public String getName() {
-        return name.getValue();
+    public Long getMemberId() {
+        return member.getId();
+    }
+
+    public String getMemberName() {
+        return member.getName();
     }
 
     public LocalDate getDate() {
@@ -65,5 +69,9 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public Member getMember() {
+        return member;
     }
 }

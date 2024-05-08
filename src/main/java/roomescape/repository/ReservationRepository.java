@@ -31,7 +31,7 @@ public class ReservationRepository {
 
         return new Reservation(
                 selectedReservation.getLong("id"),
-                selectedReservation.getString("name"),
+                null,
                 LocalDate.parse(selectedReservation.getString("date")),
                 time,
                 theme
@@ -58,7 +58,7 @@ public class ReservationRepository {
         final Long savedReservationId = reservationInsert.executeAndReturnKey(reservationParameters).longValue();
         return new Reservation(
                 savedReservationId,
-                reservation.getName(),
+                reservation.getMember(),
                 reservation.getDate(),
                 reservation.getTime(),
                 reservation.getTheme()
@@ -69,7 +69,6 @@ public class ReservationRepository {
         final String selectQuery = """
             SELECT
                 r.id as reservation_id,
-                r.name,
                 r.date,
                 rt.id as time_id,
                 rt.start_at,
@@ -92,7 +91,6 @@ public class ReservationRepository {
         final String selectQuery = """
             SELECT
                 r.id as reservation_id,
-                r.name,
                 r.date,
                 rt.id as time_id,
                 rt.start_at,
