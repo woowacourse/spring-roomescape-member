@@ -24,5 +24,5 @@ CREATE TABLE IF NOT EXISTS reservation
     PRIMARY KEY (id),
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id),
-    CONSTRAINT unique_reservation UNIQUE (date, time_id, theme_id)
+    UNIQUE (date, time_id, theme_id)
 );
