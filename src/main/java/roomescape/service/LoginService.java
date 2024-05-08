@@ -21,7 +21,7 @@ public class LoginService {
         this.memberRepository = memberRepository;
     }
 
-    private Member findMemberByEmail(String email) {
+    public Member findMemberByEmail(String email) {
         return memberRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 멤버입니다."));
     }
