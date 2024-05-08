@@ -5,6 +5,7 @@ import roomescape.dao.MemberDao;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberEmail;
 import roomescape.domain.member.MemberPassword;
+import roomescape.dto.member.LoginCheckResponse;
 import roomescape.dto.member.LoginRequest;
 import roomescape.dto.member.MemberResponse;
 import roomescape.dto.member.MemberSignupRequest;
@@ -34,9 +35,20 @@ public class MemberService {
         }
     }
 
+    public LoginCheckResponse findAuthInfo(String payload) {
+        MemberEmail email = new MemberEmail(payload);
+        Member member = findByEmail(email);
+        return new LoginCheckResponse(member);
+    }
+
     private void validateNotExistEmail(MemberEmail memberEmail) {
         if (memberDao.existByEmail(memberEmail)) {
             throw new IllegalArgumentException("동일한 이메일이 존재합니다.");
         }
+    }
+
+    private Member findByEmail(MemberEmail email) {
+        return memberDao.findByEmail(email)
+                .orElseThrow(() -> new AuthorizationException("이메일과 동일한 회원 정보가 존재하지 않습니다."));
     }
 }

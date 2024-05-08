@@ -2,6 +2,7 @@ package roomescape.controller;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -11,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +20,16 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.MemberEmail;
+import roomescape.domain.member.MemberName;
+import roomescape.domain.member.MemberPassword;
+import roomescape.dto.member.LoginCheckResponse;
 import roomescape.dto.member.LoginRequest;
 import roomescape.dto.member.LoginResponse;
 import roomescape.dto.member.MemberResponse;
 import roomescape.dto.member.MemberSignupRequest;
+import roomescape.exception.AuthorizationException;
 import roomescape.service.AuthService;
 import roomescape.service.MemberService;
 
@@ -89,5 +97,64 @@ class MemberControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(header().string("Set-Cookie", "token=" + accessToken + "; Path=/; HttpOnly"));
+    }
+
+    @Test
+    @DisplayName("로그인을 실패하면 401 Unauthorized를 반환한다.")
+    void loginWhenFail() throws Exception {
+        //given
+        LoginRequest loginRequest = new LoginRequest("email", "1234");
+        doNothing().when(memberService).checkLoginInfo(any(LoginRequest.class));
+        given(authService.createToken(any(LoginRequest.class))).willThrow(AuthorizationException.class);
+        String request = objectMapper.writeValueAsString(loginRequest);
+
+        //when //then
+        mockMvc.perform(post("/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(request))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("로그인 검증을 성공하면 200 OK와 사용자명을 응답한다.")
+    void loginCheck() throws Exception {
+        //given
+        Cookie cookie = new Cookie("token", "1234");
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        String name = "daon";
+        String email = "test@test.com";
+        LoginCheckResponse response = new LoginCheckResponse(createMember(name, email));
+        given(authService.findPayload(anyString())).willReturn(email);
+        given(memberService.findAuthInfo(anyString())).willReturn(response);
+
+        //when //then
+        mockMvc.perform(post("/login/check")
+                        .cookie(cookie))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name", is(name)));
+    }
+
+    @Test
+    @DisplayName("로그인 검증을 실패하면 401 UnAuthorized를 응답한다.")
+    void loginCheckWhenFail() throws Exception {
+        //given
+        Cookie cookie = new Cookie("token", "1234");
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        given(authService.findPayload(anyString())).willThrow(AuthorizationException.class);
+        given(memberService.findAuthInfo(anyString())).willThrow(IllegalArgumentException.class);
+
+        //when //then
+        mockMvc.perform(post("/login/check")
+                        .cookie(cookie))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    private Member createMember(String name, String email) {
+        return new Member(1L, new MemberName(name), new MemberEmail(email), new MemberPassword("1234"));
     }
 }
