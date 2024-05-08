@@ -42,7 +42,7 @@ class ReservationServiceTest {
     private final Long timeId = 1L;
     private final Long themeId = 1L;
 
-    private final ReservationTime reservationTime = new ReservationTime(1L, LocalTime.parse("10:00"));
+    private final ReservationTime reservationTime = new ReservationTime(1L, "10:00");
     private final Theme theme = new Theme(1L, "theme1", "desc1", "https://");
 
     @BeforeEach
@@ -114,7 +114,7 @@ class ReservationServiceTest {
     @Test
     void save_TodayPastTimeReservation() {
         String today = LocalDate.now().toString();
-        LocalTime oneMinuteAgo = LocalTime.now().minusMinutes(1);
+        String oneMinuteAgo = LocalTime.now().minusMinutes(1).toString();
 
         ReservationTime savedTime = reservationTimeRepository.save(new ReservationTime(oneMinuteAgo));
 

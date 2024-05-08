@@ -4,7 +4,6 @@ package roomescape.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -37,13 +36,12 @@ class ReservationTimeServiceTest {
     private ThemeRepository themeRepository;
 
     private final String rawTime = "10:00";
-    private final LocalTime localTime = LocalTime.parse(rawTime);
 
     @DisplayName("성공: 예약 시간을 저장하고, id 값과 함께 반환한다.")
     @Test
     void save() {
         ReservationTime saved = reservationTimeService.save(new SaveReservationTimeDto(rawTime));
-        assertThat(saved).isEqualTo(new ReservationTime(saved.getId(), localTime));
+        assertThat(saved).isEqualTo(new ReservationTime(saved.getId(), rawTime));
     }
 
     @DisplayName("실패: 잘못된 시간 포맷을 저장하면 예외가 발생한다.")

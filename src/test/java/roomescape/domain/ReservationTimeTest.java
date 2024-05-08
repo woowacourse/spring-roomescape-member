@@ -12,9 +12,9 @@ class ReservationTimeTest {
     @DisplayName("생성 테스트")
     @Test
     void create() {
-        assertThatCode(() -> new ReservationTime(1L, LocalTime.now()))
+        assertThatCode(() -> new ReservationTime(1L, LocalTime.now().toString()))
             .doesNotThrowAnyException();
-        assertThatCode(() -> new ReservationTime(LocalTime.now()))
+        assertThatCode(() -> new ReservationTime(LocalTime.now().toString()))
             .doesNotThrowAnyException();
     }
 }

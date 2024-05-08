@@ -3,7 +3,6 @@ package roomescape.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,7 +30,6 @@ class JdbcReservationRepositoryTest {
 
     private final String name = "tre";
     private final String date1 = "2060-01-01";
-    private final String date2 = "2070-01-01";
 
     private ReservationTime reservationTime;
     private Theme theme;
@@ -40,14 +38,14 @@ class JdbcReservationRepositoryTest {
 
     @BeforeEach
     void addInitialData() {
-        reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.of(5, 30)));
+        reservationTime = reservationTimeRepository.save(new ReservationTime("05:30"));
         theme = themeRepository.save(new Theme(
             "방탈출",
             "방탈출하는 게임",
             "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
         ));
         reservation1 = new Reservation(name, date1, reservationTime, theme);
-        reservation2 = new Reservation(name, date2, reservationTime, theme);
+        reservation2 = new Reservation(name, "2070-01-01", reservationTime, theme);
     }
 
     @DisplayName("예약 정보를 DB에 저장한다.")
@@ -83,8 +81,7 @@ class JdbcReservationRepositoryTest {
     @Test
     void isExistsHavingTimeId() {
         Reservation savedReservation = reservationRepository.save(reservation1);
-        ReservationTime savedReservationTime = reservationTimeRepository.save(
-            new ReservationTime(LocalTime.parse("11:11")));
+        ReservationTime savedReservationTime = reservationTimeRepository.save(new ReservationTime("11:11"));
 
         Long existingTimeId = savedReservation.getTime().getId();
         Long nonExistingTimeId = savedReservationTime.getId();
@@ -100,7 +97,8 @@ class JdbcReservationRepositoryTest {
     void isDuplication() {
         reservationRepository.save(reservation1);
 
-        assertThat(reservationRepository.isDuplicated(date1, reservationTime.getId(), theme.getId()))
-            .isTrue();
+        assertThat(
+            reservationRepository.isDuplicated(date1, reservationTime.getId(), theme.getId())
+        ).isTrue();
     }
 }

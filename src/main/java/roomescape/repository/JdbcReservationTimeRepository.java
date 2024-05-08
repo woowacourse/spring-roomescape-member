@@ -27,7 +27,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
         this.reservationTimeMapper = (rs, rowNum) -> new ReservationTime(
             rs.getLong("id"),
-            LocalTime.parse(rs.getString("start_at"))
+            rs.getString("start_at")
         );
     }
 
@@ -35,7 +35,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     public ReservationTime save(ReservationTime reservationTime) {
         SqlParameterSource saveSource = new BeanPropertySqlParameterSource(reservationTime);
         long id = simpleJdbcInsert.executeAndReturnKey(saveSource).longValue();
-        return new ReservationTime(id, reservationTime.getStartAt());
+        return findById(id);
     }
 
     @Override

@@ -3,7 +3,6 @@ package roomescape.domain;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -18,7 +17,7 @@ class ReservationTest {
 
     private final String validName = "sudal";
     private final String validDate = "2060-01-01";
-    private final ReservationTime validReservationTime = new ReservationTime(LocalTime.parse("10:00"));
+    private final ReservationTime validReservationTime = new ReservationTime("10:00");
     private final Theme validTheme = new Theme("방탈출", "방탈출하는 게임", "https://");
 
     @DisplayName("성공: 올바른 값 입력하여 생성")

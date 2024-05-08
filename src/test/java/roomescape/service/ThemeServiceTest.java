@@ -2,7 +2,6 @@ package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -85,7 +84,7 @@ class ThemeServiceTest {
     void delete_ReservationExists() {
         Theme savedTheme = themeService.save(new SaveThemeDto(name, description, thumbnail));
 
-        ReservationTime savedTime = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("10:00")));
+        ReservationTime savedTime = reservationTimeRepository.save(new ReservationTime("10:00"));
 
         reservationRepository.save(
             new Reservation("name", "2060-01-01", savedTime, savedTheme));

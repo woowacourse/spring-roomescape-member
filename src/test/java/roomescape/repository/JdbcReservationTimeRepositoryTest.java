@@ -3,7 +3,6 @@ package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,18 +19,17 @@ class JdbcReservationTimeRepositoryTest {
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
 
-    private final LocalTime startAt1 = LocalTime.parse("10:00");
-    private final ReservationTime reservationTime1 = new ReservationTime(startAt1);
+    private final String rawTime1 = "10:00";
+    private final ReservationTime reservationTime1 = new ReservationTime(rawTime1);
 
-    private final LocalTime startAt2 = LocalTime.parse("11:00");
-    private final ReservationTime reservationTime2 = new ReservationTime(startAt2);
+    private final String rawTime2 = "11:00";
+    private final ReservationTime reservationTime2 = new ReservationTime(rawTime2);
 
     @DisplayName("예약 시간 정보를 DB에 저장한다.")
     @Test
     void save() {
         ReservationTime saved = reservationTimeRepository.save(reservationTime1);
-
-        assertThat(saved).isEqualTo(new ReservationTime(saved.getId(), startAt1));
+        assertThat(saved).isEqualTo(new ReservationTime(saved.getId(), rawTime1));
     }
 
     @DisplayName("id값을 통해 예약 시간 정보를 DB에서 조회한다.")

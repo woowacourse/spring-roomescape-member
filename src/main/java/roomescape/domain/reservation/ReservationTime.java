@@ -6,15 +6,15 @@ import java.util.Objects;
 public class ReservationTime {
 
     private final Long id;
-    private final LocalTime startAt;
+    private final Time startAt;
 
-    public ReservationTime(LocalTime startAt) {
+    public ReservationTime(String startAt) {
         this(null, startAt);
     }
 
-    public ReservationTime(Long id, LocalTime startAt) {
+    public ReservationTime(Long id, String startAt) {
         this.id = id;
-        this.startAt = startAt;
+        this.startAt = new Time(startAt);
     }
 
     public boolean isBeforeNow() {
@@ -26,7 +26,7 @@ public class ReservationTime {
     }
 
     public LocalTime getStartAt() {
-        return startAt;
+        return startAt.getTime();
     }
 
     @Override
