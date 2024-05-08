@@ -1,8 +1,8 @@
 package roomescape.controller.dto;
 
 import java.time.LocalDate;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import roomescape.domain.reservation.ReservationTime;
+import roomescape.domain.theme.Theme;
 
 public record FindReservationResponse(Long id,
                                       String name,

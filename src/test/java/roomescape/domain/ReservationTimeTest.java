@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.reservation.ReservationTime;
 
 class ReservationTimeTest {
 
@@ -12,8 +13,8 @@ class ReservationTimeTest {
     @Test
     void create() {
         assertThatCode(() -> new ReservationTime(1L, LocalTime.now()))
-                .doesNotThrowAnyException();
+            .doesNotThrowAnyException();
         assertThatCode(() -> new ReservationTime(LocalTime.now()))
-                .doesNotThrowAnyException();
+            .doesNotThrowAnyException();
     }
 }

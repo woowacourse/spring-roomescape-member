@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Theme;
+import roomescape.domain.theme.Theme;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
@@ -41,8 +41,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         );
 
         long id = simpleJdbcInsert.executeAndReturnKey(saveSource).longValue();
-
-        return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
+        return findById(id);
     }
 
     @Override

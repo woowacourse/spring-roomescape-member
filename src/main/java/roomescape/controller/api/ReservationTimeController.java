@@ -16,7 +16,7 @@ import roomescape.controller.dto.CreateTimeRequest;
 import roomescape.controller.dto.CreateTimeResponse;
 import roomescape.controller.dto.FindTimeAndAvailabilityResponse;
 import roomescape.controller.dto.FindTimeResponse;
-import roomescape.domain.ReservationTime;
+import roomescape.domain.reservation.ReservationTime;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.dto.FindTimeAndAvailabilityDto;
 import roomescape.service.dto.SaveReservationTimeDto;
