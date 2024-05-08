@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,14 +17,13 @@ import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.time.ReservationTime;
 import roomescape.domain.time.repository.ReservationTimeRepository;
 import roomescape.dto.reservation.ReservationRequest;
-import roomescape.fixture.ReservationFixture;
 import roomescape.fixture.ThemeFixture;
 import roomescape.support.extension.TableTruncateExtension;
 
 @SpringBootTest
 @ExtendWith({TableTruncateExtension.class})
 public class ReservationServiceTest {
-    private final ReservationTime time = ReservationFixture.reservationTime();
+    private final ReservationTime time = new ReservationTime(1L, LocalTime.parse("12:12"));
     private final Theme theme = ThemeFixture.theme();
 
     @Autowired
@@ -41,7 +41,7 @@ public class ReservationServiceTest {
 
     @Test
     void 예약을_성공한다() {
-        LocalDate date = LocalDate.now().plusDays(1);
+        LocalDate date = LocalDate.now().plusDays(2);
         ReservationRequest request = new ReservationRequest("prin", date, time.getId(), theme.getId());
 
         Reservation reservation = reservationService.reserve(request);
@@ -64,7 +64,7 @@ public class ReservationServiceTest {
 
     @Test
     void 중복된_예약이_있으면_예약을_실패한다() {
-        LocalDate date = LocalDate.now().plusDays(1);
+        LocalDate date = LocalDate.now().plusDays(2);
         ReservationRequest request = new ReservationRequest("sudal", date, time.getId(), theme.getId());
         reservationService.reserve(request);
 
@@ -75,7 +75,7 @@ public class ReservationServiceTest {
 
     @Test
     void 예약을_취소한다() {
-        LocalDate date = LocalDate.now().plusDays(1);
+        LocalDate date = LocalDate.now().plusDays(2);
         ReservationRequest request = new ReservationRequest("prin", date, time.getId(), theme.getId());
         Reservation reservation = reservationService.reserve(request);
 

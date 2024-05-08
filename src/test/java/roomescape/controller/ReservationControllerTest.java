@@ -7,6 +7,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.Test;
@@ -14,8 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 import roomescape.application.ReservationService;
 import roomescape.domain.reservation.Reservation;
+import roomescape.domain.time.ReservationTime;
 import roomescape.dto.reservation.ReservationRequest;
-import roomescape.fixture.ReservationFixture;
+import roomescape.fixture.ThemeFixture;
 import roomescape.support.ControllerTest;
 import roomescape.support.SimpleMockMvc;
 
@@ -23,9 +26,20 @@ class ReservationControllerTest extends ControllerTest {
     @Autowired
     private ReservationService reservationService;
 
+    private Reservation makeReservation() {
+        return new Reservation(
+                1L,
+                "레모네",
+                LocalDate.now().plusDays(2),
+                new ReservationTime(1L, LocalTime.parse("12:00")),
+                ThemeFixture.theme()
+        );
+    }
+
     @Test
     void 예약을_생성한다() throws Exception {
-        Reservation reservation = ReservationFixture.reservation();
+        Reservation reservation = makeReservation();
+
         when(reservationService.reserve(any())).thenReturn(reservation);
         ReservationRequest request = new ReservationRequest(reservation.getName(), reservation.getDate(),
                 reservation.getTimeId(), reservation.getTheme().getId());
@@ -47,8 +61,9 @@ class ReservationControllerTest extends ControllerTest {
     @Test
     void 전체_예약을_조회한다() throws Exception {
         List<Reservation> reservations = IntStream.range(0, 3)
-                .mapToObj(ReservationFixture::reservation)
+                .mapToObj(i -> makeReservation())
                 .toList();
+
         when(reservationService.getReservations()).thenReturn(reservations);
 
         ResultActions result = SimpleMockMvc.get(mockMvc, "/reservations");

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,6 @@ import roomescape.domain.theme.repository.JdbcThemeRepository;
 import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.time.ReservationTime;
 import roomescape.domain.time.repository.JdbcReservationTimeRepository;
-import roomescape.fixture.ReservationFixture;
 import roomescape.fixture.ThemeFixture;
 
 @JdbcTest
@@ -36,20 +36,27 @@ class JdbcReservationRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        time = reservationTimeRepository.save(ReservationFixture.reservationTime());
+        time = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("12:00")));
         theme = themeRepository.save(ThemeFixture.theme());
     }
 
     @Test
     void 예약을_저장한다() {
-        Reservation reservation = ReservationFixture.reservation("prin", "2024-04-18", time, theme);
+        LocalDate date = LocalDate.now().plusDays(2);
+
+        Reservation reservation = new Reservation(
+                "레모네",
+                date,
+                time,
+                theme
+        );
 
         reservation = reservationRepository.save(reservation);
 
         Reservation savedReservation = reservationRepository.findById(reservation.getId()).get();
         assertAll(
-                () -> assertThat(savedReservation.getName()).isEqualTo("prin"),
-                () -> assertThat(savedReservation.getDate()).isEqualTo(LocalDate.parse("2024-04-18")),
+                () -> assertThat(savedReservation.getName()).isEqualTo("레모네"),
+                () -> assertThat(savedReservation.getDate()).isEqualTo(date),
                 () -> assertThat(savedReservation.getTimeId()).isEqualTo(time.getId()),
                 () -> assertThat(savedReservation.getTime()).isEqualTo(time.getStartAt()),
                 () -> assertThat(savedReservation.getTheme().getId()).isEqualTo(theme.getId()),
@@ -59,8 +66,11 @@ class JdbcReservationRepositoryTest {
 
     @Test
     void 모든_예약을_조회한다() {
-        Reservation reservationPrin = ReservationFixture.reservation("prin", "2024-04-18", time, theme);
-        Reservation reservationLiv = ReservationFixture.reservation("liv", "2024-04-19", time, theme);
+        LocalDate prinDate = LocalDate.now().plusDays(2);
+        LocalDate livDate = LocalDate.now().plusDays(3);
+
+        Reservation reservationPrin = new Reservation("prin", prinDate, time, theme);
+        Reservation reservationLiv = new Reservation("liv", livDate, time, theme);
         reservationRepository.save(reservationPrin);
         reservationRepository.save(reservationLiv);
 
@@ -77,11 +87,11 @@ class JdbcReservationRepositoryTest {
 
     @Test
     void 예약날짜와_시간이_이미_존재하면_true를_반환한다() {
-        String date = "2024-04-18";
-        Reservation reservation = ReservationFixture.reservation("prin", date, time, theme);
+        LocalDate date = LocalDate.now().plusDays(2);
+        Reservation reservation = new Reservation("prin", date, time, theme);
         reservationRepository.save(reservation);
 
-        boolean exists = reservationRepository.existsByReservationDateTimeAndTheme(LocalDate.parse(date), time.getId(),
+        boolean exists = reservationRepository.existsByReservationDateTimeAndTheme(date, time.getId(),
                 theme.getId());
 
         assertThat(exists).isTrue();
@@ -89,10 +99,11 @@ class JdbcReservationRepositoryTest {
 
     @Test
     void 예약날짜와_시간이_존재하지_않으면_false를_반환한다() {
-        Reservation reservation = ReservationFixture.reservation("prin", "2024-04-18", time, theme);
+        LocalDate date = LocalDate.now().plusDays(2);
+        Reservation reservation = new Reservation("prin", date, time, theme);
         reservationRepository.save(reservation);
 
-        boolean exists = reservationRepository.existsByReservationDateTimeAndTheme(LocalDate.parse("2024-04-20"),
+        boolean exists = reservationRepository.existsByReservationDateTimeAndTheme(date.plusDays(2),
                 time.getId(), theme.getId());
 
         assertThat(exists).isFalse();
@@ -100,7 +111,8 @@ class JdbcReservationRepositoryTest {
 
     @Test
     void 예약을_삭제한다() {
-        Reservation reservation = ReservationFixture.reservation("prin", "2024-04-18", time, theme);
+        LocalDate date = LocalDate.now().plusDays(2);
+        Reservation reservation = new Reservation("prin", date, time, theme);
         reservation = reservationRepository.save(reservation);
 
         reservationRepository.deleteById(reservation.getId());
@@ -111,16 +123,18 @@ class JdbcReservationRepositoryTest {
 
     @Test
     void 특정_날짜의_특정_테마의_특정_시간이_예약되어_있는지_확인한다() {
-        Theme theme1 = themeRepository.save(theme);
-        ReservationTime time1 = reservationTimeRepository.save(time);
-        ReservationTime time2 = reservationTimeRepository.save(time);
-        Reservation reservation1 = ReservationFixture.reservation("프린", "2024-04-24", time1, theme1);
-        Reservation reservation2 = ReservationFixture.reservation("레모네", "2024-04-24", time2, theme1);
-        reservationRepository.save(reservation1);
-        reservationRepository.save(reservation2);
+        ReservationTime prinTime = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("12:00")));
+        ReservationTime lemonTime = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("13:00")));
+        LocalDate prinDate = LocalDate.now().plusDays(2);
+        LocalDate lemonDate = LocalDate.now().plusDays(3);
+        Reservation prinReservation = new Reservation("프린", prinDate, prinTime, theme);
+        Reservation lemonReservation = new Reservation("레모네", lemonDate, lemonTime, theme);
 
-        boolean alreadyBooked = reservationRepository.existsByReservationDateTimeAndTheme(LocalDate.parse("2024-04-24"),
-                time1.getId(), theme1.getId());
+        reservationRepository.save(prinReservation);
+        reservationRepository.save(lemonReservation);
+
+        boolean alreadyBooked = reservationRepository.existsByReservationDateTimeAndTheme(prinDate,
+                prinTime.getId(), theme.getId());
 
         assertThat(alreadyBooked).isTrue();
     }

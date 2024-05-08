@@ -2,13 +2,13 @@ package roomescape.fixture;
 
 import roomescape.domain.theme.Theme;
 
-public class ThemeFixture { // todo 테스트에 fixture 반영
+public class ThemeFixture {
     public static Theme theme() {
         return theme(1L);
     }
 
     public static Theme theme(long id) {
-        return theme(id, "테마1", "설명", "링크");
+        return theme(id, "테마 이름", "설명 내용", "http://test.jpg");
     }
 
     public static Theme theme(long id, String name, String description, String thumbnail) {

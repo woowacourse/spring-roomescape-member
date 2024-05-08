@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.IntStream;
 import org.hamcrest.core.IsNull;
@@ -17,7 +18,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import roomescape.application.ReservationTimeService;
 import roomescape.domain.time.ReservationTime;
 import roomescape.dto.reservationtime.ReservationTimeRequest;
-import roomescape.fixture.ReservationFixture;
 import roomescape.support.ControllerTest;
 import roomescape.support.SimpleMockMvc;
 
@@ -28,7 +28,7 @@ class ReservationTimeControllerTest extends ControllerTest {
 
     @Test
     void 예약_시간을_생성한다() throws Exception {
-        ReservationTime reservationTime = ReservationFixture.reservationTime();
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.parse("11:23"));
         when(reservationTimeService.register(any())).thenReturn(reservationTime);
         ReservationTimeRequest request = new ReservationTimeRequest(reservationTime.getStartAt());
         String content = objectMapper.writeValueAsString(request);
@@ -46,7 +46,7 @@ class ReservationTimeControllerTest extends ControllerTest {
     @Test
     void 전체_예약_시간을_조회한다() throws Exception {
         List<ReservationTime> reservationTimes = IntStream.range(0, 3)
-                .mapToObj(ReservationFixture::reservationTime)
+                .mapToObj(i -> new ReservationTime(1L, LocalTime.parse("11:23")))
                 .toList();
         when(reservationTimeService.getReservationTimes()).thenReturn(reservationTimes);
 
