@@ -129,6 +129,7 @@ class ThemeControllerTest {
         List<Theme> themes = ThemeFixture.get(20);
         List<FindPopularThemesResponse> findPopularThemesResponses = themes.stream()
                 .map(FindPopularThemesResponse::from)
+                .limit(10)
                 .toList();
 
         // stub
@@ -142,6 +143,8 @@ class ThemeControllerTest {
                         jsonPath("size()").value(10),
                         status().isOk()
                 );
+
+        Mockito.verify(themeService, Mockito.times(1)).getPopularThemes(10);
     }
 
     @Test
