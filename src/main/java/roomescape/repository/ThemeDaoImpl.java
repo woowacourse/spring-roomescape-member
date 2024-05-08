@@ -1,14 +1,14 @@
 package roomescape.repository;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.sql.DataSource;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
@@ -43,10 +43,7 @@ public class ThemeDaoImpl implements ThemeDao {
 
     @Override
     public Theme addTheme(Theme theme) {
-        Map<String, Object> parameters = new HashMap<>(1);
-        parameters.put("name", theme.getName());
-        parameters.put("description", theme.getDescription());
-        parameters.put("thumbnail", theme.getThumbnail());
+        SqlParameterSource parameters = new BeanPropertySqlParameterSource(theme);
         Number newId = insertActor.executeAndReturnKey(parameters);
         return new Theme(newId.longValue(), theme.getName(), theme.getDescription(), theme.getThumbnail());
     }

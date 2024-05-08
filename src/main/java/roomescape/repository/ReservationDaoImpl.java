@@ -1,14 +1,14 @@
 package roomescape.repository;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.sql.DataSource;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
@@ -75,11 +75,7 @@ public class ReservationDaoImpl implements ReservationDao {
 
     @Override
     public Reservation addReservation(Reservation reservation) {
-        Map<String, Object> parameters = new HashMap<>(4);
-        parameters.put("name", reservation.getName());
-        parameters.put("date", reservation.getDate());
-        parameters.put("time_id", reservation.getTime().getId());
-        parameters.put("theme_id", reservation.getTheme().getThemeId());
+        SqlParameterSource parameters = new BeanPropertySqlParameterSource(reservation);
         Number newId = insertActor.executeAndReturnKey(parameters);
         return new Reservation(newId.longValue(), reservation.getName(), reservation.getDate(), reservation.getTime(),
                 reservation.getTheme());
