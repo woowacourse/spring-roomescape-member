@@ -10,12 +10,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.domain.LoginUser;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 @SpringBootTest
 class JdbcTemplateReservationRepositoryTest {
+    private static final LoginUser DEFAULT_LOGINUSER = new LoginUser(1L, "아서", "Hyunta@wooteco.com");
     private static final ReservationTime DEFAULT_TIME = new ReservationTime(1L, LocalTime.of(11, 56));
     private static final Theme DEFAULT_THEME = new Theme(1L, "이름", "설명", "썸네일");
 
@@ -45,7 +47,7 @@ class JdbcTemplateReservationRepositoryTest {
     void save() {
         var beforeSave = reservationRepository.findAll().getReservations();
         Reservation saved = reservationRepository.save(
-                new Reservation("test", LocalDate.now(), DEFAULT_TIME, DEFAULT_THEME));
+                new Reservation(LocalDate.now(), DEFAULT_TIME, DEFAULT_THEME, DEFAULT_LOGINUSER));
         var afterSave = reservationRepository.findAll().getReservations();
 
         Assertions.assertThat(afterSave)
@@ -57,8 +59,8 @@ class JdbcTemplateReservationRepositoryTest {
     @DisplayName("Reservation 을 잘 조회하는지 확인한다.")
     void findAll() {
         List<Reservation> beforeSave = reservationRepository.findAll().getReservations();
-        reservationRepository.save(new Reservation("test", LocalDate.now(), DEFAULT_TIME, DEFAULT_THEME));
-        reservationRepository.save(new Reservation("test2", LocalDate.now(), DEFAULT_TIME, DEFAULT_THEME));
+        reservationRepository.save(new Reservation(LocalDate.now(), DEFAULT_TIME, DEFAULT_THEME, DEFAULT_LOGINUSER));
+        reservationRepository.save(new Reservation(LocalDate.now(), DEFAULT_TIME, DEFAULT_THEME, DEFAULT_LOGINUSER));
 
         List<Reservation> afterSave = reservationRepository.findAll().getReservations();
         Assertions.assertThat(afterSave.size())
@@ -69,7 +71,7 @@ class JdbcTemplateReservationRepositoryTest {
     @DisplayName("Reservation 을 잘 지우는지 확인한다.")
     void delete() {
         List<Reservation> beforeSaveAndDelete = reservationRepository.findAll().getReservations();
-        reservationRepository.save(new Reservation("test", LocalDate.now(), DEFAULT_TIME, DEFAULT_THEME));
+        reservationRepository.save(new Reservation(LocalDate.now(), DEFAULT_TIME, DEFAULT_THEME, DEFAULT_LOGINUSER));
 
         reservationRepository.delete(1L);
 

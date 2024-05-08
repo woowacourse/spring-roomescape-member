@@ -8,6 +8,6 @@ import roomescape.domain.Theme;
 
 public record ReservationRequest(LocalDate date, long timeId, long themeId) {
     public Reservation toReservation(LoginUser user, ReservationTime reservationTime, Theme theme) {
-        return new Reservation(user.getName(), this.date, reservationTime, theme);
+        return new Reservation(this.date, reservationTime, theme, user);
     }
 }

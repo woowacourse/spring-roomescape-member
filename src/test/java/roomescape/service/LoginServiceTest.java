@@ -34,7 +34,6 @@ class LoginServiceTest {
     @DisplayName("유저 데이터가 존재할 때")
     @Nested
     class UserExistsTest {
-
         private User defaultUser = new User("name", "email@email.com", "password");
 
         @BeforeEach

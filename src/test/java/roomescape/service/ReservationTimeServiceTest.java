@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.LoginUser;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -101,10 +102,10 @@ class ReservationTimeServiceTest {
         void usedReservationTimeDeleteTest() {
             //given
             reservationRepository.save(new Reservation(
-                    "name",
                     LocalDate.now(),
                     new ReservationTime(1L, SAVED_TIME),
-                    new Theme(1L, "name", "description", "thumbnail")
+                    new Theme(1L, "name", "description", "thumbnail"),
+                    new LoginUser(1L, "name", "email@email.com")
             ));
 
             //when & then
@@ -127,8 +128,8 @@ class ReservationTimeServiceTest {
         ReservationTime reservationTime4 = reservationTimeRepository.save(new ReservationTime(LocalTime.of(14, 0)));
 
         LocalDate selectedDate = LocalDate.of(2024, 1, 1);
-        reservationRepository.save(new Reservation("name", selectedDate, reservationTime1, DEFUALT_THEME));
-        reservationRepository.save(new Reservation("name", selectedDate, reservationTime3, DEFUALT_THEME));
+        reservationRepository.save(new Reservation(selectedDate, reservationTime1, DEFUALT_THEME, new LoginUser(1L, "name", "email@email.com")));
+        reservationRepository.save(new Reservation(selectedDate, reservationTime3, DEFUALT_THEME, new LoginUser(1L, "name", "email@email.com")));
 
         //when
         List<AvailableTimeResponse> availableTimeResponses = reservationTimeService.findByThemeAndDate(selectedDate,

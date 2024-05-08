@@ -11,8 +11,16 @@ public class LoginUser {
         this.email = email;
     }
 
+    public long getId() {
+        return id;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     @Override

@@ -21,6 +21,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
+import roomescape.domain.LoginUser;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -47,7 +48,7 @@ public class ReservationTimeControllerTest {
     private ThemeRepository themeRepository;
 
     private Theme defaultTheme = new Theme("theme1", "description", "thumbnail");
-
+    private LoginUser savedUser = new LoginUser(1L, "name", "email@email.com");
     @BeforeEach
     void initData() {
         RestAssured.port = port;
@@ -123,7 +124,7 @@ public class ReservationTimeControllerTest {
         @Test
         void deleteUsedTimeTest() {
             reservationRepository.save(
-                    new Reservation("name", LocalDate.now(), usedReservationTime, defaultTheme)
+                    new Reservation(LocalDate.now(), usedReservationTime, defaultTheme, savedUser)
             );
 
             RestAssured.given().log().all()
@@ -150,7 +151,7 @@ public class ReservationTimeControllerTest {
         notUsedReservationTime = reservationTimeRepository.save(notUsedReservationTime);
 
         LocalDate findDate = LocalDate.of(2024, 5, 4);
-        reservationRepository.save(new Reservation("name", findDate, usedReservationTime, theme));
+        reservationRepository.save(new Reservation(findDate, usedReservationTime, theme, savedUser));
 
         //when
         List<AvailableTimeResponse> availableTimeResponses = RestAssured.given().log().all()

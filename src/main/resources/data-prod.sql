@@ -7,15 +7,15 @@ INSERT INTO reservation_time (start_at) VALUES ('13:00');
 INSERT INTO reservation_time (start_at) VALUES ('14:00');
 INSERT INTO reservation_time (start_at) VALUES ('15:00');
 
-INSERT INTO member (NAME, EMAIL, PASSWORD) VALUES ( 'name', 'email@email.com', 'password' );
+INSERT INTO member (NAME, EMAIL, PASSWORD) VALUES ('name', 'email@email.com', 'password');
 
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('reservation1', '2024-04-24', 1, 1);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('reservation2', '2024-04-25', 1, 1);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('reservation3', '2024-04-26', 1, 1);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('reservation4', '2024-04-27', 1, 1);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('reservation5', '2024-04-28', 1, 1);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('reservation6', '2024-04-29', 1, 2);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('reservation7', '2024-04-30', 1, 2);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('reservation8', '2024-05-01', 1, 2);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('reservation9', '2024-05-02', 1, 3);
-INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('reservation10', '2024-05-02', 1, 3);
+INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES ('2024-04-24', 1, 1, 1);
+INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES ('2024-04-25', 1, 1, 1);
+INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES ('2024-04-26', 1, 1, 1);
+INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES ('2024-04-27', 1, 1, 1);
+INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES ('2024-04-28', 1, 1, 1);
+INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES ('2024-04-29', 1, 2, 1);
+INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES ('2024-04-30', 1, 2, 1);
+INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES ('2024-05-01', 1, 2, 1);
+INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES ('2024-05-02', 1, 3, 1);
+INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES ('2024-05-02', 1, 3, 1);

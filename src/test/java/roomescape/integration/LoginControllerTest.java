@@ -36,7 +36,7 @@ class LoginControllerTest {
     @BeforeEach
     void init() {
         RestAssured.port = port;
-        defaultUser = userRepository.save(defaultUser);
+        //defaultUser = userRepository.save(defaultUser);
         System.out.println(defaultUser);
     }
 

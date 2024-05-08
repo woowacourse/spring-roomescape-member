@@ -61,7 +61,7 @@
 ]
 ```
 
-## 예약 추가 API
+## 예약 추가 API - 사용자
 
 ### Request
 
@@ -79,6 +79,49 @@
 ```
 
 ### Response
+
+> HTTP/1.1 201
+>
+> Content-Type: application/json
+> Location: /reservations/{id}
+
+```JSON
+{
+  "id": 1,
+  "name": "브라운",
+  "date": "2023-08-05",
+  "time": {
+    "id": 1,
+    "startAt": "10:00"
+  },
+  "theme": {
+    "id": 1,
+    "name": "이름",
+    "description": "설명",
+    "thumbnail": "썸네일"
+  }
+}
+```
+
+## 예약 추가 API - 관리자
+
+### request
+
+> POST /admin/reservations HTTP/1.1  
+> content-type: application/json  
+> cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI  
+> host: localhost:8080  
+
+```JSON
+{
+  "date": "2024-03-01",
+  "themeId": 1,
+  "timeId": 1,
+  "memberId": 1
+}
+```
+
+### response
 
 > HTTP/1.1 201
 >

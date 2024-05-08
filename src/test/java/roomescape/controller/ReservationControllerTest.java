@@ -9,9 +9,12 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.LoginUser;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.User;
+import roomescape.dto.LoginUserResponse;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationTimeResponse;
@@ -24,7 +27,7 @@ import roomescape.service.ReservationService;
 class ReservationControllerTest {
     private ReservationTime defaultTime = new ReservationTime(1L, LocalTime.now());
     private Theme defualtTheme = new Theme("name", "description", "thumbnail");
-
+    private static final LoginUser DEFAULT_LOGINUSER = new LoginUser(1L, "아서", "Hyunta@wooteco.com");
     private CollectionReservationRepository collectionReservationRepository;
     private ReservationController reservationController;
 
@@ -42,23 +45,27 @@ class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("예약 정보를 잘 저장하는지 확인한다.")
+    @DisplayName("예약 정보를 잘 저장하는지 확인한다. - 사용자")
     void saveReservation() {
         //given
         LocalDate date = LocalDate.now().plusDays(1);
 
         //when
         ReservationResponse saveResponse = reservationController.saveReservation(
-                        new ReservationRequest(date, "폴라", 1L, defualtTheme.getId()))
+                        DEFAULT_LOGINUSER,
+                        new ReservationRequest(date, 1L, defualtTheme.getId()))
                 .getBody();
 
         long id = Objects.requireNonNull(saveResponse).id();
 
         //then
-        ReservationResponse expected = new ReservationResponse(id, "폴라", date,
-                new ReservationTimeResponse(1L, defaultTime.getStartAt()),
-                new ThemeResponse(defualtTheme.getId(), defualtTheme.getName(), defualtTheme.getDescription(),
-                        defualtTheme.getThumbnail()));
+        ReservationResponse expected = new ReservationResponse(
+                id,
+                date,
+                ReservationTimeResponse.from(defaultTime),
+                ThemeResponse.from(defualtTheme),
+                LoginUserResponse.from(DEFAULT_LOGINUSER)
+        );
 
         Assertions.assertThat(saveResponse).isEqualTo(expected);
     }
@@ -78,7 +85,7 @@ class ReservationControllerTest {
     void delete() {
         //given
         Reservation saved = collectionReservationRepository.save(
-                new Reservation("폴라", LocalDate.now(), defaultTime, defualtTheme));
+                new Reservation(LocalDate.now(), defaultTime, defualtTheme, DEFAULT_LOGINUSER));
 
         //when
         reservationController.delete(saved.getId());

@@ -12,6 +12,7 @@ public enum ExceptionType {
     EMPTY_THEME(BAD_REQUEST, "테마는 필수값 입니다."),
     EMPTY_DESCRIPTION(BAD_REQUEST, "테마 설명은 필수값 입니다."),
     EMPTY_THUMBNAIL(BAD_REQUEST, "테마 썸네일은 필수값 입니다."),
+    EMPTY_USER(BAD_REQUEST, "사용자 정보는 필수값 입니다."),
     PAST_TIME_RESERVATION(BAD_REQUEST, "이미 지난 시간에 예약할 수 없습니다."),
     DUPLICATE_RESERVATION(BAD_REQUEST, "같은 시간에 이미 예약이 존재합니다."),
     DUPLICATE_RESERVATION_TIME(BAD_REQUEST, "이미 예약시간이 존재합니다."),
@@ -23,7 +24,8 @@ public enum ExceptionType {
     NOT_FOUND_THEME(BAD_REQUEST, "없는 테마입니다."),
     NOT_FOUND_USER(BAD_REQUEST, "존재하지 않는 유저입니다."),
     WRONG_PASSWORD(BAD_REQUEST, "잘못된 비밀번호입니다."),
-    REQUIRED_LOGIN(UNAUTHORIZED, "로그인이 필요합니다.");
+    REQUIRED_LOGIN(UNAUTHORIZED, "로그인이 필요합니다."),
+    ;
 
     private final HttpStatus status;
     private final String message;
