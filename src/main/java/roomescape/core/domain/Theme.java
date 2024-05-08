@@ -10,11 +10,20 @@ public class Theme {
     private final String description;
     private final String thumbnail;
 
-    public Theme(final String name, final String description, final String thumbnail) {
+    public Theme(
+            final String name,
+            final String description,
+            final String thumbnail
+    ) {
         this(DEFAULT_ID, name, description, thumbnail);
     }
 
-    public Theme(final Long id, final String name, final String description, final String thumbnail) {
+    public Theme(
+            final Long id,
+            final String name,
+            final String description,
+            final String thumbnail
+    ) {
         validateEmpty(id, name, description, thumbnail);
         this.id = id;
         this.name = name;
@@ -22,7 +31,12 @@ public class Theme {
         this.thumbnail = thumbnail;
     }
 
-    private void validateEmpty(final Long id, final String name, final String description, final String thumbnail) {
+    private void validateEmpty(
+            final Long id,
+            final String name,
+            final String description,
+            final String thumbnail
+    ) {
         if (id == null) {
             throw new BadRequestException("테마 id는 null일 수 없습니다.");
         }

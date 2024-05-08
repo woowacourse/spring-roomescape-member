@@ -13,7 +13,11 @@ public class ThemeRequestDto {
     public ThemeRequestDto() {
     }
 
-    public ThemeRequestDto(final String name, final String description, final String thumbnail) {
+    public ThemeRequestDto(
+            final String name,
+            final String description,
+            final String thumbnail
+    ) {
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;

@@ -4,15 +4,15 @@ import java.util.List;
 import roomescape.core.domain.Theme;
 
 public interface ThemeRepository {
-    Long save(Theme theme);
+    Long save(final Theme theme);
 
     List<Theme> findAll();
 
     List<Theme> findPopular();
 
-    Theme findById(long id);
+    Theme findById(final long id);
 
-    boolean existByName(String name);
+    boolean existByName(final String name);
 
-    void deleteById(long id);
+    void deleteById(final long id);
 }

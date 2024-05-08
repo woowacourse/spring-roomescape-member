@@ -14,12 +14,22 @@ public class Reservation {
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(final String name, final String date, final ReservationTime time, final Theme theme) {
+    public Reservation(
+            final String name,
+            final String date,
+            final ReservationTime time,
+            final Theme theme
+    ) {
         this(DEFAULT_ID, name, date, time, theme);
     }
 
-    public Reservation(final Long id, final String name, final String date, final ReservationTime time,
-                       final Theme theme) {
+    public Reservation(
+            final Long id,
+            final String name,
+            final String date,
+            final ReservationTime time,
+            final Theme theme
+    ) {
         validateEmpty(id, name, date, time, theme);
         this.id = id;
         this.name = name;
@@ -28,8 +38,13 @@ public class Reservation {
         this.theme = theme;
     }
 
-    private void validateEmpty(final Long id, final String name, final String date, final ReservationTime time,
-                               final Theme theme) {
+    private void validateEmpty(
+            final Long id,
+            final String name,
+            final String date,
+            final ReservationTime time,
+            final Theme theme
+    ) {
         if (id == null) {
             throw new BadRequestException("예약 id는 null일 수 없습니다.");
         }

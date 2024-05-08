@@ -22,7 +22,7 @@ public class ReservationTime {
         this.startAt = parseStartAt(startAt);
     }
 
-    private void validateEmpty(Long id, String startAt) {
+    private void validateEmpty(final Long id, final String startAt) {
         if (id == null) {
             throw new BadRequestException("시간 id는 null일 수 없습니다.");
         }
