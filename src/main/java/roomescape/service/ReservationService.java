@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.controller.member.dto.LoginMember;
 import roomescape.controller.reservation.dto.ReservationRequest;
 import roomescape.controller.reservation.dto.ReservationResponse;
 import roomescape.domain.Reservation;
@@ -40,7 +41,20 @@ public class ReservationService {
         final ReservationTime time = findTime(reservationRequest);
         final Theme theme = findTheme(reservationRequest);
 
-        final Reservation parsedReservation = reservationRequest.toDomain(time, theme);
+        final Reservation parsedReservation = reservationRequest.toDomain("name", time, theme);
+        validateDuplicate(theme, time, parsedReservation);
+        final LocalDateTime reservationDateTime = parsedReservation.getDate().atTime(time.getStartAt());
+        validateBeforeDay(reservationDateTime);
+
+        final Reservation savedReservation = reservationRepository.save(parsedReservation);
+        return ReservationResponse.from(savedReservation);
+    }
+
+    public ReservationResponse addReservationV2(final ReservationRequest reservationRequest, final LoginMember loginMember) {
+        final ReservationTime time = findTime(reservationRequest);
+        final Theme theme = findTheme(reservationRequest);
+
+        final Reservation parsedReservation = reservationRequest.toDomain(loginMember.name(), time, theme);
         validateDuplicate(theme, time, parsedReservation);
         final LocalDateTime reservationDateTime = parsedReservation.getDate().atTime(time.getStartAt());
         validateBeforeDay(reservationDateTime);

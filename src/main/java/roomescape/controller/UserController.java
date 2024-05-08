@@ -40,6 +40,9 @@ public class UserController {
     }
 
     private String extractTokenFromCookie(final Cookie[] cookies) {
+        if (cookies == null) {
+            return ""; //TODO cookie전부다 이짓꺼리 해야함
+        }
         for (final Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {
                 return cookie.getValue();

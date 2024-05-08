@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
+import roomescape.controller.member.dto.LoginMember;
 import roomescape.controller.reservation.dto.ReservationRequest;
 import roomescape.controller.reservation.dto.ReservationResponse;
 import roomescape.service.ReservationService;
@@ -33,9 +34,10 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> addReservation(@RequestBody
-                                                              @Valid final ReservationRequest request) {
-        final ReservationResponse reservation = reservationService.addReservation(request);
+    public ResponseEntity<ReservationResponse> addReservation(
+            @RequestBody @Valid final ReservationRequest request,
+            final LoginMember loginMember) {
+        final ReservationResponse reservation = reservationService.addReservationV2(request, loginMember);
         final URI uri = UriComponentsBuilder.fromPath("/reservations/{id}")
                 .buildAndExpand(reservation.id())
                 .toUri();

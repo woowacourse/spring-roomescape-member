@@ -5,7 +5,7 @@ import java.util.Objects;
 
 public class Reservation {
     private final Long id;
-    private final String name;
+    private final String name; //TODO Member 객체로 두기...?
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;

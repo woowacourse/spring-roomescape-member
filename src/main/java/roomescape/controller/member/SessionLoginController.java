@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.member.dto.MemberLoginRequest;
 import roomescape.controller.member.dto.MemberResponse;
+import roomescape.domain.Member;
 import roomescape.service.MemberService;
 import roomescape.service.TokenResponse;
 
@@ -42,14 +43,20 @@ public class SessionLoginController { //TODO 이름 괜춘?
     @GetMapping("/check")
     public ResponseEntity<MemberResponse> check(final HttpServletRequest request) {
         final Cookie[] cookies = request.getCookies();
-        final String tokenEmail = extractTokenFromCookie(cookies);
+        final String token = extractTokenFromCookie(cookies);
 
-        final MemberResponse member = memberService.findMemberByToken(tokenEmail);
-
-        return ResponseEntity.ok(member);
+        final Member member = memberService.findMemberByToken(token);
+        if (member == null) {
+            return ResponseEntity.ok()
+                    .build();
+        }
+        return ResponseEntity.ok(new MemberResponse(member.getName()));
     }
 
     private String extractTokenFromCookie(final Cookie[] cookies) {
+        if (cookies == null) {
+            return "";
+        }
         for (final Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {
                 return cookie.getValue();

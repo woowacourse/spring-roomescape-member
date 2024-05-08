@@ -2,7 +2,6 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.controller.member.dto.MemberLoginRequest;
-import roomescape.controller.member.dto.MemberResponse;
 import roomescape.domain.Member;
 import roomescape.domain.exception.InvalidRequestException;
 import roomescape.infrastructure.JwtTokenProvider;
@@ -35,7 +34,7 @@ public class MemberService {
         return new TokenResponse(accessToken);
     }
 
-    public MemberResponse findMemberByToken(final String token) {
+    public Member findMemberByToken(final String token) { //TODO domain 반환해야 재사용 가능!
         if (token == null || token.isBlank()) {
             return null;
         }
@@ -43,9 +42,7 @@ public class MemberService {
         return findMember(payload);
     }
 
-    public MemberResponse findMember(final String principal) {
-        final Member member = memberRepository.fetchById(Long.parseLong(principal));
-
-        return new MemberResponse(member.getName());
+    private Member findMember(final String principal) {
+        return memberRepository.fetchById(Long.parseLong(principal));
     }
 }
