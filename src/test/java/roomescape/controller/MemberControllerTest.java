@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -130,7 +131,7 @@ class MemberControllerTest {
         given(memberService.findAuthInfo(anyString())).willReturn(response);
 
         //when //then
-        mockMvc.perform(post("/login/check")
+        mockMvc.perform(get("/login/check")
                         .cookie(cookie))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -148,7 +149,7 @@ class MemberControllerTest {
         given(memberService.findAuthInfo(anyString())).willThrow(IllegalArgumentException.class);
 
         //when //then
-        mockMvc.perform(post("/login/check")
+        mockMvc.perform(get("/login/check")
                         .cookie(cookie))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
