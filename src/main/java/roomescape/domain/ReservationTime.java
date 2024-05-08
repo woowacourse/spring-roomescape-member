@@ -2,32 +2,19 @@ package roomescape.domain;
 
 import java.time.LocalTime;
 
+import lombok.Getter;
+
+@Getter
 public class ReservationTime {
-    private Long id;
-    private LocalTime startAt;
+    private final Long id;
+    private final LocalTime startAt;
 
     public ReservationTime(Long id, LocalTime startAt) {
         this.id = id;
         this.startAt = startAt;
     }
 
-    public ReservationTime(Long id) {
-        this.id = id;
-    }
-
     public ReservationTime(LocalTime startAt) {
-        this.startAt = startAt;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public LocalTime getStartAt() {
-        return startAt;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+        this(null, startAt);
     }
 }

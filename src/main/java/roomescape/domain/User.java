@@ -1,5 +1,8 @@
 package roomescape.domain;
 
+import lombok.Getter;
+
+@Getter
 public class User {
     private final String name;
     private final String email;
