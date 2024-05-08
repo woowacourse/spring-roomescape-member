@@ -1,5 +1,6 @@
 package roomescape.ui;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,11 +30,12 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         Cookie[] cookies = request.getCookies();
         String token = extractTokenFromCookie(cookies);
-        String secret = Jwts.parser()
+        Claims claims = Jwts.parser()
                 .setSigningKey("secret")
                 .parseClaimsJws(token)
-                .getBody().getSubject();
-        UserResponse userResponse = memberService.findByEmail(secret);
+                .getBody();
+        String email = String.valueOf(claims.get("email"));
+        UserResponse userResponse = memberService.findByEmail(email);
         return new Member(userResponse.id(), userResponse.name(), userResponse.email(), userResponse.password(), userResponse.role());
     }
 
