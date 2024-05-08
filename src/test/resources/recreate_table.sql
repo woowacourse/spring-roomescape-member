@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS member
     PRIMARY KEY (id)
 );
 
-INSERT INTO member(name, email, password) VALUES ( '클로버', 'clover@gmail.com', 'password' );
+INSERT INTO member(name, email, password) VALUES ( '클로버', 'test@gmail.com', 'password' );
 
 INSERT INTO reservation_time (start_at) VALUES ('10:00:00');
 INSERT INTO reservation_time (start_at) VALUES ('12:00:00');

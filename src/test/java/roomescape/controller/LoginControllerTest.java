@@ -42,7 +42,7 @@ class LoginControllerTest {
     void login() {
         // given
         Map<String, String> body = new HashMap<>();
-        body.put("email", "clover@gmail.com");
+        body.put("email", "test@gmail.com");
         body.put("password", "password");
 
         // when
@@ -60,7 +60,7 @@ class LoginControllerTest {
         String actual = jwtTokenProvider.decode(accessToken);
 
         // then
-        assertThat(actual).isEqualTo("clover@gmail.com");
+        assertThat(actual).isEqualTo("test@gmail.com");
     }
 
     @DisplayName("로그인 컨트롤러는 로그인 확인 요청이 토큰에 맞는 사용자 이름을 반환한다.")
@@ -68,7 +68,7 @@ class LoginControllerTest {
     void checkLogin() {
         // given
         Map<String, String> body = new HashMap<>();
-        body.put("email", "clover@gmail.com");
+        body.put("email", "test@gmail.com");
         body.put("password", "password");
 
         String accessToken = RestAssured.given().log().all()

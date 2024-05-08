@@ -28,7 +28,7 @@ class MemberDaoTest {
     @Test
     void findUserByEmail() {
         // given
-        String email = "clover@gmail.com";
+        String email = "test@gmail.com";
 
         // when
         Optional<Member> actual = memberRepository.findByEmail(email);

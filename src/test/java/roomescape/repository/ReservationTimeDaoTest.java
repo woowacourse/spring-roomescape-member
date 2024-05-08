@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.ReservationTime;
 import roomescape.repository.reservationtime.ReservationTimeDao;
 import roomescape.repository.reservationtime.ReservationTimeRepository;
@@ -17,6 +18,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
+@Sql(scripts = {"/recreate_table.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @DisplayName("예약 시간 DAO")
 class ReservationTimeDaoTest {
 
@@ -61,7 +63,7 @@ class ReservationTimeDaoTest {
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
 
         // then
-        assertThat(reservationTimes.size()).isEqualTo(2);
+        assertThat(reservationTimes.size()).isEqualTo(3);
     }
 
     @DisplayName("예약 시간 DAO는 삭제 요청이 들어오면 id에 맞는 값을 삭제한다.")
