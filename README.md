@@ -82,17 +82,20 @@
 ```json
 {
   "id": 1,
-  "name": "브라운",
-  "date": "2023-08-05",
+  "member": {
+    "id": 1,
+    "name": "아루"
+  },
+  "date": "2024-12-25",
   "time": {
     "id": 1,
-    "startAt": "10:00"
+    "startAt": "10:00:00"
   },
   "theme": {
     "id": 1,
-    "themeName": "테마",
-    "description": "설명",
-    "thumbnail": "url"
+    "name": "우테코에 어서오세요",
+    "description": "우테코를 탈출하세요",
+    "thumbnail": "https://avatars.githubusercontent.com/u/0"
   }
 }
 ```
