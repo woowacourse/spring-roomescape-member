@@ -71,4 +71,13 @@ public class PageControllerTest {
                 .then().log().all()
                 .statusCode(200);
     }
+
+    @DisplayName("로그인 페이지 요청 시 200으로 응답한다.")
+    @Test
+    void loginPageTest() {
+        RestAssured.given().log().all()
+                .when().get("/login")
+                .then().log().all()
+                .statusCode(200);
+    }
 }
