@@ -66,10 +66,8 @@ public class ReservationService {
 
     private Theme findTheme(ReservationRequest reservationRequest) {
         Long themeId = reservationRequest.themeId();
-        if (!themeRepository.existsById(themeId)) {
-            throw new IllegalArgumentException("theme_id가 존재하지 않습니다 : " + themeId);
-        }
-        return themeRepository.findById(themeId);
+        return themeRepository.findById(themeId)
+                .orElseThrow(() -> new IllegalArgumentException("theme_id가 존재하지 않습니다 : " + themeId));
     }
 
     private void validateReservationNotDuplicate(ReservationRequest reservationRequest) {

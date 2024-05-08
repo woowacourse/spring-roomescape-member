@@ -62,7 +62,7 @@ public class ReservationTimeService {
         if (reservationRepository.existsByTimeId(id)) {
             throw new IllegalArgumentException("해당 시간에 예약이 존재합니다.");
         }
-        reservationRepository.delete(id);
+        reservationTimeRepository.delete(id);
     }
 
     public void validateTimeDuplicate(LocalTime time) {

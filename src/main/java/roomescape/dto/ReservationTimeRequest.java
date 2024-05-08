@@ -11,10 +11,8 @@ public record ReservationTimeRequest(
 ) {
 
     public ReservationTimeRequest {
-        try {
-            Objects.requireNonNull(startAt);
-        } catch (NullPointerException e) {
-            throw new IllegalArgumentException("null 값이 될 수 없습니다.");
+        if (Objects.isNull(startAt)) {
+            throw new IllegalArgumentException("시작 시간은 null 값이 될 수 없습니다.");
         }
     }
 
