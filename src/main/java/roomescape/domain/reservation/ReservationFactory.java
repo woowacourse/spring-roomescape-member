@@ -1,6 +1,7 @@
-package roomescape.domain;
+package roomescape.domain.reservation;
 
 import org.springframework.stereotype.Component;
+import roomescape.domain.theme.Theme;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

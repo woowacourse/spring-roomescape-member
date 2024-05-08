@@ -1,6 +1,4 @@
-package roomescape.domain.repository;
-
-import roomescape.domain.Theme;
+package roomescape.domain.theme;
 
 import java.util.List;
 import java.util.Optional;

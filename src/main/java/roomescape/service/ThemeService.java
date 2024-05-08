@@ -3,10 +3,10 @@ package roomescape.service;
 import org.springframework.stereotype.Service;
 import roomescape.service.dto.request.ThemeRequest;
 import roomescape.service.dto.response.ThemeResponse;
-import roomescape.domain.Reservation;
-import roomescape.domain.Theme;
-import roomescape.domain.repository.ReservationRepository;
-import roomescape.domain.repository.ThemeRepository;
+import roomescape.domain.reservation.Reservation;
+import roomescape.domain.theme.Theme;
+import roomescape.domain.reservation.ReservationRepository;
+import roomescape.domain.theme.ThemeRepository;
 
 import java.time.LocalDate;
 import java.util.Comparator;

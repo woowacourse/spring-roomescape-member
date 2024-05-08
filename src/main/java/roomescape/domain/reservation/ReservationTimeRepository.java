@@ -1,6 +1,4 @@
-package roomescape.domain.repository;
-
-import roomescape.domain.ReservationTime;
+package roomescape.domain.reservation;
 
 import java.util.List;
 import java.util.NoSuchElementException;
