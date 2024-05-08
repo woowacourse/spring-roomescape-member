@@ -40,3 +40,6 @@ INSERT INTO reservation (name, date, time_id, theme_id) VALUES
 ('제이', CURRENT_DATE() - INTERVAL '8' DAY, 3, 12),
 ('제이', CURRENT_DATE() - INTERVAL '8' DAY, 3, 12),
 ('제이', CURRENT_DATE() - INTERVAL '8' DAY, 3, 12);
+
+INSERT INTO member(name, email, password_hash) VALUES
+('ted', 'test@email.com', '1450575459');
