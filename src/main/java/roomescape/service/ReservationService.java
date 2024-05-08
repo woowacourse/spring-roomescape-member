@@ -7,11 +7,10 @@ import org.springframework.stereotype.Service;
 import roomescape.controller.request.AdminReservationRequest;
 import roomescape.controller.response.ReservationResponse;
 import roomescape.controller.response.UserResponse;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.Role;
 import roomescape.domain.Theme;
-import roomescape.domain.Member;
 import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -49,9 +48,8 @@ public class ReservationService {
                 .orElseThrow(() -> new IllegalArgumentException("예약할 수 없는 시간입니다. timeId: " + adminReservationRequest.timeId()));
         Theme requestedTheme = themeRepository.findById(adminReservationRequest.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("예약할 수 없는 테마입니다. themeId: " + adminReservationRequest.themeId()));
-        UserResponse userResponse = memberRepository.findById(adminReservationRequest.memberId()).orElseThrow();
-        Reservation requestedReservation = new Reservation(new Member(userResponse.id(), userResponse.name(),
-                userResponse.email(), userResponse.password(), Role.USER), adminReservationRequest.date(), requestedReservationTime, requestedTheme);
+        Member member = memberRepository.findById(adminReservationRequest.memberId()).orElseThrow();
+        Reservation requestedReservation = new Reservation(member, adminReservationRequest.date(), requestedReservationTime, requestedTheme);
 
         rejectPastTimeReservation(requestedReservation);
         rejectDuplicateReservation(requestedReservation);
@@ -88,9 +86,8 @@ public class ReservationService {
                 .orElseThrow(() -> new IllegalArgumentException("예약할 수 없는 시간입니다. timeId: " + adminReservationRequest.timeId()));
         Theme requestedTheme = themeRepository.findById(adminReservationRequest.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("예약할 수 없는 테마입니다. themeId: " + adminReservationRequest.themeId()));
-        UserResponse userResponse = memberRepository.findById(adminReservationRequest.memberId()).orElseThrow();
-        Reservation requestedReservation = reservationRepository.save(new Reservation(new Member(userResponse.id(),
-                userResponse.name(), userResponse.email(), userResponse.password(), userResponse.role()), adminReservationRequest.date(), requestedReservationTime, requestedTheme));
+        Member member = memberRepository.findById(adminReservationRequest.memberId()).orElseThrow();
+        Reservation requestedReservation = reservationRepository.save(new Reservation(member, adminReservationRequest.date(), requestedReservationTime, requestedTheme));
 
         return ReservationResponse.from(requestedReservation);
     }
