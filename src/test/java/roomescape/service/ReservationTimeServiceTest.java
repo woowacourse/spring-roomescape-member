@@ -11,8 +11,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-import org.assertj.core.api.Assertions;
-import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -144,10 +142,10 @@ class ReservationTimeServiceTest {
         List<IsReservedTimeResponse> times = reservationTimeService.getIsReservedTime(reservedDate, 1L);
 
         assertSoftly(softAssertions -> {
-                    softAssertions.assertThat(times).hasSize(2);
-                    softAssertions.assertThat(times).containsOnly(
-                            new IsReservedTimeResponse(1L, reservedTime.getStartAt(), true),
-                            new IsReservedTimeResponse(2L, notReservedTime.getStartAt(), false));
+            softAssertions.assertThat(times).hasSize(2);
+            softAssertions.assertThat(times).containsOnly(
+                    new IsReservedTimeResponse(1L, reservedTime.getStartAt(), true),
+                    new IsReservedTimeResponse(2L, notReservedTime.getStartAt(), false));
         });
     }
 }

@@ -22,7 +22,8 @@ public class FakeThemeDao implements ThemeDao {
 
     @Override
     public Theme addTheme(Theme theme) {
-        Theme newTheme = new Theme(index.getAndIncrement(), theme.getName(), theme.getDescription(), theme.getThumbnail());
+        Theme newTheme = new Theme(index.getAndIncrement(), theme.getName(), theme.getDescription(),
+                theme.getThumbnail());
         themes.add(newTheme);
         return newTheme;
     }

@@ -11,7 +11,6 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -148,7 +147,8 @@ class JdbcReservationDaoTest {
         LocalDate date = LocalDate.of(2023, 8, 5);
         List<ReservationTime> times = reservationDao.findReservationTimeByDateAndTheme(date, 1);
         assertSoftly(softAssertions -> {
-                    softAssertions.assertThat(times).hasSize(1);
-                    softAssertions.assertThat(times).containsExactly(new ReservationTime(1L, LocalTime.of(10, 0)));});
+            softAssertions.assertThat(times).hasSize(1);
+            softAssertions.assertThat(times).containsExactly(new ReservationTime(1L, LocalTime.of(10, 0)));
+        });
     }
 }
