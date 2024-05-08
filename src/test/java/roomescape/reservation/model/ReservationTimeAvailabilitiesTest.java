@@ -1,11 +1,7 @@
-package roomescape.reservation.domain;
+package roomescape.reservation.model;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.reservation.model.Reservation;
-import roomescape.reservation.model.ReservationTime;
-import roomescape.reservation.model.ReservationTimeAvailabilities;
-import roomescape.reservation.model.Theme;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
