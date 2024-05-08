@@ -39,7 +39,7 @@ public class Reservation {
         return id;
     }
 
-    public Member getUser() {
+    public Member getMember() {
         return member;
     }
 

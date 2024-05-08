@@ -37,7 +37,7 @@ public class H2ReservationRepository implements ReservationRepository {
     public Reservation save(Reservation reservation) {
         Long reservationId = jdbcInsert.executeAndReturnKey(Map.of(
                         "date", reservation.getDate(),
-                        "member_id", reservation.getUser().getId(),
+                        "member_id", reservation.getMember().getId(),
                         "time_id", reservation.getTimeId(),
                         "theme_id", reservation.getThemeId()))
                 .longValue();
@@ -45,7 +45,7 @@ public class H2ReservationRepository implements ReservationRepository {
         return new Reservation(
                 reservationId,
                 reservation.getDate(),
-                reservation.getUser(),
+                reservation.getMember(),
                 reservation.getTime(),
                 reservation.getTheme());
     }

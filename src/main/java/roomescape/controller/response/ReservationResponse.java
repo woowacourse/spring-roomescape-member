@@ -16,7 +16,7 @@ public record ReservationResponse(
         ThemeResponse theme
 ) {
     public static ReservationResponse from(Reservation reservation) {
-        Member member = reservation.getUser();
+        Member member = reservation.getMember();
         return new ReservationResponse(
                 reservation.getId(),
                 new UserResponse(member.getId(), member.getName(), member.getEmail(), member.getPassword(), member.getRole()),
