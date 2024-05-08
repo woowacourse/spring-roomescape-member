@@ -43,7 +43,7 @@ public class RoomescapeControllerAdvice {
     }
 
     @ExceptionHandler({IllegalArgumentException.class, NoSuchElementException.class})
-    public ProblemDetail handleIllegalArgumentException(IllegalArgumentException exception) {
+    public ProblemDetail handleIllegalArgumentException(RuntimeException exception) {
         logger.error(exception.getMessage(), exception);
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exception.getMessage());
     }
