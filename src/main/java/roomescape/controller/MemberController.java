@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ public class MemberController {
     }
 
     @PostMapping
-    public ResponseEntity<MemberResponse> save(@RequestBody final MemberSaveRequest memberRequest) {
+    public ResponseEntity<MemberResponse> save(@RequestBody @Valid final MemberSaveRequest memberRequest) {
         MemberResponse memberResponse = memberService.save(memberRequest);
 
         return ResponseEntity.created(URI.create("/members/" + memberResponse.id()))
