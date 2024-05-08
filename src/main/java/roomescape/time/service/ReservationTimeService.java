@@ -28,12 +28,12 @@ public class ReservationTimeService {
     }
 
     public ReservationTime save(final ReservationTimeRequestDto requestDto) {
-        final ReservationTime reservationTime = ReservationTime.createWithOutId(requestDto.startAt());
+        final ReservationTime reservationTime = new ReservationTime(requestDto.startAt());
         if (reservationTimeDao.checkExistTime(reservationTime)) {
             throw new RoomEscapeException(ExceptionMessage.DUPLICATE_TIME);
         }
         final long id = reservationTimeDao.save(requestDto.toReservationTime());
-        return ReservationTime.createWithId(id, reservationTime);
+        return new ReservationTime(id, reservationTime);
     }
 
     public void deleteById(final long id) {

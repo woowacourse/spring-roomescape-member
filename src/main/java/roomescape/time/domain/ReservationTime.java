@@ -2,7 +2,11 @@ package roomescape.time.domain;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Objects;
+
+import roomescape.exception.RoomEscapeException;
+import roomescape.exception.message.ExceptionMessage;
 
 public class ReservationTime {
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
@@ -10,27 +14,24 @@ public class ReservationTime {
     private final Long id;
     private final LocalTime startAt;
 
-    private ReservationTime(final Long id, final String startAt) {
-        validateTimeIsNotNull(startAt);
+    public ReservationTime(final Long id, final String startAt) {
         this.id = id;
-        this.startAt = LocalTime.parse(startAt, TIME_FORMAT);
+        this.startAt = parseTime(startAt);
     }
 
-    public static ReservationTime createWithOutId(final String startAt) {
-        return new ReservationTime(null, startAt);
+    public ReservationTime(final String startAt) {
+        this(null, startAt);
     }
 
-    public static ReservationTime createWithId(final Long id, final ReservationTime reservationTime) {
-        return new ReservationTime(id, reservationTime.startAt.toString());
+    public ReservationTime(final Long id, final ReservationTime reservationTime) {
+        this(id, reservationTime.startAt.toString());
     }
 
-    public static ReservationTime createWithId(final Long id, final String startAt) {
-        return new ReservationTime(id, startAt);
-    }
-
-    private void validateTimeIsNotNull(final String time) {
-        if (Objects.isNull(time)) {
-            throw new NullPointerException("시간인 null인 경우 저장을 할 수 없습니다.");
+    private LocalTime parseTime(final String time) {
+        try {
+            return LocalTime.parse(time, TIME_FORMAT);
+        } catch (NullPointerException | DateTimeParseException e) {
+            throw new RoomEscapeException(ExceptionMessage.FAIL_PARSE_TIME);
         }
     }
 

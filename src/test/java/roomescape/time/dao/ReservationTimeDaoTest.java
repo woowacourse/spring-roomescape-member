@@ -26,14 +26,14 @@ class ReservationTimeDaoTest {
     @Test
     @DisplayName("예약 시간을 생성할 수 있다.")
     void save() {
-        ReservationTime reservationTime = ReservationTime.createWithOutId("23:59");
+        ReservationTime reservationTime = new ReservationTime("23:59");
         assertThat(reservationTimeDao.save(reservationTime)).isEqualTo(11L);
     }
 
     @Test
     @DisplayName("특정 예약 시간을 조회할 수 있다.")
     void getById() {
-        assertThat(reservationTimeDao.getById(1L)).isEqualTo(ReservationTime.createWithId(1L, "09:00"));
+        assertThat(reservationTimeDao.getById(1L)).isEqualTo(new ReservationTime(1L, "09:00"));
     }
 
     @Test
@@ -72,6 +72,6 @@ class ReservationTimeDaoTest {
     @Test
     @DisplayName("특정 예약 시간이 이미 존재하는 지 알 수 있다.")
     void checkExistTime() {
-        assertThat(reservationTimeDao.checkExistTime(ReservationTime.createWithId(1L, "09:00"))).isTrue();
+        assertThat(reservationTimeDao.checkExistTime(new ReservationTime(1L, "09:00"))).isTrue();
     }
 }

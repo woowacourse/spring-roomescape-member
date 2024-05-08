@@ -12,7 +12,7 @@ import roomescape.theme.domain.Theme;
 public class ThemeRowMapper implements RowMapper<Theme> {
     @Override
     public Theme mapRow(ResultSet resultSet, int rowNum) throws SQLException {
-        return Theme.createWithId(
+        return new Theme(
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
                 resultSet.getString("description"),

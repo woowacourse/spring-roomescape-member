@@ -15,7 +15,7 @@ class ThemeTest {
     @ParameterizedTest
     @NullAndEmptySource
     void validateInvalidName(final String name) {
-        assertThatThrownBy(() -> Theme.createWithId(1L, name, "description", "thumbnail"))
+        assertThatThrownBy(() -> new Theme(1L, name, "description", "thumbnail"))
                 .isInstanceOf(RoomEscapeException.class)
                 .hasMessage(ExceptionMessage.INVALID_THEME_NAME.getMessage());
     }

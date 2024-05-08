@@ -32,7 +32,7 @@ class ThemeDaoTest {
 
     @Test
     void checkExistThemes() {
-        Theme theme = Theme.createWithOutId("정글 모험", "열대 정글의 심연을 탐험하세요.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        Theme theme = new Theme("정글 모험", "열대 정글의 심연을 탐험하세요.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         assertThat(themeDao.checkExistThemes(theme)).isTrue();
     }
 }

@@ -42,7 +42,7 @@ public class ReservationService {
         validateReservationAvailable(reservation);
 
         final long reservationId = reservationDao.save(reservation);
-        return Reservation.createWithId(reservationId, reservation);
+        return new Reservation(reservationId, reservation);
     }
 
     private void validateReservationAvailable(final Reservation reservation) {

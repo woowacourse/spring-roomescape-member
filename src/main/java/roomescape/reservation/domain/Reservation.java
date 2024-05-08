@@ -2,6 +2,7 @@ package roomescape.reservation.domain;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Objects;
 
 import roomescape.exception.RoomEscapeException;
@@ -18,37 +19,34 @@ public class Reservation {
     private final ReservationTime time;
     private final Theme theme;
 
-    private Reservation(final Long id, final String name, final String date, final ReservationTime time, final Theme theme) {
+    public Reservation(final Long id, final String name, final String date, final ReservationTime time, final Theme theme) {
         validateInvalidName(name);
-        validateDateIsNotNull(date);
         this.id = id;
         this.name = name;
-        this.date = LocalDate.parse(date, DATE_FORMAT);
+        this.date = parseDate(date);
         this.time = time;
         this.theme = theme;
     }
 
-    public static Reservation createWithId(final Long id, final String name, final String date, final ReservationTime time, final Theme theme) {
-        return new Reservation(id, name, date, time, theme);
+    public Reservation(final Long id, final Reservation reservation) {
+        this(id, reservation.name, reservation.date.toString(), reservation.time, reservation.theme);
     }
 
-    public static Reservation createWithId(final Long id, final Reservation reservation) {
-        return new Reservation(id, reservation.name, reservation.date.toString(), reservation.time, reservation.theme);
+    public Reservation(final String name, final String date, final ReservationTime time, final Theme theme) {
+        this(null, name, date, time, theme);
     }
 
-    public static Reservation createWithOutId(final String name, final String date, final ReservationTime time, final Theme theme) {
-        return new Reservation(null, name, date, time, theme);
+    private LocalDate parseDate(final String date) {
+        try {
+            return LocalDate.parse(date, DATE_FORMAT);
+        } catch (NullPointerException | DateTimeParseException e) {
+            throw new RoomEscapeException(ExceptionMessage.FAIL_PARSE_DATE);
+        }
     }
 
     private void validateInvalidName(final String name) {
         if (Objects.isNull(name) || name.isBlank()) {
             throw new RoomEscapeException(ExceptionMessage.INVALID_USER_NAME);
-        }
-    }
-
-    private void validateDateIsNotNull(final String date) {
-        if (Objects.isNull(date)) {
-            throw new NullPointerException("날짜가 null인 경우 저장을 할 수 없습니다.");
         }
     }
 

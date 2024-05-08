@@ -14,7 +14,9 @@ public enum ExceptionMessage {
     NOT_FOUND_THEME("해당 themeId와 일치하는 테마가 존재하지 않습니다.", HttpStatus.BAD_REQUEST),
     NOT_FOUND_TIME("해당 timeId와 일치하는 시간이 존재하지 않습니다.", HttpStatus.BAD_REQUEST),
     EXIST_REFER_THEME("해당 테마를 예약한 예약내역이 존재하여 삭제가 불가합니다.", HttpStatus.BAD_REQUEST),
-    EXIST_REFER_TIME("해당 시간을 예약한 예약내역이 존재하여 삭제가 불가합니다.", HttpStatus.BAD_REQUEST);
+    EXIST_REFER_TIME("해당 시간을 예약한 예약내역이 존재하여 삭제가 불가합니다.", HttpStatus.BAD_REQUEST),
+    FAIL_PARSE_DATE("형식에 맞지 않은 날짜입니다.", HttpStatus.BAD_REQUEST),
+    FAIL_PARSE_TIME("형식에 맞지 않은 시간입니다.", HttpStatus.BAD_REQUEST);
 
 
     private final String message;

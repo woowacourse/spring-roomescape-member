@@ -32,7 +32,7 @@ public class ThemeService {
             throw new RoomEscapeException(ExceptionMessage.DUPLICATE_THEME);
         }
         final long id = themeDao.save(theme);
-        return Theme.createWithId(id, theme);
+        return new Theme(id, theme);
     }
 
     public void deleteById(final long id) {

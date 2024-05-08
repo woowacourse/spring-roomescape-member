@@ -32,7 +32,6 @@ class ThemeControllerTest {
     @Test
     void invalidSave() throws Exception {
         ThemeRequestDto requestDto = new ThemeRequestDto(null, "description", "thumbnail");
-        String message = "field : name" + System.lineSeparator() + "message : 테마의 이름을 입력해야 합니다.";
         mockMvc.perform(post("/themes")
                        .content(objectMapper.writeValueAsString(requestDto))
                        .contentType(MediaType.APPLICATION_JSON))

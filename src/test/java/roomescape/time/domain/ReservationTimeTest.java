@@ -3,10 +3,11 @@ package roomescape.time.domain;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import java.time.format.DateTimeParseException;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import roomescape.exception.RoomEscapeException;
+import roomescape.exception.message.ExceptionMessage;
 
 class ReservationTimeTest {
 
@@ -14,12 +15,15 @@ class ReservationTimeTest {
     @Test
     void validateTimeExist() {
         assertAll(
-                () -> assertThatThrownBy(() -> ReservationTime.createWithId(1L, (String) null))
-                        .isInstanceOf(NullPointerException.class),
-                () -> assertThatThrownBy(() -> ReservationTime.createWithId(1L, "25:00"))
-                        .isInstanceOf(DateTimeParseException.class),
-                () -> assertThatThrownBy(() -> ReservationTime.createWithId(1L, "15:68"))
-                        .isInstanceOf(DateTimeParseException.class)
+                () -> assertThatThrownBy(() -> new ReservationTime(1L, (String) null))
+                        .isInstanceOf(RoomEscapeException.class)
+                        .hasMessage(ExceptionMessage.FAIL_PARSE_TIME.getMessage()),
+                () -> assertThatThrownBy(() -> new ReservationTime(1L, "25:00"))
+                        .isInstanceOf(RoomEscapeException.class)
+                        .hasMessage(ExceptionMessage.FAIL_PARSE_TIME.getMessage()),
+                () -> assertThatThrownBy(() -> new ReservationTime(1L, "15:68"))
+                        .isInstanceOf(RoomEscapeException.class)
+                        .hasMessage(ExceptionMessage.FAIL_PARSE_TIME.getMessage())
         );
     }
 }

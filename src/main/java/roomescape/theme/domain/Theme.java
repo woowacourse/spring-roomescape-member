@@ -11,7 +11,7 @@ public class Theme {
     private final String description;
     private final String thumbnail;
 
-    private Theme(final Long id, final String name, final String description, final String thumbnail) {
+    public Theme(final Long id, final String name, final String description, final String thumbnail) {
         validateInvalidName(name);
         this.id = id;
         this.name = name;
@@ -19,16 +19,12 @@ public class Theme {
         this.thumbnail = thumbnail;
     }
 
-    public static Theme createWithId(final Long id, final Theme theme) {
-        return new Theme(id, theme.name, theme.description, theme.thumbnail);
+    public Theme(final String name, final String description, final String thumbnail) {
+        this(null, name, description, thumbnail);
     }
 
-    public static Theme createWithId(final Long id, final String name, final String description, final String thumbnail) {
-        return new Theme(id, name, description, thumbnail);
-    }
-
-    public static Theme createWithOutId(final String name, final String description, final String thumbnail) {
-        return new Theme(null, name, description, thumbnail);
+    public Theme(final Long id, final Theme theme) {
+        this(id, theme.name, theme.description, theme.thumbnail);
     }
 
     private void validateInvalidName(final String name) {

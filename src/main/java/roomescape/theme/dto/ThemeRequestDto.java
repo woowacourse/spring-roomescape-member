@@ -9,6 +9,6 @@ public record ThemeRequestDto(
         String description,
         String thumbnail) {
     public Theme toTheme() {
-        return Theme.createWithOutId(name, description, thumbnail);
+        return new Theme(name, description, thumbnail);
     }
 }
