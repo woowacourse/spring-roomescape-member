@@ -7,8 +7,8 @@ import roomescape.domain.ReservationTime;
 import roomescape.dto.AvailableReservationTimeResponse;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
-import roomescape.infrastructure.JdbcReservationRepository;
-import roomescape.infrastructure.JdbcReservationTimeRepository;
+import roomescape.repository.JdbcReservationRepository;
+import roomescape.repository.JdbcReservationTimeRepository;
 
 @Service
 public class ReservationTimeService {

@@ -10,9 +10,9 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
-import roomescape.infrastructure.JdbcReservationRepository;
-import roomescape.infrastructure.JdbcReservationTimeRepository;
-import roomescape.infrastructure.JdbcThemeRepository;
+import roomescape.repository.JdbcReservationRepository;
+import roomescape.repository.JdbcReservationTimeRepository;
+import roomescape.repository.JdbcThemeRepository;
 
 @Service
 public class ReservationService {
