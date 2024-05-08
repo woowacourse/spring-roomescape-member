@@ -1,139 +1,142 @@
 package roomescape.controller.user;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.lang.reflect.Field;
-import java.util.List;
 import java.util.Map;
-import org.junit.jupiter.api.BeforeEach;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.TestFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.test.context.ActiveProfiles;
-import roomescape.controller.ReservationController;
-import roomescape.service.dto.ReservationResponse;
+import org.springframework.http.MediaType;
+import roomescape.auth.dto.TokenRequest;
 
-@ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 class ReservationControllerTest {
+
+    private static final String EMAIL = "admin@admin.com";
+    private static final String PASSWORD = "1234";
+
+    String adminToken;
+    String createdId;
+    int reservationSize;
 
     @LocalServerPort
     int port;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    private ReservationController reservationController;
-
-    @BeforeEach
-    void init() {
+    @DisplayName("어드민의 예약 CRUD")
+    @TestFactory
+    Stream<DynamicTest> dynamicTestsFromCollection() {
         RestAssured.port = port;
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('10:00')");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('이름', '설명', '썸네일')");
-    }
 
-    @DisplayName("존재하지 않는 예약 삭제")
-    @Test
-    void deletedReservationNotFound() {
-        RestAssured.given().log().all()
-                .when().delete("/reservations/1")
-                .then().log().all()
-                .statusCode(400);
-    }
+        return Stream.of(
+                dynamicTest("어드민으로 로그인하기", () -> {
+                    adminToken = RestAssured
+                            .given().log().all()
+                            .body(new TokenRequest(EMAIL, PASSWORD))
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .accept(MediaType.APPLICATION_JSON_VALUE)
+                            .when().post("/login")
+                            .then().log().all().extract().header("Set-Cookie").split("=")[1];
+                }),
+                dynamicTest("예약을 목록을 조회한다.", () -> {
+                    reservationSize = RestAssured.given().log().all()
+                            .contentType(ContentType.JSON)
+                            .cookie("token", adminToken)
+                            .when().get("/reservations")
+                            .then().log().all()
+                            .statusCode(200).extract()
+                            .response().jsonPath().getList("$").size();
+                }),
+                dynamicTest("예약을 추가한다.", () -> {
+                    Map<String, Object> params = Map.of(
+                            "memberId", 1L,
+                            "date", "2025-10-05",
+                            "timeId", 1L,
+                            "themeId", 1L);
 
-    @DisplayName("비어 있는 예약 목록 조회")
-    @Test
-    void getReservationsWhenEmpty() {
-        RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(0));
-    }
+                    createdId = RestAssured.given().log().all()
+                            .contentType(ContentType.JSON)
+                            .cookie("token", adminToken)
+                            .body(params)
+                            .when().post("/admin/reservations")
+                            .then().log().all()
+                            .statusCode(201).extract().header("location").split("/")[2];
+                }),
+                dynamicTest("존재하지 않는 시간으로 예약을 추가할 수 없다.", () -> {
+                    Map<String, Object> params = Map.of(
+                            "memberId", 1L,
+                            "date", "2025-10-05",
+                            "timeId", 100L,
+                            "themeId", 1L);
 
-    @DisplayName("데이터 삽입 후 예약 목록 조회")
-    @Test
-    void getReservationsAfterInsert() {
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2025-08-05", 1L, 1L);
+                    RestAssured.given().log().all()
+                            .contentType(ContentType.JSON)
+                            .cookie("token", adminToken)
+                            .body(params)
+                            .when().post("/admin/reservations")
+                            .then().log().all()
+                            .statusCode(400);
+                }),
+                dynamicTest("존재하지 않는 테마로 예약을 추가할 수 없다.", () -> {
+                    Map<String, Object> params = Map.of(
+                            "memberId", 1L,
+                            "date", "2025-10-05",
+                            "timeId", 1L,
+                            "themeId", 100L);
 
-        final List<ReservationResponse> reservations = RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200).extract()
-                .jsonPath().getList(".", ReservationResponse.class);
+                    RestAssured.given().log().all()
+                            .contentType(ContentType.JSON)
+                            .cookie("token", adminToken)
+                            .body(params)
+                            .when().post("/admin/reservations")
+                            .then().log().all()
+                            .statusCode(400);
+                }),
+                dynamicTest("존재하지 않는 회원으로 예약을 추가할 수 없다.", () -> {
+                    Map<String, Object> params = Map.of(
+                            "memberId", 100L,
+                            "date", "2025-10-05",
+                            "timeId", 1L,
+                            "themeId", 1L);
 
-        final Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-        assertThat(reservations.size()).isEqualTo(count);
-    }
-
-    @DisplayName("예약 추가 및 삭제")
-    @Test
-    void saveAndDeleteReservation() {
-        final Map<String, Object> params = Map.of(
-                "name", "브라운",
-                "date", "2025-08-05",
-                "timeId", 1L,
-                "themeId", 1L);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(201)
-                .header("Location", "/reservations/1");
-
-        final Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-        assertThat(count).isEqualTo(1);
-
-        RestAssured.given().log().all()
-                .when().delete("/reservations/1")
-                .then().log().all()
-                .statusCode(204);
-
-        final Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-        assertThat(countAfterDelete).isEqualTo(0);
-    }
-
-    @DisplayName("존재하지 않는 시간으로 예약 추가")
-    @Test
-    void reservationTimeForSaveNotFound() {
-        final Map<String, Object> params = Map.of(
-                "name", "브라운",
-                "date", "2025-08-05",
-                "timeId", 100L);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(400);
-    }
-
-    @DisplayName("컨트롤러에서 jdbcTemplate 필드 제거")
-    @Test
-    void jdbcTemplateNotInjected() {
-        boolean isJdbcTemplateInjected = false;
-
-        for (Field field : reservationController.getClass().getDeclaredFields()) {
-            if (field.getType().equals(JdbcTemplate.class)) {
-                isJdbcTemplateInjected = true;
-                break;
-            }
-        }
-
-        assertFalse(isJdbcTemplateInjected);
+                    RestAssured.given().log().all()
+                            .contentType(ContentType.JSON)
+                            .cookie("token", adminToken)
+                            .body(params)
+                            .when().post("/admin/reservations")
+                            .then().log().all()
+                            .statusCode(400);
+                }),
+                dynamicTest("예약을 목록을 조회한다.", () -> {
+                    RestAssured.given().log().all()
+                            .contentType(ContentType.JSON)
+                            .cookie("token", adminToken)
+                            .when().get("/reservations")
+                            .then().log().all()
+                            .statusCode(200).body("size()", is(reservationSize + 1));
+                }),
+                dynamicTest("예약을 삭제한다.", () -> {
+                    System.out.println(createdId);
+                    RestAssured.given().log().all()
+                            .contentType(ContentType.JSON)
+                            .cookie("token", adminToken)
+                            .when().delete("/reservations/" + createdId)
+                            .then().log().all()
+                            .statusCode(204);
+                }),
+                dynamicTest("이미 삭제된 예약을 삭제시도하면 statusCode가 400이다.", () -> {
+                    RestAssured.given().log().all()
+                            .contentType(ContentType.JSON)
+                            .cookie("token", adminToken)
+                            .when().delete("/reservations/" + createdId)
+                            .then().log().all()
+                            .statusCode(400);
+                })
+        );
     }
 }
