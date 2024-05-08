@@ -2,24 +2,16 @@ package roomescape.service;
 
 import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
-import roomescape.dao.MemberDao;
 import roomescape.domain.Member;
-import roomescape.dto.request.LoginRequest;
+import roomescape.dto.response.MemberProfileResponse;
 import roomescape.util.JwtTokenProvider;
 
 @Service
-public class LoginService {
-    private final MemberDao memberDao;
+public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
 
-    public LoginService(MemberDao memberDao, JwtTokenProvider jwtTokenProvider) {
-        this.memberDao = memberDao;
+    public AuthService(JwtTokenProvider jwtTokenProvider) {
         this.jwtTokenProvider = jwtTokenProvider;
-    }
-
-    public Member findMember(LoginRequest loginRequest) {
-        Member member = new Member(loginRequest.email(), loginRequest.password());
-        return memberDao.find(member);
     }
 
     public Cookie generateCookie(Member member) {
@@ -28,4 +20,15 @@ public class LoginService {
         cookie.setPath("/");
         return cookie;
     }
+
+    public MemberProfileResponse findMemberProfile(Cookie[] cookies) {
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("token")) {
+                String name = jwtTokenProvider.getMemberNameFromToken(cookie.getValue());
+                return new MemberProfileResponse(name);
+            }
+        }
+        throw new RuntimeException();
+    }
+
 }

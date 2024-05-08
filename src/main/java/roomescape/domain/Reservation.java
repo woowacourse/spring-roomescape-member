@@ -29,8 +29,8 @@ public class Reservation {
         return id;
     }
 
-    public String getName() {
-        return name.getName();
+    public Name getName() {
+        return name;
     }
 
     public LocalDate getDate() {

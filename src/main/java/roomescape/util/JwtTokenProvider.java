@@ -22,8 +22,17 @@ public class JwtTokenProvider {
                 .subject(member.getId().toString())
                 .issuedAt(now)
                 .expiration(validity)
-                .claim("name", member.getName())
+                .claim("name", member.getNameValue())
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
+    }
+
+    public String getMemberNameFromToken(String token) {
+        return Jwts.parser()
+                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("name", String.class);
     }
 }
