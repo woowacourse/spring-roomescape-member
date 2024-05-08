@@ -6,16 +6,12 @@ import io.restassured.RestAssured;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
+import roomescape.IntegrationTestSupport;
 import roomescape.auth.dto.TokenRequest;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class AdminReservationControllerTest {
-
-    private static final String ADMIN_EMAIL = "admin@admin.com";
-    private static final String ADMIN_PASSWORD = "1234";
+class AdminReservationControllerTest extends IntegrationTestSupport {
 
     @LocalServerPort
     int port;

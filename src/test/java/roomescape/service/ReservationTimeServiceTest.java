@@ -7,63 +7,28 @@ import static org.assertj.core.api.Assertions.tuple;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.domain.Member;
-import roomescape.domain.MemberRepository;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationRepository;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.ReservationTimeRepository;
-import roomescape.domain.Theme;
-import roomescape.domain.ThemeRepository;
+import roomescape.IntegrationTestSupport;
 import roomescape.exception.ReservationBusinessException;
 import roomescape.service.dto.ReservationTimeBookedRequest;
 import roomescape.service.dto.ReservationTimeBookedResponse;
 import roomescape.service.dto.ReservationTimeResponse;
 import roomescape.service.dto.ReservationTimeSaveRequest;
 
-@SpringBootTest
 @Transactional
-class ReservationTimeServiceTest {
+class ReservationTimeServiceTest extends IntegrationTestSupport {
 
     @Autowired
     private ReservationTimeService reservationTimeService;
-
-    @Autowired
-    private ReservationTimeRepository reservationTimeRepository;
-
-    @Autowired
-    private ThemeRepository themeRepository;
-
-    @Autowired
-    private ReservationRepository reservationRepository;
-
-    @Autowired
-    private MemberRepository memberRepository;
-
-    ReservationTime reservationTime;
-    Theme theme;
-    Member member;
-
-    @BeforeEach
-    void init() {
-        reservationTimeRepository.save(new ReservationTime(LocalTime.parse("11:00")));
-        reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("12:00")));
-        theme = themeRepository.save(new Theme("이름", "설명", "썸네일"));
-        member = memberRepository.save(new Member("생강", "email@email.com", "1234"));
-        reservationRepository.save(new Reservation(member, LocalDate.parse("2024-12-12"), reservationTime, theme));
-    }
 
     @DisplayName("예약 시간 목록 조회")
     @Test
     void getTimes() {
         final List<ReservationTimeResponse> reservationTimeResponses = reservationTimeService.getTimes();
-        assertThat(reservationTimeResponses.size()).isEqualTo(2);
+        assertThat(reservationTimeResponses).hasSize(7);
     }
 
     @DisplayName("예약 시간 추가")
@@ -79,11 +44,10 @@ class ReservationTimeServiceTest {
     @DisplayName("예약 시간 삭제")
     @Test
     void deleteTime() {
-        var savedReservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("14:00")));
         final int size = reservationTimeService.getTimes().size();
 
-        reservationTimeService.deleteTime(savedReservationTime.getId());
-        assertThat(reservationTimeService.getTimes().size()).isEqualTo(size - 1);
+        reservationTimeService.deleteTime(6L);
+        assertThat(reservationTimeService.getTimes()).hasSize(size - 1);
     }
 
     @DisplayName("존재하지 않는 예약 시간 삭제")
@@ -112,19 +76,23 @@ class ReservationTimeServiceTest {
     @Test
     void findBookedTimes() {
         // given
-        var reservationTimeBookedRequest = new ReservationTimeBookedRequest(LocalDate.parse("2024-12-12"),
-                theme.getId());
+        var reservationTimeBookedRequest = new ReservationTimeBookedRequest(LocalDate.parse("2024-05-04"), 1L);
 
         // when
         final List<ReservationTimeBookedResponse> timesWithBooked = reservationTimeService.getTimesWithBooked(
                 reservationTimeBookedRequest);
 
         // then
-        assertThat(timesWithBooked).hasSize(2)
+        assertThat(timesWithBooked).hasSize(7)
                 .extracting("startAt", "alreadyBooked")
                 .containsExactly(
+                        tuple(LocalTime.parse("09:00"), true),
+                        tuple(LocalTime.parse("10:00"), true),
                         tuple(LocalTime.parse("11:00"), false),
-                        tuple(LocalTime.parse("12:00"), true)
+                        tuple(LocalTime.parse("12:00"), false),
+                        tuple(LocalTime.parse("13:00"), false),
+                        tuple(LocalTime.parse("14:00"), false),
+                        tuple(LocalTime.parse("15:00"), false)
                 );
     }
 }

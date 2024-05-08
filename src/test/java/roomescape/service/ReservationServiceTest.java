@@ -9,13 +9,10 @@ import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.controller.login.LoginMember;
+import roomescape.IntegrationTestSupport;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRepository;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
@@ -24,15 +21,11 @@ import roomescape.exception.ReservationBusinessException;
 import roomescape.service.dto.ReservationResponse;
 import roomescape.service.dto.ReservationSaveRequest;
 
-@SpringBootTest
 @Transactional
-class ReservationServiceTest {
+class ReservationServiceTest extends IntegrationTestSupport {
 
     @Autowired
     private ReservationService reservationService;
-
-    @Autowired
-    private ReservationRepository reservationRepository;
 
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
@@ -50,13 +43,12 @@ class ReservationServiceTest {
         final Theme theme = themeRepository.save(new Theme("이름", "설명", "썸네일"));
         final Member member = memberRepository.save(new Member("고구마", "email@email.com", "1234"));
 
-        final ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest(LocalDate.parse("2025-11-11"),
+        final ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest(member.getId(), LocalDate.parse("2025-11-11"),
                 time.getId(), theme.getId());
-        final ReservationResponse reservationResponse = reservationService.saveReservation(reservationSaveRequest,
-                LoginMember.from(member));
+        final ReservationResponse reservationResponse = reservationService.saveReservation(reservationSaveRequest);
 
         assertAll(
-                () -> assertThat(reservationResponse.name()).isEqualTo("고구마"),
+                () -> assertThat(reservationResponse.member().name()).isEqualTo("고구마"),
                 () -> assertThat(reservationResponse.date()).isEqualTo(LocalDate.parse("2025-11-11")),
                 () -> assertThat(reservationResponse.time().id()).isEqualTo(time.getId()),
                 () -> assertThat(reservationResponse.time().startAt()).isEqualTo(time.getStartAt()),
@@ -72,47 +64,33 @@ class ReservationServiceTest {
     void timeForSaveReservationNotFound() {
         final Member member = memberRepository.save(new Member("고구마", "email@email.com", "1234"));
 
-        final ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest(LocalDate.parse("2025-11-11"), 2L, 1L);
+        final ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest(member.getId(), LocalDate.parse("2025-11-11"), 100L, 1L);
         assertThatThrownBy(() -> {
-            reservationService.saveReservation(reservationSaveRequest, LoginMember.from(member));
+            reservationService.saveReservation(reservationSaveRequest);
         }).isInstanceOf(ReservationBusinessException.class);
     }
 
     @DisplayName("예약 삭제")
     @Test
     void deleteReservation() {
-        final ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("10:00")));
-        final Theme theme = themeRepository.save(new Theme("이름", "설명", "썸네일"));
-        final Member member = memberRepository.save(new Member("고구마", "email@email.com", "1234"));
-
-        final Reservation savedReservation = reservationRepository.save(
-                new Reservation(member, LocalDate.parse("2025-05-13"), time, theme));
-
-        reservationService.deleteReservation(savedReservation.getId());
-        assertThat(reservationService.getReservations().size()).isEqualTo(0);
+        reservationService.deleteReservation(1L);
+        assertThat(reservationService.getReservations()).hasSize(12);
     }
 
     @DisplayName("존재하지 않는 예약 삭제")
     @Test
     void deleteReservationNotFound() {
         assertThatThrownBy(() -> {
-            reservationService.deleteReservation(2L);
+            reservationService.deleteReservation(100L);
         }).isInstanceOf(ReservationBusinessException.class);
     }
 
     @DisplayName("중복된 예약 저장")
     @Test
     void saveDuplicatedReservation() {
-        final ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("10:00")));
-        final Theme theme = themeRepository.save(new Theme("이름", "설명", "썸네일"));
-        final Member member = memberRepository.save(new Member("고구마", "email@email.com", "1234"));
-
-        final Reservation savedReservation = reservationRepository.save(
-                new Reservation(member, LocalDate.parse("2025-05-13"), time, theme));
-
         assertThatThrownBy(() -> {
             reservationService.saveReservation(
-                    new ReservationSaveRequest(LocalDate.parse("2025-05-13"), time.getId(), theme.getId()), LoginMember.from(member));
+                    new ReservationSaveRequest(1L, LocalDate.parse("2024-05-04"), 1L, 1L));
         }).isInstanceOf(ReservationBusinessException.class);
     }
 }

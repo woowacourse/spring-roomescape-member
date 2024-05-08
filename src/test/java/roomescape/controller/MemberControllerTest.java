@@ -20,6 +20,7 @@ class MemberControllerTest extends IntegrationTestSupport {
     public static final String TEST_EMAIL = "test@test.com";
     public static final String TEST_PASSWORD = "1234";
     public static final String TEST_NAME = "테스트";
+
     String token;
     String createdId;
     int memberSize;
@@ -89,7 +90,6 @@ class MemberControllerTest extends IntegrationTestSupport {
                             .then().log().all()
                             .statusCode(200).body("size()", is(memberSize + 1));
                 }),
-
                 dynamicTest("회원을 삭제한다.", () -> {
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON)

@@ -8,19 +8,14 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import roomescape.IntegrationTestSupport;
 import roomescape.auth.dto.MemberResponse;
 import roomescape.auth.dto.TokenRequest;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class LoginControllerTest {
-
-    private static final String EMAIL = "admin@admin.com";
-    private static final String PASSWORD = "1234";
-    private static final String NAME = "어드민";
+class LoginControllerTest extends IntegrationTestSupport {
 
     String accessToken;
 
@@ -36,7 +31,7 @@ class LoginControllerTest {
                 dynamicTest("이메일, 패스워드로 로그인한다.", () -> {
                     accessToken = RestAssured
                             .given().log().all()
-                            .body(new TokenRequest(EMAIL, PASSWORD))
+                            .body(new TokenRequest(ADMIN_EMAIL, ADMIN_PASSWORD))
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .accept(MediaType.APPLICATION_JSON_VALUE)
                             .when().post("/login")
@@ -51,7 +46,7 @@ class LoginControllerTest {
                             .then().log().all()
                             .statusCode(HttpStatus.OK.value()).extract().as(MemberResponse.class);
 
-                    assertThat(member.name()).isEqualTo(NAME);
+                    assertThat(member.name()).isEqualTo(ADMIN_NAME);
                 }),
                 dynamicTest("로그아웃하면 토큰이 비어있다.", () -> {
                     String cookie = RestAssured

@@ -1,4 +1,4 @@
-package roomescape.controller.user;
+package roomescape.controller;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
@@ -10,16 +10,12 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
+import roomescape.IntegrationTestSupport;
 import roomescape.auth.dto.TokenRequest;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class ReservationTimeControllerTest {
-
-    private static final String ADMIN_EMAIL = "admin@admin.com";
-    private static final String ADMIN_PASSWORD = "1234";
+class ReservationTimeControllerTest extends IntegrationTestSupport {
 
     String token;
     String createdId;
@@ -28,7 +24,7 @@ class ReservationTimeControllerTest {
     @LocalServerPort
     int port;
 
-    @DisplayName("예약 시간 생성 조회")
+    @DisplayName("예약 시간 CRUD")
     @TestFactory
     Stream<DynamicTest> dynamicUserTestsFromCollection() {
         RestAssured.port = port;

@@ -1,4 +1,4 @@
-package roomescape.controller.user;
+package roomescape.controller;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
@@ -11,18 +11,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
+import roomescape.IntegrationTestSupport;
 import roomescape.auth.dto.TokenRequest;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class ReservationControllerTest {
-
-    private static final String ADMIN_EMAIL = "admin@admin.com";
-    private static final String ADMIN_PASSWORD = "1234";
-    private static final String USER_EMAIL = "user1@user.com";
-    private static final String USER_PASSWORD = "1234";
+class ReservationControllerTest extends IntegrationTestSupport {
 
     String token;
     String createdId;
@@ -127,7 +121,6 @@ class ReservationControllerTest {
                             .statusCode(200).body("size()", is(reservationSize + 1));
                 }),
                 dynamicTest("예약을 삭제한다.", () -> {
-                    System.out.println(createdId);
                     RestAssured.given().log().all()
                             .contentType(ContentType.JSON)
                             .cookie("token", token)
@@ -201,6 +194,14 @@ class ReservationControllerTest {
                             .when().post("/reservations")
                             .then().log().all()
                             .statusCode(400);
+                }),
+                dynamicTest("예약을 삭제한다.", () -> {
+                    RestAssured.given().log().all()
+                            .contentType(ContentType.JSON)
+                            .cookie("token", token)
+                            .when().delete("/reservations/" + createdId)
+                            .then().log().all()
+                            .statusCode(204);
                 })
         );
     }

@@ -9,9 +9,8 @@ import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.IntegrationTestSupport;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRepository;
 import roomescape.domain.Reservation;
@@ -21,12 +20,8 @@ import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 
-@SpringBootTest
 @Transactional
-class ReservationRepositoryTest {
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+class ReservationRepositoryTest extends IntegrationTestSupport {
 
     @Autowired
     private ReservationRepository reservationRepository;
@@ -65,13 +60,6 @@ class ReservationRepositoryTest {
     @DisplayName("존재하는 예약 삭제")
     @Test
     void deleteExistById() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?), (?)", "08:00", "07:00");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "이름", "설명", "썸네일");
-        jdbcTemplate.update("INSERT INTO member (name, email, password) VALUES (?, ?, ?)", "백호", "email@email.com", "1234");
-        jdbcTemplate.update("INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?), (?, ?, ?, ?)",
-                1L, "2024-07-07", 1L, 1L,
-                1L, "2024-08-12", 2L, 1L);
-
         assertThatCode(() -> reservationRepository.deleteById(1L))
                 .doesNotThrowAnyException();
     }
