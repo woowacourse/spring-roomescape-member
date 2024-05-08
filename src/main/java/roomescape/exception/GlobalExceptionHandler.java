@@ -16,6 +16,11 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
+    public ResponseEntity<ExceptionTemplate> handleAuthorizationException(AuthorizationException exception) {
+        return ResponseEntity.badRequest().body(new ExceptionTemplate(exception.getMessage()));
+    }
+
+    @ExceptionHandler
     protected ResponseEntity<ExceptionTemplate> handleValidationException(
             final MethodArgumentNotValidException exception) {
         String message = exception.getBindingResult().getFieldError().getDefaultMessage();
@@ -29,19 +34,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler
     public ResponseEntity<ExceptionTemplate> handleNullPointerException(NullPointerException exception) {
-        return ResponseEntity.badRequest()
-                .body(new ExceptionTemplate(exception.getMessage()));
+        return ResponseEntity.badRequest().body(new ExceptionTemplate(exception.getMessage()));
     }
 
     @ExceptionHandler
     public ResponseEntity<ExceptionTemplate> handleDuplicateKeyException(DuplicateKeyException exception) {
-        return ResponseEntity.badRequest()
-                .body(new ExceptionTemplate(exception.getMessage()));
+        return ResponseEntity.badRequest().body(new ExceptionTemplate(exception.getMessage()));
     }
 
     @ExceptionHandler
     public ResponseEntity<ExceptionTemplate> handleException(Exception exception) {
-        return ResponseEntity.internalServerError()
-                .body(new ExceptionTemplate(exception.getMessage()));
+        return ResponseEntity.internalServerError().body(new ExceptionTemplate(exception.getMessage()));
     }
 }
