@@ -37,6 +37,24 @@ class ReservationTest {
         }).doesNotThrowAnyException();
     }
 
+    @DisplayName("실패: 생성 시간보다 예약 시간이 과거일 수 없다")
+    @Test
+    void validateDateTimeFailTest() {
+        assertThatThrownBy(() -> {
+            new Reservation(1L, "name", LocalDate.of(2999, 12, 12), reservationTime, theme,
+                    LocalDateTime.of(3000, 12, 12, 12, 30));
+        }).isInstanceOf(CustomException.class);
+    }
+
+    @DisplayName("성공: 생성 시간보다 예약 시간이 과거일 수 없다")
+    @Test
+    void validateDateTimeSuccessTest() {
+        assertThatCode(() -> {
+            new Reservation(1L, "name", LocalDate.of(2999, 12, 12), reservationTime, theme,
+                    LocalDateTime.of(2998, 12, 12, 12, 30));
+        }).doesNotThrowAnyException();
+    }
+
     @DisplayName("같은 날짜/시간임을 확인할 수 있다.")
     @Test
     void sameDateTimeTest() {
