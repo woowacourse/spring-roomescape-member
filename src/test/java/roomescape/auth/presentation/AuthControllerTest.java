@@ -45,8 +45,7 @@ class AuthControllerTest extends ControllerTest {
                         .content(objectMapper.writeValueAsBytes(request)))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(header().string(HttpHeaders.SET_COOKIE, "token=token"))
-                .andExpect(header().string("Keep-Alive", "timeout=60"));
+                .andExpect(header().string(HttpHeaders.SET_COOKIE, "token=token"));
     }
 
     @Test

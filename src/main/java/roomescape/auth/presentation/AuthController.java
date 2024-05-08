@@ -1,6 +1,7 @@
 package roomescape.auth.presentation;
 
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.auth.application.JwtTokenProvider;
@@ -23,9 +24,9 @@ public class AuthController {
     public ResponseEntity<Void> login(@RequestBody LoginRequest request) {
         Member member = memberService.findByEmail(request.email());
         String token = jwtTokenProvider.createToken(member.getEmail());
+        ResponseCookie cookie = ResponseCookie.from("token", token).build();
         return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, "token=" + token)
-                .header("Keep-Alive", "timeout=60")
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .build();
     }
 
