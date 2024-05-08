@@ -19,7 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
       event.target.classList.add('active');
       checkDateAndTheme();
     }
-    console.log(1)
   });
 
   document.getElementById('time-slots').addEventListener('click', event => {
@@ -81,7 +80,6 @@ function checkDate() {
 function checkDateAndTheme() {
   const selectedDate = document.getElementById("datepicker").value;
   const selectedThemeElement = document.querySelector('.theme-slot.active');
-  // console.log(2)
   if (selectedDate && selectedThemeElement) {
     const selectedThemeId = selectedThemeElement.getAttribute('data-theme-id');
     fetchAvailableTimes(selectedDate, selectedThemeId);
