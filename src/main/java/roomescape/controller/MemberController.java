@@ -16,6 +16,11 @@ public class MemberController {
         return "login";
     }
 
+    @GetMapping("/signup")
+    public String getCheckPage() {
+        return "signup";
+    }
+
     @GetMapping
     public String getMainPage() {
         return "index";
