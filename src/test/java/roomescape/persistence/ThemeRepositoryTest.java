@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
-class H2ThemeRepositoryTest {
+class ThemeRepositoryTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 

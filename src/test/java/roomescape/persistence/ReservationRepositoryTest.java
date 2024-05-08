@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @JdbcTest
-class H2ReservationRepositoryTest {
+class ReservationRepositoryTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
