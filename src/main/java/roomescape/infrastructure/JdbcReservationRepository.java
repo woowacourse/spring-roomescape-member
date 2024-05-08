@@ -11,12 +11,11 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 @Repository
-public class JdbcReservationRepository implements ReservationRepository {
+public class JdbcReservationRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
@@ -56,14 +55,12 @@ public class JdbcReservationRepository implements ReservationRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
-    @Override
     public List<Reservation> findAll() {
         List<Reservation> reservations = jdbcTemplate.query(this.basicSelectQuery, reservationRowMapper);
 
         return Collections.unmodifiableList(reservations);
     }
 
-    @Override
     public Reservation findById(Long id) {
         String sql = basicSelectQuery + "WHERE reservation_id = ?";
         Reservation reservation = jdbcTemplate.queryForObject(sql, reservationRowMapper, id);
@@ -74,7 +71,6 @@ public class JdbcReservationRepository implements ReservationRepository {
         return reservation;
     }
 
-    @Override
     public Reservation save(Reservation reservation) {
         Map<String, Object> params = Map.of(
                 "name", reservation.getName(),
@@ -88,13 +84,11 @@ public class JdbcReservationRepository implements ReservationRepository {
                 reservation.getTheme());
     }
 
-    @Override
     public void deleteById(Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
 
-    @Override
     public boolean existByReservationTimeId(Long id) {
         String sql = basicSelectQuery + "WHERE time_id = ?";
         List<Reservation> reservations = jdbcTemplate.query(sql, reservationRowMapper, id);
@@ -102,7 +96,6 @@ public class JdbcReservationRepository implements ReservationRepository {
         return !reservations.isEmpty();
     }
 
-    @Override
     public boolean existByThemeId(Long id) {
         String sql = basicSelectQuery + "WHERE theme_id = ?";
         List<Reservation> reservations = jdbcTemplate.query(sql, reservationRowMapper, id);
@@ -110,7 +103,6 @@ public class JdbcReservationRepository implements ReservationRepository {
         return !reservations.isEmpty();
     }
 
-    @Override
     public boolean existByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
         String sql = basicSelectQuery + "WHERE r.date = ? AND t.id = ? AND th.id = ?";
         List<Reservation> reservations = jdbcTemplate.query(sql, reservationRowMapper, date, timeId, themeId);

@@ -6,24 +6,24 @@ import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
-import roomescape.domain.ThemeRepository;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
+import roomescape.infrastructure.JdbcReservationRepository;
+import roomescape.infrastructure.JdbcReservationTimeRepository;
+import roomescape.infrastructure.JdbcThemeRepository;
 
 @Service
 public class ReservationService {
 
-    private final ReservationRepository reservationRepository;
-    private final ReservationTimeRepository reservationTimeRepository;
-    private final ThemeRepository themeRepository;
+    private final JdbcReservationRepository reservationRepository;
+    private final JdbcReservationTimeRepository reservationTimeRepository;
+    private final JdbcThemeRepository themeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository,
-                              ThemeRepository themeRepository) {
+    public ReservationService(JdbcReservationRepository reservationRepository,
+                              JdbcReservationTimeRepository reservationTimeRepository,
+                              JdbcThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;

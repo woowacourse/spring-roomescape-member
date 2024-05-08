@@ -3,21 +3,21 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.ReservationTimeRepository;
 import roomescape.dto.AvailableReservationTimeResponse;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
+import roomescape.infrastructure.JdbcReservationRepository;
+import roomescape.infrastructure.JdbcReservationTimeRepository;
 
 @Service
 public class ReservationTimeService {
 
-    private final ReservationTimeRepository reservationTimeRepository;
-    private final ReservationRepository reservationRepository;
+    private final JdbcReservationTimeRepository reservationTimeRepository;
+    private final JdbcReservationRepository reservationRepository;
 
-    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository,
-                                  ReservationRepository reservationRepository) {
+    public ReservationTimeService(JdbcReservationTimeRepository reservationTimeRepository,
+                                  JdbcReservationRepository reservationRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
         this.reservationRepository = reservationRepository;
     }

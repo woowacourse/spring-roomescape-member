@@ -8,10 +8,9 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
-import roomescape.domain.ThemeRepository;
 
 @Repository
-public class JdbcThemeRepository implements ThemeRepository {
+public class JdbcThemeRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
     private final RowMapper<Theme> themeRowMapper = (resultSet, rowNum) -> new Theme(
@@ -28,14 +27,12 @@ public class JdbcThemeRepository implements ThemeRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
-    @Override
     public List<Theme> findAll() {
         String sql = "SELECT * FROM theme";
 
         return jdbcTemplate.query(sql, themeRowMapper);
     }
 
-    @Override
     public Theme findById(Long id) {
         String sql = "SELECT * FROM theme WHERE id = ?";
         Theme theme = jdbcTemplate.queryForObject(sql, themeRowMapper, id);
@@ -46,7 +43,6 @@ public class JdbcThemeRepository implements ThemeRepository {
         return theme;
     }
 
-    @Override
     public List<Theme> findTopThemesWithinDays(LocalDate date, int limit) {
         String sql = "SELECT "
                 + "    th.id AS theme_id, "
@@ -63,7 +59,6 @@ public class JdbcThemeRepository implements ThemeRepository {
         return jdbcTemplate.query(sql, themeRowMapper, date, limit);
     }
 
-    @Override
     public Theme save(Theme theme) {
         Map<String, String> params = Map.of(
                 "name", theme.getName(),
@@ -75,7 +70,6 @@ public class JdbcThemeRepository implements ThemeRepository {
         return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 
-    @Override
     public void deleteById(Long id) {
         String sql = "DELETE FROM theme WHERE id = ?";
 

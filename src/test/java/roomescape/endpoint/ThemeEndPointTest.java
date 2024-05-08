@@ -14,9 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
-import roomescape.domain.ThemeRepository;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
+import roomescape.infrastructure.JdbcThemeRepository;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -24,7 +24,7 @@ import roomescape.dto.ThemeResponse;
 public class ThemeEndPointTest {
 
     @Autowired
-    ThemeRepository themeRepository;
+    JdbcThemeRepository themeRepository;
     @Autowired
     private JdbcTemplate jdbcTemplate;
 

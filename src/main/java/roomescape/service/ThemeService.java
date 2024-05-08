@@ -3,21 +3,21 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.domain.ReservationRepository;
 import roomescape.domain.Theme;
-import roomescape.domain.ThemeRepository;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
+import roomescape.infrastructure.JdbcReservationRepository;
+import roomescape.infrastructure.JdbcThemeRepository;
 
 @Service
 public class ThemeService {
 
     private static final LocalDate TOP_THEMES_PERIOD = LocalDate.now().minusDays(7);
     private static final int TOP_THEMES_LIMIT = 10;
-    private final ThemeRepository themeRepository;
-    private final ReservationRepository reservationRepository;
+    private final JdbcThemeRepository themeRepository;
+    private final JdbcReservationRepository reservationRepository;
 
-    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository) {
+    public ThemeService(JdbcThemeRepository themeRepository, JdbcReservationRepository reservationRepository) {
         this.themeRepository = themeRepository;
         this.reservationRepository = reservationRepository;
     }

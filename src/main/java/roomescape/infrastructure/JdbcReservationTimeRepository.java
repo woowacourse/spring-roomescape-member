@@ -10,10 +10,9 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.ReservationTimeRepository;
 
 @Repository
-public class JdbcReservationTimeRepository implements ReservationTimeRepository {
+public class JdbcReservationTimeRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
@@ -29,14 +28,12 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 .usingGeneratedKeyColumns("id");
     }
 
-    @Override
     public List<ReservationTime> findAll() {
         String sql = "SELECT * FROM reservation_time";
 
         return jdbcTemplate.query(sql, reservationTimeRowMapper);
     }
 
-    @Override
     public ReservationTime findById(Long id) {
         String sql = "SELECT * FROM reservation_time WHERE id = ?";
         ReservationTime reservationTime = jdbcTemplate.queryForObject(sql, reservationTimeRowMapper, id);
@@ -47,7 +44,6 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         return reservationTime;
     }
 
-    @Override
     public List<ReservationTime> findByReservationDateAndThemeId(LocalDate date, Long themeId) {
         String sql = "SELECT " +
                 "t.id, " +
@@ -59,7 +55,6 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         return jdbcTemplate.query(sql, reservationTimeRowMapper, date, themeId);
     }
 
-    @Override
     public ReservationTime save(ReservationTime reservationTime) {
         Map<String, Object> params = Map.of(
                 "start_at", reservationTime.getStartAt()
@@ -69,7 +64,6 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         return new ReservationTime(id, reservationTime.getStartAt());
     }
 
-    @Override
     public void deleteById(Long id) {
         String sql = "DELETE FROM reservation_time WHERE id = ?";
         jdbcTemplate.update(sql, id);
