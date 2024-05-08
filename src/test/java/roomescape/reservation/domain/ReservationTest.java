@@ -64,13 +64,4 @@ class ReservationTest {
 
         assertThat(reservation1.isSameDateTime(reservation2)).isFalse();
     }
-
-    @DisplayName("예약 시간을 다른 시간과 비교할 수 있다.")
-    @Test
-    void pastTimeTest() {
-        LocalDateTime localDateTime = LocalDateTime.of(2999, 12, 12, 12,30);
-        Reservation reservation = new Reservation(1L, "name", LocalDate.of(2099, 12, 12), reservationTime, theme, createdAt);
-
-        assertThat(reservation.isBefore(localDateTime)).isTrue();
-    }
 }

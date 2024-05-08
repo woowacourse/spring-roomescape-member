@@ -44,11 +44,6 @@ public class Reservation {
         return date.isEqual(reservation.date) && time.equals(reservation.time);
     }
 
-    public boolean isBefore(LocalDateTime localDateTime) {
-        return LocalDateTime.of(date, time.getStartAt())
-                .isBefore(localDateTime);
-    }
-
     public Long getId() {
         return id;
     }
