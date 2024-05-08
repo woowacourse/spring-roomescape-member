@@ -32,7 +32,7 @@ public class MemberDaoImpl implements MemberDao {
     }
 
     public Optional<Member> findByEmail(final String email) {
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE email = ?";
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE user_email = ?";
         return jdbcTemplate.query(sql, memberRowMapper, email)
                 .stream()
                 .findAny();
