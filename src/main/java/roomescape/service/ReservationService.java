@@ -15,6 +15,7 @@ import roomescape.dto.AvailableTimeResponses;
 import roomescape.dto.ReservationCreateRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationResponses;
+import roomescape.exception.InvalidInputException;
 import roomescape.exception.NotExistingEntryException;
 import roomescape.exception.ReservingPastTimeException;
 import roomescape.repository.ReservationRepository;
@@ -65,6 +66,7 @@ public class ReservationService {
 
     public ReservationResponse create(ReservationCreateRequest reservationCreateRequest) {
         ReservationTime reservationTime = reservationTimeRepository.findByTimeId(reservationCreateRequest.timeId());
+        validateAvailableDateTime(reservationCreateRequest.date(), reservationTime.getStartAt());
         Theme theme = themeRepository.findByThemeId(reservationCreateRequest.themeId());
         Reservation reservation = new Reservation(
                 new UserName(reservationCreateRequest.name()),
@@ -72,15 +74,19 @@ public class ReservationService {
                 reservationTime,
                 theme
         );
-        validateAvailableDateTime(reservationCreateRequest.date(), reservationTime.getStartAt());
         Reservation savedReservation = reservationRepository.save(reservation);
         return ReservationResponse.from(savedReservation);
     }
 
     private void validateAvailableDateTime(LocalDate date, LocalTime time) {
+        if (date == null) {
+            throw new InvalidInputException("예약 날짜가 입력되지 않았습니다.");
+        }
+        if (time == null) {
+            throw new InvalidInputException("예약 시간이 입력되지 않았습니다.");
+        }
         LocalDate nowDate = LocalDate.now(ZoneId.of("Asia/Seoul"));
         LocalTime nowTime = LocalTime.now(ZoneId.of("Asia/Seoul"));
-
         if (date.isBefore(nowDate) || (date.isEqual(nowDate) && time.isBefore(nowTime))) {
             throw new ReservingPastTimeException("과거의 날짜 또는 시간은 예약할 수 없습니다. 현재 시간 이후로 예약해주세요.");
         }
