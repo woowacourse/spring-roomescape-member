@@ -11,19 +11,6 @@ public class ReservationRowMapper {
     private ReservationRowMapper() {
     }
 
-    public static Reservation mapRow(ResultSet rs) throws SQLException {
-        long id = rs.getLong("id");
-        String date = rs.getString("date");
-        return new Reservation(
-                id,
-                MemberRowMapper.mapRow(rs),
-                LocalDate.parse(date),
-                ReservationTimeRowMapper.mapRow(rs),
-                ThemeRowMapper.mapRow(rs),
-                rs.getTimestamp("created_at").toLocalDateTime()
-        );
-    }
-
     public static Reservation joinedMapRow(ResultSet rs) throws SQLException {
         long id = rs.getLong("reservation_id");
         String date = rs.getString("date");

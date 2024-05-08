@@ -32,6 +32,9 @@ public class MemberService {
 
     public TokenResponse login(MemberLoginRequest request) {
         Member member = memberRepository.getByEmail(request.email());
+        if (!member.matchPassword(request.password())) {
+            throw new IllegalArgumentException("이메일 / 비밀번호를 확인해 주세요.");
+        }
         return tokenManager.createToken(member);
     }
 

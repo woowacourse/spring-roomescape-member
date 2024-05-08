@@ -2,11 +2,6 @@ package roomescape.application.reservation.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import roomescape.domain.member.Member;
-import roomescape.domain.reservation.Reservation;
-import roomescape.domain.reservation.ReservationTime;
-import roomescape.domain.reservation.Theme;
 
 public record AdminReservationRequest(
         @NotNull(message = "회원 ID를 입력해주세요.")
@@ -17,11 +12,4 @@ public record AdminReservationRequest(
         Long timeId,
         @NotNull(message = "테마 ID를 입력해주세요.")
         Long themeId) {
-
-    public Reservation toReservation(Member member,
-                                     ReservationTime reservationTime,
-                                     Theme theme,
-                                     LocalDateTime createdAt) {
-        return new Reservation(member, date, reservationTime, theme, createdAt);
-    }
 }
