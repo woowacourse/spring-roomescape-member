@@ -14,15 +14,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.domain.reservation.PlayerName;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.MemberFixture;
+import roomescape.domain.member.MemberRepository;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.reservation.ReservationTimeRepository;
 import roomescape.domain.reservation.Theme;
 import roomescape.domain.reservation.ThemeRepository;
+import roomescape.infrastructure.member.JdbcMemberRepository;
 
 @JdbcTest
-@Import(value = {JdbcReservationRepository.class, JdbcReservationTimeRepository.class, JdbcThemeRepository.class})
+@Import(value = {
+        JdbcReservationRepository.class,
+        JdbcReservationTimeRepository.class,
+        JdbcThemeRepository.class,
+        JdbcMemberRepository.class})
 class JdbcReservationRepositoryTest {
     private static final LocalDateTime BASE_TIME = LocalDateTime.of(2000, 1, 1, 12, 0);
 
@@ -37,6 +44,9 @@ class JdbcReservationRepositoryTest {
 
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
 
     @DisplayName("id로 예약을 조회한다.")
     @Test
@@ -66,8 +76,9 @@ class JdbcReservationRepositoryTest {
     void shouldReturnReservationWithIdWhenReservationSave() {
         ReservationTime reservationTime = reservationTimeRepository.create(new ReservationTime(LocalTime.of(12, 0)));
         Theme theme = themeRepository.create(new Theme("theme1", "desc", "url"));
+        Member member = memberRepository.save(MemberFixture.createMember("오리"));
         Reservation reservationWithoutId = new Reservation(
-                "test",
+                member,
                 LocalDate.of(2024, 12, 25),
                 reservationTime,
                 theme,
@@ -110,12 +121,16 @@ class JdbcReservationRepositoryTest {
     }
 
     private Reservation createReservation() {
-        String sql = "insert into reservation (id, name, date, time_id, theme_id, created_at) values (?, ?, ?, ?, ?, ?)";
+        String memberSql = "insert into member (id, name, email, password) values (?, ?, ?, ?)";
+        String reservationSql = "insert into reservation (id, member_id, date, time_id, theme_id, created_at) values (?, ?, ?, ?, ?, ?)";
+
         ReservationTime reservationTime = reservationTimeRepository.create(new ReservationTime(LocalTime.of(12, 0)));
         Theme theme = themeRepository.create(new Theme("theme1", "desc", "url"));
         LocalDate date = LocalDate.of(2024, 12, 25);
-        jdbcTemplate.update(sql, 1L, "test", date, reservationTime.getId(), theme.getId(), BASE_TIME);
-        return new Reservation(1L, new PlayerName("test"), date, reservationTime, theme, BASE_TIME);
+        Member member = MemberFixture.createMember("오리");
+        jdbcTemplate.update(memberSql, 1L, member.getName(), member.getEmail(), member.getEncryptedPassword());
+        jdbcTemplate.update(reservationSql, 1L, 1L, date, reservationTime.getId(), theme.getId(), BASE_TIME);
+        return new Reservation(1L, member, date, reservationTime, theme, BASE_TIME);
     }
 
     private int getTotalRowCount() {

@@ -7,22 +7,14 @@ import java.nio.charset.StandardCharsets;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import roomescape.application.member.dto.response.MemberResponse;
 import roomescape.application.member.dto.response.TokenResponse;
 import roomescape.domain.member.Member;
-import roomescape.domain.member.MemberRepository;
 
 @Component
 public class TokenManager {
 
     @Value("${jwt.secret}")
     private String secret;
-
-    private final MemberRepository memberRepository;
-
-    public TokenManager(MemberRepository memberRepository) {
-        this.memberRepository = memberRepository;
-    }
 
     public TokenResponse createToken(Member member) {
         String token = Jwts.builder()
@@ -32,7 +24,7 @@ public class TokenManager {
         return new TokenResponse(token);
     }
 
-    public MemberResponse parseToken(String token) {
+    public long parseToken(String token) {
         if (token == null || token.isBlank()) {
             throw new IllegalArgumentException("토큰 값이 없습니다.");
         }
@@ -41,9 +33,7 @@ public class TokenManager {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-        Long id = claims.get("userId", Long.class);
-        Member member = memberRepository.getById(id);
-        return MemberResponse.from(member);
+        return claims.get("userId", Long.class);
     }
 
     private SecretKey getSecretKey() {

@@ -33,4 +33,9 @@ public class MemberService {
         Member member = memberRepository.getByEmail(request.email());
         return tokenManager.createToken(member);
     }
+
+    public MemberResponse findById(Long memberId) {
+        Member member = memberRepository.getById(memberId);
+        return MemberResponse.from(member);
+    }
 }

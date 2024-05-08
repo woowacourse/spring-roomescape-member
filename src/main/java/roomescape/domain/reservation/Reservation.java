@@ -4,28 +4,29 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Objects;
+import roomescape.domain.member.Member;
 
 public class Reservation {
     private final Long id;
-    private final PlayerName name;
+    private final Member member;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
     private final LocalDateTime createdAt;
 
-    public Reservation(Long id, PlayerName name, LocalDate date, ReservationTime time, Theme theme,
+    public Reservation(Long id, Member member, LocalDate date, ReservationTime time, Theme theme,
                        LocalDateTime createdAt) {
         validateCreatedAtAfterReserveTime(date, time.getStartAt(), createdAt);
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
         this.createdAt = createdAt;
     }
 
-    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme, LocalDateTime createdAt) {
-        this(null, new PlayerName(name), date, time, theme, createdAt);
+    public Reservation(Member member, LocalDate date, ReservationTime time, Theme theme, LocalDateTime createdAt) {
+        this(null, member, date, time, theme, createdAt);
     }
 
     private void validateCreatedAtAfterReserveTime(LocalDate date, LocalTime startAt, LocalDateTime createdAt) {
@@ -40,11 +41,15 @@ public class Reservation {
     }
 
     public String getName() {
-        return name.getName();
+        return member.getName();
     }
 
     public LocalDate getDate() {
         return date;
+    }
+
+    public Member getMember() {
+        return member;
     }
 
     public ReservationTime getTime() {
@@ -60,7 +65,7 @@ public class Reservation {
     }
 
     public Reservation withId(long id) {
-        return new Reservation(id, name, date, time, theme, createdAt);
+        return new Reservation(id, member, date, time, theme, createdAt);
     }
 
     @Override

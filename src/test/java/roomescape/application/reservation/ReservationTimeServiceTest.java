@@ -14,6 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.application.ServiceTest;
 import roomescape.application.reservation.dto.request.ReservationTimeRequest;
 import roomescape.application.reservation.dto.response.ReservationTimeResponse;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.MemberFixture;
+import roomescape.domain.member.MemberRepository;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationRepository;
 import roomescape.domain.reservation.ReservationTime;
@@ -34,6 +37,9 @@ class ReservationTimeServiceTest {
 
     @Autowired
     private ReservationRepository reservationRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
 
     @Autowired
     private Clock clock;
@@ -81,8 +87,10 @@ class ReservationTimeServiceTest {
         ReservationTime time = createTime(10, 0);
         long timeId = time.getId();
         Theme theme = themeRepository.create(new Theme("테마1", "테마1 설명", "url"));
+        Member member = MemberFixture.createMember("오리");
+        Member savedMember = memberRepository.save(member);
         reservationRepository.create(new Reservation(
-                "오리", LocalDate.parse("2024-01-01"), time, theme, LocalDateTime.now(clock)
+                savedMember, LocalDate.parse("2024-01-01"), time, theme, LocalDateTime.now(clock)
         ));
         assertThatCode(() -> reservationTimeService.deleteById(timeId))
                 .isInstanceOf(IllegalArgumentException.class)

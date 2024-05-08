@@ -26,12 +26,13 @@ create table if not exists reservation_time
 create table if not exists reservation
 (
     id         bigint      not null auto_increment,
-    name       varchar(20) not null,
+    member_id  bigint      not null,
     date       date        not null,
     time_id    bigint      not null,
     theme_id   bigint      not null,
     created_at timestamp   not null,
     primary key (id),
+    foreign key (member_id) references member (id),
     foreign key (time_id) references reservation_time (id),
     foreign key (theme_id) references theme (id)
 );

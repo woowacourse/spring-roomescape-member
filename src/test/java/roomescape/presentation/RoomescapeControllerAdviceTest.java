@@ -12,6 +12,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.mock.web.MockHttpServletResponse;
+import roomescape.application.member.TokenManager;
 import roomescape.presentation.view.AdminController;
 
 @WebMvcTest(AdminController.class)
@@ -19,6 +20,9 @@ class RoomescapeControllerAdviceTest extends ControllerTest {
 
     @MockBean
     private AdminController controller;
+
+    @MockBean
+    private TokenManager tokenManager;
 
     @DisplayName("어플리케이션에서 처리할 수 없는 예외의 경우, 500 서버 오류를 응답한다.")
     @Test

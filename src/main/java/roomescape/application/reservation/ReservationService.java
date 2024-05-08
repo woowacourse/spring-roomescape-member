@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.application.reservation.dto.request.ReservationRequest;
 import roomescape.application.reservation.dto.response.ReservationResponse;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.MemberRepository;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationRepository;
 import roomescape.domain.reservation.ReservationTime;
@@ -20,23 +22,27 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final MemberRepository memberRepository;
     private final Clock clock;
 
     public ReservationService(ReservationRepository reservationRepository,
                               ReservationTimeRepository reservationTimeRepository,
                               ThemeRepository themeRepository,
+                              MemberRepository memberRepository,
                               Clock clock) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.memberRepository = memberRepository;
         this.clock = clock;
     }
 
     @Transactional
-    public ReservationResponse create(ReservationRequest request) {
+    public ReservationResponse create(long id, ReservationRequest request) {
+        Member member = memberRepository.getById(id);
         Theme theme = themeRepository.getById(request.themeId());
         ReservationTime reservationTime = reservationTimeRepository.getById(request.timeId());
-        Reservation reservation = request.toReservation(reservationTime, theme, LocalDateTime.now(clock));
+        Reservation reservation = request.toReservation(member, reservationTime, theme, LocalDateTime.now(clock));
 
         if (reservationRepository.existsBy(reservation.getDate(), reservationTime.getId(), theme.getId())) {
             throw new IllegalArgumentException("이미 존재하는 예약입니다.");

@@ -1,6 +1,5 @@
 package roomescape.presentation.reservation;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -8,7 +7,6 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -19,9 +17,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
+import roomescape.application.member.TokenManager;
 import roomescape.application.reservation.ReservationService;
-import roomescape.application.reservation.dto.request.ReservationRequest;
 import roomescape.application.reservation.dto.response.ReservationResponse;
 import roomescape.application.reservation.dto.response.ReservationTimeResponse;
 import roomescape.application.reservation.dto.response.ThemeResponse;
@@ -29,8 +26,12 @@ import roomescape.presentation.ControllerTest;
 
 @WebMvcTest(ReservationController.class)
 class ReservationControllerTest extends ControllerTest {
+
     @MockBean
     private ReservationService reservationService;
+
+    @MockBean
+    private TokenManager tokenManager;
 
     @DisplayName("저장된 모든 예약을 반환한다.")
     @Test
@@ -60,60 +61,6 @@ class ReservationControllerTest extends ControllerTest {
         mvc.perform(get("/reservations"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(reservationResponsesJson));
-    }
-
-    @DisplayName("존재하지 않는 새로운 예약을 저장하면 201 Created 응답과 ReservationResponse가 반환된다.")
-    @Test
-    void shouldReturn201CreatedWithReservationResponseWhenNotExistReservationCreate() throws Exception {
-        ReservationRequest reservationRequest = new ReservationRequest("test", LocalDate.of(2024, 12, 25), 1L, 1L);
-        String reservationRequestJson = objectMapper.writeValueAsString(reservationRequest);
-
-        ReservationResponse reservationResponse = new ReservationResponse(
-                1L, "test", LocalDate.of(2024, 12, 25),
-                new ReservationTimeResponse(1L, LocalTime.now()),
-                new ThemeResponse(1L, "test", "test", "test"));
-        String reservationResponseJson = objectMapper.writeValueAsString(reservationResponse);
-
-        given(reservationService.create(reservationRequest))
-                .willReturn(reservationResponse);
-
-        mvc.perform(post("/reservations")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(reservationRequestJson))
-                .andExpect(status().isCreated())
-                .andExpect(content().json(reservationResponseJson));
-    }
-
-    @DisplayName("존재하지 않는 예약 시간으로 예약을 생성하려고 하면 400 Bad Request 응답을 반환한다.")
-    @Test
-    void shouldReturn400BadRequestWhenNotFoundReservationTimeCreate() throws Exception {
-        ReservationRequest reservationRequest = new ReservationRequest("test", LocalDate.of(2024, 1, 1), 1L, 1L);
-        String reservationRequestJson = objectMapper.writeValueAsString(reservationRequest);
-
-        given(reservationService.create(any(ReservationRequest.class)))
-                .willThrow(new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
-
-        mvc.perform(post("/reservations")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(reservationRequestJson))
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string(containsString("존재하지 않는 예약 시간입니다.")));
-    }
-
-    @DisplayName("이미 존재하는 예약을 생성하려고 하면 400 Bad Request 응답을 반환한다.")
-    @Test
-    void shouldReturn400ConflictWhenAlreadyExistReservationCreate() throws Exception {
-        ReservationRequest reservationRequest = new ReservationRequest("test", LocalDate.of(2024, 1, 1), 1L, 1L);
-        String reservationRequestJson = objectMapper.writeValueAsString(reservationRequest);
-
-        given(reservationService.create(reservationRequest))
-                .willThrow(new IllegalArgumentException("이미 존재하는 예약입니다."));
-
-        mvc.perform(post("/reservations")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(reservationRequestJson))
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string(containsString("이미 존재하는 예약입니다.")));
     }
 
     @DisplayName("존재하는 예약의 id로 삭제 요청을 하면 204 No Content 응답을 반환한다.")

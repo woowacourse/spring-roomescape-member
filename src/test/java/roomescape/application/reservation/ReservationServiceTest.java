@@ -15,6 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.application.ServiceTest;
 import roomescape.application.reservation.dto.request.ReservationRequest;
 import roomescape.application.reservation.dto.response.ReservationResponse;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.MemberFixture;
+import roomescape.domain.member.MemberRepository;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationRepository;
 import roomescape.domain.reservation.ReservationTime;
@@ -37,6 +40,9 @@ class ReservationServiceTest {
     private ThemeRepository themeRepository;
 
     @Autowired
+    private MemberRepository memberRepository;
+
+    @Autowired
     private Clock clock;
 
     @DisplayName("정상적인 예약 요청을 받아서 저장한다.")
@@ -44,14 +50,14 @@ class ReservationServiceTest {
     void shouldReturnReservationResponseWhenValidReservationRequestSave() {
         ReservationTime time = reservationTimeRepository.create(new ReservationTime(LocalTime.of(12, 0)));
         Theme theme = themeRepository.create(new Theme("themeName", "desc", "url"));
+        Member member = memberRepository.save(MemberFixture.createMember("아루"));
         ReservationRequest reservationRequest = new ReservationRequest(
-                "test",
                 LocalDate.of(2024, 1, 1),
                 time.getId(),
                 theme.getId()
         );
 
-        reservationService.create(reservationRequest);
+        reservationService.create(member.getId(), reservationRequest);
 
         List<Reservation> reservations = reservationRepository.findAll();
         assertThat(reservations).hasSize(1);
@@ -61,9 +67,13 @@ class ReservationServiceTest {
     @Test
     void shouldReturnIllegalArgumentExceptionWhenNotFoundReservationTime() {
         Theme savedTheme = themeRepository.create(new Theme("test", "test", "test"));
-        ReservationRequest request = new ReservationRequest("test", LocalDate.of(2024, 1, 1), 99L, savedTheme.getId());
+        Member member = memberRepository.save(MemberFixture.createMember("아루"));
+        ReservationRequest request = new ReservationRequest(
+                LocalDate.of(2024, 1, 1),
+                99L,
+                savedTheme.getId());
 
-        assertThatCode(() -> reservationService.create(request))
+        assertThatCode(() -> reservationService.create(member.getId(), request))
                 .isInstanceOf(NoSuchElementException.class)
                 .hasMessage("존재하지 않는 예약 시간입니다.");
     }
@@ -72,13 +82,13 @@ class ReservationServiceTest {
     @DisplayName("존재하지 않는 테마로 예약을 생성시 예외를 반환한다.")
     void shouldThrowIllegalArgumentExceptionWhenNotFoundTheme() {
         ReservationTime time = reservationTimeRepository.create(new ReservationTime(LocalTime.of(12, 0)));
+        Member member = memberRepository.save(MemberFixture.createMember("아루"));
         ReservationRequest request = new ReservationRequest(
-                "test",
                 LocalDate.of(2024, 1, 1),
                 time.getId(),
                 99L
         );
-        assertThatCode(() -> reservationService.create(request))
+        assertThatCode(() -> reservationService.create(member.getId(), request))
                 .isInstanceOf(NoSuchElementException.class)
                 .hasMessage("존재하지 않는 테마입니다.");
     }
@@ -89,15 +99,15 @@ class ReservationServiceTest {
     void shouldReturnIllegalStateExceptionWhenDuplicatedReservationCreate() {
         ReservationTime time = reservationTimeRepository.create(new ReservationTime(LocalTime.of(10, 0)));
         Theme theme = themeRepository.create(new Theme("test", "test", "test"));
+        Member member = memberRepository.save(MemberFixture.createMember("아루"));
         ReservationRequest request = new ReservationRequest(
-                "test",
                 LocalDate.of(2024, 1, 1),
                 time.getId(),
                 theme.getId()
         );
-        reservationRepository.create(request.toReservation(time, theme, LocalDateTime.now(clock)));
+        reservationRepository.create(request.toReservation(member, time, theme, LocalDateTime.now(clock)));
 
-        assertThatCode(() -> reservationService.create(request))
+        assertThatCode(() -> reservationService.create(member.getId(), request))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 존재하는 예약입니다.");
     }
@@ -107,12 +117,14 @@ class ReservationServiceTest {
     void shouldThrowsIllegalArgumentExceptionWhenReservationDateIsBeforeCurrentDate() {
         ReservationTime time = reservationTimeRepository.create(new ReservationTime(LocalTime.of(12, 0)));
         Theme theme = themeRepository.create(new Theme("test", "test", "test"));
-        System.out.println(time.getId() + " " + theme.getId());
-        ReservationRequest reservationRequest = new ReservationRequest(
-                "test", LocalDate.of(1999, 12, 31), time.getId(), theme.getId()
+        Member member = memberRepository.save(MemberFixture.createMember("아루"));
+        ReservationRequest request = new ReservationRequest(
+                LocalDate.of(1999, 12, 31),
+                time.getId(),
+                theme.getId()
         );
 
-        assertThatCode(() -> reservationService.create(reservationRequest))
+        assertThatCode(() -> reservationService.create(member.getId(), request))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("현재 시간보다 과거로 예약할 수 없습니다.");
     }
@@ -146,8 +158,13 @@ class ReservationServiceTest {
     private Reservation saveReservation() {
         ReservationTime time = reservationTimeRepository.create(new ReservationTime(LocalTime.of(10, 0)));
         Theme theme = themeRepository.create(new Theme("test", "test", "test"));
+        Member member = memberRepository.save(MemberFixture.createMember("아루"));
         Reservation reservation = new Reservation(
-                "test", LocalDate.of(2024, 1, 1), time, theme, LocalDateTime.now(clock)
+                member,
+                LocalDate.of(2024, 1, 1),
+                time,
+                theme,
+                LocalDateTime.now(clock)
         );
         return reservationRepository.create(reservation);
     }

@@ -3,8 +3,8 @@ package roomescape.infrastructure.reservation.rowmapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import roomescape.domain.reservation.PlayerName;
 import roomescape.domain.reservation.Reservation;
+import roomescape.infrastructure.member.rowmapper.MemberRowMapper;
 
 public class ReservationRowMapper {
 
@@ -13,11 +13,10 @@ public class ReservationRowMapper {
 
     public static Reservation mapRow(ResultSet rs) throws SQLException {
         long id = rs.getLong("id");
-        String name = rs.getString("name");
         String date = rs.getString("date");
         return new Reservation(
                 id,
-                new PlayerName(name),
+                MemberRowMapper.mapRow(rs),
                 LocalDate.parse(date),
                 ReservationTimeRowMapper.mapRow(rs),
                 ThemeRowMapper.mapRow(rs),
@@ -27,11 +26,10 @@ public class ReservationRowMapper {
 
     public static Reservation joinedMapRow(ResultSet rs) throws SQLException {
         long id = rs.getLong("reservation_id");
-        String name = rs.getString("reservation_name");
         String date = rs.getString("date");
         return new Reservation(
                 id,
-                new PlayerName(name),
+                MemberRowMapper.joinedMapRow(rs),
                 LocalDate.parse(date),
                 ReservationTimeRowMapper.joinedMapRow(rs),
                 ThemeRowMapper.joinedMapRow(rs),

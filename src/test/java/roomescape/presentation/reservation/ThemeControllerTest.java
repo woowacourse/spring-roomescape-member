@@ -13,6 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import roomescape.application.member.TokenManager;
 import roomescape.application.reservation.ThemeService;
 import roomescape.application.reservation.dto.request.ThemeRequest;
 import roomescape.application.reservation.dto.response.ThemeResponse;
@@ -22,6 +23,9 @@ import roomescape.presentation.ControllerTest;
 class ThemeControllerTest extends ControllerTest {
     @MockBean
     private ThemeService themeService;
+
+    @MockBean
+    private TokenManager tokenManager;
 
     @DisplayName("테마를 생성한다.")
     @Test

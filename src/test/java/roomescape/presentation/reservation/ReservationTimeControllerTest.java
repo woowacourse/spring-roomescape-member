@@ -19,6 +19,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import roomescape.application.member.TokenManager;
 import roomescape.application.reservation.ReservationTimeService;
 import roomescape.application.reservation.dto.request.ReservationTimeRequest;
 import roomescape.application.reservation.dto.response.ReservationTimeResponse;
@@ -28,6 +29,9 @@ import roomescape.presentation.ControllerTest;
 class ReservationTimeControllerTest extends ControllerTest {
     @MockBean
     private ReservationTimeService reservationTimeService;
+
+    @MockBean
+    private TokenManager tokenManager;
 
     @DisplayName("예약 시간 저장을 요청하면, 해당 예약 시간의 저장 id와 시간 201 Created 응답으로 반환한다.")
     @Test

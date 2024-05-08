@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationRepository;
 import roomescape.domain.reservation.ReservationTime;
@@ -17,9 +18,11 @@ import roomescape.infrastructure.reservation.rowmapper.ReservationRowMapper;
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
     private static final String FIND_ALL_SQL = """
-            select r.id as reservation_id, r.name as reservation_name, date, time_id, start_at, created_at, theme_id,
+            select r.id as reservation_id, member_id, date, time_id, start_at, created_at, theme_id,
+            m.id as member_id, m.name as member_name, email, password,
             t.name as theme_name, description, thumbnail
             from reservation as r
+            left join member as m on member_id = m.id
             left join reservation_time as rt on time_id = rt.id
             left join theme as t on theme_id = t.id
             """;
@@ -31,7 +34,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
-                .usingColumns("name", "date", "time_id", "theme_id", "created_at")
+                .usingColumns("member_id", "date", "time_id", "theme_id", "created_at")
                 .usingGeneratedKeyColumns("id");
     }
 
@@ -57,8 +60,9 @@ public class JdbcReservationRepository implements ReservationRepository {
     public Reservation create(Reservation reservation) {
         ReservationTime time = reservation.getTime();
         Theme theme = reservation.getTheme();
+        Member member = reservation.getMember();
         MapSqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("name", reservation.getName())
+                .addValue("member_id", member.getId())
                 .addValue("date", reservation.getDate())
                 .addValue("created_at", reservation.getCreatedAt())
                 .addValue("time_id", time.getId())

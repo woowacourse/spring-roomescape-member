@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.MemberFixture;
 
 class ReservationTest {
 
@@ -17,8 +19,9 @@ class ReservationTest {
         LocalDate date = reservationTime.toLocalDate();
         ReservationTime time = new ReservationTime(reservationTime.toLocalTime());
         Theme theme = new Theme("테마명", "설명", "url");
+        Member member = MemberFixture.createMember("아루");
 
-        assertThatCode(() -> new Reservation("아루", date, time, theme, createdAt))
+        assertThatCode(() -> new Reservation(member, date, time, theme, createdAt))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("현재 시간보다 과거로 예약할 수 없습니다.");
     }
