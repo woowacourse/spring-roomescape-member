@@ -70,8 +70,8 @@ public class ReservationService {
     }
 
     private void validateDateAndTime(LocalDate requestDate, LocalDate today, Time time) {
-        if (requestDate.isBefore(today) || (requestDate.isEqual(today) && time.getStartAt()
-                .isBefore(LocalTime.now()))) {
+        LocalTime currentTime = LocalTime.now();
+        if (requestDate.isBefore(today) || (requestDate.isEqual(today) && time.getStartAt().isBefore(currentTime))) {
             throw new IllegalStateException("지난 날짜나 시간은 예약이 불가능합니다.");
         }
     }
