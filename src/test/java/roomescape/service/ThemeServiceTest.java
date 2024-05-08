@@ -2,7 +2,6 @@ package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -89,7 +88,7 @@ class ThemeServiceTest {
         ReservationTime savedTime = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("10:00")));
 
         reservationRepository.save(
-            new Reservation("name", LocalDate.parse("2060-01-01"), savedTime, savedTheme));
+            new Reservation("name", "2060-01-01", savedTime, savedTheme));
 
         assertThatThrownBy(() -> themeService.delete(savedTheme.getId()))
             .isInstanceOf(RoomescapeException.class)

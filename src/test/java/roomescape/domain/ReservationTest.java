@@ -3,7 +3,6 @@ package roomescape.domain;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,7 +17,7 @@ import roomescape.exception.RoomescapeException;
 class ReservationTest {
 
     private final String validName = "sudal";
-    private final LocalDate validDate = LocalDate.parse("2060-01-01");
+    private final String validDate = "2060-01-01";
     private final ReservationTime validReservationTime = new ReservationTime(LocalTime.parse("10:00"));
     private final Theme validTheme = new Theme("방탈출", "방탈출하는 게임", "https://");
 
@@ -38,6 +37,6 @@ class ReservationTest {
         assertThatThrownBy(
             () -> new Reservation(invalidName, validDate, validReservationTime, validTheme)
         ).isInstanceOf(RoomescapeException.class)
-            .hasMessage("예약자 이름은 비어 있을 수 없습니다.");
+            .hasMessage("예약자 이름은 null이거나 비어 있을 수 없습니다.");
     }
 }

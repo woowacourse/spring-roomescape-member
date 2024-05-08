@@ -2,34 +2,27 @@ package roomescape.domain.reservation;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import roomescape.domain.member.Name;
 import roomescape.domain.theme.Theme;
-import roomescape.exception.RoomescapeException;
 
 public class Reservation {
 
     private final Long id;
-    private final String name;
-    private final LocalDate date;
+    private final Name name;
+    private final Date date;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        this(null, name, date, time, theme);
+    public Reservation(String rawName, String rawDate, ReservationTime time, Theme theme) {
+        this(null, rawName, rawDate, time, theme);
     }
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        validateName(name);
+    public Reservation(Long id, String rawName, String rawDate, ReservationTime time, Theme theme) {
         this.id = id;
-        this.name = name;
-        this.date = date;
+        this.name = new Name(rawName);
+        this.date = new Date(rawDate);
         this.time = time;
         this.theme = theme;
-    }
-
-    private void validateName(String name) {
-        if (name == null || name.isBlank()) {
-            throw new RoomescapeException("예약자 이름은 비어 있을 수 없습니다.");
-        }
     }
 
     public Long getId() {
@@ -37,11 +30,11 @@ public class Reservation {
     }
 
     public String getName() {
-        return name;
+        return name.getValue();
     }
 
     public LocalDate getDate() {
-        return date;
+        return date.getDate();
     }
 
     public ReservationTime getTime() {

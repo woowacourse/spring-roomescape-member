@@ -1,4 +1,4 @@
-package roomescape.domain.theme;
+package roomescape.domain.member;
 
 import java.util.Objects;
 import roomescape.exception.RoomescapeException;
@@ -16,10 +16,10 @@ public class Name {
 
     private void validate(String value) {
         if (value == null || value.isBlank()) {
-            throw new RoomescapeException("테마 이름은 null이거나 비어 있을 수 없습니다.");
+            throw new RoomescapeException("예약자 이름은 null이거나 비어 있을 수 없습니다.");
         }
         if (value.length() > MAX_NAME_LENGTH) {
-            throw new RoomescapeException(String.format("테마 이름은 최대 %d글자입니다.", MAX_NAME_LENGTH));
+            throw new RoomescapeException(String.format("예약자 이름은 최대 %d글자입니다.", MAX_NAME_LENGTH));
         }
     }
 

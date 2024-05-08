@@ -3,7 +3,6 @@ package roomescape.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,8 +30,8 @@ class JdbcReservationRepositoryTest {
     private ThemeRepository themeRepository;
 
     private final String name = "tre";
-    private final LocalDate date1 = LocalDate.parse("2060-01-01");
-    private final LocalDate date2 = LocalDate.parse("2070-01-01");
+    private final String date1 = "2060-01-01";
+    private final String date2 = "2070-01-01";
 
     private ReservationTime reservationTime;
     private Theme theme;

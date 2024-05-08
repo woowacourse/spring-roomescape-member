@@ -42,7 +42,6 @@ class ReservationServiceTest {
     private final Long timeId = 1L;
     private final Long themeId = 1L;
 
-    private final LocalDate date = LocalDate.parse(rawDate);
     private final ReservationTime reservationTime = new ReservationTime(1L, LocalTime.parse("10:00"));
     private final Theme theme = new Theme(1L, "theme1", "desc1", "https://");
 
@@ -57,7 +56,7 @@ class ReservationServiceTest {
     void save() {
         Reservation saved = reservationService.save(new SaveReservationDto(name, rawDate, timeId, themeId));
         assertThat(saved)
-            .isEqualTo(new Reservation(saved.getId(), name, date, reservationTime, theme));
+            .isEqualTo(new Reservation(saved.getId(), name, rawDate, reservationTime, theme));
     }
 
     @DisplayName("실패: 빈 이름을 저장하면 예외가 발생한다.")
@@ -67,7 +66,7 @@ class ReservationServiceTest {
         assertThatThrownBy(
             () -> reservationService.save(new SaveReservationDto(invalidName, rawDate, timeId, themeId))
         ).isInstanceOf(RoomescapeException.class)
-            .hasMessage("예약자 이름은 비어 있을 수 없습니다.");
+            .hasMessage("예약자 이름은 null이거나 비어 있을 수 없습니다.");
     }
 
     @DisplayName("실패: 존재하지 않는 날짜 입력 시 예외가 발생한다.")

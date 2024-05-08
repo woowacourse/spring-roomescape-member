@@ -41,7 +41,6 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public ReservationTime findById(Long id) {
         String sql = "SELECT * FROM reservation_time WHERE id = ?";
-
         return jdbcTemplate.queryForObject(sql, reservationTimeMapper, id);
     }
 

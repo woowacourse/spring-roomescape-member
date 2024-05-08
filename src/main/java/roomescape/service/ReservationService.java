@@ -1,7 +1,6 @@
 package roomescape.service;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.List;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
@@ -32,22 +31,13 @@ public class ReservationService {
     }
 
     public Reservation save(SaveReservationDto dto) {
-        LocalDate date = parseDate(dto.date());
         ReservationTime time = findTime(dto.timeId());
         Theme theme = findTheme(dto.themeId());
-        Reservation reservation = new Reservation(dto.name(), date, time, theme);
-        validatePastReservation(date, time);
-        validateDuplication(date, dto.timeId(), dto.themeId());
+        Reservation reservation = new Reservation(dto.name(), dto.date(), time, theme);
+        validatePastReservation(LocalDate.parse(dto.date()), time);
+        validateDuplication(dto.date(), dto.timeId(), dto.themeId());
 
         return reservationRepository.save(reservation);
-    }
-
-    private LocalDate parseDate(String rawDate) {
-        try {
-            return LocalDate.parse(rawDate);
-        } catch (DateTimeParseException | NullPointerException e) {
-            throw new RoomescapeException("잘못된 날짜 형식입니다.");
-        }
     }
 
     private ReservationTime findTime(Long timeId) {
@@ -81,8 +71,8 @@ public class ReservationService {
         }
     }
 
-    private void validateDuplication(LocalDate date, Long timeId, Long themeId) {
-        if (reservationRepository.isDuplicated(date, timeId, themeId)) {
+    private void validateDuplication(String rawDate, Long timeId, Long themeId) {
+        if (reservationRepository.isDuplicated(rawDate, timeId, themeId)) {
             throw new RoomescapeException("해당 시간에 예약이 이미 존재합니다.");
         }
     }

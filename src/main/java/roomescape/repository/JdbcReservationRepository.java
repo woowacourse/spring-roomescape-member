@@ -30,7 +30,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         this.reservationMapper = (rs, rowNum) -> new Reservation(
             rs.getLong("reservation_id"),
             rs.getString("reservation_name"),
-            LocalDate.parse(rs.getString("reservation_date")),
+            rs.getString("reservation_date"),
             new ReservationTime(
                 rs.getLong("time_id"),
                 LocalTime.parse(rs.getString("time_value"))
@@ -52,16 +52,29 @@ public class JdbcReservationRepository implements ReservationRepository {
             Map.entry("time_id", reservation.getTime().getId()),
             Map.entry("theme_id", reservation.getTheme().getId())
         );
-
         long id = simpleJdbcInsert.executeAndReturnKey(saveSource).longValue();
+        return findById(id);
+    }
 
-        return new Reservation(
-            id,
-            reservation.getName(),
-            reservation.getDate(),
-            reservation.getTime(),
-            reservation.getTheme()
-        );
+    private Reservation findById(Long id) {
+        String sql = """
+            SELECT
+                r.id AS reservation_id,
+                r.name AS reservation_name,
+                r.date AS reservation_date,
+                t.id AS time_id,
+                t.start_at AS time_value,
+                th.id AS theme_id,
+                th.name AS theme_name,
+                th.description AS theme_description,
+                th.thumbnail AS theme_thumbnail
+            FROM reservation AS r
+            INNER JOIN reservation_time AS t ON r.time_id = t.id
+            INNER JOIN theme AS th ON r.theme_id = th.id
+            WHERE r.id = ?
+            """;
+
+        return jdbcTemplate.queryForObject(sql, reservationMapper, id);
     }
 
     @Override
@@ -104,9 +117,9 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Boolean isDuplicated(LocalDate date, Long timeId, Long themeId) {
+    public Boolean isDuplicated(String rawDate, Long timeId, Long themeId) {
         String sql = "SELECT EXISTS(SELECT id FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
+        return jdbcTemplate.queryForObject(sql, Boolean.class, rawDate, timeId, themeId);
     }
 
     @Override

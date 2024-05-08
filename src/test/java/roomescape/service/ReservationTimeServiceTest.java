@@ -4,7 +4,6 @@ package roomescape.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -78,7 +77,7 @@ class ReservationTimeServiceTest {
         );
 
         reservationRepository.save(
-            new Reservation("name", LocalDate.parse("2060-01-01"), savedTime, savedTheme)
+            new Reservation("name", "2060-01-01", savedTime, savedTheme)
         );
 
         assertThatThrownBy(

@@ -16,7 +16,7 @@ public interface ReservationRepository {
 
     Boolean isThemeIdUsed(Long id);
 
-    Boolean isDuplicated(LocalDate date, Long timeId, Long themeId);
+    Boolean isDuplicated(String rawDate, Long timeId, Long themeId);
 
     List<Reservation> findAllByDateAndThemeId(LocalDate date, Long themeId);
 }
