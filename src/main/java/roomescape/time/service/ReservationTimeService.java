@@ -1,6 +1,5 @@
 package roomescape.time.service;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -8,6 +7,7 @@ import org.springframework.stereotype.Service;
 import roomescape.exception.RoomEscapeException;
 import roomescape.exception.message.ExceptionMessage;
 import roomescape.reservation.dao.ReservationDao;
+import roomescape.reservation.domain.ReservationDate;
 import roomescape.time.dao.ReservationTimeDao;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.domain.ReservationUserTime;
@@ -45,7 +45,15 @@ public class ReservationTimeService {
     }
 
     public List<ReservationUserTime> findAvailableTime(final String date, final long themeId) {
-        LocalDate localDate = LocalDate.parse(date);
+        final ReservationDate reservationDate = new ReservationDate(date);
+        if (reservationDate.isBeforeToday()) {
+            return reservationTimeDao.findAll().stream()
+                                     .map(reservationTime -> new ReservationUserTime(
+                                             reservationTime.getId(),
+                                             reservationTime.getStartAt().toString(),
+                                             true))
+                                     .toList();
+        }
         return reservationTimeDao.findAvailableTime(date, themeId);
     }
 }
