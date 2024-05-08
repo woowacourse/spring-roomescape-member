@@ -87,7 +87,7 @@ Content-Type: application/json
 
 ## 4단계
 - [x] 사용자 도메인을 추가합니다.
-- [ ] 로그인 기능을 구현하세요.
+- [x] 로그인 기능을 구현하세요.
 - [ ] 로그인 후 Cookie를 이용하여 사용자의 정보를 조회하는 API를 구현하세요.
 - [ ] 로그인 기능 구현 완료 후 클라이언트 코드에 있는 로그인 관련 로직을 활성화해야 합니다. 
   - [ ] TODO: [4단계] 주석을 검색하여 안내사항에 맞게 클라이언트 코드를 수정하세요.
@@ -97,13 +97,21 @@ Content-Type: application/json
   - name: 사용자 이름
   - email: 이메일
   - password: 비밀번호
-- [ ] email을 로그인의 id로, password를 비밀번호로 사용합니다.
+- [x] email을 로그인의 id로, password를 비밀번호로 사용합니다.
 
 ### 로그인
 - [x] GET /login 요청 시 로그인 폼이 있는 페이지를 응답합니다.
   - templates/login.html 파일을 이용하세요.
-- [ ] POST /login 요청 시 로그인 폼에 입력한 email, password 값을 body에 포함하세요.
-- [ ] 응답 Cookie에 "token"값으로 토큰이 포함되도록 하세요.
+- [x] POST /login 요청 시 로그인 폼에 입력한 email, password 값을 body에 포함하세요.
+  - [x] email과 password를 이용해서 멤버를 조회하고
+  - [x] 조회한 멤버로 토큰을 만듭니다.
+  - [x] 그리고 Cookie를 만들어 응답합니다.
+  - [x] 응답 Cookie에 "token"값으로 토큰이 포함되도록 하세요.
+- [ ] 인증 정보 조회(GET /login/check)하는 API를 만드세요.
+  - [ ] Cookie에서 토큰 정보를 추출하여
+  - [ ] 멤버를 찾아 멤버 정보를 응답합니다.
+- [ ] 로그인 기능과 인증 정보 조회 기능이 정상적으로 구현되면 로그인 후 우측 상단의 Login 버튼이 사용자 이름으로 변합니다.
+- [ ] 로그아웃 시 다시 Login 버튼이 노출됩니다.
 
 ### 인증 정보 조회
 -[ ] 상단바 우측 로그인 상태를 표현해주기 위해 사용자의 정보를 조회하는 API를 구현하세요.
