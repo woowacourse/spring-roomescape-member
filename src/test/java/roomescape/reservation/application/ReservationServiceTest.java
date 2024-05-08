@@ -57,7 +57,7 @@ class ReservationServiceTest {
     void validateDate(LocalDate invalidDate) {
         // given
         Reservation reservation = new Reservation(
-                USER_MIA, invalidDate, new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME());
+                MIA_NAME, invalidDate, new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME());
 
         // when & then
         assertThatThrownBy(() -> reservationService.create(reservation))
@@ -103,7 +103,7 @@ class ReservationServiceTest {
         assertSoftly(softly -> {
             softly.assertThat(reservations).hasSize(2)
                     .extracting(ReservationResponse::name)
-                    .containsExactly(USER_MIA, USER_TOMMY);
+                    .containsExactly(MIA_NAME, TOMMY_NAME);
             softly.assertThat(reservations).extracting(ReservationResponse::time)
                     .extracting(ReservationTimeResponse::startAt)
                     .containsExactly(MIA_RESERVATION_TIME, TOMMY_RESERVATION_TIME);

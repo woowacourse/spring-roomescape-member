@@ -1,10 +1,10 @@
-package roomescape.reservation.presentation;
+package roomescape.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 
-abstract class ControllerTest {
+public abstract class ControllerTest {
     @Autowired
     protected MockMvc mockMvc;
 

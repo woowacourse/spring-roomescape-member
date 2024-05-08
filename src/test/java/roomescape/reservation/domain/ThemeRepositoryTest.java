@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import roomescape.common.RepositoryTest;
 
 import java.sql.Time;
 import java.time.LocalDate;
@@ -117,8 +118,8 @@ class ThemeRepositoryTest extends RepositoryTest {
         long firstRankThemeId = 2;
         String insertReservationSql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)";
         jdbcTemplate.update(insertReservationSql,
-                USER_MIA, LocalDate.now().minusDays(7), 1L, firstRankThemeId,
-                USER_TOMMY, LocalDate.now().minusDays(6), 2L, firstRankThemeId,
+                MIA_NAME, LocalDate.now().minusDays(7), 1L, firstRankThemeId,
+                TOMMY_NAME, LocalDate.now().minusDays(6), 2L, firstRankThemeId,
                 "냥", LocalDate.now().minusDays(1), 1L, secondRankThemeId);
 
         LocalDate startDate = LocalDate.now().minusDays(7);

@@ -1,5 +1,6 @@
 package roomescape;
 
+import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
@@ -8,11 +9,12 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class TestFixture {
-    public static final String USER_MIA = "미아";
+    public static final String MIA_NAME = "미아";
+    public static final String MIA_EMAIL = "testmia@gmail.com";
     public static final LocalDate MIA_RESERVATION_DATE = LocalDate.of(2030, 4, 18);
     public static final LocalTime MIA_RESERVATION_TIME = LocalTime.of(15, 0);
 
-    public static final String USER_TOMMY = "토미";
+    public static final String TOMMY_NAME = "토미";
     public static final LocalDate TOMMY_RESERVATION_DATE = LocalDate.of(2030, 5, 19);
     public static final LocalTime TOMMY_RESERVATION_TIME = LocalTime.of(15, 0);
 
@@ -23,18 +25,23 @@ public class TestFixture {
     public static final String HORROR_THEME_DESCRIPTION = "매우 무섭습니다.";
 
     public static final String TEST_ERROR_MESSAGE = "ERROR MESSAGE";
+    public static final String TEST_PASSWORD = "test password";
+
+    public static Member USER_MIA() {
+        return new Member(MIA_NAME, MIA_EMAIL, TEST_PASSWORD);
+    }
 
     public static Reservation MIA_RESERVATION() {
         return MIA_RESERVATION(new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME());
     }
 
     public static Reservation MIA_RESERVATION(ReservationTime time, Theme theme) {
-        return new Reservation(USER_MIA, MIA_RESERVATION_DATE, time, theme);
+        return new Reservation(MIA_NAME, MIA_RESERVATION_DATE, time, theme);
     }
 
     public static Reservation TOMMY_RESERVATION() {
         return new Reservation(
-                USER_TOMMY, TOMMY_RESERVATION_DATE,
+                TOMMY_NAME, TOMMY_RESERVATION_DATE,
                 new ReservationTime(TOMMY_RESERVATION_TIME), WOOTECO_THEME()
         );
     }

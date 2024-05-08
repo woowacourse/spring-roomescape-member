@@ -46,7 +46,7 @@ class ReservationAcceptanceTest extends ApiAcceptanceTest {
         Long themeId = saveTheme(WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION);
         Long timeId = saveReservationTime(MIA_RESERVATION_TIME);
 
-        ReservationSaveRequest request = new ReservationSaveRequest(USER_MIA, MIA_RESERVATION_DATE, timeId, themeId);
+        ReservationSaveRequest request = new ReservationSaveRequest(MIA_NAME, MIA_RESERVATION_DATE, timeId, themeId);
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(request)
@@ -59,7 +59,7 @@ class ReservationAcceptanceTest extends ApiAcceptanceTest {
         assertSoftly(softly -> {
             checkHttpStatusCreated(softly, response);
             softly.assertThat(reservationResponse.id()).isNotNull();
-            softly.assertThat(reservationResponse.name()).isEqualTo(USER_MIA);
+            softly.assertThat(reservationResponse.name()).isEqualTo(MIA_NAME);
         });
     }
 
@@ -93,7 +93,7 @@ class ReservationAcceptanceTest extends ApiAcceptanceTest {
         Long notExistingTimeId = 1L;
         Long themeId = saveTheme(WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION);
 
-        ReservationSaveRequest request = new ReservationSaveRequest(USER_MIA, MIA_RESERVATION_DATE, notExistingTimeId, themeId);
+        ReservationSaveRequest request = new ReservationSaveRequest(MIA_NAME, MIA_RESERVATION_DATE, notExistingTimeId, themeId);
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(request)

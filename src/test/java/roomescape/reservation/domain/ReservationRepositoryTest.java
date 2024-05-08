@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import roomescape.common.RepositoryTest;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -49,7 +50,7 @@ class ReservationRepositoryTest extends RepositoryTest {
         Long timeId = 1L;
         Long themeId = 1L;
         String insertSql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
-        jdbcTemplate.update(insertSql, USER_MIA, Date.valueOf(MIA_RESERVATION_DATE), timeId, themeId);
+        jdbcTemplate.update(insertSql, MIA_NAME, Date.valueOf(MIA_RESERVATION_DATE), timeId, themeId);
 
         // when
         boolean existByDateAndTimeIdAndThemeId = reservationRepository.existByDateAndTimeIdAndThemeId(
@@ -66,7 +67,7 @@ class ReservationRepositoryTest extends RepositoryTest {
         Long timeId = 1L;
         Long themeId = 1L;
         String insertSql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
-        jdbcTemplate.update(insertSql, USER_MIA, MIA_RESERVATION_DATE, timeId, themeId);
+        jdbcTemplate.update(insertSql, MIA_NAME, MIA_RESERVATION_DATE, timeId, themeId);
 
         // when
         List<Reservation> reservations = reservationRepository.findAll();
@@ -93,7 +94,7 @@ class ReservationRepositoryTest extends RepositoryTest {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(insertSql, new String[]{"id"});
-            ps.setString(1, USER_MIA);
+            ps.setString(1, MIA_NAME);
             ps.setDate(2, Date.valueOf(MIA_RESERVATION_DATE));
             ps.setLong(3, timeId);
             return ps;
@@ -130,8 +131,8 @@ class ReservationRepositoryTest extends RepositoryTest {
         String insertSql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?), (?, ?, ?, ?)";
         jdbcTemplate.update(
                 insertSql,
-                USER_MIA, Date.valueOf(MIA_RESERVATION_DATE), timeId, themeId,
-                USER_TOMMY, Date.valueOf(MIA_RESERVATION_DATE), timeId, themeId
+                MIA_NAME, Date.valueOf(MIA_RESERVATION_DATE), timeId, themeId,
+                TOMMY_NAME, Date.valueOf(MIA_RESERVATION_DATE), timeId, themeId
         );
 
         // when

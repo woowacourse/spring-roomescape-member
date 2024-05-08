@@ -6,6 +6,7 @@ import org.mockito.BDDMockito;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import roomescape.common.ControllerTest;
 import roomescape.reservation.application.ThemeService;
 import roomescape.reservation.dto.request.ThemeSaveRequest;
 import roomescape.reservation.dto.response.ThemeResponse;

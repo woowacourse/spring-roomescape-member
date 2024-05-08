@@ -1,4 +1,4 @@
-package roomescape.reservation.domain;
+package roomescape.common;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -8,7 +8,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 @Sql("/test-schema.sql")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class RepositoryTest {
+public class RepositoryTest {
     @LocalServerPort
     private int port;
 

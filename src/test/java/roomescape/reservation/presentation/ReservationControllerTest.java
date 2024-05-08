@@ -8,6 +8,7 @@ import org.mockito.BDDMockito;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import roomescape.common.ControllerTest;
 import roomescape.exception.NotFoundException;
 import roomescape.reservation.application.ReservationService;
 import roomescape.reservation.application.ReservationTimeService;
@@ -56,7 +57,7 @@ class ReservationControllerTest extends ControllerTest {
         mockMvc.perform(get("/reservations").contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].name").value(USER_MIA))
+                .andExpect(jsonPath("$[0].name").value(MIA_NAME))
                 .andExpect(jsonPath("$[0].time.id").value(1L))
                 .andExpect(jsonPath("$[0].time.startAt").value(MIA_RESERVATION_TIME.toString()))
                 .andExpect(jsonPath("$[0].theme.name").value(WOOTECO_THEME_NAME))
@@ -67,7 +68,7 @@ class ReservationControllerTest extends ControllerTest {
     @DisplayName("예약 POST 요청 시 상태코드 201을 반환한다.")
     void createReservation() throws Exception {
         // given
-        ReservationSaveRequest request = new ReservationSaveRequest(USER_MIA, MIA_RESERVATION_DATE, 1L, 1L);
+        ReservationSaveRequest request = new ReservationSaveRequest(MIA_NAME, MIA_RESERVATION_DATE, 1L, 1L);
         ReservationTime expectedTime = new ReservationTime(1L, MIA_RESERVATION_TIME);
         Theme expectedTheme = WOOTECO_THEME(1L);
         ReservationResponse expectedResponse = ReservationResponse.from(MIA_RESERVATION(expectedTime, expectedTheme));
@@ -85,7 +86,7 @@ class ReservationControllerTest extends ControllerTest {
                         .content(objectMapper.writeValueAsBytes(request)))
                 .andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name").value(USER_MIA))
+                .andExpect(jsonPath("$.name").value(MIA_NAME))
                 .andExpect(jsonPath("$.time.id").value(1L))
                 .andExpect(jsonPath("$.time.startAt").value(MIA_RESERVATION_TIME.toString()))
                 .andExpect(jsonPath("$.date").value(MIA_RESERVATION_DATE.toString()));
@@ -107,9 +108,9 @@ class ReservationControllerTest extends ControllerTest {
     private static Stream<ReservationSaveRequest> invalidPostRequests() {
         return Stream.of(
                 new ReservationSaveRequest(null, MIA_RESERVATION_DATE, 1L, 1L),
-                new ReservationSaveRequest(USER_MIA, null, 1L, 1L),
-                new ReservationSaveRequest(USER_MIA, MIA_RESERVATION_DATE, null, 1L),
-                new ReservationSaveRequest(USER_MIA, MIA_RESERVATION_DATE, 1L, null)
+                new ReservationSaveRequest(MIA_NAME, null, 1L, 1L),
+                new ReservationSaveRequest(MIA_NAME, MIA_RESERVATION_DATE, null, 1L),
+                new ReservationSaveRequest(MIA_NAME, MIA_RESERVATION_DATE, 1L, null)
         );
     }
 
@@ -135,7 +136,7 @@ class ReservationControllerTest extends ControllerTest {
         Long notExistingTimeId = 1L;
         Long themeId = 1L;
         ThemeResponse themeResponse = ThemeResponse.from(WOOTECO_THEME(themeId));
-        ReservationSaveRequest request = new ReservationSaveRequest(USER_MIA, MIA_RESERVATION_DATE, notExistingTimeId, themeId);
+        ReservationSaveRequest request = new ReservationSaveRequest(MIA_NAME, MIA_RESERVATION_DATE, notExistingTimeId, themeId);
 
         BDDMockito.given(themeService.findById(themeId))
                 .willReturn(themeResponse);
@@ -160,7 +161,7 @@ class ReservationControllerTest extends ControllerTest {
         Long timeId = 1L;
         Long notExistingThemeId = 1L;
         ReservationTimeResponse timeResponse = ReservationTimeResponse.from(new ReservationTime(1L, MIA_RESERVATION_TIME));
-        ReservationSaveRequest request = new ReservationSaveRequest(USER_MIA, MIA_RESERVATION_DATE, timeId, notExistingThemeId);
+        ReservationSaveRequest request = new ReservationSaveRequest(MIA_NAME, MIA_RESERVATION_DATE, timeId, notExistingThemeId);
 
         BDDMockito.given(reservationTimeService.findById(timeId))
                 .willReturn(timeResponse);
