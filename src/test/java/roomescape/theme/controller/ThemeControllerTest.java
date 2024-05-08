@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -52,7 +53,11 @@ public class ThemeControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(theme.getId()))
+                .andExpect(jsonPath("$.name").value(theme.getName()))
+                .andExpect(jsonPath("$.thumbnail").value(theme.getThumbnail()))
+                .andExpect(jsonPath("$.description").value(theme.getDescription()));
     }
 
     @Test
@@ -63,7 +68,11 @@ public class ThemeControllerTest {
 
         mockMvc.perform(get("/themes"))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(theme.getId()))
+                .andExpect(jsonPath("$[0].name").value(theme.getName()))
+                .andExpect(jsonPath("$[0].thumbnail").value(theme.getThumbnail()))
+                .andExpect(jsonPath("$[0].description").value(theme.getDescription()));
     }
 
     @Test
@@ -74,7 +83,10 @@ public class ThemeControllerTest {
 
         mockMvc.perform(get("/themes/rank?date=" + TODAY))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].thumbnail").value(theme.getThumbnail()))
+                .andExpect(jsonPath("$[0].name").value(theme.getName()))
+                .andExpect(jsonPath("$[0].description").value(theme.getDescription()));
     }
 
     @Test

@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,6 +36,7 @@ class ReservationControllerTest {
 
     private final Reservation reservation = Reservation.reservationOf(1L, "polla", TODAY,
             new Time(1L, LocalTime.of(10, 0)), new Theme(1L, "polla", "폴라 방탈출", "이미지~"));
+    private final String expectedStartAt = "10:00:00";
 
     @Autowired
     private MockMvc mockMvc;
@@ -58,7 +60,11 @@ class ReservationControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(reservation.getId()))
+                .andExpect(jsonPath("$.reservationName").value(reservation.getName()))
+                .andExpect(jsonPath("$.startAt").value(expectedStartAt))
+                .andExpect(jsonPath("$.themeName").value(reservation.getTheme().getName()));
     }
 
     @Test
@@ -69,7 +75,12 @@ class ReservationControllerTest {
 
         mockMvc.perform(get("/reservations"))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(reservation.getId()))
+                .andExpect(jsonPath("$[0].reservationName").value(reservation.getName()))
+                .andExpect(jsonPath("$[0].startAt").value(expectedStartAt))
+                .andExpect(jsonPath("$[0].themeName").value(reservation.getTheme().getName()));
+        ;
     }
 
     @Test
@@ -81,7 +92,10 @@ class ReservationControllerTest {
 
         mockMvc.perform(get("/reservations/1?date=" + TODAY))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].startAt").value(expectedStartAt))
+                .andExpect(jsonPath("$[0].timeId").value(reservation.getReservationTime().getId()))
+                .andExpect(jsonPath("$[0].alreadyBooked").value(true));
     }
 
     @Test

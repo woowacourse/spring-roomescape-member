@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,7 +27,8 @@ import roomescape.time.service.TimeService;
 
 @WebMvcTest(TimeController.class)
 class TimeControllerTest {
-    private final Time time = new Time(4L, LocalTime.of(10, 0));
+    private final Time time = new Time(4L, LocalTime.of(10, 0, 0));
+    private final String expectedTime = "10:00:00";
 
     @Autowired
     private MockMvc mockMvc;
@@ -50,7 +52,9 @@ class TimeControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(time.getId()))
+                .andExpect(jsonPath("$.startAt").value(expectedTime));
     }
 
     @Test
@@ -61,7 +65,9 @@ class TimeControllerTest {
 
         mockMvc.perform(get("/times"))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(time.getId()))
+                .andExpect(jsonPath("$[0].startAt").value(expectedTime));
     }
 
     @Test
