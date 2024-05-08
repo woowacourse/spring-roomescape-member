@@ -42,4 +42,13 @@ public class MemberController {
         final MemberLoginResponse memberLoginResponse = memberService.findMemberByToken(accessToken);
         return ResponseEntity.ok(memberLoginResponse);
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(final HttpServletResponse response) {
+        Cookie cookie = new Cookie("token", null);
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+        return ResponseEntity.ok().build();
+    }
 }
