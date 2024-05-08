@@ -40,14 +40,14 @@ public class ThemeDao implements ThemeRepository {
     @Override
     public List<Theme> findAll() {
         String sql = "SELECT * FROM theme";
-        return jdbcTemplate.query(sql, this::rowMapper);
+        return jdbcTemplate.query(sql, this::mapRowToObject);
     }
 
     @Override
     public Optional<Theme> findById(Long id) {
         try {
             String sql = "SELECT * FROM theme WHERE id = ?";
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, this::rowMapper, id));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, this::mapRowToObject, id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -81,10 +81,10 @@ public class ThemeDao implements ThemeRepository {
                 LIMIT
                     ?
                 """;
-        return jdbcTemplate.query(sql, this::rowMapper, startDate, endDate, limit);
+        return jdbcTemplate.query(sql, this::mapRowToObject, startDate, endDate, limit);
     }
 
-    private Theme rowMapper(ResultSet resultSet, int rowNumber) throws SQLException {
+    private Theme mapRowToObject(ResultSet resultSet, int rowNumber) throws SQLException {
         return new Theme(
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
