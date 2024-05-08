@@ -132,7 +132,7 @@ class ReservationControllerTest {
     @DisplayName("예약 생성 시, date는 오늘이고 time은 이미 지난 시간이면 예외가 발생한다.")
     void validateReservationCreateWithTodayPastTime() {
         Map<String, String> params = new HashMap<>();
-        params.put("startAt", LocalTime.now().minusHours(1).format(DateTimeFormatter.ofPattern("HH:mm")));
+        params.put("startAt", LocalTime.now().minusSeconds(1).format(DateTimeFormatter.ofPattern("HH:mm")));
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
