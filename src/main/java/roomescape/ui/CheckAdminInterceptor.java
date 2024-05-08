@@ -1,5 +1,6 @@
 package roomescape.ui;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,11 +12,12 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         Cookie[] cookies = request.getCookies();
         String token = extractTokenFromCookie(cookies);
-        String email = Jwts.parser()
+        Claims claims = Jwts.parser()
                 .setSigningKey("secret")
                 .parseClaimsJws(token)
-                .getBody().getSubject();
-        if (email == null || !email.equals("admin")) {
+                .getBody();
+        String role = String.valueOf(claims.get("role"));
+        if (role == null || !role.equals("ADMIN")) {
             response.setStatus(401);
             return false;
         }

@@ -8,6 +8,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import roomescape.domain.Member;
 
 @Component
 public class JwtTokenProvider {
@@ -16,15 +17,11 @@ public class JwtTokenProvider {
     @Value("${security.jwt.token.expire-length}")
     private long validityInMilliseconds;
 
-    public String createToken(String payload) {
-        Claims claims = Jwts.claims().setSubject(payload);
-        Date now = new Date();
-        Date validity = new Date(now.getTime() + validityInMilliseconds);
-
+    public String createToken(Member member) {
         return Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(validity)
+                .setSubject(member.getId().toString())
+                .claim("email", member.getEmail())
+                .claim("role", member.getRole())
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }

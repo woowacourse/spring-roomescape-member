@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.controller.response.UserResponse;
 import roomescape.domain.Member;
+import roomescape.domain.Role;
 
 @Repository
 public class MemberRepository {
@@ -23,17 +24,19 @@ public class MemberRepository {
     }
 
     public Member save(Member member) {
-        Long userId = jdbcInsert.executeAndReturnKey(Map.of(
+        Long memberId = jdbcInsert.executeAndReturnKey(Map.of(
                         "name", member.getName(),
                         "email", member.getEmail(),
-                        "password", member.getPassword()))
+                        "password", member.getPassword(),
+                        "role", member.getRole().name()))
                 .longValue();
 
         return new Member(
-                userId,
+                memberId,
                 member.getName(),
                 member.getEmail(),
-                member.getPassword());
+                member.getPassword(),
+                member.getRole());
     }
 
     public boolean checkExistMember(String email, String password) {
@@ -52,28 +55,28 @@ public class MemberRepository {
         return b;
     }
 
-    public UserResponse findByEmail(String email) {
+    public Member findByEmail(String email) {
         String sql = """
                 SELECT
-                    id, name, email, password
+                    id, name, email, password, role
                 FROM
                     user_table
                 WHERE
                     email = ?
                 """;
-        UserResponse userResponse = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new UserResponse(
+        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new Member(
                 rs.getLong("id"),
                 rs.getString("name"),
                 rs.getString("email"),
-                rs.getString("password")
+                rs.getString("password"),
+                Role.getR(rs.getString("role"))
         ), email);
-        return userResponse;
     }
 
     public Optional<UserResponse> findById(Long memberId) {
         String sql = """
                 SELECT
-                    id, name, email, password
+                    id, name, email, password, role
                 FROM
                     user_table
                 WHERE
@@ -83,7 +86,8 @@ public class MemberRepository {
                 rs.getLong("id"),
                 rs.getString("name"),
                 rs.getString("email"),
-                rs.getString("password")
+                rs.getString("password"),
+                Role.getR(rs.getString("role"))
         ), memberId);
         return Optional.ofNullable(userResponse);
     }
@@ -94,7 +98,8 @@ public class MemberRepository {
                 rs.getLong("id"),
                 rs.getString("name"),
                 rs.getString("email"),
-                rs.getString("password")
+                rs.getString("password"),
+                Role.getR(rs.getString("role"))
         ));
     }
 }

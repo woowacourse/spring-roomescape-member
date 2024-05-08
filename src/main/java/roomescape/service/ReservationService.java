@@ -9,6 +9,7 @@ import roomescape.controller.response.ReservationResponse;
 import roomescape.controller.response.UserResponse;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 import roomescape.domain.Member;
 import roomescape.repository.MemberRepository;
@@ -50,7 +51,7 @@ public class ReservationService {
                 .orElseThrow(() -> new IllegalArgumentException("예약할 수 없는 테마입니다. themeId: " + reservationRequest2.themeId()));
         UserResponse userResponse = memberRepository.findById(reservationRequest2.memberId()).orElseThrow();
         Reservation requestedReservation = new Reservation(new Member(userResponse.id(), userResponse.name(),
-                userResponse.email(), userResponse.password()), reservationRequest2.date(), requestedReservationTime, requestedTheme);
+                userResponse.email(), userResponse.password(), Role.USER), reservationRequest2.date(), requestedReservationTime, requestedTheme);
 
         rejectPastTimeReservation(requestedReservation);
         rejectDuplicateReservation(requestedReservation);
@@ -89,13 +90,14 @@ public class ReservationService {
                 .orElseThrow(() -> new IllegalArgumentException("예약할 수 없는 테마입니다. themeId: " + reservationRequest2.themeId()));
         UserResponse userResponse = memberRepository.findById(reservationRequest2.memberId()).orElseThrow();
         Reservation requestedReservation = reservationRepository.save(new Reservation(new Member(userResponse.id(),
-                userResponse.name(), userResponse.email(), userResponse.password()), reservationRequest2.date(), requestedReservationTime, requestedTheme));
+                userResponse.name(), userResponse.email(), userResponse.password(), userResponse.role()), reservationRequest2.date(), requestedReservationTime, requestedTheme));
 
         return ReservationResponse.from(requestedReservation);
     }
 
     public UserResponse findByEmail(String email) {
-        return memberRepository.findByEmail(email);
+        Member byEmail = memberRepository.findByEmail(email);
+        return new UserResponse(byEmail.getId(), byEmail.getName(), byEmail.getEmail(), byEmail.getPassword(), byEmail.getRole());
     }
 
     public List<ReservationResponse> findSearchReservation(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {

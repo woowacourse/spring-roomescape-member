@@ -26,13 +26,13 @@ values ('10:00'),
        ('20:00'),
        ('21:00');
 
-insert into user_table (name, email, password)
-values ('admin', 'admin', 'admin'),
-       ('name1', 'email1', 'qq1'),
-       ('name2', 'email2', 'qq2');
+insert into user_table (name, email, password, role)
+values ('admin', 'admin', 'admin', 'ADMIN'),
+       ('name1', 'email1', 'qq1', 'USER'),
+       ('name2', 'email2', 'qq2', 'USER');
 
 insert into reservation (date, member_id, time_id, theme_id)
-values ('2024-04-29', 2, 1, 1),
-       ('2024-04-30', 2, 2, 1),
-       ('2024-04-28', 3, 4, 2),
-       ('2024-04-29', 3, 1, 1);
+values ('2024-05-05', 2, 1, 1),
+       ('2024-05-05', 2, 2, 1),
+       ('2024-05-07', 3, 4, 2),
+       ('2024-05-07', 3, 1, 1);

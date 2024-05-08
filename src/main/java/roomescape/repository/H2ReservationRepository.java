@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 import roomescape.domain.Member;
 
@@ -90,7 +91,8 @@ public class H2ReservationRepository implements ReservationRepository {
                         u.id as user_id,
                         u.name as user_name,
                         u.email as user_email,
-                        u.password as user_password
+                        u.password as user_password,
+                        u.role as user_role
                     from reservation as r
                     inner join reservation_time as t
                     on r.time_id = t.id
@@ -109,7 +111,8 @@ public class H2ReservationRepository implements ReservationRepository {
                     new Member(rs.getLong("user_id"),
                             rs.getString("user_name"),
                             rs.getString("email"),
-                            rs.getString("user_password")),
+                            rs.getString("user_password"),
+                            Role.getR(rs.getString("user_role"))),
                     rs.getDate("date").toLocalDate(),
                     new ReservationTime(
                             rs.getLong("time_id"),

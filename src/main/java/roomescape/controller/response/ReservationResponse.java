@@ -19,7 +19,7 @@ public record ReservationResponse(
         Member member = reservation.getUser();
         return new ReservationResponse(
                 reservation.getId(),
-                new UserResponse(member.getId(), member.getName(), member.getEmail(), member.getPassword()),
+                new UserResponse(member.getId(), member.getName(), member.getEmail(), member.getPassword(), member.getRole()),
                 reservation.getDate(),
                 TimeResponse.from(reservation.getTime()),
                 ThemeResponse.from(reservation.getTheme()));

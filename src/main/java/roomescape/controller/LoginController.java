@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,11 +45,12 @@ public class LoginController {
     public ResponseEntity<UserResponse> checkLogin(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         String token = extractTokenFromCookie(cookies);
-        String secret = Jwts.parser()
+        Claims claims = Jwts.parser()
                 .setSigningKey("secret")
                 .parseClaimsJws(token)
-                .getBody().getSubject();
-        UserResponse userResponse = memberService.findByEmail(secret);
+                .getBody();
+        String email = String.valueOf(claims.get("email"));
+        UserResponse userResponse = memberService.findByEmail(email);
         return ResponseEntity.ok(userResponse);
     }
 

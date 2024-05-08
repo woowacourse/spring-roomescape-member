@@ -34,7 +34,7 @@ public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArg
                 .parseClaimsJws(token)
                 .getBody().getSubject();
         UserResponse userResponse = memberService.findByEmail(secret);
-        return new Member(userResponse.id(), userResponse.name(), userResponse.email(), userResponse.password());
+        return new Member(userResponse.id(), userResponse.name(), userResponse.email(), userResponse.password(), userResponse.role());
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {

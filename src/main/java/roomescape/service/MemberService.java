@@ -30,7 +30,8 @@ public class MemberService {
         if (!checkInvalidLogin(userLoginRequest.email(), userLoginRequest.password())) {
             throw new IllegalArgumentException("사용자 없음");
         }
-        return jwtTokenProvider.createToken(userLoginRequest.email());
+        Member byEmail = memberRepository.findByEmail(userLoginRequest.email());
+        return jwtTokenProvider.createToken(byEmail);
     }
 
     private boolean checkInvalidLogin(String email, String password) {
@@ -38,7 +39,8 @@ public class MemberService {
     }
 
     public UserResponse findByEmail(String email) {
-        return memberRepository.findByEmail(email);
+        Member byEmail = memberRepository.findByEmail(email);
+        return new UserResponse(byEmail.getId(), byEmail.getName(), byEmail.getEmail(), byEmail.getPassword(), byEmail.getRole());
     }
 
     public List<MemberResponse> findAll() {
