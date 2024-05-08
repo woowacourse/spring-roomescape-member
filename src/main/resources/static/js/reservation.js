@@ -43,16 +43,14 @@ function createSelect(options, defaultText, selectId, textProperty) {
     select.className = 'form-control';
     select.id = selectId;
 
-    // 기본 옵션 추가
     const defaultOption = document.createElement('option');
     defaultOption.textContent = defaultText;
     select.appendChild(defaultOption);
 
-    // 넘겨받은 옵션을 바탕으로 드롭다운 메뉴 아이템 생성
     options.forEach(optionData => {
         const option = document.createElement('option');
         option.value = optionData.id;
-        option.textContent = optionData[textProperty]; // 동적 속성 접근
+        option.textContent = optionData[textProperty];
         select.appendChild(option);
     });
 
@@ -68,7 +66,7 @@ function createActionButton(label, className, eventListener) {
 }
 
 function addInputRow() {
-    if (isEditing) return;  // 이미 편집 중인 경우 추가하지 않음
+    if (isEditing) return;
 
     const tableBody = document.getElementById('table-body');
     const row = tableBody.insertRow();
@@ -113,7 +111,6 @@ function createActionButton(label, className, eventListener) {
 }
 
 function saveRow(event) {
-    // 이벤트 전파를 막는다
     event.stopPropagation();
 
     const row = event.target.parentNode.parentNode;
@@ -133,7 +130,7 @@ function saveRow(event) {
         })
         .catch(error => console.error('Error:', error));
 
-    isEditing = false;  // isEditing 값을 false로 설정
+    isEditing = false;
 }
 
 function deleteRow(event) {
@@ -166,7 +163,7 @@ function requestDelete(id) {
 
     return fetch(`${RESERVATION_API_ENDPOINT}/${id}`, requestOptions)
         .then(response => {
-            if (response.status !== 204) throw new Error('Delete failed');
+            if (response.status !== 200) throw new Error('Delete failed');
         });
 }
 
