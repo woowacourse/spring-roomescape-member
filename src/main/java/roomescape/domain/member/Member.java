@@ -16,6 +16,10 @@ public class Member {
         this.password = password;
     }
 
+    public Member(long id, String name, String userEmail, String userPassword) {
+        this(id, new Name(name), new Email(userEmail), new Password(userPassword));
+    }
+
     public String getName() {
         return name.getValue();
     }

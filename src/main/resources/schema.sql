@@ -25,3 +25,11 @@ CREATE TABLE reservation
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id)
 );
+
+CREATE TABLE member
+(
+    id   BIGINT       NOT NULL AUTO_INCREMENT,
+    user_email VARCHAR(255) NOT NULL,
+    user_password VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id)
+)
