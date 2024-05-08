@@ -15,6 +15,5 @@ class ReservationTimeTest {
                 .doesNotThrowAnyException();
         assertThatCode(() -> new ReservationTime(LocalTime.now()))
                 .doesNotThrowAnyException();
-
     }
 }

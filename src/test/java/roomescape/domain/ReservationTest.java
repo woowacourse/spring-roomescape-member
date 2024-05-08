@@ -34,6 +34,7 @@ class ReservationTest {
     void construct_IllegalName(String invalidName) {
         assertThatThrownBy(
             () -> new Reservation(invalidName, validDate, validReservationTime, validTheme)
-        ).isInstanceOf(RoomescapeException.class);
+        ).isInstanceOf(RoomescapeException.class)
+            .hasMessage("예약자 이름은 비어 있을 수 없습니다.");
     }
 }

@@ -66,7 +66,8 @@ class ReservationServiceTest {
     void save_IllegalName(String invalidName) {
         assertThatThrownBy(
             () -> reservationService.save(new SaveReservationDto(invalidName, rawDate, timeId, themeId))
-        ).isInstanceOf(RoomescapeException.class);
+        ).isInstanceOf(RoomescapeException.class)
+            .hasMessage("예약자 이름은 비어 있을 수 없습니다.");
     }
 
     @DisplayName("실패: 존재하지 않는 날짜 입력 시 예외가 발생한다.")
@@ -75,7 +76,8 @@ class ReservationServiceTest {
     void save_IllegalDate(String invalidRawDate) {
         assertThatThrownBy(
             () -> reservationService.save(new SaveReservationDto(name, invalidRawDate, timeId, themeId))
-        ).isInstanceOf(RoomescapeException.class);
+        ).isInstanceOf(RoomescapeException.class)
+            .hasMessage("잘못된 날짜 형식입니다.");
     }
 
     @DisplayName("실패: 존재하지 않는 시간 ID 입력 시 예외가 발생한다.")
@@ -83,7 +85,8 @@ class ReservationServiceTest {
     void save_TimeIdDoesntExist() {
         assertThatThrownBy(
             () -> reservationService.save(new SaveReservationDto(name, rawDate, 2L, themeId))
-        ).isInstanceOf(RoomescapeException.class);
+        ).isInstanceOf(RoomescapeException.class)
+            .hasMessage("입력한 시간 ID에 해당하는 데이터가 존재하지 않습니다.");
     }
 
     @DisplayName("실패: 중복 예약을 생성하면 예외가 발생한다.")
@@ -93,7 +96,8 @@ class ReservationServiceTest {
 
         assertThatThrownBy(
             () -> reservationService.save(new SaveReservationDto(name, rawDate, timeId, themeId))
-        ).isInstanceOf(RoomescapeException.class);
+        ).isInstanceOf(RoomescapeException.class)
+            .hasMessage("해당 시간에 예약이 이미 존재합니다.");
     }
 
     @DisplayName("실패: 과거 날짜 예약 생성하면 예외 발생 -- 어제")
@@ -103,7 +107,8 @@ class ReservationServiceTest {
 
         assertThatThrownBy(
             () -> reservationService.save(new SaveReservationDto(name, yesterday, timeId, themeId))
-        ).isInstanceOf(RoomescapeException.class);
+        ).isInstanceOf(RoomescapeException.class)
+            .hasMessage("과거 예약을 추가할 수 없습니다.");
     }
 
     @DisplayName("실패: 같은 날짜, 과거 시간 예약 생성하면 예외 발생 -- 1분 전")
@@ -116,6 +121,7 @@ class ReservationServiceTest {
 
         assertThatThrownBy(
             () -> reservationService.save(new SaveReservationDto(name, today, savedTime.getId(), themeId))
-        ).isInstanceOf(RoomescapeException.class);
+        ).isInstanceOf(RoomescapeException.class)
+            .hasMessage("과거 예약을 추가할 수 없습니다.");
     }
 }
