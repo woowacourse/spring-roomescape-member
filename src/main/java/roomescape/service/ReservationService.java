@@ -78,11 +78,9 @@ public class ReservationService {
         LocalDate today = now.toLocalDate();
         LocalTime nowTime = now.toLocalTime();
 
-        // 날짜가 지난 경우
         if (requestDate.isBefore(today)) {
             return true;
         }
-        // 날짜가 오늘이지만, 지난 시간인 경우
         if (requestDate.isEqual(today) && requestTime.getStartAt().isBefore(nowTime)) {
             return true;
         }
