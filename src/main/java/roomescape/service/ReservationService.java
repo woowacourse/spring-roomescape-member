@@ -68,8 +68,8 @@ public class ReservationService {
     }
 
     private void validateExistReservation(long id) {
-        Long count = reservationDao.countReservationById(id);
-        if (count == null || count <= 0) {
+        long count = reservationDao.countReservationById(id);
+        if (count <= 0) {
             throw new NotFoundException("해당 id:[%s] 값으로 예약된 내역이 존재하지 않습니다.".formatted(id));
         }
     }
