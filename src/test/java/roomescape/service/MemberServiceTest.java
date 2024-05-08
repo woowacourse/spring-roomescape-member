@@ -4,39 +4,39 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.domain.User;
-import roomescape.dto.UserDto;
+import roomescape.domain.Member;
+import roomescape.dto.MemberDto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class UserServiceTest {
+public class MemberServiceTest {
 
     @Autowired
-    private final UserService userService;
+    private final MemberService memberService;
 
     @Autowired
-    public UserServiceTest(UserService userService) {
-        this.userService = userService;
+    public MemberServiceTest(MemberService memberService) {
+        this.memberService = memberService;
     }
 
     @Test
     void registerTest() {
-        User user = userService.register(new UserDto("name", "email@email.com", "password"));
+        Member member = memberService.register(new MemberDto("name", "email@email.com", "password"));
 
-        assertThat(user).isNotNull();
+        assertThat(member).isNotNull();
     }
 
     @Test
     void loginTest() {
         String id = "email@email.com";
         String password = "password";
-        userService.register(new UserDto("name", id, password));
+        memberService.register(new MemberDto("name", id, password));
 
-        User user = userService.login(id, password);
+        Member member = memberService.login(id, password);
 
-        assertThat(user.isEmailMatches(id)).isTrue();
-        assertThat(user.isPasswordMatches(password)).isTrue();
+        assertThat(member.isEmailMatches(id)).isTrue();
+        assertThat(member.isPasswordMatches(password)).isTrue();
     }
 }

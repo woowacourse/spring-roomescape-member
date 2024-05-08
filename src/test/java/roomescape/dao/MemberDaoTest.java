@@ -1,15 +1,15 @@
 package roomescape.dao;
 
 import org.junit.jupiter.api.Test;
-import roomescape.domain.User;
+import roomescape.domain.Member;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class UserDaoTest {
+public class MemberDaoTest {
 
-    private final UserDao userDao = new UserDao();
+    private final MemberDao memberDao = new MemberDao();
 
     @Test
     void insertTest() {
@@ -17,16 +17,16 @@ public class UserDaoTest {
         String email = "email@email.com";
         String password = "password";
 
-        User user = userDao.insert(name, email, password);
+        Member member = memberDao.insert(name, email, password);
 
-        assertThat(user).isNotNull();
+        assertThat(member).isNotNull();
     }
 
     @Test
     void findByEmailTest() {
-        userDao.insert("name", "email@email.com", "password");
+        memberDao.insert("name", "email@email.com", "password");
 
-        Optional<User> user = userDao.findByEmail("email@email.com");
+        Optional<Member> user = memberDao.findByEmail("email@email.com");
 
         assertThat(user.isPresent()).isTrue();
     }

@@ -9,22 +9,22 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import roomescape.dto.LoginRequestDto;
 import roomescape.service.AuthenticationService;
-import roomescape.service.UserService;
+import roomescape.service.MemberService;
 
 @Controller
-public class UserController {
+public class MemberController {
 
-    private final UserService userService;
+    private final MemberService memberService;
     private final AuthenticationService authenticationService;
 
-    public UserController(UserService userService, AuthenticationService authenticationService) {
-        this.userService = userService;
+    public MemberController(MemberService memberService, AuthenticationService authenticationService) {
+        this.memberService = memberService;
         this.authenticationService = authenticationService;
     }
 
     @PostMapping("/login")
     public void login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
-        userService.login(loginRequestDto.email(), loginRequestDto.password());
+        memberService.login(loginRequestDto.email(), loginRequestDto.password());
         String token = authenticationService.createToken(loginRequestDto.email());
         Cookie cookie = authenticationService.createCookie(token);
         response.addCookie(cookie);
