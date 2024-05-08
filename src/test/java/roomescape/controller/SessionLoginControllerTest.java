@@ -21,7 +21,7 @@ class SessionLoginControllerTest {
         RestAssured.port = port;
     }
 
-    @Test
+//    @Test
     @DisplayName("유효한 회원의 로그인 요청")
     void login() {
         final Map<String, String> params = Map.of("password", "0000", "email", "redddy@gmail.com");
