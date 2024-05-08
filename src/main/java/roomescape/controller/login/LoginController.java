@@ -1,9 +1,7 @@
 package roomescape.controller.login;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.Arrays;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import roomescape.auth.application.AuthService;
 import roomescape.auth.dto.MemberResponse;
 import roomescape.auth.dto.TokenRequest;
-import roomescape.auth.infrastructure.AuthorizationExtractor;
 
 @Controller
 public class LoginController {
@@ -20,11 +17,9 @@ public class LoginController {
     public static final String TOKEN_NAME = "token";
 
     private final AuthService authService;
-    private final AuthorizationExtractor authorizationExtractor;
 
     public LoginController(AuthService authService) {
         this.authService = authService;
-        this.authorizationExtractor = new AuthorizationExtractor();
     }
 
     @GetMapping("/login")
@@ -48,14 +43,10 @@ public class LoginController {
     }
 
     @PostMapping("/logout")
-    public void logout(HttpServletRequest request, HttpServletResponse response) {
-        Cookie[] cookies = request.getCookies();
+    public void logout(HttpServletResponse response) {
+        Cookie cookie = new Cookie(TOKEN_NAME, null);
+        cookie.setMaxAge(0);
 
-        Arrays.stream(cookies)
-                .filter(cookie -> TOKEN_NAME.equals(cookie.getName()))
-                .forEach(cookie -> {
-                    cookie.setMaxAge(0);
-                    response.addCookie(cookie);
-                });
+        response.addCookie(cookie);
     }
 }
