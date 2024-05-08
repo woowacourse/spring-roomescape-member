@@ -88,9 +88,9 @@ class ReservationServiceTest extends IntegrationTestSupport {
     @DisplayName("중복된 예약 저장")
     @Test
     void saveDuplicatedReservation() {
-        assertThatThrownBy(() -> {
-            reservationService.saveReservation(
-                    new ReservationSaveRequest(1L, LocalDate.parse("2024-05-04"), 1L, 1L));
-        }).isInstanceOf(ReservationBusinessException.class);
+        ReservationSaveRequest reservationSaveRequest = new ReservationSaveRequest(1L, LocalDate.parse("2024-05-04"),
+                1L, 1L);
+        assertThatThrownBy(() -> reservationService.saveReservation(reservationSaveRequest))
+                .isInstanceOf(ReservationBusinessException.class);
     }
 }

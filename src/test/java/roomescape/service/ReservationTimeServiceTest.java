@@ -67,8 +67,11 @@ class ReservationTimeServiceTest extends IntegrationTestSupport {
     @DisplayName("중복된 시간 저장")
     @Test
     void saveDuplicatedTime() {
+        ReservationTimeSaveRequest reservationTimeSaveRequest = new ReservationTimeSaveRequest(
+                LocalTime.parse("11:00"));
+
         assertThatThrownBy(
-                () -> reservationTimeService.saveTime(new ReservationTimeSaveRequest(LocalTime.parse("11:00"))))
+                () -> reservationTimeService.saveTime(reservationTimeSaveRequest))
                 .isInstanceOf(ReservationBusinessException.class);
     }
 

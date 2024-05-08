@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @ExceptionHandler(AuthorizationException.class)
-    public ResponseEntity<ProblemDetail> handleAuthorizationException(AuthorizationException e) {
+    public ResponseEntity<ProblemDetail> handleAuthorizationException() {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(ProblemDetail.forStatusAndDetail(
                         HttpStatus.UNAUTHORIZED,
