@@ -68,7 +68,7 @@ public class MemberRepository {
                 rs.getString("name"),
                 rs.getString("email"),
                 rs.getString("password"),
-                Role.getR(rs.getString("role"))
+                Role.valueOf(rs.getString("role"))
         ), email);
     }
 
@@ -86,7 +86,7 @@ public class MemberRepository {
                 rs.getString("name"),
                 rs.getString("email"),
                 rs.getString("password"),
-                Role.getR(rs.getString("role"))
+                Role.valueOf(rs.getString("role"))
         ), memberId);
         return Optional.ofNullable(member);
     }
@@ -98,7 +98,7 @@ public class MemberRepository {
                 rs.getString("name"),
                 rs.getString("email"),
                 rs.getString("password"),
-                Role.getR(rs.getString("role"))
+                Role.valueOf(rs.getString("role"))
         ));
     }
 }

@@ -113,7 +113,7 @@ public class H2ReservationRepository implements ReservationRepository {
                             rs.getString("user_name"),
                             rs.getString("email"),
                             rs.getString("user_password"),
-                            Role.getR(rs.getString("user_role"))),
+                            Role.valueOf(rs.getString("user_role"))),
                     new ReservationTime(
                             rs.getLong("time_id"),
                             rs.getTime("time_value").toLocalTime()),
