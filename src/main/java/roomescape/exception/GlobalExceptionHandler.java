@@ -48,4 +48,10 @@ public class GlobalExceptionHandler {
         ErrorResponse data = new ErrorResponse(message);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(data);
     }
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ErrorResponse> handleForbiddenException(ForbiddenException exception) {
+        ErrorResponse data = new ErrorResponse(exception.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(data);
+    }
 }

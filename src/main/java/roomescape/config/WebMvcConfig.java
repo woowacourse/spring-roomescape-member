@@ -3,6 +3,8 @@ package roomescape.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
@@ -11,9 +13,20 @@ import java.util.List;
 public class WebMvcConfig implements WebMvcConfigurer {
 
     private final HandlerMethodArgumentResolver loginMemberArgumentResolver;
+    private final HandlerInterceptor roleCheckHandlerInterceptor;
 
-    public WebMvcConfig(HandlerMethodArgumentResolver loginMemberArgumentResolver) {
+    public WebMvcConfig(
+            HandlerMethodArgumentResolver loginMemberArgumentResolver,
+            HandlerInterceptor roleCheckHandlerInterceptor
+    ) {
         this.loginMemberArgumentResolver = loginMemberArgumentResolver;
+        this.roleCheckHandlerInterceptor = roleCheckHandlerInterceptor;
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(roleCheckHandlerInterceptor)
+                .addPathPatterns("/admin/**");
     }
 
     @Override
