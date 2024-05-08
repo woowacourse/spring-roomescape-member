@@ -9,7 +9,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import roomescape.auth.TokenProvider;
 import roomescape.auth.dto.request.LoginRequest;
+import roomescape.auth.dto.response.GetAuthInfoResponse;
 import roomescape.auth.dto.response.LoginResponse;
+import roomescape.member.domain.Member;
 import roomescape.member.repository.MemberRepository;
 import roomescape.util.MemberFixture;
 
@@ -21,7 +23,7 @@ class AuthServiceTest {
     private final MemberRepository memberRepository;
 
     AuthServiceTest() {
-        this.tokenProvider = new TokenProvider("adffdsa", 100);
+        this.tokenProvider = new TokenProvider("adffdsa", 3600000);
         this.memberRepository = new FakeMemberRepository();
         this.authService = new AuthService(memberRepository, tokenProvider);
     }
@@ -48,14 +50,45 @@ class AuthServiceTest {
     void login_WhenMemberNotExists() {
         assertThatThrownBy(() -> authService.login(new LoginRequest("email@naver.com", "asdf")))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("로그인하려는 회원이 존재하지 않는 회원입니다.");
+                .hasMessage("로그인하려는 계정이 존재하지 않습니다. 회원가입 후 로그인해주세요.");
     }
 
     @Test
-    @DisplayName("유저 로그인 시 입력한 비밀번호가 계정의 비밀번호와 다를 경우, 예외가 발생한다..")
+    @DisplayName("유저 로그인 시 입력한 비밀번호가 계정의 비밀번호와 다를 경우, 예외가 발생한다.")
     void login_WhenMemberPasswordNotSame() {
-        assertThatThrownBy(() -> authService.login(new LoginRequest("email@naver.com", "asdf")))
+        // given
+        String email = "email@naver.com";
+        String password = "asdf";
+        memberRepository.save(MemberFixture.getOne(email, password));
+
+        // when & then
+        assertThatThrownBy(() -> authService.login(new LoginRequest(email, "hihi" + password)))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("로그인하려는 회원이 존재하지 않는 회원입니다.");
+                .hasMessage("아이디 또는 비밀번호를 잘못 입력했습니다. 다시 입력해주세요.");
+    }
+
+    @Test
+    @DisplayName("토큰으로부터 회원 정보를 찾아 반환한다.")
+    void getMemberAuthInfo() {
+        // given
+        String email = "moly@hihi.com";
+        Member member = memberRepository.save(MemberFixture.getOne(email));
+        String token = tokenProvider.createToken(email);
+
+        // when & then
+        assertThat(authService.getMemberAuthInfo(token)).isEqualTo(GetAuthInfoResponse.from(member));
+    }
+
+    @Test
+    @DisplayName("토큰으로부터 얻은 회원 정보가 존재하지 않는 경우, 예외를 반환한다.")
+    void getMemberAuthInfo_WhenMemberNotExists() {
+        // given
+        String email = "moly@hihi.com";
+        String token = tokenProvider.createToken(email);
+
+        // when & then
+        assertThatThrownBy(() -> authService.getMemberAuthInfo(token))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("사용자 정보를 찾을 수 없습니다. 다시 로그인해주세요.");
     }
 }

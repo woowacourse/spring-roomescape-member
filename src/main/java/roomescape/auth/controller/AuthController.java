@@ -32,8 +32,8 @@ public class AuthController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<GetAuthInfoResponse> checkLogin(@CookieValue(name = TOKEN_COOKIE_NAME) String token) {
-        GetAuthInfoResponse getAuthInfoResponse = authService.checkMember(token);
+    public ResponseEntity<GetAuthInfoResponse> getMemberAuthInfo(@CookieValue(name = TOKEN_COOKIE_NAME) String token) {
+        GetAuthInfoResponse getAuthInfoResponse = authService.getMemberAuthInfo(token);
         return ResponseEntity.ok(getAuthInfoResponse);
     }
 }
