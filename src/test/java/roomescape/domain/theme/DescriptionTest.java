@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import roomescape.domain.reservation.Name;
@@ -18,4 +19,12 @@ class DescriptionTest {
                 .hasMessage(String.format("설명은 %d글자 이상 입력해주세요.", MAX_LENGTH));
     }
 
+
+    @Test
+    @DisplayName("설명 값이 null이면 예외가 발생한다")
+    void nonNull() {
+        Assertions.assertThatThrownBy(() -> new Description(null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("설명 값은 null이 될 수 없습니다.");
+    }
 }

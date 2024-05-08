@@ -27,4 +27,12 @@ class NameTest {
         Assertions.assertThatThrownBy(() -> new Name(value)).isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(String.format("이름은 %d~%d자만 가능합니다.", MIN_LENGTH, MAX_LENGTH));
     }
+
+    @Test
+    @DisplayName("예약명이 null이면 예외가 발생한다")
+    void nonNull() {
+        Assertions.assertThatThrownBy(() -> new Name(null
+                )).isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이름 값은 null이 될 수 없습니다.");
+    }
 }
