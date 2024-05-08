@@ -1,6 +1,7 @@
 package roomescape.exception;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import org.springframework.http.HttpStatus;
 
@@ -21,7 +22,8 @@ public enum ExceptionType {
     NOT_FOUND_RESERVATION_TIME(BAD_REQUEST, "존재하지 않는 시간입니다."),
     NOT_FOUND_THEME(BAD_REQUEST, "없는 테마입니다."),
     NOT_FOUND_USER(BAD_REQUEST, "존재하지 않는 유저입니다."),
-    WRONG_PASSWORD(BAD_REQUEST, "잘못된 비밀번호입니다.");
+    WRONG_PASSWORD(BAD_REQUEST, "잘못된 비밀번호입니다."),
+    REQUIRED_LOGIN(UNAUTHORIZED, "로그인이 필요합니다.");
 
     private final HttpStatus status;
     private final String message;

@@ -23,15 +23,10 @@ public class JwtGenerator {
                 .compact();
     }
 
-    public Claims decodePayload(String token) {
+    public Claims getClaims(String token) {
         return Jwts.parser()
                 .setSigningKey(SECRET_KEY)
                 .parseClaimsJws(token)
                 .getBody();
-    }
-
-    public Object getValue(String token, String key) {
-        Claims claims = decodePayload(token);
-        return claims.get(key);
     }
 }

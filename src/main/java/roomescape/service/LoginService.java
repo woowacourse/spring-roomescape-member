@@ -3,12 +3,13 @@ package roomescape.service;
 import static roomescape.exception.ExceptionType.NOT_FOUND_USER;
 import static roomescape.exception.ExceptionType.WRONG_PASSWORD;
 
+import io.jsonwebtoken.Claims;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
+import roomescape.domain.LoginUser;
 import roomescape.domain.User;
 import roomescape.dto.LoginRequest;
-import roomescape.dto.LoginResponse;
 import roomescape.exception.RoomescapeException;
 import roomescape.repository.UserRepository;
 
@@ -32,13 +33,18 @@ public class LoginService {
         }
 
         return jwtGenerator.generateWith(Map.of(
+                "id", findUser.getId(),
                 "name", findUser.getName(),
                 "email", findUser.getEmail()
         ));
     }
 
-    public LoginResponse checkLogin(String token) {
-        String name = jwtGenerator.getValue(token, "name").toString();
-        return new LoginResponse(name);
+    public LoginUser checkLogin(String token) {
+        Claims claims = jwtGenerator.getClaims(token);
+        return new LoginUser(
+                claims.get("id", Long.class),
+                claims.get("name", String.class),
+                claims.get("email", String.class)
+        );
     }
 }

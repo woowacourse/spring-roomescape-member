@@ -12,9 +12,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.LoginUser;
 import roomescape.domain.User;
 import roomescape.dto.LoginRequest;
-import roomescape.dto.LoginResponse;
 import roomescape.exception.RoomescapeException;
 import roomescape.repository.CollectionUserRepository;
 import roomescape.repository.UserRepository;
@@ -35,11 +35,11 @@ class LoginServiceTest {
     @Nested
     class UserExistsTest {
 
-        private static final User DEFAULT_USER = new User("name", "email@email.com", "password");
+        private User defaultUser = new User("name", "email@email.com", "password");
 
         @BeforeEach
         void addDefaultUser() {
-            userRepository.save(DEFAULT_USER);
+            defaultUser = userRepository.save(defaultUser);
         }
 
         @DisplayName("정상적인 로그인에 대해 토큰을 생성할 수 있다.")
@@ -47,15 +47,15 @@ class LoginServiceTest {
         void createTokenTest() {
             //when
             String createdToken = loginService.getLoginToken(new LoginRequest(
-                    DEFAULT_USER.getEmail(),
-                    DEFAULT_USER.getPassword()
+                    defaultUser.getEmail(),
+                    defaultUser.getPassword()
             ));
 
             //then
-            Claims payload = JWT_GENERATOR.decodePayload(createdToken);
+            Claims payload = JWT_GENERATOR.getClaims(createdToken);
             assertAll(
-                    () -> assertThat(payload.get("email")).isEqualTo(DEFAULT_USER.getEmail()),
-                    () -> assertThat(payload.get("name")).isEqualTo(DEFAULT_USER.getName())
+                    () -> assertThat(payload.get("email")).isEqualTo(defaultUser.getEmail()),
+                    () -> assertThat(payload.get("name")).isEqualTo(defaultUser.getName())
             );
         }
 
@@ -63,8 +63,8 @@ class LoginServiceTest {
         @Test
         void notFoundEmailGetTokenTest() {
             assertThatThrownBy(() -> loginService.getLoginToken(new LoginRequest(
-                    DEFAULT_USER.getEmail() + "wrong",
-                    DEFAULT_USER.getPassword()
+                    defaultUser.getEmail() + "wrong",
+                    defaultUser.getPassword()
             )))
                     .isInstanceOf(RoomescapeException.class)
                     .hasMessage(NOT_FOUND_USER.getMessage());
@@ -74,8 +74,8 @@ class LoginServiceTest {
         @Test
         void illegalPasswordGetTokenTest() {
             assertThatThrownBy(() -> loginService.getLoginToken(new LoginRequest(
-                    DEFAULT_USER.getEmail(),
-                    DEFAULT_USER.getPassword() + " wrong"
+                    defaultUser.getEmail(),
+                    defaultUser.getPassword() + " wrong"
             )))
                     .isInstanceOf(RoomescapeException.class)
                     .hasMessage(WRONG_PASSWORD.getMessage());
@@ -86,16 +86,17 @@ class LoginServiceTest {
         void loginTokenContainsUserNameTest() {
             //given
             String token = JWT_GENERATOR.generateWith(Map.of(
-                    "name", DEFAULT_USER.getName(),
-                    "email", DEFAULT_USER.getEmail()
+                    "id", defaultUser.getId(),
+                    "name", defaultUser.getName(),
+                    "email", defaultUser.getEmail()
             ));
 
             //when
-            LoginResponse loginResponse = loginService.checkLogin(token);
+            LoginUser loginUser = loginService.checkLogin(token);
 
             //then
-            assertThat(loginResponse.name())
-                    .isEqualTo(DEFAULT_USER.getName());
+            assertThat(loginUser.getName())
+                    .isEqualTo(defaultUser.getName());
         }
     }
 }
