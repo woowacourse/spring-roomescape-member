@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import roomescape.auth.controller.dto.LoginRequest;
-import roomescape.member.controller.dto.MemberResponse;
 import roomescape.auth.controller.dto.SignUpRequest;
 import roomescape.auth.service.AuthService;
+import roomescape.member.controller.dto.MemberResponse;
 
 @Controller
 public class AuthController {
@@ -21,6 +21,12 @@ public class AuthController {
 
     public AuthController(AuthService authService) {
         this.authService = authService;
+    }
+
+    private static void expireCookie(HttpServletResponse response) {
+        Cookie cookie = new Cookie(SESSION_KEY, null);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
     }
 
     @GetMapping("/login")
@@ -61,12 +67,6 @@ public class AuthController {
     public ResponseEntity<Void> logout(HttpServletResponse response) {
         expireCookie(response);
         return ResponseEntity.ok().build();
-    }
-
-    private static void expireCookie(HttpServletResponse response) {
-        Cookie cookie = new Cookie(SESSION_KEY, null);
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
     }
 
     @GetMapping("/signup")

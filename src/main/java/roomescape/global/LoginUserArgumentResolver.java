@@ -11,7 +11,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.auth.service.AuthService;
 import roomescape.exception.BusinessException;
 import roomescape.exception.ErrorType;
-import roomescape.member.domain.Member;
+import roomescape.global.annotation.LoginUser;
 import roomescape.member.domain.repository.MemberRepository;
 
 @Component
@@ -28,7 +28,7 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterType().equals(Member.class);
+        return parameter.hasParameterAnnotation(LoginUser.class);
     }
 
     @Override
