@@ -33,4 +33,12 @@ class UserControllerTest {
                 .when().get("")
                 .then().log().all().assertThat().statusCode(HttpStatus.OK.value());
     }
+
+    @DisplayName("로그인 페이지 접근 성공 테스트")
+    @Test
+    void responseUserPage() {
+        RestAssured.given().log().all()
+                .when().get("/login")
+                .then().log().all().assertThat().statusCode(HttpStatus.OK.value());
+    }
 }
