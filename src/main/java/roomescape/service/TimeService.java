@@ -9,7 +9,8 @@ import roomescape.dto.time.TimeRequest;
 import roomescape.dto.time.TimeResponse;
 import roomescape.dto.time.TimesResponse;
 import roomescape.global.exception.error.ErrorType;
-import roomescape.global.exception.model.DataConflictException;
+import roomescape.global.exception.model.AssociatedDataExistsException;
+import roomescape.global.exception.model.DataDuplicateException;
 
 import java.util.List;
 
@@ -44,7 +45,7 @@ public class TimeService {
         List<Time> duplicateTimes = timeDao.findByStartAt(timeRequest.startAt());
 
         if (duplicateTimes.size() > 0) {
-            throw new DataConflictException(ErrorType.TIME_DUPLICATION_CONFLICT,
+            throw new DataDuplicateException(ErrorType.TIME_DUPLICATED,
                     String.format("이미 존재하는 예약 시간입니다. [startAt: %s]", timeRequest.startAt()));
         }
     }
@@ -52,7 +53,7 @@ public class TimeService {
     public void removeTimeById(final Long id) {
         List<Reservation> usingTimeReservations = reservationDao.findByTimeId(id);
         if (usingTimeReservations.size() > 0) {
-            throw new DataConflictException(ErrorType.TIME_IS_USED_CONFLICT,
+            throw new AssociatedDataExistsException(ErrorType.TIME_IS_USED_CONFLICT,
                     String.format("해당 시간에 예약이 존재하여 시간을 삭제할 수 없습니다. [timeId: %d]", id));
         }
         timeDao.deleteById(id);

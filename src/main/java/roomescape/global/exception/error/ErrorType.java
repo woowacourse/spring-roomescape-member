@@ -11,9 +11,9 @@ public enum ErrorType {
 
     // 409 Conflict
     TIME_IS_USED_CONFLICT("삭제할 수 없는 시간대입니다."),
-    TIME_DUPLICATION_CONFLICT("이미 해당 시간이 존재합니다."),
-    RESERVATION_DUPLICATION_CONFLICT("해당 시간에 이미 예약이 존재합니다."),
-    RESERVATION_PERIOD_CONFLICT("이미 지난 시간대는 예약할 수 없습니다."),
+    TIME_DUPLICATED("이미 해당 시간이 존재합니다."),
+    RESERVATION_DUPLICATED("해당 시간에 이미 예약이 존재합니다."),
+    RESERVATION_PERIOD_IN_PAST("이미 지난 시간대는 예약할 수 없습니다."),
 
     // 500 Internal Server Error
     INTERNAL_SERVER_ERROR("서버 내부에서 에러가 발생하였습니다."),

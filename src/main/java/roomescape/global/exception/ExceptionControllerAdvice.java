@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.global.dto.response.ApiResponse;
 import roomescape.global.exception.error.ErrorType;
-import roomescape.global.exception.model.DataConflictException;
+import roomescape.global.exception.model.DataDuplicateException;
 import roomescape.global.exception.model.ValidateException;
 
 @RestControllerAdvice
@@ -30,9 +30,9 @@ public class ExceptionControllerAdvice {
         return ApiResponse.fail(ErrorType.INVALID_REQUEST_DATA_TYPE);
     }
 
-    @ExceptionHandler(value = DataConflictException.class)
+    @ExceptionHandler(value = DataDuplicateException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ApiResponse<Object> handleConflictException(final DataConflictException e) {
+    public ApiResponse<Object> handleConflictException(final DataDuplicateException e) {
         logger.error(e.getMessage(), e);
         return ApiResponse.fail(e.getErrorType());
     }
