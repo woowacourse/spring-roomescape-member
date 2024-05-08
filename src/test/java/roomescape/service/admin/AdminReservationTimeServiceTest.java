@@ -5,12 +5,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static roomescape.fixture.LocalTimeFixture.TEN_HOUR;
 
 import java.time.LocalTime;
-import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.ReservationTime;
-import roomescape.dto.ReservationTimeAddRequest;
+import roomescape.reservationTime.service.AdminReservationTimeService;
+import roomescape.reservationTime.domain.ReservationTime;
+import roomescape.reservationTime.dto.ReservationTimeAddRequest;
 import roomescape.exception.ClientIllegalArgumentException;
 import roomescape.service.fakeDao.FakeReservationTimeRepository;
 

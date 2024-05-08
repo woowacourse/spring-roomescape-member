@@ -7,6 +7,7 @@ import static roomescape.fixture.LocalTimeFixture.TEN_HOUR;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.exception.ClientIllegalArgumentException;
+import roomescape.reservationTime.domain.ReservationTime;
 
 class ReservationTimeTest {
 

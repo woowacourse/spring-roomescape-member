@@ -9,11 +9,12 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
-import roomescape.dto.BookableTimeResponse;
-import roomescape.dto.BookableTimesRequest;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.service.UserReservationService;
+import roomescape.reservationTime.domain.ReservationTime;
+import roomescape.theme.domain.Theme;
+import roomescape.reservation.dto.BookableTimeResponse;
+import roomescape.reservation.dto.BookableTimesRequest;
 import roomescape.service.fakeDao.FakeReservationRepository;
 import roomescape.service.fakeDao.FakeReservationTimeRepository;
 

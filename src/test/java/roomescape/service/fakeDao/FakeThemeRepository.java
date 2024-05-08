@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
-import roomescape.domain.Theme;
-import roomescape.repository.ThemeRepository;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.repository.ThemeRepository;
 
 public class FakeThemeRepository implements ThemeRepository {
     Map<Long, Theme> themes = new HashMap<>();

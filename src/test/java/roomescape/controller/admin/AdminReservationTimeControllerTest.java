@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.controller.ControllerTest;
-import roomescape.dto.ReservationTimeAddRequest;
+import roomescape.reservationTime.dto.ReservationTimeAddRequest;
 
 class AdminReservationTimeControllerTest extends ControllerTest {
 

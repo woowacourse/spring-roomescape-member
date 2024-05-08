@@ -2,12 +2,12 @@ package roomescape.dto;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.exception.ClientIllegalArgumentException;
+import roomescape.reservation.dto.ReservationAddRequest;
 
 class ReservationAddRequestTest {
 

@@ -4,10 +4,10 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static roomescape.fixture.LocalDateFixture.AFTER_ONE_DAYS_DATE;
 
-import java.time.LocalDate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.exception.ClientIllegalArgumentException;
+import roomescape.reservation.domain.ReservationDate;
 
 class ReservationDateTest {
 

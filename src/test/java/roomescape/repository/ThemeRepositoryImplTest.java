@@ -8,7 +8,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.domain.Theme;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.repository.ThemeRepository;
+import roomescape.theme.repository.ThemeRepositoryImpl;
 
 class ThemeRepositoryImplTest extends RepositoryTest {
     @Autowired
