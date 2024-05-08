@@ -50,11 +50,11 @@
 
 #### 로그인
 
-- [ ] GET /login
-    - [ ] templates/login.html
-- [ ] POST /login
-    - [ ] 요청 body에 email, password 값을 포함합니다.
-    - [ ] 응답 Cookie에 "token"값으로 토큰을 포함합니다.
+- [x] GET /login
+    - [x] templates/login.html
+- [x] POST /login
+    - [x] 요청 body에 email, password 값을 포함합니다.
+    - [x] 응답 Cookie에 "token"값으로 토큰을 포함합니다.
 
 #### 인증 정보 조회
 
