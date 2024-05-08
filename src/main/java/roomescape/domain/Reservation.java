@@ -6,6 +6,7 @@ import java.util.Objects;
 public class Reservation {
     private final Long id;
     private final String name; //TODO Member 객체로 두기...?
+    private Member member;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
@@ -19,8 +20,21 @@ public class Reservation {
         this.theme = theme;
     }
 
+    public Reservation(final Long id, final Member member, final LocalDate date, final ReservationTime time, final Theme theme) {
+        this.id = id;
+        this.name = "";
+        this.member = member;
+        this.date = date;
+        this.time = time;
+        this.theme = theme;
+    }
+
     public Long getId() {
         return id;
+    }
+
+    public Member getMember() {
+        return member;
     }
 
     public String getName() {
@@ -60,7 +74,7 @@ public class Reservation {
     public String toString() {
         return "Reservation{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
+                ", member='" + member + '\'' +
                 ", date=" + date +
                 ", time=" + time +
                 ", theme=" + theme +

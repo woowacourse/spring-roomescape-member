@@ -1,6 +1,7 @@
 package roomescape.controller.reservation.dto;
 
 import jakarta.validation.constraints.NotNull;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -15,9 +16,7 @@ public record ReservationRequest(
         @NotNull
         Long themeId) {
 
-    public Reservation toDomain(final String name, final ReservationTime time, final Theme theme) {
-        //TODO name 찾아오기
-
-        return new Reservation(null, name, date, time, theme);
+    public Reservation toDomain(final Member member, final ReservationTime time, final Theme theme) {
+        return new Reservation(null, member, date, time, theme);
     }
 }

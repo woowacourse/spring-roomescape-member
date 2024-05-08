@@ -16,13 +16,6 @@ public class Member {
         this.password = password;
     }
 
-    public Member(final String name, final String email, final String password) {
-        this.id = null;
-        this.name = name;
-        this.email = email;
-        this.password = password;
-    }
-
     public boolean hasValidPassword(final String target) {
         return password.equals(target);
     }
@@ -54,5 +47,15 @@ public class Member {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Member{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                '}';
     }
 }

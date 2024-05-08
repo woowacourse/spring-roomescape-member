@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -38,14 +39,14 @@ class ReservationRepositoryTest {
         final List<Reservation> expected = List.of(
                 new Reservation(
                         1L,
-                        "al",
+                        new Member(1L, "al", "aa@email.com", "0000"),
                         LocalDate.of(2025, 1, 20),
                         new ReservationTime(1L, LocalTime.parse("10:15")),
                         new Theme(1L, "", "", "")
                 ),
                 new Reservation(
                         2L,
-                        "be",
+                        new Member(2L, "be", "bb@email.com", "1111"),
                         LocalDate.of(2025, 2, 19),
                         new ReservationTime(2L, LocalTime.parse("11:20")),
                         new Theme(2L, "", "", "")
@@ -66,7 +67,7 @@ class ReservationRepositoryTest {
         Long id = 2L;
         Reservation expected = new Reservation(
                 id,
-                "be",
+                new Member(2L, "be", "bb@email.com", "1111"),
                 LocalDate.of(2025, 2, 19),
                 new ReservationTime(2L, LocalTime.parse("00:00")),
                 new Theme(2L, "", "", "")

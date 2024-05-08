@@ -4,9 +4,11 @@ import org.springframework.stereotype.Service;
 import roomescape.controller.member.dto.LoginMember;
 import roomescape.controller.reservation.dto.ReservationRequest;
 import roomescape.controller.reservation.dto.ReservationResponse;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -22,13 +24,17 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final MemberRepository memberRepository;
+
 
     public ReservationService(final ReservationRepository reservationRepository,
                               final ReservationTimeRepository reservationTimeRepository,
-                              final ThemeRepository themeRepository) {
+                              final ThemeRepository themeRepository,
+                              final MemberRepository memberRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.memberRepository = memberRepository;
     }
 
     public List<ReservationResponse> getReservations() {
@@ -37,24 +43,27 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse addReservation(final ReservationRequest reservationRequest) {
-        final ReservationTime time = findTime(reservationRequest);
-        final Theme theme = findTheme(reservationRequest);
-
-        final Reservation parsedReservation = reservationRequest.toDomain("name", time, theme);
-        validateDuplicate(theme, time, parsedReservation);
-        final LocalDateTime reservationDateTime = parsedReservation.getDate().atTime(time.getStartAt());
-        validateBeforeDay(reservationDateTime);
-
-        final Reservation savedReservation = reservationRepository.save(parsedReservation);
-        return ReservationResponse.from(savedReservation);
+    public ReservationResponse addReservation(final ReservationRequest reservationRequest) { //TODO 얘 이제 테스트에서만 씀
+//        final ReservationTime time = findTime(reservationRequest);
+//        final Theme theme = findTheme(reservationRequest);
+//
+//        final Reservation parsedReservation = reservationRequest.toDomain("name", time, theme);
+//        validateDuplicate(theme, time, parsedReservation);
+//        final LocalDateTime reservationDateTime = parsedReservation.getDate().atTime(time.getStartAt());
+//        validateBeforeDay(reservationDateTime);
+//
+//        final Reservation savedReservation = reservationRepository.save(parsedReservation);
+//        return ReservationResponse.from(savedReservation);
+        return null;
     }
 
-    public ReservationResponse addReservationV2(final ReservationRequest reservationRequest, final LoginMember loginMember) {
+    public ReservationResponse addReservationV2(final ReservationRequest reservationRequest,
+                                                final LoginMember loginMember) {
         final ReservationTime time = findTime(reservationRequest);
         final Theme theme = findTheme(reservationRequest);
+        final Member member = memberRepository.fetchById(loginMember.id());
 
-        final Reservation parsedReservation = reservationRequest.toDomain(loginMember.name(), time, theme);
+        final Reservation parsedReservation = reservationRequest.toDomain(member, time, theme);
         validateDuplicate(theme, time, parsedReservation);
         final LocalDateTime reservationDateTime = parsedReservation.getDate().atTime(time.getStartAt());
         validateBeforeDay(reservationDateTime);
