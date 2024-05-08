@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.ControllerTest;
-import roomescape.theme.dto.ThemeAddRequest;
+import roomescape.domain.theme.dto.ThemeAddRequest;
 
 class AdminThemeControllerTest extends ControllerTest {
 

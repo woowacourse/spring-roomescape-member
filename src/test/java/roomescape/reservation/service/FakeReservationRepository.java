@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
-import roomescape.reservation.domain.Reservation;
-import roomescape.reservationTime.domain.ReservationTime;
-import roomescape.theme.domain.Theme;
-import roomescape.reservation.repository.ReservationRepository;
+import roomescape.domain.reservation.domain.Reservation;
+import roomescape.domain.reservationTime.domain.ReservationTime;
+import roomescape.domain.theme.domain.Theme;
+import roomescape.domain.reservation.repository.ReservationRepository;
 
 public class FakeReservationRepository implements ReservationRepository {
 

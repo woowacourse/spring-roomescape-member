@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.exception.ClientIllegalArgumentException;
-import roomescape.reservation.dto.ReservationAddRequest;
+import roomescape.domain.reservation.dto.ReservationAddRequest;
 
 class ReservationAddRequestTest {
 

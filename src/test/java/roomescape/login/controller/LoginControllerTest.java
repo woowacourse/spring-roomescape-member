@@ -7,7 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import roomescape.ControllerTest;
-import roomescape.login.dto.LoginRequest;
+import roomescape.domain.login.dto.LoginRequest;
 
 class LoginControllerTest extends ControllerTest {
 

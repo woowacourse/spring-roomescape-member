@@ -11,9 +11,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.theme.domain.Theme;
-import roomescape.reservation.repository.ReservationRepository;
-import roomescape.theme.service.UserThemeService;
+import roomescape.domain.theme.domain.Theme;
+import roomescape.domain.reservation.repository.ReservationRepository;
+import roomescape.domain.theme.service.UserThemeService;
 
 @ExtendWith(MockitoExtension.class)
 class UserThemeServiceTest {

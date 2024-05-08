@@ -7,10 +7,11 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.theme.domain.Theme;
-import roomescape.theme.dto.ThemeAddRequest;
+import roomescape.domain.theme.domain.Theme;
+import roomescape.domain.theme.dto.ThemeAddRequest;
+import roomescape.domain.theme.service.AdminThemeService;
 import roomescape.exception.ClientIllegalArgumentException;
-import roomescape.theme.repository.ThemeRepository;
+import roomescape.domain.theme.repository.ThemeRepository;
 
 class AdminThemeServiceTest {
 

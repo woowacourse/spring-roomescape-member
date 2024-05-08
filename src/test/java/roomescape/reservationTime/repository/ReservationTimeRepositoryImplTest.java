@@ -10,9 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.RepositoryTest;
-import roomescape.reservationTime.domain.ReservationTime;
-import roomescape.reservationTime.repository.ReservationTimeRepository;
-import roomescape.reservationTime.repository.ReservationTimeRepositoryImpl;
+import roomescape.domain.reservationTime.domain.ReservationTime;
+import roomescape.domain.reservationTime.repository.ReservationTimeRepository;
+import roomescape.domain.reservationTime.repository.ReservationTimeRepositoryImpl;
 
 class ReservationTimeRepositoryImplTest extends RepositoryTest {
 
