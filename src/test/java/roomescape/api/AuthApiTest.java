@@ -16,7 +16,7 @@ import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.LoginCheckResponse;
 import roomescape.dto.LoginRequest;
 
-@Sql("/auth-api-test.sql")
+@Sql("/member-test-data.sql")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 public class AuthApiTest {
