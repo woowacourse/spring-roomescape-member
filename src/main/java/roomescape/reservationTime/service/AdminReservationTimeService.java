@@ -2,9 +2,9 @@ package roomescape.reservationTime.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.exception.ClientIllegalArgumentException;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.dto.ReservationTimeAddRequest;
-import roomescape.exception.ClientIllegalArgumentException;
 import roomescape.reservationTime.repository.ReservationTimeRepository;
 
 @Service
@@ -12,7 +12,7 @@ public class AdminReservationTimeService {
 
     private ReservationTimeRepository reservationTimeRepository;
 
-    AdminReservationTimeService(ReservationTimeRepository reservationTimeRepository) {
+    public AdminReservationTimeService(ReservationTimeRepository reservationTimeRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
