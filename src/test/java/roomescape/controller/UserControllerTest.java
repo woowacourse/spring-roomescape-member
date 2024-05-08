@@ -12,6 +12,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.Matchers.is;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class UserControllerTest {
@@ -36,5 +38,35 @@ public class UserControllerTest {
                 .body(params)
                 .when().post("/login")
                 .then().log().all().statusCode(200);
+    }
+
+    @DisplayName("존재하지 않는 아이디인 경우 400으로 응답한다.")
+    @Test
+    void wrongIdTest() {
+        Map<String, String> params = new HashMap<>();
+        params.put("email", "wrongEmail@email.com");
+        params.put("password", "password");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/login")
+                .then().log().all().statusCode(400)
+                .body(is("존재하지 않는 아이디입니다."));
+    }
+
+    @DisplayName("존재하지 않는 아이디인 경우 400으로 응답한다.")
+    @Test
+    void wrongPasswordTest() {
+        Map<String, String> params = new HashMap<>();
+        params.put("email", "email@email.com");
+        params.put("password", "wrongPassword");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/login")
+                .then().log().all().statusCode(400)
+                .body(is("비밀번호가 일치하지 않습니다."));
     }
 }
