@@ -117,6 +117,27 @@ Content-Type: application/json
 -[x] 상단바 우측 로그인 상태를 표현해주기 위해 사용자의 정보를 조회하는 API를 구현하세요.
 -[x] Cookie를 이용하여 로그인 사용자의 정보를 확인하세요.
 
+## 5단계
+- [x] TODO: [5단계] 주석을 검색하여 안내사항에 맞게 클라이언트 코드를 수정하세요.
+- [ ] Cookie를 통해 멤버 정보를 조회하는 로직은 컨트롤러 마다 생겨날 수 있습니다.
+- [x] HandlerMethodArgumentResolver를 이용하여 컨트롤러에 진입하기 전에 처리할 수 있습니다.
+- [x] HandlerMethodArgumentResolver에서 만든 멤버 정보 객체를 컨트롤러 메서드에서 주입 받아 사용할 수 있습니다.
+
+### 로그인 리팩터링
+- [x] Cookie에 담긴 인증 정보를 이용해서 멤버 객체를 만드는 로직을 분리합니다.
+  - [x] HandlerMethodArgumentResolver을 활용하면 회원정보를 객체를 컨트롤러 메서드에 주입할 수 있습니다.
+
+### 예약 생성 기능 변경 - 사용자
+- [x] 사용자가 예약 생성 시, 로그인한 사용자 정보를 활용하도록 리팩터링 합니다.
+  - [x] reservation.html, user-reservation.js 파일의 TODO 주석을 참고하여 변경된 명세에 맞게 클라이언트가 동작하도록 변경합니다.
+
+### 예약 생성 기능 변경 - 관리자
+- [ ] 관리자가 예약 생성 시, 유저를 조회하여 선택 후 예약을 생성하도록 리팩터링 합니다.
+  - [ ] 관리자는 memberId 인자로 전달한 정보로 예약을 생성하게 합니다.
+- [ ] admin/reservation-new.html 파일에서 안내된 4단계 관련 주석에 따라, 로딩하는 js 파일을 변경합니다.
+  - [ ] AS-IS: /js/reservation-new.js
+  - [ ] TO-BE: /js/reservation-with-member.js
+
 
 ## 리팩토링 할 것
 - [ ] ReservationRequte에 @DateTimeFormat 적용
@@ -131,3 +152,4 @@ Content-Type: application/json
 - [ ] class IllegalReservationException extends IllegalArgumentException { // TODO: IllegalArgumentException가 최선일까?
 - [ ] findIds sql문 in으로 수정
 - [ ] flatpkr url로 수정
+- [ ] 주석 삭제

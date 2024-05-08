@@ -24,4 +24,8 @@ public class MemberService {
         Member member = memberDao.findById(id);
         return MemberResponse.from(member);
     }
+
+    public Member findMemberById(final Long id) {
+        return memberDao.findById(id);
+    }
 }

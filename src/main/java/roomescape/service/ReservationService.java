@@ -3,6 +3,7 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -32,7 +33,10 @@ public class ReservationService {
         return ReservationResponse.fromReservations(reservations);
     }
 
-    public long save(ReservationCreateRequest request) {
+//    public long save(ReservationCreateRequest request, final Member member) {
+    public ReservationResponse save(ReservationCreateRequest request, final Member member) {
+        String memberName = member.getName();
+
         if (request.date().isBefore(LocalDate.now())) {
             throw new IllegalReservationException("[ERROR] 과거 날짜는 예약할 수 없습니다.");
         }
@@ -43,13 +47,19 @@ public class ReservationService {
         }
 
         Theme theme = themeDao.findById(request.themeId());
-        Reservation reservation = ReservationCreateRequest.toReservation(request, time, theme);
+        Reservation reservation = ReservationCreateRequest.toReservation(memberName, request, time, theme);
 
         if (reservationDao.existByDateAndTimeAndTheme(reservation.getDate(), reservation.getTimeId(), reservation.getThemeId())) {
             throw new ExistReservationException("[ERROR] 같은 날짜, 테마, 시간에 중복된 예약을 생성할 수 없습니다.");
         } // TODO: IllegalReservationException와 통합?
 
-        return reservationDao.save(reservation);
+        long id = reservationDao.save(reservation);
+        return findById(id); //TODO: 수정
+    }
+
+    private ReservationResponse findById(final long id) {
+        Reservation reservation = reservationDao.findById(id);
+        return ReservationResponse.fromReservation(reservation);
     }
 
     public void deleteById(Long id) {
