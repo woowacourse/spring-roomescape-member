@@ -37,5 +37,11 @@ class UserPageControllerTest {
                    .when().get("/")
                    .then().statusCode(200);
     }
-
+    @Test
+    @DisplayName("/login 요청시 로그인 페이지를 응답한다.")
+    void response_user_login_page() {
+        RestAssured.given().contentType(ContentType.JSON)
+                .when().get("/login")
+                .then().statusCode(200);
+    }
 }
