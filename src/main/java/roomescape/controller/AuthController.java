@@ -1,6 +1,7 @@
 package roomescape.controller;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,14 +20,12 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         AuthDto authDto = AuthDto.from(loginRequest);
         String accessToken = authService.createToken(authDto);
         Cookie cookie = createCookie(accessToken);
-        return ResponseEntity.ok()
-                .header("Set-Cookie", cookie.getValue()).build();
-        // TODO: HttpResponse 이용해서 쿠키 전달해보기?
-        // cookie.addCookie(cookie);
+        response.addCookie(cookie);
+        return ResponseEntity.ok().build();
     }
 
     private Cookie createCookie(String accessToken) {

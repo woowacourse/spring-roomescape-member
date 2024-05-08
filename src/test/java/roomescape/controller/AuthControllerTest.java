@@ -53,9 +53,9 @@ public class AuthControllerTest {
         memberInsertActor.execute(parameters);
     }
 
-    @DisplayName("로그인을 성공할 경우 사용자 정보를 바탕으로 토큰을 생성하여 헤더에 담아 반환한다.")
+    @DisplayName("로그인을 성공할 경우 사용자 정보를 바탕으로 토큰을 생성하여 쿠키에 담아 반환한다.")
     @Test
-    void should_return_token_through_header_when_login_success() {
+    void should_return_token_through_cookie_when_login_success() {
         Member member = new Member(1L, "에버", "treeboss@gmail.com", "treeboss123!");
         String expected = RestAssured
                 .given().log().all()
@@ -64,7 +64,7 @@ public class AuthControllerTest {
                 .accept(ContentType.JSON)
                 .when().post("/login")
                 .then().log().all()
-                .extract().header("Set-Cookie");
+                .extract().cookie("token");
         String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
         String actual = Jwts.builder()
                 .subject(String.valueOf(member.getId()))
