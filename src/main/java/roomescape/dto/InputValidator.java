@@ -1,23 +1,21 @@
 package roomescape.dto;
 
-import roomescape.exception.CustomException;
+import roomescape.dto.exception.InputNotAllowedException;
 
-import static roomescape.exception.CustomExceptionCode.*;
+class InputValidator {
 
-public class InputValidator {
-
-    public static void validateNotNull(Object... inputs) {
+    static void validateNotNull(Object... inputs) {
         for (Object input : inputs) {
             if (input == null) {
-                throw new CustomException(NULL_INPUT_NOT_ALLOWED);
+                throw new InputNotAllowedException("null은 입력할 수 없습니다.");
             }
         }
     }
 
-    public static void validateNotEmpty(String... inputs) {
+    static void validateNotEmpty(String... inputs) {
         for (String input : inputs) {
             if (input.isEmpty()) {
-                throw new CustomException(BLANK_INPUT_NOT_ALLOWED);
+                throw new InputNotAllowedException("빈 문자열은 입력할 수 없습니다.");
             }
         }
     }

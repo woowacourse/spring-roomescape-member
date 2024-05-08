@@ -1,14 +1,17 @@
 package roomescape.infrastructure;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
@@ -36,14 +39,15 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public Theme findById(Long id) {
+    public Optional<Theme> findById(Long id) {
         String sql = "SELECT * FROM theme WHERE id = ?";
-        Theme theme = jdbcTemplate.queryForObject(sql, themeRowMapper, id);
-        if (theme == null) {
-            throw new IllegalArgumentException("존재하지 않는 테마입니다");
-        }
 
-        return theme;
+        try {
+            Theme theme = jdbcTemplate.queryForObject(sql, themeRowMapper, id);
+            return Optional.ofNullable(theme);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -71,7 +75,7 @@ public class JdbcThemeRepository implements ThemeRepository {
                 "thumbnail", theme.getThumbnail()
         );
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
-        
+
         return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 

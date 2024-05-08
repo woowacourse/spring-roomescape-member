@@ -1,7 +1,5 @@
 package roomescape.service;
 
-import java.time.LocalDate;
-import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
@@ -9,9 +7,11 @@ import roomescape.domain.ReservationTimeRepository;
 import roomescape.dto.AvailableReservationTimeResponse;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
-import roomescape.exception.CustomException;
+import roomescape.service.exception.OperationNotAllowedException;
+import roomescape.service.exception.ResourceNotFoundException;
 
-import static roomescape.exception.CustomExceptionCode.*;
+import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class ReservationTimeService {
@@ -40,9 +40,10 @@ public class ReservationTimeService {
     }
 
     public void deleteReservationTimeById(Long id) {
+        findValidatedReservationTime(id);
         boolean exist = reservationRepository.existByReservationTimeId(id);
         if (exist) {
-            throw new CustomException(CAN_NOT_DELETE_TIME_DUE_TO_RESERVATION_EXIST);
+            throw new OperationNotAllowedException("해당 시간에 예약이 존재하기 때문에 삭제할 수 없습니다.");
         }
 
         reservationTimeRepository.deleteById(id);
@@ -58,5 +59,10 @@ public class ReservationTimeService {
                         bookedTimes.contains(reservationTime)
                 ))
                 .toList();
+    }
+
+    private ReservationTime findValidatedReservationTime(Long id) {
+        return reservationTimeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("아이디에 해당하는 예약 시간을 찾을 수 없습니다."));
     }
 }

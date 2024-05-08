@@ -1,11 +1,6 @@
 package roomescape.infrastructure;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -14,6 +9,13 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -64,14 +66,15 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation findById(Long id) {
-        String sql = basicSelectQuery + "WHERE reservation_id = ?";
-        Reservation reservation = jdbcTemplate.queryForObject(sql, reservationRowMapper, id);
-        if (reservation == null) {
-            throw new NoSuchElementException("존재하지 않는 아아디입니다.");
-        }
+    public Optional<Reservation> findById(Long id) {
+        String sql = basicSelectQuery + "WHERE r.id = ?";
 
-        return reservation;
+        try {
+            Reservation reservation = jdbcTemplate.queryForObject(sql, reservationRowMapper, id);
+            return Optional.ofNullable(reservation);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -96,7 +99,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public boolean existByReservationTimeId(Long id) {
-        String sql = basicSelectQuery + "WHERE time_id = ?";
+        String sql = basicSelectQuery + "WHERE t.id = ?";
         List<Reservation> reservations = jdbcTemplate.query(sql, reservationRowMapper, id);
 
         return !reservations.isEmpty();
@@ -104,16 +107,16 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public boolean existByThemeId(Long id) {
-        String sql = basicSelectQuery + "WHERE theme_id = ?";
+        String sql = basicSelectQuery + "WHERE th.id = ?";
         List<Reservation> reservations = jdbcTemplate.query(sql, reservationRowMapper, id);
 
         return !reservations.isEmpty();
     }
 
     @Override
-    public boolean existByDateAndTimeId(LocalDate date, Long id) {
-        String sql = basicSelectQuery + "WHERE r.date = ? AND t.id = ?";
-        List<Reservation> reservations = jdbcTemplate.query(sql, reservationRowMapper, date, id);
+    public boolean existByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+        String sql = basicSelectQuery + "WHERE r.date = ? AND t.id = ? AND th.id = ?";
+        List<Reservation> reservations = jdbcTemplate.query(sql, reservationRowMapper, date, timeId, themeId);
 
         return !reservations.isEmpty();
     }
