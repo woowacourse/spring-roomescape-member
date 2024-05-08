@@ -18,7 +18,8 @@ public class JwtGenerator {
         return Jwts.builder()
                 .addClaims(Jwts.claims(claimDatas))
                 .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + EXPIRE_LEN))
+                //Todo 토큰 만료 처리 해주기
+                //.setExpiration(new Date(now.getTime() + EXPIRE_LEN))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
     }
