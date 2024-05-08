@@ -14,4 +14,6 @@ public interface MemberRepository {
     boolean existByEmailAndPassword(String email, String password);
 
     Optional<Member> findByEmail(String email);
+
+    void deleteById(Long id);
 }

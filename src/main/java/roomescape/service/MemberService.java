@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import roomescape.auth.dto.MemberResponse;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRepository;
+import roomescape.exception.ReservationBusinessException;
 import roomescape.service.dto.MemberSaveRequest;
 
 @Service
@@ -27,5 +28,13 @@ public class MemberService {
          return memberRepository.findAll().stream()
                  .map(MemberResponse::from)
                  .toList();
+    }
+
+    public void delete(Long id) {
+        if (memberRepository.findById(id).isEmpty()) {
+            throw new ReservationBusinessException("회원이 존재하지 않습니다.");
+        }
+
+        memberRepository.deleteById(id);
     }
 }

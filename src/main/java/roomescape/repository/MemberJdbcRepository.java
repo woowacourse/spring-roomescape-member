@@ -84,4 +84,9 @@ public class MemberJdbcRepository implements MemberRepository {
             return Optional.empty();
         }
     }
+
+    @Override
+    public void deleteById(final Long id) {
+        jdbcTemplate.update("DELETE FROM member WHERE id = ?", id);
+    }
 }
