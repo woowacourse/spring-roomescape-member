@@ -227,18 +227,44 @@ Content-Type: application/json
 
 ---
 
-### 예약 등록
+### 예약 등록_사용자
 
 #### Request
 ```http
 POST /reservations HTTP/1.1
 Content-type: application/json
+cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+host: localhost:8080
 
 {
-    "name": "ted",
     "date": "2024-04-01",
     "timeId": 1,
     "themeId" : 1
+}
+```
+
+#### Response
+```http
+HTTP/1.1 201
+Content-Type: application/json
+Location: /reservations/1
+```
+---
+
+### 예약 등록_관리자
+
+#### Request
+```http
+POST /admin/reservations HTTP/1.1
+content-type: application/json
+cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+host: localhost:8080
+
+{
+    "date": "2024-03-01",
+    "themeId": 1,
+    "timeId": 1,
+    "memberId": 1
 }
 ```
 
