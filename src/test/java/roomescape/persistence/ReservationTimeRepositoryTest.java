@@ -52,11 +52,14 @@ class ReservationTimeRepositoryTest {
     @Test
     @DisplayName("특정 예약 시간 id의 데이터를 조회한다.")
     void findById() {
+        // given
+        ReservationTime targetTime = new ReservationTime(2L, LocalTime.parse("11:00"));
+
         // when
-        ReservationTime findReservationTime = reservationTimeRepository.findById(2L).orElseThrow();
+        ReservationTime findReservationTime = reservationTimeRepository.findById(targetTime.getId()).orElseThrow();
 
         // then
-        assertThat(findReservationTime.getStartAt()).isEqualTo("11:00");
+        assertThat(findReservationTime).isEqualTo(targetTime);
     }
 
     @Test

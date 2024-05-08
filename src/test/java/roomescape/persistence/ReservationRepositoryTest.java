@@ -2,7 +2,6 @@ package roomescape.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -55,15 +54,20 @@ class ReservationRepositoryTest {
     @Test
     @DisplayName("특정 예약 id의 데이터를 조회한다.")
     void findById() {
-        // when
-        Reservation findReservations = reservationRepository.findById(2L);
-
-        // then
-        assertAll(
-                () -> assertThat(findReservations.getName().value()).isEqualTo("엘라"),
-                () -> assertThat(findReservations.getDate().date()).isEqualTo("2024-05-04")
+        // given
+        Reservation targetReservation = new Reservation(
+                2L,
+                new Name("엘라"),
+                new ReservationDate(LocalDate.parse("2024-05-04")),
+                new ReservationTime(LocalTime.parse("10:00")),
+                new Theme(null, null, null)
         );
 
+        // when
+        Reservation findReservation = reservationRepository.findById(targetReservation.getId());
+
+        // then
+        assertThat(findReservation).isEqualTo(targetReservation);
     }
 
     @Test
