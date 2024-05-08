@@ -23,10 +23,6 @@ public class Reservation {
         this(null, name, date, reservationTime, theme);
     }
 
-    public boolean isSameReservation(Long id) {
-        return this.id.equals(id);
-    }
-
     public Long getId() {
         return id;
     }

@@ -23,7 +23,7 @@ public class ReservationStatus {
 
     private static boolean isReserved(List<ReservationTime> reservedTimes, ReservationTime reservationTime) {
         return reservedTimes.stream()
-                .anyMatch(reservedTime -> reservedTime.isSameReservationTime(reservationTime.getId()));
+                .anyMatch(reservedTime -> reservedTime.equals(reservationTime));
     }
 
     public Boolean findReservationStatusBy(ReservationTime reservationTime) {
