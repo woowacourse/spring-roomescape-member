@@ -43,8 +43,8 @@ public class ThemeController {
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<ThemeResponseDto>> findPopular() {
-        final List<Theme> themes = themeService.findPopular();
+    public ResponseEntity<List<ThemeResponseDto>> findPopularInLastWeek() {
+        final List<Theme> themes = themeService.findPopularInLastWeek();
         final List<ThemeResponseDto> response = themes.stream()
                 .map(ThemeResponseDto::new)
                 .toList();

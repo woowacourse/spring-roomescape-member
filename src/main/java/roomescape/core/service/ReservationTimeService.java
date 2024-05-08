@@ -61,7 +61,7 @@ public class ReservationTimeService {
 
     @Transactional
     public void delete(final long id) {
-        final boolean exist = reservationRepository.existByTimeId(id);
+        final boolean exist = reservationRepository.hasReservationAtTime(id);
         if (exist) {
             throw new BadRequestException("해당 시간에 예약한 내역이 존재하여 삭제할 수 없습니다.");
         }
@@ -69,7 +69,7 @@ public class ReservationTimeService {
     }
 
     private void validateDuplicatedStartAt(final ReservationTime reservationTime) {
-        final boolean exist = reservationTimeRepository.existByStartAt(reservationTime.getStartAtString());
+        final boolean exist = reservationTimeRepository.hasDuplicateReservationTime(reservationTime.getStartAtString());
         if (exist) {
             throw new BadRequestException("해당 시간이 이미 존재합니다.");
         }

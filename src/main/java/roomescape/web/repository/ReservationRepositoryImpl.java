@@ -81,19 +81,19 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
-    public boolean existByTimeId(final long timeId) {
+    public boolean hasReservationAtTime(final long timeId) {
         final String query = "SELECT EXISTS(SELECT 1 FROM reservation WHERE time_id = ?)";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, timeId));
     }
 
     @Override
-    public boolean existByThemeId(final long themeId) {
+    public boolean hasReservationWithTheme(final long themeId) {
         final String query = "SELECT EXISTS(SELECT 1 FROM reservation WHERE theme_id = ?)";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, themeId));
     }
 
     @Override
-    public boolean existByDateAndTimeIdAndThemeId(final String date, final long timeId, final long themeId) {
+    public boolean hasDuplicateReservation(final String date, final long timeId, final long themeId) {
         final String query = "SELECT EXISTS(SELECT 1 FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?)";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, date, timeId, themeId));
     }

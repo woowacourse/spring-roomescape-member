@@ -42,7 +42,7 @@ public class ThemeRepositoryImpl implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findPopular() {
+    public List<Theme> findPopularInLastWeek() {
         final LocalDate today = LocalDate.now();
         final LocalDate lastWeek = today.minusWeeks(1);
 
@@ -70,7 +70,7 @@ public class ThemeRepositoryImpl implements ThemeRepository {
     }
 
     @Override
-    public boolean existByName(final String name) {
+    public boolean hasDuplicateTheme(final String name) {
         final String query = "SELECT EXISTS(SELECT 1 FROM theme WHERE name = ?)";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, name));
     }

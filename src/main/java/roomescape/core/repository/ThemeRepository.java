@@ -8,11 +8,11 @@ public interface ThemeRepository {
 
     List<Theme> findAll();
 
-    List<Theme> findPopular();
+    List<Theme> findPopularInLastWeek();
 
     Theme findById(final long id);
 
-    boolean existByName(final String name);
+    boolean hasDuplicateTheme(final String name);
 
     void deleteById(final long id);
 }

@@ -39,7 +39,7 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
     }
 
     @Override
-    public List<BookingTimeResponseDto> findAllByDateNotOrThemeIdNot(final String date, final long themeId) {
+    public List<BookingTimeResponseDto> findAllWithReservationState(final String date, final long themeId) {
         final String query = """
                 SELECT t.id, t.start_at, r.id IS NOT NULL AS already_booked
                 FROM reservation_time AS t 
@@ -62,7 +62,7 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
     }
 
     @Override
-    public boolean existByStartAt(final String startAt) {
+    public boolean hasDuplicateReservationTime(final String startAt) {
         final String query = "SELECT EXISTS(SELECT 1 FROM reservation_time WHERE start_at = ?)";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, startAt));
     }

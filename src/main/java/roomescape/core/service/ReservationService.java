@@ -60,7 +60,7 @@ public class ReservationService {
     }
 
     private void validateDuplicatedReservation(final Reservation reservation, final ReservationTime reservationTime) {
-        final boolean exist = reservationRepository.existByDateAndTimeIdAndThemeId(
+        final boolean exist = reservationRepository.hasDuplicateReservation(
                 reservation.getDateString(),
                 reservationTime.getId(),
                 reservation.getTheme().getId()

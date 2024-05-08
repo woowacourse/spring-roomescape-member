@@ -10,11 +10,11 @@ public interface ReservationRepository {
 
     List<Reservation> findAllByDateAndThemeId(final String date, final long themeId);
 
-    boolean existByTimeId(final long timeId);
+    boolean hasReservationAtTime(final long timeId);
 
-    boolean existByThemeId(final long themeId);
+    boolean hasReservationWithTheme(final long themeId);
 
-    boolean existByDateAndTimeIdAndThemeId(final String date, final long timeId, final long themeId);
+    boolean hasDuplicateReservation(final String date, final long timeId, final long themeId);
 
     void deleteById(final long id);
 }

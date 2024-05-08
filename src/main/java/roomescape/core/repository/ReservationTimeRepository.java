@@ -9,11 +9,11 @@ public interface ReservationTimeRepository {
 
     List<ReservationTime> findAll();
 
-    List<BookingTimeResponseDto> findAllByDateNotOrThemeIdNot(final String date, final long themeId);
+    List<BookingTimeResponseDto> findAllWithReservationState(final String date, final long themeId);
 
     ReservationTime findById(final long id);
 
-    boolean existByStartAt(final String startAt);
+    boolean hasDuplicateReservationTime(final String startAt);
 
     void deleteById(final long id);
 }

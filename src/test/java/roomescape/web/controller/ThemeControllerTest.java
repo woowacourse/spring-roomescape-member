@@ -170,7 +170,7 @@ class ThemeControllerTest {
 
     @Test
     @DisplayName("지난 한 주 동안의 인기 테마 목록을 조회한다.")
-    void findPopularThemes() {
+    void findPopularThemesInLastWeek() {
         final String yesterday = LocalDate.now().minusDays(1).format(DateTimeFormatter.ISO_DATE);
         insertReservation("브라운", yesterday, 1, 1);
 
