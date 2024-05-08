@@ -40,6 +40,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<String> handleRuntimeException(RuntimeException e) {
         return new ResponseEntity<>("""
+                예기치 못한 런타임 오류가 발생했습니다.
+                """, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleException(Exception e) {
+        return new ResponseEntity<>("""
                 예기치 못한 오류가 발생했습니다.
                 """, HttpStatus.INTERNAL_SERVER_ERROR);
     }
