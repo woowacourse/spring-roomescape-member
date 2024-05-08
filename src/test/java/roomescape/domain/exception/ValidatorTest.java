@@ -16,7 +16,7 @@ class ValidatorTest {
 
     @DisplayName("인자 중 null이 없을 시 정상 작동한다.")
     @Test
-    void NonNull() {
+    void nonNull() {
         assertThatCode(() -> Validator.nonNull("안녕", 1L))
                 .doesNotThrowAnyException();
     }
@@ -31,7 +31,7 @@ class ValidatorTest {
 
     @DisplayName("인자 중 빈 값이 없을 시 정상 작동한다.")
     @Test
-    void NotEmpty() {
+    void notEmpty() {
         assertThatCode(() -> Validator.notEmpty("안녕", "반가워"))
                 .doesNotThrowAnyException();
     }
