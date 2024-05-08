@@ -31,7 +31,7 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponseDto> save(@RequestBody final ReservationRequestDto reservationRequestDto, LoginMember member) {
-        final Reservation reservation = reservationService.create(reservationRequestDto.toReservation());
+        final Reservation reservation = reservationService.create(reservationRequestDto.toReservation(member));
 
         final ReservationResponseDto reservationResponseDto = changeToReservationResponseDto(reservation);
         final String url = "/reservations/" + reservationResponseDto.id();
