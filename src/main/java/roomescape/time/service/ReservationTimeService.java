@@ -16,18 +16,18 @@ public class ReservationTimeService {
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
-    public List<ReservationTime> findAll() {
-        return reservationTimeRepository.findAll();
+    public List<ReservationTime> readAll() {
+        return reservationTimeRepository.readAll();
     }
 
-    public ReservationTime save(final ReservationTime reservationTime) {
-        final long timeId = reservationTimeRepository.save(reservationTime);
+    public ReservationTime create(final ReservationTime reservationTime) {
+        final long timeId = reservationTimeRepository.create(reservationTime);
 
-        return reservationTimeRepository.findById(timeId);
+        return reservationTimeRepository.find(timeId);
     }
 
-    public void deleteById(final long id) {
-        final int deleteCount = reservationTimeRepository.deleteById(id);
+    public void delete(final long id) {
+        final int deleteCount = reservationTimeRepository.delete(id);
 
         validateDeletionOccurred(deleteCount);
     }

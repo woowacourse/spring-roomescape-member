@@ -41,7 +41,7 @@ public class ReservationRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public List<Reservation> findAll() {
+    public List<Reservation> readAll() {
         final String sql = """
                 SELECT r.id AS reservation_id, r.name AS reservation_name, r.date, rt.id AS time_id,\s
                 rt.start_at AS time_value, t.id AS theme_id, t.name AS theme_name, t.description, t.thumbnail\s
@@ -52,7 +52,7 @@ public class ReservationRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
-    public Reservation findById(final long id) {
+    public Reservation read(final long id) {
         final String sql = """
                 SELECT r.id AS reservation_id, r.name AS reservation_name, r.date,\s
                 rt.id AS time_id, rt.start_at AS time_value,\s
@@ -65,7 +65,7 @@ public class ReservationRepository {
         return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
     }
 
-    public Long save(final Reservation reservation) {
+    public Long create(final Reservation reservation) {
         final SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
                 .addValue("date", reservation.getDate())
@@ -75,14 +75,14 @@ public class ReservationRepository {
         return simpleJdbcInsert.executeAndReturnKey(params).longValue();
     }
 
-    public Integer deleteById(final long id) {
+    public Integer delete(final long id) {
         final String sql = """
                 DELETE FROM reservation WHERE id = ?""";
 
         return jdbcTemplate.update(sql, id);
     }
 
-    public Boolean checkReservationExists(Reservation reservation) {
+    public Boolean checkExists(Reservation reservation) {
         final String sql = """
                 SELECT CASE WHEN COUNT(*) > 0 THEN TRUE ELSE FALSE END\s
                 FROM reservation AS r\s

@@ -16,18 +16,18 @@ public class ThemeService {
         this.themeRepository = themeRepository;
     }
 
-    public List<Theme> findAll() {
-        return themeRepository.findAll();
+    public List<Theme> readAll() {
+        return themeRepository.readAll();
     }
 
-    public Theme save(final Theme theme) {
-        final long themeId = themeRepository.save(theme);
+    public Theme create(final Theme theme) {
+        final long themeId = themeRepository.create(theme);
 
-        return themeRepository.findById(themeId);
+        return themeRepository.read(themeId);
     }
 
-    public void deleteById(final long id) {
-        final int deleteCount = themeRepository.deleteById(id);
+    public void delete(final long id) {
+        final int deleteCount = themeRepository.delete(id);
 
         validateDeletionOccurred(deleteCount);
     }

@@ -21,7 +21,7 @@ public class ReservationController {
 
     @GetMapping
     public ResponseEntity<List<ReservationResponseDto>> findAll() {
-        final List<Reservation> reservations = reservationService.findAll();
+        final List<Reservation> reservations = reservationService.readAll();
 
         final List<ReservationResponseDto> reservationResponseDtos = changeToReservationResponseDtos(reservations);
 
@@ -30,7 +30,7 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponseDto> save(@RequestBody final ReservationRequestDto reservationRequestDto) {
-        final Reservation reservation = reservationService.save(reservationRequestDto.toReservation());
+        final Reservation reservation = reservationService.create(reservationRequestDto.toReservation());
 
         final ReservationResponseDto reservationResponseDto = changeToReservationResponseDto(reservation);
         final String url = "/reservations/" + reservationResponseDto.id();
@@ -40,7 +40,7 @@ public class ReservationController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") final long id) {
-        reservationService.deleteById(id);
+        reservationService.delete(id);
 
         return ResponseEntity.noContent().build();
     }

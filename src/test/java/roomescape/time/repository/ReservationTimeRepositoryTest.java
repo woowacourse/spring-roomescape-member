@@ -25,30 +25,30 @@ class ReservationTimeRepositoryTest {
 
     @Test
     @DisplayName("예약 시간을 생성할 수 있다.")
-    void save() {
+    void create() {
         ReservationTime reservationTime = new ReservationTime(null, LocalTime.of(23, 59));
-        assertThat(reservationTimeRepository.save(reservationTime)).isEqualTo(11L);
+        assertThat(reservationTimeRepository.create(reservationTime)).isEqualTo(11L);
     }
 
     @Test
     @DisplayName("특정 예약 시간을 조회할 수 있다.")
-    void findById() {
-        assertThat(reservationTimeRepository.findById(1L)).isEqualTo(new ReservationTime(1L, LocalTime.of(9, 0)));
+    void find() {
+        assertThat(reservationTimeRepository.find(1L)).isEqualTo(new ReservationTime(1L, LocalTime.of(9, 0)));
     }
 
     @Test
     @DisplayName("모든 예약 시간을 조회할 수 있다.")
-    void findAll() {
+    void readAll() {
         assertAll(
-                () -> assertThat(reservationTimeRepository.findAll()
+                () -> assertThat(reservationTimeRepository.readAll()
                         .size()).isEqualTo(10)
         );
     }
 
     @Test
     @DisplayName("특정 예약 시간을 삭제할 수 있다.")
-    void deleteById() {
-        assertThat(reservationTimeRepository.deleteById(10L)).isEqualTo(1);
+    void delete() {
+        assertThat(reservationTimeRepository.delete(10L)).isEqualTo(1);
     }
 
     @Test

@@ -25,30 +25,30 @@ public class ReservationService {
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
-    public List<Reservation> findAll() {
-        return reservationRepository.findAll();
+    public List<Reservation> readAll() {
+        return reservationRepository.readAll();
     }
 
-    public Reservation save(final Reservation reservation) {
+    public Reservation create(final Reservation reservation) {
         validateFutureReservation(reservation);
 
-        boolean isExist = reservationRepository.checkReservationExists(reservation);
+        boolean isExist = reservationRepository.checkExists(reservation);
         validateUniqueReservation(isExist);
 
-        final long reservationId = reservationRepository.save(reservation);
+        final long reservationId = reservationRepository.create(reservation);
 
-        return reservationRepository.findById(reservationId);
+        return reservationRepository.read(reservationId);
     }
 
-    public void deleteById(final long id) {
-        final Integer deleteCount = reservationRepository.deleteById(id);
+    public void delete(final long id) {
+        final Integer deleteCount = reservationRepository.delete(id);
 
         validateDeletionOccurred(deleteCount);
     }
 
     private void validateFutureReservation(Reservation reservation) {
         final Long timeId = reservation.getTime().getId();
-        final ReservationTime reservationTime = reservationTimeRepository.findById(timeId);
+        final ReservationTime reservationTime = reservationTimeRepository.find(timeId);
 
         LocalDateTime currentDateTime = LocalDateTime.now();
         LocalDate currentDate = currentDateTime.toLocalDate();

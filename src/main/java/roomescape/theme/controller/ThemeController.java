@@ -21,7 +21,7 @@ public class ThemeController {
 
     @GetMapping
     public ResponseEntity<List<ThemeResponseDto>> findAll() {
-        final List<Theme> themes = themeService.findAll();
+        final List<Theme> themes = themeService.readAll();
 
         final List<ThemeResponseDto> themeResponseDtos = changeToThemeResponseDtos(themes);
 
@@ -30,7 +30,7 @@ public class ThemeController {
 
     @PostMapping
     public ResponseEntity<ThemeResponseDto> save(@RequestBody final ThemeRequestDto themeRequestDto) {
-        final Theme theme = themeService.save(themeRequestDto.toTheme());
+        final Theme theme = themeService.create(themeRequestDto.toTheme());
 
         final ThemeResponseDto themeResponseDto = changeToThemeResponseDto(theme);
         final String url = "/themes/" + themeResponseDto.id();
@@ -40,7 +40,7 @@ public class ThemeController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") final long id) {
-        themeService.deleteById(id);
+        themeService.delete(id);
 
         return ResponseEntity.noContent().build();
     }

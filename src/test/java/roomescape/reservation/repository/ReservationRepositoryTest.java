@@ -38,17 +38,17 @@ class ReservationRepositoryTest {
 
     @Test
     @DisplayName("특정 예약을 생성할 수 있다.")
-    void save() {
-        reservationTimeRepository.save(reservationTime);
-        themeRepository.save(theme);
-        assertThat(reservationRepository.save(reservation)).isEqualTo(1L);
+    void create() {
+        reservationTimeRepository.create(reservationTime);
+        themeRepository.create(theme);
+        assertThat(reservationRepository.create(reservation)).isEqualTo(1L);
     }
 
     @Test
     @DisplayName("예약을 모두 조회할 수 있다.")
-    void findAll() {
-        save();
-        List<Reservation> reservationList = reservationRepository.findAll();
+    void readAll() {
+        create();
+        List<Reservation> reservationList = reservationRepository.readAll();
         assertAll(
                 () -> assertThat(reservationList.get(0)).isEqualTo(reservation),
                 () -> assertThat(reservationList.size()).isEqualTo(1)
@@ -57,22 +57,22 @@ class ReservationRepositoryTest {
 
     @Test
     @DisplayName("특정 예약을 조회할 수 있다.")
-    void findById() {
-        save();
-        assertThat(reservationRepository.findById(1L)).isEqualTo(reservation);
+    void read() {
+        create();
+        assertThat(reservationRepository.read(1L)).isEqualTo(reservation);
     }
 
     @Test
     @DisplayName("특정 예약을 삭제 할 수 있다.")
-    void deleteById() {
-        save();
-        assertThat(reservationRepository.deleteById(1L)).isEqualTo(1);
+    void delete() {
+        create();
+        assertThat(reservationRepository.delete(1L)).isEqualTo(1);
     }
 
     @Test
     @DisplayName("특정 날짜, 시간, 테마에 예약이 존재하는지 알 수 있다.")
-    void checkReservationExists() {
-        save();
-        assertThat(reservationRepository.checkReservationExists(reservation)).isTrue();
+    void checkExists() {
+        create();
+        assertThat(reservationRepository.checkExists(reservation)).isTrue();
     }
 }

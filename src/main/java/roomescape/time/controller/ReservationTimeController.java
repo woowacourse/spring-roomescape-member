@@ -23,7 +23,7 @@ public class ReservationTimeController {
 
     @GetMapping
     public ResponseEntity<List<ReservationTimeResponseDto>> findAll() {
-        final List<ReservationTime> reservationTimes = reservationTimeService.findAll();
+        final List<ReservationTime> reservationTimes = reservationTimeService.readAll();
 
         final List<ReservationTimeResponseDto> reservationTimeResponseDtos = changeToReservationTimeResponseDtos(reservationTimes);
 
@@ -32,7 +32,7 @@ public class ReservationTimeController {
 
     @PostMapping
     public ResponseEntity<ReservationTimeResponseDto> save(@RequestBody final ReservationTimeRequestDto reservationTimeRequestDto) {
-        final ReservationTime reservationTime = reservationTimeService.save(reservationTimeRequestDto.toReservationTime());
+        final ReservationTime reservationTime = reservationTimeService.create(reservationTimeRequestDto.toReservationTime());
 
         final ReservationTimeResponseDto reservationTimeResponseDto = changeToReservationTimeResponseDto(reservationTime);
         final String url = "/times/" + reservationTimeResponseDto.id();
@@ -42,7 +42,7 @@ public class ReservationTimeController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") final long id) {
-        reservationTimeService.deleteById(id);
+        reservationTimeService.delete(id);
 
         return ResponseEntity.noContent().build();
     }
