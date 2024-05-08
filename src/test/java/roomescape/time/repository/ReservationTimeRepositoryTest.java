@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.domain.ReservationUserTime;
+import roomescape.time.domain.ReservationTimeStatus;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -54,17 +54,17 @@ class ReservationTimeRepositoryTest {
     @Test
     @DisplayName("날짜와 테마를 통해 가능한 예약을 찾을 수 있다.")
     void findAvailableTime() {
-        List<ReservationUserTime> userTimes = List.of(
-                new ReservationUserTime(1L, "09:00:00", false),
-                new ReservationUserTime(2L, "10:00:00", true),
-                new ReservationUserTime(3L, "11:00:00", false),
-                new ReservationUserTime(4L, "12:00:00", false),
-                new ReservationUserTime(5L, "13:00:00", false),
-                new ReservationUserTime(6L, "14:00:00", false),
-                new ReservationUserTime(7L, "15:00:00", false),
-                new ReservationUserTime(8L, "16:00:00", false),
-                new ReservationUserTime(9L, "17:00:00", false),
-                new ReservationUserTime(10L, "18:00:00", false)
+        List<ReservationTimeStatus> userTimes = List.of(
+                new ReservationTimeStatus(1L, LocalTime.of(9, 0), false),
+                new ReservationTimeStatus(2L, LocalTime.of(10, 0), true),
+                new ReservationTimeStatus(3L, LocalTime.of(11, 0), false),
+                new ReservationTimeStatus(4L, LocalTime.of(12, 0), false),
+                new ReservationTimeStatus(5L, LocalTime.of(13, 0), false),
+                new ReservationTimeStatus(6L, LocalTime.of(14, 0), false),
+                new ReservationTimeStatus(7L, LocalTime.of(15, 0), false),
+                new ReservationTimeStatus(8L, LocalTime.of(16, 0), false),
+                new ReservationTimeStatus(9L, LocalTime.of(17, 0), false),
+                new ReservationTimeStatus(10L, LocalTime.of(18, 0), false)
         );
 
         assertThat(reservationTimeRepository.findAvailableTime("2024-04-24", 2)).isEqualTo(userTimes);

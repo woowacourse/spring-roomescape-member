@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.domain.ReservationUserTime;
+import roomescape.time.domain.ReservationTimeStatus;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -18,10 +18,10 @@ public class ReservationTimeRepository {
             new ReservationTime(
                     resultSet.getLong("id"),
                     resultSet.getTime("start_at").toLocalTime());
-    private static final RowMapper<ReservationUserTime> USER_TIME_ROW_MAPPER = (resultSet, rowNum) ->
-            new ReservationUserTime(
+    private static final RowMapper<ReservationTimeStatus> USER_TIME_ROW_MAPPER = (resultSet, rowNum) ->
+            new ReservationTimeStatus(
                     resultSet.getLong("id"),
-                    resultSet.getTime("start_at").toString(),
+                    resultSet.getTime("start_at").toLocalTime(),
                     resultSet.getBoolean("already_booked"));
 
     private final JdbcTemplate jdbcTemplate;
@@ -58,7 +58,7 @@ public class ReservationTimeRepository {
         return jdbcTemplate.update(sql, id);
     }
 
-    public List<ReservationUserTime> findAvailableTime(final String date, final long themeId) {
+    public List<ReservationTimeStatus> findAvailableTime(final String date, final long themeId) {
         final String sql = """
                 SELECT t.id, t.start_at,\s
                 EXISTS (SELECT 1 FROM reservation r WHERE r.time_id = t.id AND r.date = ? AND r.theme_id = ?)\s

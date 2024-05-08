@@ -1,17 +1,12 @@
 package roomescape.time.domain;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import roomescape.exception.InvalidTimeException;
 
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class ReservationTime {
-    private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
-
     private final Long id;
-    @JsonFormat(pattern = "HH:MM")
     private final LocalTime startAt;
 
     public ReservationTime(final Long id, final LocalTime startAt) {
