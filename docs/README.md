@@ -51,3 +51,4 @@
 - [X] 사용자 생성 API
 - [X] 사용자 조회 API
 - [X] `/logout` 요청 시 쿠키 삭제
+- [X] `Argument Resolver`로 사용자 정보 조회
