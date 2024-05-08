@@ -14,7 +14,7 @@ public class MemberService {
         this.memberDao = memberDao;
     }
 
-    public Member register(MemberDto memberDto) {
+    public Long register(MemberDto memberDto) {
         return memberDao.insert(memberDto.name(), memberDto.email(), memberDto.password());
     }
 

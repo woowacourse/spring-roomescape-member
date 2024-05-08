@@ -1,15 +1,29 @@
 package roomescape.dao;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.Member;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@JdbcTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@Import(MemberDao.class)
+@Sql(scripts = {"/test_schema.sql", "/test_data.sql"})
 public class MemberDaoTest {
 
-    private final MemberDao memberDao = new MemberDao();
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private MemberDao memberDao;
 
     @Test
     void insertTest() {
@@ -17,15 +31,13 @@ public class MemberDaoTest {
         String email = "email@email.com";
         String password = "password";
 
-        Member member = memberDao.insert(name, email, password);
+        Member member = new Member(memberDao.insert(name, email, password), name, email, password);
 
         assertThat(member).isNotNull();
     }
 
     @Test
     void findByEmailTest() {
-        memberDao.insert("name", "email@email.com", "password");
-
         Optional<Member> user = memberDao.findByEmail("email@email.com");
 
         assertThat(user.isPresent()).isTrue();

@@ -1,35 +1,50 @@
 package roomescape.dao;
 
+import org.springframework.dao.support.DataAccessUtils;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
 
-import java.util.ArrayList;
+import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 
-//TODO: DB를 이용하도록 수정
 @Repository
 public class MemberDao {
 
-    private final List<Member> members;
+    private final JdbcTemplate jdbcTemplate;
 
-    public MemberDao() {
-        this.members = new ArrayList<>(){
-            {
-                add(new Member("name", "email@email.com", "password"));
-            }
-        };
+    public MemberDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Member insert(String name, String email, String password) {
-        Member newMember = new Member(name, email, password);
-        members.add(newMember);
-        return newMember;
+    public Long insert(String name, String email, String password) {
+        String insertSql = "INSERT INTO member(name, email, password) VALUES (?, ?, ?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(
+                    insertSql,
+                    new String[]{"id"});
+            ps.setString(1, name);
+            ps.setString(2, email);
+            ps.setString(3, password);
+            return ps;
+        }, keyHolder);
+
+        return keyHolder.getKey().longValue();
     }
 
     public Optional<Member> findByEmail(String email) {
-        return members.stream()
-                .filter(user -> user.isEmailMatches(email))
-                .findAny();
+        String findByEmailSql = "SELECT id, name, email, password FROM member WHERE email = ?";
+        List<Member> members = jdbcTemplate.query(findByEmailSql,
+                (resultSet, numRow) -> new Member(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("email"),
+                        resultSet.getString("password"))
+                , email);
+        return Optional.ofNullable(DataAccessUtils.singleResult(members));
     }
 }

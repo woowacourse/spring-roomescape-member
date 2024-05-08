@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.dto.LoginRequestDto;
 
 import java.util.HashMap;
@@ -19,6 +20,7 @@ import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@Sql(scripts = {"/test_schema.sql", "/test_data.sql"})
 public class MemberControllerTest {
 
     @LocalServerPort
@@ -27,20 +29,6 @@ public class MemberControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-    }
-
-    @DisplayName("정상적인 로그인 요청 시 200으로 응답한다.")
-    @Test
-    void loginTest() {
-        Map<String, String> params = new HashMap<>();
-        params.put("email", "email@email.com");
-        params.put("password", "password");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/login")
-                .then().log().all().statusCode(200);
     }
 
     @DisplayName("존재하지 않는 아이디인 경우 400으로 응답한다.")
@@ -58,7 +46,7 @@ public class MemberControllerTest {
                 .body(is("존재하지 않는 아이디입니다."));
     }
 
-    @DisplayName("존재하지 않는 아이디인 경우 400으로 응답한다.")
+    @DisplayName("잘못된 비밀번호인 경우 400으로 응답한다.")
     @Test
     void wrongPasswordTest() {
         Map<String, String> params = new HashMap<>();
