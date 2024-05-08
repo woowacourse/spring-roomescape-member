@@ -6,22 +6,22 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.ui.CheckAdminInterceptor;
-import roomescape.ui.MemberConverterArgumentResolver;
+import roomescape.ui.MemberIdConverterArgumentResolver;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
     private final CheckAdminInterceptor checkAdminInterceptor;
-    private final MemberConverterArgumentResolver memberConverterArgumentResolver;
+    private final MemberIdConverterArgumentResolver memberIdConverterArgumentResolver;
 
     public WebMvcConfiguration(CheckAdminInterceptor checkAdminInterceptor,
-                               MemberConverterArgumentResolver memberConverterArgumentResolver) {
+                               MemberIdConverterArgumentResolver memberIdConverterArgumentResolver) {
         this.checkAdminInterceptor = checkAdminInterceptor;
-        this.memberConverterArgumentResolver = memberConverterArgumentResolver;
+        this.memberIdConverterArgumentResolver = memberIdConverterArgumentResolver;
     }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(memberConverterArgumentResolver);
+        resolvers.add(memberIdConverterArgumentResolver);
     }
 
     @Override

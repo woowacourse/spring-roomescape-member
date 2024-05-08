@@ -31,6 +31,14 @@ public class JwtTokenProvider {
         return "";
     }
 
+    public Long getMemberIdByToken(String token) {
+        String memberId = Jwts.parser()
+                .setSigningKey("secret")
+                .parseClaimsJws(token)
+                .getBody().getSubject();
+        return Long.parseLong(memberId);
+    }
+
     public String getEmailByToken(String token) {
         Claims claims = Jwts.parser()
                 .setSigningKey("secret")
