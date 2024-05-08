@@ -321,7 +321,9 @@ id : long
   - /login 으로 로케이터 지정
   - 이메일이 중복시 예외 발생
 - [ ] POST /login 요청 시 로그인 폼에 입력한 email, password 값을 body에 포함
-  - 응답 시 Cookie에 "token"값으로 토큰을 포함
+  - JWT 토큰 의존성 `build.gradle`에 추가하기 
+  - 토큰 발급하기
+  - 응답 헤더 `Set-Cookie`에 `token:{access_token}`값으로 토큰을 포함
 - [ ] 인증 정보 조회
   - 사용자의 정보를 조회하는 API 구현
   - Cookie를 이용하여 로그인 사용자의 정보를 확인
