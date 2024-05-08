@@ -1,7 +1,7 @@
 package roomescape.domain.reservation;
 
-import roomescape.domain.theme.Theme;
 import roomescape.domain.exception.InvalidDomainObjectException;
+import roomescape.domain.theme.Theme;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -88,5 +88,11 @@ public class Reservation {
 
     public LocalDateTime getDateTime() {
         return LocalDateTime.of(this.date, this.time.getStartAt());
+    }
+
+    public boolean isBeforeNow() {
+        LocalDateTime reservationDataTime = LocalDateTime.of(date, time.getStartAt());
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        return reservationDataTime.isBefore(currentDateTime);
     }
 }
