@@ -1,9 +1,11 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.service.dto.reservation.MemberReservationCreateRequest;
 import roomescape.service.dto.reservation.ReservationCreateRequest;
 import roomescape.service.dto.reservation.ReservationResponse;
 import roomescape.exception.BadRequestException;
@@ -39,6 +41,18 @@ public class ReservationService {
 
         validateDuplicated(reservation);
         validateRequestedTime(reservation, reservationTime);
+
+        Reservation savedReservation = reservationRepository.save(reservation);
+        return ReservationResponse.from(savedReservation);
+    }
+
+    public ReservationResponse createReservation(MemberReservationCreateRequest request, Member member) {
+        ReservationTime time = findReservationTimeById(request.timeId());
+        Theme theme = findThemeById(request.themeId());
+        Reservation reservation = request.toReservation(member, time, theme);
+
+        validateDuplicated(reservation);
+        validateRequestedTime(reservation, time);
 
         Reservation savedReservation = reservationRepository.save(reservation);
         return ReservationResponse.from(savedReservation);

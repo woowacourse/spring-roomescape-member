@@ -2,9 +2,11 @@ package roomescape.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
+import roomescape.domain.Member;
+import roomescape.service.ReservationService;
+import roomescape.service.dto.reservation.MemberReservationCreateRequest;
 import roomescape.service.dto.reservation.ReservationCreateRequest;
 import roomescape.service.dto.reservation.ReservationResponse;
-import roomescape.service.ReservationService;
 
 import java.util.List;
 
@@ -31,6 +33,14 @@ public class ReservationController {
     @PostMapping
     public ReservationResponse createReservation(@Valid @RequestBody ReservationCreateRequest request) {
         return reservationService.createReservation(request);
+    }
+
+    @PostMapping(params = {"type=member"})
+    public ReservationResponse createReservation(
+            @Valid @RequestBody MemberReservationCreateRequest request,
+            Member member
+    ) {
+        return reservationService.createReservation(request, member);
     }
 
     @DeleteMapping("/{id}")

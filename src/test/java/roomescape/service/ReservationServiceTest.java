@@ -9,11 +9,13 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.Fixtures;
+import roomescape.domain.Member;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ResourceNotFoundException;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationtime.ReservationTimeRepository;
 import roomescape.repository.theme.ThemeRepository;
+import roomescape.service.dto.reservation.MemberReservationCreateRequest;
 import roomescape.service.dto.reservation.ReservationCreateRequest;
 import roomescape.service.dto.reservation.ReservationResponse;
 
@@ -97,6 +99,30 @@ class ReservationServiceTest {
 
         // when
         ReservationResponse reservation = reservationService.createReservation(request);
+
+        // then
+        SoftAssertions softAssertions = new SoftAssertions();
+        softAssertions.assertThat(reservation.date()).isEqualTo(date);
+        softAssertions.assertThat(reservation.name()).isEqualTo(name);
+        softAssertions.assertThat(reservation.time().getStartAt()).isEqualTo(LocalTime.of(10, 10));
+        softAssertions.assertAll();
+    }
+
+    @DisplayName("예약 서비스는 사용자 예약을 생성한다.")
+    @Test
+    void createMemberReservation() {
+        // given
+        Mockito.when(reservationTimeRepository.findById(id))
+                .thenReturn(Optional.of(Fixtures.reservationTimeFixture));
+        Mockito.when(themeRepository.findById(id))
+                .thenReturn(Optional.of(Fixtures.themeFixture));
+        MemberReservationCreateRequest request = new MemberReservationCreateRequest(date, 1L, 1L);
+        Member member = Fixtures.memberFixture;
+        Mockito.when(reservationRepository.save(any()))
+                .thenReturn(Fixtures.reservationFixture);
+
+        // when
+        ReservationResponse reservation = reservationService.createReservation(request, member);
 
         // then
         SoftAssertions softAssertions = new SoftAssertions();

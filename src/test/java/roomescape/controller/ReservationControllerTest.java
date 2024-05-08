@@ -9,6 +9,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.time.LocalDate;
@@ -70,6 +71,47 @@ class ReservationControllerTest {
                 .then()
                 .statusCode(200)
                 .body("size()", is(10));
+    }
+
+    @DisplayName("예약 컨트롤러는 사용자 예약 생성 시 생성된 값을 반환한다.")
+    @Test
+    void createMemberReservation() {
+        // given
+        Map<String, String> body = new HashMap<>();
+        body.put("email", "test@gmail.com");
+        body.put("password", "password");
+
+        String accessToken = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(body)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200)
+                .extract()
+                .header(HttpHeaders.SET_COOKIE)
+                .split(";")[0]
+                .split("token=")[1];
+
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("date", LocalDate.MAX.toString());
+        reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
+
+        // when
+        String name = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .cookie("token", accessToken)
+                .body(reservation)
+                .queryParam("type", "member")
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .extract()
+                .body()
+                .jsonPath().get("name");
+
+        // then
+        assertThat(name).isEqualTo("클로버");
     }
 
     @DisplayName("예약 컨트롤러는 잘못된 형식의 날짜로 예약 생성 요청 시 400을 응답한다.")
