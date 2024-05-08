@@ -18,6 +18,13 @@ public interface ReservationRepository {
 
     List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId);
 
+    List<Reservation> findByDateBetweenAndMemberIdAndThemeId(
+            LocalDate start,
+            LocalDate end,
+            Long memberId,
+            Long themeId
+    );
+
     int deleteById(Long id);
 
     Boolean existsByTimeId(Long timeId);

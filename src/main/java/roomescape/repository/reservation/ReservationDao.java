@@ -178,6 +178,38 @@ public class ReservationDao implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findByDateBetweenAndMemberIdAndThemeId(
+            LocalDate start,
+            LocalDate end,
+            Long memberId,
+            Long themeId
+    ) {
+        String sql = """
+                SELECT
+                    r.id AS reservation_id,
+                    m.id AS member_id,
+                    m.name AS member_name,
+                    m.email AS member_email,
+                    m.password AS member_password,
+                    r.date,
+                    t.id AS time_id,
+                    t.start_at AS start_at,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail AS theme_thumbnail
+                FROM reservation AS r
+                    INNER JOIN reservation_time AS t
+                        ON r.time_id = t.id
+                    INNER JOIN theme AS th
+                        ON r.theme_id = th.id
+                    INNER JOIN member AS m
+                        ON r.member_id = m.id
+                WHERE r.date BETWEEN ? AND ? AND th.id = ? AND m.id = ?""";
+        return jdbcTemplate.query(sql, rowMapper, start, end, themeId, memberId);
+    }
+
+    @Override
     public int deleteById(Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
         return jdbcTemplate.update(sql, id);

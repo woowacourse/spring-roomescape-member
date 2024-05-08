@@ -42,6 +42,20 @@ class ReservationControllerTest {
                 .body("size()", is(9));
     }
 
+    @DisplayName("예약 컨트롤러는 기간, 사용자, 테마로 예약 조회 시 값을 반환한다.")
+    @Test
+    void readReservationsWithPeriodAndMemberAndTheme() {
+        RestAssured.given().log().all()
+                .queryParam("dateFrom", "2024-01-01")
+                .queryParam("dateTo", "2099-12-31")
+                .queryParam("memberId", 1)
+                .queryParam("themeId", 2)
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(2));
+    }
+
     @DisplayName("예약 컨트롤러는 예약 생성 시 생성된 값을 반환한다.")
     @Test
     void createReservation() {

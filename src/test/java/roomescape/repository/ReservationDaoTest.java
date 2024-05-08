@@ -45,8 +45,9 @@ class ReservationDaoTest {
     void save() {
         // given
         ReservationTime reservationTime = Fixtures.reservationTimeFixture;
-        Long reservationTimeId = simpleJdbcInsertWithReservationTime.executeAndReturnKey(new BeanPropertySqlParameterSource(reservationTime))
-                .longValue();
+        Long reservationTimeId = simpleJdbcInsertWithReservationTime.executeAndReturnKey(
+                    new BeanPropertySqlParameterSource(reservationTime)
+                ).longValue();
         ReservationTime newReservationTime = new ReservationTime(reservationTimeId, reservationTime.getStartAt());
         Reservation reservation = new Reservation(
                 Fixtures.memberFixture,
@@ -100,6 +101,27 @@ class ReservationDaoTest {
     @DisplayName("예약 DAO는 주어진 날짜와 테마에 맞는 예약을 반환한다.")
     @Test
     void findByDateAndThemeId() {
+        // given
+        LocalDate startDate = LocalDate.of(2024, 12, 1);
+        LocalDate endDate = LocalDate.of(2024, 12, 8);
+        Long themeId = 2L;
+        Long memberId = 1L;
+
+        // when
+        List<Reservation> reservations = reservationRepository.findByDateBetweenAndMemberIdAndThemeId(
+                startDate,
+                endDate,
+                memberId,
+                themeId
+        );
+
+        // then
+        assertThat(reservations).hasSize(1);
+    }
+
+    @DisplayName("예약 DAO는 주어진 기간, 테마, 사용자에 맞는 예약을 반환한다.")
+    @Test
+    void findByDateBetweenAndMemberIdAndThemeId() {
         // given
         LocalDate date = LocalDate.of(2024, 12, 2);
         Long themeId = 2L;

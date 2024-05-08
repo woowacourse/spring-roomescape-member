@@ -42,13 +42,13 @@ CREATE TABLE IF NOT EXISTS reservation
     FOREIGN KEY (member_id) REFERENCES member (id)
 );
 
-INSERT INTO member(name, email, password, role) VALUES ( '관리자', 'admin@gmail.com', 'password', 'ADMIN' );
 INSERT INTO member(name, email, password) VALUES ( '클로버', 'test@gmail.com', 'password' );
 INSERT INTO member(name, email, password) VALUES ( '페드로', 'test2@gmail.com', 'password' );
 INSERT INTO member(name, email, password) VALUES ( '클로버2', 'test3@gmail.com', 'password' );
 INSERT INTO member(name, email, password) VALUES ( '클로버3', 'test4@gmail.com', 'password' );
 INSERT INTO member(name, email, password) VALUES ( '클로버4', 'test5@gmail.com', 'password' );
 INSERT INTO member(name, email, password) VALUES ( '클로버5', 'test6@gmail.com', 'password' );
+INSERT INTO member(name, email, password, role) VALUES ( '관리자', 'admin@gmail.com', 'password', 'ADMIN' );
 
 INSERT INTO reservation_time (start_at) VALUES ('10:00:00');
 INSERT INTO reservation_time (start_at) VALUES ('12:00:00');

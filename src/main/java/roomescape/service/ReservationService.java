@@ -15,6 +15,7 @@ import roomescape.repository.theme.ThemeRepository;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationtime.ReservationTimeRepository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -101,6 +102,12 @@ public class ReservationService {
 
     public List<ReservationResponse> readReservations() {
         return reservationRepository.findAll().stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
+    public List<ReservationResponse> readReservations(LocalDate start, LocalDate end, Long memberId, Long themeId) {
+        return reservationRepository.findByDateBetweenAndMemberIdAndThemeId(start, end, memberId, themeId).stream()
                 .map(ReservationResponse::from)
                 .toList();
     }

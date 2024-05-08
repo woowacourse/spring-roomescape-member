@@ -8,6 +8,7 @@ import roomescape.service.dto.reservation.MemberReservationCreateRequest;
 import roomescape.service.dto.reservation.ReservationCreateRequest;
 import roomescape.service.dto.reservation.ReservationResponse;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -23,6 +24,16 @@ public class ReservationController {
     @GetMapping
     public List<ReservationResponse> readReservations() {
         return reservationService.readReservations();
+    }
+
+    @GetMapping(params = {"dateFrom", "dateTo", "memberId", "themeId"})
+    public List<ReservationResponse> readReservations(
+            @RequestParam LocalDate dateFrom,
+            @RequestParam LocalDate dateTo,
+            @RequestParam Long memberId,
+            @RequestParam Long themeId
+    ) {
+        return reservationService.readReservations(dateFrom, dateTo, memberId, themeId);
     }
 
     @GetMapping("/{id}")
