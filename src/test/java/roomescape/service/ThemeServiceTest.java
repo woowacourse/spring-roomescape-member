@@ -14,13 +14,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.domain.Member;
+import roomescape.domain.MemberRepository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
+import roomescape.domain.ThemeRepository;
 import roomescape.exception.ReservationBusinessException;
-import roomescape.repository.ThemeJdbcRepository;
 import roomescape.service.dto.PopularThemeRequest;
 import roomescape.service.dto.ThemeResponse;
 import roomescape.service.dto.ThemeSaveRequest;
@@ -39,7 +41,10 @@ class ThemeServiceTest {
     private ReservationTimeRepository reservationTimeRepository;
 
     @Autowired
-    private ThemeJdbcRepository themeJdbcRepository;
+    private ThemeRepository themeRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
 
     @DisplayName("테마 저장")
     @Test
@@ -98,8 +103,9 @@ class ThemeServiceTest {
     void deleteExistReservation() {
         // given
         final ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("10:00")));
-        final Theme theme = themeJdbcRepository.save(new Theme("이름", "설명", "썸네일"));
-        reservationRepository.save(new Reservation("감자", LocalDate.parse("2025-05-13"), time, theme));
+        final Theme theme = themeRepository.save(new Theme("이름", "설명", "썸네일"));
+        final Member member = memberRepository.save(new Member("생강", "email@email.com", "1234"));
+        reservationRepository.save(new Reservation(member, LocalDate.parse("2025-05-13"), time, theme));
 
         // when & then
         assertThatThrownBy(() -> themeService.deleteTheme(theme.getId()))

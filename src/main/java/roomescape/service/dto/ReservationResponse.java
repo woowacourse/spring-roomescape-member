@@ -3,11 +3,12 @@ package roomescape.service.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import java.time.LocalDate;
+import roomescape.auth.dto.MemberResponse;
 import roomescape.domain.Reservation;
 
 public record ReservationResponse(
         Long id,
-        String name,
+        MemberResponse member,
         @JsonFormat(shape = Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
         LocalDate date,
         ReservationTimeResponse time,
@@ -17,7 +18,7 @@ public record ReservationResponse(
     public ReservationResponse(final Reservation reservation) {
         this(
                 reservation.getId(),
-                reservation.getName(),
+                MemberResponse.from(reservation.getMember()),
                 reservation.getDate(),
                 new ReservationTimeResponse(reservation.getTime()),
                 new ThemeResponse(reservation.getTheme())

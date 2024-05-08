@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
@@ -23,10 +24,11 @@ public class ReservationJdbcRepository implements ReservationRepository {
     private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (selectedReservation, rowNum) -> {
         final ReservationTime time = mapReservationTime(selectedReservation);
         final Theme theme = mapTheme(selectedReservation);
+        final Member member = mapMember(selectedReservation);
 
         return new Reservation(
                 selectedReservation.getLong("id"),
-                selectedReservation.getString("name"),
+                member,
                 LocalDate.parse(selectedReservation.getString("date")),
                 time,
                 theme
@@ -52,6 +54,15 @@ public class ReservationJdbcRepository implements ReservationRepository {
         );
     }
 
+    private static Member mapMember(final ResultSet resultSet) throws SQLException {
+        return new Member(
+                resultSet.getLong("member_id"),
+                resultSet.getString("member_name"),
+                resultSet.getString("email"),
+                resultSet.getString("password")
+        );
+    }
+
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert reservationInsert;
 
@@ -68,7 +79,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
         final Long savedReservationId = reservationInsert.executeAndReturnKey(reservationParameters).longValue();
         return new Reservation(
                 savedReservationId,
-                reservation.getName(),
+                reservation.getMember(),
                 reservation.getDate(),
                 reservation.getTime(),
                 reservation.getTheme()
@@ -80,7 +91,10 @@ public class ReservationJdbcRepository implements ReservationRepository {
         final String selectQuery = """
             SELECT
                 r.id as reservation_id,
-                r.name,
+                r.member_id,
+                m.name as member_name,
+                m.email,
+                m.password,
                 r.date,
                 rt.id as time_id,
                 rt.start_at,
@@ -89,10 +103,12 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 t.description,
                 t.thumbnail
             FROM reservation as r
-            INNER JOIN reservation_time as rt
+            LEFT JOIN reservation_time as rt
             ON r.time_id = rt.id
-            INNER JOIN theme as t
+            LEFT JOIN theme as t
             ON r.theme_id = t.id
+            LEFT JOIN member as m
+            ON r.member_id = m.id
         """;
         return jdbcTemplate.query(selectQuery, RESERVATION_ROW_MAPPER);
     }
@@ -102,7 +118,10 @@ public class ReservationJdbcRepository implements ReservationRepository {
         final String selectQuery = """
             SELECT
                 r.id as reservation_id,
-                r.name,
+                r.member_id,
+                m.name as member_name,
+                m.email,
+                m.password,
                 r.date,
                 rt.id as time_id,
                 rt.start_at,
@@ -111,10 +130,12 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 t.description,
                 t.thumbnail
             FROM reservation as r
-            INNER JOIN reservation_time as rt
+            LEFT JOIN reservation_time as rt
             ON r.time_id = rt.id
-            INNER JOIN theme as t
+            LEFT JOIN theme as t
             ON r.theme_id = t.id
+            LEFT JOIN member as m
+            ON r.member_id = m.id
             WHERE r.id = ?
         """;
 

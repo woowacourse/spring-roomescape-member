@@ -13,6 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.domain.Member;
+import roomescape.domain.MemberRepository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
@@ -41,15 +43,20 @@ class ReservationTimeServiceTest {
     @Autowired
     private ReservationRepository reservationRepository;
 
+    @Autowired
+    private MemberRepository memberRepository;
+
     ReservationTime reservationTime;
     Theme theme;
+    Member member;
 
     @BeforeEach
     void init() {
         reservationTimeRepository.save(new ReservationTime(LocalTime.parse("11:00")));
         reservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.parse("12:00")));
         theme = themeRepository.save(new Theme("이름", "설명", "썸네일"));
-        reservationRepository.save(new Reservation(1L, "백호", LocalDate.parse("2024-12-12"), reservationTime, theme));
+        member = memberRepository.save(new Member("생강", "email@email.com", "1234"));
+        reservationRepository.save(new Reservation(member, LocalDate.parse("2024-12-12"), reservationTime, theme));
     }
 
     @DisplayName("예약 시간 목록 조회")
@@ -62,8 +69,10 @@ class ReservationTimeServiceTest {
     @DisplayName("예약 시간 추가")
     @Test
     void saveTime() {
-        final ReservationTimeSaveRequest reservationTimeSaveRequest = new ReservationTimeSaveRequest(LocalTime.parse("01:00"));
-        final ReservationTimeResponse reservationTimeResponse = reservationTimeService.saveTime(reservationTimeSaveRequest);
+        final ReservationTimeSaveRequest reservationTimeSaveRequest = new ReservationTimeSaveRequest(
+                LocalTime.parse("01:00"));
+        final ReservationTimeResponse reservationTimeResponse = reservationTimeService.saveTime(
+                reservationTimeSaveRequest);
         assertThat(reservationTimeResponse.startAt()).isEqualTo(LocalTime.parse("01:00"));
     }
 
@@ -94,7 +103,8 @@ class ReservationTimeServiceTest {
     @DisplayName("중복된 시간 저장")
     @Test
     void saveDuplicatedTime() {
-        assertThatThrownBy(() -> reservationTimeService.saveTime(new ReservationTimeSaveRequest(LocalTime.parse("11:00"))))
+        assertThatThrownBy(
+                () -> reservationTimeService.saveTime(new ReservationTimeSaveRequest(LocalTime.parse("11:00"))))
                 .isInstanceOf(ReservationBusinessException.class);
     }
 
@@ -102,7 +112,8 @@ class ReservationTimeServiceTest {
     @Test
     void findBookedTimes() {
         // given
-        var reservationTimeBookedRequest = new ReservationTimeBookedRequest(LocalDate.parse("2024-12-12"), theme.getId());
+        var reservationTimeBookedRequest = new ReservationTimeBookedRequest(LocalDate.parse("2024-12-12"),
+                theme.getId());
 
         // when
         final List<ReservationTimeBookedResponse> timesWithBooked = reservationTimeService.getTimesWithBooked(

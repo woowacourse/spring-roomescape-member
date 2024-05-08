@@ -2,15 +2,18 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.controller.login.LoginMember;
+import roomescape.domain.Member;
+import roomescape.domain.MemberRepository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
+import roomescape.exception.ReservationBusinessException;
 import roomescape.service.dto.ReservationResponse;
 import roomescape.service.dto.ReservationSaveRequest;
-import roomescape.exception.ReservationBusinessException;
 
 @Service
 public class ReservationService {
@@ -18,15 +21,17 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final MemberRepository memberRepository;
 
     public ReservationService(
             final ReservationRepository reservationRepository,
             final ReservationTimeRepository reservationTimeRepository,
-            final ThemeRepository themeRepository
+            final ThemeRepository themeRepository, MemberRepository memberRepository
     ) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.memberRepository = memberRepository;
     }
 
     public List<ReservationResponse> getReservations() {
@@ -36,14 +41,17 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse saveReservation(final ReservationSaveRequest reservationSaveRequest) {
+    public ReservationResponse saveReservation(final ReservationSaveRequest reservationSaveRequest, final LoginMember loginMember) {
         final ReservationTime time = reservationTimeRepository.findById(reservationSaveRequest.timeId())
                 .orElseThrow(() -> new ReservationBusinessException("존재하지 않는 예약 시간입니다."));
 
         final Theme theme = themeRepository.findById(reservationSaveRequest.themeId())
                 .orElseThrow(() -> new ReservationBusinessException("존재하지 않는 테마입니다."));
 
-        final Reservation reservation = reservationSaveRequest.toReservation(time, theme);
+        final Member member = memberRepository.findById(loginMember.id())
+                .orElseThrow(() -> new ReservationBusinessException("존재하지 않는 회원입니다."));
+
+        final Reservation reservation = reservationSaveRequest.toReservation(time, theme, member);
         validateUnique(reservation);
 
         final Reservation savedReservation = reservationRepository.save(reservation);

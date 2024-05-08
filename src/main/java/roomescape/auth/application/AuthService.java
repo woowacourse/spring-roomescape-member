@@ -1,32 +1,38 @@
 package roomescape.auth.application;
 
 import org.springframework.stereotype.Service;
-import roomescape.auth.dto.MemberResponse;
 import roomescape.auth.dto.TokenRequest;
 import roomescape.auth.infrastructure.JwtTokenProvider;
+import roomescape.controller.login.LoginMember;
+import roomescape.domain.Member;
+import roomescape.domain.MemberRepository;
 
 @Service
 public class AuthService {
-    private static final String EMAIL = "email@email.com";
-    private static final String PASSWORD = "1234";
 
+    private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public AuthService(JwtTokenProvider jwtTokenProvider) {
+    public AuthService(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
+        this.memberRepository = memberRepository;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    public boolean checkInvalidLogin(String principal, String credentials) {
-        return !EMAIL.equals(principal) || !PASSWORD.equals(credentials);
+    public boolean checkInvalidLogin(String email, String password) {
+        return !memberRepository.existByEmailAndPassword(email, password);
     }
 
-    public MemberResponse findMemberByToken(String token) {
+    public LoginMember findMemberByToken(String token) {
+        validateToken(token);
         String payload = jwtTokenProvider.getPayload(token);
         return findMember(payload);
     }
 
-    public MemberResponse findMember(String principal) {
-        return new MemberResponse("어드민");
+    public LoginMember findMember(String principal) {
+        Member member = memberRepository.findByEmail(principal)
+                .orElseThrow(AuthorizationException::new);
+
+        return LoginMember.from(member);
     }
 
     public String createToken(TokenRequest tokenRequest) {
@@ -35,5 +41,11 @@ public class AuthService {
         }
 
         return jwtTokenProvider.createToken(tokenRequest.getEmail());
+    }
+
+    public void validateToken(String token) {
+        if (!jwtTokenProvider.validateToken(token)) {
+            throw new AuthorizationException();
+        }
     }
 }
