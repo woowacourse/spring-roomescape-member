@@ -11,15 +11,11 @@ public class User {
         this.password = password;
     }
 
-    public UserName getName() {
-        return name;
+    public static User of(final String name, final String email, final String password) {
+        return new User(new UserName(name), email, password);
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPassword() {
-        return password;
+    public String getNameValue() {
+        return name.getValue();
     }
 }

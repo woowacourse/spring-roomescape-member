@@ -24,5 +24,4 @@ public class AdminPageController {
     public String getThemePage() {
         return "/admin/theme";
     }
-
 }
