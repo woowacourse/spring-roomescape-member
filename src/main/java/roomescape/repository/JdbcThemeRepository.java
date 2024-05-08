@@ -1,13 +1,13 @@
 package roomescape.repository;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
@@ -69,11 +69,8 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public Theme save(Theme theme) {
-        Map<String, Object> themeRow = new HashMap<>();
-        themeRow.put("name", theme.getName());
-        themeRow.put("description", theme.getDescription());
-        themeRow.put("thumbnail", theme.getThumbnail());
-        Long id = simpleJdbcInsert.executeAndReturnKey(themeRow).longValue();
+        SqlParameterSource parameters = new BeanPropertySqlParameterSource(theme);
+        Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
         return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 

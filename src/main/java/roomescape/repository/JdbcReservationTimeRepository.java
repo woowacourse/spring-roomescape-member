@@ -2,13 +2,13 @@ package roomescape.repository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
@@ -73,9 +73,8 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public ReservationTime save(ReservationTime reservationTime) {
-        Map<String, Object> reservationTimeRow = new HashMap<>();
-        reservationTimeRow.put("start_at", reservationTime.getStartAt());
-        Long id = simpleJdbcInsert.executeAndReturnKey(reservationTimeRow).longValue();
+        SqlParameterSource parameters = new BeanPropertySqlParameterSource(reservationTime);
+        Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
         return new ReservationTime(id, reservationTime.getStartAt());
     }
 
