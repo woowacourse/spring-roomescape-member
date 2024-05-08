@@ -1,88 +1,103 @@
 package roomescape.controller.user;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.lang.reflect.Field;
-import java.util.List;
 import java.util.Map;
-import org.junit.jupiter.api.BeforeEach;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.TestFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.test.context.ActiveProfiles;
-import roomescape.controller.ReservationTimeController;
-import roomescape.service.dto.ReservationTimeResponse;
+import org.springframework.http.MediaType;
+import roomescape.auth.dto.TokenRequest;
 
-@ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 class ReservationTimeControllerTest {
+
+    private static final String ADMIN_EMAIL = "admin@admin.com";
+    private static final String ADMIN_PASSWORD = "1234";
+
+    String token;
+    String createdId;
+    int timeSize;
 
     @LocalServerPort
     int port;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    private ReservationTimeController reservationTimeController;
-
-    @BeforeEach
-    void initPort() {
+    @DisplayName("예약 시간 생성 조회")
+    @TestFactory
+    Stream<DynamicTest> dynamicUserTestsFromCollection() {
         RestAssured.port = port;
-    }
 
-    @DisplayName("데이터 삽입 후 시간 목록 조회")
-    @Test
-    void getReservationTimesAfterInsert() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "15:40");
+        return Stream.of(
+                dynamicTest("어드민으로 로그인", () -> {
+                    token = RestAssured
+                            .given().log().all()
+                            .body(new TokenRequest(ADMIN_EMAIL, ADMIN_PASSWORD))
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .accept(MediaType.APPLICATION_JSON_VALUE)
+                            .when().post("/login")
+                            .then().log().all().extract().header("Set-Cookie").split("=")[1];
+                }),
+                dynamicTest("예약 시간 목록을 조회한다.", () -> {
+                    timeSize = RestAssured.given().log().all()
+                            .contentType(ContentType.JSON)
+                            .cookie("token", token)
+                            .when().get("/times")
+                            .then().log().all()
+                            .statusCode(200).extract()
+                            .response().jsonPath().getList("$").size();
+                }),
+                dynamicTest("예약 시간을 추가한다.", () -> {
+                    Map<String, String> param = Map.of("startAt", "12:12");
 
-        final List<ReservationTimeResponse> reservationTimeResponses = RestAssured.given().log().all()
-                .when().get("/times")
-                .then().log().all()
-                .statusCode(200).extract()
-                .jsonPath().getList(".", ReservationTimeResponse.class);
+                    createdId = RestAssured.given().log().all()
+                            .contentType(ContentType.JSON)
+                            .cookie("token", token)
+                            .body(param)
+                            .when().post("/times")
+                            .then().log().all()
+                            .statusCode(201).extract().header("location").split("/")[2];
+                }),
+                dynamicTest("예약 시간 목록 개수가 1증가한다.", () -> {
+                    RestAssured.given().log().all()
+                            .contentType(ContentType.JSON)
+                            .cookie("token", token)
+                            .when().get("/times")
+                            .then().log().all()
+                            .statusCode(200).body("size()", is(timeSize + 1));
+                }),
+                dynamicTest("유효하지 않은 형식으로 시간을 추가할 수 없다.", () -> {
+                    Map<String, String> param = Map.of("startAt", "12:12:12");
 
-        final Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation_time", Integer.class);
-        assertThat(reservationTimeResponses.size()).isEqualTo(count);
-    }
-
-    @DisplayName("컨트롤러에서 jdbcTemplate 필드 제거")
-    @Test
-    void jdbcTemplateNotInjected() {
-        boolean isJdbcTemplateInjected = false;
-
-        for (Field field : reservationTimeController.getClass().getDeclaredFields()) {
-            if (field.getType().equals(JdbcTemplate.class)) {
-                isJdbcTemplateInjected = true;
-                break;
-            }
-        }
-
-        assertFalse(isJdbcTemplateInjected);
-    }
-
-    @DisplayName("유효하지 않은 시간 형식 입력")
-    @ParameterizedTest
-    @ValueSource(strings = {"", "    ", "11:11:11", "25:10"})
-    void invalidTimeFormat(final String time) {
-        final Map<String, String> params = Map.of("startAt", time);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(400);
+                    RestAssured.given().log().all()
+                            .contentType(ContentType.JSON)
+                            .cookie("token", token)
+                            .body(param)
+                            .when().post("/times")
+                            .then().log().all()
+                            .statusCode(400);
+                }),
+                dynamicTest("시간을 삭제한다.", () -> {
+                    RestAssured.given().log().all()
+                            .contentType(ContentType.JSON)
+                            .cookie("token", token)
+                            .when().delete("/times/" + createdId)
+                            .then().log().all()
+                            .statusCode(204);
+                }),
+                dynamicTest("예약 시간 목록 개수가 1감소한다.", () -> {
+                    RestAssured.given().log().all()
+                            .contentType(ContentType.JSON)
+                            .cookie("token", token)
+                            .when().get("/times")
+                            .then().log().all()
+                            .statusCode(200).body("size()", is(timeSize));
+                })
+        );
     }
 }
