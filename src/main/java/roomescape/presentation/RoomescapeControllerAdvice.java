@@ -1,5 +1,7 @@
 package roomescape.presentation;
 
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.MalformedJwtException;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -40,6 +42,12 @@ public class RoomescapeControllerAdvice {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "값을 변환하는 중 오류가 발생했습니다.");
         problemDetail.setTitle("요청을 변환할 수 없습니다.");
         return problemDetail;
+    }
+
+    @ExceptionHandler(JwtException.class)
+    public ProblemDetail handleMalformedJwtException(MalformedJwtException exception) {
+        logger.error(exception.getMessage(), exception);
+        return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다.");
     }
 
     @ExceptionHandler({IllegalArgumentException.class, NoSuchElementException.class})
