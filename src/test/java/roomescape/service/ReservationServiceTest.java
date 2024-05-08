@@ -75,9 +75,11 @@ public class ReservationServiceTest {
         // given
         reservationService.insertReservation(new ReservationRequest("user", LocalDate.parse("2025-01-01"), 1L, 1L));
 
-        // when & then
-        assertThatThrownBy(() -> reservationService.insertReservation(
-                new ReservationRequest("user1", LocalDate.parse("2025-01-01"), 1L, 1L)))
+        // when
+        ReservationRequest request = new ReservationRequest("user1", LocalDate.parse("2025-01-01"), 1L, 1L);
+
+        // then
+        assertThatThrownBy(() -> reservationService.insertReservation(request))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 해당 시간에 예약이 존재합니다.");
     }
@@ -85,8 +87,9 @@ public class ReservationServiceTest {
     @DisplayName("지난 날짜에 대한 예약은 불가능하다.")
     @Test
     void insertPastDate() {
-        assertThatThrownBy(() -> reservationService.insertReservation(
-                new ReservationRequest("name", LocalDate.now().minusDays(1), 1L, 1L)))
+        ReservationRequest request = new ReservationRequest("name", LocalDate.now().minusDays(1), 1L, 1L);
+
+        assertThatThrownBy(() -> reservationService.insertReservation(request))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이전 시간에 대한 예약은 불가능합니다.");
     }
@@ -97,9 +100,12 @@ public class ReservationServiceTest {
         // given
         timeService.insertTime(new TimeRequest(LocalTime.now().minusHours(1)));
 
-        // when & then
+        // when
+        ReservationRequest request = new ReservationRequest("name", LocalDate.now(), 2L, 1L);
+
+        // then
         assertThatThrownBy(
-                () -> reservationService.insertReservation(new ReservationRequest("name", LocalDate.now(), 2L, 1L)))
+                () -> reservationService.insertReservation(request))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이전 시간에 대한 예약은 불가능합니다.");
     }
@@ -110,9 +116,11 @@ public class ReservationServiceTest {
         // given
         reservationService.insertReservation(new ReservationRequest("user", LocalDate.parse("2025-01-01"), 1L, 1L));
 
-        // when & then
-        assertThatThrownBy(() -> reservationService.insertReservation(
-                new ReservationRequest("user", LocalDate.parse("2025-01-01"), 1L, 1L)))
+        // when
+        ReservationRequest request = new ReservationRequest("user", LocalDate.parse("2025-01-01"), 1L, 1L);
+
+        // then
+        assertThatThrownBy(() -> reservationService.insertReservation(request))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 해당 시간에 예약이 존재합니다.");
     }

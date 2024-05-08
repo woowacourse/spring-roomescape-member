@@ -61,8 +61,11 @@ class ReservationTimeServiceTest {
         // given
         timeService.insertTime(new TimeRequest(LocalTime.parse("10:00")));
 
-        // when & then
-        assertThatThrownBy(() -> timeService.insertTime(new TimeRequest(LocalTime.parse("10:00"))))
+        // when
+        TimeRequest request = new TimeRequest(LocalTime.parse("10:00"));
+
+        // then
+        assertThatThrownBy(() -> timeService.insertTime(request))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("동일한 시간이 존재합니다.");
     }
@@ -91,7 +94,8 @@ class ReservationTimeServiceTest {
         reservationService.insertReservation(new ReservationRequest("user", LocalDate.now().plusDays(1), 1L, 1L));
 
         // when
-        List<BookableTimeResponse> bookableTimes = timeService.getAllBookableTimes(LocalDate.now().plusDays(1).toString(), 1L);
+        List<BookableTimeResponse> bookableTimes = timeService.getAllBookableTimes(
+                LocalDate.now().plusDays(1).toString(), 1L);
 
         // then
         assertThat(bookableTimes).hasSize(2);

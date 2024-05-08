@@ -74,8 +74,11 @@ class ReservationThemeServiceTest {
         // given
         themeService.insertTheme(new ThemeRequest("name", "desc", "thumb"));
 
-        // when & then
-        assertThatThrownBy(() -> themeService.insertTheme(new ThemeRequest("name", "desc1", "thumb1")))
+        // when
+        ThemeRequest request = new ThemeRequest("name", "desc1", "thumb1");
+
+        // then
+        assertThatThrownBy(() -> themeService.insertTheme(request))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이름이 동일한 테마가 존재합니다.");
     }
