@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.reservation.model.Theme;
 import roomescape.reservation.dto.AvailableReservationTimeResponse;
 import roomescape.reservation.dto.SaveThemeRequest;
 import roomescape.reservation.dto.ThemeResponse;
+import roomescape.reservation.model.Theme;
 import roomescape.reservation.service.ThemeService;
 
 import java.net.URI;
@@ -44,7 +44,7 @@ public class ThemeController {
     }
 
     @DeleteMapping("/themes/{themeId}")
-    public ResponseEntity<Void> deleteTheme(@PathVariable final Long themeId) {
+    public ResponseEntity<Void> deleteTheme(@PathVariable("themeId") final Long themeId) {
         themeService.deleteTheme(themeId);
         return ResponseEntity.noContent().build();
     }
