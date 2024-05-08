@@ -1,8 +1,3 @@
-SET REFERENTIAL_INTEGRITY FALSE;
-truncate table reservation_time;
-truncate table reservation;
-SET REFERENTIAL_INTEGRITY TRUE;
-
 INSERT INTO reservation_time (start_at) VALUES ('10:00');
 INSERT INTO reservation_time (start_at) VALUES ('12:00');
 INSERT INTO reservation_time (start_at) VALUES ('14:00');

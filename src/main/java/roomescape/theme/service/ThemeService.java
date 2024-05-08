@@ -1,24 +1,26 @@
 package roomescape.theme.service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.model.Reservation;
-import roomescape.reservation.repository.ReservationRepository;
+import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.theme.dto.request.CreateThemeRequest;
 import roomescape.theme.dto.response.CreateThemeResponse;
 import roomescape.theme.dto.response.FindPopularThemesResponse;
 import roomescape.theme.dto.response.FindThemeResponse;
 import roomescape.theme.model.Theme;
-import roomescape.theme.repository.ThemeRepository;
+import roomescape.theme.repository.JdbcThemeRepository;
 
 @Service
 public class ThemeService {
 
-    private final ThemeRepository themeRepository;
-    private final ReservationRepository reservationRepository;
+    private final JdbcThemeRepository themeRepository;
+    private final JdbcReservationRepository reservationRepository;
 
-    public ThemeService(final ThemeRepository themeRepository, final ReservationRepository reservationRepository) {
+    public ThemeService(
+            final JdbcThemeRepository themeRepository,
+            final JdbcReservationRepository reservationRepository
+    ) {
         this.themeRepository = themeRepository;
         this.reservationRepository = reservationRepository;
     }

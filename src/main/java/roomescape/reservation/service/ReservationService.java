@@ -11,22 +11,24 @@ import roomescape.reservation.dto.response.CreateReservationResponse;
 import roomescape.reservation.dto.response.FindAvailableTimesResponse;
 import roomescape.reservation.dto.response.FindReservationResponse;
 import roomescape.reservation.model.Reservation;
-import roomescape.reservation.repository.ReservationRepository;
+import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.reservationtime.model.ReservationTime;
-import roomescape.reservationtime.repository.ReservationTimeRepository;
+import roomescape.reservationtime.repository.JdbcReservationTimeRepository;
 import roomescape.theme.model.Theme;
-import roomescape.theme.repository.ThemeRepository;
+import roomescape.theme.repository.JdbcThemeRepository;
 
 @Service
 public class ReservationService {
 
-    private final ReservationRepository reservationRepository;
-    private final ReservationTimeRepository reservationTimeRepository;
-    private final ThemeRepository themeRepository;
+    private final JdbcReservationRepository reservationRepository;
+    private final JdbcReservationTimeRepository reservationTimeRepository;
+    private final JdbcThemeRepository themeRepository;
 
-    public ReservationService(final ReservationRepository reservationRepository,
-                              final ReservationTimeRepository reservationTimeRepository,
-                              final ThemeRepository themeRepository) {
+    public ReservationService(
+            final JdbcReservationRepository reservationRepository,
+            final JdbcReservationTimeRepository reservationTimeRepository,
+            final JdbcThemeRepository themeRepository
+    ) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
@@ -78,7 +80,7 @@ public class ReservationService {
     }
 
     private static FindAvailableTimesResponse generateFindAvailableTimesResponse(final List<Reservation> reservations,
-                                                                                 final ReservationTime reservationTime) {
+            final ReservationTime reservationTime) {
         return FindAvailableTimesResponse.of(
                 reservationTime.getId(),
                 reservationTime.getTime(),

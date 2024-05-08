@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
-import org.springframework.context.annotation.Primary;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -18,8 +17,7 @@ import roomescape.reservationtime.model.ReservationTime;
 import roomescape.theme.model.Theme;
 
 @Repository
-@Primary
-public class JdbcReservationRepository implements ReservationRepository {
+public class JdbcReservationRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -45,7 +43,6 @@ public class JdbcReservationRepository implements ReservationRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
-    @Override
     public Reservation save(final Reservation reservation) {
         SqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
@@ -64,7 +61,6 @@ public class JdbcReservationRepository implements ReservationRepository {
         );
     }
 
-    @Override
     public List<Reservation> findAll() {
         String sql = """
                 select r.id, r.name, r.date, 
@@ -79,7 +75,6 @@ public class JdbcReservationRepository implements ReservationRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
-    @Override
     public Optional<Reservation> findById(final Long id) {
         String sql = """
                 select r.id, r.name, r.date,  
@@ -99,7 +94,6 @@ public class JdbcReservationRepository implements ReservationRepository {
         }
     }
 
-    @Override
     public List<Reservation> findAllByTimeId(final Long timeId) {
         String sql = """
                 select r.id, r.name, r.date, 
@@ -115,7 +109,6 @@ public class JdbcReservationRepository implements ReservationRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER, timeId);
     }
 
-    @Override
     public List<Reservation> findAllByThemeId(final Long themeId) {
         String sql = """
                 select r.id, r.name, r.date,
@@ -131,7 +124,6 @@ public class JdbcReservationRepository implements ReservationRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER, themeId);
     }
 
-    @Override
     public List<Reservation> findAllByDateAndThemeId(final LocalDate date, final Long themeId) {
         String sql = """
                 select r.id, r.name, r.date,
@@ -147,7 +139,6 @@ public class JdbcReservationRepository implements ReservationRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER, date, themeId);
     }
 
-    @Override
     public boolean existsByDateAndTimeAndTheme(final LocalDate date, final Long timeId, final Long themeId) {
         String sql = """
                 select exists (
@@ -162,7 +153,6 @@ public class JdbcReservationRepository implements ReservationRepository {
         return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
     }
 
-    @Override
     public void deleteById(final Long id) {
         String sql = "delete from reservation where id = ?";
         jdbcTemplate.update(sql, id);

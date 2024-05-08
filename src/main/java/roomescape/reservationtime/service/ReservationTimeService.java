@@ -4,28 +4,31 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.model.Reservation;
-import roomescape.reservation.repository.ReservationRepository;
+import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.reservationtime.dto.request.CreateReservationTimeRequest;
 import roomescape.reservationtime.dto.response.CreateReservationTimeResponse;
 import roomescape.reservationtime.dto.response.FindReservationTimeResponse;
 import roomescape.reservationtime.model.ReservationTime;
-import roomescape.reservationtime.repository.ReservationTimeRepository;
+import roomescape.reservationtime.repository.JdbcReservationTimeRepository;
 
 @Service
 public class ReservationTimeService {
-    private final ReservationTimeRepository reservationTimeRepository;
-    private final ReservationRepository reservationRepository;
+
+    private final JdbcReservationTimeRepository reservationTimeRepository;
+    private final JdbcReservationRepository reservationRepository;
 
     public ReservationTimeService(
-            final ReservationTimeRepository reservationTimeRepository,
-            final ReservationRepository reservationRepository) {
+            final JdbcReservationTimeRepository reservationTimeRepository,
+            final JdbcReservationRepository reservationRepository
+    ) {
         this.reservationTimeRepository = reservationTimeRepository;
         this.reservationRepository = reservationRepository;
     }
 
     public CreateReservationTimeResponse createReservationTime(
             final CreateReservationTimeRequest createReservationTimeRequest) {
-        ReservationTime reservationTime = reservationTimeRepository.save(createReservationTimeRequest.toReservationTime());
+        ReservationTime reservationTime = reservationTimeRepository.save(
+                createReservationTimeRequest.toReservationTime());
         return CreateReservationTimeResponse.of(reservationTime);
     }
 

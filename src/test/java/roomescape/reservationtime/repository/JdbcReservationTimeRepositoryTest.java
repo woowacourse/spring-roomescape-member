@@ -10,18 +10,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.fixture.Fixture;
 import roomescape.reservationtime.model.ReservationTime;
 
-@ActiveProfiles("test")
 @JdbcTest
-@Sql(scripts = {"/delete-data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD,
-statements = {
-        "INSERT INTO reservation_time (start_at) VALUES ('10:00')",
-        "INSERT INTO reservation_time (start_at) VALUES ('12:00')",
-})
+@Sql(scripts = "/delete-data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 class JdbcReservationTimeRepositoryTest {
 
     @Autowired
@@ -34,16 +29,20 @@ class JdbcReservationTimeRepositoryTest {
     }
 
     @Test
-    @DisplayName("ReservationTime 저장한 후 저장한 row의 id값을 반환한다.")
+    @DisplayName("ReservationTime 을 저장한다.")
     void save() {
-        ReservationTime newReservationTime = new ReservationTime(null, LocalTime.of(14, 0));
+        ReservationTime saved = reservationTimeRepository.save(Fixture.RESERVATION_TIME_1);
 
-        assertThat(reservationTimeRepository.save(newReservationTime)).isEqualTo(new ReservationTime(3L, LocalTime.of(10, 0)));
+        assertThat(saved)
+                .isEqualTo(new ReservationTime(1L, LocalTime.of(10, 10)));
     }
 
     @Test
     @DisplayName("ReservationTime 테이블의 있는 모든 데이터를 조회한다.")
     void findAll() {
+        reservationTimeRepository.save(Fixture.RESERVATION_TIME_1);
+        reservationTimeRepository.save(Fixture.RESERVATION_TIME_2);
+
         assertThat(reservationTimeRepository.findAll())
                 .containsExactly(
                         Fixture.RESERVATION_TIME_1,
@@ -53,6 +52,8 @@ class JdbcReservationTimeRepositoryTest {
     @Test
     @DisplayName("ReservationTime 테이블의 주어진 id와 동일한 데이터를 조회한다.")
     void findById() {
+        reservationTimeRepository.save(Fixture.RESERVATION_TIME_1);
+
         assertThat(reservationTimeRepository.findById(1L))
                 .isEqualTo(Optional.of(Fixture.RESERVATION_TIME_1));
     }

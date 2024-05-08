@@ -3,7 +3,6 @@ package roomescape.theme.repository;
 import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
-import org.springframework.context.annotation.Primary;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -13,8 +12,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.theme.model.Theme;
 
 @Repository
-@Primary
-public class JdbcThemeRepository implements ThemeRepository {
+public class JdbcThemeRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -33,7 +31,6 @@ public class JdbcThemeRepository implements ThemeRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
-    @Override
     public Theme save(final Theme theme) {
         MapSqlParameterSource source = new MapSqlParameterSource()
                 .addValue("name", theme.getName())
@@ -45,13 +42,11 @@ public class JdbcThemeRepository implements ThemeRepository {
         return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 
-    @Override
     public List<Theme> findAll() {
         String sql = "select id, name, description, thumbnail from theme";
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
-    @Override
     public Optional<Theme> findById(final Long id) {
         String sql = " select id, name, description, thumbnail from theme where id = ? ";
         try {
@@ -61,7 +56,6 @@ public class JdbcThemeRepository implements ThemeRepository {
         }
     }
 
-    @Override
     public List<Theme> findOrderByReservation() {
         String sql = """
                 select t.id, t.name, t.description, t.thumbnail, count(t.id) as count
@@ -75,7 +69,6 @@ public class JdbcThemeRepository implements ThemeRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
-    @Override
     public void deleteById(final Long id) {
         String sql = "delete from theme where id = ?";
         jdbcTemplate.update(sql, id);

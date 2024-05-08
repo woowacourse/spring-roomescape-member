@@ -12,9 +12,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import roomescape.reservationtime.dto.request.CreateReservationTimeRequest;
@@ -22,7 +21,7 @@ import roomescape.reservationtime.dto.request.CreateReservationTimeRequest;
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
+@Sql(scripts = {"/delete-data.sql", "/data.sql"})
 class ReservationTimeControllerTest  {
 
     @Autowired
@@ -34,7 +33,7 @@ class ReservationTimeControllerTest  {
     @Test
     void createReservationTime() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/times")
-                        .content(objectMapper.writeValueAsString(new CreateReservationTimeRequest(LocalTime.of(10, 00))))
+                        .content(objectMapper.writeValueAsString(new CreateReservationTimeRequest(LocalTime.of(10, 0))))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(header().stringValues("Location", "/times/7"));

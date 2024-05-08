@@ -16,7 +16,7 @@ import roomescape.reservationtime.model.ReservationTime;
 
 @Repository
 @Primary
-public class JdbcReservationTimeRepository implements ReservationTimeRepository {
+public class JdbcReservationTimeRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -40,13 +40,11 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         return new ReservationTime(id, reservationTime.getTime());
     }
 
-    @Override
     public List<ReservationTime> findAll() {
         String sql = "select id, start_at from reservation_time";
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
-    @Override
     public Optional<ReservationTime> findById(final Long timeId) {
         String sql = "select id, start_at from reservation_time where id = ?";
         try {
@@ -56,7 +54,6 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         }
     }
 
-    @Override
     public void deleteById(final Long id) {
         String sql = "delete from reservation_time where id = ?";
         jdbcTemplate.update(sql, id);

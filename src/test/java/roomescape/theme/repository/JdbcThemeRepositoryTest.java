@@ -11,23 +11,27 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.fixture.Fixture;
+import roomescape.reservation.repository.JdbcReservationRepository;
+import roomescape.reservationtime.repository.JdbcReservationTimeRepository;
 import roomescape.theme.model.Theme;
 
-@ActiveProfiles("test")
 @JdbcTest
-@Sql(scripts = {"/delete-data.sql", "/init-data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql("/delete-data.sql")
 class JdbcThemeRepositoryTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
     private JdbcThemeRepository themeRepository;
+    private JdbcReservationTimeRepository reservationTimeRepository;
+    private JdbcReservationRepository reservationRepository;
 
     @BeforeEach
     void setUp() {
         themeRepository = new JdbcThemeRepository(jdbcTemplate, jdbcTemplate.getDataSource());
+        reservationTimeRepository = new JdbcReservationTimeRepository(jdbcTemplate, jdbcTemplate.getDataSource());
+        reservationRepository = new JdbcReservationRepository(jdbcTemplate, jdbcTemplate.getDataSource());
     }
 
     @Test
@@ -36,22 +40,26 @@ class JdbcThemeRepositoryTest {
         Theme theme = new Theme(null, "마크", "노력함", "https://asd.cmom");
 
         assertThat(themeRepository.save(theme))
-                .isEqualTo(new Theme(4L, "마크", "노력함", "https://asd.cmom"));
+                .isEqualTo(new Theme(1L, "마크", "노력함", "https://asd.cmom"));
     }
 
     @Test
     @DisplayName("Theme 테이블의 있는 모든 데이터를 조회한다.")
     void findAll() {
+        themeRepository.save(Fixture.THEME_1);
+        themeRepository.save(Fixture.THEME_2);
+
         assertThat(themeRepository.findAll())
                 .containsExactly(
                         Fixture.THEME_1,
-                        Fixture.THEME_2,
-                        Fixture.THEME_3);
+                        Fixture.THEME_2);
     }
 
     @Test
     @DisplayName("Theme 테이블의 주어진 id와 동일한 데이터를 조회한다.")
     void findById() {
+        themeRepository.save(Fixture.THEME_1);
+
         assertThat(themeRepository.findById(1L))
                 .isEqualTo(Optional.of(Fixture.THEME_1));
     }
@@ -66,6 +74,12 @@ class JdbcThemeRepositoryTest {
     @Test
     @DisplayName("Theme 테이블에서 많이 예약된 테마 10개를 내림차순으로 가져온다.")
     void findOrderByReservation() {
+        themeRepository.save(Fixture.THEME_1);
+        themeRepository.save(Fixture.THEME_2);
+        reservationTimeRepository.save(Fixture.RESERVATION_TIME_1);
+        reservationRepository.save(Fixture.RESERVATION_1);
+        reservationRepository.save(Fixture.RESERVATION_2);
+
         assertThat(themeRepository.findOrderByReservation())
                 .containsExactlyInAnyOrderElementsOf(List.of(
                         Fixture.THEME_2,
@@ -73,9 +87,14 @@ class JdbcThemeRepositoryTest {
     }
 
     @Test
-    @DisplayName("예약되지 않은 테마는 가져오지 않는다.")
+    @DisplayName("예약되지 않은 테마는 인기 테마로 가져오지 않는다.")
     void findOrderByReservation2() {
+        themeRepository.save(Fixture.THEME_1);
+        themeRepository.save(Fixture.THEME_2);
         themeRepository.save(new Theme(null, "예약되지 않은 테마", "테마 설명", "https://asd.cmom"));
+        reservationTimeRepository.save(Fixture.RESERVATION_TIME_1);
+        reservationRepository.save(Fixture.RESERVATION_1);
+        reservationRepository.save(Fixture.RESERVATION_2);
 
         List<Theme> orderByReservation = themeRepository.findOrderByReservation();
 
@@ -96,8 +115,9 @@ class JdbcThemeRepositoryTest {
     }
 
     private void generateReservationBy11Theme() {
+        reservationTimeRepository.save(Fixture.RESERVATION_TIME_1);
         // 테마 10개 추가
-        IntStream.range(0, 10).forEach(i ->
+        IntStream.range(0, 11).forEach(i ->
                 jdbcTemplate.update("insert into theme (name, description, thumbnail) values ('추가 테마%d', '설명', 'https://asd.cmom')".formatted(i)));
         // 1 ~ 11번 테마를 사용하는 예약 생성
         IntStream.range(1, 12).forEach(i ->
