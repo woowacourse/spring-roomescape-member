@@ -37,10 +37,10 @@ public class MemberDao {
         return Member.from(id, member.getName(), member.getEmail(), member.getPassword());
     }
 
-    public Optional<Member> findByEmailAndPassword(final String email, final String password) {
-        final String sql = "SELECT id, name, email, password FROM member WHERE email = ? AND password = ?";
+    public Optional<Member> findByEmail(final String email) {
+        final String sql = "SELECT id, name, email, password FROM member WHERE email = ?";
         try {
-            return Optional.of(jdbcTemplate.queryForObject(sql, rowMapper, email, password));
+            return Optional.of(jdbcTemplate.queryForObject(sql, rowMapper, email));
         } catch (final EmptyResultDataAccessException | NullPointerException exception) {
             return Optional.empty();
         }
