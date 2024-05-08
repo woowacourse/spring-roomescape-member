@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import roomescape.reservation.dao.ThemeDao;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.handler.exception.CustomBadRequest;
 import roomescape.reservation.handler.exception.CustomException;

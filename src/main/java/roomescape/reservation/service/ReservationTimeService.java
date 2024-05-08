@@ -4,7 +4,6 @@ import java.util.List;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import roomescape.reservation.dao.ReservationTimeDao;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.handler.exception.CustomBadRequest;
 import roomescape.reservation.handler.exception.CustomException;

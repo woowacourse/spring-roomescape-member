@@ -1,4 +1,4 @@
-package roomescape.reservation.dao;
+package roomescape.reservation.service;
 
 import java.time.LocalDate;
 import java.util.List;

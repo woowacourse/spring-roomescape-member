@@ -1,4 +1,4 @@
-package roomescape.reservation.dao;
+package roomescape.reservation.service;
 
 import java.util.List;
 import java.util.Optional;
