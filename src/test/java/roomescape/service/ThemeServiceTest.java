@@ -13,16 +13,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import roomescape.dao.ReservationDao;
+import roomescape.dao.ReservationTimeDao;
+import roomescape.dao.ThemeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.ExistsException;
 import roomescape.exception.InvalidInputException;
 import roomescape.exception.NotExistsException;
+import roomescape.fixture.ReservationFixture;
+import roomescape.fixture.ReservationTimeFixture;
 import roomescape.fixture.ThemeFixture;
-import roomescape.service.dto.input.ReservationTimeInput;
-import roomescape.service.dto.input.ThemeInput;
-import roomescape.service.dto.output.ReservationTimeOutput;
 import roomescape.service.dto.output.ThemeOutput;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -32,10 +33,11 @@ class ThemeServiceTest {
     @Autowired
     ThemeService themeService;
     @Autowired
-    ReservationTimeService reservationTimeService;
-    @Autowired
     ReservationDao reservationDao;
-
+    @Autowired
+    ReservationTimeDao reservationTimeDao;
+    @Autowired
+    ThemeDao themeDao;
     @Autowired
     JdbcTemplate jdbcTemplate;
 
@@ -48,141 +50,88 @@ class ThemeServiceTest {
         jdbcTemplate.update("SET REFERENTIAL_INTEGRITY TRUE");
     }
 
+    @DisplayName("예약 시간을 생성한다.")
     @Test
-    @DisplayName("유효한 값을 입력하면 예외를 발생하지 않는다.")
     void create_reservationTime() {
-        ThemeInput input = new ThemeInput(
-                "레벨2 탈출",
-                "우테코 레벨2를 탈출하는 내용입니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
-        );
-        assertThatCode(() -> themeService.createTheme(input))
+        assertThatCode(() -> themeService.createTheme(ThemeFixture.getInput()))
                 .doesNotThrowAnyException();
     }
 
-    @Test
     @DisplayName("유효하지 않은 값을 입력하면 예외를 발생한다.")
+    @Test
     void throw_exception_when_input_is_invalid() {
-        ThemeInput input = new ThemeInput(
-                "",
-                "우테코 레벨2를 탈출하는 내용입니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
-        );
-        assertThatThrownBy(() -> themeService.createTheme(input))
+        assertThatThrownBy(() -> themeService.createTheme(ThemeFixture.getInput("")))
                 .isInstanceOf(InvalidInputException.class);
     }
 
-    @Test
     @DisplayName("모든 요소를 받아온다.")
+    @Test
     void get_all_themes() {
-        ThemeInput input = new ThemeInput(
-                "레벨2 탈출",
-                "우테코 레벨2를 탈출하는 내용입니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
-        );
-        themeService.createTheme(input);
+        themeDao.create(ThemeFixture.getDomain());
+        themeDao.create(ThemeFixture.getDomain("테마 2"));
 
-        var result = themeService.getAllThemes();
-        assertThat(result).hasSize(1);
+        final List<ThemeOutput> themeOutputs = themeService.getAllThemes();
+
+        assertThat(themeOutputs).hasSize(2);
     }
 
-    @Test
     @DisplayName("존재하지 않는 테마 ID 를 삭제하려 하면 에외를 발생한다.")
+    @Test
     void throw_exception_when_not_exist_id() {
         assertThatThrownBy(() -> themeService.deleteTheme(-1))
                 .isInstanceOf(NotExistsException.class);
     }
 
-    @Test
     @DisplayName("특정 테마에 대한 예약이 존재하면 예외를 발생한다.")
+    @Test
     void throw_exception_when_delete_id_that_exist_reservation() {
-        ThemeOutput themeOutput = themeService.createTheme(
-                ThemeFixture.getInput());
+        final Theme theme = themeDao.create(ThemeFixture.getDomain());
+        final ReservationTime time = reservationTimeDao.create(ReservationTimeFixture.getDomain());
+        reservationDao.create(ReservationFixture.getDomain(time, theme));
 
-        ReservationTimeOutput timeOutput = reservationTimeService.createReservationTime(
-                new ReservationTimeInput("10:00"));
-
-        reservationDao.create(Reservation.from(
-                null,
-                "제리",
-                "2024-04-30",
-                ReservationTime.from(timeOutput.id(), timeOutput.startAt()),
-                Theme.of(themeOutput.id(), themeOutput.name(), themeOutput.description(), themeOutput.thumbnail())
-        ));
-
-        assertThatThrownBy(() -> themeService.deleteTheme(themeOutput.id()))
+        assertThatThrownBy(() -> themeService.deleteTheme(theme.getId()))
                 .isInstanceOf(ExistsException.class);
     }
 
-    @Test
     @DisplayName("예약이 많은 테마 순으로 조회한다.")
+    @Test
     void get_popular_themes() {
-        ThemeOutput themeOutput1 = themeService.createTheme(ThemeFixture.getInput());
-        final ThemeOutput themeOutput2 = themeService.createTheme(new ThemeInput(
-                "레벨3 탈출",
-                "우테코 레벨2를 탈출하는 내용입니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
-        ));
-        final ReservationTimeOutput timeOutput = reservationTimeService.createReservationTime(
-                new ReservationTimeInput("10:00"));
+        final Theme theme1 = themeDao.create(ThemeFixture.getDomain());
+        final Theme theme2 = themeDao.create(ThemeFixture.getDomain("테마 2"));
 
-        reservationDao.create(Reservation.from(
-                null,
-                "제리",
-                "2024-06-01",
-                ReservationTime.from(timeOutput.id(), timeOutput.startAt()),
-                Theme.of(themeOutput1.id(), themeOutput1.name(), themeOutput1.description(), themeOutput1.thumbnail())
-        ));
-        reservationDao.create(Reservation.from(
-                null,
-                "조이썬",
-                "2024-06-02",
-                ReservationTime.from(timeOutput.id(), timeOutput.startAt()),
-                Theme.of(themeOutput1.id(), themeOutput1.name(), themeOutput1.description(), themeOutput1.thumbnail())
-        ));
-        reservationDao.create(Reservation.from(
-                null,
-                "제리",
-                "2024-06-03",
-                ReservationTime.from(timeOutput.id(), timeOutput.startAt()),
-                Theme.of(themeOutput2.id(), themeOutput2.name(), themeOutput2.description(), themeOutput2.thumbnail())
-        ));
+        final ReservationTime time1 = reservationTimeDao.create(ReservationTimeFixture.getDomain());
+        final ReservationTime time2 = reservationTimeDao.create(ReservationTimeFixture.getDomain("11:00"));
 
-        final List<ThemeOutput> popularThemes = themeService.findPopularThemes("2024-06-04", 10);
+        reservationDao.create(ReservationFixture.getDomain(time1, theme1));
+        reservationDao.create(ReservationFixture.getDomain(time2, theme1));
+        reservationDao.create(ReservationFixture.getDomain(time1, theme2));
 
-        assertThat(popularThemes).containsExactly(
-                new ThemeOutput(themeOutput1.id(), themeOutput1.name(), themeOutput1.description(),
-                        themeOutput1.thumbnail()),
-                new ThemeOutput(themeOutput2.id(), themeOutput2.name(), themeOutput2.description(),
-                        themeOutput2.thumbnail())
-        );
+        final List<ThemeOutput> popularThemes = themeService.findPopularThemes("2024-06-02", 10);
+
+        assertThat(popularThemes).containsExactly(ThemeOutput.from(theme1), ThemeOutput.from(theme2));
     }
 
-    @Test
     @DisplayName("지정된 개수만큼 인기 테마를 조회한다.")
+    @Test
     void get_popular_themes_up_to_limit() {
-        final ThemeOutput themeOutput1 = themeService.createTheme(new ThemeInput("테마 1", "테마 설명", "image.png"));
-        final ThemeOutput themeOutput2 = themeService.createTheme(new ThemeInput("테마 2", "테마 설명", "image.png"));
-        final ThemeOutput themeOutput3 = themeService.createTheme(new ThemeInput("테마 3", "테마 설명", "image.png"));
+        final Theme theme1 = themeDao.create(ThemeFixture.getDomain());
+        final Theme theme2 = themeDao.create(ThemeFixture.getDomain("테마 2"));
+        final Theme theme3 = themeDao.create(ThemeFixture.getDomain("테마 3"));
 
-        final ReservationTimeOutput timeOutput =
-                reservationTimeService.createReservationTime(new ReservationTimeInput("10:00"));
+        final ReservationTime time = reservationTimeDao.create(ReservationTimeFixture.getDomain());
 
-        createReservations(themeOutput1, timeOutput, 1, 1);
-        createReservations(themeOutput2, timeOutput, 2, 2);
-        createReservations(themeOutput3, timeOutput, 4, 3);
+        createReservations(time, theme1, 1, 1);
+        createReservations(time, theme2, 2, 2);
+        createReservations(time, theme3, 4, 3);
 
         final List<ThemeOutput> popularThemes = themeService.findPopularThemes("2024-06-07", 2);
 
-        assertThat(popularThemes).containsExactly(themeOutput3, themeOutput2);
+        assertThat(popularThemes).containsExactly(ThemeOutput.from(theme3), ThemeOutput.from(theme2));
     }
 
-    private void createReservations(final ThemeOutput themeOutput, final ReservationTimeOutput timeOutput, final int startDate, final int count) {
-        final Theme theme = Theme.of(themeOutput.id(), themeOutput.name(), themeOutput.description(), themeOutput.thumbnail());
-        final ReservationTime time = ReservationTime.from(timeOutput.id(), timeOutput.startAt());
-
+    private void createReservations(final ReservationTime time, final Theme theme, final int startDate, final int count) {
         for (int i = startDate; i < startDate + count; i++) {
-            final String date = String.format("2024-06-0%d", i);
+            final String date = String.format("2024-06-%02d", i);
             final Reservation reservation = Reservation.from(null, "제리", date, time, theme);
             reservationDao.create(reservation);
         }

@@ -28,7 +28,7 @@ public class ReservationRowMapper implements RowMapper<Reservation> {
                 reservationId,
                 new Name(name),
                 ReservationDate.from(date),
-                ReservationTime.from(timeId, startAt),
+                ReservationTime.of(timeId, startAt),
                 Theme.of(themeId, themeName, description, thumbnail)
         );
     }

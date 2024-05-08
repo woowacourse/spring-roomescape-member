@@ -22,7 +22,7 @@ public class ReservationTimeTest {
     @Test
     @DisplayName("id 와 문자열 을 통해 도메인을 생성한다.")
     void create_with_id_and_string() {
-        assertThatCode(() -> ReservationTime.from(null, "10:00"))
+        assertThatCode(() -> ReservationTime.of(null, "10:00"))
                 .doesNotThrowAnyException();
     }
 
@@ -30,7 +30,7 @@ public class ReservationTimeTest {
     @ValueSource(strings = {"", "10.00", "24:00", "1:1"})
     @DisplayName("유효하지 않은 값을 입력하면 예외를 발생한다.")
     void throw_exception_when_string_is_invalid(final String invalidStartAt) {
-        assertThatThrownBy(() -> ReservationTime.from(null, invalidStartAt))
+        assertThatThrownBy(() -> ReservationTime.of(null, invalidStartAt))
                 .isInstanceOf(InvalidInputException.class);
     }
 }

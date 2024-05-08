@@ -15,7 +15,7 @@ public class ReservationTime {
         this.startAt = startAt;
     }
 
-    public static ReservationTime from(final Long id, final String startAt) {
+    public static ReservationTime of(final Long id, final String startAt) {
         try {
             return new ReservationTime(id, LocalTime.parse(startAt));
         } catch (final DateTimeException exception) {
