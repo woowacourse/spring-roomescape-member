@@ -11,7 +11,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import java.util.Map;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class LoginControllerTest {
+class SessionLoginControllerTest {
 
     @LocalServerPort
     int port;
