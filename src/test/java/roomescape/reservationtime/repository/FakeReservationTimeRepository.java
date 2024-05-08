@@ -16,7 +16,6 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     public ReservationTime save(final ReservationTime reservationTime) {
         ReservationTime newReservationTime = ReservationTime.of((long) reservationTimes.size() + 1, reservationTime);
         reservationTimes.add(newReservationTime);
-        System.out.println();
         return newReservationTime;
     }
 
