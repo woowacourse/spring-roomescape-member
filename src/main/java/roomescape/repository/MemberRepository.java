@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.controller.response.UserResponse;
-import roomescape.domain.User;
+import roomescape.domain.Member;
 
 @Repository
 public class MemberRepository {
@@ -22,18 +22,18 @@ public class MemberRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public User save(User user) {
+    public Member save(Member member) {
         Long userId = jdbcInsert.executeAndReturnKey(Map.of(
-                        "name", user.getName(),
-                        "email", user.getEmail(),
-                        "password", user.getPassword()))
+                        "name", member.getName(),
+                        "email", member.getEmail(),
+                        "password", member.getPassword()))
                 .longValue();
 
-        return new User(
+        return new Member(
                 userId,
-                user.getName(),
-                user.getEmail(),
-                user.getPassword());
+                member.getName(),
+                member.getEmail(),
+                member.getPassword());
     }
 
     public boolean checkExistMember(String email, String password) {
@@ -88,9 +88,9 @@ public class MemberRepository {
         return Optional.ofNullable(userResponse);
     }
 
-    public List<User> findAll() {
+    public List<Member> findAll() {
         String sql = "SELECT * FROM user_table";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new User(
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new Member(
                 rs.getLong("id"),
                 rs.getString("name"),
                 rs.getString("email"),

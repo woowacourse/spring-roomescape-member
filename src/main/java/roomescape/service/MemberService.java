@@ -6,7 +6,7 @@ import roomescape.controller.request.UserLoginRequest;
 import roomescape.controller.request.UserSignUpRequest;
 import roomescape.controller.response.MemberResponse;
 import roomescape.controller.response.UserResponse;
-import roomescape.domain.User;
+import roomescape.domain.Member;
 import roomescape.infrastructure.JwtTokenProvider;
 import roomescape.repository.MemberRepository;
 
@@ -21,9 +21,9 @@ public class MemberService {
     }
 
     public void save(UserSignUpRequest userSignUpRequest) {
-        User user = userSignUpRequest.toEntity();
+        Member member = userSignUpRequest.toEntity();
 
-        memberRepository.save(user);
+        memberRepository.save(member);
     }
 
     public String createToken(UserLoginRequest userLoginRequest) {
@@ -42,9 +42,9 @@ public class MemberService {
     }
 
     public List<MemberResponse> findAll() {
-        List<User> users = memberRepository.findAll();
+        List<Member> members = memberRepository.findAll();
 
-        return users.stream()
+        return members.stream()
                 .map(MemberResponse::from)
                 .toList();
     }

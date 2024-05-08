@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.domain.User;
+import roomescape.domain.Member;
 
 @Repository
 public class H2ReservationRepository implements ReservationRepository {
@@ -106,7 +106,7 @@ public class H2ReservationRepository implements ReservationRepository {
         public Reservation mapRow(ResultSet rs, int rowNum) throws SQLException {
             return new Reservation(
                     rs.getLong("reservation_id"),
-                    new User(rs.getLong("user_id"),
+                    new Member(rs.getLong("user_id"),
                             rs.getString("user_name"),
                             rs.getString("email"),
                             rs.getString("user_password")),

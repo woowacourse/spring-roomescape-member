@@ -1,9 +1,9 @@
 package roomescape.controller.request;
 
-import roomescape.domain.User;
+import roomescape.domain.Member;
 
 public record UserSignUpRequest(String name, String email, String password) {
-    public User toEntity() {
-        return new User(name, email, password);
+    public Member toEntity() {
+        return new Member(name, email, password);
     }
 }

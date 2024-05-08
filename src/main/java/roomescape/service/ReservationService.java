@@ -10,7 +10,7 @@ import roomescape.controller.response.UserResponse;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.domain.User;
+import roomescape.domain.Member;
 import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -49,7 +49,7 @@ public class ReservationService {
         Theme requestedTheme = themeRepository.findById(reservationRequest2.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("예약할 수 없는 테마입니다. themeId: " + reservationRequest2.themeId()));
         UserResponse userResponse = memberRepository.findById(reservationRequest2.memberId()).orElseThrow();
-        Reservation requestedReservation = new Reservation(new User(userResponse.id(), userResponse.name(),
+        Reservation requestedReservation = new Reservation(new Member(userResponse.id(), userResponse.name(),
                 userResponse.email(), userResponse.password()), reservationRequest2.date(), requestedReservationTime, requestedTheme);
 
         rejectPastTimeReservation(requestedReservation);
@@ -88,7 +88,7 @@ public class ReservationService {
         Theme requestedTheme = themeRepository.findById(reservationRequest2.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("예약할 수 없는 테마입니다. themeId: " + reservationRequest2.themeId()));
         UserResponse userResponse = memberRepository.findById(reservationRequest2.memberId()).orElseThrow();
-        Reservation requestedReservation = reservationRepository.save(new Reservation(new User(userResponse.id(),
+        Reservation requestedReservation = reservationRepository.save(new Reservation(new Member(userResponse.id(),
                 userResponse.name(), userResponse.email(), userResponse.password()), reservationRequest2.date(), requestedReservationTime, requestedTheme));
 
         return ReservationResponse.from(requestedReservation);
