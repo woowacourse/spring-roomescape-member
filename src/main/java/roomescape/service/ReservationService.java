@@ -61,7 +61,7 @@ public class ReservationService {
     @Transactional
     public ReservationResponse addReservation(ReservationRequest reservationRequest, Accessor accessor) {
         return createReservation(
-                LocalDate.parse(reservationRequest.date()),
+                reservationRequest.date(),
                 accessor.id(),
                 reservationRequest.timeId(),
                 reservationRequest.themeId()
@@ -71,7 +71,7 @@ public class ReservationService {
     @Transactional
     public ReservationResponse addAdminReservation(AdminReservationRequest request) {
         return createReservation(
-                LocalDate.parse(request.date()),
+                request.date(),
                 request.memberId(),
                 request.timeId(),
                 request.themeId()

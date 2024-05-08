@@ -4,7 +4,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import java.time.LocalDate;
-import roomescape.controller.exception.valid.DateValid;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -12,8 +11,7 @@ import roomescape.domain.member.Member;
 
 public record ReservationRequest(
         @NotBlank(message = "날짜를 입력해주세요.")
-        @DateValid
-        String date,
+        LocalDate date,
 
         @NotNull(message = "예약 시간 id을 입력해주세요.")
         @Positive
@@ -25,6 +23,6 @@ public record ReservationRequest(
 ) {
 
     public Reservation toReservation(Member member, ReservationTime time, Theme theme) {
-        return new Reservation(LocalDate.parse(date), member, time, theme);
+        return new Reservation(date, member, time, theme);
     }
 }
