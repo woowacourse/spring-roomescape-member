@@ -16,6 +16,7 @@ import roomescape.domain.reservation.Reservation;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.Time;
 import roomescape.dto.time.TimeRequest;
+import roomescape.global.exception.ApplicationException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.TimeRepository;
 
@@ -41,7 +42,7 @@ class TimeServiceMockTest {
 
         // when & then
         assertThatThrownBy(() -> timeService.createTime(new TimeRequest(time.getStartAt())))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(ApplicationException.class);
     }
 
     @Test
@@ -56,6 +57,6 @@ class TimeServiceMockTest {
 
         // when & then
         assertThatThrownBy(() -> timeService.deleteTime(time.getId()))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(ApplicationException.class);
     }
 }

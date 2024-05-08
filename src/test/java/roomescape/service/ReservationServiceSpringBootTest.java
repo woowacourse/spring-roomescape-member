@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.Time;
 import roomescape.dto.reservation.ReservationRequest;
+import roomescape.global.exception.ApplicationException;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.TimeRepository;
 
@@ -40,7 +41,7 @@ class ReservationServiceSpringBootTest {
 
         assertThatThrownBy(() -> reservationService.createReservation(
                 new ReservationRequest("예약", LocalDate.now().plusDays(1L), time.getId(), theme.getId())))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(ApplicationException.class);
     }
 
     @Test
@@ -54,7 +55,7 @@ class ReservationServiceSpringBootTest {
         // when & then
         assertThatThrownBy(() -> reservationService.createReservation(
                 new ReservationRequest("예약", beforeDate, time.getId(), theme.getId())))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(ApplicationException.class);
     }
 
     @Test
@@ -69,6 +70,6 @@ class ReservationServiceSpringBootTest {
         // when & then
         assertThatThrownBy(() -> reservationService.createReservation(
                 new ReservationRequest("예약", LocalDate.now(), time.getId(), theme.getId()))
-        ).isInstanceOf(IllegalStateException.class);
+        ).isInstanceOf(ApplicationException.class);
     }
 }

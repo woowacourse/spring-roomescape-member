@@ -13,6 +13,7 @@ import roomescape.domain.reservation.Reservation;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.Time;
 import roomescape.dto.time.TimeRequest;
+import roomescape.global.exception.ApplicationException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.TimeRepository;
@@ -40,7 +41,7 @@ class TimeServiceSpringBootTest {
 
         // when & then
         assertThatThrownBy(() -> timeService.createTime(new TimeRequest(LocalTime.of(12, 30))))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(ApplicationException.class);
     }
 
     @Test
@@ -55,6 +56,6 @@ class TimeServiceSpringBootTest {
 
         // then
         assertThatThrownBy(() -> timeService.deleteTime(time.getId()))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(ApplicationException.class);
     }
 }

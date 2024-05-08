@@ -50,8 +50,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity(new ExceptionResponse(message), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(value = IllegalStateException.class)
-    public ResponseEntity<ExceptionResponse> handle(IllegalStateException e) {
+    @ExceptionHandler(value = ApplicationException.class)
+    public ResponseEntity<ExceptionResponse> handle(ApplicationException e) {
         return new ResponseEntity(new ExceptionResponse(e.getMessage()), HttpStatus.CONFLICT);
     }
 
