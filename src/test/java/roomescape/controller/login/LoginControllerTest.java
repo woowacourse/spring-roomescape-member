@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 import io.restassured.RestAssured;
-import java.util.Map;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,9 +19,9 @@ import roomescape.auth.dto.TokenRequest;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class LoginControllerTest {
 
-    private static final String EMAIL = "test@test.com";
+    private static final String EMAIL = "admin@admin.com";
     private static final String PASSWORD = "1234";
-    private static final String NAME = "테스트";
+    private static final String NAME = "어드민";
 
     String accessToken;
 
@@ -38,18 +37,6 @@ class LoginControllerTest {
     @TestFactory
     Stream<DynamicTest> dynamicTestsFromCollection() {
         return Stream.of(
-                dynamicTest("회원가입 요청으로 회원가입한다.", () -> {
-                    Map<String, String> params = Map.of("email", EMAIL, "password", PASSWORD, "name", NAME);
-
-                    RestAssured
-                            .given().log().all()
-                            .body(params)
-                            .contentType(MediaType.APPLICATION_JSON_VALUE)
-                            .accept(MediaType.APPLICATION_JSON_VALUE)
-                            .when().post("/members")
-                            .then().log().all()
-                            .statusCode(HttpStatus.CREATED.value());
-                }),
                 dynamicTest("이메일, 패스워드로 로그인한다.", () -> {
                     accessToken = RestAssured
                             .given().log().all()
