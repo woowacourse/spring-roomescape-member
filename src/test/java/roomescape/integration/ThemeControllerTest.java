@@ -194,9 +194,7 @@ public class ThemeControllerTest {
         //then
         List<ThemeResponse> themeResponses = RestAssured.given().log().all()
                 .when()
-                .params("start", LocalDate.now().minusDays(7).toString(),
-                        "end", LocalDate.now().minusDays(1).toString(),
-                        "count", 10)
+                .params("count", 10)
                 .get("/themes/ranking")
                 .then().log().all()
                 .statusCode(200)
