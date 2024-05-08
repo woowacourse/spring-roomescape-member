@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(ProblemDetail.forStatusAndDetail(
                         HttpStatus.UNAUTHORIZED,
-                        "로그인이 필요합니다."
+                        "권한이 없습니다."
                 ));
     }
 

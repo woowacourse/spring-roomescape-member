@@ -22,25 +22,25 @@ public class AuthService {
         return !memberRepository.existByEmailAndPassword(email, password);
     }
 
-    public LoginMember findMemberByToken(String token) {
-        validateToken(token);
-        String payload = jwtTokenProvider.getPayload(token);
-        return findMember(payload);
-    }
-
-    public LoginMember findMember(String principal) {
-        Member member = memberRepository.findByEmail(principal)
-                .orElseThrow(AuthorizationException::new);
-
-        return LoginMember.from(member);
-    }
-
     public String createToken(TokenRequest tokenRequest) {
         if (checkInvalidLogin(tokenRequest.getEmail(), tokenRequest.getPassword())) {
             throw new AuthorizationException();
         }
 
         return jwtTokenProvider.createToken(tokenRequest.getEmail());
+    }
+
+    public LoginMember findMemberByToken(String token) {
+        validateToken(token);
+        String payload = jwtTokenProvider.getPayload(token);
+        return findMember(payload);
+    }
+
+    private LoginMember findMember(String principal) {
+        Member member = memberRepository.findByEmail(principal)
+                .orElseThrow(AuthorizationException::new);
+
+        return LoginMember.from(member);
     }
 
     public void validateToken(String token) {

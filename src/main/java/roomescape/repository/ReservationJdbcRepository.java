@@ -16,6 +16,7 @@ import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 
 @Repository
@@ -59,7 +60,8 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 resultSet.getLong("member_id"),
                 resultSet.getString("member_name"),
                 resultSet.getString("email"),
-                resultSet.getString("password")
+                resultSet.getString("password"),
+                Role.valueOf(resultSet.getString("role"))
         );
     }
 
@@ -95,6 +97,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 m.name as member_name,
                 m.email,
                 m.password,
+                m.role,
                 r.date,
                 rt.id as time_id,
                 rt.start_at,
@@ -122,6 +125,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 m.name as member_name,
                 m.email,
                 m.password,
+                m.role,
                 r.date,
                 rt.id as time_id,
                 rt.start_at,

@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRepository;
+import roomescape.domain.Role;
 
 @Repository
 public class MemberJdbcRepository implements MemberRepository {
@@ -18,7 +19,8 @@ public class MemberJdbcRepository implements MemberRepository {
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("email"),
-            resultSet.getString("password")
+            resultSet.getString("password"),
+            Role.valueOf(resultSet.getString("role"))
     );
 
     private final JdbcTemplate jdbcTemplate;
@@ -36,7 +38,7 @@ public class MemberJdbcRepository implements MemberRepository {
         final BeanPropertySqlParameterSource memberParameters = new BeanPropertySqlParameterSource(member);
         final Long savedThemeId = jdbcInsert.executeAndReturnKey(memberParameters).longValue();
 
-        return new Member(savedThemeId, member.getName(), member.getEmail(), member.getPassword());
+        return new Member(savedThemeId, member.getName(), member.getEmail(), member.getPassword(), member.getRole());
     }
 
     @Override

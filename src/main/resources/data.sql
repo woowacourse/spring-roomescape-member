@@ -12,10 +12,10 @@ INSERT INTO theme (name, description, thumbnail) VALUES ('이름1', '설명1', '
                                                         ('이름12', '설명12', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg'),
                                                         ('이름13', '설명13', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
 INSERT INTO reservation_time (start_at) VALUES ('09:00'), ('10:00'), ('11:00'), ('12:00'), ('13:00'), ('14:00'), ('15:00');
-INSERT INTO member (name, email, password) VALUES ( '어드민', 'admin@admin.com' ,'1234'),
-                                               ('유저1', 'user1@email.com', '1234'),
-                                               ('유저2', 'user2@email.com', '1234'),
-                                               ('유저3', 'user3@email.com', '1234');
+INSERT INTO member (name, email, password, role) VALUES ( '어드민', 'admin@admin.com' ,'1234', 'ADMIN'),
+                                               ('유저1', 'user1@user.com', '1234', 'USER'),
+                                               ('유저2', 'user2@user.com', '1234', 'USER'),
+                                               ('유저3', 'user3@user.com', '1234', 'USER');
 INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (1, '2024-05-04', 1, 1),
                                                                 (1, '2024-05-04', 2, 1),
                                                                 (1, '2024-05-05', 3, 1),
