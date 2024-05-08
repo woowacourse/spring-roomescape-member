@@ -2,7 +2,7 @@ package roomescape.service.dto.output;
 
 import java.util.List;
 
-import roomescape.domain.ReservationTime;
+import roomescape.domain.reservation.ReservationTime;
 
 public record ReservationTimeOutput(long id, String startAt) {
 

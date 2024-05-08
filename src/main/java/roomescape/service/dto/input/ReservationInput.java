@@ -1,8 +1,8 @@
 package roomescape.service.dto.input;
 
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationTime;
+import roomescape.domain.reservation.Theme;
 
 public record ReservationInput(String name, String date, Long timeId, Long themeId) {
 

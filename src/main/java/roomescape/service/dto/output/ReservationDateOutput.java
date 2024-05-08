@@ -1,6 +1,6 @@
 package roomescape.service.dto.output;
 
-import roomescape.domain.ReservationDate;
+import roomescape.domain.reservation.ReservationDate;
 
 public record ReservationDateOutput(String date) {
 

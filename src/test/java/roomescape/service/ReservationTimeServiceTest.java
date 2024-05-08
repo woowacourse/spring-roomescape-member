@@ -14,9 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.dao.ReservationDao;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationTime;
+import roomescape.domain.reservation.Theme;
 import roomescape.exception.AlreadyExistsException;
 import roomescape.exception.ExistReservationException;
 import roomescape.exception.NotExistException;
@@ -89,8 +89,8 @@ class ReservationTimeServiceTest {
                 ReservationTime.from(timeOutput.id(), timeOutput.startAt()),
                 Theme.of(themeOutput.id(), themeOutput.name(), themeOutput.description(), themeOutput.thumbnail())
         ));
-
-        assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(timeOutput.id()))
+        final var timeId = timeOutput.id();
+        assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(timeId))
                 .isInstanceOf(ExistReservationException.class);
     }
 

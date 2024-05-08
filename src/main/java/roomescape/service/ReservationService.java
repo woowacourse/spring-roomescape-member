@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
-import roomescape.domain.Reservation;
+import roomescape.domain.reservation.Reservation;
 import roomescape.exception.*;
 import roomescape.service.dto.input.ReservationInput;
 import roomescape.service.dto.output.ReservationOutput;
