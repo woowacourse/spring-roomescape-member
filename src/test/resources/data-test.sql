@@ -25,4 +25,4 @@ INSERT INTO theme (name, description, thumbnail)
 VALUES ('테마11', '테마11 설명', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
 
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('홍길동', '2024-04-24', 1, 1);
+VALUES ('홍길동', '2024-05-05', 1, 1);
