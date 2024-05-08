@@ -5,17 +5,17 @@ public class Member {
     private final Long id;
     private final String name;
     private final String email;
-    private final String password;
+    private final String encodedPassword;
 
-    public Member(Long id, String name, String email, String password) {
+    public Member(Long id, String name, String email, String encodedPassword) {
         this.id = id;
         this.name = name;
         this.email = email;
-        this.password = password;
+        this.encodedPassword = encodedPassword;
     }
 
-    public Member(String name, String email, String password) {
-        this(null, name, email, password);
+    public Member(String name, String email, String encodedPassword) {
+        this(null, name, email, encodedPassword);
     }
 
     public Long getId() {
@@ -30,7 +30,7 @@ public class Member {
         return email;
     }
 
-    public String getPassword() {
-        return password;
+    public String getEncodedPassword() {
+        return encodedPassword;
     }
 }
