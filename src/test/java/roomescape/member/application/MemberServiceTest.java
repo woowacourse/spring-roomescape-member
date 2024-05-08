@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.exception.NotFoundException;
+import roomescape.exception.MemberNotExistException;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberRepository;
 
@@ -48,6 +48,6 @@ class MemberServiceTest {
 
         // when & then
         assertThatThrownBy(() -> memberService.findByEmail(notExistingEmail))
-                .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(MemberNotExistException.class);
     }
 }
