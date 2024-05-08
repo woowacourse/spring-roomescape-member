@@ -1,6 +1,5 @@
 package roomescape.service;
 
-import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationRepository;
@@ -47,8 +46,7 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> findPopularThemes() {
-        ReservationTerm reservationTerm = new ReservationTerm(
-                LocalDate.now().minusDays(7), LocalDate.now().minusDays(1));
+        ReservationTerm reservationTerm = ReservationTerm.of(7);
         List<Theme> themes = themeRepository.findByReservationTermAndCount(
                 reservationTerm.getStartDate(), reservationTerm.getEndDate(), MAXIMUM_COUNT);
         return themes.stream()
