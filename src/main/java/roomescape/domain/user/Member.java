@@ -19,6 +19,10 @@ public class Member {
         return new Member(id, new Name(name), new Email(email), new Password(password));
     }
 
+    public boolean isNotEqualPassword(final String password) {
+        return !this.password.isEqual(password);
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
@@ -34,7 +38,7 @@ public class Member {
     public String getName() {
         return name.name();
     }
-    
+
     public String getEmail() {
         return email.value();
     }

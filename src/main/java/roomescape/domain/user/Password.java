@@ -7,6 +7,9 @@ public record Password(String value) {
     public Password {
         validate(value);
     }
+    public boolean isEqual(final String password) {
+        return this.value.equals(password);
+    }
 
     private void validate(final String value) {
         if (value.length() <= MIN_LENGTH) {
