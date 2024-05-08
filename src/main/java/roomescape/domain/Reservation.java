@@ -24,11 +24,11 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public Reservation(String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
-        this(null, new Name(name), date, reservationTime, theme);
+    public Reservation(final Long reservationId, final String name, final LocalDate date, final ReservationTime time, final Theme theme) {
+        this(reservationId, new Name(name), date, time, theme);
     }
 
-    public boolean isBeforeThan(LocalDateTime otherTime) {
+    public boolean isBeforeThan(final LocalDateTime otherTime) {
         LocalDateTime reservationTime = LocalDateTime.of(date, time.getStartAt());
         return reservationTime.isBefore(otherTime);
     }

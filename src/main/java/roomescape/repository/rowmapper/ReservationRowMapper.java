@@ -2,7 +2,6 @@ package roomescape.repository.rowmapper;
 
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
-import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -30,7 +29,7 @@ public class ReservationRowMapper implements RowMapper<Reservation> {
         try {
             return new Reservation(
                     resultSet.getLong("reservation_id"),
-                    resultSet.getObject("name", Name.class),
+                    resultSet.getString("name"),
                     resultSet.getObject("date", LocalDate.class),
                     reservationTimeRowMapper.mapRow(resultSet, rowNumber),
                     themeRowMapper.mapRow(resultSet, rowNumber)
