@@ -43,7 +43,7 @@ class ThemeController {
 
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> readThemes(
-            @RequestParam(required = false, defaultValue = "false") boolean showRanking
+            @RequestParam(defaultValue = "false") boolean showRanking
     ) {
         if (showRanking) {
             return ResponseEntity.ok(themeService.getPopularThemes());
