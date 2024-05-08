@@ -8,6 +8,7 @@
 | GET    |                 | /admin/theme           | 어드민 테마 페이지 접근       | /admin/theme.html       |                                                                             |
 | GET    |                 | /reservation           | 사용자 예약 페이지 접근       | /reservation.html       |                                                                             |
 | GET    |                 | /                      | 메인 페이지 접근           | /index.html             |                                                                             |
+| GET    |                 | /login                 | 로그인 페이지 접근          | /login.html             |                                                                             |
 | GET    |                 | /reservations          | 모든 예약 조회            |                         |                                                                             |
 |        | 200 OK          |                        | 모든 예약 조회            |                         | {id, name, date, time{id, startAt}, theme{id, name, description, thumbnail} |
 | POST   |                 | /reservations          | 예약 추가               |                         | name, date, timeId, themeId                                                 |
@@ -18,6 +19,8 @@
 |        | 404 NOT FOUND   |                        | 예약 삭제 실패            |                         | error message                                                               |
 | GET    |                 | /times                 | 모든 시간 조회            |                         |                                                                             |
 |        | 200 OK          |                        | 모든 시간 조회            |                         | {id, startAt}                                                               |
+| GET    |                 | /times/search          | 예약 여부를 포함한 모든 시간 조회 |                         |                                                                             |
+|        | 200 OK          |                        | 예약 여부를 포함한 모든 시간 조회 |                         | {id ,startAt, booked}                                                       |
 | POST   |                 | /times                 | 시간 추가               |                         | startAt                                                                     |
 |        | 201 CREATED     | /times/{id}            | 시간 추가 성공            |                         | id, startAt                                                                 |
 |        | 400 BAD REQUEST |                        | 입력 양식으로 인한 시간 추가 실패 |                         | error message                                                               |
@@ -27,6 +30,8 @@
 |        | 400 BAD REQUEST |                        | 시간 삭제 실패            |                         | error message                                                               |
 | GET    |                 | /themes                | 모든 테마 조회            |                         |                                                                             |
 |        | 200 OK          |                        | 모든 테마 조회            |                         | {id, name, description, thumbnail}                                          |
+| GET    |                 | /themes/ranking        | 모든 테마 랭킹순으로 조회      |                         |                                                                             |
+|        | 200 OK          |                        | 모든 테마 랭킹순으로 조회      |                         | {id, name, description, thumbnail}                                          |
 | POST   |                 | /themes                | 테마 추가               |                         | name, description, thumbnail                                                |
 |        | 201 CREATED     | /themes/{id}           | 테마 추가 성공            |                         | id, name, description, thumbnail                                            |
 | DELETE |                 | /themes/{id}           | 테마 삭제               |                         |                                                                             |
