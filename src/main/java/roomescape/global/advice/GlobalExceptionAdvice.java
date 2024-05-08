@@ -14,7 +14,7 @@ public class GlobalExceptionAdvice {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @ExceptionHandler({RuntimeException.class, Exception.class})
-    public ResponseEntity<ErrorResponse> handleNullPointerException(Exception e) {
+    public ResponseEntity<ErrorResponse> handleServerException(Exception e) {
         logger.error(e.getMessage());
         ErrorResponse errorResponse = new ErrorResponse(500, "서버 에러입니다. 관리자에게 문의하세요");
         return ResponseEntity.internalServerError().body(errorResponse);
@@ -30,12 +30,12 @@ public class GlobalExceptionAdvice {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         logger.warn(e.getMessage());
-        ErrorResponse errorResponse = new ErrorResponse(e.getStatusCode().value(), e);
+        ErrorResponse errorResponse = new ErrorResponse(e.getStatusCode().value(), e.getMessage());
         return ResponseEntity.badRequest().body(errorResponse);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorResponse> handle(HttpMessageNotReadableException e) {
+    public ResponseEntity<ErrorResponse> handleInvalidDataException(HttpMessageNotReadableException e) {
         logger.warn(e.getMessage());
         ErrorResponse errorResponse = new ErrorResponse(400, "잘못된 데이터 형식입니다");
         return ResponseEntity.badRequest().body(errorResponse);
