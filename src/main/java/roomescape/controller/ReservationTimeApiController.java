@@ -26,15 +26,15 @@ import java.util.List;
 
 @Validated
 @RestController
-public class ReservationTimeController {
+public class ReservationTimeApiController {
 
     private final ReservationTimeCreateService reservationTimeCreateService;
     private final ReservationTimeFindService reservationTimeFindService;
     private final ReservationTimeDeleteService reservationTimeDeleteService;
 
-    public ReservationTimeController(ReservationTimeCreateService reservationTimeCreateService,
-                                     ReservationTimeFindService reservationTimeFindService,
-                                     ReservationTimeDeleteService reservationTimeDeleteService) {
+    public ReservationTimeApiController(ReservationTimeCreateService reservationTimeCreateService,
+                                        ReservationTimeFindService reservationTimeFindService,
+                                        ReservationTimeDeleteService reservationTimeDeleteService) {
         this.reservationTimeCreateService = reservationTimeCreateService;
         this.reservationTimeFindService = reservationTimeFindService;
         this.reservationTimeDeleteService = reservationTimeDeleteService;

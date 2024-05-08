@@ -22,15 +22,15 @@ import java.util.List;
 
 @Validated
 @RestController
-public class ThemeController {
+public class ThemeApiController {
 
     private final ThemeCreateService themeCreateService;
     private final ThemeFindService themeFindService;
     private final ThemeDeleteService themeDeleteService;
 
-    public ThemeController(ThemeCreateService themeCreateService,
-                           ThemeFindService themeFindService,
-                           ThemeDeleteService themeDeleteService) {
+    public ThemeApiController(ThemeCreateService themeCreateService,
+                              ThemeFindService themeFindService,
+                              ThemeDeleteService themeDeleteService) {
         this.themeCreateService = themeCreateService;
         this.themeFindService = themeFindService;
         this.themeDeleteService = themeDeleteService;

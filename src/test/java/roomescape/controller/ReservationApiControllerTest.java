@@ -18,10 +18,10 @@ import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class ReservationControllerTest {
+public class ReservationApiControllerTest {
 
     @Autowired
-    private ReservationController reservationController;
+    private ReservationApiController reservationApiController;
 
     @Test
     @DisplayName("예약 페이지 요청이 정상적으로 수행된다.")
@@ -86,7 +86,7 @@ public class ReservationControllerTest {
     void layerRefactoring() {
         boolean isJdbcTemplateInjected = false;
 
-        for (Field field : reservationController.getClass().getDeclaredFields()) {
+        for (Field field : reservationApiController.getClass().getDeclaredFields()) {
             if (field.getType().equals(JdbcTemplate.class)) {
                 isJdbcTemplateInjected = true;
                 break;

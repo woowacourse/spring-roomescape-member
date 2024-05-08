@@ -22,15 +22,15 @@ import java.util.List;
 
 @Validated
 @RestController
-public class ReservationController {
+public class ReservationApiController {
 
     private final ReservationFindService reservationFindService;
     private final ReservationCreateService reservationCreateService;
     private final ReservationDeleteService reservationDeleteService;
 
-    public ReservationController(ReservationFindService reservationFindService,
-                                 ReservationCreateService reservationCreateService,
-                                 ReservationDeleteService reservationDeleteService) {
+    public ReservationApiController(ReservationFindService reservationFindService,
+                                    ReservationCreateService reservationCreateService,
+                                    ReservationDeleteService reservationDeleteService) {
         this.reservationFindService = reservationFindService;
         this.reservationCreateService = reservationCreateService;
         this.reservationDeleteService = reservationDeleteService;
