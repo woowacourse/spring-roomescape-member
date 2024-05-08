@@ -1,15 +1,11 @@
 package roomescape.member.model;
 
-public class MemberName {
+public record MemberName(String value) {
 
     private static final int MAXIMUM_ENABLE_NAME_LENGTH = 5;
 
-    private final String value;
-
-    public MemberName(final String value) {
+    public MemberName {
         validateValue(value);
-
-        this.value = value;
     }
 
     private void validateValue(final String value) {

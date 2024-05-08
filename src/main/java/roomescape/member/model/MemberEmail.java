@@ -1,16 +1,12 @@
 package roomescape.member.model;
 
-public class MemberEmail {
+public record MemberEmail(String value) {
 
     private static final String REGEX_PATTERN = "^(.+)@(\\S+)$";
 
-    private String value;
-
-    public MemberEmail(final String value) {
+    public MemberEmail {
         checkNullOrEmpty(value);
         validateEmailRegex(value);
-
-        this.value = value;
     }
 
     private void checkNullOrEmpty(final String value) {
