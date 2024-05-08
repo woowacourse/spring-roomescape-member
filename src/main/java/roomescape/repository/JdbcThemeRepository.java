@@ -71,7 +71,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     public Theme save(Theme theme) {
         SqlParameterSource parameters = new BeanPropertySqlParameterSource(theme);
         Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
-        return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
+        return new Theme(id, theme);
     }
 
     @Override
