@@ -2,6 +2,7 @@ package roomescape.auth.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.auth.TokenProvider;
+import roomescape.auth.dto.response.CheckMemberResponse;
 import roomescape.auth.dto.response.LoginResponse;
 import roomescape.member.domain.Member;
 import roomescape.auth.dto.request.LoginRequest;
@@ -38,5 +39,10 @@ public class AuthService {
         if (member.hasNotSamePassword(password)) {
             throw new IllegalArgumentException("로그인하려는 계정의 비밀번호가 올바르지 않습니다.");
         }
+    }
+
+    public CheckMemberResponse checkMember(final String token) {
+        String email = tokenProvider.extractPayload(token);
+        return CheckMemberResponse.from(findUser(email));
     }
 }

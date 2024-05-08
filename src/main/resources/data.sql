@@ -34,3 +34,5 @@ INSERT INTO reservation (name, date, time_id, theme_id) values ( '솔라', '2024
 INSERT INTO reservation (name, date, time_id, theme_id) values ( '브리', '2024-05-03', 1, 4);
 INSERT INTO reservation (name, date, time_id, theme_id) values ( '리사', '2024-05-04', 2, 5);
 INSERT INTO reservation (name, date, time_id, theme_id) values ( '왼손', '2024-05-05', 3, 6);
+
+INSERT INTO member (name, email, password) values ( '왼손', 'hihi@naver.com', 'hihi');
