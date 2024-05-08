@@ -15,7 +15,7 @@ import roomescape.auth.service.AuthService;
 
 @RestController
 public class AuthController {
-    private static final String COOKIE_KEY = "token=";
+    private static final String TOKEN_COOKIE_NAME = "token";
 
     private final AuthService authService;
 
@@ -26,7 +26,9 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest loginMemberRequest) {
         LoginResponse loginResponse = authService.login(loginMemberRequest);
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, COOKIE_KEY + loginResponse.token()).build();
+        ResponseCookie responseCookie = ResponseCookie.from(TOKEN_COOKIE_NAME, loginResponse.token())
+                .build();
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, responseCookie.toString()).build();
     }
 
     @GetMapping("/login/check")

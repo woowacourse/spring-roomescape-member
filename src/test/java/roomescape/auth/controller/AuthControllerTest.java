@@ -54,7 +54,23 @@ class AuthControllerTest {
                         ))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpectAll(
-                        header().stringValues("Set-Cookie", "token=" + tokenValue),
+                        cookie().value("token", tokenValue),
+                        status().isOk()
+                );
+    }
+
+    @Test
+    @DisplayName("인증 정보 조회 시 요청 받은 쿠키의 토큰 값으로부터 유저 정보를 반환한다.")
+    void checkLogin() throws Exception {
+        // stub
+        Mockito.when(authService.checkMember(any())).thenReturn(new CheckMemberResponse("hi"));
+
+        // when & then
+        mockMvc.perform(MockMvcRequestBuilders.get("/login/check")
+                        .cookie(new Cookie("token", "asdf"))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpectAll(
+                        jsonPath("$.name").value("hi"),
                         status().isOk()
                 );
     }
