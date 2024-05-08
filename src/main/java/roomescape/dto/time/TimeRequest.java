@@ -16,7 +16,7 @@ public record TimeRequest(
     public TimeRequest {
         if (StringUtils.isBlank(startAt.toString())) {
             throw new ValidateException(ErrorType.REQUEST_DATA_BLANK,
-                    String.format("공백 또는 null이 포함된 요청입니다. [values: %s]", this));
+                    String.format("공백 또는 null이 포함된 시간 등록 요청입니다. [values: %s]", this));
         }
     }
 
