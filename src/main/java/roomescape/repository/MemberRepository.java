@@ -13,6 +13,10 @@ public interface MemberRepository {
 
     Member fetchByEmail(String email);
 
+    Optional<Member> findById(long id);
+
+    Member fetchById(long id);
+
     Member save(Member member);
 
     void delete(String email);

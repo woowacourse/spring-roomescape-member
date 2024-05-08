@@ -19,8 +19,8 @@ public class JwtTokenProvider {
     @Value("${security.jwt.token.expire-length}")
     private long validityInMilliseconds;
 
-    public String generateToken(final String username) {
-        final Claims claims = Jwts.claims().setSubject(username);
+    public String generateToken(final String userId) {
+        final Claims claims = Jwts.claims().setSubject(userId);
         final Date now = new Date();
         final Date validity = new Date(now.getTime() + validityInMilliseconds);
 

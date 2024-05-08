@@ -29,14 +29,14 @@ public class H2MemberRepository implements MemberRepository {
 
     @Override
     public List<Member> findAll() {
-        final String sql = "SELECT NAME, EMAIL, PASSWORD FROM MEMBER";
+        final String sql = "SELECT ID, NAME, EMAIL, PASSWORD FROM MEMBER";
 
         return jdbcTemplate.query(sql, this::mapRowMember);
     }
 
     @Override
     public Optional<Member> findByEmail(final String email) {
-        final String sql = "SELECT NAME, EMAIL, PASSWORD FROM MEMBER WHERE EMAIL = ?";
+        final String sql = "SELECT ID, NAME, EMAIL, PASSWORD FROM MEMBER WHERE EMAIL = ?";
 
         return jdbcTemplate.query(sql, this::mapRowMember, email)
                 .stream()
@@ -46,6 +46,20 @@ public class H2MemberRepository implements MemberRepository {
     @Override
     public Member fetchByEmail(final String email) {
         return findByEmail(email).orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
+    }
+
+    @Override
+    public Optional<Member> findById(final long id) {
+        final String sql = "SELECT ID, NAME, EMAIL, PASSWORD FROM MEMBER WHERE ID = ?";
+
+        return jdbcTemplate.query(sql, this::mapRowMember, id)
+                .stream()
+                .findAny();
+    }
+
+    @Override
+    public Member fetchById(final long id) {
+        return findById(id).orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
     }
 
     @Override
@@ -65,6 +79,7 @@ public class H2MemberRepository implements MemberRepository {
 
     private Member mapRowMember(final ResultSet rs, final int rowNum) throws SQLException {
         return new Member(
+                rs.getLong("ID"),
                 rs.getString("NAME"),
                 rs.getString("EMAIL"),
                 rs.getString("PASSWORD")

@@ -29,16 +29,10 @@ public class MemberService {
         if (checkInvalidLogin(request.email(), request.password())) {
             throw new InvalidRequestException("Invalid email or password");
         }
-        final String accessToken = jwtTokenProvider.generateToken(request.email()); //TODO id로 굽기
-        return new TokenResponse(accessToken);
-    }
+        final Member member = memberRepository.fetchByEmail(request.email());
 
-    public Member login(final MemberLoginRequest loginRequest) {
-        final Member member = memberRepository.fetchByEmail(loginRequest.email());
-        if (hasInvalidPassword(loginRequest, member)) {
-            throw new InvalidRequestException("Invalid password"); // TODO 예외 수정
-        }
-        return member;
+        final String accessToken = jwtTokenProvider.generateToken(String.valueOf(member.getId()));
+        return new TokenResponse(accessToken);
     }
 
     public MemberResponse findMemberByToken(final String token) {
@@ -50,12 +44,8 @@ public class MemberService {
     }
 
     public MemberResponse findMember(final String principal) {
-        final Member member = memberRepository.fetchByEmail(principal);
+        final Member member = memberRepository.fetchById(Long.parseLong(principal));
 
         return new MemberResponse(member.getName());
-    }
-
-    private boolean hasInvalidPassword(final MemberLoginRequest loginRequest, final Member member) {
-        return !member.hasValidPassword(loginRequest.password());
     }
 }
