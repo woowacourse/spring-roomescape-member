@@ -17,7 +17,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import roomescape.web.ReservationController;
+import roomescape.web.controller.ReservationController;
 import roomescape.web.dto.response.ReservationResponse;
 
 class MissionStepTest extends AcceptanceTest {

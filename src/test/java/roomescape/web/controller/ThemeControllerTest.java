@@ -1,4 +1,4 @@
-package roomescape.web;
+package roomescape.web.controller;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.http.HttpHeaders.LOCATION;
