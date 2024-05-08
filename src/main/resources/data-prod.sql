@@ -7,6 +7,8 @@ INSERT INTO reservation_time (start_at) VALUES ('13:00');
 INSERT INTO reservation_time (start_at) VALUES ('14:00');
 INSERT INTO reservation_time (start_at) VALUES ('15:00');
 
+INSERT INTO member (NAME, EMAIL, PASSWORD) VALUES ( 'name', 'email@email.com', 'password' );
+
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('reservation1', '2024-04-24', 1, 1);
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('reservation2', '2024-04-25', 1, 1);
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('reservation3', '2024-04-26', 1, 1);

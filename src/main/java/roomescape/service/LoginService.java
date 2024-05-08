@@ -4,6 +4,7 @@ import static roomescape.exception.ExceptionType.NOT_FOUND_USER;
 import static roomescape.exception.ExceptionType.WRONG_PASSWORD;
 
 import java.util.Map;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.domain.User;
 import roomescape.dto.LoginRequest;
@@ -22,7 +23,8 @@ public class LoginService {
     }
 
     public String getLoginToken(LoginRequest loginRequest) {
-        User findUser = userRepository.findByEmail(loginRequest.email())
+        Optional<User> byEmail = userRepository.findByEmail(loginRequest.email());
+        User findUser = byEmail
                 .orElseThrow(() -> new RoomescapeException(NOT_FOUND_USER));
         if (!findUser.getPassword().equals(loginRequest.password())) {
             throw new RoomescapeException(WRONG_PASSWORD);

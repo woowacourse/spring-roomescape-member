@@ -9,7 +9,7 @@ import roomescape.domain.User;
 public class CollectionUserRepository implements UserRepository {
 
     private final List<User> users;
-    private AtomicLong index;
+    private final AtomicLong index;
 
     public CollectionUserRepository() {
         this.users = new ArrayList<>();
@@ -24,9 +24,9 @@ public class CollectionUserRepository implements UserRepository {
     }
 
     @Override
-    public long save(User user) {
+    public User save(User user) {
         User savedUser = new User(index.incrementAndGet(), user);
         users.add(savedUser);
-        return savedUser.getId();
+        return savedUser;
     }
 }
