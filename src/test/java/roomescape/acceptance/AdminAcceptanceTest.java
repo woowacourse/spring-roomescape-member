@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import io.restassured.RestAssured;
 
-public class AdminAcceptanceTest extends AcceptanceTest {
+class AdminAcceptanceTest extends AcceptanceTest {
     @Test
     void 어드민_메인_페이지를_응답할_수_있다() {
         RestAssured.given().log().all()
