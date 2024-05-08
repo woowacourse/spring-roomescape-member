@@ -4,15 +4,13 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.*;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
-import roomescape.exception.CustomException;
+import roomescape.service.exception.OperationNotAllowedException;
+import roomescape.service.exception.ResourceNotFoundException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-
-import static roomescape.exception.CustomExceptionCode.RESERVATION_ALREADY_EXIST;
-import static roomescape.exception.CustomExceptionCode.RESERVATION_FOR_PAST_NOT_ALLOWED;
 
 @Service
 public class ReservationService {
@@ -37,10 +35,10 @@ public class ReservationService {
     }
 
     public ReservationResponse addReservation(ReservationRequest request) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId());
+        ReservationTime reservationTime = findValidatedReservationTime(request.timeId());
         validateNotPast(request.date(), reservationTime.getStartAt());
-        validateNotDuplicatedTime(request.date(), request.timeId());
-        Theme theme = themeRepository.findById(request.themeId());
+        validateNotDuplicatedTime(request.date(), request.timeId(), request.themeId());
+        Theme theme = findValidatedTheme(request.themeId());
 
         Reservation reservation = new Reservation(request.name(), request.date(), reservationTime, theme);
         Reservation savedReservation = reservationRepository.save(reservation);
@@ -48,20 +46,36 @@ public class ReservationService {
         return ReservationResponse.from(savedReservation);
     }
 
-    private void validateNotDuplicatedTime(LocalDate date, Long id) {
-        if (reservationRepository.existByDateAndTimeId(date, id)) {
-            throw new CustomException(RESERVATION_ALREADY_EXIST);
+    public void deleteById(Long id) {
+        findValidatedReservation(id);
+        reservationRepository.deleteById(id);
+    }
+
+    private Reservation findValidatedReservation(Long id) {
+        return reservationRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("아이디에 해당하는 예약을 찾을 수 없습니다."));
+    }
+
+    private ReservationTime findValidatedReservationTime(Long id) {
+        return reservationTimeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("아이디에 해당하는 예약 시간을 찾을 수 없습니다."));
+    }
+
+    private Theme findValidatedTheme(Long id) {
+        return themeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("아이디에 해당하는 테마를 찾을 수 없습니다."));
+    }
+
+    private void validateNotDuplicatedTime(LocalDate date, Long timeId, Long themeId) {
+        if (reservationRepository.existByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
+            throw new OperationNotAllowedException("예약이 이미 존재합니다.");
         }
     }
 
     private void validateNotPast(LocalDate date, LocalTime time) {
         LocalDateTime reservationDateTime = date.atTime(time);
         if (reservationDateTime.isBefore(LocalDateTime.now())) {
-            throw new CustomException(RESERVATION_FOR_PAST_NOT_ALLOWED);
+            throw new OperationNotAllowedException("지나간 시간에 대한 예약은 할 수 없습니다.");
         }
-    }
-
-    public void deleteById(Long id) {
-        reservationRepository.deleteById(id);
     }
 }
