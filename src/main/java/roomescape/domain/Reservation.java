@@ -24,7 +24,7 @@ public class Reservation {
     }
 
     public boolean isDateBefore(LocalDate target) {
-        return getDate().isBefore(target);
+        return date.isBefore(target);
     }
 
     public Long getId() {
