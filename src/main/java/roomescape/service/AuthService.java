@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
 import roomescape.infrastructure.JwtTokenProvider;
 import roomescape.service.dto.TokenRequest;
@@ -19,6 +20,14 @@ public class AuthService {
     public TokenResponse createToken(TokenRequest tokenRequest) {
         String accessToken = jwtTokenProvider.createToken(tokenRequest.email());
         return new TokenResponse(accessToken);
+    }
+
+    public Cookie createCookieByToken(String token) {
+        Cookie cookie = new Cookie("token", token);
+        cookie.setMaxAge(3600);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        return cookie;
     }
 
 }
