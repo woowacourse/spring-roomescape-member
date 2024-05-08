@@ -2,7 +2,7 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.domain.member.Member;
-import roomescape.dto.LoginCheckResponse;
+import roomescape.dto.LoginMember;
 import roomescape.dto.LoginRequest;
 import roomescape.dto.MemberPayload;
 import roomescape.dto.TokenDto;
@@ -30,10 +30,10 @@ public class AuthService {
         return new TokenDto(token);
     }
 
-    public LoginCheckResponse findUserNameByToken(TokenDto tokenDto) {
+    public LoginMember findUserByToken(TokenDto tokenDto) {
         Long userId = extractUserIdByToken(tokenDto.accessToken());
         Member member = memberService.getMemberById(userId);
-        return new LoginCheckResponse(member.getName());
+        return LoginMember.from(member);
     }
 
     private Member authenticateUser(LoginRequest request) {
