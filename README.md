@@ -38,7 +38,7 @@
 ### 4단계 요구사항
 
 - [x] 로그인 페이지요청에 응답이 가능하다 (GET "/login")
-- [ ] 로그인 API 구현. (POST "login")
+- [x] 로그인 API 구현. (POST "login")
     - [x] email, password로 User를 불러올 수 있다.
-    - [ ] 로그인 응답 cookie에 이름 기반의 token값을 포함 시킨다.
+    - [x] 로그인 응답 cookie에 이름 기반의 token값을 포함 시킨다.
 - [ ] 사용자 정보 조회 API 구현 (GET "/login/check")
