@@ -47,7 +47,7 @@
 
 ### 사용자 로그인
 
-- [ ] `GET /login` 요청 시 로그인 폼이 있는 페이지를 응답
+- [X] `GET /login` 요청 시 로그인 폼이 있는 페이지를 응답
 - [ ] `POST /login` 요청 시 로그인 폼에 입력한 email, password 값을 body에 포함하여 응답
     - [ ] 응답 `Cookie`에 "token"값으로 토큰이 포함되도록 구성한다.
 - [ ] `GET /login/check` 요청 시 인증 정보를 조회 후 응답
