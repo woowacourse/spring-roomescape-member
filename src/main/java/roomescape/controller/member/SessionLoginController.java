@@ -18,7 +18,6 @@ import roomescape.service.TokenResponse;
 @RequestMapping("/login")
 public class SessionLoginController { //TODO 이름 괜춘?
 
-    //TODO 로그인 상태에서 /login 하면 redirect
     private final MemberService memberService;
 
     public SessionLoginController(final MemberService memberService) {

@@ -29,7 +29,7 @@ public class MemberService {
         if (checkInvalidLogin(request.email(), request.password())) {
             throw new InvalidRequestException("Invalid email or password");
         }
-        final String accessToken = jwtTokenProvider.generateToken(request.email());
+        final String accessToken = jwtTokenProvider.generateToken(request.email()); //TODO id로 굽기
         return new TokenResponse(accessToken);
     }
 
