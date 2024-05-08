@@ -1,3 +1,14 @@
+/**
+  member data
+ */
+INSERT INTO member (role, password, name, email)
+VALUES ('ADMIN', 'adminPw1234!', '관리자', 'admin@mail.com');
+INSERT INTO member (role, password, name, email)
+VALUES ('ADMIN', 'adminPw1234!', '관리자', 'admin@mail.com');
+
+/**
+  theme data
+ */
 INSERT INTO theme(name, description, thumbnail)
 VALUES ('테바와 비밀친구', '나랑.. 비밀친구할래..?', '테바 사진');
 INSERT INTO theme(name, description, thumbnail)
@@ -29,6 +40,9 @@ VALUES ('브리와 솔라의 페어프로그래밍 연극', '... 이거 이렇�
 INSERT INTO theme(name, description, thumbnail)
 VALUES ('레디의 코드리뷰', '아씨 깜짝아! 내 코드인줄 알았네 (제제의 코드를 보며)', '레디 사진');
 
+/**
+  reservation time data
+ */
 INSERT INTO reservation_time(start_at)
 VALUES ('09:30');
 INSERT INTO reservation_time(start_at)
@@ -46,6 +60,9 @@ VALUES ('21:30');
 INSERT INTO reservation_time(start_at)
 VALUES ('23:30');
 
+/**
+  reservation
+ */
 INSERT INTO reservation(name, date, time_id, theme_id)
 VALUES ('켈리', CAST(TIMESTAMPADD(DAY, -3, NOW()) AS DATE), 1, 1);
 INSERT INTO reservation(name, date, time_id, theme_id)

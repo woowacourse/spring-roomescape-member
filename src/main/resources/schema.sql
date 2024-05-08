@@ -1,6 +1,17 @@
+drop table if exists member CASCADE;
 drop table if exists theme CASCADE;
 drop table if exists reservation CASCADE;
 drop table if exists reservation_time CASCADE;
+
+CREATE TABLE member
+(
+    id       BIGINT        NOT NULL AUTO_INCREMENT,
+    role     VARCHAR(30)   NOT NULL,
+    password VARCHAR(5000) NOT NULL,
+    name     VARCHAR(20)   NOT NULL,
+    email    VARCHAR(30)   NOT NULL,
+    PRIMARY KEY (id)
+);
 
 CREATE TABLE theme
 (
