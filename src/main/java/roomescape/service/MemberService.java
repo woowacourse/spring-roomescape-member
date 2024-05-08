@@ -9,12 +9,12 @@ import roomescape.service.dto.request.LoginRequest;
 import roomescape.service.dto.response.MemberResponse;
 
 @Service
-public class UserService {
+public class MemberService {
 
     private final MemberDao memberDao;
     private final TokenProvider tokenProvider;
 
-    public UserService(MemberDao memberDao, TokenProvider tokenProvider) {
+    public MemberService(MemberDao memberDao, TokenProvider tokenProvider) {
         this.memberDao = memberDao;
         this.tokenProvider = tokenProvider;
     }
@@ -34,5 +34,13 @@ public class UserService {
                 .orElseThrow(() -> new NotFoundException("사용자를 찾을 수 없습니다."));
 
         return MemberResponse.from(member);
+    }
+
+    public Member findLoginMember(String token) {
+        String payload = tokenProvider.getPayload(token);
+        Member member = memberDao.findById(Long.valueOf(payload))
+                .orElseThrow(() -> new NotFoundException("사용자를 찾을 수 없습니다."));
+
+        return member;
     }
 }

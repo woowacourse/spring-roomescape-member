@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.exception.BadRequestException;
-import roomescape.service.UserService;
+import roomescape.service.MemberService;
 import roomescape.service.dto.request.LoginRequest;
 import roomescape.service.dto.response.MemberResponse;
 
@@ -18,15 +18,15 @@ public class UserController {
 
     private static final String TOKEN_NAME = "token";
 
-    private final UserService userService;
+    private final MemberService memberService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
+    public UserController(MemberService memberService) {
+        this.memberService = memberService;
     }
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-        String token = userService.login(loginRequest);
+        String token = memberService.login(loginRequest);
 
         Cookie cookie = new Cookie(TOKEN_NAME, token);
         cookie.setHttpOnly(true);
@@ -40,7 +40,7 @@ public class UserController {
     public ResponseEntity<MemberResponse> findMember(HttpServletRequest request) {
         String token = extractTokenFromCookie(request.getCookies());
 
-        MemberResponse memberResponse = userService.findMember(token);
+        MemberResponse memberResponse = memberService.findMember(token);
         return ResponseEntity.ok().body(memberResponse);
     }
 
