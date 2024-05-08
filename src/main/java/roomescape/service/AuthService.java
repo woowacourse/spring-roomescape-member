@@ -1,6 +1,5 @@
 package roomescape.service;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import roomescape.domain.member.Member;
 import roomescape.dto.LoginCheckResponse;
@@ -9,6 +8,7 @@ import roomescape.dto.MemberPayload;
 import roomescape.dto.TokenDto;
 import roomescape.exception.ClientErrorExceptionWithData;
 import roomescape.infrastructure.JwtProvider;
+import roomescape.infrastructure.PasswordEncoder;
 
 @Service
 public class AuthService {

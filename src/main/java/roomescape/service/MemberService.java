@@ -26,6 +26,5 @@ public class MemberService {
                 .orElseThrow(() -> new ClientErrorExceptionWithData(
                         "[ERROR] 존재하지 않는 아이디(이메일) 입니다.", email
                 ));
-
     }
 }
