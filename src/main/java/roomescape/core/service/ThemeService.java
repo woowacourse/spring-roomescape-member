@@ -41,8 +41,8 @@ public class ThemeService {
         themeRepository.deleteById(id);
     }
 
-    public List<Theme> findPopularInLastWeek() {
-        return themeRepository.findPopularInLastWeek();
+    public List<Theme> findPopularThemesInLastWeek() {
+        return themeRepository.findPopularThemesInLastWeek();
     }
 
     private void validateDuplicatedName(final Theme theme) {

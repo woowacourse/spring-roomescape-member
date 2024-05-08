@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.core.domain.Reservation;
 import roomescape.core.domain.ReservationTime;
-import roomescape.core.dto.ReservationTimeWithStateDto;
 import roomescape.core.dto.ReservationTimeRequestDto;
+import roomescape.core.dto.ReservationTimeWithStateDto;
 import roomescape.core.repository.ReservationRepository;
 import roomescape.core.repository.ReservationTimeRepository;
 import roomescape.web.exception.BadRequestException;
@@ -41,19 +41,19 @@ public class ReservationTimeService {
     }
 
     @Transactional(readOnly = true)
-    public List<ReservationTimeWithStateDto> findBookable(final String date, final long themeId) {
+    public List<ReservationTimeWithStateDto> findAllWithReservationState(final String date, final long themeId) {
         List<ReservationTime> times = reservationTimeRepository.findAll();
-        Set<Long> timeIdOfReservation = reservationRepository.findAllByDateAndThemeId(date, themeId)
+        Set<Long> reservedTimeIds = reservationRepository.findAllByDateAndThemeId(date, themeId)
                 .stream()
                 .map(Reservation::getTimeId)
                 .collect(toSet());
         return times.stream()
-                .map(reservationTime -> createBookingTime(reservationTime, timeIdOfReservation))
+                .map(reservationTime -> toDto(reservationTime, reservedTimeIds))
                 .toList();
     }
 
-    private ReservationTimeWithStateDto createBookingTime(final ReservationTime time, final Set<Long> timeIdOfReservation) {
-        if (timeIdOfReservation.contains(time.getId())) {
+    private ReservationTimeWithStateDto toDto(final ReservationTime time, final Set<Long> reservedTimeIds) {
+        if (reservedTimeIds.contains(time.getId())) {
             return new ReservationTimeWithStateDto(time.getId(), time.getStartAtString(), true);
         }
         return new ReservationTimeWithStateDto(time.getId(), time.getStartAtString(), false);

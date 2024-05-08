@@ -44,7 +44,7 @@ class ReservationTimeControllerTest {
 
     @Test
     @DisplayName("시간 생성 시, startAt 값이 null이면 예외가 발생한다.")
-    void validateTimeCreateWithNull() {
+    void validateTimeCreateTimeWithNull() {
         Map<String, Object> params = new HashMap<>();
         params.put("startAt", null);
 
@@ -59,7 +59,7 @@ class ReservationTimeControllerTest {
     @ParameterizedTest
     @ValueSource(strings = {"", " ", "10:89"})
     @DisplayName("시간 생성 시, startAt 값의 형식이 올바르지 않으면 예외가 발생한다.")
-    void validateTimeCreateWithStartAtFormat(final String startAt) {
+    void validateTimeCreateTimeWithStartAtFormat(final String startAt) {
         Map<String, Object> params = new HashMap<>();
         params.put("startAt", startAt);
 
@@ -94,7 +94,7 @@ class ReservationTimeControllerTest {
 
     @Test
     @DisplayName("모든 시간 목록을 조회한다.")
-    void findAllReservationTimes() {
+    void findAllTimesReservationTimes() {
         RestAssured.given().log().all()
                 .when().get("/times")
                 .then().log().all()
@@ -105,7 +105,7 @@ class ReservationTimeControllerTest {
 
     @Test
     @DisplayName("날짜와 테마 정보가 주어지면 예약 가능한 시간 목록을 조회한다.")
-    void findBookable() {
+    void findAllTimesWithReservationState() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", TOMORROW_DATE);
@@ -126,19 +126,19 @@ class ReservationTimeControllerTest {
                 .jsonPath().getList(".", ReservationTimeWithStateDto.class);
 
         assertThat(times).hasSize(countReservationTime())
-                .allMatch(response -> validateBookingTime(response, 1));
+                .allMatch(response -> validateAvailableTime(response, 1));
     }
 
-    private boolean validateBookingTime(final ReservationTimeWithStateDto bookingTime, final int timeId) {
-        if (bookingTime.getId() == timeId) {
-            return bookingTime.isAlreadyBooked();
+    private boolean validateAvailableTime(final ReservationTimeWithStateDto time, final int timeId) {
+        if (time.getId() == timeId) {
+            return time.isAlreadyBooked();
         }
-        return !bookingTime.isAlreadyBooked();
+        return !time.isAlreadyBooked();
     }
 
     @Test
     @DisplayName("시간 삭제 시, 해당 시간을 참조하는 예약이 있으면 예외가 발생한다.")
-    void validateTimeDelete() {
+    void validateTimeDeleteTime() {
         RestAssured.given().log().all()
                 .when().delete("/times/1")
                 .then().log().all()
@@ -147,7 +147,7 @@ class ReservationTimeControllerTest {
 
     @Test
     @DisplayName("시간 삭제 시, 해당 시간을 참조하는 예약이 없으면 시간이 삭제된다.")
-    void deleteTime() {
+    void deleteTimeTime() {
         Map<String, Object> params = new HashMap<>();
         params.put("startAt", "10:10");
 

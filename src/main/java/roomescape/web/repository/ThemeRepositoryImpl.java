@@ -42,7 +42,7 @@ public class ThemeRepositoryImpl implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findPopularInLastWeek() {
+    public List<Theme> findPopularThemesInLastWeek() {
         final LocalDate today = LocalDate.now();
         final LocalDate lastWeek = today.minusWeeks(1);
 

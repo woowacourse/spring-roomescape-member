@@ -26,7 +26,7 @@ public class ThemeController {
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponseDto> create(@RequestBody @Valid final ThemeRequestDto request) {
+    public ResponseEntity<ThemeResponseDto> createTheme(@RequestBody @Valid final ThemeRequestDto request) {
         final Theme theme = themeService.create(request);
         final ThemeResponseDto response = new ThemeResponseDto(theme);
         return ResponseEntity.created(URI.create("/themes/" + response.getId()))
@@ -34,7 +34,7 @@ public class ThemeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ThemeResponseDto>> findAll() {
+    public ResponseEntity<List<ThemeResponseDto>> findAllThemes() {
         final List<Theme> themes = themeService.findAll();
         final List<ThemeResponseDto> response = themes.stream()
                 .map(ThemeResponseDto::new)
@@ -43,8 +43,8 @@ public class ThemeController {
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<ThemeResponseDto>> findPopularInLastWeek() {
-        final List<Theme> themes = themeService.findPopularInLastWeek();
+    public ResponseEntity<List<ThemeResponseDto>> findPopularThemesInLastWeek() {
+        final List<Theme> themes = themeService.findPopularThemesInLastWeek();
         final List<ThemeResponseDto> response = themes.stream()
                 .map(ThemeResponseDto::new)
                 .toList();
@@ -52,7 +52,7 @@ public class ThemeController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") final long id) {
+    public ResponseEntity<Void> deleteTheme(@PathVariable("id") final long id) {
         themeService.delete(id);
         return ResponseEntity.noContent()
                 .build();

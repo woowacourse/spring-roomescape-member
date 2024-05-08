@@ -29,7 +29,9 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponseDto> create(@RequestBody @Valid final ReservationRequestDto request) {
+    public ResponseEntity<ReservationResponseDto> createReservation(
+            @RequestBody @Valid final ReservationRequestDto request
+    ) {
         final Reservation reservation = reservationService.create(request);
         final ReservationResponseDto response = new ReservationResponseDto(reservation);
         return ResponseEntity.created(URI.create("/reservations/" + response.getId()))
@@ -37,7 +39,7 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponseDto>> findAll() {
+    public ResponseEntity<List<ReservationResponseDto>> findAllReservations() {
         return reservationService.findAll()
                 .stream()
                 .map(ReservationResponseDto::new)
@@ -45,8 +47,9 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") final long id) {
+    public ResponseEntity<Void> deleteReservation(@PathVariable("id") final long id) {
         reservationService.delete(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent()
+                .build();
     }
 }

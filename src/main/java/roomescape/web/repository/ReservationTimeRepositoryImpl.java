@@ -48,7 +48,7 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
                 ) AS r
                 ON t.id = r.time_id;
                 """;
-        return jdbcTemplate.query(query, getBookingTimeRowMapper(), date, themeId);
+        return jdbcTemplate.query(query, getReservationTimeWithStateRowMapper(), date, themeId);
     }
 
     @Override
@@ -79,7 +79,7 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
         );
     }
 
-    private RowMapper<ReservationTimeWithStateDto> getBookingTimeRowMapper() {
+    private RowMapper<ReservationTimeWithStateDto> getReservationTimeWithStateRowMapper() {
         return (resultSet, rowNum) -> new ReservationTimeWithStateDto(
                 resultSet.getLong("id"),
                 resultSet.getString("start_at"),

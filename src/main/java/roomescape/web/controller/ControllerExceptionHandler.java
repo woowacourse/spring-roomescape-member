@@ -22,7 +22,8 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<String> handleMethodArgumentNotValidException(
-            final MethodArgumentNotValidException exception) {
+            final MethodArgumentNotValidException exception
+    ) {
         log.error("[Method Argument Not Valid Exception]", exception);
         String message = exception.getBindingResult()
                 .getAllErrors()
