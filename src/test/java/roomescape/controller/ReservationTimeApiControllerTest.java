@@ -101,7 +101,7 @@ class ReservationTimeApiControllerTest {
                 .statusCode(201);
 
         AvailableTimeResponseDtos actualResponse = RestAssured.given().log().all()
-                .when().get("/times/available?date=2100-08-05&theme-id=1")
+                .when().get("/times/available?date=2100-08-05&themeId=1")
                 .then().log().all()
                 .statusCode(200)
                 .extract()

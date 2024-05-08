@@ -6,7 +6,7 @@ POST http://localhost:8080/reservations
 Content-Type: application/json
 
 {
-  "date": "2100-01-01",
+  "date": "2100-01-21",
   "name": "재즈",
   "themeId": 1000,
   "timeId": 1000

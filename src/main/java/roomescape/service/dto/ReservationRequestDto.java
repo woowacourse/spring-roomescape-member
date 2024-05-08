@@ -1,72 +1,38 @@
 package roomescape.service.dto;
 
-import java.time.LocalDate;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import java.time.LocalTime;
-import java.time.format.DateTimeParseException;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationName;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeName;
+import roomescape.service.dto.validator.DateFormatConstraint;
 
 public class ReservationRequestDto {
 
+    @NotBlank(message = "이름은 반드시 입력되어야 합니다.")
     private final String name;
+
+    @NotNull(message = "테마 아이디는 반드시 입력되어야 합니다.")
+    @Positive(message = "테마 아이디는 자연수여야 합니다. ${validatedValue}은 사용할 수 없습니다.")
     private final Long themeId;
+
+    @DateFormatConstraint
     private final String date;
+
+    @NotNull(message = "예약 시간 아이디는 반드시 입력되어야 합니다.")
+    @Positive(message = "예약 시간 아이디는 자연수여야 합니다. ${validatedValue}은 사용할 수 없습니다.")
     private final Long timeId;
 
     public ReservationRequestDto(String name, Long themeId, String date, Long timeId) {
-        validateNameExist(name);
-        validateThemeIdExist(themeId);
-        validateIdNaturalNumber(themeId);
-        validateDateExist(date);
-        validateDateFormat(date);
-        validateTimeIdExist(timeId);
-        validateIdNaturalNumber(timeId);
         this.name = name;
         this.themeId = themeId;
         this.date = date;
         this.timeId = timeId;
-    }
-
-    private void validateNameExist(String name) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("이름은 반드시 입력되어야 합니다.");
-        }
-    }
-
-    private void validateThemeIdExist(Long themeId) {
-        if (themeId == null) {
-            throw new IllegalArgumentException("테마 아이디는 반드시 입력되어야 합니다.");
-        }
-    }
-
-    private void validateIdNaturalNumber(Long id) {
-        if (id <= 0) {
-            throw new IllegalArgumentException("아이디는 자연수여야 합니다.");
-        }
-    }
-
-    private void validateDateExist(String date) {
-        if (date == null || date.isBlank()) {
-            throw new IllegalArgumentException("날짜는 반드시 입력되어야 합니다.");
-        }
-    }
-
-    private void validateDateFormat(String date) {
-        try {
-            LocalDate.parse(date);
-        } catch (DateTimeParseException ex) {
-            throw new IllegalArgumentException("날짜 형식이 올바르지 않습니다.");
-        }
-    }
-
-    private void validateTimeIdExist(Long timeId) {
-        if (timeId == null) {
-            throw new IllegalArgumentException("시간 아이디는 반드시 입력되어야 합니다.");
-        }
     }
 
     public Reservation toReservation() {

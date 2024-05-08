@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -7,7 +8,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.service.ReservationTimeService;
@@ -31,14 +31,13 @@ public class ReservationTimeApiController {
     }
 
     @GetMapping("/times/available")
-    public AvailableTimeResponseDtos findAvailableReservationTimes(@RequestParam String date,
-                                                                   @RequestParam(name = "theme-id") long themeId) {
-        return reservationTimeService.findAvailableReservationTimes(new AvailableTimeRequestDto(date, themeId));
+    public AvailableTimeResponseDtos findAvailableReservationTimes(@Valid AvailableTimeRequestDto requestDto) {
+        return reservationTimeService.findAvailableReservationTimes(requestDto);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/times")
-    public ReservationTimeResponseDto createReservationTime(@RequestBody ReservationTimeRequestDto requestDto) {
+    public ReservationTimeResponseDto createReservationTime(@Valid @RequestBody ReservationTimeRequestDto requestDto) {
         return reservationTimeService.createReservationTime(requestDto);
     }
 
