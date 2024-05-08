@@ -51,14 +51,13 @@ public class ThemeJdbcRepository implements ThemeRepository {
                     th.id AS theme_id,
                     th.name AS theme_name,
                     th.description AS theme_description,
-                    th.thumbnail AS theme_thumbnail,
-                    COUNT(r.id) AS reservation_count
+                    th.thumbnail AS theme_thumbnail
                 FROM
                     reservation AS r
                 INNER JOIN theme AS th ON r.theme_id = th.id
                 WHERE r.date BETWEEN ? AND ?
                 GROUP BY theme_id
-                ORDER BY reservation_count DESC, theme_name
+                ORDER BY COUNT(r.id) DESC, theme_name
                 LIMIT ?;
                 """;
         return jdbcTemplate.query(sql, themeRowMapper, start, end, limit);
