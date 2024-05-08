@@ -10,11 +10,11 @@ public record ThemeName(String value) {
 
     public ThemeName {
         if (isNull(value)) {
-            throw new InvalidDomainObjectException("value must not be null");
+            throw new InvalidDomainObjectException("theme name must not be null");
         }
         if (NAME_LENGTH_MAX < value.length() || value.length() < NAME_LENGTH_MIN) {
-            throw new InvalidDomainObjectException(String.format("value must be between %d and %d characters",
-                    NAME_LENGTH_MIN, NAME_LENGTH_MAX));
+            throw new InvalidDomainObjectException(String.format("테마 이름은 %d자 이상 %d자 이하여야 합니다. (현재 입력한 이름 길이: %d자)",
+                    NAME_LENGTH_MIN, NAME_LENGTH_MAX, value.length()));
         }
     }
 }

@@ -12,8 +12,8 @@ public record Description(String value) {
             throw new InvalidDomainObjectException("description must not be null");
         }
         if (value.length() > DESCRIPTION_LENGTH_MAX) {
-            throw new InvalidDomainObjectException(String.format("description must be less than %d characters",
-                    DESCRIPTION_LENGTH_MAX));
+            throw new InvalidDomainObjectException(String.format("설명은 %d자 이하여야 합니다. (현재 입력한 설명 길이: %d자)",
+                    DESCRIPTION_LENGTH_MAX, value.length()));
         }
     }
 }

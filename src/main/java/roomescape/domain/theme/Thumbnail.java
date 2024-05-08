@@ -16,12 +16,12 @@ public record Thumbnail(String value) {
             throw new InvalidDomainObjectException("thumbnail must not be null");
         }
         if (value.length() > THUMBNAIL_LENGTH_MAX) {
-            throw new InvalidDomainObjectException(String.format("thumbnail must be less than %d characters",
-                    THUMBNAIL_LENGTH_MAX));
+            throw new InvalidDomainObjectException(String.format("썸네일 URL은 %d자 이하여야 합니다. (현재 입력한 URL 길이: %d자)",
+                    THUMBNAIL_LENGTH_MAX, value.length()));
         }
         Matcher matcher = URL_PATTERN.matcher(value);
         if (!matcher.matches()) {
-            throw new InvalidDomainObjectException("thumbnail must be a valid URL");
+            throw new InvalidDomainObjectException("썸네일 URL 형식이 올바르지 않습니다. (예: http(s)://example.com/image.png)");
         }
     }
 }
