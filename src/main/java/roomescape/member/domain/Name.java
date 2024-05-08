@@ -10,12 +10,12 @@ public class Name {
 
     private final String value;
 
-    public Name(final String name) {
+    public Name(String name) {
         validate(name);
         this.value = name;
     }
 
-    private void validate(final String name) {
+    private void validate(String name) {
         if (name.isEmpty() || name.length() > MAX_NAME_LENGTH || !PATTERN.matcher(name).matches()) {
             throw new IllegalArgumentException(INVALID_NAME_FORMAT);
         }

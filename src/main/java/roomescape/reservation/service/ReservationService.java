@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.exception.BusinessException;
+import roomescape.exception.ErrorType;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.repository.MemberRepository;
 import roomescape.reservation.controller.dto.MemberReservationRequest;
@@ -43,11 +45,11 @@ public class ReservationService {
 
         LocalDate date = LocalDate.parse(reservationRequest.date());
         if (date.isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException("지나간 날짜와 시간에 대한 예약 생성은 불가능합니다. 다른 예약 시간을 선택해주세요.");
+            throw new BusinessException(ErrorType.INVALID_REQUEST_ERROR);
         }
 
         if (reservationRepository.existMemberReservationBy(date, reservationTime.getId(), theme.getId())) {
-            throw new IllegalArgumentException("예약이 다른 사람과 중복되었습니다. 다른 예약 시간을 선택해주세요.");
+            throw new BusinessException(ErrorType.DUPLICATED_RESERVATION_ERROR);
         }
 
         Reservation reservation = reservationRepository.save(new Reservation(date, reservationTime, theme));
@@ -63,7 +65,7 @@ public class ReservationService {
         LocalDate date = LocalDate.parse(memberReservationRequest.date());
 
         if (reservationRepository.existsBy(date, reservationTime.getId(), theme.getId())) {
-            throw new IllegalArgumentException("예약이 중복되었습니다. 다른 예약 시간을 선택해주세요.");
+            throw new BusinessException(ErrorType.DUPLICATED_RESERVATION_ERROR);
         }
 
         Member member = memberRepository.findById(memberReservationRequest.memberId()).orElseThrow();
@@ -74,7 +76,7 @@ public class ReservationService {
 
     public void deleteMemberReservation(long reservationMemberId) {
         if (!reservationRepository.deleteMemberReservationById(reservationMemberId)) {
-            throw new IllegalArgumentException(String.format("잘못된 사용자 예약입니다. id=%d를 확인해주세요.", reservationMemberId));
+            throw new BusinessException(ErrorType.MEMBER_RESERVATION_NOT_FOUND);
         }
     }
 
@@ -83,17 +85,17 @@ public class ReservationService {
         reservationRepository.deleteMemberReservationByReservationId(reservationId);
         boolean deleted = reservationRepository.delete(reservationId);
         if (!deleted) {
-            throw new IllegalArgumentException(String.format("잘못된 예약입니다. id=%d를 확인해주세요.", reservationId));
+            throw new BusinessException(ErrorType.DUPLICATED_RESERVATION_ERROR);
         }
     }
 
     private ReservationTime findAndValidateReservationTime(long timeId) {
         return reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new IllegalArgumentException(String.format("잘못된 예약 시간입니다. id=%d를 확인해주세요.", timeId)));
+                .orElseThrow(() -> new BusinessException(ErrorType.RESERVATION_TIME_NOT_FOUND));
     }
 
     private Theme findAndValidateTheme(long themeId) {
         return themeRepository.findById(themeId)
-                .orElseThrow(() -> new IllegalArgumentException(String.format("잘못된 테마입니다. id=%d를 확인해주세요.", themeId)));
+                .orElseThrow(() -> new BusinessException(ErrorType.THEME_NOT_FOUND));
     }
 }

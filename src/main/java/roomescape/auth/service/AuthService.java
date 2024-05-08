@@ -2,9 +2,11 @@ package roomescape.auth.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.auth.controller.dto.LoginRequest;
-import roomescape.member.controller.dto.MemberResponse;
 import roomescape.auth.controller.dto.SignUpRequest;
 import roomescape.auth.controller.dto.TokenResponse;
+import roomescape.exception.BusinessException;
+import roomescape.exception.ErrorType;
+import roomescape.member.controller.dto.MemberResponse;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberSignUp;
 import roomescape.member.domain.repository.MemberRepository;
@@ -22,7 +24,7 @@ public class AuthService {
 
     public void authenticate(LoginRequest loginRequest) {
         if (!memberRepository.existsBy(loginRequest.email(), loginRequest.password())) {
-            throw new IllegalArgumentException("아이디 또는 비밀번호가 잘못되었습니다.");
+            throw new BusinessException(ErrorType.MEMBER_NOT_FOUND);
         }
     }
 
@@ -32,10 +34,10 @@ public class AuthService {
 
     public MemberResponse fetchByToken(String token) {
         if (!tokenProvider.validateToken(token)) {
-            throw new IllegalStateException();
+            throw new BusinessException(ErrorType.INVALID_TOKEN);
         }
         Member member = memberRepository.findBy(tokenProvider.getPayload(token))
-                .orElseThrow();
+                .orElseThrow(() -> new BusinessException(ErrorType.MEMBER_NOT_FOUND));
         return MemberResponse.from(member);
     }
 

@@ -13,6 +13,8 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.exception.BusinessException;
+import roomescape.exception.ErrorType;
 import roomescape.reservation.controller.dto.AvailableTimeResponse;
 import roomescape.reservation.controller.dto.ReservationTimeRequest;
 import roomescape.reservation.controller.dto.ReservationTimeResponse;
@@ -82,7 +84,7 @@ class ReservationTimeServiceTest {
         assertThat(reservationTimeRepository.findAll()).hasSize(0);
     }
 
-    @DisplayName("예약이 존재하는 예약 시간을 삭제할 경우 예와가 발생한다.")
+    @DisplayName("예약이 존재하는 예약 시간을 삭제할 경우 예외가 발생한다.")
     @Test
     void deleteTimeWithReservation() {
         //given
@@ -91,7 +93,8 @@ class ReservationTimeServiceTest {
 
         //when & then
         assertThatThrownBy(() -> reservationTimeService.delete(reservation.getId()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorType.RESERVATION_NOT_DELETED.getMessage());
     }
 
     @DisplayName("예약 시간이 증복일 경우, 예외가 발생한다.")
@@ -104,7 +107,8 @@ class ReservationTimeServiceTest {
 
         //when & then
         assertThatThrownBy(() -> reservationTimeService.create(reservationTimeRequest))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorType.DUPLICATED_RESERVATION_TIME_ERROR.getMessage());
     }
 
     @DisplayName("예약 가능한 시간 조회에 성공한다.")

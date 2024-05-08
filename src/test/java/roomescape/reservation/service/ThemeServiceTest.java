@@ -12,6 +12,8 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.exception.BusinessException;
+import roomescape.exception.ErrorType;
 import roomescape.reservation.controller.dto.ThemeRequest;
 import roomescape.reservation.controller.dto.ThemeResponse;
 import roomescape.reservation.dao.FakeReservationDao;
@@ -90,7 +92,8 @@ class ThemeServiceTest {
 
         //when & then
         assertThatThrownBy(() -> themeService.delete(theme.getId()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorType.RESERVATION_NOT_DELETED.getMessage());
     }
 
 
@@ -104,6 +107,7 @@ class ThemeServiceTest {
 
         //when & then
         assertThatThrownBy(() -> themeService.findPopularThemes(startDate, endDate, limit))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorType.INVALID_REQUEST_ERROR.getMessage());
     }
 }

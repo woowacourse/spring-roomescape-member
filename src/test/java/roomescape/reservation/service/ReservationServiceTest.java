@@ -13,6 +13,8 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.exception.BusinessException;
+import roomescape.exception.ErrorType;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberSignUp;
 import roomescape.member.domain.repository.MemberRepository;
@@ -133,7 +135,8 @@ class ReservationServiceTest {
 
         //when & then
         assertThatThrownBy(() -> reservationService.createMemberReservation(member, reservationRequest))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorType.DUPLICATED_RESERVATION_ERROR.getMessage());
     }
 
     @DisplayName("예약 삭제 시, 사용자 예약도 함께 삭제된다.")

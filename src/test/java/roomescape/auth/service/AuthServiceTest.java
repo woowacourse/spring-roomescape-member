@@ -13,6 +13,8 @@ import roomescape.auth.controller.dto.LoginRequest;
 import roomescape.auth.controller.dto.SignUpRequest;
 import roomescape.auth.controller.dto.TokenResponse;
 import roomescape.auth.service.jwt.FakeTokenProvider;
+import roomescape.exception.BusinessException;
+import roomescape.exception.ErrorType;
 import roomescape.member.controller.dto.MemberResponse;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.MemberSignUp;
@@ -74,7 +76,8 @@ class AuthServiceTest {
 
         //when & then
         assertThatThrownBy(() -> authService.fetchByToken(invalidToken))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorType.INVALID_TOKEN.getMessage());
     }
 
     @DisplayName("사용자 회원가입에 성공한다.")
