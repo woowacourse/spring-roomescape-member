@@ -13,16 +13,16 @@ import roomescape.controller.response.UserResponse;
 import roomescape.domain.Member;
 import roomescape.service.MemberService;
 
-public class AuthenticationPrincipalArgumentResolver implements HandlerMethodArgumentResolver {
+public class MemberConverterArgumentResolver implements HandlerMethodArgumentResolver {
     private MemberService memberService;
 
-    public AuthenticationPrincipalArgumentResolver(MemberService memberService) {
+    public MemberConverterArgumentResolver(MemberService memberService) {
         this.memberService = memberService;
     }
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(AuthenticationPrincipal.class);
+        return parameter.hasParameterAnnotation(MemberConverter.class);
     }
 
     @Override

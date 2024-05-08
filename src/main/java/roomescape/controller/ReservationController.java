@@ -15,7 +15,7 @@ import roomescape.controller.request.UserReservationRequest;
 import roomescape.controller.response.ReservationResponse;
 import roomescape.domain.Member;
 import roomescape.service.ReservationService;
-import roomescape.ui.AuthenticationPrincipal;
+import roomescape.ui.MemberConverter;
 
 @RestController
 @RequestMapping("/reservations")
@@ -34,7 +34,7 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> save(@AuthenticationPrincipal Member member, @RequestBody UserReservationRequest userReservationRequest) {
+    public ResponseEntity<ReservationResponse> save(@MemberConverter Member member, @RequestBody UserReservationRequest userReservationRequest) {
         ReservationResponse reservationResponse = reservationService.save(new AdminReservationRequest(member.getId(), userReservationRequest.date(), userReservationRequest.timeId(), userReservationRequest.themeId()));
 
         return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.id()))
