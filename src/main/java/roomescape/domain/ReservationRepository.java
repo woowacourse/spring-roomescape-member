@@ -23,4 +23,6 @@ public interface ReservationRepository {
     void deleteById(final Long id);
 
     List<Theme> findTopThemesDurationOrderByCount(LocalDate startDate, LocalDate endDate, Integer limit);
+
+    List<Reservation> findByDurationAndThemeIdAndMemberId(Long memberId, Long themeId, LocalDate dateFrom, LocalDate dateTo);
 }

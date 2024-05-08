@@ -240,4 +240,39 @@ public class ReservationJdbcRepository implements ReservationRepository {
 
         return jdbcTemplate.query(sql, THEME_ROW_MAPPER, startDate, endDate, limit);
     }
+
+    @Override
+    public List<Reservation> findByDurationAndThemeIdAndMemberId(
+            Long memberId,
+            Long themeId,
+            LocalDate dateFrom,
+            LocalDate dateTo
+    ) {
+        final String selectQuery = """
+            SELECT
+                r.id as reservation_id,
+                r.member_id,
+                m.name as member_name,
+                m.email,
+                m.password,
+                m.role,
+                r.date,
+                rt.id as time_id,
+                rt.start_at,
+                t.id as theme_id,
+                t.name as theme_name,
+                t.description,
+                t.thumbnail
+            FROM reservation as r
+            LEFT JOIN reservation_time as rt
+            ON r.time_id = rt.id
+            LEFT JOIN theme as t
+            ON r.theme_id = t.id
+            LEFT JOIN member as m
+            ON r.member_id = m.id
+            WHERE m.id = ? AND t.id = ? AND r.date BETWEEN ? AND ?
+        """;
+        return jdbcTemplate.query(selectQuery, RESERVATION_ROW_MAPPER, memberId, themeId, dateFrom, dateTo);
+
+    }
 }

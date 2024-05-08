@@ -11,6 +11,7 @@ import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 import roomescape.exception.ReservationBusinessException;
+import roomescape.service.dto.ReservationConditionRequest;
 import roomescape.service.dto.ReservationResponse;
 import roomescape.service.dto.ReservationSaveRequest;
 
@@ -72,5 +73,17 @@ public class ReservationService {
         }
 
         reservationRepository.deleteById(id);
+    }
+
+    public List<ReservationResponse> findReservationsByCondition(
+            final ReservationConditionRequest reservationConditionRequest) {
+        return reservationRepository.findByDurationAndThemeIdAndMemberId(
+                        reservationConditionRequest.memberId(),
+                        reservationConditionRequest.themeId(),
+                        reservationConditionRequest.dateFrom(),
+                        reservationConditionRequest.dateTo()
+                ).stream()
+                .map(ReservationResponse::new)
+                .toList();
     }
 }
