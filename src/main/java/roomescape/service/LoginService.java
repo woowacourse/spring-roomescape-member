@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import roomescape.dao.MemberDao;
 import roomescape.domain.Member;
 import roomescape.dto.request.LoginRequest;
-import roomescape.dto.response.TokenResponse;
 import roomescape.util.JwtTokenProvider;
 
 @Service
@@ -23,12 +22,8 @@ public class LoginService {
         return memberDao.find(member);
     }
 
-    public TokenResponse createToken(Member member) {
-        return new TokenResponse(jwtTokenProvider.createToken(member));
-    }
-
-    public Cookie generateCookie(TokenResponse tokenResponse) {
-        Cookie cookie = new Cookie("token", tokenResponse.accessToken());
+    public Cookie generateCookie(Member member) {
+        Cookie cookie = new Cookie("token", jwtTokenProvider.createToken(member));
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         return cookie;
