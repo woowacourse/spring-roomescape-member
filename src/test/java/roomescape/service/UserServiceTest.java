@@ -5,25 +5,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.User;
-import roomescape.dto.LoginDto;
+import roomescape.dto.UserDto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class LoginServiceTest {
+public class UserServiceTest {
 
     @Autowired
-    private final LoginService loginService;
+    private final UserService userService;
 
     @Autowired
-    public LoginServiceTest(LoginService loginService) {
-        this.loginService = loginService;
+    public UserServiceTest(UserService userService) {
+        this.userService = userService;
     }
 
     @Test
-    void addUserTest() {
-        User user = loginService.addUser(new LoginDto("name", "email@email.com", "password"));
+    void registerTest() {
+        User user = userService.register(new UserDto("name", "email@email.com", "password"));
 
         assertThat(user).isNotNull();
     }
@@ -32,9 +32,9 @@ public class LoginServiceTest {
     void loginTest() {
         String id = "email@email.com";
         String password = "password";
-        loginService.addUser(new LoginDto("name", id, password));
+        userService.register(new UserDto("name", id, password));
 
-        User user = loginService.login(id, password);
+        User user = userService.login(id, password);
 
         assertThat(user.isEmailMatches(id)).isTrue();
         assertThat(user.isPasswordMatches(password)).isTrue();

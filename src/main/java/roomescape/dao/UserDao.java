@@ -9,11 +9,11 @@ import java.util.Optional;
 
 //TODO: DB를 이용하도록 수정
 @Repository
-public class LoginDao {
+public class UserDao {
 
     private final List<User> users;
 
-    public LoginDao() {
+    public UserDao() {
         this.users = new ArrayList<>();
     }
 

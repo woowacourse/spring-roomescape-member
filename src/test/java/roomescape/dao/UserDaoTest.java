@@ -7,9 +7,9 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class LoginDaoTest {
+public class UserDaoTest {
 
-    private final LoginDao loginDao = new LoginDao();
+    private final UserDao userDao = new UserDao();
 
     @Test
     void insertTest() {
@@ -17,16 +17,16 @@ public class LoginDaoTest {
         String email = "email@email.com";
         String password = "password";
 
-        User user = loginDao.insert(name, email, password);
+        User user = userDao.insert(name, email, password);
 
         assertThat(user).isNotNull();
     }
 
     @Test
     void findByEmailTest() {
-        loginDao.insert("name", "email@email.com", "password");
+        userDao.insert("name", "email@email.com", "password");
 
-        Optional<User> user = loginDao.findByEmail("email@email.com");
+        Optional<User> user = userDao.findByEmail("email@email.com");
 
         assertThat(user.isPresent()).isTrue();
     }
