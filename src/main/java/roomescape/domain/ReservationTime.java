@@ -30,10 +30,10 @@ public class ReservationTime {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ReservationTime that = (ReservationTime) o;
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        ReservationTime that = (ReservationTime) object;
         return Objects.equals(id, that.id) && Objects.equals(startAt, that.startAt);
     }
 

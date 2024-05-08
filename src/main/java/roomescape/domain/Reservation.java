@@ -48,15 +48,19 @@ public class Reservation {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Reservation that = (Reservation) o;
-        return Objects.equals(id, that.id);
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        Reservation that = (Reservation) object;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(date, that.date) &&
+                Objects.equals(reservationTime, that.reservationTime) &&
+                Objects.equals(theme, that.theme);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(id, name, date, reservationTime, theme);
     }
 }
