@@ -7,10 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.reservation.Reservation;
-import roomescape.domain.reservation.ReservationTime;
-import roomescape.domain.theme.Theme;
 import roomescape.domain.reservation.ReservationRepository;
+import roomescape.domain.reservation.ReservationTime;
 import roomescape.domain.reservation.ReservationTimeRepository;
+import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemeRepository;
 
 import java.time.LocalDate;
@@ -116,7 +116,7 @@ public class H2ReservationTimeRepositoryTest {
         ReservationTime savedReservationTime = reservationTimeRepository.save(Fixture.reservationTime);
         Theme savedTheme = themeRepository.save(Fixture.theme);
         Reservation reservation = new Reservation("피케이", LocalDate.now().plusDays(1), savedReservationTime, savedTheme);
-        Reservation savedReservation = reservationRepository.save(reservation);
+        reservationRepository.save(reservation);
 
         // when, then
         assertThatThrownBy(() -> reservationTimeRepository.deleteById(savedReservationTime.getId()))

@@ -118,7 +118,7 @@ class H2ThemeRepositoryTest {
                 .isEmpty();
     }
 
-    private class Fixture {
+    private static class Fixture {
         private static final Theme theme = new Theme("테마", "테마 설명", "https://1.jpg");
         private static final Theme theme1 = new Theme("테마1", "테마1 설명", "https://1.jpg");
         private static final Theme theme2 = new Theme("테마1", "테마1 설명", "https://1.jpg");
