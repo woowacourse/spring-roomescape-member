@@ -2,32 +2,32 @@ package roomescape.domain.login.service;
 
 import java.util.Optional;
 import org.springframework.stereotype.Service;
-import roomescape.domain.login.domain.User;
-import roomescape.domain.login.repository.UserRepository;
+import roomescape.domain.login.domain.Member;
+import roomescape.domain.login.repository.MemberRepository;
 import roomescape.exception.ClientIllegalArgumentException;
 
 @Service
 public class LoginService {
 
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
 
-    public LoginService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public LoginService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
     }
 
-    public User findUserById(Long id) {
-        Optional<User> user = userRepository.findById(id);
-        if (user.isEmpty()) {
-            throw new ClientIllegalArgumentException("없는 user를 조회 했습니다.");
+    public Member findMemberById(Long id) {
+        Optional<Member> member = memberRepository.findById(id);
+        if (member.isEmpty()) {
+            throw new ClientIllegalArgumentException("없는 member를 조회 했습니다.");
         }
-        return user.get();
+        return member.get();
     }
 
-    public User findUserByEmailAndPassword(String email, String password) {
-        Optional<User> user = userRepository.findByEmailAndPassword(email, password);
-        if (user.isEmpty()) {
+    public Member findMemberByEmailAndPassword(String email, String password) {
+        Optional<Member> member = memberRepository.findByEmailAndPassword(email, password);
+        if (member.isEmpty()) {
             throw new ClientIllegalArgumentException("이메일 또는 비밀번호를 잘못 입력했습니다.");
         }
-        return user.get();
+        return member.get();
     }
 }

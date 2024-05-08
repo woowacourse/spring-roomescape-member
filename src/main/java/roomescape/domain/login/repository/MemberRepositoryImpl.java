@@ -8,41 +8,41 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.login.domain.User;
+import roomescape.domain.login.domain.Member;
 
 @Repository
-public class UserRepositoryImpl implements UserRepository {
+public class MemberRepositoryImpl implements MemberRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    private final RowMapper<User> rowMapper = ((rs, rowNum) -> new User(
+    private final RowMapper<Member> rowMapper = ((rs, rowNum) -> new Member(
             rs.getLong("id"),
             rs.getString("name"),
             rs.getString("email"),
             rs.getString("password")
     ));
 
-    public UserRepositoryImpl(JdbcTemplate jdbcTemplate) {
+    public MemberRepositoryImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("escape_user")
+                .withTableName("member")
                 .usingGeneratedKeyColumns("id");
     }
 
     @Override
-    public User insert(User user) {
-        Map<String, Object> userRow = new HashMap<>();
-        userRow.put("name", user.getName());
-        userRow.put("email", user.getEmail());
-        userRow.put("password", user.getPassword());
-        Long id = simpleJdbcInsert.executeAndReturnKey(userRow).longValue();
-        return new User(id, user.getName(), user.getEmail(), user.getPassword());
+    public Member insert(Member member) {
+        Map<String, Object> memberRow = new HashMap<>();
+        memberRow.put("name", member.getName());
+        memberRow.put("email", member.getEmail());
+        memberRow.put("password", member.getPassword());
+        Long id = simpleJdbcInsert.executeAndReturnKey(memberRow).longValue();
+        return new Member(id, member.getName(), member.getEmail(), member.getPassword());
     }
 
     @Override
-    public Optional<User> findById(Long id) {
-        String sql = "select * from escape_user where id = ?";
+    public Optional<Member> findById(Long id) {
+        String sql = "select * from member where id = ?";
         try {
             return Optional.of(jdbcTemplate.queryForObject(sql, rowMapper, id));
         } catch (EmptyResultDataAccessException e) {
@@ -51,8 +51,8 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public Optional<User> findByEmailAndPassword(String email, String password) {
-        String sql = "select * from escape_user where email = ? and password = ?";
+    public Optional<Member> findByEmailAndPassword(String email, String password) {
+        String sql = "select * from member where email = ? and password = ?";
         try {
             return Optional.of(jdbcTemplate.queryForObject(sql, rowMapper, email, password));
         } catch (EmptyResultDataAccessException e) {

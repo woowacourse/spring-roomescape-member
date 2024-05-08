@@ -22,7 +22,7 @@ class LoginControllerTest extends ControllerTest {
 
     @BeforeEach
     void setUp() {
-        jdbcTemplate.update("insert into escape_user(name, email, password) values ('어드민', 'admin@gmail.com', 123456)");
+        jdbcTemplate.update("insert into member (name, email, password) values ('어드민', 'admin@gmail.com', 123456)");
     }
 
     @DisplayName("로그인 요청을 하면 쿠키와 함께 응답한다.(200 OK)")

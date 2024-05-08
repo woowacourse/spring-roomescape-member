@@ -1,10 +1,10 @@
-insert into escape_user(name, email, password)
+insert into member(name, email, password)
 values ('어드민', 'admin@gmail.com', 123456);
 
-insert into escape_user(name, email, password)
+insert into member(name, email, password)
 values ('도도', 'dodo@gmail.com', 123123);
 
-insert into escape_user(name, email, password)
+insert into member(name, email, password)
 values ('미르', 'mir@gmail.com', 123456);
 
 insert into theme(name, description, thumbnail)

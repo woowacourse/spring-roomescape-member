@@ -5,12 +5,12 @@ FROM reservation_time;
 DELETE
 FROM theme;
 DELETE
-FROM escape_user;
+FROM member;
 ALTER TABLE reservation
     ALTER COLUMN id RESTART;
 ALTER TABLE reservation_time
     ALTER COLUMN id RESTART;
 ALTER TABLE theme
     ALTER COLUMN id RESTART;
-ALTER TABLE escape_user
+ALTER TABLE member
     ALTER COLUMN id RESTART;

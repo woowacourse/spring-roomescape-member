@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.login.JwtTokenProvider;
-import roomescape.domain.login.domain.User;
+import roomescape.domain.login.domain.Member;
 import roomescape.domain.login.dto.LoginRequest;
 import roomescape.domain.login.service.LoginService;
 
@@ -24,9 +24,9 @@ public class LoginController {
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-        User user = loginService.findUserByEmailAndPassword(loginRequest.email(),
+        Member member = loginService.findMemberByEmailAndPassword(loginRequest.email(),
                 loginRequest.password());
-        Cookie cookie = new Cookie("token", jwtTokenProvider.generateToken(user.getName()));
+        Cookie cookie = new Cookie("token", jwtTokenProvider.generateToken(member.getName()));
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         response.addCookie(cookie);
