@@ -42,8 +42,9 @@
     - [ ] email: 이메일
     - [ ] password: 비밀번호
   - [ ] 로그인
-    - [ ] 사용자의 이메일을 id로, password를 비밀번호로 사용
-    - [ ] 로그인 요청 API 기능 구현
-      - [ ] 응답 Cookie에 token이 포함되도록 함
+    - [x] 사용자의 이메일을 id로, password를 비밀번호로 사용
+    - [x] 로그인 페이지 API 기능 구현
+    - [x] 로그인 요청 API 기능 구현
+      - [x] 응답 Cookie에 token이 포함되도록 함
     - [ ] 인증 정보 조회 API 기능 구현
       - [ ] Cookie를 이용해 사용자의 정보를 함
