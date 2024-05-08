@@ -1,37 +1,30 @@
 package roomescape.ui;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.infrastructure.JwtTokenProvider;
 
+@Component
 public class CheckAdminInterceptor implements HandlerInterceptor {
+    private final JwtTokenProvider jwtTokenProvider;
+
+    public CheckAdminInterceptor(JwtTokenProvider jwtTokenProvider) {
+        this.jwtTokenProvider = jwtTokenProvider;
+    }
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         Cookie[] cookies = request.getCookies();
-        String token = extractTokenFromCookie(cookies);
-        Claims claims = Jwts.parser()
-                .setSigningKey("secret")
-                .parseClaimsJws(token)
-                .getBody();
-        String role = String.valueOf(claims.get("role"));
+        String token = jwtTokenProvider.extractTokenFromCookie(cookies);
+        String role = jwtTokenProvider.getRoleByToken(token);
         if (role == null || !role.equals("ADMIN")) {
             response.setStatus(401);
             return false;
         }
 
         return true;
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-
-        return "";
     }
 }

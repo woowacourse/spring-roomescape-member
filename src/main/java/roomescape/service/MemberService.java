@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import jakarta.servlet.http.Cookie;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.controller.request.UserLoginRequest;
@@ -49,5 +50,11 @@ public class MemberService {
         return members.stream()
                 .map(MemberResponse::from)
                 .toList();
+    }
+
+    public UserResponse findByCookies(Cookie[] cookies) {
+        String token = jwtTokenProvider.extractTokenFromCookie(cookies);
+        String email = jwtTokenProvider.getEmailByToken(token);
+        return findByEmail(email);
     }
 }

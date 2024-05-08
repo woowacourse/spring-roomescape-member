@@ -5,27 +5,27 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import roomescape.service.MemberService;
-import roomescape.ui.MemberConverterArgumentResolver;
 import roomescape.ui.CheckAdminInterceptor;
+import roomescape.ui.MemberConverterArgumentResolver;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
-    private MemberService memberService;
+    private final CheckAdminInterceptor checkAdminInterceptor;
+    private final MemberConverterArgumentResolver memberConverterArgumentResolver;
 
-    public WebMvcConfiguration(MemberService memberService) {
-        this.memberService = memberService;
+    public WebMvcConfiguration(CheckAdminInterceptor checkAdminInterceptor,
+                               MemberConverterArgumentResolver memberConverterArgumentResolver) {
+        this.checkAdminInterceptor = checkAdminInterceptor;
+        this.memberConverterArgumentResolver = memberConverterArgumentResolver;
     }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        MemberConverterArgumentResolver argumentResolver = new MemberConverterArgumentResolver(memberService);
-        resolvers.add(argumentResolver);
+        resolvers.add(memberConverterArgumentResolver);
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        CheckAdminInterceptor checkLoginInterceptor = new CheckAdminInterceptor();
-        registry.addInterceptor(checkLoginInterceptor).addPathPatterns("/admin/**");
+        registry.addInterceptor(checkAdminInterceptor).addPathPatterns("/admin/**");
     }
 }
