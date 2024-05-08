@@ -1,5 +1,6 @@
 package roomescape.auth.presentation;
 
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
@@ -13,10 +14,10 @@ import roomescape.common.ControllerTest;
 import roomescape.member.application.MemberService;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static roomescape.TestFixture.*;
 
 @WebMvcTest(AuthController.class)
@@ -46,5 +47,22 @@ class AuthControllerTest extends ControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.SET_COOKIE, "token=token"))
                 .andExpect(header().string("Keep-Alive", "timeout=60"));
+    }
+
+    @Test
+    @DisplayName("인증 정보 GET 요청 시 상태코드 200을 반환한다.")
+    void checkAuthInformation() throws Exception {
+        // given
+        Cookie cookie = new Cookie("token", "token");
+
+        BDDMockito.given(memberService.findByEmail(any()))
+                .willReturn(USER_MIA());
+
+        // when
+        mockMvc.perform(get("/login/check")
+                        .cookie(cookie))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value(MIA_NAME));
     }
 }
