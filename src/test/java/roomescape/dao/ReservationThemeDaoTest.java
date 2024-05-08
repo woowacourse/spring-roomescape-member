@@ -53,7 +53,7 @@ public class ReservationThemeDaoTest {
     void findByWrongId() {
         Optional<ReservationTheme> reservationTheme = themeDao.findById(9L);
 
-        assertThat(reservationTheme).isEqualTo(Optional.empty());
+        assertThat(reservationTheme).isEmpty();
     }
 
     @DisplayName("테마를 추가한다.")
@@ -80,7 +80,7 @@ public class ReservationThemeDaoTest {
         Optional<ReservationTheme> theme = themeDao.findById(inserted.getId());
 
         // then
-        assertThat(theme).isEqualTo(Optional.empty());
+        assertThat(theme).isEmpty();
     }
 
     @DisplayName("ID를 이용하여 테마가 존재하는지 확인한다.")

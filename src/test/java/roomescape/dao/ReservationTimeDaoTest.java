@@ -67,7 +67,7 @@ class ReservationTimeDaoTest {
     void findByNotExistId() {
         Optional<ReservationTime> time = timeDao.findById(2L);
 
-        assertThat(time).isEqualTo(Optional.empty());
+        assertThat(time).isEmpty();
     }
 
 
@@ -82,7 +82,7 @@ class ReservationTimeDaoTest {
         Optional<ReservationTime> time = timeDao.findById(inserted.getId());
 
         // then
-        assertThat(time).isEqualTo(Optional.empty());
+        assertThat(time).isEmpty();
     }
 
     @DisplayName("동일한 시간이 존재하는지 확인한다.")

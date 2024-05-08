@@ -99,7 +99,7 @@ public class ReservationDaoTest {
     void findByWrongId() {
         Optional<Reservation> reservation = reservationDao.findById(1L);
 
-        assertThat(reservation).isEqualTo(Optional.empty());
+        assertThat(reservation).isEmpty();
     }
 
     @DisplayName("ID를 이용하여 예약을 삭제한다.")
@@ -118,7 +118,7 @@ public class ReservationDaoTest {
         Optional<Reservation> reservation = reservationDao.findById(inserted.getId());
 
         // then
-        assertThat(reservation).isEqualTo(Optional.empty());
+        assertThat(reservation).isEmpty();
     }
 
     @DisplayName("특정 시간에 대한 예약이 존재하는지 확인한다.")
