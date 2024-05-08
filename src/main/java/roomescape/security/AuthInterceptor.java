@@ -10,6 +10,7 @@ import roomescape.controller.exception.AccessDeniedException;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberRepository;
 import roomescape.domain.member.Role;
+import roomescape.util.CookieUtil;
 
 @Component
 public class AuthInterceptor implements HandlerInterceptor {
@@ -31,7 +32,7 @@ public class AuthInterceptor implements HandlerInterceptor {
             Object handler
     ) {
         try {
-            String token = extractTokenFromCookie(request);
+            String token = CookieUtil.extractTokenFromCookie(request);
             Long memberId = jwtTokenProvider.getMemberId(token);
             Member member = memberRepository.getById(memberId);
 
@@ -43,19 +44,5 @@ public class AuthInterceptor implements HandlerInterceptor {
         } catch (Exception e) {
             throw new AccessDeniedException(e);
         }
-    }
-
-    private String extractTokenFromCookie(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-
-        if (cookies == null) {
-            return null;
-        }
-
-        return Arrays.stream(cookies)
-                .filter(cookie -> TOKEN.equals(cookie.getName()))
-                .map(Cookie::getValue)
-                .findFirst()
-                .orElse(null);
     }
 }

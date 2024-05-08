@@ -11,11 +11,10 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.dto.response.MemberResponse;
 import roomescape.service.MemberService;
+import roomescape.util.CookieUtil;
 
 @Component
 public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
-
-    private static final String TOKEN = "token";
 
     private final MemberService memberService;
     private final JwtTokenProvider jwtTokenProvider;
@@ -37,7 +36,7 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
             NativeWebRequest webRequest,
             WebDataBinderFactory binderFactory
     ) {
-        String token = extractTokenFromCookie(webRequest);
+        String token = CookieUtil.extractTokenFromCookie(webRequest);
         Long id = jwtTokenProvider.getMemberId(token);
 
         MemberResponse memberResponse = memberService.getById(id);
@@ -48,25 +47,5 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
                 memberResponse.email(),
                 memberResponse.role()
         );
-    }
-
-    private String extractTokenFromCookie(NativeWebRequest webRequest) {
-        HttpServletRequest nativeRequest = webRequest.getNativeRequest(HttpServletRequest.class);
-
-        if (nativeRequest == null) {
-            return null;
-        }
-
-        Cookie[] cookies = nativeRequest.getCookies();
-
-        if (cookies == null) {
-            return null;
-        }
-
-        return Arrays.stream(cookies)
-                .filter(cookie -> TOKEN.equals(cookie.getName()))
-                .map(Cookie::getValue)
-                .findFirst()
-                .orElse(null);
     }
 }
