@@ -2,14 +2,13 @@ package roomescape.time.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import roomescape.time.domain.ReservationTimeStatus;
 
 import java.time.LocalTime;
 
 public record ReservationTimeStatusResponseDto(Long timeId, LocalTime startAt, Boolean alreadyBooked) {
 
-    public ReservationTimeStatusResponseDto(final ReservationTimeStatus reservationTimeStatus) {
-        this(reservationTimeStatus.getId(), reservationTimeStatus.getStartAt(), reservationTimeStatus.getAlreadyBooked());
+    public ReservationTimeStatusResponseDto(final ReservationTimeStatusDto reservationTimeStatusDto) {
+        this(reservationTimeStatusDto.id(), reservationTimeStatusDto.startAt(), reservationTimeStatusDto.alreadyBooked());
     }
 
     @JsonFormat(pattern = "HH:mm")
