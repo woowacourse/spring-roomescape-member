@@ -18,6 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.theme.NotFoundThemeException;
 
 @SpringBootTest
 class ThemeDaoTest {
@@ -85,4 +86,29 @@ class ThemeDaoTest {
                 );
     }
 
+    @Test
+    @DisplayName("테마를 삭제할 수 있다")
+    void delete_ShouldRemovePersistence() {
+        // given
+        Theme theme = new Theme("name", "description", " thumbnail");
+        Theme savedTheme = themeDao.save(theme);
+
+        // when
+        themeDao.delete(savedTheme);
+
+        // then
+        Assertions.assertThat(themeDao.findById(savedTheme.getId()))
+                .isEmpty();
+    }
+
+    @Test
+    @DisplayName("없는 테마를 삭제할 경우 예외를 던진다.")
+    void delete_ShouldThrowException_WhenThemeDoesNotExists() {
+        // given
+        Theme theme = new Theme("name", "description", " thumbnail");
+
+        // when & then
+        Assertions.assertThatThrownBy(() -> themeDao.delete(theme))
+                .isInstanceOf(NotFoundThemeException.class);
+    }
 }

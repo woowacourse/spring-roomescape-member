@@ -17,7 +17,7 @@ import org.springframework.stereotype.Repository;
 
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
-import roomescape.exception.time.TimeDeletionException;
+import roomescape.exception.time.NotFoundTimeException;
 
 @Repository
 public class ReservationTimeDao implements ReservationTimeRepository {
@@ -64,21 +64,21 @@ public class ReservationTimeDao implements ReservationTimeRepository {
 
     @Override
     public void delete(ReservationTime time) {
-        try {
-            String sql = "DELETE FROM reservation_time WHERE id = ?";
-            jdbcTemplate.update(sql, time.getId());
-        } catch (Exception e) {
-            throw new TimeDeletionException();
+        String sql = "DELETE FROM reservation_time WHERE id = ?";
+        int update = jdbcTemplate.update(sql, time.getId());
+        checkRemoved(update);
+    }
+
+    private void checkRemoved(int count) {
+        if (count < 1) {
+            throw new NotFoundTimeException();
         }
     }
 
     @Override
     public void deleteAll() {
-        try {
-            String sql = "DELETE FROM reservation_time";
-            jdbcTemplate.update(sql);
-        } catch (Exception e) {
-            throw new TimeDeletionException();
-        }
+        String sql = "DELETE FROM reservation_time";
+        jdbcTemplate.update(sql);
     }
+
 }

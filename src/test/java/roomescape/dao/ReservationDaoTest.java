@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.reservation.NotFoundReservationException;
 
 @SpringBootTest
 class ReservationDaoTest {
@@ -49,5 +50,40 @@ class ReservationDaoTest {
         Assertions.assertThat(reservationDao.findAll())
                 .hasSize(1);
     }
+
+    @Test
+    @DisplayName("예약을 삭제한다.")
+    void delete_ShouldRemovePersistence() {
+        // given
+        ReservationTime time = new ReservationTime(LocalTime.of(11, 0));
+        Theme theme = new Theme("name", "description", "thumbnail");
+        ReservationTime savedTime = reservationTimeDao.save(time);
+        Theme savedTheme = themeDao.save(theme);
+        Reservation savedReservation = reservationDao.save(
+                new Reservation("name", LocalDate.of(2023, FEBRUARY, 1), savedTime, savedTheme));
+
+        // when
+        reservationDao.delete(savedReservation);
+
+        // then
+        Assertions.assertThat(reservationDao.findById(savedReservation.getId()))
+                .isEmpty();
+    }
+
+
+    @Test
+    @DisplayName("없는 예약에 대한 삭제 요청시 예외를 발생시킨다.")
+    void remove_ShouldThrowException_WhenReservationDoesNotExist() {
+        ReservationTime time = new ReservationTime(LocalTime.of(11, 0));
+        Theme theme = new Theme("name", "description", "thumbnail");
+        ReservationTime savedTime = reservationTimeDao.save(time);
+        Theme savedTheme = themeDao.save(theme);
+        Reservation reservation = new Reservation("name", LocalDate.of(2023, FEBRUARY, 1), savedTime, savedTheme);
+
+        // when & then
+        Assertions.assertThatThrownBy(() -> reservationDao.delete(reservation))
+                .isInstanceOf(NotFoundReservationException.class);
+    }
+
 
 }
