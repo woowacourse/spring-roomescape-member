@@ -37,7 +37,6 @@ public class ReservationService {
         Reservation reservation = reservationRequest.toEntity(reservationTime, theme);
 
         validateDuplication(reservation);
-        validatePastTime(reservation);
 
         try {
             return reservationDao.save(reservation);
@@ -53,12 +52,6 @@ public class ReservationService {
                 .ifPresent(r -> {
                     throw new CustomException(CustomBadRequest.DUPLICATE_RESERVATION);
                 });
-    }
-
-    private void validatePastTime(Reservation reservation) {
-        if (reservation.isBefore(LocalDateTime.now(clock))) {
-            throw new CustomException(CustomBadRequest.PAST_TIME_SLOT_RESERVATION);
-        }
     }
 
     public List<Reservation> findReservations(LocalDate date, Long themeId) {

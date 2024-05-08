@@ -1,7 +1,5 @@
 package roomescape.reservation.dao;
 
-import java.time.LocalDate;
-import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -12,6 +10,8 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.service.ReservationDao;
+import java.time.LocalDate;
+import java.util.List;
 
 @Repository
 public class JdbcReservationDao implements ReservationDao {
@@ -30,7 +30,8 @@ public class JdbcReservationDao implements ReservationDao {
                             resultSet.getString("theme_name"),
                             resultSet.getString("theme_description"),
                             resultSet.getString("theme_thumbnail")
-                    )
+                    ),
+                    resultSet.getTimestamp("created_at").toLocalDateTime()
             );
 
     private final JdbcTemplate jdbcTemplate;
@@ -47,7 +48,7 @@ public class JdbcReservationDao implements ReservationDao {
     public Reservation save(Reservation reservation) {
         SqlParameterSource parameterSource = new BeanPropertySqlParameterSource(reservation);
         Number id = jdbcInsert.executeAndReturnKey(parameterSource);
-        return new Reservation(id.longValue(), reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
+        return new Reservation(id.longValue(), reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme(), reservation.getCreatedAt());
     }
 
     @Override
@@ -57,6 +58,7 @@ public class JdbcReservationDao implements ReservationDao {
                     r.id as reservation_id,
                     r.name,
                     r.date,
+                    r.created_at,
                     t.id as time_id,
                     t.start_at as time_value,
                     h.id as theme_id,
@@ -78,6 +80,7 @@ public class JdbcReservationDao implements ReservationDao {
                     r.id as reservation_id,
                     r.name,
                     r.date,
+                    r.created_at,
                     t.id as time_id,
                     t.start_at as time_value,
                     h.id as theme_id,

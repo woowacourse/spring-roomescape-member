@@ -13,20 +13,30 @@ public class Reservation {
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
+    private final LocalDateTime createdAt;
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme, LocalDateTime createdAt) {
         validateName(name);
+        validateDateTime(date, time, createdAt);
 
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
+        this.createdAt = createdAt;
     }
 
     private void validateName(String name) {
         if (name.isEmpty() || name.length() > 10) {
             throw new CustomException(CustomBadRequest.INVALID_NAME_LENGTH);
+        }
+    }
+
+    private void validateDateTime(LocalDate date, ReservationTime time, LocalDateTime createdAt) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
+        if (reservationDateTime.isBefore(createdAt)) {
+            throw new CustomException(CustomBadRequest.PAST_TIME_SLOT_RESERVATION);
         }
     }
 
@@ -57,6 +67,10 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
     public Long getTimeId() {

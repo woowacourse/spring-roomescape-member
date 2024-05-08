@@ -3,6 +3,7 @@ package roomescape.reservation.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import org.assertj.core.api.Assertions;
@@ -38,8 +39,8 @@ class JdbcReservationDaoTest {
 
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES(?, ?, ?)", "happy", "hi", "abcd.html");
         Theme theme = new Theme(1L, "happy", "hi", "abcd.html");
-
-        Reservation reservation = new Reservation(null, "parang", LocalDate.of(2999, 3, 28), reservationTime, theme);
+        LocalDateTime createdAt = LocalDateTime.of(2024, 5, 8, 12, 30);
+        Reservation reservation = new Reservation(null, "parang", LocalDate.of(2999, 3, 28), reservationTime, theme, createdAt);
         savedReservation = jdbcReservationDao.save(reservation);
     }
 

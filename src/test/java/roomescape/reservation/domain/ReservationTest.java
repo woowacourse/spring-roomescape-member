@@ -17,13 +17,14 @@ class ReservationTest {
 
     private final ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(12, 30));
     private final Theme theme = new Theme(1L, "themeName", "description", "thumbnail");
+    private final LocalDateTime createdAt = LocalDateTime.of(2024, 5, 8, 12, 30);
 
     @DisplayName("실패: 이름은 1자 이상 10자 이하여야 한다")
     @ParameterizedTest
     @ValueSource(strings = {"", "01234567890"})
     void validateNameFailTest(String name) {
         assertThatThrownBy(() -> {
-            new Reservation(1L, name, LocalDate.of(2999, 12, 12), reservationTime, theme);
+            new Reservation(1L, name, LocalDate.of(2999, 12, 12), reservationTime, theme, createdAt);
         }).isInstanceOf(CustomException.class);
     }
 
@@ -32,15 +33,15 @@ class ReservationTest {
     @ValueSource(strings = {"0", "0123456789"})
     void validateNameSuccessTest(String name) {
         assertThatCode(() -> {
-            new Reservation(1L, name, LocalDate.of(2999, 12, 12), reservationTime, theme);
+            new Reservation(1L, name, LocalDate.of(2999, 12, 12), reservationTime, theme, createdAt);
         }).doesNotThrowAnyException();
     }
 
     @DisplayName("같은 날짜/시간임을 확인할 수 있다.")
     @Test
     void sameDateTimeTest() {
-        Reservation reservation1 = new Reservation(1L, "name", LocalDate.of(2999, 12, 12), reservationTime, theme);
-        Reservation reservation2 = new Reservation(2L, "name", LocalDate.of(2999, 12, 12), reservationTime, theme);
+        Reservation reservation1 = new Reservation(1L, "name", LocalDate.of(2999, 12, 12), reservationTime, theme, createdAt);
+        Reservation reservation2 = new Reservation(2L, "name", LocalDate.of(2999, 12, 12), reservationTime, theme, createdAt);
 
         assertThat(reservation1.isSameDateTime(reservation2)).isTrue();
     }
@@ -48,8 +49,8 @@ class ReservationTest {
     @DisplayName("다른 날짜임을 확인할 수 있다.")
     @Test
     void differentDateTest() {
-        Reservation reservation1 = new Reservation(1L, "name", LocalDate.of(2999, 12, 12), reservationTime, theme);
-        Reservation reservation2 = new Reservation(2L, "name", LocalDate.of(2999, 12, 11), reservationTime, theme);
+        Reservation reservation1 = new Reservation(1L, "name", LocalDate.of(2999, 12, 12), reservationTime, theme, createdAt);
+        Reservation reservation2 = new Reservation(2L, "name", LocalDate.of(2999, 12, 11), reservationTime, theme, createdAt);
 
         assertThat(reservation1.isSameDateTime(reservation2)).isFalse();
     }
@@ -58,8 +59,8 @@ class ReservationTest {
     @Test
     void differentTimeTest() {
         ReservationTime otherReservationTime = new ReservationTime(2L, LocalTime.of(11,10));
-        Reservation reservation1 = new Reservation(1L, "name", LocalDate.of(2999, 12, 12), otherReservationTime, theme);
-        Reservation reservation2 = new Reservation(2L, "name", LocalDate.of(2999, 12, 12), reservationTime, theme);
+        Reservation reservation1 = new Reservation(1L, "name", LocalDate.of(2999, 12, 12), otherReservationTime, theme, createdAt);
+        Reservation reservation2 = new Reservation(2L, "name", LocalDate.of(2999, 12, 12), reservationTime, theme, createdAt);
 
         assertThat(reservation1.isSameDateTime(reservation2)).isFalse();
     }
@@ -68,7 +69,7 @@ class ReservationTest {
     @Test
     void pastTimeTest() {
         LocalDateTime localDateTime = LocalDateTime.of(2999, 12, 12, 12,30);
-        Reservation reservation = new Reservation(1L, "name", LocalDate.of(2099, 12, 12), reservationTime, theme);
+        Reservation reservation = new Reservation(1L, "name", LocalDate.of(2099, 12, 12), reservationTime, theme, createdAt);
 
         assertThat(reservation.isBefore(localDateTime)).isTrue();
     }

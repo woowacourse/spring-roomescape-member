@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.is;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,10 +32,11 @@ class ReservationTimeTest {
 
     @BeforeEach
     void insert() {
+        LocalDateTime createdAt = LocalDateTime.of(2024, 5, 8, 12, 30);
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES(?)", LocalTime.of(10, 0));
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES(?, ?, ?)", "hi", "happy", "abcd.html");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES(?, ?, ?, ?)",
-                "rush", LocalDate.of(2999, 12, 12), 1, 1);
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id, created_at) VALUES(?, ?, ?, ?, ?)",
+                "rush", LocalDate.of(2999, 12, 12), 1, 1, createdAt);
     }
 
     @Autowired
