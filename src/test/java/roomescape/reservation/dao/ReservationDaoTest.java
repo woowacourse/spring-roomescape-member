@@ -14,6 +14,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationDate;
 import roomescape.theme.dao.ThemeDao;
 import roomescape.theme.domain.Theme;
 import roomescape.time.dao.ReservationTimeDao;
@@ -34,7 +35,7 @@ class ReservationDaoTest {
 
     private final ReservationTime reservationTime = new ReservationTime(1L, "10:00");
     private final Theme theme = new Theme(1L, "정글 모험", "열대 정글의 심연을 탐험하세요.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-    private final Reservation reservation = new Reservation(1L, "hotea", LocalDate.MAX.toString(), reservationTime, theme);
+    private final Reservation reservation = new Reservation(1L, "hotea", new ReservationDate(LocalDate.MAX.toString()), reservationTime, theme);
 
     @Test
     @DisplayName("특정 예약을 생성할 수 있다.")
@@ -67,7 +68,7 @@ class ReservationDaoTest {
     void checkExistByReservation() {
         save();
         assertThat(reservationDao.checkExistByReservation(
-                reservation.getDate(),
+                reservation.getReservationDate().getDate(),
                 reservationTime.getId(),
                 theme.getId())
         ).isTrue();

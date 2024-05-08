@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationDate;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
@@ -32,7 +33,7 @@ public class ReservationDao {
     private RowMapper<Reservation> rowMapper = ((resultSet, rowNum) -> new Reservation(
             resultSet.getLong("reservation_id"),
             resultSet.getString("reservation_name"),
-            resultSet.getString("date"),
+            new ReservationDate(resultSet.getString("date")),
             new ReservationTime(
                     resultSet.getLong("time_id"),
                     resultSet.getString("time_value")
@@ -61,7 +62,7 @@ public class ReservationDao {
     public long save(final Reservation reservation) {
         final SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
-                .addValue("date", reservation.getDate())
+                .addValue("date", reservation.getReservationDate().getDate())
                 .addValue("time_id", reservation.getTime().getId())
                 .addValue("theme_id", reservation.getTheme().getId());
         return simpleJdbcInsert.executeAndReturnKey(params).longValue();

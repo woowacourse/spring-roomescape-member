@@ -1,5 +1,6 @@
 package roomescape.time.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -44,6 +45,7 @@ public class ReservationTimeService {
     }
 
     public List<ReservationUserTime> findAvailableTime(final String date, final long themeId) {
+        LocalDate localDate = LocalDate.parse(date);
         return reservationTimeDao.findAvailableTime(date, themeId);
     }
 }

@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationDate;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
@@ -14,6 +15,6 @@ public record ReservationRequestDto(
         @Min(value = 1, message = "올바른 예약 테마 ID를 입력해야 합니다.") long themeId) {
 
     public Reservation toReservation(final ReservationTime reservationTime, final Theme theme) {
-        return new Reservation(name, date, reservationTime, theme);
+        return new Reservation(name, new ReservationDate(date), reservationTime, theme);
     }
 }

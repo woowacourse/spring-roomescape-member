@@ -15,7 +15,7 @@ public record ReservationResponseDto(
         this(
                 reservation.getId(),
                 reservation.getName(),
-                reservation.getDate().toString(),
+                reservation.getReservationDate().toString(),
                 new ReservationTimeResponseDto(reservation.getTime()),
                 new ThemeResponseDto(reservation.getTheme())
         );

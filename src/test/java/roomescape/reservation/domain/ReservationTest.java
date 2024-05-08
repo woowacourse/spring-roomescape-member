@@ -19,13 +19,13 @@ class ReservationTest {
     @Test
     void validateNameExist() {
         assertAll(
-                () -> assertThatThrownBy(() -> new Reservation(1L, null, "2024-04-30", reservationTime, theme))
+                () -> assertThatThrownBy(() -> new Reservation(1L, null, new ReservationDate("2024-04-30"), reservationTime, theme))
                         .isInstanceOf(RoomEscapeException.class)
                         .hasMessage(ExceptionMessage.INVALID_USER_NAME.getMessage()),
-                () -> assertThatThrownBy(() -> new Reservation(1L, "", "2024-04-30", reservationTime, theme))
+                () -> assertThatThrownBy(() -> new Reservation(1L, "", new ReservationDate("2024-04-30"), reservationTime, theme))
                         .isInstanceOf(RoomEscapeException.class)
                         .hasMessage(ExceptionMessage.INVALID_USER_NAME.getMessage()),
-                () -> assertThatThrownBy(() -> new Reservation(1L, " ", "2024-04-30", reservationTime, theme))
+                () -> assertThatThrownBy(() -> new Reservation(1L, " ", new ReservationDate("2024-04-30"), reservationTime, theme))
                         .isInstanceOf(RoomEscapeException.class)
                         .hasMessage(ExceptionMessage.INVALID_USER_NAME.getMessage())
         );
@@ -37,13 +37,13 @@ class ReservationTest {
         ReservationTime reservationTime = new ReservationTime(1L, "15:46");
 
         assertAll(
-                () -> assertThatThrownBy(() -> new Reservation(1L, "hotea", null, reservationTime, theme))
+                () -> assertThatThrownBy(() -> new Reservation(1L, "hotea", new ReservationDate(null), reservationTime, theme))
                         .isInstanceOf(RoomEscapeException.class)
                         .hasMessage(ExceptionMessage.FAIL_PARSE_DATE.getMessage()),
-                () -> assertThatThrownBy(() -> new Reservation(1L, "hotea", "2024-14-30", reservationTime, theme))
+                () -> assertThatThrownBy(() -> new Reservation(1L, "hotea", new ReservationDate("2024-14-30"), reservationTime, theme))
                         .isInstanceOf(RoomEscapeException.class)
                         .hasMessage(ExceptionMessage.FAIL_PARSE_DATE.getMessage()),
-                () -> assertThatThrownBy(() -> new Reservation(1L, "hotea", "2024-04-50", reservationTime, theme))
+                () -> assertThatThrownBy(() -> new Reservation(1L, "hotea", new ReservationDate("2024-04-50"), reservationTime, theme))
                         .isInstanceOf(RoomEscapeException.class)
                         .hasMessage(ExceptionMessage.FAIL_PARSE_DATE.getMessage())
         );
