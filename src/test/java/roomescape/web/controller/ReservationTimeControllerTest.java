@@ -6,8 +6,6 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
+import roomescape.core.dto.reservationtime.ReservationTimeRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -38,12 +37,11 @@ class ReservationTimeControllerTest {
     @ValueSource(strings = {" ", "10:89"})
     @DisplayName("시간 생성 시, startAt 값의 형식이 올바르지 않으면 예외가 발생한다.")
     void validateTimeCreateWithEmpty(final String startAt) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("startAt", startAt);
+        ReservationTimeRequest request = new ReservationTimeRequest(startAt);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
+                .body(request)
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(400);
@@ -63,7 +61,7 @@ class ReservationTimeControllerTest {
     @DisplayName("날짜와 테마 정보가 주어지면 예약 가능한 시간 목록을 조회한다.")
     void findBookable() {
         RestAssured.given().log().all()
-                .when().get("/times?date=" + TOMORROW_DATE + "&themeId=1")
+                .when().get("/times?date=" + TOMORROW_DATE + "&theme=1")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(3));
@@ -79,21 +77,38 @@ class ReservationTimeControllerTest {
     }
 
     @Test
-    @DisplayName("시간 생성 시, startAt 값이 중복되면 예외가 발생한다.")
-    void validateTimeDuplicated() {
-        Map<String, Object> params = new HashMap<>();
-        params.put("startAt", "10:10");
+    @DisplayName("시간 삭제 시, 해당 시간을 참조하는 예약이 없으면 삭제된다.")
+    void deleteTime() {
+        ReservationTimeRequest request = new ReservationTimeRequest("10:00");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
+                .body(request)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .when().delete("/times/4")
+                .then().log().all()
+                .statusCode(204);
+    }
+
+    @Test
+    @DisplayName("시간 생성 시, startAt 값이 중복되면 예외가 발생한다.")
+    void validateTimeDuplicated() {
+        ReservationTimeRequest request = new ReservationTimeRequest("10:00");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(request)
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
+                .body(request)
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(400);

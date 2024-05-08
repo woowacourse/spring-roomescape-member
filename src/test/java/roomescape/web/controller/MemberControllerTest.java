@@ -79,7 +79,7 @@ class MemberControllerTest {
                 .then().log().all()
                 .statusCode(200).extract().as(MemberResponse.class);
 
-        assertThat(user.getName()).isEqualTo("홍길동");
+        assertThat(user.getName()).isEqualTo("어드민");
     }
 
     @Test
@@ -91,4 +91,12 @@ class MemberControllerTest {
                 .statusCode(200);
     }
 
+    @Test
+    @DisplayName("모든 회원 정보를 조회한다.")
+    void findMembers() {
+        RestAssured.given().log().all()
+                .when().get("/members")
+                .then().log().all()
+                .statusCode(200);
+    }
 }

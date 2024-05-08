@@ -9,7 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class ReservationTest {
-    private static final Member member = new Member("리건", "test@email.com", "password");
+    private static final Member member = new Member("리건", "test@email.com", "password", Role.ADMIN);
     private static final Theme theme = new Theme("테마", "테마 설명", "테마 이미지");
     private static final ReservationTime time = new ReservationTime("10:00");
 
