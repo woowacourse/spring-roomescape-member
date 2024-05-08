@@ -6,8 +6,6 @@ import java.time.format.DateTimeParseException;
 import roomescape.web.exception.BadRequestException;
 
 public class Reservation {
-    private static final Long DEFAULT_ID = 0L;
-
     private final Long id;
     private final String name;
     private final LocalDate date;
@@ -20,7 +18,7 @@ public class Reservation {
             final ReservationTime time,
             final Theme theme
     ) {
-        this(DEFAULT_ID, name, date, time, theme);
+        this(null, name, date, time, theme);
     }
 
     public Reservation(
@@ -30,7 +28,7 @@ public class Reservation {
             final ReservationTime time,
             final Theme theme
     ) {
-        validateEmpty(id, name, date, time, theme);
+        validateEmpty(name, date, time, theme);
         this.id = id;
         this.name = name;
         this.date = parseDate(date);
@@ -39,15 +37,11 @@ public class Reservation {
     }
 
     private void validateEmpty(
-            final Long id,
             final String name,
             final String date,
             final ReservationTime time,
             final Theme theme
     ) {
-        if (id == null) {
-            throw new BadRequestException("예약 id는 null일 수 없습니다.");
-        }
         if (name == null || name.isBlank()) {
             throw new BadRequestException("예약 이름은 null이나 빈 값일 수 없습니다.");
         }

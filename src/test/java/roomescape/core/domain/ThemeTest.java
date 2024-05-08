@@ -22,14 +22,6 @@ class ThemeTest {
                 .doesNotThrowAnyException();
     }
 
-    @Test
-    @DisplayName("테마 생성 시, id가 null이면 예외가 발생한다")
-    void throwExceptionWhenNullId() {
-        assertThatThrownBy(() -> new Theme(null, THEME_NAME, THEME_DESCRIPTION, THEME_THUMBNAIL))
-                .isInstanceOf(BadRequestException.class)
-                .hasMessage("테마 id는 null일 수 없습니다.");
-    }
-
     @ParameterizedTest
     @DisplayName("테마 생성 시, name이 null이나 빈값이면 예외가 발생한다")
     @NullAndEmptySource

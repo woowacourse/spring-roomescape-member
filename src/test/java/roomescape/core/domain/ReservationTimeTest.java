@@ -20,14 +20,6 @@ class ReservationTimeTest {
                 .doesNotThrowAnyException();
     }
 
-    @Test
-    @DisplayName("시간 생성 시, id가 null이면 예외가 발생한다")
-    void throwExceptionWhenNullId() {
-        assertThatThrownBy(() -> new ReservationTime(null, START_AT))
-                .isInstanceOf(BadRequestException.class)
-                .hasMessage("시간 id는 null일 수 없습니다.");
-    }
-
     @ParameterizedTest
     @DisplayName("시간 생성 시, startAt이 null이나 빈값이면 예외가 발생한다")
     @NullAndEmptySource

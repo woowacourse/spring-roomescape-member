@@ -7,25 +7,21 @@ import roomescape.web.exception.BadRequestException;
 
 public class ReservationTime {
     private static final String TIME_FORMAT = "HH:mm";
-    private static final Long DEFAULT_ID = 0L;
 
     private final Long id;
     private final LocalTime startAt;
 
     public ReservationTime(final String startAt) {
-        this(DEFAULT_ID, startAt);
+        this(null, startAt);
     }
 
     public ReservationTime(final Long id, final String startAt) {
-        validateEmpty(id, startAt);
+        validateEmpty(startAt);
         this.id = id;
         this.startAt = parseStartAt(startAt);
     }
 
-    private void validateEmpty(final Long id, final String startAt) {
-        if (id == null) {
-            throw new BadRequestException("시간 id는 null일 수 없습니다.");
-        }
+    private void validateEmpty(final String startAt) {
         if (startAt == null || startAt.isBlank()) {
             throw new BadRequestException("시간은 null이나 빈 값일 수 없습니다.");
         }

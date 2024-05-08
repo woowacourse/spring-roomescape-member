@@ -23,14 +23,6 @@ class ReservationTest {
                 .doesNotThrowAnyException();
     }
 
-    @Test
-    @DisplayName("예약 생성 시, id가 null이면 예외가 발생한다")
-    void throwExceptionWhenNullId() {
-        assertThatThrownBy(() -> new Reservation(null, USER_NAME, DATE, RESERVATION_TIME, THEME))
-                .isInstanceOf(BadRequestException.class)
-                .hasMessage("예약 id는 null일 수 없습니다.");
-    }
-
     @ParameterizedTest
     @DisplayName("예약 생성 시, name이 null이나 빈값이면 예외가 발생한다")
     @NullAndEmptySource
