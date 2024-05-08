@@ -2,7 +2,6 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
@@ -38,12 +37,11 @@ public class ReservationService {
 
     public ReservationResponse addReservation(ReservationRequest request) {
         ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId());
-        validateNotPast(request.date(), reservationTime.getStartAt());
         validateNotDuplicatedTime(request.date(), request.timeId(), request.themeId());
         Theme theme = themeRepository.findById(request.themeId());
 
         Reservation reservation = new Reservation(request.name(), request.date(), reservationTime,
-                theme);
+                theme, LocalDateTime.now());
         Reservation savedReservation = reservationRepository.save(reservation);
 
         return ReservationResponse.from(savedReservation);
@@ -52,13 +50,6 @@ public class ReservationService {
     private void validateNotDuplicatedTime(LocalDate date, Long timeId, Long themeId) {
         if (reservationRepository.existByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
             throw new IllegalArgumentException("중복 예약은 불가능하다.");
-        }
-    }
-
-    private void validateNotPast(LocalDate date, LocalTime time) {
-        LocalDateTime reservationDateTime = date.atTime(time);
-        if (reservationDateTime.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("지나간 시간에 대한 예약 생성은 불가능하다.");
         }
     }
 

@@ -32,12 +32,14 @@ public class JdbcReservationRepository {
                     resultSet.getString("theme_name"),
                     resultSet.getString("theme_description"),
                     resultSet.getString("theme_thumbnail")
-            )
+            ),
+            resultSet.getTimestamp("created_at").toLocalDateTime()
     );
     private final String basicSelectQuery = "SELECT " +
             "r.id AS reservation_id, " +
             "r.name, " +
             "r.date, " +
+            "r.created_at, " +
             "t.id AS time_id, " +
             "t.start_at AS time_value, " +
             "th.id AS theme_id, " +
@@ -76,12 +78,13 @@ public class JdbcReservationRepository {
                 "name", reservation.getName(),
                 "date", reservation.getDate(),
                 "time_id", reservation.getTime().getId(),
-                "theme_id", reservation.getTheme().getId()
+                "theme_id", reservation.getTheme().getId(),
+                "created_at", reservation.getCreatedAt()
         );
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
 
         return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
-                reservation.getTheme());
+                reservation.getTheme(), reservation.getCreatedAt());
     }
 
     public void deleteById(Long id) {

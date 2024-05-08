@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.notNullValue;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
@@ -95,8 +96,9 @@ public class ReservationTimeEndPointTest {
     @DisplayName("예약 가능 시간을 조회하면 상태코드 200과 예약 가능 여부를 담은 시간 목록을 반환한다.")
     @Test
     void getAvailableTimes() {
+        String path = "/times/available?date=" + LocalDate.now().minusDays(1).toString() + "&themeId=2";
         List<AvailableReservationTimeResponse> responses = RestAssured.given().log().all()
-                .when().get("/times/available?date=2024-05-01&themeId=2")
+                .when().get(path)
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
                 .extract()

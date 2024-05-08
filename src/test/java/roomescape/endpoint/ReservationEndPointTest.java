@@ -49,7 +49,7 @@ public class ReservationEndPointTest {
         List<ReservationResponse> expected = List.of(new ReservationResponse(
                 1L,
                 "칸쵸와 알파고",
-                LocalDate.parse("2024-05-01"),
+                LocalDate.now().minusDays(1),
                 new ReservationTimeResponse(2L, LocalTime.parse("11:00:00")),
                 new ThemeResponse(2L, "이름2", "설명2", "썸네일2")
         ));

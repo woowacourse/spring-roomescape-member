@@ -19,11 +19,11 @@ VALUES ('우테코 수료 대장정',
         '자고 있는 사이에 캠퍼스 문이 닫혀버렸다! 잠실 캠퍼스 탈출기',
         'https://velog.velcdn.com/images/jangws/post/7199f6ba-b3a8-4e2f-b86a-e5406b166bcd/image.jpeg');
 
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('알알알', FORMATDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_TIMESTAMP()), 'yyyy-MM-dd'), 1, 1),
-       ('산초', FORMATDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_TIMESTAMP()), 'yyyy-MM-dd'), 2, 2),
-       ('칸쵸', FORMATDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_TIMESTAMP()), 'yyyy-MM-dd'), 3, 2),
-       ('찰리', FORMATDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_TIMESTAMP()), 'yyyy-MM-dd'), 4, 3),
-       ('러너덕', FORMATDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_TIMESTAMP()), 'yyyy-MM-dd'), 4, 2),
-       ('위브', FORMATDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_TIMESTAMP()), 'yyyy-MM-dd'), 3, 4),
-       ('아래브', FORMATDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_TIMESTAMP()), 'yyyy-MM-dd'), 2, 3);
+INSERT INTO reservation (name, date, time_id, theme_id, created_at)
+VALUES ('알알알', FORMATDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_TIMESTAMP()), 'yyyy-MM-dd'), 1, 1, TIMESTAMPADD(DAY, -2, CURRENT_TIMESTAMP())),
+       ('산초', FORMATDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_TIMESTAMP()), 'yyyy-MM-dd'), 2, 2, TIMESTAMPADD(DAY, -2, CURRENT_TIMESTAMP())),
+       ('칸쵸', FORMATDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_TIMESTAMP()), 'yyyy-MM-dd'), 3, 2, TIMESTAMPADD(DAY, -2, CURRENT_TIMESTAMP())),
+       ('찰리', FORMATDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_TIMESTAMP()), 'yyyy-MM-dd'), 4, 3, TIMESTAMPADD(DAY, -2, CURRENT_TIMESTAMP())),
+       ('러너덕', FORMATDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_TIMESTAMP()), 'yyyy-MM-dd'), 4, 2, TIMESTAMPADD(DAY, -2, CURRENT_TIMESTAMP())),
+       ('위브', FORMATDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_TIMESTAMP()), 'yyyy-MM-dd'), 3, 4, TIMESTAMPADD(DAY, -2, CURRENT_TIMESTAMP())),
+       ('아래브', FORMATDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_TIMESTAMP()), 'yyyy-MM-dd'), 2, 3, TIMESTAMPADD(DAY, -2, CURRENT_TIMESTAMP()));
