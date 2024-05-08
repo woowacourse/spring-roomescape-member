@@ -7,7 +7,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import roomescape.domain.member.Password;
 
 class PasswordTest {
 
@@ -16,7 +15,7 @@ class PasswordTest {
     @ValueSource(ints = {7, 21})
     void invalidLengthTest(int length) {
         String rawPassword = "a".repeat(length);
-        assertThatCode(() -> new Password(rawPassword))
+        assertThatCode(() -> Password.encryptFrom(rawPassword))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("비밀번호는 8자 이상 20자 이하여야 합니다.");
     }
@@ -25,7 +24,7 @@ class PasswordTest {
     @Test
     void validPasswordTest() {
         String rawPassword = "12345678";
-        Password password = new Password(rawPassword);
+        Password password = Password.encryptFrom(rawPassword);
         boolean matches = password.matches(rawPassword);
         assertThat(matches).isTrue();
     }

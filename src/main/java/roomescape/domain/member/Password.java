@@ -19,29 +19,30 @@ public class Password {
 
     private final String encryptedPassword;
 
-    public Password(String rawPassword) {
-        validateNonBlank(rawPassword);
-        validateLength(rawPassword);
-        this.encryptedPassword = encrypt(rawPassword);
+    public Password(String encryptedPassword) {
+        this.encryptedPassword = encryptedPassword;
     }
 
-    private void validateNonBlank(String rawPassword) {
+    public static Password encryptFrom(String rawPassword) {
+        validateNonBlank(rawPassword);
+        validateLength(rawPassword);
+        String encryptedPassword = encrypt(rawPassword);
+        return new Password(encryptedPassword);
+    }
+
+    private static void validateNonBlank(String rawPassword) {
         if (rawPassword == null || rawPassword.isBlank()) {
             throw new IllegalArgumentException("비밀번호는 필수 입력값 입니다.");
         }
     }
 
-    private void validateLength(String rawPassword) {
+    private static void validateLength(String rawPassword) {
         if (rawPassword.length() < PASSWORD_MIN_LENGTH || rawPassword.length() > PASSWORD_MAX_LENGTH) {
             throw new IllegalArgumentException("비밀번호는 8자 이상 20자 이하여야 합니다.");
         }
     }
 
-    public boolean matches(String other) {
-        return encrypt(other).equals(encryptedPassword);
-    }
-
-    private String encrypt(String rawPassword) {
+    private static String encrypt(String rawPassword) {
         String saltedPassword = rawPassword + SALT;
         md.update(saltedPassword.getBytes());
         byte[] byteData = md.digest();
@@ -50,6 +51,10 @@ public class Password {
             sb.append(String.format("%02x", b));
         }
         return sb.toString();
+    }
+
+    public boolean matches(String other) {
+        return encryptedPassword.equals(encrypt(other));
     }
 
     public String getEncryptedPassword() {

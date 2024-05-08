@@ -16,7 +16,7 @@ public class Member {
     }
 
     public Member(String name, String email, String password) {
-        this(null, new PlayerName(name), new Email(email), new Password(password));
+        this(null, new PlayerName(name), new Email(email), Password.encryptFrom(password));
     }
 
     public Member withId(long id) {
