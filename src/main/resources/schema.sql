@@ -1,9 +1,9 @@
-CREATE TABLE `user`
+CREATE TABLE escape_user
 (
-    id          BIGINT          NOT NULL AUTO_INCREMENT,
-    name        VARCHAR(255)    NOT NULL,
-    email       VARCHAR(255)    NOT NULL,
-    password    varchar(255)    NOT NULL,
+    id       BIGINT              NOT NULL AUTO_INCREMENT,
+    name     VARCHAR(255)        NOT NULL,
+    email    VARCHAR(255) unique NOT NULL,
+    password varchar(255)        NOT NULL,
     PRIMARY KEY (id)
 );
 
