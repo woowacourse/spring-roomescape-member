@@ -18,7 +18,7 @@ import roomescape.exception.PastTimeReservationException;
 import roomescape.fixture.ThemeFixture;
 import roomescape.service.dto.input.ReservationInput;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest
 class ReservationServiceTest {
 
     @Autowired
