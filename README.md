@@ -1,24 +1,24 @@
 # 방탈출 API 명세
 
-| Method | Endpoint                  | Description               |
-|--------|---------------------------|---------------------------|
-| GET    | `/admin`                  | 어드민 페이지 요청                |
-| GET    | `/admin/reservation`      | 어드민 예약 관리 페이지 요청          |
-| GET    | `/admin/time`             | 어드민 시간 관리 페이지 요청          |
-| GET    | `/admin/theme`            | 어드민 테마 관리 페이지 요청          |
-| GET    | ` `                       | 메인 페이지 요청                 |
-| GET    | `/reservation`            | 예약 관리 페이지 요청              |
-| GET    | `/reservations`           | 전체 예약 정보 요청               |
-| POST   | `/reservations`           | 예약 추가 요청                  |
-| DELETE | `/reservations/{id}`      | 예약 삭제 요청                  |
-| GET    | `/times`                  | 전체 시간 요청                  |
-| POST   | `/times`                  | 시간 추가 요청                  |
-| DELETE | `/times/{id}`             | 시간 삭제 요청                  |
-| DELETE | `/times/{date}/{themeId}` | 특정 날짜에 특정 테마에 대한 시간 정보 요청 |
-| GET    | `/themes`                 | 전체 테마 요청                  |
-| POST   | `/themes`                 | 테마 추가 요청                  |
-| DELETE | `/themes/{id}`            | 테마 삭제 요청                  |
-| DELETE | `/themes/popular`         | 인기 있는 테마 요청               |
+| Method | Endpoint                                         | Description               |
+|--------|--------------------------------------------------|---------------------------|
+| GET    | `/admin`                                         | 어드민 페이지 요청                |
+| GET    | `/admin/reservation`                             | 어드민 예약 관리 페이지 요청          |
+| GET    | `/admin/time`                                    | 어드민 시간 관리 페이지 요청          |
+| GET    | `/admin/theme`                                   | 어드민 테마 관리 페이지 요청          |
+| GET    | ` `                                              | 메인 페이지 요청                 |
+| GET    | `/reservation`                                   | 예약 관리 페이지 요청              |
+| GET    | `/reservations`                                  | 전체 예약 정보 요청               |
+| POST   | `/reservations`                                  | 예약 추가 요청                  |
+| DELETE | `/reservations/{id}`                             | 예약 삭제 요청                  |
+| GET    | `/times`                                         | 전체 시간 요청                  |
+| POST   | `/times`                                         | 시간 추가 요청                  |
+| DELETE | `/times/{id}`                                    | 시간 삭제 요청                  |
+| DELETE | `/times/available?date={date}&themeId={themeId}` | 특정 날짜에 특정 테마에 대한 시간 정보 요청 |
+| GET    | `/themes`                                        | 전체 테마 요청                  |
+| POST   | `/themes`                                        | 테마 추가 요청                  |
+| DELETE | `/themes/{id}`                                   | 테마 삭제 요청                  |
+| DELETE | `/themes/popular`                                | 인기 있는 테마 요청               |
 
 # 도메인 명세
 

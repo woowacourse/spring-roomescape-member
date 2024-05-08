@@ -67,7 +67,9 @@ class ReservationTimeControllerTest {
     void should_handle_get_times_with_book_status_when_requested() throws Exception {
         when(reservationTimeService.findAllWithBookStatus(DAY_AFTER_TOMORROW, 1L)).thenReturn(Collections.emptyList());
 
-        mockMvc.perform(get("/times/{date}/{themeId}", DAY_AFTER_TOMORROW, 1))
+        mockMvc.perform(get("/times/available")
+                        .param("date", DAY_AFTER_TOMORROW.toString())
+                        .param("themeId", "1"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$").isArray());
