@@ -58,7 +58,7 @@ class ThemeControllerTest extends ControllerTest {
     @DisplayName("테마를 삭제한다.")
     @Test
     void shouldDeleteTheme() throws Exception {
-        Long themeId = 1L;
+        long themeId = 1L;
         mvc.perform(delete("/themes/" + themeId))
                 .andExpect(status().isNoContent());
     }
