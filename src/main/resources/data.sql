@@ -20,10 +20,10 @@ VALUES ('우테코 수료 대장정',
         'https://velog.velcdn.com/images/jangws/post/7199f6ba-b3a8-4e2f-b86a-e5406b166bcd/image.jpeg');
 
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('알알알', '2024-04-30', 1, 1),
-       ('산초', '2024-04-30', 2, 2),
-       ('칸쵸', '2024-04-30', 3, 2),
-       ('찰리', '2024-04-30', 4, 3),
-       ('러너덕', '2024-04-30', 4, 2),
-       ('위브', '2024-04-30', 3, 4),
-       ('아래브', '2024-04-30', 2, 3);
+VALUES ('알알알', FORMATDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_TIMESTAMP()), 'yyyy-MM-dd'), 1, 1),
+       ('산초', FORMATDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_TIMESTAMP()), 'yyyy-MM-dd'), 2, 2),
+       ('칸쵸', FORMATDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_TIMESTAMP()), 'yyyy-MM-dd'), 3, 2),
+       ('찰리', FORMATDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_TIMESTAMP()), 'yyyy-MM-dd'), 4, 3),
+       ('러너덕', FORMATDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_TIMESTAMP()), 'yyyy-MM-dd'), 4, 2),
+       ('위브', FORMATDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_TIMESTAMP()), 'yyyy-MM-dd'), 3, 4),
+       ('아래브', FORMATDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_TIMESTAMP()), 'yyyy-MM-dd'), 2, 3);

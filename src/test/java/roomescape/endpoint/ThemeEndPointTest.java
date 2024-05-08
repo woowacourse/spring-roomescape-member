@@ -5,7 +5,6 @@ import static org.hamcrest.Matchers.notNullValue;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -90,9 +89,6 @@ public class ThemeEndPointTest {
     @DisplayName("테마 순위를 조회하면 상태코드 200과 테마의 순위를 반환한다.")
     @Test
     void getTopThemes() {
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('이름', ?, 2, 2)",
-                LocalDate.now().minusDays(1).toString());
-
         List<ThemeResponse> responses = RestAssured.given().log().all()
                 .when().get("/themes/rankings")
                 .then().log().all()
