@@ -13,8 +13,6 @@ import roomescape.core.service.MemberService;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private static final String COOKIE_NAME = "token";
-
     private final MemberService memberService;
     private final TokenProvider tokenProvider;
 
