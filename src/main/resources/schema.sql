@@ -21,6 +21,7 @@ CREATE TABLE reservation
     date                DATE         NOT NULL,
     reservation_time_id BIGINT,
     theme_id            BIGINT,
+    UNIQUE (date, reservation_time_id, theme_id),
     PRIMARY KEY (id),
     FOREIGN KEY (reservation_time_id) REFERENCES reservation_time (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id)
