@@ -26,9 +26,10 @@ class ReservationTimeAcceptanceTest extends ApiAcceptanceTest {
     @Test
     @DisplayName("[Step7] 예약 시간을 추가한다.")
     void createReservationTime() {
-        // given & when
+        // given
         ReservationTimeSaveRequest request = new ReservationTimeSaveRequest(MIA_RESERVATION_TIME);
 
+        // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(request)
@@ -48,9 +49,10 @@ class ReservationTimeAcceptanceTest extends ApiAcceptanceTest {
     @Test
     @DisplayName("[Step7] 잘못된 형식의 예약 시간을 추가한다.")
     void createReservationTime2() {
-        // given & when
+        // given
         ReservationTimeSaveRequest request = new ReservationTimeSaveRequest(LocalTime.of(15, 3));
 
+        // when
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(request)
@@ -74,8 +76,7 @@ class ReservationTimeAcceptanceTest extends ApiAcceptanceTest {
                 .when().get("/times")
                 .then().log().all()
                 .extract();
-        List<ReservationTimeResponse> reservationTimeResponse = Arrays.stream(
-                        response.as(ReservationTimeResponse[].class))
+        List<ReservationTimeResponse> reservationTimeResponse = Arrays.stream(response.as(ReservationTimeResponse[].class))
                 .toList();
 
         // then

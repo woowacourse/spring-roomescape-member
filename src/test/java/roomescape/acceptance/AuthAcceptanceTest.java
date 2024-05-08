@@ -18,7 +18,7 @@ public class AuthAcceptanceTest extends ApiAcceptanceTest {
     @DisplayName("[2 - Step4] 사용자가 로그인한다.")
     void login() {
         // given
-        Member member = createMember();
+        Member member = createTestMember();
         LoginRequest request = new LoginRequest(member.getEmail(), member.getPassword());
 
         // when
@@ -28,9 +28,9 @@ public class AuthAcceptanceTest extends ApiAcceptanceTest {
                 .when().post("/login")
                 .then().log().all()
                 .extract();
+        String token = response.response().getCookie("token");
 
         // then
-        String token = response.response().getCookie("token");
         assertSoftly(softly -> {
             checkHttpStatusOk(softly, response);
             softly.assertThat(token.split("\\.")).hasSize(3);
@@ -41,8 +41,8 @@ public class AuthAcceptanceTest extends ApiAcceptanceTest {
     @DisplayName("[2 - Step4] 사용자 인증 정보를 조회한다.")
     void checkAuthInformation() {
         // given
-        Member member = createMember();
-        String token = createToken(member);
+        Member member = createTestMember();
+        String token = createTestToken(member);
         Cookie cookie = new Cookie.Builder("token", token).build();
 
         // when
@@ -52,9 +52,9 @@ public class AuthAcceptanceTest extends ApiAcceptanceTest {
                 .when().get("/login/check")
                 .then().log().all()
                 .extract();
+        AuthInformationResponse authInfoResponse = response.as(AuthInformationResponse.class);
 
         // then
-        AuthInformationResponse authInfoResponse = response.as(AuthInformationResponse.class);
         assertSoftly(softly -> {
             checkHttpStatusOk(softly, response);
             softly.assertThat(authInfoResponse.name()).isEqualTo(member.getName());

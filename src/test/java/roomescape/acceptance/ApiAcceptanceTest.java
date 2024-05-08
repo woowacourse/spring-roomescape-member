@@ -19,8 +19,6 @@ import roomescape.reservation.dto.request.ThemeSaveRequest;
 import roomescape.reservation.dto.response.ReservationTimeResponse;
 import roomescape.reservation.dto.response.ThemeResponse;
 
-import java.time.LocalTime;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static roomescape.TestFixture.*;
 
@@ -35,8 +33,8 @@ abstract class ApiAcceptanceTest {
         RestAssured.port = port;
     }
 
-    protected Long saveTheme(String name, String description) {
-        ThemeSaveRequest request = new ThemeSaveRequest(name, description, THEME_THUMBNAIL);
+    protected Long createTestTheme() {
+        ThemeSaveRequest request = new ThemeSaveRequest(WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL);
         return RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(request)
@@ -46,8 +44,8 @@ abstract class ApiAcceptanceTest {
                 .id();
     }
 
-    protected Long saveReservationTime(LocalTime time) {
-        ReservationTimeSaveRequest request = new ReservationTimeSaveRequest(time);
+    protected Long createTestReservationTime() {
+        ReservationTimeSaveRequest request = new ReservationTimeSaveRequest(MIA_RESERVATION_TIME);
         return RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(request)
@@ -57,7 +55,7 @@ abstract class ApiAcceptanceTest {
                 .id();
     }
 
-    protected Member createMember() {
+    protected Member createTestMember() {
         MemberJoinRequest request = new MemberJoinRequest(MIA_EMAIL, TEST_PASSWORD, MIA_NAME);
         MemberResponse response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -68,7 +66,7 @@ abstract class ApiAcceptanceTest {
         return new Member(response.id(), response.name(), response.email(), null);
     }
 
-    protected String createToken(Member member) {
+    protected String createTestToken(Member member) {
         LoginRequest request = new LoginRequest(member.getEmail(), member.getPassword());
         return RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
