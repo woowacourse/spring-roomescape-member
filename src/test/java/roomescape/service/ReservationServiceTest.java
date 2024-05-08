@@ -16,8 +16,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.dao.ReservationDao;
+import roomescape.domain.Member;
+import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.ReservedThemeResponse;
@@ -42,7 +45,7 @@ class ReservationServiceTest {
         final Reservation reservation = MIA_RESERVATION();
 
         given(reservationDao.save(reservation))
-                .willReturn(new Reservation(1L, reservation.getName(), reservation.getDate(),
+                .willReturn(new Reservation(1L, reservation.getMember(), reservation.getDate(),
                         reservation.getTime(), reservation.getTheme()));
 
         // when
@@ -69,13 +72,25 @@ class ReservationServiceTest {
 
     @Test
     @DisplayName("모든 예약 목록을 조회한다.")
-    void getAll() {
+    void getAllReservations() {
         // given
-        final Reservation miaReservation = MIA_RESERVATION();
-        final Reservation tommyReservation = TOMMY_RESERVATION();
+        final Member member1 = new Member(new Name("냥인"), "nyangin@email.com", "1234");
+        final Member member2 = new Member(new Name("미아"), "mia@email.com", "1234");
+        final String startAt1 = "18:00";
+        final String startAt2 = "19:00";
+        final ReservationTime reservationTime1 = new ReservationTime(startAt1);
+        final ReservationTime reservationTime2 = new ReservationTime(startAt2);
+        final String themeName1 = "호러";
+        final String themeName2 = "추리";
+        final Theme theme1 = new Theme(themeName1, "매우 무섭습니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        final Theme theme2 = new Theme(themeName2, "매우 어렵습니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        final Reservation reservation1 = new Reservation(member1, "2034-05-08", reservationTime1, theme1);
+        final Reservation reservation2 = new Reservation(member2, "2034-05-08", reservationTime2, theme2);
 
         given(reservationDao.findAll())
-                .willReturn(List.of(miaReservation, tommyReservation));
+                .willReturn(List.of(reservation1, reservation2));
 
         // when
         final List<ReservationResponse> reservations = reservationService.findAll();
@@ -84,13 +99,13 @@ class ReservationServiceTest {
         assertAll(() -> {
             assertThat(reservations).hasSize(2)
                     .extracting(ReservationResponse::name)
-                    .containsExactly(USER_MIA, USER_TOMMY);
+                    .containsExactly("냥인", "미아");
             assertThat(reservations).extracting(ReservationResponse::time)
                     .extracting(ReservationTimeResponse::startAt)
-                    .containsExactly(MIA_RESERVATION_TIME, TOMMY_RESERVATION_TIME);
+                    .containsExactly(startAt1, startAt2);
             assertThat(reservations).extracting(ReservationResponse::theme)
                     .extracting(ReservedThemeResponse::name)
-                    .containsExactly(WOOTECO_THEME_NAME, WOOTECO_THEME_NAME);
+                    .containsExactly(themeName1, themeName2);
         });
     }
 

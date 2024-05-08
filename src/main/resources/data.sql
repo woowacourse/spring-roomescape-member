@@ -1,3 +1,5 @@
+INSERT INTO member (id, name, email, password) VALUES (1, '냥인', 'oddpinkjadeite@gmail.com', '1234');
+
 INSERT INTO reservation_time (id, start_at) VALUES (1, '13:00:00');
 INSERT INTO reservation_time (id, start_at) VALUES (2, '14:00:00');
 

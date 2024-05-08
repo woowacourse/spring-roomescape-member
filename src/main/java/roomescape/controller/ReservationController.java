@@ -10,10 +10,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Reservation;
+import roomescape.dto.MemberResponse;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationSaveRequest;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.ThemeResponse;
+import roomescape.service.MemberService;
 import roomescape.service.ReservationService;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.ThemeService;
@@ -23,13 +25,19 @@ import java.util.List;
 @RestController
 @RequestMapping("/reservations")
 public class ReservationController {
+
+    private final MemberService memberService;
     private final ReservationService reservationService;
     private final ReservationTimeService reservationTimeService;
     private final ThemeService themeService;
 
-    public ReservationController(final ReservationService reservationService,
-                                 final ReservationTimeService reservationTimeService,
-                                 final ThemeService themeService) {
+    public ReservationController(
+            final MemberService memberService,
+            final ReservationService reservationService,
+            final ReservationTimeService reservationTimeService,
+            final ThemeService themeService)
+    {
+        this.memberService = memberService;
         this.reservationService = reservationService;
         this.reservationTimeService = reservationTimeService;
         this.themeService = themeService;
@@ -37,9 +45,11 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(@RequestBody final ReservationSaveRequest request) {
+        final MemberResponse memberResponse = memberService.findById(request.memberId());
         final ReservationTimeResponse reservationTimeResponse = reservationTimeService.findById(request.timeId());
         final ThemeResponse themeResponse = themeService.findById(request.themeId());
-        final Reservation reservation = request.toModel(themeResponse, reservationTimeResponse);
+
+        final Reservation reservation = request.toModel(memberResponse, themeResponse, reservationTimeResponse);
         return ResponseEntity.status(HttpStatus.CREATED).body(reservationService.create(reservation));
     }
 

@@ -9,8 +9,8 @@ import roomescape.exception.NotFoundException;
 
 import java.util.List;
 
-@Service
 @Transactional
+@Service
 public class ThemeService {
 
     private static final int POPULARITY_AGGREGATION_PERIOD = 7;
@@ -37,7 +37,7 @@ public class ThemeService {
     @Transactional(readOnly = true)
     public ThemeResponse findById(final Long id) {
         final Theme theme = themeDao.findById(id)
-                .orElseThrow(() -> new NotFoundException(id + "에 해당하는 테마가 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(id + "에 해당하는 테마가 없습니다."));
         return ThemeResponse.from(theme);
     }
 

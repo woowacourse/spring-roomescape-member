@@ -44,7 +44,7 @@ public class ReservationTimeService {
     @Transactional(readOnly = true)
     public ReservationTimeResponse findById(final Long id) {
         final ReservationTime reservationTime = reservationTimeDao.findById(id)
-                .orElseThrow(() -> new NotFoundException("해당 ID의 예약 시간이 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 예약 시간이 없습니다."));
         return ReservationTimeResponse.from(reservationTime);
     }
 

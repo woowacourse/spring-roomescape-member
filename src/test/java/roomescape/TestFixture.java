@@ -1,16 +1,19 @@
 package roomescape;
 
+import roomescape.domain.Member;
 import roomescape.domain.Name;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 public class TestFixture {
-    public static final String USER_MIA = "미아";
+    public static final String MEMBER_MIA_NAME = "미아";
     public static final String MIA_RESERVATION_DATE = "2030-04-18";
     public static final String MIA_RESERVATION_TIME = "15:00";
+    public static final String MEMBER_MIA_EMAIL = "mia@email.com";
+    public static final String MEMBER_MIA_PASSWORD = "1234";
 
-    public static final String USER_TOMMY = "토미";
+    public static final String MEMBER_TOMMY_NAME = "토미";
     public static final String TOMMY_RESERVATION_DATE = "2030-05-19";
     public static final String TOMMY_RESERVATION_TIME = "15:00";
 
@@ -25,14 +28,24 @@ public class TestFixture {
     }
 
     public static Reservation MIA_RESERVATION(final ReservationTime time, final Theme theme) {
-        return new Reservation(new Name(USER_MIA), MIA_RESERVATION_DATE, time, theme);
+        return new Reservation(MEMBER_MIA(), MIA_RESERVATION_DATE, time, theme);
+    }
+
+    public static Reservation MIA_RESERVATION(final Member member, final ReservationTime time, final Theme theme) {
+        return new Reservation(member, MIA_RESERVATION_DATE, time, theme);
     }
 
     public static Reservation TOMMY_RESERVATION() {
-        return new Reservation(
-                new Name(USER_TOMMY), TOMMY_RESERVATION_DATE,
-                new ReservationTime(TOMMY_RESERVATION_TIME), WOOTECO_THEME()
-        );
+        return new Reservation(MEMBER_MIA(), TOMMY_RESERVATION_DATE,
+                new ReservationTime(TOMMY_RESERVATION_TIME), WOOTECO_THEME());
+    }
+
+    public static Member MEMBER_MIA() {
+        return new Member(new Name(MEMBER_MIA_NAME), MEMBER_MIA_EMAIL, MEMBER_MIA_PASSWORD);
+    }
+
+    public static Member MEMBER_MIA(final Long id) {
+        return new Member(id, new Name(MEMBER_MIA_NAME), MEMBER_MIA_EMAIL, MEMBER_MIA_PASSWORD);
     }
 
     public static Theme WOOTECO_THEME() {

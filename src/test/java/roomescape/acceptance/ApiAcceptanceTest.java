@@ -49,7 +49,7 @@ abstract class ApiAcceptanceTest {
     }
 
     protected Long saveReservation(final Long timeId, final Long themeId) {
-        final ReservationSaveRequest request = new ReservationSaveRequest(USER_MIA, MIA_RESERVATION_DATE, timeId, themeId);
+        final ReservationSaveRequest request = new ReservationSaveRequest(1L, MIA_RESERVATION_DATE, timeId, themeId);
         return RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(request)

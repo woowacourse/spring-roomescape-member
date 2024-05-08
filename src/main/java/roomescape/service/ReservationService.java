@@ -42,7 +42,7 @@ public class ReservationService {
                 .toList();
     }
 
-    public void delete(Long id) {
+    public void delete(final Long id) {
         final boolean isExist = reservationDao.existById(id);
         if (!isExist) {
             throw new NotFoundException("해당 ID의 예약이 없습니다.");

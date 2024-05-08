@@ -1,41 +1,39 @@
 package roomescape.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static roomescape.TestFixture.*;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import roomescape.domain.Member;
+import roomescape.domain.Name;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-
-import java.sql.Time;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
 class ThemeJdbcDaoTest extends DaoTest {
 
     @Autowired
+    private MemberDao memberDao;
+
+    @Autowired
+    private ReservationTimeDao reservationTimeDao;
+
+    @Autowired
     private ThemeDao themeDao;
 
-    private SimpleJdbcInsert jdbcInsert;
+    @Autowired
+    private ReservationDao reservationDao;
 
-    @BeforeEach
-    void setUp() {
-        jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("theme")
-                .usingGeneratedKeyColumns("id");
-    }
 
     @Test
     @DisplayName("테마를 저장한다.")
     void save() {
         // given
-        final Theme theme = new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        final Theme theme = new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
 
         // when
         final Theme savedTheme = themeDao.save(theme);
@@ -48,8 +46,9 @@ class ThemeJdbcDaoTest extends DaoTest {
     @DisplayName("테마 목록을 조회한다.")
     void findAll() {
         // given
-        final String insertSql = "INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)";
-        jdbcTemplate.update(insertSql, WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL);
+        final Theme theme = new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        themeDao.save(theme);
 
         // when
         final List<Theme> themes = themeDao.findAll();
@@ -59,23 +58,23 @@ class ThemeJdbcDaoTest extends DaoTest {
     }
 
     @Test
-    @DisplayName("Id로 테마를 조회한다.")
+    @DisplayName("Id에 해당하는 테마를 조회한다.")
     void findById() {
         // given
-        final Theme theme = WOOTECO_THEME();
-        final SqlParameterSource params = new BeanPropertySqlParameterSource(theme);
-        final Long id = jdbcInsert.executeAndReturnKey(params).longValue();
+        final Theme theme = new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        final Theme savedTheme = themeDao.save(theme);
 
         // when
-        final Optional<Theme> foundTheme = themeDao.findById(id);
+        final Optional<Theme> foundTheme = themeDao.findById(savedTheme.getId());
 
         // then
         assertThat(foundTheme).isNotEmpty();
     }
 
     @Test
-    @DisplayName("존재하지 않는 Id로 테마를 조회하면 빈 Optional을 반환한다.")
-    void findByNotExistingId() {
+    @DisplayName("존재하지 않는 Id로 테마를 조회하면 빈 옵셔널을 반환한다.")
+    void returnEmptyOptionalWhenFindByNotExistingId() {
         // given
         final Long notExistingId = 1L;
 
@@ -87,44 +86,41 @@ class ThemeJdbcDaoTest extends DaoTest {
     }
 
     @Test
-    @DisplayName("Id로 테마를 삭제한다.")
+    @DisplayName("Id에 해당하는 테마를 삭제한다.")
     void deleteById() {
         // given
-        final Theme theme = WOOTECO_THEME();
-        final SqlParameterSource params = new BeanPropertySqlParameterSource(theme);
-        final Long id = jdbcInsert.executeAndReturnKey(params).longValue();
+        final Theme theme = new Theme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        final Theme savedTheme = themeDao.save(theme);
 
         // when
-        themeDao.deleteById(id);
+        themeDao.deleteById(savedTheme.getId());
 
         // then
-        final Integer count = jdbcTemplate.queryForObject("SELECT count(1) from theme where id = ?", Integer.class, id);
-        assertThat(count).isEqualTo(0);
+        final List<Theme> themes = themeDao.findAll();
+        assertThat(themes).hasSize(0);
     }
 
     @Test
     @DisplayName("최근 일주일을 기준으로 예약이 많은 순으로 테마 10개를 조회한다.")
-    void findAllOrderByReservationCountInLastWeek() {
+    void findTopThemesByReservationCountDuringPeriod() {
         // given
-        final String insertTimeSql = "INSERT INTO reservation_time (start_at) VALUES (?), (?)";
-        jdbcTemplate.update(insertTimeSql,
-                Time.valueOf(LocalTime.parse(MIA_RESERVATION_TIME)),
-                Time.valueOf(LocalTime.parse(TOMMY_RESERVATION_TIME)));
-        final String insertThemeSql = "INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?), (?, ?, ?)";
-        jdbcTemplate.update(insertThemeSql,
-                WOOTECO_THEME_NAME, WOOTECO_THEME_DESCRIPTION, THEME_THUMBNAIL,
-                HORROR_THEME_NAME, HORROR_THEME_DESCRIPTION, THEME_THUMBNAIL);
-        final String insertReservationSql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)";
-        jdbcTemplate.update(insertReservationSql,
-                USER_MIA, MIA_RESERVATION_DATE, 1L, 1L,
-                USER_TOMMY, TOMMY_RESERVATION_DATE, 2L, 1L,
-                "냥", "2030-05-03", 1L, 2L);
+        final Member member = memberDao.save(new Member(new Name("냥인"), "nyangin@email.com", "1234"));
+        final ReservationTime reservationTime1 = reservationTimeDao.save(new ReservationTime("18:00"));
+        final ReservationTime reservationTime2 = reservationTimeDao.save(new ReservationTime("19:00"));
+        final Theme theme1 = themeDao.save(new Theme("호러", "매우 무섭습니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        final Theme theme2 = themeDao.save(new Theme("추리", "매우 어렵습니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        reservationDao.save(new Reservation(member, "2034-05-08", reservationTime1, theme1));
+        reservationDao.save(new Reservation(member, "2034-05-08", reservationTime2, theme1));
+        reservationDao.save(new Reservation(member, "2034-05-08", reservationTime1, theme2));
 
         // when
         final List<Theme> allOrderByReservationCountInLastWeek = themeDao.findTopThemesByReservationCountDuringPeriod(7, 10);
 
         // then
         assertThat(allOrderByReservationCountInLastWeek).extracting(Theme::getName)
-                .containsExactly(WOOTECO_THEME_NAME, HORROR_THEME_NAME);
+                .containsExactly(theme1.getName(), theme2.getName());
     }
 }

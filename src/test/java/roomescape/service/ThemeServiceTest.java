@@ -94,7 +94,7 @@ class ThemeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> themeService.findById(1L))
-                .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test

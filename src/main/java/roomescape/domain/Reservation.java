@@ -7,25 +7,25 @@ import java.util.Objects;
 public class Reservation {
 
     private final Long id;
-    private final Name name;
+    private final Member member;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(final Name name, final String date, final ReservationTime time, final Theme theme) {
-        this(null, name, date, time, theme);
+    public Reservation(final Member member, final String date, final ReservationTime time, final Theme theme) {
+        this(null, member, date, time, theme);
     }
 
-    public Reservation(final Long id, final Name name, final String date,
+    public Reservation(final Long id, final Member member, final String date,
                        final ReservationTime time, final Theme theme) {
-        this(id, name, convertToLocalDate(date), time, theme);
+        this(id, member, convertToLocalDate(date), time, theme);
     }
 
-    public Reservation(final Long id, final Name name, final LocalDate date,
+    public Reservation(final Long id, final Member member, final LocalDate date,
                        final ReservationTime time, final Theme theme) {
         validateDate(date);
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
@@ -52,6 +52,10 @@ public class Reservation {
         return this.time.equals(time) && this.date.equals(date);
     }
 
+    public Long getMemberId() {
+        return member.getId();
+    }
+
     public Long getReservationTimeId() {
         return time.getId();
     }
@@ -64,12 +68,12 @@ public class Reservation {
         return id;
     }
 
-    public Name getName() {
-        return name;
+    public Member getMember() {
+        return member;
     }
 
-    public String getNameString() {
-        return name.getName();
+    public String getMemberName() {
+        return member.getNameString();
     }
 
     public LocalDate getDate() {

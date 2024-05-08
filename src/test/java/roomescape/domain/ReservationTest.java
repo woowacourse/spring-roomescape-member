@@ -21,7 +21,7 @@ class ReservationTest {
     @DisplayName("예약 날짜가 현재 날짜 이후가 아닌 경우 예외가 발생한다.")
     void throwExceptionWhenInvalidDate(final LocalDate invalidDate) {
         // when & then
-        assertThatThrownBy(() -> new Reservation(new Name(USER_MIA), invalidDate.toString(), new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME()))
+        assertThatThrownBy(() -> new Reservation(MEMBER_MIA(), invalidDate.toString(), new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -38,7 +38,7 @@ class ReservationTest {
     @DisplayName("예약 날짜 입력 값이 유효하지 않으면 예외가 발생한다.")
     void throwExceptionWhenCannotConvertToLocalDate(final String invalidDate) {
         // when & then
-        assertThatThrownBy(() -> new Reservation(new Name(USER_MIA), invalidDate, new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME()))
+        assertThatThrownBy(() -> new Reservation(MEMBER_MIA(), invalidDate, new ReservationTime(MIA_RESERVATION_TIME), WOOTECO_THEME()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
