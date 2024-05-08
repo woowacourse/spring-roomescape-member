@@ -5,10 +5,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.dto.request.LoginCheckRequest;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.response.LoginResponse;
 import roomescape.dto.response.TokenResponse;
@@ -28,13 +31,24 @@ public class AuthController {
     ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest loginRequest,
                                         HttpServletResponse servletResponse) {
         TokenResponse tokenResponse = authService.createToken(loginRequest);
-        servletResponse.addCookie(createToken(tokenResponse));
+
+        Cookie tokenCookie = createTokenCookie(tokenResponse.accessToken());
+        servletResponse.addCookie(tokenCookie);
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    private Cookie createToken(TokenResponse tokenResponse) {
-        Cookie token = new Cookie("token", tokenResponse.accessToken());
+    @GetMapping("/check")
+    ResponseEntity<LoginCheckResponse> checkLogin(@CookieValue String token) {
+        LoginCheckRequest loginCheckRequest = new LoginCheckRequest(token);
+
+        LoginCheckResponse loginCheckResponse = authService.checkLogin(loginCheckRequest);
+
+        return ResponseEntity.status(HttpStatus.OK).body(loginCheckResponse);
+    }
+
+    private Cookie createTokenCookie(String tokenValue) {
+        Cookie token = new Cookie("token", tokenValue);
         token.setPath("/");
         token.setHttpOnly(true);
         return token;
