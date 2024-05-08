@@ -68,3 +68,6 @@ INSERT INTO reservation (name, date, time_id, theme_id)
 VALUES ('테니', '2024-05-03', 1, 11);
 INSERT INTO reservation (name, date, time_id, theme_id)
 VALUES ('테니', '2024-05-04', 1, 11);
+
+INSERT INTO member (name, email, password)
+VALUES ('테니', 'tenny@wooteco.com', 'secret');
