@@ -1,4 +1,4 @@
-package roomescape.auth.ui;
+package roomescape.controller.api;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,6 +13,8 @@ import roomescape.auth.application.AuthService;
 import roomescape.auth.dto.MemberResponse;
 import roomescape.auth.dto.TokenRequest;
 import roomescape.auth.infrastructure.AuthorizationExtractor;
+import roomescape.controller.login.Login;
+import roomescape.controller.login.LoginMember;
 
 @Controller
 public class LoginController {
@@ -43,10 +45,8 @@ public class LoginController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberResponse> findMyInfo(HttpServletRequest request) {
-        String token = authorizationExtractor.extract(request);
-        MemberResponse member = authService.findMemberByToken(token);
-        return ResponseEntity.ok().body(member);
+    public ResponseEntity<MemberResponse> findMyInfo(@Login LoginMember loginMember) {
+        return ResponseEntity.ok().body(new MemberResponse(loginMember.id(), loginMember.name()));
     }
 
     @PostMapping("/logout")

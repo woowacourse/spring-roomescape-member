@@ -3,6 +3,7 @@ package roomescape.auth.ui;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,10 +17,9 @@ import roomescape.auth.dto.TokenRequest;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class LoginControllerTest {
 
-    private static final String USERNAME_FIELD = "email";
-    private static final String PASSWORD_FIELD = "password";
     private static final String EMAIL = "email@email.com";
     private static final String PASSWORD = "1234";
+    private static final String NAME = "백호";
 
     @LocalServerPort
     int port;
@@ -29,9 +29,20 @@ class LoginControllerTest {
         RestAssured.port = port;
     }
 
-    @DisplayName("토큰으로 로그인을 한다.")
+    @DisplayName("로그아웃을 한다.")
     @Test
     void tokenLogin() {
+        Map<String, String> params = Map.of("email", EMAIL, "password", PASSWORD, "name", NAME);
+
+        RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/members")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value());
+
         String accessToken = RestAssured
                 .given().log().all()
                 .body(new TokenRequest(EMAIL, PASSWORD))
@@ -39,8 +50,6 @@ class LoginControllerTest {
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/login")
                 .then().log().all().extract().header("Set-Cookie").split("=")[1];
-
-        System.out.println("accessToken = " + accessToken);
 
         MemberResponse member = RestAssured
                 .given().log().all()
@@ -50,6 +59,14 @@ class LoginControllerTest {
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value()).extract().as(MemberResponse.class);
 
-        assertThat(member.getName()).isEqualTo("어드민");
+        assertThat(member.name()).isEqualTo(NAME);
+
+        RestAssured
+                .given().log().all()
+                .cookie("token", accessToken)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/logout")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value());
     }
 }

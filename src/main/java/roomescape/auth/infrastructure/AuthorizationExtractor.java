@@ -3,8 +3,10 @@ package roomescape.auth.infrastructure;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
+import org.springframework.stereotype.Component;
 import roomescape.auth.application.AuthorizationException;
 
+@Component
 public class AuthorizationExtractor {
 
     public String extract(HttpServletRequest request) {
