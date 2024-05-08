@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.request.ReservationRequest;
+import roomescape.controller.request.ReservationRequest2;
 import roomescape.controller.request.ReservationRequest3;
 import roomescape.controller.response.ReservationResponse;
 import roomescape.controller.response.UserResponse;
@@ -44,9 +44,9 @@ public class ReservationController {
                 .parseClaimsJws(token)
                 .getBody().getSubject();
         UserResponse userResponse = reservationService.findByEmail(secret);
-        ReservationRequest reservationRequest = new ReservationRequest(userResponse.name(), reservationRequest3.date().toString(), reservationRequest3.timeId(),
-                reservationRequest3.themeId());
-        ReservationResponse reservationResponse = reservationService.save(reservationRequest);
+        /*ReservationRequest reservationRequest = new ReservationRequest(userResponse.name(), reservationRequest3.date().toString(), reservationRequest3.timeId(),
+                reservationRequest3.themeId());*/
+        ReservationResponse reservationResponse = reservationService.save(new ReservationRequest2(userResponse.id(), reservationRequest3.date(), reservationRequest3.timeId(), reservationRequest3.themeId()));
 
         return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.id()))
                 .body(reservationResponse);

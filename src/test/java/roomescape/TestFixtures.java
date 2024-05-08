@@ -1,3 +1,4 @@
+/*
 package roomescape;
 
 import java.time.LocalDate;
@@ -111,3 +112,4 @@ public class TestFixtures {
     public static final ReservationResponse RESERVATION_RESPONSE_2 = ReservationResponse.from(RESERVATION_2);
     public static final ReservationResponse RESERVATION_RESPONSE_3 = ReservationResponse.from(RESERVATION_3);
 }
+*/

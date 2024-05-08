@@ -45,6 +45,11 @@ public class FakeReservationRepository implements ReservationRepository {
                 .toList();
     }
 
+    @Override
+    public List<Reservation> findSearchReservation(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        return null;
+    }
+
     public void deleteAll() {
         fakeReservationDB.clear();
     }

@@ -55,26 +55,36 @@ public class MemberRepository {
     public UserResponse findByEmail(String email) {
         String sql = """
                 SELECT
-                    name
+                    id, name, email, password
                 FROM
                     user_table
                 WHERE
                     email = ?
                 """;
-        UserResponse userResponse = jdbcTemplate.queryForObject(sql, UserResponse.class, email);
+        UserResponse userResponse = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new UserResponse(
+                rs.getLong("id"),
+                rs.getString("name"),
+                rs.getString("email"),
+                rs.getString("password")
+        ), email);
         return userResponse;
     }
 
     public Optional<UserResponse> findById(Long memberId) {
         String sql = """
                 SELECT
-                    name
+                    id, name, email, password
                 FROM
                     user_table
                 WHERE
                     id = ?
                 """;
-        UserResponse userResponse = jdbcTemplate.queryForObject(sql, UserResponse.class, memberId);
+        UserResponse userResponse = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new UserResponse(
+                rs.getLong("id"),
+                rs.getString("name"),
+                rs.getString("email"),
+                rs.getString("password")
+        ), memberId);
         return Optional.ofNullable(userResponse);
     }
 

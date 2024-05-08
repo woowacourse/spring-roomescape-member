@@ -4,9 +4,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
 
 public record ReservationRequest(
         @NotBlank
@@ -30,9 +27,5 @@ public record ReservationRequest(
         } catch (DateTimeParseException e) {
             throw new IllegalArgumentException("날짜는 yyyy-MM-dd 형식으로 입력해야 합니다. 입력한 값: " + date);
         }
-    }
-
-    public Reservation toEntity(ReservationTime reservationTime, Theme theme) {
-        return new Reservation(name, LocalDate.parse(date), reservationTime, theme);
     }
 }
