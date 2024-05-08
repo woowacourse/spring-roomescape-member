@@ -21,7 +21,7 @@ public class ReservationTimeFindService {
         return reservationTimeRepository.findAll();
     }
 
-    public ReservationStatus findIsBooked(LocalDate date, Long themeId) {
+    public ReservationStatus findIsBooked(LocalDate date, long themeId) {
         List<ReservationTime> reservedTimes = reservationTimeRepository.findReservedBy(date, themeId);
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
         return ReservationStatus.of(reservedTimes, reservationTimes);

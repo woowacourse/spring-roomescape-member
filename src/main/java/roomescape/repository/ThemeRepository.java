@@ -47,7 +47,7 @@ public class ThemeRepository {
                 theme.getDescription(), theme.getThumbnail());
     }
 
-    public Optional<Theme> findById(Long id) {
+    public Optional<Theme> findById(long id) {
         String sql = "SELECT id, name, description, thumbnail " +
                 "FROM theme " +
                 "WHERE id = ?";
@@ -73,7 +73,7 @@ public class ThemeRepository {
         return jdbcTemplate.query(sql, themeRowMapper, Date.valueOf(start), Date.valueOf(end), count);
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(long id) {
         String sql = "DELETE FROM theme " +
                 "WHERE id = ?";
         jdbcTemplate.update(con -> {

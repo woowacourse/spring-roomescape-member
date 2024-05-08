@@ -55,7 +55,7 @@ public class ReservationController {
 
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable
-                                                  @Positive(message = "1 이상의 값만 입력해주세요.") Long id) {
+                                                  @Positive(message = "1 이상의 값만 입력해주세요.") long id) {
         System.out.println(11);
         reservationDeleteService.deleteReservation(id);
         return ResponseEntity.noContent().build();

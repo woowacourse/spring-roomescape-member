@@ -57,7 +57,7 @@ public class ReservationRepository {
                 reservation.getDate(), reservation.getReservationTime(), reservation.getTheme());
     }
 
-    public Optional<Reservation> findById(Long id) {
+    public Optional<Reservation> findById(long id) {
         String sql = "SELECT " +
                 "    r.id AS reservation_id, " +
                 "    r.name, " +
@@ -97,13 +97,13 @@ public class ReservationRepository {
         return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(long id) {
         String sql = "DELETE FROM reservation " +
                 "WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
 
-    public boolean existsByReservationTimeId(Long reservationTimeId) {
+    public boolean existsByReservationTimeId(long reservationTimeId) {
         String sql = "SELECT exists(" +
                 "SELECT 1 " +
                 "FROM reservation " +
@@ -112,7 +112,7 @@ public class ReservationRepository {
         return jdbcTemplate.queryForObject(sql, Boolean.class, reservationTimeId);
     }
 
-    public boolean existsByReservationThemeId(Long themeId) {
+    public boolean existsByReservationThemeId(long themeId) {
         String sql = "SELECT exists(" +
                 "SELECT 1 " +
                 "FROM reservation " +
@@ -121,7 +121,7 @@ public class ReservationRepository {
         return jdbcTemplate.queryForObject(sql, Boolean.class, themeId);
     }
 
-    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long reservationTimeId, Long themeId) {
+    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, long reservationTimeId, long themeId) {
         String sql = "SELECT exists(" +
                 "SELECT 1 " +
                 "FROM reservation " +

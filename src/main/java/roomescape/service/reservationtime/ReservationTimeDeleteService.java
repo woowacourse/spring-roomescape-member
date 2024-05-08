@@ -16,7 +16,7 @@ public class ReservationTimeDeleteService {
         this.reservationRepository = reservationRepository;
     }
 
-    public void deleteReservationTime(Long id) {
+    public void deleteReservationTime(long id) {
         reservationTimeRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간 아이디 입니다."));
 

@@ -65,7 +65,7 @@ public class ThemeController {
 
     @DeleteMapping("/themes/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable
-                                            @Positive(message = "1 이상의 값만 입력해주세요.") Long id) {
+                                            @Positive(message = "1 이상의 값만 입력해주세요.") long id) {
         themeDeleteService.deleteTheme(id);
         return ResponseEntity.noContent().build();
     }

@@ -53,7 +53,7 @@ public class ReservationTimeController {
     @GetMapping("/times/available")
     public ResponseEntity<List<ReservationStatusResponse>> getReservationTimesIsBooked(
             @RequestParam LocalDate date,
-            @RequestParam @Positive(message = "1 이상의 값만 입력해주세요.") Long themeId) {
+            @RequestParam @Positive(message = "1 이상의 값만 입력해주세요.") long themeId) {
         ReservationStatus reservationStatus = reservationTimeFindService.findIsBooked(date, themeId);
         return ResponseEntity.ok(
                 reservationStatus.getReservationStatus()
@@ -74,7 +74,7 @@ public class ReservationTimeController {
 
     @DeleteMapping("/times/{id}")
     public ResponseEntity<Void> deleteReservationTime(@PathVariable
-                                                      @Positive(message = "1 이상의 값만 입력해주세요.") Long id) {
+                                                      @Positive(message = "1 이상의 값만 입력해주세요.") long id) {
         reservationTimeDeleteService.deleteReservationTime(id);
         return ResponseEntity.noContent().build();
     }
