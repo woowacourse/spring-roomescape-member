@@ -37,7 +37,7 @@ public class ThemeJdbcDao implements ThemeDao {
     public Theme save(final Theme theme) {
         final SqlParameterSource params = new BeanPropertySqlParameterSource(theme);
         final Long id = jdbcInsert.executeAndReturnKey(params).longValue();
-        return new Theme(Objects.requireNonNull(id), theme);
+        return new Theme(Objects.requireNonNull(id), theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 
     @Override
