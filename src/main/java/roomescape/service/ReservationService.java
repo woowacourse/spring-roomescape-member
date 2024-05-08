@@ -2,7 +2,6 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.controller.login.LoginMember;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRepository;
 import roomescape.domain.Reservation;
@@ -41,17 +40,17 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse saveReservation(final ReservationSaveRequest reservationSaveRequest, final LoginMember loginMember) {
+    public ReservationResponse saveReservation(final ReservationSaveRequest reservationSaveRequest) {
         final ReservationTime time = reservationTimeRepository.findById(reservationSaveRequest.timeId())
                 .orElseThrow(() -> new ReservationBusinessException("존재하지 않는 예약 시간입니다."));
 
         final Theme theme = themeRepository.findById(reservationSaveRequest.themeId())
                 .orElseThrow(() -> new ReservationBusinessException("존재하지 않는 테마입니다."));
 
-        final Member member = memberRepository.findById(loginMember.id())
+        final Member member = memberRepository.findById(reservationSaveRequest.memberId())
                 .orElseThrow(() -> new ReservationBusinessException("존재하지 않는 회원입니다."));
 
-        final Reservation reservation = reservationSaveRequest.toReservation(time, theme, member);
+        final Reservation reservation = new Reservation(member, reservationSaveRequest.date(), time, theme);
         validateUnique(reservation);
 
         final Reservation savedReservation = reservationRepository.save(reservation);
