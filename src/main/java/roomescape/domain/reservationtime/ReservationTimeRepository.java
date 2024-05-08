@@ -1,11 +1,10 @@
-package roomescape.domain;
+package roomescape.domain.reservationtime;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import roomescape.domain.dto.AvailableReservationTimeDto;
 
 public interface ReservationTimeRepository {
 

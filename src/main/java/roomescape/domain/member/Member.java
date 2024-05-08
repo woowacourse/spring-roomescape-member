@@ -6,13 +6,13 @@ public class Member {
 
     private static final int EMAIL_MAX_LENGTH = 255;
     private static final int PASSWORD_MAX_LENGTH = 255;
-    private static final int NAME_MAX_LENGTH = 255;
+    private static final int NAME_MAX_LENGTH = 30;
 
     private final Long id;
     private final String email;
     private final String password;
     private final String name;
-    public final Role role;
+    private  final Role role;
 
     public Member(String email, String password, String name, Role role) {
         this(null, email, password, name, role);

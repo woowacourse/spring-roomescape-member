@@ -1,10 +1,10 @@
-package roomescape.domain;
+package roomescape.domain.theme;
 
 import java.util.Objects;
 
 public class Theme {
 
-    private static final int NAME_MAX_LENGTH = 255;
+    private static final int NAME_MAX_LENGTH = 30;
     private static final int DESCRIPTION_MAX_LENGTH = 255;
     private static final int THUMBNAIL_MAX_LENGTH = 255;
 

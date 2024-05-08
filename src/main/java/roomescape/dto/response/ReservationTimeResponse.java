@@ -2,7 +2,7 @@ package roomescape.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalTime;
-import roomescape.domain.ReservationTime;
+import roomescape.domain.reservationtime.ReservationTime;
 
 public record ReservationTimeResponse(
         Long id,
