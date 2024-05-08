@@ -1,6 +1,7 @@
 package roomescape.common;
 
 import java.util.NoSuchElementException;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class GlobalExceptionHandler {
 
     private static final String EXCEPTION_PREFIX = "[ERROR] ";
+
+    @ExceptionHandler
+    public ResponseEntity<String> catchInternalServerException(Exception ex) {
+        System.out.println(EXCEPTION_PREFIX + ex.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(EXCEPTION_PREFIX + ex.getMessage());
+    }
 
     @ExceptionHandler
     public ResponseEntity<String> catchValidationException(MethodArgumentNotValidException ex) {
