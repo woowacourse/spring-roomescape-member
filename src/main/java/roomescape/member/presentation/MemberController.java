@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.member.application.MemberService;
 import roomescape.member.domain.Member;
 import roomescape.member.dto.request.MemberJoinRequest;
+import roomescape.member.dto.response.MemberResponse;
 
 @RestController
 @RequestMapping("members")
@@ -20,9 +21,8 @@ public class MemberController {
     }
 
     @PostMapping("/join")
-    public ResponseEntity<Void> join(@RequestBody MemberJoinRequest request) {
-        Member member = request.toModel();
-        memberService.create(member);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<MemberResponse> join(@RequestBody MemberJoinRequest request) {
+        Member member = memberService.create(request.toModel());
+        return ResponseEntity.status(HttpStatus.CREATED).body(MemberResponse.from(member));
     }
 }

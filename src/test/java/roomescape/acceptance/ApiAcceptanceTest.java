@@ -10,6 +10,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.auth.dto.request.LoginRequest;
+import roomescape.member.domain.Member;
+import roomescape.member.dto.request.MemberJoinRequest;
+import roomescape.member.dto.response.MemberResponse;
 import roomescape.reservation.dto.request.ReservationTimeSaveRequest;
 import roomescape.reservation.dto.request.ThemeSaveRequest;
 import roomescape.reservation.dto.response.ReservationTimeResponse;
@@ -18,7 +22,7 @@ import roomescape.reservation.dto.response.ThemeResponse;
 import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static roomescape.TestFixture.THEME_THUMBNAIL;
+import static roomescape.TestFixture.*;
 
 @Sql("/test-schema.sql")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -51,6 +55,26 @@ abstract class ApiAcceptanceTest {
                 .then().extract()
                 .as(ReservationTimeResponse.class)
                 .id();
+    }
+
+    protected Member createMember() {
+        MemberJoinRequest request = new MemberJoinRequest(MIA_EMAIL, TEST_PASSWORD, MIA_NAME);
+        MemberResponse response = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().post("/members/join")
+                .then().extract()
+                .as(MemberResponse.class);
+        return new Member(response.id(), response.name(), response.email(), null);
+    }
+
+    protected String createToken(Member member) {
+        LoginRequest request = new LoginRequest(member.getEmail(), member.getPassword());
+        return RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when().post("/login")
+                .getCookie("token");
     }
 
     protected void checkHttpStatusOk(
