@@ -15,19 +15,19 @@ public record ThemeRequest(
         validateThumbnail(thumbnail);
     }
 
-    private void validateThumbnail(final String thumbnail) {
+    private void validateThumbnail(String thumbnail) {
         if (Objects.isNull(thumbnail)) {
             throw new IllegalArgumentException("썸네일 값은 null 값이 될 수 없습니다.");
         }
     }
 
-    private void validateDescription(final String description) {
+    private void validateDescription(String description) {
         if (Objects.isNull(description)) {
             throw new IllegalArgumentException("설명은 null 값이 될 수 없습니다.");
         }
     }
 
-    private void validateName(final String name) {
+    private void validateName(String name) {
         if (Objects.isNull(name)) {
             throw new IllegalArgumentException("이름은 null 값이 될 수 없습니다.");
         }

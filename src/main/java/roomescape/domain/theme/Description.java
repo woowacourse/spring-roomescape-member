@@ -10,7 +10,7 @@ public record Description(String description) {
         validateLength(description);
     }
 
-    private void validateNull(final String description) {
+    private void validateNull(String description) {
         if (Objects.isNull(description)) {
             throw new IllegalArgumentException("설명 값은 null이 될 수 없습니다.");
         }

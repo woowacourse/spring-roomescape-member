@@ -1,7 +1,6 @@
 package roomescape.service;
 
 import java.util.List;
-import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.domain.theme.Theme;
 import roomescape.dto.ThemeRequest;
@@ -42,7 +41,7 @@ public class ThemeService {
     public void deleteTheme(Long id) {
         themeRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 id가 존재하지 않습니다."));
-        if(reservationRepository.existsByThemeId(id)){
+        if (reservationRepository.existsByThemeId(id)) {
             throw new IllegalArgumentException("예약이 되어있어 해당 테마를 지울 수 없습니다.");
         }
         themeRepository.delete(id);

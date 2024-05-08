@@ -9,7 +9,7 @@ public record Thumbnail(String thumbnail) {
         validateEmptiness(thumbnail);
     }
 
-    private void validateNull(final String thumbnail) {
+    private void validateNull(String thumbnail) {
         if (Objects.isNull(thumbnail)) {
             throw new IllegalArgumentException("썸네일 값은 null이 될 수 없습니다.");
         }

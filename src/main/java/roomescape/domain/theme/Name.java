@@ -10,7 +10,7 @@ public record Name(String name) {
         validateLength(name);
     }
 
-    private void validateNull(final String name) {
+    private void validateNull(String name) {
         if (Objects.isNull(name)) {
             throw new IllegalArgumentException("이름 값은 null이 될 수 없습니다.");
         }
