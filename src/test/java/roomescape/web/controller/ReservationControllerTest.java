@@ -101,7 +101,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
     @Test
     @DisplayName("예약 시간 ID는 0보다 커야 한다.")
     void nonPositiveTimeId() {
-        long invalidTimeId = 0L;
+        Long invalidTimeId = 0L;
         ReservationRequest invalidRequest = new ReservationRequest("name", "2023-12-23", invalidTimeId, 1L);
 
         RestAssured.given().log().all()
@@ -122,7 +122,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
     @Test
     @DisplayName("존재하지 않는 시간 ID에 대한 예약을 할 수 없다.")
     void nonExistTimeId() {
-        long nonExistTimeId = 4L;
+        Long nonExistTimeId = 4L;
         String date = "2023-12-23";
         ReservationRequest invalidRequest = new ReservationRequest("name", date, nonExistTimeId, 1L);
 
@@ -150,7 +150,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
     @Test
     @DisplayName("예약 테마 ID는 0보다 커야 한다.")
     void nonPositiveThemeId() {
-        long invalidThemeId = 0L;
+        Long invalidThemeId = 0L;
         ReservationRequest invalidRequest = new ReservationRequest("name", "2023-12-23", 1L, invalidThemeId);
 
         RestAssured.given().log().all()
@@ -170,7 +170,7 @@ class ReservationControllerTest extends IntegrationTestSupport {
     @Test
     @DisplayName("존재하지 않는 테마 ID에 대한 예약을 할 수 없다.")
     void nonExistThemeId() {
-        long nonExistThemeId = 3L;
+        Long nonExistThemeId = 3L;
         ReservationRequest invalidRequest = new ReservationRequest("name", "2023-12-23", 1L, nonExistThemeId);
 
         RestAssured.given().log().all()

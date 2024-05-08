@@ -53,7 +53,7 @@ class ReservationServiceTest extends IntegrationTestSupport {
     @DisplayName("존재하지 않는 테마에 대한 예약은 생성할 수 없다.")
     void withUnknownTheme() {
         LocalDate date = nextDate();
-        long unknownThemeId = 3L;
+        Long unknownThemeId = 3L;
         ReservationRequest request = new ReservationRequest("아톰", date.toString(), 1L, unknownThemeId);
 
         assertThatThrownBy(() -> target.createReservation(request))
@@ -71,7 +71,7 @@ class ReservationServiceTest extends IntegrationTestSupport {
     @DisplayName("존재하지 않는 시간에 대한 예약은 생성할 수 없다.")
     void withUnknownTime() {
         LocalDate date = nextDate();
-        long unknownTimeId = 4L;
+        Long unknownTimeId = 4L;
         ReservationRequest request = new ReservationRequest("아톰", date.toString(), unknownTimeId, 2L);
 
         assertThatThrownBy(() -> target.createReservation(request))

@@ -114,7 +114,7 @@ class ReservationRepositoryTest extends IntegrationTestSupport {
         assertThat(result).isFalse();
     }
 
-    private Reservation createReservation(String nameValue, String dateValue, long timeId, long themeId) {
+    private Reservation createReservation(String nameValue, String dateValue, Long timeId, Long themeId) {
         Name name = new Name(nameValue);
         LocalDate date = LocalDate.parse(dateValue);
         ReservationTime reservationTime = new ReservationTime(timeId, null);

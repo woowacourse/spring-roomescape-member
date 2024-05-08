@@ -34,7 +34,7 @@ public class ReservationTimeService {
         return ReservationTimeResponse.from(createdReservationTime);
     }
 
-    public void deleteReservationTime(long id) {
+    public void deleteReservationTime(Long id) {
         if (reservationRepository.hasByTimeId(id)) {
             throw new IllegalStateException("해당 시간을 사용하고 있는 예약이 존재합니다.");
         }
@@ -48,7 +48,7 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    public List<AvailableReservationTimeResponse> getAvailableReservationTimes(String date, long themeId) {
+    public List<AvailableReservationTimeResponse> getAvailableReservationTimes(String date, Long themeId) {
         return reservationTimeRepository.findAvailableReservationTimes(LocalDate.parse(date), themeId);
     }
 }

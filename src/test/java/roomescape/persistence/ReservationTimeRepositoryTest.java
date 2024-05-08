@@ -116,7 +116,7 @@ class ReservationTimeRepositoryTest extends IntegrationTestSupport {
     @DisplayName("주어진 날짜와 테마에 대한 사용 가능 시간을 조회할 수 있다.")
     void findAvailableTimes() {
         LocalDate date = LocalDate.parse("2023-05-04");
-        long themeId = 1L;
+        Long themeId = 1L;
 
         List<AvailableReservationTimeResponse> result = target.findAvailableReservationTimes(date, themeId);
 

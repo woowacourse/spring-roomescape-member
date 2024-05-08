@@ -31,7 +31,7 @@ public class ThemeService {
         return ThemeResponse.from(createdTheme);
     }
 
-    public void deleteTheme(long id) {
+    public void deleteTheme(Long id) {
         if (reservationRepository.hasByThemeId(id)) {
             throw new IllegalStateException("해당 테마를 사용하는 예약이 존재합니다.");
         }

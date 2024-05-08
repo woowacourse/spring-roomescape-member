@@ -52,17 +52,17 @@ public class ReservationService {
         );
     }
 
-    private ReservationTime getReservationTime(long id) {
+    private ReservationTime getReservationTime(Long id) {
         return reservationTimeRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("해당되는 예약 시간이 없습니다."));
     }
 
-    private Theme getTheme(long id) {
+    private Theme getTheme(Long id) {
         return themeRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("해당되는 테마가 없습니다."));
     }
 
-    public void deleteReservation(long id) {
+    public void deleteReservation(Long id) {
         reservationRepository.removeById(id);
     }
 
