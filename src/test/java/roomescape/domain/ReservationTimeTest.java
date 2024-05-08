@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 class ReservationTimeTest {
 
     @Test
-    @DisplayName("startAt에 null이 입력된 경우 IllegalArgumentException 예외가 발생한다.")
+    @DisplayName("startAt에 null이 입력된 경우 IllegalArgumentException 발생")
     void constructorNullTimeFormatException() {
         assertThatThrownBy(() -> new ReservationTime(1L, null))
                 .isInstanceOf(IllegalArgumentException.class)
