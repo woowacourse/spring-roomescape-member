@@ -11,7 +11,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 
 //@formatter:off
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class UserPageControllerTest {
+class MemberPageControllerTest {
 
     @LocalServerPort
     int port;

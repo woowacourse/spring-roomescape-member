@@ -2,29 +2,27 @@ package roomescape.domain.user;
 
 import java.util.Objects;
 
-public class User {
+public class Member {
     private final Long id;
     private final Name name;
     private final Email email;
     private final Password password;
-    private final Role role;
 
-    public User(final Long id, final Name name, final Email email, final Password password, final Role role) {
+    public Member(final Long id, final Name name, final Email email, final Password password) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
-        this.role = role;
     }
 
-    public static User from(final Long id, final String name, final String email, final String password, final String role) {
-        return new User(id, new Name(name), new Email(email), new Password(password), Role.from(role));
+    public static Member from(final Long id, final String name, final String email, final String password) {
+        return new Member(id, new Name(name), new Email(email), new Password(password));
     }
 
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
-        if (!(o instanceof final User user)) return false;
+        if (!(o instanceof final Member user)) return false;
         return Objects.equals(email, user.email) && Objects.equals(password, user.password);
     }
 
@@ -36,11 +34,7 @@ public class User {
     public String getName() {
         return name.name();
     }
-
-    public String getRole() {
-        return role.getValue();
-    }
-
+    
     public String getEmail() {
         return email.value();
     }
