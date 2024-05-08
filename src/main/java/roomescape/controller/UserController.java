@@ -1,7 +1,7 @@
 package roomescape.controller;
 
 import jakarta.servlet.http.Cookie;
-import org.springframework.http.HttpHeaders;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -23,11 +23,11 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody LoginRequestDto loginRequestDto) {
+    public void login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
         userService.login(loginRequestDto.email(), loginRequestDto.password());
         String token = authenticationService.createToken(loginRequestDto.email());
         Cookie cookie = authenticationService.createCookie(token);
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).build();
+        response.addCookie(cookie);
     }
 
     @ExceptionHandler(value = IllegalArgumentException.class)

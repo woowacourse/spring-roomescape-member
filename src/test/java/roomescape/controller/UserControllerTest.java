@@ -7,11 +7,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.dto.LoginRequestDto;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -68,5 +71,19 @@ public class UserControllerTest {
                 .when().post("/login")
                 .then().log().all().statusCode(400)
                 .body(is("비밀번호가 일치하지 않습니다."));
+    }
+
+    @DisplayName("정상적인 로그인 시 토큰이 포함된 쿠키를 담아 응답한다.")
+    @Test
+    void loginCookieTest() {
+        String accessToken = RestAssured
+                .given().log().all()
+                .body(new LoginRequestDto("email@email.com", "password"))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().all().statusCode(200)
+                .extract().header("Set-Cookie");
+        assertThat(accessToken).contains("token=");
     }
 }
