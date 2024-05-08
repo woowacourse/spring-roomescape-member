@@ -28,13 +28,13 @@ public class ReservationTime {
         this.startAt = LocalTime.parse(startAt);
     }
 
-    private static void validateTimeBlank(final String startAt) {
+    private void validateTimeBlank(final String startAt) {
         if (startAt == null || startAt.isBlank()) {
             throw new InvalidTimeException("시간은 공백일 수 없습니다.");
         }
     }
 
-    private static void validateTimeFormat(final String startAt) {
+    private void validateTimeFormat(final String startAt) {
         try {
             LocalTime.parse(startAt);
         } catch (DateTimeParseException e) {

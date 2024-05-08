@@ -32,7 +32,7 @@ public class Reservation {
         this.theme = theme;
     }
 
-    private static void validateDateFormat(final String date) {
+    private void validateDateFormat(final String date) {
         try {
             LocalDate.parse(date);
         } catch (DateTimeParseException exception) {
@@ -40,7 +40,7 @@ public class Reservation {
         }
     }
 
-    private static void validateDateBlank(final String date) {
+    private void validateDateBlank(final String date) {
         if (date == null || date.isBlank()) {
             throw new InvalidDateException("날짜는 공백일 수 없습니다.");
         }

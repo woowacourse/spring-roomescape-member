@@ -29,14 +29,14 @@ public class Theme {
         this.thumbnail = getDefaultThumbnailIfNotExists(thumbnail);
     }
 
-    private static String getDefaultThumbnailIfNotExists(final String thumbnail) {
+    private String getDefaultThumbnailIfNotExists(final String thumbnail) {
         if (thumbnail == null || thumbnail.isBlank()) {
             return DEFAULT_THUMBNAIL;
         }
         return thumbnail;
     }
 
-    private static void validateNull(final String name) {
+    private void validateNull(final String name) {
         if (name == null || name.isBlank()) {
             throw new InvalidRequestException("공백일 수 없습니다.");
         }
