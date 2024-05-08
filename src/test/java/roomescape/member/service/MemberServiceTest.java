@@ -10,15 +10,7 @@ import roomescape.member.domain.Member;
 import roomescape.member.domain.repository.MemberRepository;
 import roomescape.member.dto.LoginRequest;
 import roomescape.member.util.FakeTokenProvider;
-import roomescape.member.util.JwtTokenProvider;
 import roomescape.reservation.dao.FakeMemberDao;
-import roomescape.reservation.dao.FakeReservationDao;
-import roomescape.reservation.dao.FakeReservationTimeDao;
-import roomescape.reservation.dao.FakeThemeDao;
-import roomescape.reservation.domain.repository.ReservationRepository;
-import roomescape.reservation.domain.repository.ReservationTimeRepository;
-import roomescape.reservation.domain.repository.ThemeRepository;
-import roomescape.reservation.service.ReservationService;
 
 class MemberServiceTest {
     MemberRepository memberRepository;

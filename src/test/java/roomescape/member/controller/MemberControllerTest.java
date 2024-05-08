@@ -3,20 +3,12 @@ package roomescape.member.controller;
 import static org.hamcrest.Matchers.containsString;
 
 import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
-import java.util.HashMap;
-import java.util.Map;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import roomescape.member.domain.repository.MemberRepository;
 import roomescape.member.dto.LoginRequest;
-import roomescape.member.service.MemberService;
-import roomescape.reservation.dao.FakeMemberDao;
 import roomescape.util.ControllerTest;
 
 @DisplayName("사용자 API 테스트")

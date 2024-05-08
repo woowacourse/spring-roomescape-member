@@ -3,7 +3,6 @@ package roomescape.member.service;
 import org.springframework.stereotype.Service;
 import roomescape.member.domain.repository.MemberRepository;
 import roomescape.member.dto.LoginRequest;
-import roomescape.member.util.JwtTokenProvider;
 import roomescape.member.util.TokenProvider;
 
 @Service
